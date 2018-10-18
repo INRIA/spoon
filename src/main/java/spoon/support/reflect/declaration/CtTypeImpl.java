@@ -728,7 +728,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 					if (!isSameParameter(candidate, ((CtArrayTypeReference) ctParameterType).getComponentType(), ((CtArrayTypeReference) parameterType).getComponentType())) {
 						return false;
 					} else {
-						if (!(((CtArrayTypeReference) ctParameterType).getDimensionCount() == ((CtArrayTypeReference) parameterType).getDimensionCount())) {
+						if (((CtArrayTypeReference) ctParameterType).getDimensionCount() != ((CtArrayTypeReference) parameterType).getDimensionCount()) {
 							return false;
 						}
 					}
