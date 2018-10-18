@@ -58,7 +58,15 @@ import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.parent.ParentTest;
 
-import java.io.*;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.io.FileReader;
+import java.io.StringWriter;
+import java.io.PrintWriter;
+import java.io.PrintStream;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
