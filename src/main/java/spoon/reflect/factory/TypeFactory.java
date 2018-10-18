@@ -678,7 +678,7 @@ public class TypeFactory extends SubFactory {
 			}
 		}
 		Visitor visitor = new Visitor();
-		((CtElement) formalTypeDeclarer).accept(visitor);
+		formalTypeDeclarer.accept(visitor);
 		return visitor.adapter;
 	}
 
@@ -715,5 +715,4 @@ public class TypeFactory extends SubFactory {
 		CtImport ctImport = factory.Core().createImport();
 		return ctImport.setReference(reference.clone());
 	}
-
 }
