@@ -48,7 +48,7 @@ public class TemplateReplaceReturnTest {
 		
 		CtClass<?> resultKlass = factory.Class().create(factory.Package().getOrCreate("spoon.test.template"), "ReturnReplaceResult");
 		new ReturnReplaceTemplate(model).apply(resultKlass);
-		assertEquals("{ if (((java.lang.System.currentTimeMillis()) % 2L) == 0) { return \"Panna\"; }else { return \"Orel\"; }}", getOptimizedString(resultKlass.getMethod("method").getBody()));
+		assertEquals("{ if (((java.lang.System.currentTimeMillis()) % 2L) == 0) { return \"Panna\"; } else { return \"Orel\"; }}", getOptimizedString(resultKlass.getMethod("method").getBody()));
 		launcher.setSourceOutputDirectory(new File("./target/spooned/"));
 		launcher.getModelBuilder().generateProcessedSourceFiles(OutputType.CLASSES);
 		ModelUtils.canBeBuilt(new File("./target/spooned/spoon/test/template/ReturnReplaceResult.java"), 8);
