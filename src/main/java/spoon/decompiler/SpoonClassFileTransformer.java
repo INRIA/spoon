@@ -16,7 +16,6 @@
  */
 package spoon.decompiler;
 
-import org.apache.log4j.Logger;
 import org.benf.cfr.reader.Main;
 import spoon.IncrementalLauncher;
 import spoon.SpoonModelBuilder;
@@ -37,8 +36,6 @@ import java.util.function.Predicate;
 
 @Experimental
 public class SpoonClassFileTransformer implements ClassFileTransformer {
-
-	private static final Logger LOGGER = Logger.getLogger(SpoonClassFileTransformer.class);
 
 	protected String pathToDecompiled;
 	//protected String pathToRecompile;
@@ -136,6 +133,7 @@ public class SpoonClassFileTransformer implements ClassFileTransformer {
 			ProtectionDomain protectionDomain,
 			byte[] classfileBuffer
 	) throws IllegalClassFormatException {
+		IncrementalLauncher launcher = new IncrementalLauncher(inputSources, classPath, cache);
 		try {
 
 			//If the class is not matched by user's filter, resume unmodified loading
@@ -147,7 +145,6 @@ public class SpoonClassFileTransformer implements ClassFileTransformer {
 			String pathToClassFile = loader.getResource(className + ".class").getPath();
 			decompiler.decompile(pathToClassFile);
 
-			IncrementalLauncher launcher = new IncrementalLauncher(inputSources, classPath, cache);
 			launcher.addInputResource(pathToDecompiled);
 
 			//Get updated model
@@ -178,10 +175,10 @@ public class SpoonClassFileTransformer implements ClassFileTransformer {
 				return fileContent;
 			} catch (IOException e) {
 				launcher.getEnvironment().debugMessage("[ERROR][Agent] while loading transformed " + className);
-				LOGGER.error(e.getMessage(), e);
+				launcher.getEnvironment().debugMessage(e.toString());
 			}
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			launcher.getEnvironment().debugMessage(e.toString());
 		}
 		return classfileBuffer;
 	}
