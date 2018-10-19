@@ -107,7 +107,7 @@ public class SpoonClassFileTransformer implements ClassFileTransformer {
 			this.classNameFilter = classNameFilter;
 		}
 
-		String classPathAr[] = System.getProperty("java.class.path").split(":");
+		String[] classPathAr = System.getProperty("java.class.path").split(":");
 		classPath = new HashSet<>(Arrays.asList(classPathAr));
 		this.pathToDecompiled = pathToDecompiled;
 		recompileDir = new File(pathToRecompile);
