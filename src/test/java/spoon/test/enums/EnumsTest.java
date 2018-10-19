@@ -167,7 +167,7 @@ public class EnumsTest {
 
 	@Test
 	public void testEnumValue() {
-		// contract: constructorCall on enumvalues should be implicit if they're not declared
+		// contract: constructorCall on enum values should be implicit if they're not declared
 
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/EnumClass.java");
