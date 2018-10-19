@@ -6,8 +6,8 @@ This article is a short summary of the [official documentation of sonatype](http
 
 * [ ] Release on Maven Central
 * [ ] Release on Github
-* [ ] PR to update the information: #2648
-* [ ] PR to remove deprecated methods: #2649
+* [ ] PR to update the information
+* [ ] PR to remove deprecated methods
 
 ## Prerequisites
 
@@ -27,7 +27,7 @@ This article is a short summary of the [official documentation of sonatype](http
 1. clean your project for the release and prepare the release `mvn release:clean release:prepare`
 1. `mvn release:perform` (sends the new version on Maven Central)
 1. check that the new version is on Maven Central (connect to `oss.sonatype.org`)
-1. alternatively `mvn -Prelease deploy -DskipTests`
+1. alternatively `mvn -Prelease deploy`
 
 ## Github Release
 1. push the release tag on Github (git push origin master)
@@ -91,22 +91,5 @@ To push your archive on Maven Central, you must sign before your jar with GPG, a
 1. Generate your pair of keys: `gpg --gen-key`
 2. Check if your key is generated: `gpg2 --list-keys`
 3. Distributing your public key on a server key (used by maven release plugin): `gpg2 --keyserver hkp://pool.sks-keyservers.net --send-keys <your-public-id-key>`
-
-
-### Create a repo for a new project in Sonatype
-
-In the JIRA of Sonatype, create a new ticket to create your repository. You will fill a form with some information about your project like Git repository, scm, etc.
-
-This process may take +/- 48 hours.
-
-After that, you can update your `settings.xml` of your Maven:
-
-Initialize the project: All steps in this section are detailed in the [official documentation](http://central.sonatype.org/pages/apache-maven.html) and modify `pom.xml` of the project.
-
-1. Specify sonatype plugin and distributions managements for release and snapshot (if necessary).
-3. Specify GPG plugin to verify and sign your project.
-4. Specify Nexus staging plugin if you would like push your archive on the sonatype and manually push it on the central.
-5. Specify sonatype as parent of your pom.xml.
-6. Specify a scm about your Sonatype repository.
 
 
