@@ -554,7 +554,8 @@ public class MainTest {
 	}
 
 	@Test
-	public void testElementIsContainedInAttributeOfItsParent() {rootPackage.accept(new CtScanner() {
+	public void testElementIsContainedInAttributeOfItsParent() {
+		rootPackage.accept(new CtScanner() {
 			@Override
 			public void scan(CtRole role, CtElement element) {
 				if (element != null) {
