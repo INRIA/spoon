@@ -46,6 +46,7 @@ import spoon.support.StandardEnvironment;
 import spoon.support.util.ImmutableMap;
 
 /**
+ * Generates the source code corresponding to a Pattern's RootNode
  */
 public class PatternPrinter extends DefaultGenerator {
 
