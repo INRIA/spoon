@@ -39,7 +39,7 @@ public class SpoonClassFileTransformerTest {
 		@Override
 		public Class<?> loadClass(String name) throws ClassNotFoundException {
 			try {
-				byte[] original =  Files.readAllBytes(Paths.get(classPath + name + ".class"));
+				byte[] original =  Files.readAllBytes(Paths.get(classPath + "/" + name + ".class"));
 				byte[] byteBuffer = transformer.transform(this, name,null, null, original);
 				return defineClass(name.replace("/", "."), byteBuffer, 0, byteBuffer.length);
 			} catch (IOException | IllegalClassFormatException e) {
@@ -50,7 +50,7 @@ public class SpoonClassFileTransformerTest {
 		@Override
 		public URL getResource(String name) {
 			try {
-				return new File(classPath + name).toPath().toUri().toURL();
+				return new File(classPath + "/" + name).toPath().toUri().toURL();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
@@ -83,7 +83,7 @@ public class SpoonClassFileTransformerTest {
 		);
 
 		//Class loaded by cl should be transformed
-		TransformingClassLoader cl = new TransformingClassLoader(transformer, CLASSES_DIR.getPath() + "/");
+		TransformingClassLoader cl = new TransformingClassLoader(transformer, CLASSES_DIR.getPath());
 
 		//Load a class
 		Class<?> subjectClass = cl.loadClass("se/kth/castor/TransformMe");
