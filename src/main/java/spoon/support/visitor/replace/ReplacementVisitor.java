@@ -1302,10 +1302,10 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 				if (val != null) {
 					map.put(key, val);
 					val.setParent(shouldBeDeleted.getParent());
-				}else {
+				} else {
 					map.remove(key);
 				}
-			}else {
+			} else {
 				map.remove(key);
 			}
 			listener.set(map);
