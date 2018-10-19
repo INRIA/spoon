@@ -282,7 +282,7 @@ public class TypeFactory extends SubFactory {
 	}
 
 	/**
-	 * Creates a reference to an one-dimension array of given type.
+	 * Creates a reference to a one-dimension array of given type.
 	 */
 	public <T> CtArrayTypeReference<T[]> createArrayReference(CtTypeReference<T> reference) {
 		CtArrayTypeReference<T[]> array = factory.Core().createArrayTypeReference();
