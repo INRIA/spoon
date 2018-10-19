@@ -678,7 +678,7 @@ public class TypeFactory extends SubFactory {
 			}
 		}
 		Visitor visitor = new Visitor();
-		((CtElement) formalTypeDeclarer).accept(visitor);
+		formalTypeDeclarer.accept(visitor);
 		return visitor.adapter;
 	}
 
