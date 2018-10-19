@@ -64,14 +64,10 @@ a project. Use `CtPathBuilder` like the example below.
 CtPath p1 = new CtPathBuilder().recursiveWildcard().name("toto").role(CtPathRole.DEFAULT_VALUE).build();
 // equivalent to
 CtPath p2 = new CtPathStringBuilder().fromString(".**.toto#default_value").build();
-```
 
-Warning: The ordering of instructions is important. Ordering instructions differently can have a
-vastly different meaning, as can be seen in the below examples. The first code snippet takes all
-toto elements in the project. The second snippet takes the first element named "toto" at the root of your project and after,
-makes a search recursively in your project according to the rest of your path request.
-
-```
+// takes all elements named "toto" in the project. 
 new CtPathBuilder().recursiveWildcard().name("toto")
+
+// takes the first element named "toto", a package or a class in the default package, at the root of your project.
 new CtPathBuilder().name("toto").recursiveWildcard()
 ```
