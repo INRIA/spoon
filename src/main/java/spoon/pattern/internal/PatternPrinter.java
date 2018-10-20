@@ -46,6 +46,7 @@ import spoon.support.StandardEnvironment;
 import spoon.support.util.ImmutableMap;
 
 /**
+ * Generates the source code corresponding to a Pattern's RootNode
  */
 public class PatternPrinter extends DefaultGenerator {
 
@@ -160,7 +161,7 @@ public class PatternPrinter extends DefaultGenerator {
 	}
 
 	/**
-	 * Creates a element which will be printed in source code of pattern as marker of parameter
+	 * Creates an element which will be printed in source code of pattern as marker of parameter
 	 * @param parameterInfo describes a pattern parameter to be printed
 	 * @param type class of the generated element
 	 * @return dummy template element, which represents a template type in source of generated Pattern.
