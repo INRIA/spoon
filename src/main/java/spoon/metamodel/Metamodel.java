@@ -180,6 +180,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.declaration.CtImportKind.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtModule.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtModuleRequirement.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtPackageDeclaration.class));
 		result.add(factory.Type().get(CtPackageExport.class));
 		result.add(factory.Type().get(CtProvidedService.class));
 		result.add(factory.Type().get(spoon.reflect.reference.CtModuleReference.class));

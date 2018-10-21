@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtPackageReference;
 
@@ -83,6 +84,29 @@ public class PackageFactory extends SubFactory {
 		CtPackageReference ref = factory.Core().createPackageReference();
 		ref.setSimpleName(name);
 		return ref;
+	}
+
+	/**
+	 * Creates a package declaration of a package.
+	 *
+	 * @param packageRef a reference to a package
+	 */
+	public CtPackageDeclaration createPackageDeclaration(CtPackageReference packageRef) {
+		CtPackageDeclaration pd = factory.Core().createPackageDeclaration();
+		pd.setReference(packageRef);
+		return pd;
+	}
+
+	/**
+	 * Creates a package declaration of a package. The given name has to be a fully qualified name.
+	 *
+	 * @param name
+	 * 		full name of the package to reference
+	 */
+	public CtPackageDeclaration createPackageDeclaration(String name) {
+		CtPackageDeclaration pd = factory.Core().createPackageDeclaration();
+		pd.setReference(createReference(name));
+		return pd;
 	}
 
 	/**

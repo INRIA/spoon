@@ -733,6 +733,15 @@ public class Metamodel {
 
 			));
 
+			types.add(new Type("CtPackageDeclaration", spoon.reflect.declaration.CtPackageDeclaration.class, spoon.support.reflect.declaration.CtPackageDeclarationImpl.class, fm -> fm
+				.field(CtRole.IS_IMPLICIT, false, false)
+				.field(CtRole.POSITION, false, false)
+				.field(CtRole.PACKAGE_REF, false, false)
+				.field(CtRole.ANNOTATION, false, false)
+				.field(CtRole.COMMENT, false, false)
+
+			));
+
 			types.add(new Type("CtTypeParameterReference", spoon.reflect.reference.CtTypeParameterReference.class, spoon.support.reflect.reference.CtTypeParameterReferenceImpl.class, fm -> fm
 				.field(CtRole.NAME, false, false)
 				.field(CtRole.IS_SHADOW, false, false)
