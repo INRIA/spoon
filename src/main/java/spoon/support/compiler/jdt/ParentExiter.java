@@ -798,11 +798,9 @@ public class ParentExiter extends CtInheritanceScanner {
 				ctPackage.removeType((CtType<?>) child);
 			}
 			ctPackage.addType((CtType<?>) child);
-			if (child.getPosition().getCompilationUnit() != null) {
-				CompilationUnit cu = child.getPosition().getCompilationUnit();
-				List<CtType<?>> declaredTypes = new ArrayList<>(cu.getDeclaredTypes());
-				declaredTypes.add((CtType<?>) child);
-				cu.setDeclaredTypes(declaredTypes);
+			CompilationUnit cu = child.getPosition().getCompilationUnit();
+			if (cu != null) {
+				cu.addDeclaredTypeReference(((CtType<?>) child).getReference());
 			}
 			return;
 		}

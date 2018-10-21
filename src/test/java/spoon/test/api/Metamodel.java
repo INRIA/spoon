@@ -724,6 +724,18 @@ public class Metamodel {
 
 			));
 
+			types.add(new Type("CtCompilationUnit", spoon.reflect.declaration.CtCompilationUnit.class, spoon.support.reflect.declaration.CtCompilationUnitImpl.class, fm -> fm
+				.field(CtRole.IS_IMPLICIT, false, false)
+				.field(CtRole.POSITION, true, true)
+				.field(CtRole.DECLARED_TYPE_REF, false, false)
+				.field(CtRole.DECLARED_MODULE_REF, false, false)
+				.field(CtRole.PACKAGE_DECLARATION, false, false)
+				.field(CtRole.DECLARED_IMPORT, false, false)
+				.field(CtRole.ANNOTATION, false, false)
+				.field(CtRole.COMMENT, false, false)
+
+			));
+
 			types.add(new Type("CtImport", spoon.reflect.declaration.CtImport.class, spoon.support.reflect.declaration.CtImportImpl.class, fm -> fm
 				.field(CtRole.IS_IMPLICIT, false, false)
 				.field(CtRole.POSITION, false, false)

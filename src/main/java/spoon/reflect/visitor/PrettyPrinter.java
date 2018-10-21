@@ -16,7 +16,7 @@
  */
 package spoon.reflect.visitor;
 
-import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -51,7 +51,7 @@ public interface PrettyPrinter {
 	 * compilation unit is required for calculating the line numbers mapping.
 	 * It always resets the printing context at the beginning of this process.
 	 */
-	void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types);
+	void calculate(CtCompilationUnit sourceCompilationUnit, List<CtType<?>> types);
 
 	/**
 	 * Gets the line number mapping between the generated code and the original

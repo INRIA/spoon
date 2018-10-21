@@ -155,6 +155,18 @@ public class MetamodelTest {
 		assertEquals(Collections.EMPTY_SET, isNotGetter);
 		assertEquals(Collections.EMPTY_SET, isNotSetter);
 	}
+	
+	private static final Set<String> IGNORED_FIELD_NAMES = new HashSet<>(Arrays.asList(
+			"parent",
+			"metadata",
+			"factory",
+			"valueOfMethod",
+			"autoImport",
+			"file",
+			"lineSeparatorPositions",
+			"rootFragment",
+			"originalSourceCode",
+			"myPartialSourcePosition"));
 
 	@Test
 	public void testRoleOnField() {
@@ -175,13 +187,8 @@ public class MetamodelTest {
 				if (candidate.hasModifier(ModifierKind.FINAL) || candidate.hasModifier(ModifierKind.STATIC) || candidate.hasModifier(ModifierKind.TRANSIENT)) {
 					return false;
 				}
-				if (
+				if (IGNORED_FIELD_NAMES.contains(candidate.getSimpleName())) {
 					// not a role
-					"parent".equals(candidate.getSimpleName())
-					|| "metadata".equals(candidate.getSimpleName())
-					|| "factory".equals(candidate.getSimpleName())
-					// cache field
-					|| "valueOfMethod".equals(candidate.getSimpleName())) {
 					return false;
 				}
 				CtClass parent = candidate.getParent(CtClass.class);
@@ -256,7 +263,7 @@ public class MetamodelTest {
 			assertNotNull(expectedConcept);
 			assertConceptsEqual(expectedConcept, runtimeConcept);
 		}
-		assertEquals(0, expectedConceptsByName.size());
+		assertEquals(expectedConceptsByName.keySet().toString(), 0, expectedConceptsByName.size());
 	}
 
 	private void assertConceptsEqual(MetamodelConcept expectedConcept, MetamodelConcept runtimeConcept) {

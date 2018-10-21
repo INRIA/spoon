@@ -1256,6 +1256,62 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtCompilationUnitPackageDeclarationReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.declaration.CtPackageDeclaration> {
+		private final spoon.reflect.declaration.CtCompilationUnit element;
+
+		CtCompilationUnitPackageDeclarationReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.declaration.CtPackageDeclaration replace) {
+			this.element.setPackageDeclaration(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtCompilationUnitImportsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.declaration.CtCompilationUnit element;
+
+		CtCompilationUnitImportsReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setImports(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtCompilationUnitDeclaredModuleReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtModuleReference> {
+		private final spoon.reflect.declaration.CtCompilationUnit element;
+
+		CtCompilationUnitDeclaredModuleReferenceReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtModuleReference replace) {
+			this.element.setDeclaredModuleReference(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtCompilationUnitDeclaredTypeReferencesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.declaration.CtCompilationUnit element;
+
+		CtCompilationUnitDeclaredTypeReferencesReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setDeclaredTypeReferences(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	class CtPackageDeclarationReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
 		private final spoon.reflect.declaration.CtPackageDeclaration element;
 
@@ -2123,6 +2179,17 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(usedService.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(usedService));
 		replaceElementIfExist(usedService.getServiceType(), new spoon.support.visitor.replace.ReplacementVisitor.CtUsedServiceServiceTypeReplaceListener(usedService));
 		replaceInListIfExist(usedService.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(usedService));
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
+	public void visitCtCompilationUnit(spoon.reflect.declaration.CtCompilationUnit compilationUnit) {
+		replaceInListIfExist(compilationUnit.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(compilationUnit));
+		replaceInListIfExist(compilationUnit.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(compilationUnit));
+		replaceElementIfExist(compilationUnit.getPackageDeclaration(), new spoon.support.visitor.replace.ReplacementVisitor.CtCompilationUnitPackageDeclarationReplaceListener(compilationUnit));
+		replaceInListIfExist(compilationUnit.getImports(), new spoon.support.visitor.replace.ReplacementVisitor.CtCompilationUnitImportsReplaceListener(compilationUnit));
+		replaceElementIfExist(compilationUnit.getDeclaredModuleReference(), new spoon.support.visitor.replace.ReplacementVisitor.CtCompilationUnitDeclaredModuleReferenceReplaceListener(compilationUnit));
+		replaceInListIfExist(compilationUnit.getDeclaredTypeReferences(), new spoon.support.visitor.replace.ReplacementVisitor.CtCompilationUnitDeclaredTypeReferencesReplaceListener(compilationUnit));
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator

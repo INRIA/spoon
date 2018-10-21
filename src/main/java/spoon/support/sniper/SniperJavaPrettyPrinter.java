@@ -25,7 +25,7 @@ import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtComment;
-import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtType;
@@ -110,7 +110,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	}
 
 	@Override
-	public void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
+	public void calculate(CtCompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		//use line separator of origin source file
 		setLineSeparator(detectLineSeparator(sourceCompilationUnit.getOriginalSourceCode()));
 		super.calculate(sourceCompilationUnit, types);

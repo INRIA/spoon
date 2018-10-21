@@ -760,7 +760,7 @@ public class PositionTest {
 			launcher ->	launcher.getEnvironment().setAutoImports(true), 
 			AnnonymousClassNewIface.class);
 		String originSources = foo.getPosition().getCompilationUnit().getOriginalSourceCode();
-		Set<CtImport> imports = foo.getPosition().getCompilationUnit().getImports();
+		List<CtImport> imports = foo.getPosition().getCompilationUnit().getImports();
 		assertEquals(2, imports.size());
 		Iterator<CtImport> iter = imports.iterator();
 		{

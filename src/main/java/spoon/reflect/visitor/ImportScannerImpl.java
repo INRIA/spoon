@@ -330,7 +330,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	}
 
 	@Override
-	public void initWithImports(Set<CtImport> importCollection) {
+	public void initWithImports(Iterable<CtImport> importCollection) {
 		for (CtImport ctImport : importCollection) {
 			this.usedImport.put(ctImport, Boolean.FALSE);
 		}

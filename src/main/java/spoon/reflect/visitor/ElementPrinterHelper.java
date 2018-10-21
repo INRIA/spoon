@@ -24,8 +24,8 @@ import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -131,7 +131,7 @@ public class ElementPrinterHelper {
 		}
 	}
 
-	public void visitCtNamedElement(CtNamedElement namedElement, CompilationUnit sourceCompilationUnit) {
+	public void visitCtNamedElement(CtNamedElement namedElement, CtCompilationUnit sourceCompilationUnit) {
 		writeAnnotations(namedElement);
 		if (env.isPreserveLineNumbers()) {
 			getPrinterHelper().adjustStartPosition(namedElement);
