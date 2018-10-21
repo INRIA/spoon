@@ -95,6 +95,7 @@ import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -1090,6 +1091,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeKeyword("uses").writeSpace();
 		scan(usedService.getServiceType());
 		printer.writeSeparator(";").writeln();
+	}
+
+	@Override
+	public void visitCtPackageDeclaration(CtPackageDeclaration packageDeclaration) {
+		elementPrinterHelper.writePackageLine(packageDeclaration.getReference().getQualifiedName());
 	}
 
 	@Override
