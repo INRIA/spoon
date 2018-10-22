@@ -997,7 +997,7 @@ public class CommentTest {
 				"-i", "src/test/resources/ConfigPlugin.java"
 		});
 		// the comment should be associated to the expression in the annotation
-		assertEquals("prevent users from disabling", launcher.getFactory().Type().get("net.runelite.client.plugins.config.ConfigPlugin").getAnnotations().get(0).filterChildren(new TypeFilter<>(CtComment.class)).list().get(0).toString());
+		assertEquals("// prevent users from disabling", launcher.getFactory().Type().get("net.runelite.client.plugins.config.ConfigPlugin").getAnnotations().get(0).filterChildren(new TypeFilter<>(CtComment.class)).list().get(0).toString());
 
 	}
 
