@@ -601,7 +601,7 @@ public class MetamodelProperty {
 		if (Map.class.isAssignableFrom(valueClass)) {
 			return ContainerKind.MAP;
 		}
-		if (Set.class.isAssignableFrom(valueClass) || Collection.class.isAssignableFrom(valueClass)) {
+		if (Collection.class.isAssignableFrom(valueClass)) {
 			return ContainerKind.SET;
 		}
 		return ContainerKind.SINGLE;
