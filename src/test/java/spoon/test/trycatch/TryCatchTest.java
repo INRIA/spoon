@@ -254,7 +254,7 @@ public class TryCatchTest {
 		assertEquals(1, catchVariable.getMultiTypes().size());
 		assertEquals(IllegalArgumentException.class, catchVariable.getMultiTypes().get(0).getActualClass());
 
-		catchVariable.setMultiTypes(Collections.singletonList((CtTypeReference)factory.Type().createReference(UnsupportedOperationException.class)));
+		catchVariable.setMultiTypes(Collections.singletonList(factory.Type().createReference(UnsupportedOperationException.class)));
 		assertEquals(UnsupportedOperationException.class,catchVariable.getType().getActualClass());
 		//contract setType influences multitypes
 		assertEquals(1, catchVariable.getMultiTypes().size());
