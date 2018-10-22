@@ -195,8 +195,9 @@ public class ContextBuilder {
 		final CtVariable<T> variable = this.<T, CtVariable<T>>getVariableDeclaration(name, null);
 		if (variable == null) {
 			// note: this happens when using the new try(vardelc) structure
-			this.jdtTreeBuilder.getLogger().error(
-					format("Could not find declaration for variable %s at %s",
+			// note: this can happen when identifier is not a variable name but e.g. a Type name.
+			this.jdtTreeBuilder.getLogger().debug(
+					format("Could not find declaration for variable %s at %s.",
 							name, stack.peek().element.getPosition()));
 		}
 		return variable;
