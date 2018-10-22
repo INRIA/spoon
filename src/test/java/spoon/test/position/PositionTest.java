@@ -1,9 +1,42 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.position;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.reflect.code.*;
+import spoon.reflect.code.CtAssignment;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtForEach;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.CompoundSourcePosition;
@@ -12,6 +45,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -20,17 +54,42 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.comment.testclasses.Comment1;
-import spoon.test.position.testclasses.*;
+import spoon.test.position.testclasses.AnnonymousClassNewIface;
+import spoon.test.position.testclasses.ArrayArgParameter;
+import spoon.test.position.testclasses.CatchPosition;
+import spoon.test.position.testclasses.Expressions;
+import spoon.test.position.testclasses.Foo;
+import spoon.test.position.testclasses.FooAbstractMethod;
+import spoon.test.position.testclasses.FooAnnotation;
+import spoon.test.position.testclasses.FooClazz;
+import spoon.test.position.testclasses.FooClazz2;
+import spoon.test.position.testclasses.FooClazzWithComments;
+import spoon.test.position.testclasses.FooEnum;
+import spoon.test.position.testclasses.FooField;
+import spoon.test.position.testclasses.FooForEach;
+import spoon.test.position.testclasses.FooGeneric;
+import spoon.test.position.testclasses.FooInterface;
+import spoon.test.position.testclasses.FooLabel;
+import spoon.test.position.testclasses.FooMethod;
+import spoon.test.position.testclasses.FooStatement;
+import spoon.test.position.testclasses.FooSwitch;
+import spoon.test.position.testclasses.NoMethodModifiers;
+import spoon.test.position.testclasses.PositionParameterTypeWithReference;
+import spoon.test.position.testclasses.PositionTry;
+import spoon.test.position.testclasses.SomeEnum;
+import spoon.test.position.testclasses.TypeParameter;
 import spoon.test.query_function.testclasses.VariableReferencesModelTest;
-import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -39,7 +98,7 @@ import static spoon.testing.utils.ModelUtils.buildClass;
 public class PositionTest {
 
 	@Test
-	public void testPositionClass() throws Exception {
+	public void testPositionClass() {
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooClazz> foo = build.Type().get(FooClazz.class);
 		String classContent = getClassContent(foo);
@@ -70,7 +129,7 @@ public class PositionTest {
 	
 	
 	@Test
-	public void testPositionClassWithComments() throws Exception {
+	public void testPositionClassWithComments() {
 		//contract: check that comments before and after the 'class' keyword are handled well by PositionBuilder
 		//and it produces correct `modifierEnd`
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
@@ -157,7 +216,7 @@ public class PositionTest {
 	}
 	
 	@Test
-	public void testPositionInterface() throws Exception {
+	public void testPositionInterface() {
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooInterface> foo = build.Type().get(FooInterface.class);
 		String classContent = getClassContent(foo);
@@ -191,7 +250,7 @@ public class PositionTest {
 	}
 
 	@Test
-	public void testPositionAnnotation() throws Exception {
+	public void testPositionAnnotation() {
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooAnnotation> foo = build.Type().get(FooAnnotation.class);
 		String classContent = getClassContent(foo);
@@ -383,7 +442,7 @@ public class PositionTest {
 		assertEquals(15, position2.getEndLine());
 
 		assertEquals("/**\n"
-				+ "\t * Mathod with javadoc\n"
+				+ "\t * Method with javadoc\n"
 				+ "\t * @param parm1 the parameter\n"
 				+ "\t */\n"
 				+ "\tint mWithDoc(int parm1) {\n"
@@ -562,7 +621,7 @@ public class PositionTest {
 	}
 
 	@Test
-	public void testSourcePosition() throws Exception {
+	public void testSourcePosition() {
 		SourcePosition s = new spoon.Launcher().getFactory().Core().createClass().getPosition();
 		assertFalse(s.isValidPosition());
 		assertFails(() -> s.getSourceStart());
@@ -599,7 +658,7 @@ public class PositionTest {
 		launcher.addInputResource("./src/test/java/spoon/test/position/testclasses/ImplicitBlock.java");
 		launcher.buildModel();
 
-		CtIf ifElement = launcher.getModel().getElements(new TypeFilter<CtIf>(CtIf.class)).get(0);
+		CtIf ifElement = launcher.getModel().getElements(new TypeFilter<>(CtIf.class)).get(0);
 		CtStatement thenStatement = ifElement.getThenStatement();
 
 		assertTrue(thenStatement instanceof CtBlock);
@@ -628,7 +687,7 @@ public class PositionTest {
 	public void testPositionMethodTypeParameter() throws Exception {
 		//contract: the Method TypeParameter T extends List<?> has simple source position
 		//the previous used DeclarationSourcePosition had incorrect details
-		final CtType<?> foo = ModelUtils.buildClass(TypeParameter.class);
+		final CtType<?> foo = buildClass(TypeParameter.class);
 		String classContent = getClassContent(foo);
 
 		CtTypeParameter typeParam = foo.getMethodsByName("m").get(0).getFormalCtTypeParameters().get(0);
@@ -639,7 +698,7 @@ public class PositionTest {
 	@Test
 	public void testPositionOfAnnonymousType() throws Exception {
 		//contract: the annonymous type has consistent position
-		final CtEnum foo = (CtEnum) ModelUtils.buildClass(SomeEnum.class);
+		final CtEnum foo = (CtEnum) buildClass(SomeEnum.class);
 		String classContent = getClassContent(foo);
 
 		CtNewClass<?> newClass = (CtNewClass<?>) foo.getEnumValue("X").getDefaultExpression();
@@ -665,7 +724,7 @@ public class PositionTest {
 	@Test
 	public void testPositionOfAnnonymousTypeByNewInterface() throws Exception {
 		//contract: the annonymous type has consistent position
-		final CtType<?> foo = ModelUtils.buildClass(AnnonymousClassNewIface.class);
+		final CtType<?> foo = buildClass(AnnonymousClassNewIface.class);
 		String classContent = getClassContent(foo);
 
 		CtLocalVariable<?> localVar = (CtLocalVariable<?>) foo.getMethodsByName("m").get(0).getBody().getStatement(0);
@@ -693,11 +752,32 @@ public class PositionTest {
 		assertEquals(start, bhsp.getNameStart());
 		assertEquals(start - 1, bhsp.getNameEnd());
 	}
+	
+	@Test
+	public void testPositionOfCtImport() throws Exception {
+		//contract: the CtImport has position
+		final CtType<?> foo = buildClass(
+			launcher ->	launcher.getEnvironment().setAutoImports(true), 
+			AnnonymousClassNewIface.class);
+		String originSources = foo.getPosition().getCompilationUnit().getOriginalSourceCode();
+		Set<CtImport> imports = foo.getPosition().getCompilationUnit().getImports();
+		assertEquals(2, imports.size());
+		Iterator<CtImport> iter = imports.iterator();
+		{
+			CtImport ctImport = iter.next();
+			assertEquals("import java.util.Set;", contentAtPosition(originSources, ctImport.getPosition()));
+		}
+		{
+			CtImport ctImport = iter.next();
+			assertEquals("import java.util.function.Consumer;", contentAtPosition(originSources, ctImport.getPosition()));
+		}
+	}
+	
 
 	@Test
 	public void testEmptyModifiersOfMethod() throws Exception {
 		//contract: the modifiers of Method without modifiers are empty and have correct start
-		final CtType<?> foo = ModelUtils.buildClass(NoMethodModifiers.class);
+		final CtType<?> foo = buildClass(NoMethodModifiers.class);
 		String classContent = getClassContent(foo);
 
 		BodyHolderSourcePosition bhsp = (BodyHolderSourcePosition) foo.getMethodsByName("m").get(0).getPosition();
@@ -714,7 +794,7 @@ public class PositionTest {
 	@Test
 	public void testPositionTryCatch() throws Exception {
 		//contract: check that the variable in the catch has a correct position
-		CtType<?> foo = ModelUtils.buildClass(PositionTry.class);
+		CtType<?> foo = buildClass(PositionTry.class);
 		String classContent = getClassContent(foo);
 
 		List<CtCatchVariable> elements = foo.getElements(new TypeFilter<>(CtCatchVariable.class));
@@ -786,7 +866,7 @@ public class PositionTest {
 	@Test
 	public void testArrayArgParameter() throws Exception {
 		//contract: the parameter declared like `String arg[]`, `String[] arg` and `String []arg` has correct positions
-		final CtType<?> foo = ModelUtils.buildClass(ArrayArgParameter.class);
+		final CtType<?> foo = buildClass(ArrayArgParameter.class);
 		String classContent = getClassContent(foo);
 
 		{
@@ -836,7 +916,7 @@ public class PositionTest {
 	@Test
 	public void testExpressions() throws Exception {
 		//contract: the expression including type casts has correct position which includes all brackets too
-		final CtType<?> foo = ModelUtils.buildClass(Expressions.class);
+		final CtType<?> foo = buildClass(Expressions.class);
 		String classContent = getClassContent(foo);
 		List<CtInvocation<?>> statements = (List) foo.getMethodsByName("method").get(0).getBody().getStatements();
 
@@ -882,7 +962,7 @@ public class PositionTest {
 	@Test
 	public void testCatchPosition() throws Exception {
 		//contract: check the catch position
-		final CtType<?> foo = ModelUtils.buildClass(CatchPosition.class);
+		final CtType<?> foo = buildClass(CatchPosition.class);
 		String classContent = getClassContent(foo);
 		CtTry tryStatement = (CtTry) foo.getMethodsByName("method").get(0).getBody().getStatement(0);
 		{
@@ -944,7 +1024,7 @@ public class PositionTest {
 	@Test
 	public void testEnumConstructorCallComment() throws Exception {
 		//contract: check position the enum constructor call 
-		final CtType<?> foo = ModelUtils.buildClass(FooEnum.class);
+		final CtType<?> foo = buildClass(FooEnum.class);
 		
 		String classContent = getClassContent(foo);
 		CtField<?> field = foo.getField("GET");
@@ -961,7 +1041,7 @@ public class PositionTest {
 	@Test
 	public void testSwitchCase() throws Exception {
 		//contract: check position of the statements of the case of switch
-		final CtType<?> foo = ModelUtils.buildClass(FooSwitch.class);
+		final CtType<?> foo = buildClass(FooSwitch.class);
 		
 		String classContent = getClassContent(foo);
 		CtSwitch<?> switchStatement = foo.getMethodsByName("m1").get(0).getBody().getStatement(0);
@@ -998,7 +1078,7 @@ public class PositionTest {
 	@Test
 	public void testFooForEach() throws Exception {
 		//contract: check position of the for each position
-		final CtType<?> foo = ModelUtils.buildClass(FooForEach.class);
+		final CtType<?> foo = buildClass(FooForEach.class);
 		
 		String classContent = getClassContent(foo);
 		List<CtForEach> stmts = (List) foo.getMethodsByName("m").get(0).getBody().getStatements();
@@ -1036,5 +1116,84 @@ public class PositionTest {
 		assertEquals(14, pos.getColumn());
 		assertEquals(23, pos.getEndLine());
 		assertEquals(2, pos.getEndColumn());
+	}
+
+	@Test
+	public void testFirstLineColumn() {
+		//contract: element, positioned before the first line separator in a file, should have correct column
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/TestSimpleClass.java"));
+		CtType<?> type = build.Type().get("spoon.test.position.testclasses.TestSimpleClass");
+		assertEquals(54, type.getPosition().getColumn());
+	}
+
+	@Test
+	public void testSingleLineClassColumn() {
+		//contract: element, positioned in a file without EOL, should have correct column
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/TestSingleLineClass.java"));
+		CtType<?> type = build.Type().get("spoon.test.position.testclasses.TestSingleLineClass");
+		assertEquals(54, type.getPosition().getColumn());
+	}
+
+	@Test
+	public void testLabel() throws Exception {
+		//contract: check position of labeled statement
+		final Factory build = build(FooLabel.class);
+		final CtType<FooLabel> foo = build.Type().get(FooLabel.class);
+		String classContent = getClassContent(foo);
+		List<CtStatement> stmts = foo.getMethodsByName("m").get(0).getBody().getStatements();
+		int idx = 0;
+		assertEquals("label1: while(x) {}", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
+		assertEquals("label2: getClass();", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
+		assertEquals("labelx: label3: new String();", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
+		//contract: the nested label from previous line is not moved to next statement
+		assertNull(stmts.get(idx).getLabel());
+		assertEquals("getClass();", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
+		assertEquals("label4: x = false;", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
+		assertEquals("label5: /*c1*/ return;", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
+	}
+
+	@Test
+	public void testNestedLabels() throws Exception {
+		//contract: check position of nested labeled statements
+		final Factory build = build(FooLabel.class);
+		final CtType<FooLabel> foo = build.Type().get(FooLabel.class);
+		String classContent = getClassContent(foo);
+		{
+			CtStatement stmt = foo.getMethodsByName("m2").get(0).getBody().getStatement(0);
+			assertTrue(stmt instanceof CtBlock);
+			assertFalse(stmt.isImplicit());
+			assertEquals("label1: {label2: while(x);}", contentAtPosition(classContent, stmt.getPosition()));
+			assertEquals("label2: while(x);", contentAtPosition(classContent, ((CtBlock) stmt).getStatement(0).getPosition()));
+		}
+		{
+			CtStatement stmt = foo.getMethodsByName("m2").get(0).getBody().getStatement(1);
+			assertTrue(stmt instanceof CtBlock);
+			assertTrue(stmt.isImplicit());
+			assertEquals("label1: label2: while(x);", contentAtPosition(classContent, stmt.getPosition()));
+			assertEquals("label2: while(x);", contentAtPosition(classContent, ((CtBlock) stmt).getStatement(0).getPosition()));
+		}
+		{
+			CtStatementList stmts = ((CtSwitch<?>) foo.getMethodsByName("m5").get(0).getBody().getStatement(0)).getCases().get(0);
+
+			CtStatement labelledEmtpyStatement = stmts.getStatement(0);
+			assertTrue(labelledEmtpyStatement instanceof CtBlock);
+			assertTrue(labelledEmtpyStatement.isImplicit());
+			assertEquals("label:;", contentAtPosition(classContent, labelledEmtpyStatement.getPosition()));
+
+			CtStatement multiLatbelledStatement = stmts.getStatement(1);
+			assertTrue(multiLatbelledStatement instanceof CtBlock);
+			assertTrue(multiLatbelledStatement.isImplicit());
+			assertEquals("laval3: label1: label2: while(true);", contentAtPosition(classContent, multiLatbelledStatement.getPosition()));
+		}
+		{
+			CtWhile stmt1 = (CtWhile) foo.getMethodsByName("m6").get(0).getBody().getStatement(0);
+			assertEquals("labelW", stmt1.getLabel());
+			CtTry stmt2 = ((CtBlock) stmt1.getBody()).getStatement(0);
+			assertNull(stmt2.getLabel());
+			assertEquals("try { label2: while(true); } finally {}", contentAtPosition(classContent, stmt2.getPosition()));
+			CtWhile stmt3 = stmt2.getBody().getStatement(0);
+			assertEquals("label2", stmt3.getLabel());
+			assertEquals("label2: while(true);", contentAtPosition(classContent, stmt3.getPosition()));
+		}
 	}
 }

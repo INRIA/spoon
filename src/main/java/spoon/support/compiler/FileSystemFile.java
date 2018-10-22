@@ -38,7 +38,6 @@ public class FileSystemFile implements SpoonFile {
 	}
 
 	public FileSystemFile(File file) {
-		super();
 		try {
 			this.file = file.getCanonicalFile();
 		} catch (IOException e) {
@@ -46,6 +45,7 @@ public class FileSystemFile implements SpoonFile {
 		}
 	}
 
+	@Override
 	public InputStream getContent() {
 		try {
 			if (!this.file.exists()) {
@@ -57,10 +57,12 @@ public class FileSystemFile implements SpoonFile {
 		}
 	}
 
+	@Override
 	public String getName() {
 		return file.getName();
 	}
 
+	@Override
 	public SpoonFolder getParent() {
 		try {
 			return SpoonResourceHelper.createFolder(file.getParentFile());
@@ -75,14 +77,17 @@ public class FileSystemFile implements SpoonFile {
 		return file.getParentFile();
 	}
 
+	@Override
 	public boolean isFile() {
 		return true;
 	}
 
+	@Override
 	public boolean isJava() {
 		return getName().endsWith(".java");
 	}
 
+	@Override
 	public String getPath() {
 		try {
 			return file.getCanonicalPath();

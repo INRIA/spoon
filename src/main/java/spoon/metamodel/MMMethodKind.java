@@ -31,7 +31,7 @@ public enum MMMethodKind {
 	 * Getter.
 	 * T get()
 	 */
-	GET(-1, false, 1, m -> m.getParameters().size() == 0  && (m.getSimpleName().startsWith("get") || m.getSimpleName().startsWith("is"))),
+	GET(-1, false, 1, m -> m.getParameters().isEmpty() && (m.getSimpleName().startsWith("get") || m.getSimpleName().startsWith("is"))),
 	/**
 	 * Setter
 	 * void set(T)
@@ -43,9 +43,7 @@ public enum MMMethodKind {
 	ADD_FIRST(0, true, 10, m -> {
 		if (m.getParameters().size() == 1) {
 			if (m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert")) {
-				if (m.getSimpleName().endsWith("AtTop") || m.getSimpleName().endsWith("Begin")) {
-					return true;
-				}
+				return m.getSimpleName().endsWith("AtTop") || m.getSimpleName().endsWith("Begin");
 			}
 		}
 		return false;
@@ -55,9 +53,7 @@ public enum MMMethodKind {
 	 */
 	ADD_LAST(0, true,  1, m -> {
 		if (m.getParameters().size() == 1) {
-			if (m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert")) {
-				return true;
-			}
+			return m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert");
 		}
 		return false;
 	}),
@@ -65,10 +61,8 @@ public enum MMMethodKind {
 	 * void addOn(int, T)
 	 */
 	ADD_ON(1, true, 1, m -> {
-		if (m.getParameters().size() == 2 && m.getParameters().get(0).getType().getSimpleName().equals("int")) {
-			if (m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert")) {
-				return true;
-			}
+		if (m.getParameters().size() == 2 && "int".equals(m.getParameters().get(0).getType().getSimpleName())) {
+			return m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert");
 		}
 		return false;
 	}),
@@ -117,8 +111,8 @@ public enum MMMethodKind {
 	public static MMMethodKind kindOf(CtMethod<?> method) {
 		MMMethodKind result = OTHER;
 		for (MMMethodKind k : values()) {
-			if (k.detector.test(method) && result.level < k.level) {
-				if (result.level == k.level) {
+			if (k.detector.test(method) && result.level <= k.level) {
+				if (result.level == k.level && k != OTHER) {
 					throw new SpoonException("Ambiguous method kinds " + result.name() + " X " + k.name() + " for method " + method.getSignature());
 				}
 				result = k;

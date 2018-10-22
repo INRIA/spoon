@@ -1,0 +1,1 @@
+package spoon.test.position.testclasses; public class TestSingleLineClass { int x; int y; int z; }

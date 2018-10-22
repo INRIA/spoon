@@ -28,7 +28,7 @@
   <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>6.3.0-SNAPSHOT</version>
+  <version>7.2.0-SNAPSHOT</version>
   <name>Spoon Core</name>
   <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
   <url>http://spoon.gforge.inria.fr/</url>
@@ -88,6 +88,12 @@
     </developer>
     <developer>
       <name>Christophe Dufour</name>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Nicolas Harrand</name>
       <roles>
         <role>Contributor</role>
       </roles>
@@ -170,6 +176,7 @@
     <url>https://github.com/INRIA/spoon</url>
     <connection>scm:git:https://github.com/INRIA/spoon.git</connection>
     <developerConnection>scm:git:ssh://github.com/INRIA/spoon.git</developerConnection>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
@@ -177,6 +184,7 @@
     <java.test.version>1.8</java.test.version>
     <runtime.log>target/velocity.log</runtime.log>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <version.cfr>0.132.0</version.cfr>
   </properties>
 
   <distributionManagement>
@@ -196,12 +204,18 @@
     </site>
   </distributionManagement>
 
-  <!-- This repository is actually needed for revapi to compare against the last Spoon Snapshot -->
   <repositories>
+    <!-- This repository is actually needed for revapi to compare against the last Spoon Snapshot -->
     <repository>
       <id>maven.inria.fr-snapshot</id>
       <name>Maven Repository for Spoon Snapshots</name>
       <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
+    </repository>
+    <!-- This repository is needed for cfr -->
+    <repository>
+      <id>inria</id>
+      <name>triskell-public-release</name>
+      <url>http://maven.inria.fr/artifactory/triskell-public-release</url>
     </repository>
   </repositories>
 
@@ -247,7 +261,7 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
-      <version>3.3.9</version>
+      <version>3.5.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -263,7 +277,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.9.2</version>
+      <version>2.9.5</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -294,6 +308,24 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.jboss.windup.decompiler.fernflower/fernflower -->
+    <dependency>
+      <groupId>org.jboss.windup.decompiler.fernflower</groupId>
+      <artifactId>fernflower</artifactId>
+      <version>2.5.0.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-invoker</artifactId>
+      <version>3.0.1</version>
+    </dependency>
+      <dependency>
+	  <!-- released on maven.inria.fr -->
+          <groupId>org.benf</groupId>
+          <artifactId>cfr</artifactId>
+	  <!-- 0.132 is the version of July 2018 -->
+          <version>0.132.0</version>
+      </dependency>
   </dependencies>
 
   <build>
@@ -639,7 +671,24 @@
   </reporting>
 
   <profiles>
-    <profile>
+      <profile>
+          <id>checkstyle-test</id>
+          <build>
+              <plugins>
+                  <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-checkstyle-plugin</artifactId>
+                      <version>2.17</version>
+                      <configuration>
+                          <failsOnError>true</failsOnError>
+                          <configLocation>checkstyle-test.xml</configLocation>
+                          <consoleOutput>true</consoleOutput>
+                      </configuration>
+                  </plugin>
+              </plugins>
+          </build>
+      </profile>
+      <profile>
       <id>coveralls</id>
       <build>
         <plugins>

@@ -1,11 +1,27 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.api;
 
-import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.SpoonException;
 import spoon.metamodel.ConceptKind;
+import spoon.metamodel.MMMethod;
 import spoon.metamodel.MMMethodKind;
 import spoon.metamodel.Metamodel;
 import spoon.metamodel.MetamodelConcept;
@@ -43,7 +59,6 @@ import spoon.support.visitor.ClassTypingContext;
 import spoon.template.Parameter;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -55,7 +70,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -67,7 +81,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-
 public class MetamodelTest {
 	@Test
 	public void testGetAllMetamodelInterfacess() {
@@ -77,7 +90,7 @@ public class MetamodelTest {
 		interfaces.addInputResource("src/main/java/spoon/reflect/code");
 		interfaces.addInputResource("src/main/java/spoon/reflect/reference");
 		interfaces.buildModel();
-		assertThat(Metamodel.getAllMetamodelInterfaces().stream().map(x->x.getQualifiedName()).collect(Collectors.toSet()), equalTo(interfaces.getModel().getAllTypes().stream().map(x->x.getQualifiedName()).collect(Collectors.toSet())));
+		assertThat(Metamodel.getAllMetamodelInterfaces().stream().map(x -> x.getQualifiedName()).collect(Collectors.toSet()), equalTo(interfaces.getModel().getAllTypes().stream().map(x -> x.getQualifiedName()).collect(Collectors.toSet())));
 	}
 
 	@Test
@@ -87,7 +100,7 @@ public class MetamodelTest {
 		Map<String, MetamodelConcept> expectedTypesByName = new HashMap<>();
 		testMetaModel.getConcepts().forEach(t -> {
 			if (t.getKind() == ConceptKind.LEAF) {
-				expectedTypesByName.put(t.getName(), t);	
+				expectedTypesByName.put(t.getName(), t);
 			}
 		});
 		List<String> problems = new ArrayList<>();
@@ -106,7 +119,7 @@ public class MetamodelTest {
 				}
 			}
 			if (expectedRoleToField.isEmpty() == false) {
-				problems.add("These Metamodel.Field instances are missing on Type " + type.getName() +": " + expectedRoleToField.keySet());
+				problems.add("These Metamodel.Field instances are missing on Type " + type.getName() + ": " + expectedRoleToField.keySet());
 			}
 		}
 		if (expectedTypesByName.isEmpty() == false) {
@@ -114,6 +127,7 @@ public class MetamodelTest {
 		}
 		assertTrue("You might need to update api/Metamodel.java: " + String.join("\n", problems), problems.isEmpty());
 	}
+
 	@Test
 	public void testGetterSetterFroRole() {
 		// contract: all roles in spoon metamodel must at least have a setter and a getter
@@ -128,20 +142,19 @@ public class MetamodelTest {
 
 		Set<String> expectedRoles = Arrays.stream(CtRole.values()).map(r -> r.name()).collect(Collectors.toSet());
 
-		List<CtMethod<?>> getters = interfaces.getModel().getElements(new AnnotationFilter<CtMethod<?>>(PropertyGetter.class));
-		Set<String> getterRoles = getters.stream().map(g -> ((CtFieldRead)g.getAnnotation(propertyGetter).getValue("role")).getVariable().getSimpleName()).collect(Collectors.toSet());
+		List<CtMethod<?>> getters = interfaces.getModel().getElements(new AnnotationFilter<>(PropertyGetter.class));
+		Set<String> getterRoles = getters.stream().map(g -> ((CtFieldRead) g.getAnnotation(propertyGetter).getValue("role")).getVariable().getSimpleName()).collect(Collectors.toSet());
 		Set<CtMethod<?>> isNotGetter = getters.stream().filter(m -> !(m.getSimpleName().startsWith("get") || m.getSimpleName().startsWith("is"))).collect(Collectors.toSet());
 
-		List<CtMethod<?>> setters = interfaces.getModel().getElements(new AnnotationFilter<CtMethod<?>>(PropertySetter.class));
-		Set<String> setterRoles = setters.stream().map(g -> ((CtFieldRead)g.getAnnotation(propertySetter).getValue("role")).getVariable().getSimpleName()).collect(Collectors.toSet());
+		List<CtMethod<?>> setters = interfaces.getModel().getElements(new AnnotationFilter<>(PropertySetter.class));
+		Set<String> setterRoles = setters.stream().map(g -> ((CtFieldRead) g.getAnnotation(propertySetter).getValue("role")).getVariable().getSimpleName()).collect(Collectors.toSet());
 		Set<CtMethod<?>> isNotSetter = setters.stream().filter(m -> !(m.getSimpleName().startsWith("set") || m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert") || m.getSimpleName().startsWith("remove"))).collect(Collectors.toSet());
 
-		Assert.assertEquals(expectedRoles, getterRoles);
-		Assert.assertEquals(expectedRoles, setterRoles);
-		Assert.assertEquals(Collections.EMPTY_SET, isNotGetter);
-		Assert.assertEquals(Collections.EMPTY_SET, isNotSetter);
+		assertEquals(expectedRoles, getterRoles);
+		assertEquals(expectedRoles, setterRoles);
+		assertEquals(Collections.EMPTY_SET, isNotGetter);
+		assertEquals(Collections.EMPTY_SET, isNotSetter);
 	}
-
 
 	@Test
 	public void testRoleOnField() {
@@ -162,12 +175,13 @@ public class MetamodelTest {
 				if (candidate.hasModifier(ModifierKind.FINAL) || candidate.hasModifier(ModifierKind.STATIC) || candidate.hasModifier(ModifierKind.TRANSIENT)) {
 					return false;
 				}
-				if ( 	// not a role
-						"parent".equals(candidate.getSimpleName())
-						|| "metadata".equals(candidate.getSimpleName())
-						|| "factory".equals(candidate.getSimpleName())
-						// cache field
-						|| "valueOfMethod".equals(candidate.getSimpleName())) {
+				if (
+					// not a role
+					"parent".equals(candidate.getSimpleName())
+					|| "metadata".equals(candidate.getSimpleName())
+					|| "factory".equals(candidate.getSimpleName())
+					// cache field
+					|| "valueOfMethod".equals(candidate.getSimpleName())) {
 					return false;
 				}
 				CtClass parent = candidate.getParent(CtClass.class);
@@ -178,18 +192,19 @@ public class MetamodelTest {
 						|| parent.isSubtypeOf(candidate.getFactory().createCtTypeReference(CtElement.class))
 						);
 			}
-		}).stream().map(x -> {result.add(x.toString()); return x;}).filter(f -> f.getAnnotation(metamodelPropertyField) == null).collect(Collectors.toList());
+		}).stream().map(x -> {
+			result.add(x.toString()); return x;
+		}).filter(f -> f.getAnnotation(metamodelPropertyField) == null).collect(Collectors.toList());
 
-		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.IS_SHADOW)"+nl+"boolean isShadow;"));
-		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.TYPE)"+nl+"spoon.reflect.reference.CtTypeReference<T> type;"));
-		assertTrue(result.size()>100);
-		Assert.assertEquals(Collections.emptyList(), fieldWithoutAnnotation);
-
+		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.IS_SHADOW)" + nl + "boolean isShadow;"));
+		assertTrue(result.contains("@spoon.reflect.annotations.MetamodelPropertyField(role = spoon.reflect.path.CtRole.TYPE)" + nl + "spoon.reflect.reference.CtTypeReference<T> type;"));
+		assertTrue(result.size() > 100);
+		assertEquals(Collections.emptyList(), fieldWithoutAnnotation);
 
 		final CtTypeReference propertySetter = factory.Type().get(PropertySetter.class).getReference();
 		final CtTypeReference propertyGetter = factory.Type().get(PropertyGetter.class).getReference();
 
-		List<CtField> fields = factory.getModel().getElements(new AnnotationFilter<CtField>(MetamodelPropertyField.class));
+		List<CtField> fields = factory.getModel().getElements(new AnnotationFilter<>(MetamodelPropertyField.class));
 		for (CtField field : fields) {
 			CtClass parent = field.getParent(CtClass.class);
 			CtExpression roleExpression = field.getAnnotation(metamodelPropertyField).getValue("role");
@@ -198,8 +213,7 @@ public class MetamodelTest {
 				roles.add(((CtFieldRead) roleExpression).getVariable().getSimpleName());
 			} else  if (roleExpression instanceof CtNewArray) {
 				List<CtFieldRead> elements = ((CtNewArray) roleExpression).getElements();
-				for (int i = 0; i < elements.size(); i++) {
-					CtFieldRead ctFieldRead =  elements.get(i);
+				for (CtFieldRead ctFieldRead : elements) {
 					roles.add(ctFieldRead.getVariable().getSimpleName());
 				}
 			}
@@ -224,7 +238,6 @@ public class MetamodelTest {
 			assertTrue(roles + " must have a getter in " + parent.getQualifiedName(), getterFound);
 			assertTrue(roles + " must have a setter in " + parent.getQualifiedName(), setterFound);
 		}
-
 	}
 
 	@Test
@@ -232,7 +245,7 @@ public class MetamodelTest {
 		//contract: metamodel based on spoon sources delivers is same like metamodel based on shadow classes
 		Metamodel runtimeMM = Metamodel.getInstance();
 		Collection<MetamodelConcept> concepts = runtimeMM.getConcepts();
-		
+
 		Metamodel sourceBasedMM = new Metamodel(new File("src/main/java"));
 		Map<String, MetamodelConcept> expectedConceptsByName = new HashMap<>();
 		sourceBasedMM.getConcepts().forEach(c -> {
@@ -252,9 +265,9 @@ public class MetamodelTest {
 			assertNull(runtimeConcept.getImplementationClass());
 		} else {
 			assertNotNull(runtimeConcept.getImplementationClass());
-			assertEquals(expectedConcept.getImplementationClass().getActualClass(), runtimeConcept.getImplementationClass().getActualClass());
+			assertSame(expectedConcept.getImplementationClass().getActualClass(), runtimeConcept.getImplementationClass().getActualClass());
 		}
-		assertEquals(expectedConcept.getMetamodelInterface().getActualClass(), runtimeConcept.getMetamodelInterface().getActualClass());
+		assertSame(expectedConcept.getMetamodelInterface().getActualClass(), runtimeConcept.getMetamodelInterface().getActualClass());
 		assertEquals(expectedConcept.getKind(), runtimeConcept.getKind());
 		assertEquals(expectedConcept.getSuperConcepts().size(), runtimeConcept.getSuperConcepts().size());
 		for (int i = 0; i < expectedConcept.getSuperConcepts().size(); i++) {
@@ -272,7 +285,7 @@ public class MetamodelTest {
 	private void assertPropertiesEqual(MetamodelProperty expectedProperty, MetamodelProperty runtimeProperty) {
 		assertSame(expectedProperty.getRole(), runtimeProperty.getRole());
 		assertEquals(expectedProperty.getName(), runtimeProperty.getName());
-		assertEquals(expectedProperty.getTypeofItems().getActualClass(), runtimeProperty.getTypeofItems().getActualClass());
+		assertSame(expectedProperty.getTypeofItems().getActualClass(), runtimeProperty.getTypeofItems().getActualClass());
 		assertEquals(expectedProperty.getOwner().getName(), runtimeProperty.getOwner().getName());
 		assertSame(expectedProperty.getContainerKind(), runtimeProperty.getContainerKind());
 		assertEquals(expectedProperty.getTypeOfField(), runtimeProperty.getTypeOfField());
@@ -281,7 +294,7 @@ public class MetamodelTest {
 	}
 
 	@Test
-	public void testMetamodelCachedInFactory() throws IOException {
+	public void testMetamodelCachedInFactory() {
 		//contract: Metamodel concepts are accessible
 		Metamodel.getInstance().getConcepts();
 	}
@@ -307,7 +320,7 @@ public class MetamodelTest {
 				}
 				if (mmField.getMethod(MMMethodKind.SET) == null) {
 					if (new ClassTypingContext(mmConcept.getMetamodelInterface()).isSubtypeOf(factory.Type().createReference(CtReference.class)) == false
-							&& mmConcept.getName().equals("CtTypeInformation") == false) {
+							&& "CtTypeInformation".equals(mmConcept.getName()) == false) {
 						//only NON references needs a setter
 						problems.add("Missing setter for " + mmField.getOwner().getName() + " and CtRole." + mmField.getRole());
 					}
@@ -332,6 +345,7 @@ public class MetamodelTest {
 		 */
 //		assertTrue(String.join("\n", problems), problems.isEmpty());
 	}
+
 	@Test
 	public void testGetRoleHandlersOfClass() {
 		int countOfIfaces = 0;
@@ -375,6 +389,7 @@ public class MetamodelTest {
 		//parent of new CtClass is root package - there is no way how to modify that
 		assertNull(RoleHandlerHelper.getRoleHandlerWrtParent(type));
 	}
+
 	@Test
 	public void elementAnnotationRoleHandlerTest() {
 		Launcher launcher = new Launcher();
@@ -385,10 +400,10 @@ public class MetamodelTest {
 		//check contract of low level RoleHandler
 		RoleHandler roleHandler = RoleHandlerHelper.getRoleHandler(type.getClass(), CtRole.ANNOTATION);
 		assertNotNull(roleHandler);
-		assertEquals(CtElement.class, roleHandler.getTargetType());
+		assertSame(CtElement.class, roleHandler.getTargetType());
 		assertSame(CtRole.ANNOTATION, roleHandler.getRole());
 		assertSame(ContainerKind.LIST, roleHandler.getContainerKind());
-		assertEquals(CtAnnotation.class, roleHandler.getValueClass());
+		assertSame(CtAnnotation.class, roleHandler.getValueClass());
 
 		//check getting value using role handler
 		List<CtAnnotation<?>> value = roleHandler.getValue(type);
@@ -459,6 +474,7 @@ public class MetamodelTest {
 			//OK
 		}
 	}
+
 	@Test
 	public void elementAnnotationAdaptedRoleTest() {
 		Launcher launcher = new Launcher();
@@ -483,6 +499,7 @@ public class MetamodelTest {
 		assertEquals(1, ((List) type.getValueByRole(CtRole.ANNOTATION)).size());
 		assertEquals(annotation, ((List) type.getValueByRole(CtRole.ANNOTATION)).get(0));
 	}
+
 	@Test
 	public void singleValueRoleAddSetRemove() {
 		//contract: single value roles supports multivalue interface too
@@ -548,7 +565,7 @@ public class MetamodelTest {
 		assertListContracts(packages, typeRef, 1, null);
 
 		//contract: set of new value replaces existing value
-		assertEquals(null, packages.set(0, factory.Package().createReference("some.test.package")));
+		assertNull(packages.set(0, factory.Package().createReference("some.test.package")));
 		assertListContracts(packages, typeRef, 1, "some.test.package");
 
 		//contract: set of null value keeps size==1 even if value is replaced by null
@@ -571,7 +588,7 @@ public class MetamodelTest {
 		try {
 			packages.set(0, factory.Package().createReference("some.test.another_package"));
 			fail();
-		} catch(IndexOutOfBoundsException e) {
+		} catch (IndexOutOfBoundsException e) {
 			//OK
 		}
 		assertListContracts(packages, typeRef, 0, null);
@@ -594,7 +611,7 @@ public class MetamodelTest {
 				try {
 					packages.get(i);
 					fail();
-				} catch(IndexOutOfBoundsException e) {
+				} catch (IndexOutOfBoundsException e) {
 					//OK
 				}
 			}
@@ -609,7 +626,7 @@ public class MetamodelTest {
 					try {
 						packages.get(i);
 						fail();
-					} catch(IndexOutOfBoundsException e) {
+					} catch (IndexOutOfBoundsException e) {
 						//OK
 					}
 				}
@@ -646,26 +663,40 @@ public class MetamodelTest {
 		assertEquals(1, typeMembers.size());
 		assertEquals(1, ctClass.getTypeMembers().size());
 		assertSame(ctClass, field1.getDeclaringType());
-		Assert.assertThat(asList("field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e)->e.getSimpleName()).list())) ;
+		assertThat(Arrays.asList("field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
 		//contract: call of add on RoleHandler collection adds the item into real collection too
 		typeMembers.add(field2);
 		assertSame(ctClass, field2.getDeclaringType());
-		Assert.assertThat(asList("field1","field2"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e)->e.getSimpleName()).list())) ;
+		assertThat(Arrays.asList("field1", "field2"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
 		//contract: call of set on RoleHandler collection replaces the item in real collection
 		typeMembers.set(0, field3);
 		assertSame(ctClass, field3.getDeclaringType());
-		Assert.assertThat(asList("field3","field2"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e)->e.getSimpleName()).list())) ;
+		assertThat(Arrays.asList("field3", "field2"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
 		typeMembers.set(1, field1);
-		Assert.assertThat(asList("field3","field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e)->e.getSimpleName()).list())) ;
+		assertThat(Arrays.asList("field3", "field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
 		//contract: call of remove(int) on RoleHandler collection removes the item in real collection
 		assertSame(field3, typeMembers.remove(0));
-		Assert.assertThat(asList("field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e)->e.getSimpleName()).list())) ;
+		assertThat(Arrays.asList("field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
 		//contract: call of remove(Object) which does not exist does nothing
 		assertFalse(typeMembers.remove(field2));
-		Assert.assertThat(asList("field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e)->e.getSimpleName()).list())) ;
+		assertThat(Arrays.asList("field1"), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
 		//contract: call of remove(Object) on RoleHandler collection removes the item in real collection
 		assertTrue(typeMembers.remove(field1));
-		Assert.assertThat(asList(), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e)->e.getSimpleName()).list())) ;
+		assertThat(Arrays.asList(), is(ctClass.filterChildren(new TypeFilter(CtField.class)).map((CtField e) -> e.getSimpleName()).list()));
+	}
+
+	@Test
+	public void testMethodBySignature() {
+		//contract: MetamodelProperty#getMethodBySignature(String) returns null for unknown signature
+		MMMethod method = Metamodel.getInstance().getConcept(CtClass.class).getProperty(CtRole.NAME).getMethodBySignature("getSimpleName()");
+		assertEquals("getSimpleName", method.getName());
+		assertEquals("getSimpleName()", method.getSignature());
+	}
+
+	@Test
+	public void testMethodBySignatureReturnsNullIfNotFound() {
+		//contract: MetamodelProperty#getMethodBySignature(String) returns method with same signature
+		assertNull(Metamodel.getInstance().getConcept(CtClass.class).getProperty(CtRole.NAME).getMethodBySignature("xyz()"));
 	}
 
 	private CtField<?> createField(Factory factory, String name) {
@@ -674,5 +705,4 @@ public class MetamodelTest {
 		field.setSimpleName(name);
 		return field;
 	}
-
 }

@@ -57,7 +57,6 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 	Set<CtTypeReference<? extends Throwable>> thrownTypes = emptySet();
 
 	public CtExecutableImpl() {
-		super();
 	}
 
 	public CtType<?> getDeclaringType() {

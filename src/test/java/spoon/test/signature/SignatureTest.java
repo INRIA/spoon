@@ -1,9 +1,25 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.signature;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -12,7 +28,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import spoon.Launcher;
@@ -42,7 +57,7 @@ import spoon.support.compiler.jdt.JDTSnippetCompiler;
 public class SignatureTest {
 
 	@Test
-	public void testNullSignature() throws Exception {
+	public void testNullSignature() {
 		// bug found by Thomas Vincent et Mathieu Schepens (students at the
 		// University of Lille) on Nov 4 2014
 		// in their analysis, they put CtExpressions in a Map
@@ -65,13 +80,13 @@ public class SignatureTest {
 		// since the signature is null, CtElement.equals throws an exception and
 		// should not
 		CtLiteral<?> lit2 = ((CtLiteral<?>) lit).clone();
-		HashSet<CtExpression<?>> s = new HashSet<CtExpression<?>>();
+		HashSet<CtExpression<?>> s = new HashSet<>();
 		s.add(lit);
 		s.add(lit2);
 	}
 
 	@Test
-	public void testNullSignatureInUnboundVariable() throws Exception {
+	public void testNullSignatureInUnboundVariable() {
 		//Unbound variable access bug fix:
 		//Bug description: The signature printer ignored the element Unbound variable reference
 		//(as well all Visitor that extend CtVisitor)
@@ -93,7 +108,7 @@ public class SignatureTest {
 		SpoonModelBuilder builder = new JDTSnippetCompiler(factory, content);
 		try {
 			builder.build();
-			Assert.fail();
+			fail();
 		} catch (Exception e) {
 			// Must fail due to the unbound element "Complex.I"
 		}
@@ -122,7 +137,7 @@ public class SignatureTest {
 		CtStatement sta2 = (factory).Code().createCodeSnippetStatement("String hello =\"t1\"; System.out.println(hello)")
 				.compile();
 
-		assertFalse(sta1.equals(sta2));// equals depends on deep equality
+		assertNotEquals(sta1, sta2);// equals depends on deep equality
 
 		String parameterWithQuotes = ((CtInvocation<?>)sta1).getArguments().get(0).toString();
 		assertEquals("\"hello\"",parameterWithQuotes);
@@ -144,7 +159,7 @@ public class SignatureTest {
 		String signature1 = ((CtInvocation)sta1).getExecutable().getSignature();
 		String signature2 = ((CtInvocation)sta2).getExecutable().getSignature();
 		assertEquals(signature1,  signature2);
-		assertFalse(sta1.equals(sta2));
+		assertNotEquals(sta1, sta2);
 
 
 		CtStatement stb1 = (factory).Code().createCodeSnippetStatement("Integer.toBinaryString(20)")
@@ -155,7 +170,7 @@ public class SignatureTest {
 		String signature1b = ((CtInvocation)sta1).getExecutable().getSignature();
 		String signature2b = ((CtInvocation)sta2).getExecutable().getSignature();
 		assertEquals(signature1b,  signature2b);
-		assertFalse(stb1.equals(stb2));
+		assertNotEquals(stb1, stb2);
 
 
 		CtStatement stc1 = (factory).Code().createCodeSnippetStatement("String.format(\"format1\",\"f2\" )")
@@ -165,11 +180,11 @@ public class SignatureTest {
 		String signaturestc1 = ((CtInvocation)sta1).getExecutable().getSignature();
 		String signaturestc2 = ((CtInvocation)sta2).getExecutable().getSignature();
 		assertEquals(signaturestc1,  signaturestc2);
-		assertFalse(stc1.equals(stc2));
+		assertNotEquals(stc1, stc2);
 	}
 
 	@Test
-	public void testMethodInvocationSignatureWithVariableAccess() throws Exception{
+	public void testMethodInvocationSignatureWithVariableAccess() {
 
 		Factory factory = new FactoryImpl(new DefaultCoreFactory(),
 				new StandardEnvironment());
@@ -203,7 +218,7 @@ public class SignatureTest {
 
 		//**FIRST PART: passing local variable access.
 		///--------From the first method we take the method invocations
-		TreeSet<CtMethod<?>> ts = new TreeSet<CtMethod<?>>(new DeepRepresentationComparator());
+		TreeSet<CtMethod<?>> ts = new TreeSet<>(new DeepRepresentationComparator());
 		ts.addAll(clazz1.getMethods());
 		CtMethod[] methodArray = ts.toArray(new CtMethod[0]);
 		CtMethod<?> methodInteger = methodArray[0];
@@ -279,14 +294,14 @@ public class SignatureTest {
 
 		CtExpression<?> left = invoToInt1.getAssigned();
 		assertEquals("this.mfield",left.toString());
-		assertEquals(null,left.getType());// null because noclasspath
+		assertNull(left.getType());// null because noclasspath
 		assertEquals("this.mfield = p",invoToInt1.toString());
 
 
 	}
 
 	@Test
-	public void testArgumentNotNullForExecutableReference() throws Exception {
+	public void testArgumentNotNullForExecutableReference() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/resources/variable/PropPanelUseCase_1.40.java");

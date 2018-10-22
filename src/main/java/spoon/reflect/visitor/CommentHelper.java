@@ -20,16 +20,9 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
 
-import static spoon.reflect.visitor.DefaultJavaPrettyPrinter.JAVADOC_START;
-import static spoon.reflect.visitor.DefaultJavaPrettyPrinter.INLINE_COMMENT_START;
-import static spoon.reflect.visitor.DefaultJavaPrettyPrinter.BLOCK_COMMENT_START;
-import static spoon.reflect.visitor.DefaultJavaPrettyPrinter.BLOCK_COMMENT_END;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import static spoon.reflect.visitor.DefaultJavaPrettyPrinter.COMMENT_STAR;
 
 /**
  * Computes source code representation of the Comment literal
@@ -55,16 +48,16 @@ class CommentHelper {
 	static void printComment(PrinterHelper printer, CtComment.CommentType commentType, String content, Collection<CtJavaDocTag> javaDocTags) {
 		switch (commentType) {
 		case FILE:
-			printer.write(JAVADOC_START).writeln();
+			printer.write(DefaultJavaPrettyPrinter.JAVADOC_START).writeln();
 			break;
 		case JAVADOC:
-			printer.write(JAVADOC_START).writeln();
+			printer.write(DefaultJavaPrettyPrinter.JAVADOC_START).writeln();
 			break;
 		case INLINE:
-			printer.write(INLINE_COMMENT_START);
+			printer.write(DefaultJavaPrettyPrinter.INLINE_COMMENT_START);
 			break;
 		case BLOCK:
-			printer.write(BLOCK_COMMENT_START);
+			printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_START);
 			break;
 		}
 		switch (commentType) {
@@ -73,16 +66,15 @@ class CommentHelper {
 				break;
 			default:
 				String[] lines = LINE_SEPARATORS_RE.split(content);
-				for (int i = 0; i < lines.length; i++) {
-					String com = lines[i];
+				for (String com : lines) {
 					if (commentType == CtComment.CommentType.BLOCK) {
 						printer.write(com);
 						if (lines.length > 1) {
 							printer.writeln();
 						}
 					} else {
-						if (com.length() > 0) {
-							printer.write(COMMENT_STAR + com).writeln();
+						if (!com.isEmpty()) {
+							printer.write(DefaultJavaPrettyPrinter.COMMENT_STAR + com).writeln();
 						} else {
 							printer.write(" *" /* no trailing space */ + com).writeln();
 						}
@@ -98,19 +90,19 @@ class CommentHelper {
 		}
 		switch (commentType) {
 			case BLOCK:
-				printer.write(BLOCK_COMMENT_END);
+				printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_END);
 				break;
 			case FILE:
-				printer.write(BLOCK_COMMENT_END);
+				printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_END);
 				break;
 			case JAVADOC:
-				printer.write(BLOCK_COMMENT_END);
+				printer.write(DefaultJavaPrettyPrinter.BLOCK_COMMENT_END);
 				break;
 		}
 	}
 
 	static void printJavaDocTag(PrinterHelper printer, CtJavaDocTag docTag) {
-		printer.write(COMMENT_STAR);
+		printer.write(DefaultJavaPrettyPrinter.COMMENT_STAR);
 		printer.write(CtJavaDocTag.JAVADOC_TAG_PREFIX);
 		printer.write(docTag.getType().name().toLowerCase());
 		printer.write(" ");
@@ -122,7 +114,7 @@ class CommentHelper {
 		for (int i = 0; i < tagLines.length; i++) {
 			String com = tagLines[i];
 			if (i > 0 || docTag.getType().hasParam()) {
-				printer.write(COMMENT_STAR);
+				printer.write(DefaultJavaPrettyPrinter.COMMENT_STAR);
 			}
 			if (docTag.getType().hasParam()) {
 				printer.write("\t\t");

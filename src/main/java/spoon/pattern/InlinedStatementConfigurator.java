@@ -135,7 +135,6 @@ public class InlinedStatementConfigurator {
 			throw new SpoonException("Each inline `for(x : iterable)` statement must have defined pattern parameter for `iterable` expression");
 		}
 		PrimitiveMatcher parameterOfExpression = (PrimitiveMatcher) vr;
-//		PatternBuilder localPatternBuilder = patternBuilder.create(bodyToStatements(foreach.getBody()));
 		ForEachNode mvr = new ForEachNode();
 		mvr.setIterableParameter(parameterOfExpression);
 		CtLocalVariable<?> lv = foreach.getVariable();
@@ -163,7 +162,7 @@ public class InlinedStatementConfigurator {
 	 */
 	public InlinedStatementConfigurator markAsInlined(CtIf ifElement) {
 		SwitchNode osp = new SwitchNode();
-		boolean[] canBeInline = new boolean[]{true};
+		boolean[] canBeInline = { true };
 		forEachIfCase(ifElement, (expression, block) -> {
 			//detect meta elements by different way - e.g. comments?
 			if (expression != null) {
@@ -235,9 +234,6 @@ public class InlinedStatementConfigurator {
 					}
 				}
 			}
-		}
-		if (elseStmt instanceof CtIf) {
-			return (CtIf) elseStmt;
 		}
 		return elseStmt;
 	}

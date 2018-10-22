@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.intercession.insertBefore;
 
 import org.junit.Before;
@@ -24,13 +40,13 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class InsertMethodsTest {
 
 	Factory factory;
-	;
 	private CtClass<?> assignmentClass;
 	private CtClass<?> insertExampleClass;
 
@@ -70,7 +86,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfter() throws Exception {
+	public void testInsertAfter() {
 		CtMethod<Void> foo = (CtMethod<Void>) assignmentClass.getMethods().toArray()[0];
 
 		CtBlock<?> body = foo.getBody();
@@ -89,7 +105,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertBeforeWithoutBrace() throws Exception {
+	public void testInsertBeforeWithoutBrace() {
 		CtMethod<?> ifWithoutBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithoutBraces")).get(0);
 
 		// replace the return
@@ -106,13 +122,13 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertBeforeWithBrace() throws Exception {
+	public void testInsertBeforeWithBrace() {
 		CtMethod<?> ifWithBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithBraces")).get(0);
 
 		// replace the return
 		CtCodeSnippetStatement s = factory.Code().createCodeSnippetStatement("return 2");
 
-		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<CtIf>(CtIf.class)).get(0);
+		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<>(CtIf.class)).get(0);
 
 		// Inserts a s before the then statement
 		ifWithBraces.getThenStatement().insertBefore(s);
@@ -122,7 +138,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfterWithoutBrace() throws Exception {
+	public void testInsertAfterWithoutBrace() {
 		CtMethod<?> ifWithoutBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithoutBraces")).get(0);
 
 		// replace the return
@@ -139,13 +155,13 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfterWithBrace() throws Exception {
+	public void testInsertAfterWithBrace() {
 		CtMethod<?> ifWithBraces_m = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"ifWithBraces")).get(0);
 
 		// replace the return
 		CtCodeSnippetStatement s = factory.Code().createCodeSnippetStatement("return 2");
 
-		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<CtIf>(CtIf.class)).get(0);
+		CtIf ifWithBraces = ifWithBraces_m.getElements(new TypeFilter<>(CtIf.class)).get(0);
 
 		// Inserts a s before the then statement
 		ifWithBraces.getThenStatement().insertAfter(s);
@@ -155,7 +171,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertBeforeSwitchCase() throws Exception {
+	public void testInsertBeforeSwitchCase() {
 		CtMethod<?> sm = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"switchMethod")).get(0);
 
 		// Adds a new snippet in a case.
@@ -191,7 +207,7 @@ public class InsertMethodsTest {
 	}
 
 	@Test
-	public void testInsertAfterSwitchCase() throws Exception {
+	public void testInsertAfterSwitchCase() {
 		CtMethod<?> sm = insertExampleClass.getElements(new NamedElementFilter<>(CtMethod.class,"switchMethod")).get(0);
 
 		// Adds a new snippet in a case.
@@ -248,7 +264,7 @@ public class InsertMethodsTest {
 		spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/resources/spoon/test/intercession/insertBefore/InsertBeforeExample2.java")).build();
 
 		// Get the 'while'
-		List<CtWhile> elements = Query.getElements(factory, new TypeFilter<CtWhile>(CtWhile.class));
+		List<CtWhile> elements = Query.getElements(factory, new TypeFilter<>(CtWhile.class));
 		assertTrue(1 == elements.size());
 		CtWhile theWhile = elements.get(0);
 
@@ -266,7 +282,7 @@ public class InsertMethodsTest {
 
 		// We make sure the parent of the while is updated
 		CtElement newParent = theWhile.getParent();
-		assertTrue(newParent != ifParent);
+		assertNotSame(newParent, ifParent);
 		assertTrue(newParent instanceof CtBlock);
 		assertFalse(newParent.isImplicit());
 	}

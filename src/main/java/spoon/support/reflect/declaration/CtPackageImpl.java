@@ -31,10 +31,6 @@ import spoon.support.util.ModelSet;
 
 import java.util.Set;
 
-import static spoon.reflect.path.CtRole.IS_SHADOW;
-import static spoon.reflect.path.CtRole.SUB_PACKAGE;
-import static spoon.reflect.path.CtRole.CONTAINED_TYPE;
-
 /**
  * The implementation for {@link spoon.reflect.declaration.CtPackage}.
  *
@@ -43,7 +39,7 @@ import static spoon.reflect.path.CtRole.CONTAINED_TYPE;
 public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = SUB_PACKAGE)
+	@MetamodelPropertyField(role = CtRole.SUB_PACKAGE)
 	protected ModelSet<CtPackage> packs = new ModelSet<CtPackage>(QualifiedNameComparator.INSTANCE) {
 		private static final long serialVersionUID = 1L;
 		@Override
@@ -53,7 +49,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 		@Override
 		protected CtRole getRole() {
-			return SUB_PACKAGE;
+			return CtRole.SUB_PACKAGE;
 		}
 
 		@Override
@@ -77,10 +73,10 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 				}
 			}
 			return super.add(pack);
-		};
+		}
 	};
 
-	@MetamodelPropertyField(role = CONTAINED_TYPE)
+	@MetamodelPropertyField(role = CtRole.CONTAINED_TYPE)
 	private ModelSet<CtType<?>> types = new ModelSet<CtType<?>>(QualifiedNameComparator.INSTANCE) {
 		private static final long serialVersionUID = 1L;
 		@Override
@@ -94,7 +90,6 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	};
 
 	public CtPackageImpl() {
-		super();
 	}
 
 	@Override
@@ -223,7 +218,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return getQualifiedName();
 	}
 
-	@MetamodelPropertyField(role = IS_SHADOW)
+	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
 	boolean isShadow;
 
 	@Override
@@ -233,7 +228,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <E extends CtShadowable> E setShadow(boolean isShadow) {
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
 		return (E) this;
 	}
@@ -247,5 +242,4 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	public boolean isUnnamedPackage() {
 		return TOP_LEVEL_PACKAGE_NAME.equals(getSimpleName());
 	}
-
 }

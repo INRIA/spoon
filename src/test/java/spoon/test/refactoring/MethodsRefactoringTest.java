@@ -1,18 +1,22 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.refactoring;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonModelBuilder;
@@ -41,6 +45,24 @@ import spoon.test.refactoring.parameter.testclasses.TypeB;
 import spoon.test.refactoring.parameter.testclasses.TypeC;
 import spoon.test.refactoring.parameter.testclasses.TypeR;
 import spoon.testing.utils.ModelUtils;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class MethodsRefactoringTest {
 
@@ -153,7 +175,7 @@ public class MethodsRefactoringTest {
 			final List<CtExecutable<?>> executables = startExecutable.map(new AllMethodsSameSignatureFunction()).list();
 			assertFalse("Unexpected start executable "+startExecutable, containsSame(executables, startExecutable));
 			//check that some method was found
-			assertTrue(executables.size()>0);
+			assertFalse(executables.isEmpty());
 			//check that expected methods were found and remove them 
 			expectedExecutables.forEach(m->{
 				boolean found = removeSame(executables, m);
@@ -174,7 +196,7 @@ public class MethodsRefactoringTest {
 			final List<CtExecutable<?>> executables = startExecutable.map(new AllMethodsSameSignatureFunction().includingSelf(true)).list();
 			assertTrue("Missing start executable "+startExecutable, containsSame(executables, startExecutable));
 			//check that some method was found
-			assertTrue(executables.size()>0);
+			assertFalse(executables.isEmpty());
 			//check that expected methods were found and remove them 
 			expectedExecutables.forEach(m->{
 				assertTrue("The signature "+getQSignature(m)+" not found", removeSame(executables, m));
@@ -194,7 +216,7 @@ public class MethodsRefactoringTest {
 			}
 			
 			//check that some method was found
-			assertTrue(executables.size()>0);
+			assertFalse(executables.isEmpty());
 			//check that expected methods were found and remove them 
 			expectedExecutables.forEach(m->{
 				if(m instanceof CtLambda) {
@@ -231,13 +253,13 @@ public class MethodsRefactoringTest {
 			if (exec instanceof CtLambda) {
 				//lambda is marked by annotation on the first statement of the lambda body.
 				List<CtStatement> stats = exec.getBody().getStatements();
-				if(stats.size()>0) {
+				if(!stats.isEmpty()) {
 					ele = stats.get(0);
 				}
 			}
 			TestHierarchy th = ele.getAnnotation(TestHierarchy.class);
 			if (th!=null) {
-				return Arrays.asList(th.value()).indexOf(hierarchyName)>=0;
+				return Arrays.asList(th.value()).contains(hierarchyName);
 			}
 			return false;
 		}).list();
@@ -269,7 +291,7 @@ public class MethodsRefactoringTest {
 	}
 
 	private int checkExecutableReferenceFilter(Factory factory, List<CtExecutable<?>> executables) {
-		assertTrue(executables.size()>0);
+		assertFalse(executables.isEmpty());
 		ExecutableReferenceFilter execRefFilter = new ExecutableReferenceFilter();
 		executables.forEach((CtExecutable<?> e)->execRefFilter.addExecutable(e));
 		final List<CtExecutableReference<?>> refs = new ArrayList<>(factory.getModel().filterChildren(execRefFilter).list());
@@ -296,7 +318,7 @@ public class MethodsRefactoringTest {
 	}
 	private boolean removeSame(Collection list, Object item) {
 		for (Iterator iter = list.iterator(); iter.hasNext();) {
-			Object object = (Object) iter.next();
+			Object object = iter.next();
 			if(object==item) {
 				iter.remove();
 				return true;

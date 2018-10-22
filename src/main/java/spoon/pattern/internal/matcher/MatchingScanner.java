@@ -68,7 +68,7 @@ public class MatchingScanner extends EarlyTerminatingScanner<Void> {
 
 	private int searchMatchInList(CtRole role, List<? extends CtElement> list, boolean scanChildren) {
 		int matchCount = 0;
-		if (list.size() > 0) {
+		if (!list.isEmpty()) {
 			TobeMatched tobeMatched = TobeMatched.create(
 					new ImmutableMapImpl(),
 					ContainerKind.LIST,
@@ -77,7 +77,7 @@ public class MatchingScanner extends EarlyTerminatingScanner<Void> {
 				TobeMatched nextTobeMatched = pattern.matchAllWith(tobeMatched);
 				if (nextTobeMatched != null) {
 					List<?> matchedTargets = tobeMatched.getMatchedTargets(nextTobeMatched);
-					if (matchedTargets.size() > 0) {
+					if (!matchedTargets.isEmpty()) {
 						matchCount++;
 						//send information about match to client
 						matchConsumer.accept(new Match(matchedTargets, nextTobeMatched.getParameters()));
@@ -99,7 +99,7 @@ public class MatchingScanner extends EarlyTerminatingScanner<Void> {
 	}
 
 	private void searchMatchInSet(CtRole role, Set<? extends CtElement> set) {
-		if (set.size() > 0) {
+		if (!set.isEmpty()) {
 			//copy targets, because it might be modified by call of matchConsumer, when refactoring spoon model
 			//use List, because Spoon uses Sets with predictable order - so keep the order
 			TobeMatched tobeMatched = TobeMatched.create(
@@ -110,7 +110,7 @@ public class MatchingScanner extends EarlyTerminatingScanner<Void> {
 				TobeMatched nextTobeMatched = pattern.matchAllWith(tobeMatched);
 				if (nextTobeMatched != null) {
 					List<?> matchedTargets = tobeMatched.getMatchedTargets(nextTobeMatched);
-					if (matchedTargets.size() > 0) {
+					if (!matchedTargets.isEmpty()) {
 						//send information about match to client
 						matchConsumer.accept(new Match(matchedTargets, nextTobeMatched.getParameters()));
 						//do not scan children of matched elements. They already matched, so we must not scan them again

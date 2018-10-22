@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.fieldaccesses;
 
 import org.junit.Test;
@@ -30,16 +46,19 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.fieldaccesses.testclasses.B;
 import spoon.test.fieldaccesses.testclasses.Kuu;
+import spoon.test.fieldaccesses.testclasses.Mouse;
 import spoon.test.fieldaccesses.testclasses.Panini;
 import spoon.test.fieldaccesses.testclasses.Pozole;
 import spoon.test.fieldaccesses.testclasses.Tacos;
-import spoon.testing.utils.ModelUtils;
+import spoon.test.fieldaccesses.testclasses.MyClass;
 
 import java.util.List;
 import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.Assert.assertThat;
@@ -50,7 +69,7 @@ public class FieldAccessTest {
 
 	@Test
 	public void testModelBuildingFieldAccesses() throws Exception {
-		CtType<?> type = build("spoon.test.fieldaccesses", "Mouse");
+		CtType<?> type = build("spoon.test.fieldaccesses.testclasses", "Mouse");
 		assertEquals("Mouse", type.getSimpleName());
 
 		CtMethod<?> meth1 = type.getElements(
@@ -98,7 +117,7 @@ public class FieldAccessTest {
 
 	@Test
 	public void testBCUBug20140402() throws Exception {
-		CtType<?> type = build("spoon.test.fieldaccesses",
+		CtType<?> type = build("spoon.test.fieldaccesses.testclasses",
 				"BCUBug20140402");
 		assertEquals("BCUBug20140402", type.getSimpleName());
 
@@ -125,7 +144,7 @@ public class FieldAccessTest {
 
 		// testing the proxy method setAssignment/getAssignment on local variables
 		var.setAssignment(null);
-		assertEquals(null, var.getAssignment());
+		assertNull(var.getAssignment());
 		assertEquals("int a", var.toString());
 
 		// testing the proxy method setAssignment/getAssignment on fields
@@ -133,14 +152,14 @@ public class FieldAccessTest {
 				new TypeFilter<CtField<?>>(CtField.class)).get(0);
 		assertNotNull(field.getAssignment());
 		field.setAssignment(null);
-		assertEquals(null, field.getAssignment());
+		assertNull(field.getAssignment());
 		assertEquals("java.lang.Object[] data;", field.toString());
 
 	}
 
 	@Test
 	public void testBUG20160112() throws Exception {
-		CtType<?> type = build("spoon.test.fieldaccesses", "BUG20160112");
+		CtType<?> type = build("spoon.test.fieldaccesses.testclasses", "BUG20160112");
 		assertEquals("BUG20160112", type.getSimpleName());
 		CtOperatorAssignment<?, ?> ass = type.getElements(
 				new TypeFilter<CtOperatorAssignment<?, ?>>(CtOperatorAssignment.class)).get(0);
@@ -151,9 +170,8 @@ public class FieldAccessTest {
 
 	@Test
 	public void testTargetedAccessPosition() throws Exception {
-		CtType<?> type = build("spoon.test.fieldaccesses", "TargetedAccessPosition");
-		List<CtFieldAccess<?>> vars = type.getElements(
-				new TypeFilter<CtFieldAccess<?>>(CtFieldAccess.class));
+		CtType<?> type = build("spoon.test.fieldaccesses.testclasses", "TargetedAccessPosition");
+		List<CtFieldAccess<?>> vars = type.getElements(new TypeFilter<>(CtFieldAccess.class));
 		//vars is [t.ta.ta, t.ta]
 		assertEquals(2, vars.size());
 
@@ -181,11 +199,11 @@ public class FieldAccessTest {
 
 		final CtFieldAccess logFieldAccess = Query.getElements(build, new TypeFilter<>(CtFieldAccess.class)).get(0);
 
-		assertEquals(Logger.class, logFieldAccess.getType().getActualClass());
+		assertSame(Logger.class, logFieldAccess.getType().getActualClass());
 		assertEquals("LOG", logFieldAccess.getVariable().getSimpleName());
-		assertEquals(MyClass.class, logFieldAccess.getVariable().getDeclaringType().getActualClass());
+		assertSame(MyClass.class, logFieldAccess.getVariable().getDeclaringType().getActualClass());
 
-		String expectedLambda = "() -> {" + System.lineSeparator() + "    spoon.test.fieldaccesses.MyClass.LOG.info(\"bla\");" + System.lineSeparator() + "}";
+		String expectedLambda = "() -> {" + System.lineSeparator() + "    spoon.test.fieldaccesses.testclasses.MyClass.LOG.info(\"bla\");" + System.lineSeparator() + "}";
 		assertEquals(expectedLambda, logFieldAccess.getParent(CtLambda.class).toString());
 	}
 
@@ -202,7 +220,7 @@ public class FieldAccessTest {
 
 
 	@Test
-	public void testFieldAccessNoClasspath() throws Exception {
+	public void testFieldAccessNoClasspath() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/resources/import-resources/fr/inria/");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -236,7 +254,7 @@ public class FieldAccessTest {
 		// contract: When we use var++, the variable is a read access with an unary operator.
 		final CtType<Panini> aMole = buildClass(Panini.class);
 		final CtMethod<?> make = aMole.getMethodsByName("make").get(0);
-		final List<CtUnaryOperator<?>> unaryOperators = make.getElements(new TypeFilter<CtUnaryOperator<?>>(CtUnaryOperator.class));
+		final List<CtUnaryOperator<?>> unaryOperators = make.getElements(new TypeFilter<>(CtUnaryOperator.class));
 
 		final CtFieldWrite<Object> fieldRead = aMole.getFactory().Core().createFieldWrite();
 		fieldRead.setTarget(aMole.getFactory().Code().createThisAccess(aMole.getReference(), true));
@@ -291,7 +309,7 @@ public class FieldAccessTest {
 	}
 
 	@Test
-	public void testFieldAccessDeclaredInADefaultClass() throws Exception {
+	public void testFieldAccessDeclaredInADefaultClass() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/Tacos.java");
@@ -335,7 +353,7 @@ public class FieldAccessTest {
 
 	@Test
 	public void testTypeOfFieldAccess() throws Exception {
-		CtType<Panini> aPanini = ModelUtils.buildClass(Panini.class);
+		CtType<Panini> aPanini = buildClass(Panini.class);
 		List<CtFieldAccess> fieldAccesses = aPanini.getMethod("prepare").getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(1, fieldAccesses.size());
 		assertNotNull(fieldAccesses.get(0).getType());
@@ -343,7 +361,7 @@ public class FieldAccessTest {
 	}
 
 	@Test
-	public void testFieldAccessWithoutAnyImport() throws Exception {
+	public void testFieldAccessWithoutAnyImport() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/Kuu.java");
@@ -352,12 +370,11 @@ public class FieldAccessTest {
 
 		final CtType<Kuu> aType = launcher.getFactory().Type().get(Kuu.class);
 		final DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(aType.getFactory().getEnvironment());
-		assertEquals(0, printer.computeImports(aType).size());
 		assertEquals("spoon.test.fieldaccesses.testclasses.Mole.Delicious delicious", aType.getMethodsByName("m").get(0).getParameters().get(0).toString());
 	}
 
 	@Test
-	public void testFieldAccessOnUnknownType() throws Exception {
+	public void testFieldAccessOnUnknownType() {
 		final Launcher launcher = new Launcher();
 
 		launcher.addInputResource("./src/test/resources/noclasspath/FieldAccessRes.java");
@@ -383,7 +400,7 @@ public class FieldAccessTest {
 	}
 
 	@Test
-	public void testGetReference() throws Exception {
+	public void testGetReference() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setShouldCompile(true);
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
@@ -399,7 +416,7 @@ public class FieldAccessTest {
 	}
 	@Test
 	public void testFieldAccessAutoExplicit() throws Exception {
-		CtClass mouse = (CtClass)ModelUtils.buildClass(Mouse.class);
+		CtClass mouse = (CtClass) buildClass(Mouse.class);
 		CtMethod method = mouse.filterChildren((CtMethod m)->"meth1".equals(m.getSimpleName())).first();
 		
 		CtFieldReference ageFR = method.filterChildren((CtFieldReference fr)->"age".equals(fr.getSimpleName())).first();

@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.prettyprinter;
 
 import org.apache.commons.io.IOUtils;
@@ -13,6 +29,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -25,15 +42,17 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
 import spoon.test.prettyprinter.testclasses.AClass;
+import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -55,7 +74,7 @@ public class DefaultPrettyPrinterTest {
 		comp.build();
 		Factory factory = comp.getFactory();
 		CtType<?> theClass = factory.Type().get(qualifiedName);
-		List<CtInvocation<?>> elements = Query.getElements(theClass, new TypeFilter<CtInvocation<?>>(CtInvocation.class));
+		List<CtInvocation<?>> elements = Query.getElements(theClass, new TypeFilter<>(CtInvocation.class));
 		assertEquals(3, elements.size());
 		CtInvocation<?> mathAbsInvocation = elements.get(1);
 		assertEquals("java.lang.Math.abs(message.length())", mathAbsInvocation.toString());
@@ -84,7 +103,7 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	public void testPrintAClassWithImports() throws Exception {
+	public void testPrintAClassWithImports() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
@@ -93,29 +112,30 @@ public class DefaultPrettyPrinterTest {
 		compiler.build();
 
 		final String expected =
-			  "public class AClass {" +nl+
-			  "    public List<?> aMethod() {" +nl+
-			  "        return new ArrayList<>();" +nl+
-			  "    }" +nl+
-			  "" +nl+
-			  "    public List<? extends ArrayList> aMethodWithGeneric() {" +nl+
-			  "        return new ArrayList<>();" +nl+
-			  "    }" +nl+
-			  "}";
+			"public class AClass {" + nl
+			+ "    public List<?> aMethod() {" + nl
+			+ "        return new ArrayList<>();" + nl
+			+ "    }" + nl
+			+ "" + nl
+			+ "    public List<? extends ArrayList> aMethodWithGeneric() {" + nl
+			+ "        return new ArrayList<>();" + nl
+			+ "    }" + nl
+			+ "}";
+
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
 		assertEquals(expected, aClass.toString());
 
 		final CtConstructorCall<?> constructorCall = aClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class)).get(0);
 
 		final CtTypeReference<?> ctTypeReference = constructorCall.getType()
-																  .getActualTypeArguments()
-																  .get(0);
+																.getActualTypeArguments()
+																.get(0);
 		assertTrue(ctTypeReference.isImplicit());
 		assertEquals("Object", ctTypeReference.getSimpleName());
 	}
 
 	@Test
-	public void testPrintAMethodWithImports() throws Exception {
+	public void testPrintAMethodWithImports() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
@@ -124,25 +144,25 @@ public class DefaultPrettyPrinterTest {
 		compiler.build();
 
 		final String expected =
-			  "public List<?> aMethod() {" +nl+
-			  "    return new ArrayList<>();" +nl+
-			  "}";
+			"public List<?> aMethod() {" + nl
+			+ "    return new ArrayList<>();" + nl
+			+ "}";
 
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
 		assertEquals(expected, aClass.getMethodsByName("aMethod").get(0).toString());
 
 		final CtConstructorCall<?> constructorCall =
 				aClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class))
-					  .get(0);
+					.get(0);
 		final CtTypeReference<?> ctTypeReference = constructorCall.getType()
-																  .getActualTypeArguments()
-																  .get(0);
+																.getActualTypeArguments()
+																.get(0);
 		assertTrue(ctTypeReference.isImplicit());
 		assertEquals("Object", ctTypeReference.getSimpleName());
 	}
 
 	@Test
-	public void testPrintAMethodWithGeneric() throws Exception {
+	public void testPrintAMethodWithGeneric() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
@@ -167,7 +187,7 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	public void autoImportUsesFullyQualifiedNameWhenImportedNameAlreadyPresent() throws Exception {
+	public void autoImportUsesFullyQualifiedNameWhenImportedNameAlreadyPresent() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
@@ -176,72 +196,70 @@ public class DefaultPrettyPrinterTest {
 		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/TypeIdentifierCollision.java"));
 		compiler.build();
 
-		final CtClass<?> aClass = (CtClass<?>) factory.Type().get( spoon.test.prettyprinter.testclasses.TypeIdentifierCollision.class );
+		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(spoon.test.prettyprinter.testclasses.TypeIdentifierCollision.class);
 
 		String expected =
-			"public void setFieldUsingExternallyDefinedEnumWithSameNameAsLocal() {" +nl+
-			"    localField = spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1.ordinal();" +nl+
-			"}"
-		;
+			"public void setFieldUsingExternallyDefinedEnumWithSameNameAsLocal() {" + nl
+			+ "    localField = spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1.ordinal();" + nl
+			+ "}";
+
 		String computed = aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0).toString();
-		assertEquals( "We use FQN for E1", expected, computed );
+		assertEquals("We use FQN for E1", expected, computed);
 
 		expected = //This is correct however it could be more concise.
-			"public void setFieldUsingLocallyDefinedEnum() {" +nl+
-			"    localField = TypeIdentifierCollision.ENUM.E1.ordinal();" +nl+
-			"}"
-		;
+			"public void setFieldUsingLocallyDefinedEnum() {" + nl
+			+ "    localField = TypeIdentifierCollision.ENUM.E1.ordinal();" + nl
+			+ "}";
+
 		computed = aClass.getMethodsByName("setFieldUsingLocallyDefinedEnum").get(0).toString();
-		assertEquals( expected, computed );
+		assertEquals(expected, computed);
 
 		expected =
-			"public void setFieldOfClassWithSameNameAsTheCompilationUnitClass() {" +nl+
-			"    spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField = localField;" +nl+
-			"}"
-		;
+			"public void setFieldOfClassWithSameNameAsTheCompilationUnitClass() {" + nl
+			+ "    spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField = localField;" + nl
+			+ "}";
+
 		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).toString();
-		assertEquals( "The static field of an external type with the same identifier as the compilation unit is printed with FQN", expected, computed );
+		assertEquals("The static field of an external type with the same identifier as the compilation unit is printed with FQN", expected, computed);
 
 		expected = //This is correct however it could be more concise.
-			"public void referToTwoInnerClassesWithTheSameName() {" +nl+
-			"    TypeIdentifierCollision.Class0.ClassA.VAR0 = TypeIdentifierCollision.Class0.ClassA.getNum();" +nl+
-			"    TypeIdentifierCollision.Class1.ClassA.VAR1 = TypeIdentifierCollision.Class1.ClassA.getNum();" +nl+
-			"}"
-		;
+			"public void referToTwoInnerClassesWithTheSameName() {" + nl
+			+ "    TypeIdentifierCollision.Class0.ClassA.VAR0 = TypeIdentifierCollision.Class0.ClassA.getNum();" + nl
+			+ "    TypeIdentifierCollision.Class1.ClassA.VAR1 = TypeIdentifierCollision.Class1.ClassA.getNum();" + nl
+			+ "}";
 
-		//Ensure the ClassA of Class0 takes precedence over an import statement for ClassA in Class1, and it's identifier can be the short version.
+		//Ensure the ClassA of Class0 takes precedence over an import statement for ClassA in Class1, and its identifier can be the short version.
 
 		computed = aClass.getMethodsByName("referToTwoInnerClassesWithTheSameName").get(0).toString();
-		assertEquals( "where inner types have the same identifier only one may be shortened and the other should be fully qualified", expected, computed );
+		assertEquals("where inner types have the same identifier only one may be shortened and the other should be fully qualified", expected, computed);
 
 		expected =
-			"public enum ENUM {" +nl+nl+
-			"    E1(spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField, spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1);" +nl+
-			"    final int NUM;" +nl+nl+
-			"    final Enum<?> e;" +nl+nl+
-			"    private ENUM(int num, Enum<?> e) {" +nl+
-			"        NUM = num;" +nl+
-			"        this.e = e;" +nl+
-			"    }" +nl+
-			"}"
-		;
+			"public enum ENUM {" + nl + nl
+			+ "    E1(spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField, spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1);" + nl
+			+ "    final int NUM;" + nl + nl
+			+ "    final Enum<?> e;" + nl + nl
+			+ "    private ENUM(int num, Enum<?> e) {" + nl
+			+ "        NUM = num;" + nl
+			+ "        this.e = e;" + nl
+			+ "    }" + nl
+			+ "}";
+
 		computed = aClass.getNestedType("ENUM").toString();
-		assertEquals( expected, computed );
+		assertEquals(expected, computed);
 	}
 
 	@Test
 	public void useFullyQualifiedNamesInCtElementImpl_toString() throws Exception {
-		Factory factory = build( AClass.class );
+		Factory factory = build(AClass.class);
 		factory.getEnvironment().setAutoImports(false);
 
-		final CtClass<?> aClass = (CtClass<?>) factory.Type().get( AClass.class );
+		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
 		String computed = aClass.getMethodsByName("aMethod").get(0).toString();
 		final String expected =
-			  "public java.util.List<?> aMethod() {" +nl+
-			  "    return new java.util.ArrayList<>();" +nl+
-			  "}"
-		;
-		assertEquals( "the toString method of CtElementImpl should not shorten type names as it has no context or import statements", expected, computed );
+			"public java.util.List<?> aMethod() {" + nl
+			+ "    return new java.util.ArrayList<>();" + nl
+			+ "}";
+		assertEquals("the toString method of CtElementImpl should not shorten type names as it has no context or import statements", expected, computed);
 	}
 
 	@Test
@@ -253,14 +271,14 @@ public class DefaultPrettyPrinterTest {
 
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setSourceOutputDirectory(File.createTempFile("foo","").getParentFile());
+		launcher.getEnvironment().setSourceOutputDirectory(File.createTempFile("foo", "").getParentFile());
 		launcher.buildModel();
 		Factory factory = launcher.getFactory();
 		CtClass<Object> ctClass = factory.Class().create("foo.Bar");
 		JavaOutputProcessor jop = launcher.createOutputWriter();
 		jop.setFactory(factory);
 
-		jop.createJavaFile(ctClass);//JavaOutputProcessor is able to create the file even if we do not set the cu manually
+		jop.createJavaFile(ctClass); //JavaOutputProcessor is able to create the file even if we do not set the cu manually
 
 		String pathname = System.getProperty("java.io.tmpdir") + "/foo/Bar.java";
 		File javaFile = new File(pathname);
@@ -320,7 +338,7 @@ public class DefaultPrettyPrinterTest {
 		launcher.getEnvironment().setComplianceLevel(8);
 		CtModel model = launcher.buildModel();
 
-		CtMethod<?> machin = model.getElements(new NamedElementFilter<CtMethod>(CtMethod.class, "machin")).get(0);
+		CtMethod<?> machin = model.getElements(new NamedElementFilter<>(CtMethod.class, "machin")).get(0);
 		assertEquals("machin", machin.getSimpleName());
 
 		List<CtParameter<?>> parameters = machin.getParameters();
@@ -333,4 +351,39 @@ public class DefaultPrettyPrinterTest {
 		launcher.prettyprint();
 	}
 
+	@Test
+	public void testThisConstructorCall() throws Exception {
+		// contract: the this(...) call of another constructor is printed well
+
+		CtClass<?> type = (CtClass) ModelUtils.buildClass(spoon.test.prettyprinter.testclasses.ArrayRealVector.class);
+		CtConstructor<?> constr = type.getConstructors().stream().filter(c -> c.getParameters().size() == 1).findFirst().get();
+		assertEquals("this(v, true)", constr.getBody().getStatement(0).toString());
+	}
+	
+	@Test
+	public void testThisConstructorCall2() throws Exception {
+		// contract: the this(...) call of another constructor is printed well
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/noclasspath/ArrayRealVector.java");
+		CtModel model = launcher.buildModel();
+		Factory f = launcher.getFactory();
+
+		CtClass<?> type = (CtClass) f.Class().get("org.apache.commons.math4.linear.ArrayRealVector");
+		{
+			CtConstructor<?> constr = type.getConstructors().stream()
+					.filter(c -> 
+						c.getParameters().size() == 1 
+						&& "ArrayRealVector".equals(c.getParameters().get(0).getType().getSimpleName())
+					).findFirst().get();
+			assertEquals("this(v, true)", constr.getBody().getStatement(0).toString());
+		}
+		{
+			String printed = type.toString();
+			Pattern re = Pattern.compile("public ArrayRealVector\\(org.apache.commons.math4.linear.ArrayRealVector v\\)[^\\{]*\\{\\s*([^;]*)");
+			Matcher m = re.matcher(printed);
+			assertTrue(m.find());
+			assertEquals("this(v, true)", m.group(1));
+		}
+	}
 }

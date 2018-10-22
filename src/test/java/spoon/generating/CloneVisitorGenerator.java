@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -212,7 +212,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					"spoon.support.reflect.declaration.CtModifiableImpl", "spoon.support.reflect.declaration.CtMultiTypedElementImpl", //
 					"spoon.support.reflect.declaration.CtTypeMemberImpl", "spoon.support.reflect.code.CtRHSReceiverImpl",
 					"spoon.support.reflect.declaration.CtShadowableImpl", "spoon.support.reflect.code.CtBodyHolderImpl", "spoon.support.reflect.declaration.CtModuleDirectiveImpl");
-			private final List<String> excludesFields = Arrays.asList("factory", "elementValues", "target", "metadata");
+			private final List<String> excludesFields = Arrays.asList("factory", "elementValues", "target");
 			private final Set<String> collectionClasses = new HashSet<>(Arrays.asList(
 					List.class.getName(), Collection.class.getName(), Set.class.getName(),
 					ModelList.class.getName(), ModelSet.class.getName()));
@@ -254,13 +254,13 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 							element.getParameters().get(0).getType(), setterOfField, //
 							createGetterInvocation(element.getParameters().get(0), getGetterOf(ctField)));
 					final List<CtMethod<?>> methodsToAvoid = getCtMethodThrowUnsupportedOperation(setterOfField);
-					if (methodsToAvoid.size() > 0) {
+					if (!methodsToAvoid.isEmpty()) {
 						clone.getBody().addStatement(createProtectionToException(setterInvocation, methodsToAvoid));
 					} else {
 						clone.getBody().addStatement(setterInvocation);
 					}
 				}
-				if (clone.getBody().getStatements().size() > 0) {
+				if (!clone.getBody().getStatements().isEmpty()) {
 					clone.getBody().insertEnd(createSuperInvocation(element));
 
 					// Add auto-generated comment.
@@ -478,7 +478,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 						if (!ctMethod.getType().equals(ctField.getType())) {
 							continue;
 						}
-						if (ctMethod.getParameters().size() != 0) {
+						if (!ctMethod.getParameters().isEmpty()) {
 							continue;
 						}
 						return ctMethod;

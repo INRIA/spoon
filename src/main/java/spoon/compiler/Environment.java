@@ -26,12 +26,15 @@ import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.OutputDestinationHandler;
 import spoon.support.CompressionType;
 import spoon.support.compiler.SpoonProgress;
+import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.function.Supplier;
 
 /**
  * This interface represents the environment in which Spoon is launched -
@@ -70,8 +73,7 @@ public interface Environment {
 	/**
 	 * Returns the properties for a given processor.
 	 */
-	ProcessorProperties getProcessorProperties(String processorName)
-			throws Exception;
+	ProcessorProperties getProcessorProperties(String processorName);
 
 	/**
 	 * Sets the properties for a given processor.
@@ -329,15 +331,6 @@ public interface Environment {
 	boolean checksAreSkipped();
 
 	/**
-	 * Enable or not consistency checks on the AST. See {@link #checksAreSkipped()} for a list of all checks.
-	 * @param skip false means that all checks are made (default), true means that no checks are made.
-	 *
-	 * Use {@link #disableConsistencyChecks()} instead.
-	 */
-	@Deprecated // method name is super confusing "skip" is missing
-	void setSelfChecks(boolean skip);
-
-	/**
 	 * Disable all consistency checks on the AST. Dangerous! The only valid usage of this is to keep
 	 * full backward-compatibility.
 	 */
@@ -413,4 +406,16 @@ public interface Environment {
 	 * Set the type of serialization to be used by default
 	 */
 	void setCompressionType(CompressionType serializationType);
+
+	/**
+	 * @return new instance of {@link PrettyPrinter} which is configured for this environment
+	 */
+	PrettyPrinter createPrettyPrinter();
+
+	/**
+	 * @param creator a {@link Supplier}, which creates new instance of pretty printer.
+	 * Can be used to create a {@link SniperJavaPrettyPrinter} for enabling the sniper mode.
+	 *
+	 */
+	void setPrettyPrinterCreator(Supplier<PrettyPrinter> creator);
 }

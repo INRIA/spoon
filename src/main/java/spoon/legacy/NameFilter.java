@@ -22,8 +22,6 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 
 
-
-
 /**
  * Filters elements by name (for instance to find a method). Example:
  *
@@ -32,14 +30,12 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
  * 		new NameFilter&lt;CtMethod&lt;?&gt;&gt;(&quot;normalFor&quot;)).get(0);
  * </pre>
  *
- * @deprecated Use {@link NamedElementFilter} instead: the actual NameFilter could return wrongly typed results. NamedElementFilter explicit the use of a type.
+ * Use {@link NamedElementFilter} instead: the actual NameFilter could return wrongly typed results. NamedElementFilter explicit the use of a type.
  */
 public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 	private final String name;
 
-
 	/**
-	 *
 	 * @param name Name of the expected element
 	 */
 	public NameFilter(String name) {
@@ -49,7 +45,7 @@ public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 		this.name = name;
 	}
 
-
+	@Override
 	public boolean matches(T element) {
 		try {
 			return name.equals(element.getSimpleName());
@@ -58,10 +54,8 @@ public class NameFilter<T extends CtNamedElement> implements Filter<T> {
 		}
 	}
 
-
 	@SuppressWarnings("unchecked")
 	public Class<T> getType() {
 		return (Class<T>) CtNamedElement.class;
 	}
 }
-

@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.architecture;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +54,7 @@ import static spoon.metamodel.ConceptKind.ABSTRACT;
 public class SpoonArchitectureEnforcerTest {
 
 	@Test
-	public void statelessFactory() throws Exception {
+	public void statelessFactory() {
 		// the factories must be stateless
 		SpoonAPI spoon = new Launcher();
 		spoon.addInputResource("src/main/java/spoon/reflect/factory");
@@ -49,11 +65,11 @@ public class SpoonArchitectureEnforcerTest {
 			public boolean matches(CtType element) {
 				return super.matches(element)
 						&& element.getSimpleName().contains("Factory");
-			};
+			}
 		})) {
 			for (Object o : t.getFields()) {
 				CtField f = (CtField) o;
-				if (f.getSimpleName().equals("factory")) {
+				if ("factory".equals(f.getSimpleName())) {
 					continue;
 				}
 				if (f.hasModifier(ModifierKind.FINAL) || f.hasModifier(ModifierKind.TRANSIENT)) {
@@ -66,12 +82,12 @@ public class SpoonArchitectureEnforcerTest {
 	}
 
 	@Test
-	public void testFactorySubFactory() throws Exception {
+	public void testFactorySubFactory() {
 		// contract:: all subfactory methods must also be in the main factory
 		// this is very important for usability and discoverability
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/main/java/spoon/reflect/factory");
-		class SanityCheck { int val = 0; };
+		class SanityCheck { int val = 0; }
 		SanityCheck sanityCheck = new SanityCheck();
 		launcher.addProcessor(new AbstractManualProcessor() {
 			@Override
@@ -96,7 +112,7 @@ public class SpoonArchitectureEnforcerTest {
 						}
 
 						// too generic, what should we create??
-						if (m.getSimpleName().equals("create")) {
+						if ("create".equals(m.getSimpleName())) {
 							String simpleNameType = m.getType().getSimpleName().replace("Ct", "");
 							CtMethod method = m.clone();
 
@@ -106,7 +122,7 @@ public class SpoonArchitectureEnforcerTest {
 						}
 
 						// too generic, is it a fieldref? an execref? etc
-						if (m.getSimpleName().equals("createReference")) {
+						if ("createReference".equals(m.getSimpleName())) {
 							continue;
 						}
 
@@ -129,7 +145,7 @@ public class SpoonArchitectureEnforcerTest {
 	// this test contains all the architectural rules that are valid for the whole src/main/java
 	// we put them in the same test in order to only build the full model once
 	@Test
-	public void testSrcMainJava() throws Exception {
+	public void testSrcMainJava() {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setCommentEnabled(true);
 		spoon.addInputResource("src/main/java/");
@@ -146,7 +162,7 @@ public class SpoonArchitectureEnforcerTest {
 					&& !method.getSimpleName().startsWith("is")
 					&& !method.getSimpleName().startsWith("add")
 					&& !method.getSimpleName().startsWith("remove")
-					&& method.getTopDefinitions().size() == 0 // only the top declarations should be documented (not the overriding methods which are lower in the hierarchy)
+					&& method.getTopDefinitions().isEmpty() // only the top declarations should be documented (not the overriding methods which are lower in the hierarchy)
 					&& (
 							method.hasModifier(ModifierKind.ABSTRACT) // all interface methods and abstract class methods must be documented
 
@@ -171,7 +187,7 @@ public class SpoonArchitectureEnforcerTest {
 				}
 			}
 		}
-		if (notDocumented.size() > 0) {
+		if (!notDocumented.isEmpty()) {
 			fail(notDocumented.size() + " public methods should be documented with proper API documentation: \n" + StringUtils.join(notDocumented, "\n"));
 		}
 
@@ -179,7 +195,7 @@ public class SpoonArchitectureEnforcerTest {
 		List<CtConstructorCall> treeSetWithoutComparators = spoon.getFactory().Package().getRootPackage().filterChildren(new AbstractFilter<CtConstructorCall>() {
 			@Override
 			public boolean matches(CtConstructorCall element) {
-				return element.getType().getActualClass().equals(TreeSet.class) && element.getArguments().size() == 0;
+				return element.getType().getActualClass().equals(TreeSet.class) && element.getArguments().isEmpty();
 			}
 		}).list();
 
@@ -187,7 +203,7 @@ public class SpoonArchitectureEnforcerTest {
 	}
 
 	@Test
-	public void metamodelPackageRule() throws Exception {
+	public void metamodelPackageRule() {
 		// all implementations of the metamodel classes have a corresponding interface in the appropriate package
 		List<String> exceptions = Arrays.asList("CtWildcardStaticTypeMemberReferenceImpl", "InvisibleArrayConstructorImpl");
 
@@ -215,7 +231,7 @@ public class SpoonArchitectureEnforcerTest {
 	}
 
 	@Test
-	public void testGoodTestClassNames() throws Exception {
+	public void testGoodTestClassNames() {
 		// contract: to be run by Maven surefire, all test classes must be called Test* or *Test
 		// reference: "By default, the Surefire Plugin will automatically include all test classes with the following wildcard patterns:"
 		// "**/Test*.java" and "**/*Test.java"
@@ -268,7 +284,7 @@ public class SpoonArchitectureEnforcerTest {
 	}
 
 	@Test
-	public void testStaticClasses() throws Exception {
+	public void testStaticClasses() {
 		// contract: helper classes only have static methods and a private constructor
 
 //		spoon.compiler.SpoonResourceHelper
@@ -290,11 +306,11 @@ public class SpoonArchitectureEnforcerTest {
 		for (CtClass<?> klass : spoon.getModel().getElements(new TypeFilter<CtClass>(CtClass.class) {
 			@Override
 			public boolean matches(CtClass element) {
-				return element.getSuperclass() == null && super.matches(element) && element.getMethods().size() > 0
+				return element.getSuperclass() == null && super.matches(element) && !element.getMethods().isEmpty()
 						&& element.getElements(new TypeFilter<>(CtMethod.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.STATIC));
 			}
 		})) {
-			assertTrue(klass.getElements(new TypeFilter<>(CtConstructor.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.PRIVATE)));
+			assertTrue("Utility class " + klass.getQualifiedName() + " is missing private constructor", klass.getElements(new TypeFilter<>(CtConstructor.class)).stream().allMatch(x -> x.hasModifier(ModifierKind.PRIVATE)));
 		}
 	}
 
@@ -330,13 +346,14 @@ public class SpoonArchitectureEnforcerTest {
 	}
 
 	@Test
-	public void testSpecPackage() throws Exception {
+	public void testSpecPackage() {
 		// contract: when a pull-request introduces a new package, it is made explicit during code review
 		// when a pull-request introduces a new package, this test fails and the author has to explicitly declare the new package here
 
 		Set<String> officialPackages = new TreeSet<>();
 		officialPackages.add("spoon.compiler.builder");
 		officialPackages.add("spoon.compiler");
+		officialPackages.add("spoon.decompiler");
 		officialPackages.add("spoon.support.modelobs.action");
 		officialPackages.add("spoon.support.modelobs.context");
 		officialPackages.add("spoon.support.modelobs");
@@ -369,6 +386,8 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.support.compiler.jdt");
 		officialPackages.add("spoon.support.compiler");
 		officialPackages.add("spoon.support.gui");
+		officialPackages.add("spoon.support.sniper");
+		officialPackages.add("spoon.support.sniper.internal");
 		officialPackages.add("spoon.support.reflect.code");
 		officialPackages.add("spoon.support.reflect.cu.position");
 		officialPackages.add("spoon.support.reflect.cu");
@@ -380,6 +399,7 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.support.reflect");
 		officialPackages.add("spoon.support.template");
 		officialPackages.add("spoon.support.util");
+		officialPackages.add("spoon.support.util.internal");
 		officialPackages.add("spoon.support.visitor.clone");
 		officialPackages.add("spoon.support.visitor.equals");
 		officialPackages.add("spoon.support.visitor.java.internal");

@@ -40,13 +40,16 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.support.util.internal.MapUtils;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,7 +73,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	private CtPackageReference pack;
 
 	public CtTypeReferenceImpl() {
-		super();
 	}
 
 	@Override
@@ -83,31 +85,31 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (!isPrimitive()) {
 			return this;
 		}
-		if (getSimpleName().equals("int")) {
+		if ("int".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Integer.class);
 		}
-		if (getSimpleName().equals("float")) {
+		if ("float".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Float.class);
 		}
-		if (getSimpleName().equals("long")) {
+		if ("long".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Long.class);
 		}
-		if (getSimpleName().equals("char")) {
+		if ("char".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Character.class);
 		}
-		if (getSimpleName().equals("double")) {
+		if ("double".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Double.class);
 		}
-		if (getSimpleName().equals("boolean")) {
+		if ("boolean".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Boolean.class);
 		}
-		if (getSimpleName().equals("short")) {
+		if ("short".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Short.class);
 		}
-		if (getSimpleName().equals("byte")) {
+		if ("byte".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Byte.class);
 		}
-		if (getSimpleName().equals("void")) {
+		if ("void".equals(getSimpleName())) {
 			return getFactory().Type().createReference(Void.class);
 		}
 		return this;
@@ -141,6 +143,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		return findClass();
 	}
 
+	private static Map<String, Class> classByQName = Collections.synchronizedMap(new HashMap<>());
+	private static ClassLoader lastClassLoader = null;
+
 	/**
 	 * Finds the class requested in {@link #getActualClass()}.
 	 *
@@ -148,16 +153,23 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	 */
 	@SuppressWarnings("unchecked")
 	protected Class<T> findClass() {
-		try {
-			// creating a classloader on the fly is not the most efficient
-			// but it decreases the amount of state to maintain
-			// since getActualClass is only used in rare cases, that's OK.
-			ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
-			String qualifiedName = getQualifiedName();
-			return (Class<T>) classLoader.loadClass(qualifiedName);
-		} catch (Throwable e) {
-			throw new SpoonClassNotFoundException("cannot load class: " + getQualifiedName(), e);
+		String qualifiedName = getQualifiedName();
+		ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
+		if (classLoader != lastClassLoader) {
+			//clear cache because class loader changed
+			classByQName.clear();
+			lastClassLoader = classLoader;
 		}
+		return MapUtils.getOrCreate(classByQName, qualifiedName, () -> {
+			try {
+				// creating a classloader on the fly is not the most efficient
+				// but it decreases the amount of state to maintain
+				// since getActualClass is only used in rare cases, that's OK.
+				return (Class<T>) classLoader.loadClass(qualifiedName);
+			} catch (Throwable e) {
+				throw new SpoonClassNotFoundException("cannot load class: " + getQualifiedName(), e);
+			}
+		});
 	}
 
 	@Override
@@ -352,7 +364,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (getFactory().getEnvironment().getNoClasspath()) {
 			// should not be thrown in 'noClasspath' environment (#775)
 			Launcher.LOGGER.warn(msg);
-			return;
 		} else {
 			throw cnfe;
 		}
@@ -370,6 +381,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		return null;
 	}
 
+	@Override
 	public CtFieldReference<?> getDeclaredOrInheritedField(String fieldName) {
 		CtType<?> t = getTypeDeclaration();
 		if (t != null) {
@@ -749,6 +761,17 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			}
 		}
 
+		if (parent instanceof CtFormalTypeDeclarer) {
+			CtFormalTypeDeclarer exec = (CtFormalTypeDeclarer) parent;
+			if (exec instanceof CtMethod || exec instanceof CtConstructor) {
+				for (CtTypeParameter typeParam : exec.getFormalCtTypeParameters()) {
+					if (typeParam.getSimpleName().equals(getSimpleName())) {
+						return typeParam;
+					}
+				}
+				return null;
+			}
+		}
 		return null;
 	}
 

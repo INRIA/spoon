@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.condition;
 
 import org.junit.Test;
@@ -17,24 +33,27 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ConditionalTest {
+	String newLine = System.getProperty("line.separator");
+
 	@Test
 	public void testConditional() throws Exception {
 		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
-		final CtConditional aConditional = aFoo.getMethod("m2").getElements(new TypeFilter<CtConditional>(CtConditional.class)).get(0);
+		final CtConditional aConditional = aFoo.getMethod("m2").getElements(new TypeFilter<>(CtConditional.class)).get(0);
 		assertEquals("return a == 18 ? true : false", aConditional.getParent().toString());
 	}
 
 	@Test
 	public void testConditionalWithAssignment() throws Exception {
 		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
-		final CtConditional aConditional = aFoo.getMethod("m").getElements(new TypeFilter<CtConditional>(CtConditional.class)).get(0);
+		final CtConditional aConditional = aFoo.getMethod("m").getElements(new TypeFilter<>(CtConditional.class)).get(0);
 		assertEquals("x = (a == 18) ? true : false", aConditional.getParent().toString());
 	}
 
 	@Test
 	public void testBlockInConditionAndLoop() throws Exception {
 		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
-		final List<CtIf> conditions = aFoo.getMethod("m3").getElements(new TypeFilter<CtIf>(CtIf.class));
+		CtMethod<Object> method = aFoo.getMethod("m3");
+		final List<CtIf> conditions = method.getElements(new TypeFilter<>(CtIf.class));
 		assertEquals(4, conditions.size());
 		for (CtIf condition : conditions) {
 			assertTrue(condition.getThenStatement() instanceof CtBlock);
@@ -42,18 +61,25 @@ public class ConditionalTest {
 				assertTrue(condition.getElseStatement() instanceof CtBlock);
 			}
 		}
+
+		assertEquals("if (true) {" + newLine + 
+				"    java.lang.System.out.println();" + newLine + 
+				"} else" + newLine + 
+				"    if (true) {" + newLine + 
+				"        java.lang.System.out.println();" + newLine + 
+				"    } else {" + newLine + 
+				"        java.lang.System.out.println();" + newLine + 
+				"    }" + newLine,
+				method.getBody().getStatement(0).toString());
 	}
 
 	@Test
 	public void testNoBlockInConditionAndLoop() throws Exception {
-		String newLine = System.getProperty("line.separator");
-		
+
 		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
 		CtMethod<Object> method = aFoo.getMethod("m3");
-		final List<CtIf> conditions = method.getElements(new TypeFilter<CtIf>(CtIf.class));
-		for (int i = 0; i < conditions.size(); i++) {
-			CtIf ctIf = conditions.get(i);
-
+		final List<CtIf> conditions = method.getElements(new TypeFilter<>(CtIf.class));
+		for (CtIf ctIf : conditions) {
 			// replace the block to a statement
 			CtStatement then = ((CtBlock) ctIf.getThenStatement()).getStatement(0);
 			ctIf.setThenStatement(then);

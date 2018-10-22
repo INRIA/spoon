@@ -22,8 +22,7 @@ import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
-import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
-import static spoon.reflect.path.CtRole.TYPE;
+import java.util.Objects;
 
 public class CtCommentImpl extends CtStatementImpl implements CtComment {
 	private static final long serialVersionUID = 1L;
@@ -48,7 +47,7 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 
 	@Override
 	public <E extends CtComment> E setContent(String content) {
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, COMMENT_CONTENT, content, this.content);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.COMMENT_CONTENT, content, this.content);
 		this.content = content;
 		return (E) this;
 	}
@@ -60,7 +59,7 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 
 	@Override
 	public <E extends CtComment> E setCommentType(CommentType commentType) {
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, commentType, this.type);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.TYPE, commentType, this.type);
 		type = commentType;
 		return (E) this;
 	}
@@ -85,9 +84,7 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 
 		CtCommentImpl ctComment = (CtCommentImpl) o;
 
-		if (content != null
-				? !content.equals(ctComment.content)
-				: ctComment.content != null) {
+		if (!Objects.equals(content, ctComment.content)) {
 			return false;
 		}
 		return type == ctComment.type;

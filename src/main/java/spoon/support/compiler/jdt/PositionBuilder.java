@@ -89,6 +89,7 @@ public class PositionBuilder {
 		CompilationUnit cu = this.jdtTreeBuilder.getFactory().CompilationUnit().getOrCreate(new String(this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
 		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
 		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
+		cu.setLineSeparatorPositions(lineSeparatorPositions);
 		char[] contents = cr.compilationUnit.getContents();
 
 		int sourceStart = node.sourceStart;
@@ -128,7 +129,7 @@ public class PositionBuilder {
 
 			List<CastInfo> casts = this.jdtTreeBuilder.getContextBuilder().casts;
 
-			if (casts.size() > 0 && e instanceof CtExpression) {
+			if (!casts.isEmpty() && e instanceof CtExpression) {
 				int declarationSourceStart = sourceStart;
 				int declarationSourceEnd = sourceEnd;
 				SourcePosition pos = casts.get(0).typeRef.getPosition();
@@ -386,7 +387,6 @@ public class PositionBuilder {
 				sourceStart += fieldDeclaration.name.length;
 			}
 		} else if (node instanceof CaseStatement) {
-			CaseStatement caseStmt = (CaseStatement) node;
 			sourceEnd = findNextNonWhitespace(contents, contents.length - 1, sourceEnd + 1);
 			if (sourceEnd < 0) {
 				return handlePositionProblem("Unexpected end of file in CtCase on: " + sourceStart);
@@ -690,7 +690,7 @@ public class PositionBuilder {
 					if (content[off] == '\r') {
 						//we have found end of this comment
 						//skip windows \n too if any
-						if (content[off] == '\n') {
+						if (off < maxOff && content[off + 1] == '\n') {
 							off++;
 						}
 						return off;

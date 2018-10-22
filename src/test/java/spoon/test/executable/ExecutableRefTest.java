@@ -1,6 +1,21 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.executable;
 
-import org.junit.Assert;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtAbstractInvocation;
@@ -28,6 +43,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
@@ -36,13 +52,13 @@ public class ExecutableRefTest {
 	@Test
 	public void methodTest() throws Exception {
 		CtAbstractInvocation<?> ctAbstractInvocation = this.getInvocationFromMethod("testMethod");
-		Assert.assertTrue(ctAbstractInvocation instanceof CtInvocation<?>);
+		assertTrue(ctAbstractInvocation instanceof CtInvocation<?>);
 
 		CtExecutableReference<?> executableReference = ctAbstractInvocation.getExecutable();
-		Assert.assertNotNull(executableReference);
+		assertNotNull(executableReference);
 
 		Method method = executableReference.getActualMethod();
-		Assert.assertNotNull(method);
+		assertNotNull(method);
 
 		assertEquals("Hello World",
 				method.invoke(null, ((CtLiteral<?>) ctAbstractInvocation.getArguments().get(0)).getValue()));
@@ -51,13 +67,13 @@ public class ExecutableRefTest {
 	@Test
 	public void constructorTest() throws Exception {
 		CtAbstractInvocation<?> ctAbstractInvocation = this.getInvocationFromMethod("testConstructor");
-		Assert.assertTrue(ctAbstractInvocation instanceof CtConstructorCall<?>);
+		assertTrue(ctAbstractInvocation instanceof CtConstructorCall<?>);
 
 		CtExecutableReference<?> executableReference = ctAbstractInvocation.getExecutable();
-		Assert.assertNotNull(executableReference);
+		assertNotNull(executableReference);
 
 		Constructor<?> constructor = executableReference.getActualConstructor();
-		Assert.assertNotNull(constructor);
+		assertNotNull(constructor);
 
 		assertEquals("Hello World",
 				constructor.newInstance(((CtLiteral<?>) ctAbstractInvocation.getArguments().get(0)).getValue()));
@@ -84,7 +100,7 @@ public class ExecutableRefTest {
 		launcher.run();
 
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("org.objectweb.carol.jndi.spi.CmiContext");
-		final List<CtConstructorCall> ctConstructorCalls = aClass.getElements(new TypeFilter<CtConstructorCall>(CtConstructorCall.class));
+		final List<CtConstructorCall> ctConstructorCalls = aClass.getElements(new TypeFilter<>(CtConstructorCall.class));
 
 		for (CtConstructorCall constructorCall : ctConstructorCalls) {
 			assertNotNull(constructorCall.getExecutable());
@@ -97,20 +113,20 @@ public class ExecutableRefTest {
 		Factory factory = build(ExecutableRefTestSource.class, MyIntf.class);
 
 		CtClass<ExecutableRefTestSource> clazz = factory.Class().get(ExecutableRefTestSource.class);
-		Assert.assertNotNull(clazz);
+		assertNotNull(clazz);
 
 		List<CtMethod<?>> methods = clazz.getMethodsByName(methodName);
 		assertEquals(1, methods.size());
 
 		CtMethod<?> ctMethod = methods.get(0);
-		CtBlock<?> ctBody = (CtBlock<?>) ctMethod.getBody();
-		Assert.assertNotNull(ctBody);
+		CtBlock<?> ctBody = ctMethod.getBody();
+		assertNotNull(ctBody);
 
 		List<CtStatement> ctStatements = ctBody.getStatements();
 		assertEquals(1, ctStatements.size());
 
 		CtStatement ctStatement = ctStatements.get(0);
-		Assert.assertTrue(ctStatement instanceof CtAbstractInvocation<?>);
+		assertTrue(ctStatement instanceof CtAbstractInvocation<?>);
 
 		return (CtAbstractInvocation<?>) ctStatement;
 	}

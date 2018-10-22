@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.prettyprinter;
 
 import org.junit.Before;
@@ -31,37 +47,35 @@ public class LinesTest {
 		spoon.createCompiler(
 				factory,
 				SpoonResourceHelper
-						.resources("./src/test/java/spoon/test/prettyprinter/Validation.java"))
+						.resources("./src/test/java/spoon/test/prettyprinter/testclasses/Validation.java"))
 				.build();
 		factory.getEnvironment().setPreserveLineNumbers(true);
 		factory.getEnvironment().setAutoImports(false);
 	}
 
 	@Test
-	public void testPrettyPrinterWithLines() throws Exception {
+	public void testPrettyPrinterWithLines() {
 
 		for (CtType<?> t : factory.Type().getAll()) {
 			if (t.isTopLevel()) {
-				// System.out.println("calculate " + t.getSimpleName());
 				DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(
 						factory.getEnvironment());
 				pp.calculate(t.getPosition().getCompilationUnit(), t
 						.getPosition().getCompilationUnit().getDeclaredTypes());
-				// System.out.println(pp.getResult().toString());
 			}
 		}
 		assertEquals(0, factory.getEnvironment().getWarningCount());
 		assertEquals(0, factory.getEnvironment().getErrorCount());
 
 		// contract: in line preserve mode, toString is not prefixed or suffixed by newlines
-		String meth = factory.Type().get("spoon.test.prettyprinter.Validation").getMethodsByName("isIdentifier").get(0).toString();
+		String meth = factory.Type().get("spoon.test.prettyprinter.testclasses.Validation").getMethodsByName("isIdentifier").get(0).toString();
 		// the added linebreaks due to line preservation are removed
-		assertFalse(Pattern.compile("^\\s", Pattern.DOTALL).asPredicate().test(meth.toString()));
+		assertFalse(Pattern.compile("^\\s", Pattern.DOTALL).asPredicate().test(meth));
 
 	}
 
 	@Test
-	public void testIdenticalPrettyPrinter() throws  Exception{
+	public void testIdenticalPrettyPrinter() {
 		// contract: the end line should also be preserved
 
 		// setup
@@ -73,12 +87,6 @@ public class LinesTest {
 		List<String> paths = new ArrayList<>();
 		paths.add("spoon/test/prettyprinter/testclasses/A.java");
 		paths.add("spoon/test/prettyprinter/testclasses/AClass.java");
-		//paths.add("spoon/test/prettyprinter/testclasses/QualifiedThisRef.java");
-		//paths.add("spoon/test/prettyprinter/testclasses/ImportStatic.java");
-		//paths.add("spoon/test/prettyprinter/testclasses/QualifiedThisRef.java");
-		//paths.add("spoon/test/prettyprinter/testclasses/Rule.java");
-		//paths.add("spoon/test/prettyprinter/testclasses/TypeIdentifierCollision.java");
-
 
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(options);

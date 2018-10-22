@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.literal;
 
 import org.junit.Test;
@@ -16,13 +32,15 @@ import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class LiteralTest {
+
 	@Test
-	public void testCharLiteralInNoClasspath() throws Exception {
+	public void testCharLiteralInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/SecondaryIndexManager.java");
 		launcher.setSourceOutputDirectory("./target/literal");
@@ -30,7 +48,7 @@ public class LiteralTest {
 		launcher.run();
 
 		final CtClass<Object> aClass = launcher.getFactory().Class().get("org.apache.cassandra.index.SecondaryIndexManager");
-		TreeSet<CtLiteral<?>> ts = new TreeSet<CtLiteral<?>>(new DeepRepresentationComparator());
+		TreeSet<CtLiteral<?>> ts = new TreeSet<>(new DeepRepresentationComparator());
 
 		ts.addAll(aClass.getElements(new TypeFilter<CtLiteral<Character>>(CtLiteral.class) {
 			@Override
@@ -76,7 +94,7 @@ public class LiteralTest {
 
 
 		literal = (CtLiteral<?>) ctType.getField("d").getDefaultExpression();
-		assertEquals(0l, literal.getValue());
+		assertEquals(0L, literal.getValue());
 		assertTrue(literal.getType().isPrimitive());
 		assertEquals(typeFactory.LONG_PRIMITIVE, literal.getType());
 
@@ -99,7 +117,7 @@ public class LiteralTest {
 		assertEquals(typeFactory.STRING, literal.getType());
 
 		literal = (CtLiteral<?>) ctType.getField("h").getDefaultExpression();
-		assertEquals(null, literal.getValue());
+		assertNull(literal.getValue());
 		assertFalse(literal.getType().isPrimitive());
 		assertEquals(typeFactory.NULL_TYPE, literal.getType());
 
@@ -129,7 +147,7 @@ public class LiteralTest {
 	}
 
 	@Test
-	public void testEscapedString() throws Exception {
+	public void testEscapedString() {
 
 		/* test escaped char: spoon change octal values by equivalent unicode values */
 

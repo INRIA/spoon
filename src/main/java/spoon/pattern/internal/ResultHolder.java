@@ -95,7 +95,7 @@ public abstract class ResultHolder<T> {
 		@Override
 		public void mapEachResult(Function<T, T> consumer) {
 			result = consumer.apply(result);
-		};
+		}
 
 		@Override
 		public List<T> getResults() {

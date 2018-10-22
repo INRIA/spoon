@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.executable;
 
 import org.junit.Test;
@@ -20,17 +36,18 @@ import spoon.testing.utils.ModelUtils;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ExecutableTest {
 	@Test
-	public void testInfoInsideAnonymousExecutable() throws Exception {
+	public void testInfoInsideAnonymousExecutable() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/executable/testclasses/AnonymousExecutableSample.java");
 		launcher.run();
 
-		final List<CtAnonymousExecutable> anonymousExecutables = Query.getElements(launcher.getFactory(), new TypeFilter<CtAnonymousExecutable>(CtAnonymousExecutable.class));
+		final List<CtAnonymousExecutable> anonymousExecutables = Query.getElements(launcher.getFactory(), new TypeFilter<>(CtAnonymousExecutable.class));
 
 		assertEquals(2, anonymousExecutables.size());
 
@@ -54,29 +71,29 @@ public class ExecutableTest {
 
 		String methodName = "getInt1";
 		CtExecutableReference<?> methodRef = aClass.getMethod(methodName).getReference();
-		assertEquals(false, methodRef.isFinal());
-		assertEquals(true, methodRef.isStatic());
+		assertFalse(methodRef.isFinal());
+		assertTrue(methodRef.isStatic());
 		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
 		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
 
 		methodName = "getInt2";
 		methodRef = aClass.getMethod(methodName).getReference();
-		assertEquals(true, methodRef.isFinal());
-		assertEquals(true, methodRef.isStatic());
+		assertTrue(methodRef.isFinal());
+		assertTrue(methodRef.isStatic());
 		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
 		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
 
 		methodName = "getInt3";
 		methodRef = aClass.getMethod(methodName).getReference();
-		assertEquals(true, methodRef.isFinal());
-		assertEquals(false, methodRef.isStatic());
+		assertTrue(methodRef.isFinal());
+		assertFalse(methodRef.isStatic());
 		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
 		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
 
 		methodName = "getInt4";
 		methodRef = aClass.getMethod(methodName).getReference();
-		assertEquals(false, methodRef.isFinal());
-		assertEquals(false, methodRef.isStatic());
+		assertFalse(methodRef.isFinal());
+		assertFalse(methodRef.isStatic());
 		assertEquals(aClass.getFactory().Type().integerPrimitiveType(), methodRef.getType());
 		assertEquals(aClass.getMethod(methodName), methodRef.getDeclaration());
 	}
@@ -90,7 +107,7 @@ public class ExecutableTest {
 		List<CtExecutableReference> listValueOf = ctModel.
 				filterChildren(new TypeFilter<>(CtExecutableReference.class)).
 				filterChildren((Filter<CtExecutableReference>) element -> {
-					return element.getSimpleName().equals("valueOf");
+					return "valueOf".equals(element.getSimpleName());
 				}).list();
 
 		assertEquals(1, listValueOf.size());
@@ -100,7 +117,7 @@ public class ExecutableTest {
 		CtType<?> ctType = launcher.getFactory().Type().get(WithEnum.class);
 		List<CtExecutableReference> listShadowValueOf = ctType.filterChildren(new TypeFilter<>(CtExecutableReference.class))
 				.filterChildren((Filter<CtExecutableReference>) element -> {
-					return element.getSimpleName().equals("valueOf");
+					return "valueOf".equals(element.getSimpleName());
 				}).list();
 		assertEquals(1, listShadowValueOf.size());
 		CtExecutableReference shadowValueOf = listShadowValueOf.get(0);

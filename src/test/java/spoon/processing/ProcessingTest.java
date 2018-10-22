@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2006-2015 INRIA and contributors
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -14,7 +14,6 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-
 package spoon.processing;
 
 import org.junit.Test;
@@ -28,8 +27,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class ProcessingTest {
+
 	@Test
-	public void testInterruptAProcessor() throws Exception {
+	public void testInterruptAProcessor() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
@@ -45,7 +45,7 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testSpoonTagger() throws Exception {
+	public void testSpoonTagger() {
 		final Launcher launcher = new Launcher();
 		launcher.addProcessor("spoon.processing.SpoonTagger");
 		launcher.run();

@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -83,6 +84,7 @@ public class MetamodelProperty {
 	private Boolean unsettable;
 
 	private Map<MMMethodKind, List<MMMethod>> methodsByKind = new HashMap<>();
+	private Map<String, MMMethod> methodsBySignature;
 
 	/**
 	 * methods of this field defined directly on ownerType.
@@ -103,14 +105,13 @@ public class MetamodelProperty {
 	private List<MMMethodKind> ambiguousMethodKinds = new ArrayList<>();
 
 	MetamodelProperty(String name, CtRole role, MetamodelConcept ownerConcept) {
-		super();
 		this.name = name;
 		this.role = role;
 		this.ownerConcept = ownerConcept;
 	}
 
 	void addMethod(CtMethod<?> method) {
-		MMMethod mmMethod = addMethod(method, true);
+		addMethod(method, true);
 	}
 
 	/**
@@ -256,14 +257,44 @@ public class MetamodelProperty {
 
 	public MMMethod getMethod(MMMethodKind kind) {
 		List<MMMethod> ms = getMethods(kind);
-		return ms.size() > 0 ? ms.get(0) : null;
+		return !ms.isEmpty() ? ms.get(0) : null;
 	}
 
+	/**
+	 * @return {@link MMMethod} accessing this property, which has signature `signature`
+	 */
+	public MMMethod getMethodBySignature(String signature) {
+		if (methodsBySignature == null) {
+			methodsBySignature = new HashMap<>();
+			for (List<MMMethod> mmMethods : methodsByKind.values()) {
+				for (MMMethod mmMethod : mmMethods) {
+					String sigature = mmMethod.getSignature();
+					methodsBySignature.put(sigature, mmMethod);
+				}
+			}
+		}
+		return methodsBySignature.get(signature);
+	}
+
+	/**
+	 * @param kind {@link MMMethodKind}
+	 * @return methods of required `kind`
+	 */
 	public List<MMMethod> getMethods(MMMethodKind kind) {
 		List<MMMethod> ms = methodsByKind.get(kind);
 		return ms == null ? Collections.emptyList() : Collections.unmodifiableList(ms);
 	}
 
+	/**
+	 * @return all methods which are accessing this property
+	 */
+	public Set<MMMethod> getMethods() {
+		Set<MMMethod> res = new HashSet<>();
+		for (List<MMMethod> methods : methodsByKind.values()) {
+			res.addAll(methods);
+		}
+		return Collections.unmodifiableSet(res);
+	}
 
 	void sortByBestMatch() {
 		//resolve conflicts using value type. Move the most matching method to 0 index
@@ -297,7 +328,7 @@ public class MetamodelProperty {
 	 */
 	private int getIdxOfBestMatch(List<MMMethod> methods, MMMethodKind key) {
 		MMMethod mmMethod = methods.get(0);
-		if (mmMethod.getActualCtMethod().getParameters().size() == 0) {
+		if (mmMethod.getActualCtMethod().getParameters().isEmpty()) {
 			return getIdxOfBestMatchByReturnType(methods, key);
 		} else {
 			MMMethod mmGetMethod = getMethod(MMMethodKind.GET);
@@ -355,7 +386,6 @@ public class MetamodelProperty {
 	private int getIdxOfBestMatchByInputParameter(List<MMMethod> methods, MMMethodKind key, CtTypeReference<?> expectedValueType)  {
 		int idx = -1;
 		MatchLevel maxMatchLevel = null;
-		CtTypeReference<?> newValueType = null;
 		if (key.isMulti()) {
 			expectedValueType = getTypeofItems(expectedValueType);
 		}
@@ -368,13 +398,11 @@ public class MetamodelProperty {
 				if (idx == -1) {
 					idx = i;
 					maxMatchLevel = matchLevel;
-					newValueType = mMethod.getValueType();
 				} else {
 					//both methods have matching value type. Use the better match
 					if (maxMatchLevel.ordinal() < matchLevel.ordinal()) {
 						idx = i;
 						maxMatchLevel = matchLevel;
-						newValueType = mMethod.getValueType();
 					} else if (maxMatchLevel == matchLevel) {
 						//there is conflict
 						return -1;
@@ -540,7 +568,7 @@ public class MetamodelProperty {
 	 */
 	public MetamodelProperty getSuperProperty() {
 		List<MetamodelProperty> potentialRootSuperFields = new ArrayList<>();
-		if (roleMethods.size() > 0) {
+		if (!roleMethods.isEmpty()) {
 			potentialRootSuperFields.add(this);
 		}
 		superProperties.forEach(superField -> {
@@ -636,4 +664,5 @@ public class MetamodelProperty {
 		}
 		getRoleHandler().setValue(element, value);
 	}
+
 }

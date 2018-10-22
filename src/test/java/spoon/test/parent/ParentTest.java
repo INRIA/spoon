@@ -1,6 +1,21 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.parent;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -50,6 +65,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -71,9 +87,8 @@ public class ParentTest {
 	}
 
 	@Test
-	public void testParent() throws Exception {
-		// toString should not throw a parent exception even if parents are not
-		// set
+	public void testParent() {
+		// toString should not throw a parent exception even if parents are not set
 		try {
 			CtLiteral<Object> literal = factory.Core().createLiteral();
 			literal.setValue(1);
@@ -82,12 +97,12 @@ public class ParentTest {
 			minus.setRightHandOperand(literal);
 			minus.setLeftHandOperand(literal);
 		} catch (Exception e) {
-			Assert.fail();
+			fail();
 		}
 	}
 
 	@Test
-	public void testParentSet() throws Exception {
+	public void testParentSet() {
 		CtClass<?> foo = factory.Package().get("spoon.test.parent")
 				.getType("Foo");
 
@@ -112,7 +127,7 @@ public class ParentTest {
 	}
 
 	@Test
-	public void testParentPackage() throws Exception {
+	public void testParentPackage() {
 		// addType should set Parent
 		CtClass<?> clazz = factory.Core().createClass();
 		clazz.setSimpleName("Foo");
@@ -124,7 +139,7 @@ public class ParentTest {
 	}
 
 	@Test
-	public void testParentOfCtPackageReference() throws Exception {
+	public void testParentOfCtPackageReference() {
 		// contract: a parent at a top level must be the root package and in the code, the element which call getParent().
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
@@ -190,7 +205,7 @@ public class ParentTest {
 		final CtTypeReference referenceWithGeneric = Query.getElements(factory, new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
-				return reference.getActualTypeArguments().size() > 0 && super.matches(reference);
+				return !reference.getActualTypeArguments().isEmpty() && super.matches(reference);
 			}
 		}).get(0);
 		final CtTypeReference<?> generic = referenceWithGeneric.getActualTypeArguments().get(0);
@@ -212,14 +227,14 @@ public class ParentTest {
 	}
 
 	public static void checkParentContract(CtPackage pack) {
-		for(CtElement elem: pack.getElements(new TypeFilter<>(CtElement.class))) {
+		pack.filterChildren(null).forEach((CtElement elem) -> {
 			// there is always one parent
-			Assert.assertNotNull("no parent for "+elem.getClass()+"-"+elem.getPosition(), elem.getParent());
-		}
+			assertTrue("no parent for "+elem.getClass()+"-"+elem.getPosition(), elem.isParentInitialized());
+		});
 
 		// the scanner and the parent are in correspondence
 		new CtScanner() {
-			Deque<CtElement> elementStack = new ArrayDeque<CtElement>();
+			Deque<CtElement> elementStack = new ArrayDeque<>();
 			@Override
 			public void scan(CtElement e) {
 				if (e==null) { return; }
@@ -230,20 +245,20 @@ public class ParentTest {
 				elementStack.push(e);
 				e.accept(this);
 				elementStack.pop();
-			};
+			}
 		}.scan(pack);
 
 	}
 
 	@Test
-	public void testGetParentWithFilter() throws Exception {
+	public void testGetParentWithFilter() {
 		// addType should set Parent
 		CtClass<Foo> clazz = (CtClass<Foo>) factory.Class().getAll().get(0);
 
 		CtMethod<Object> m = clazz.getMethod("m");
 		// get three = "" in one = two = three = "";
 		CtExpression statement = ((CtAssignment)((CtAssignment)m.getBody().getStatement(3)).getAssignment()).getAssignment();
-		CtPackage ctPackage = statement.getParent(new TypeFilter<CtPackage>(CtPackage.class));
+		CtPackage ctPackage = statement.getParent(new TypeFilter<>(CtPackage.class));
 		assertEquals(Foo.class.getPackage().getName(), ctPackage.getQualifiedName());
 
 		CtStatement ctStatement = statement
@@ -278,8 +293,8 @@ public class ParentTest {
 		assertNotEquals(ctStatement1.getParent(CtType.class), parent);
 
 		// not present element
-		CtWhile ctWhile = ctStatement1.getParent(new TypeFilter<CtWhile>(CtWhile.class));
-		assertEquals(null, ctWhile);
+		CtWhile ctWhile = ctStatement1.getParent(new TypeFilter<>(CtWhile.class));
+		assertNull(ctWhile);
 
 		CtStatement statementParent = statement
 				.getParent(new AbstractFilter<CtStatement>(CtStatement.class) {
@@ -293,7 +308,7 @@ public class ParentTest {
 	}
 
 	@Test
-	public void testHasParent() throws Exception {
+	public void testHasParent() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/resources/reference-package/Panini.java");
@@ -312,7 +327,7 @@ public class ParentTest {
 
 	@Test
 	@Ignore // too fragile because of conventions
-	public void testParentSetInSetter() throws Exception {
+	public void testParentSetInSetter() {
 		// contract: Check that all setters protect their parameter.
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
@@ -406,7 +421,7 @@ public class ParentTest {
 						return "setParent".equals(element.getExecutable().getSimpleName()) && super.matches(element);
 					}
 				});
-				return ctInvocations.size() >0 ? ctInvocations.get(0) :  null;
+				return !ctInvocations.isEmpty() ? ctInvocations.get(0) :  null;
 			}
 		}.scan(launcher.getModel().getRootPackage());
 	}

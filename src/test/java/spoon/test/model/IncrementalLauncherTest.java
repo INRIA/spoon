@@ -1,6 +1,24 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.model;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -63,8 +81,8 @@ public class IncrementalLauncherTest {
 		assertTrue(originalModel.getAllTypes().equals(cachedCachedModel.getAllTypes()));
 
 		for (CtType<?> t : cachedCachedModel.getAllTypes()) {
-			assertTrue(t.getPosition() != null);
-			assertTrue(t.getPosition().getFile() != null);
+			assertNotNull(t.getPosition());
+			assertNotNull(t.getPosition().getFile());
 			assertTrue(t.getPosition().getLine() != -1);
 		}
 	}
@@ -95,7 +113,7 @@ public class IncrementalLauncherTest {
 		Collection<CtType<?>> types1 = originalModel.getAllTypes();
 		Collection<CtType<?>> types2 = newModel.getAllTypes();
 
-		assertFalse(types1.equals(types2));
+		assertNotEquals(types1, types2);
 
 		CtType<?> a1 = getTypeByName(types1, "A");
 		CtType<?> b1 = getTypeByName(types1, "B");
@@ -108,11 +126,11 @@ public class IncrementalLauncherTest {
 		assertTrue(a1.equals(a2));
 		assertTrue(b1.equals(b2));
 		assertTrue(c1.equals(c2));
-		assertFalse(d1.equals(d2));
+		assertNotEquals(d1, d2);
 
-		assertTrue(d1.getDeclaredFields().size() == 0);
+		assertTrue(d1.getDeclaredFields().isEmpty());
 		assertTrue(d2.getDeclaredFields().size() == 2);
-		assertTrue(d1.getMethods().size() == 0);
+		assertTrue(d1.getMethods().isEmpty());
 		assertTrue(d2.getMethods().size() == 1);
 	}
 
@@ -134,7 +152,7 @@ public class IncrementalLauncherTest {
 		launcher1.saveCache();
 		assertTrue(originalModel.getAllTypes().size() == 3);
 
-		inputResources.removeIf(f -> f.getName().equals("C.java"));
+		inputResources.removeIf(f -> "C.java".equals(f.getName()));
 		inputResources.add(new File(WORKING_DIR, "D.java"));
 
 		IncrementalLauncher launcher2 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
@@ -154,7 +172,7 @@ public class IncrementalLauncherTest {
 		CtType<?> d2 = getTypeByName(types2, "D");
 		assertTrue(a1.equals(a2));
 		assertTrue(b1.equals(b2));
-		assertFalse(c1.equals(d2));
+		assertNotEquals(c1, d2);
 	}
 
 	@Test
@@ -176,15 +194,15 @@ public class IncrementalLauncherTest {
 		launcher1.saveCache();
 
 		CtType<?> c1 = getTypeByName(originalModel.getAllTypes(), "C");
-		assertTrue(c1.getField("val").getType().getSimpleName().equals("int"));
+		assertTrue("int".equals(c1.getField("val").getType().getSimpleName()));
 
 		CtType<?> b1 = getTypeByName(originalModel.getAllTypes(), "B");
 		CtMethod<?> method1 = b1.getMethodsByName("func").get(0);
 		CtStatement stmt1 = method1.getBody().getStatement(0);
 		CtAssignment<?, ?> assignment1 = (CtAssignment<?, ?>) stmt1;
 		CtExpression<?> lhs1 = assignment1.getAssigned();
-		assertTrue(assignment1.getType().getSimpleName().equals("int"));
-		assertTrue(lhs1.getType().getSimpleName().equals("int"));
+		assertTrue("int".equals(assignment1.getType().getSimpleName()));
+		assertTrue("int".equals(lhs1.getType().getSimpleName()));
 
 		TimeUnit.MILLISECONDS.sleep(1000);
 		FileUtils.copyFile(new File(CHANGED_FILES_DIR, "C.java"), new File(WORKING_DIR, "C.java"), true);
@@ -196,15 +214,15 @@ public class IncrementalLauncherTest {
 		launcher2.saveCache();
 
 		CtType<?> c2 = getTypeByName(newModel.getAllTypes(), "C");
-		assertTrue(c2.getField("val").getType().getSimpleName().equals("float"));
+		assertTrue("float".equals(c2.getField("val").getType().getSimpleName()));
 
 		CtType<?> b2 = getTypeByName(newModel.getAllTypes(), "B");
 		CtMethod<?> method2 = b2.getMethodsByName("func").get(0);
 		CtStatement stmt2 = method2.getBody().getStatement(0);
 		CtAssignment<?, ?> assignment2 = (CtAssignment<?, ?>) stmt2;
 		CtExpression<?> lhs2 = assignment2.getAssigned();
-		assertTrue(assignment2.getType().getSimpleName().equals("float"));
-		assertTrue(lhs2.getType().getSimpleName().equals("float"));
+		assertTrue("float".equals(assignment2.getType().getSimpleName()));
+		assertTrue("float".equals(lhs2.getType().getSimpleName()));
 	}
 
 	@Test

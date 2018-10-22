@@ -1,6 +1,21 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.constructor;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
@@ -25,6 +40,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -34,7 +50,7 @@ public class ConstructorTest {
 	private CtClass<?> aClass;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		SpoonAPI launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/java/spoon/test/constructor/testclasses/",
@@ -48,12 +64,12 @@ public class ConstructorTest {
 	public void testImplicitConstructor() throws Exception {
 		CtClass<?> ctType = (CtClass) ModelUtils.buildClass(ImplicitConstructor.class);
 
-		Assert.assertTrue(ctType.getConstructor().isImplicit());
-		Assert.assertFalse(aClass.getConstructor().isImplicit());
+		assertTrue(ctType.getConstructor().isImplicit());
+		assertFalse(aClass.getConstructor().isImplicit());
 	}
 
 	@Test
-	public void testTransformationOnConstructorWithInsertBegin() throws Exception {
+	public void testTransformationOnConstructorWithInsertBegin() {
 		final CtConstructor<?> ctConstructor = aClass.getElements(new TypeFilter<CtConstructor<?>>(CtConstructor.class)).get(0);
 		ctConstructor.getBody().insertBegin(factory.Code().createCodeSnippetStatement("int i = 0"));
 
@@ -64,7 +80,7 @@ public class ConstructorTest {
 	}
 
 	@Test
-	public void testTransformationOnConstructorWithInsertBefore() throws Exception {
+	public void testTransformationOnConstructorWithInsertBefore() {
 		final CtConstructor<?> ctConstructor = aClass.getElements(new TypeFilter<CtConstructor<?>>(CtConstructor.class)).get(0);
 		try {
 			ctConstructor.getBody().getStatement(0).insertBefore(factory.Code().createCodeSnippetStatement("int i = 0"));
@@ -76,16 +92,16 @@ public class ConstructorTest {
 	}
 
 	@Test
-	public void callParamConstructor() throws Exception {
+	public void callParamConstructor() {
 		CtClass<Object> aClass = factory.Class().get(AClass.class);
 		CtConstructor<Object> constructor = aClass.getConstructors().iterator().next();
-		assertEquals("{" + System.lineSeparator() +
-				"    enclosingInstance.super();" + System.lineSeparator()
+		assertEquals("{" + System.lineSeparator()
+				+ "    enclosingInstance.super();" + System.lineSeparator()
 				+ "}", constructor.getBody().toString());
 	}
 
 	@Test
-	public void testConstructorCallFactory() throws Exception {
+	public void testConstructorCallFactory() {
 		CtTypeReference<ArrayList> ctTypeReference = factory.Code()
 				.createCtTypeReference(ArrayList.class);
 		CtConstructorCall<ArrayList> constructorCall = factory.Code()
@@ -99,7 +115,7 @@ public class ConstructorTest {
 	}
 
 	@Test
-	public void testTypeAnnotationOnExceptionDeclaredInConstructors() throws Exception {
+	public void testTypeAnnotationOnExceptionDeclaredInConstructors() {
 		final CtConstructor<?> aConstructor = aClass.getConstructor(factory.Type().OBJECT);
 
 		assertEquals(1, aConstructor.getThrownTypes().size());
@@ -111,7 +127,7 @@ public class ConstructorTest {
 	}
 
 	@Test
-	public void testTypeAnnotationWithConstructorsOnFormalType() throws Exception {
+	public void testTypeAnnotationWithConstructorsOnFormalType() {
 		final CtConstructor<?> aConstructor = aClass.getConstructor(factory.Type().OBJECT);
 
 		assertEquals(1, aConstructor.getFormalCtTypeParameters().size());

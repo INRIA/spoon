@@ -38,6 +38,7 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 	@MetamodelPropertyField(role = CAST)
 	List<CtTypeReference<?>> typeCasts = emptyList();
 
+	@Override
 	public CtTypeReference<T> getType() {
 		return type;
 	}
@@ -59,6 +60,7 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 
 	@Override
 	public <C extends CtExpression<T>> C setTypeCasts(List<CtTypeReference<?>> casts) {
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CAST, this.typeCasts, new ArrayList<>(this.typeCasts));
 		if (casts == null || casts.isEmpty()) {
 			this.typeCasts = CtElementImpl.emptyList();
 			return (C) this;
@@ -66,7 +68,6 @@ public abstract class CtExpressionImpl<T> extends CtCodeElementImpl implements C
 		if (this.typeCasts == CtElementImpl.<CtTypeReference<?>>emptyList()) {
 			this.typeCasts = new ArrayList<>(CASTS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CAST, this.typeCasts, new ArrayList<>(this.typeCasts));
 		this.typeCasts.clear();
 		for (CtTypeReference<?> cast : casts) {
 			addTypeCast(cast);

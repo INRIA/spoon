@@ -16,11 +16,6 @@
  */
 package spoon.support.visitor;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.Set;
-
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -39,12 +34,16 @@ import spoon.reflect.visitor.filter.CtScannerFunction;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-import static spoon.reflect.visitor.chain.ScanningMode.NORMAL;
-import static spoon.reflect.visitor.chain.ScanningMode.SKIP_ALL;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Expects a {@link CtPackage} as input
- * and  upon calls to forEachSubTypeInPackage produces all sub classes and sub interfaces, which extends or implements super type(s) provided in constructor and stored as `targetSuperTypes`.<br>
+ * and  upon calls to forEachSubTypeInPackage produces all sub classes and sub interfaces,
+ * which extends or implements super type(s) provided by call(s) of {@link #addSuperType(CtTypeInformation)}
+ * and stored as `targetSuperTypes`.<br>
  *
  * The repeated processing of this mapping function on the same input returns only newly found sub types.
  * The instance of {@link SubInheritanceHierarchyResolver} returns found sub types only once.
@@ -159,7 +158,7 @@ public class SubInheritanceHierarchyResolver {
 						 * FOUND! we are in super inheritance hierarchy, which extends from an searched super type(s).
 						 * All `currentSubTypes` are sub types of searched super type
 						 */
-						while (currentSubTypes.size() > 0) {
+						while (!currentSubTypes.isEmpty()) {
 							final CtTypeReference<?> currentTypeRef  = currentSubTypes.pop();
 							String currentQName = currentTypeRef.getQualifiedName();
 							/*
@@ -172,14 +171,14 @@ public class SubInheritanceHierarchyResolver {
 						}
 						//we do not have to go deeper into super inheritance hierarchy. Skip visiting of further super types
 						//but continue visiting of siblings (do not terminate query)
-						return SKIP_ALL;
+						return ScanningMode.SKIP_ALL;
 					}
 					if (allVisitedTypeNames.add(qName) == false) {
 						/*
 						 * this type was already visited, by another way. So it is not sub type of `targetSuperTypes`.
 						 * Stop visiting it's inheritance hierarchy.
 						 */
-						return SKIP_ALL;
+						return ScanningMode.SKIP_ALL;
 					}
 					/*
 					 * This type was not visited yet.
@@ -187,7 +186,7 @@ public class SubInheritanceHierarchyResolver {
 					 * continue searching in super inheritance hierarchy
 					 */
 					currentSubTypes.push(typeRef);
-					return NORMAL;
+					return ScanningMode.NORMAL;
 				}
 				@Override
 				public void exit(CtElement element) {
@@ -218,15 +217,12 @@ public class SubInheritanceHierarchyResolver {
 	private static final Filter<CtType<?>> typeFilter = new Filter<CtType<?>>() {
 		@Override
 		public boolean matches(CtType<?> type) {
-			if (type instanceof CtTypeParameter) {
-				return false;
-			}
-			return true;
+			return !(type instanceof CtTypeParameter);
 		}
 	};
 
 	/**
 	 * Accept all {@link CtClass}, {@link CtEnum}
 	 */
-	private static final Filter<CtClass<?>> classFilter = new TypeFilter<CtClass<?>>(CtClass.class);
+	private static final Filter<CtClass<?>> classFilter = new TypeFilter<>(CtClass.class);
 }

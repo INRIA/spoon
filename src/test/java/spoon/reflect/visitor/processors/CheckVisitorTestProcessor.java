@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2006-2015 INRIA and contributors
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -14,7 +14,6 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-
 package spoon.reflect.visitor.processors;
 
 import spoon.processing.AbstractProcessor;
@@ -81,7 +80,7 @@ public class CheckVisitorTestProcessor<T extends CtVisitor> extends AbstractProc
 		int nbScanner = isAbstract ? 1 : 0;
 		final List<CtMethod<?>> scanners = visitorType.getMethodsByName("scan" + element.getSimpleName());
 		if (scanners.size() != nbScanner) {
-			if (!(scanners.size() > 0 && scanners.get(0).getAnnotation(Deprecated.class) != null)) {
+			if (!(!scanners.isEmpty() && scanners.get(0).getAnnotation(Deprecated.class) != null)) {
 				throw new AssertionError("You should have " + nbScanner + " scanner methods for the element " + element.getSimpleName() + " in the CtInheritanceScanner.");
 			}
 		}
@@ -91,7 +90,7 @@ public class CheckVisitorTestProcessor<T extends CtVisitor> extends AbstractProc
 		int nbVisit = isAbstract ? 0 : 1;
 		final List<CtMethod<?>> visits = visitorType.getMethodsByName("visit" + element.getSimpleName());
 		if (visits.size() != nbVisit) {
-			if (!(visits.size() > 0 && visits.get(0).getAnnotation(Deprecated.class) != null)) {
+			if (!(!visits.isEmpty() && visits.get(0).getAnnotation(Deprecated.class) != null)) {
 				throw new AssertionError("You should have " + nbVisit + " visit methods for the element " + element.getSimpleName() + " in the CtInheritanceScanner.");
 			}
 		}

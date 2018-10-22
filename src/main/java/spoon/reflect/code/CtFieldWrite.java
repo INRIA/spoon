@@ -17,7 +17,7 @@
 package spoon.reflect.code;
 
 /**
- * This code element defines a write to a field.
+ * This code element defines a write access to a field.
  *
  * In Java, it is a usage of a field inside an assignment.
  *

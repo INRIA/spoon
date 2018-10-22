@@ -58,6 +58,7 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public void scanCtElement(spoon.reflect.declaration.CtElement e) {
 		((spoon.reflect.declaration.CtElement) (other)).setPosition(e.getPosition());
+		((spoon.reflect.declaration.CtElement) (other)).setAllMetadata(e.getAllMetadata());
 		((spoon.reflect.declaration.CtElement) (other)).setImplicit(e.isImplicit());
 		super.scanCtElement(e);
 	}
@@ -232,9 +233,10 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
-	public void visitCtTypeParameterReference(spoon.reflect.reference.CtTypeParameterReference e) {
-		((spoon.reflect.reference.CtTypeParameterReference) (other)).setUpper(e.isUpper());
-		super.visitCtTypeParameterReference(e);
+	@java.lang.Override
+	public void visitCtWildcardReference(spoon.reflect.reference.CtWildcardReference wildcardReference) {
+		((spoon.reflect.reference.CtWildcardReference) (other)).setUpper(wildcardReference.isUpper());
+		super.visitCtWildcardReference(wildcardReference);
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator

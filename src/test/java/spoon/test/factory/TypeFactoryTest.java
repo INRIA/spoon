@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.factory;
 
 import com.mysema.query.types.expr.ComparableExpressionBase;
@@ -17,6 +33,7 @@ import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class TypeFactoryTest {
 
@@ -32,7 +49,7 @@ public class TypeFactoryTest {
 		assertEquals("java.lang.Object", ctTypeReference.getQualifiedName());
 
 		ctTypeReference = launcher.getFactory().Code().createCtTypeReference(null);
-		assertEquals(null, ctTypeReference);
+		assertNull(ctTypeReference);
 
 		ctTypeReference = launcher.getFactory().Code().createCtTypeReference(CtJavaDoc.CommentType.class);
 		assertEquals("CommentType", ctTypeReference.getSimpleName());
@@ -40,7 +57,7 @@ public class TypeFactoryTest {
 	}
 
 	@Test
-	public void reflectionAPI() throws Exception {
+	public void reflectionAPI() {
 		// Spoon can be used as reflection API
 		CtType s = new TypeFactory().get(String.class);
 		assertEquals("String", s.getSimpleName());
@@ -76,7 +93,7 @@ public class TypeFactoryTest {
 	}
 
 	@Test
-	public void testGetClassWithDollarAndNestedClass() throws Exception {
+	public void testGetClassWithDollarAndNestedClass() {
 		//Classes with name containing $ without being nested classes can contain nested classes
 		Factory factory = ModelUtils.build(new File("./src/test/resources/dollar-and-nested-classes"));
 		CtType<?> poorName = factory.Type().get("$Poor$Name");

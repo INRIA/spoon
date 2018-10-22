@@ -52,7 +52,6 @@ public class ChainOfMatchersImpl implements Matchers {
 	}
 
 	private ChainOfMatchersImpl(RootNode firstMatcher, Matchers next) {
-		super();
 		if (firstMatcher == null) {
 			throw new SpoonException("The firstMatcher Node MUST NOT be null");
 		}

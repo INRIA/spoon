@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.trycatch;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +35,7 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.trycatch.testclasses.Foo;
+import spoon.test.trycatch.testclasses.Main;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +58,7 @@ public class TryCatchTest {
 
 	@Test
 	public void testModelBuildingInitializer() throws Exception {
-		CtClass<Main> type = build("spoon.test.trycatch", "Main");
+		CtClass<Main> type = build("spoon.test.trycatch.testclasses", "Main");
 		assertEquals("Main", type.getSimpleName());
 
 		CtMethod<Void> m = type.getMethod("test");
@@ -64,8 +81,7 @@ public class TryCatchTest {
 						"" + "class X {" + "public void foo() {"
 								+ " try{}catch(java.lang.RuntimeException e){}"
 								+ "}};").compile();
-		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(
-				0);
+		CtTry tryStmt = clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
 		assertEquals(1, tryStmt.getCatchers().size());
 	}
 
@@ -80,8 +96,7 @@ public class TryCatchTest {
 								+ " try{}catch(RuntimeException e){java.lang.System.exit(0);}"
 								+ "      catch(Exception e){}" + "}"
 								+ "};").compile();
-		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(
-				0);
+		CtTry tryStmt = clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
 
 		// the first caught exception is RuntimeException
 		assertEquals(
@@ -103,7 +118,7 @@ public class TryCatchTest {
 						"" + "class X {" + "public void foo() {"
 								+ " try{}catch(RuntimeException | Error e){System.exit(0);}" + "}"
 								+ "};").compile();
-		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
+		CtTry tryStmt = clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
 		List<CtCatch> catchers = tryStmt.getCatchers();
 		assertEquals(1, catchers.size());
 
@@ -126,7 +141,7 @@ public class TryCatchTest {
 
 	@Test
 	public void testRethrowingExceptionsJava7() throws Exception {
-		CtClass<?> clazz = build("spoon.test.trycatch", "RethrowingClass");
+		CtClass<?> clazz = build("spoon.test.trycatch.testclasses", "RethrowingClass");
 
 		CtMethod<?> method = (CtMethod<?>) clazz.getMethods().toArray()[0];
 		Set<CtTypeReference<? extends Throwable>> thrownTypes = method
@@ -135,7 +150,7 @@ public class TryCatchTest {
 		// Checks we throw 2 exceptions and not one.
 		assertEquals(2, thrownTypes.size());
 
-		CtTry ctTry = clazz.getElements(new TypeFilter<CtTry>(CtTry.class))
+		CtTry ctTry = clazz.getElements(new TypeFilter<>(CtTry.class))
 				.get(0);
 
 		Class<? extends CtCatchVariableReference> exceptionClass = ctTry
@@ -149,11 +164,11 @@ public class TryCatchTest {
 
 	@Test
 	public void testTryWithOneResource() throws Exception {
-		CtClass<?> clazz = build("spoon.test.trycatch", "TryCatchResourceClass");
+		CtClass<?> clazz = build("spoon.test.trycatch.testclasses", "TryCatchResourceClass");
 
 		CtMethod<?> method = clazz.getMethodsByName("readFirstLineFromFile").get(0);
 		CtTryWithResource ctTryWithResource = method.getElements(
-				new TypeFilter<CtTryWithResource>(CtTryWithResource.class)).get(0);
+				new TypeFilter<>(CtTryWithResource.class)).get(0);
 
 		// Checks try has only one resource.
 		assertTrue(ctTryWithResource.getResources().size() == 1);
@@ -161,18 +176,18 @@ public class TryCatchTest {
 
 	@Test
 	public void testTryWithResources() throws Exception {
-		CtClass<?> clazz = build("spoon.test.trycatch", "TryCatchResourceClass");
+		CtClass<?> clazz = build("spoon.test.trycatch.testclasses", "TryCatchResourceClass");
 
 		CtMethod<?> method = clazz.getMethodsByName("writeToFileZipFileContents").get(0);
 		CtTryWithResource ctTryWithResource = method.getElements(
-				new TypeFilter<CtTryWithResource>(CtTryWithResource.class)).get(0);
+				new TypeFilter<>(CtTryWithResource.class)).get(0);
 
 		// Checks try has more than one resource.
 		assertTrue(ctTryWithResource.getResources().size() > 1);
 	}
 
 	@Test
-	public void testMultiTryCatchWithCustomExceptions() throws Exception {
+	public void testMultiTryCatchWithCustomExceptions() {
 		final Launcher launcher = new Launcher();
 		final SpoonModelBuilder compiler = launcher.createCompiler();
 		compiler.addInputSource(new File("./src/test/java/spoon/test/trycatch/testclasses/"));
@@ -192,7 +207,7 @@ public class TryCatchTest {
 	}
 
 	@Test
-	public void testCompileMultiTryCatchWithCustomExceptions() throws Exception {
+	public void testCompileMultiTryCatchWithCustomExceptions() {
 		spoon.Launcher.main(new String[] {
 				"-i", "src/test/java/spoon/test/trycatch/testclasses",
 				"-o", "target/spooned"
@@ -208,7 +223,7 @@ public class TryCatchTest {
 		}
 	}
 	@Test
-	public void testTryCatchVariableGetType() throws Exception {
+	public void testTryCatchVariableGetType() {
 		Factory factory = createFactory();
 		CtClass<?> clazz = factory
 				.Code()
@@ -216,7 +231,7 @@ public class TryCatchTest {
 						"" + "class X {" + "public void foo() {"
 								+ " try{}catch(RuntimeException e){System.exit(0);}" + "}"
 								+ "};").compile();
-		CtTry tryStmt = (CtTry) clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
+		CtTry tryStmt = clazz.getElements(new TypeFilter<>(CtTry.class)).get(0);
 		List<CtCatch> catchers = tryStmt.getCatchers();
 		assertEquals(1, catchers.size());
 
@@ -300,7 +315,7 @@ public class TryCatchTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		CtModel model = launcher.buildModel();
 
-		List<CtCatch> catches = model.getElements(new TypeFilter<CtCatch>(CtCatch.class));
+		List<CtCatch> catches = model.getElements(new TypeFilter<>(CtCatch.class));
 		assertNotNull(catches.get(0).getParameter().getType()); // catch with single UnknownException
 		assertNull(catches.get(1).getParameter().getType()); // multicatch with UnknownException
 		assertNull(catches.get(2).getParameter().getType()); // multicatch with UnknownException

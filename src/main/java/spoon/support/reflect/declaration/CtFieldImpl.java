@@ -36,10 +36,6 @@ import spoon.support.reflect.CtModifierHandler;
 
 import java.util.Set;
 
-import static spoon.reflect.path.CtRole.DEFAULT_EXPRESSION;
-import static spoon.reflect.path.CtRole.IS_SHADOW;
-import static spoon.reflect.path.CtRole.TYPE;
-
 /**
  * The implementation for {@link spoon.reflect.declaration.CtField}.
  *
@@ -58,7 +54,6 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
 	public CtFieldImpl() {
-		super();
 	}
 
 	@Override
@@ -96,7 +91,7 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 		if (defaultExpression != null) {
 			defaultExpression.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DEFAULT_EXPRESSION, defaultExpression, this.defaultExpression);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.DEFAULT_EXPRESSION, defaultExpression, this.defaultExpression);
 		this.defaultExpression = defaultExpression;
 		return (C) this;
 	}
@@ -106,7 +101,7 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 		if (type != null) {
 			type.setParent(this);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, type, this.type);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.TYPE, type, this.type);
 		this.type = type;
 		return (C) this;
 	}
@@ -184,7 +179,7 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 
 	@Override
 	public <E extends CtShadowable> E setShadow(boolean isShadow) {
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, IS_SHADOW, isShadow, this.isShadow);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IS_SHADOW, isShadow, this.isShadow);
 		this.isShadow = isShadow;
 		return (E) this;
 	}

@@ -29,6 +29,9 @@ import java.util.TreeMap;
  * Partial implementation for CtPathElement
  */
 public abstract class AbstractPathElement<P extends CtElement, T extends CtElement> implements CtPathElement<P, T> {
+	public static final String ARGUMENT_START = "[";
+	public static final String ARGUMENT_END = "]";
+	public static final String ARGUMENT_NAME_SEPARATOR = "=";
 
 	private Map<String, String> arguments = new TreeMap<>();
 
@@ -42,7 +45,7 @@ public abstract class AbstractPathElement<P extends CtElement, T extends CtEleme
 		return (C) this;
 	}
 
-	Collection<CtElement> getChilds(CtElement element) {
+	Collection<CtElement> getChildren(CtElement element) {
 		final Collection<CtElement> elements = new ArrayList<>();
 		if (element != null) {
 			element.accept(new CtScanner() {

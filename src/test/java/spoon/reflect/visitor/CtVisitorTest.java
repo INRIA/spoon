@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2006-2015 INRIA and contributors
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -14,7 +14,6 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-
 package spoon.reflect.visitor;
 
 import org.junit.Test;
@@ -22,8 +21,9 @@ import spoon.Launcher;
 import spoon.reflect.visitor.processors.CheckVisitorTestProcessor;
 
 public class CtVisitorTest {
+
 	@Test
-	public void testMethodsInVisitor() throws Exception {
+	public void testMethodsInVisitor() {
 		// contract: CtVisitor must declare all visit methods.
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });

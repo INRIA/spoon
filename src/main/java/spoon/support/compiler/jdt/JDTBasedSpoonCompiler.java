@@ -49,10 +49,12 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
+import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.support.QueueProcessingManager;
 import spoon.support.comparator.FixedOrderBasedOnFileNameCompilationUnitComparator;
 import spoon.support.compiler.SpoonProgress;
 import spoon.support.compiler.VirtualFolder;
+import spoon.support.modelobs.SourceFragmentCreator;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -95,17 +97,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	private void initializeCUCOmparator() {
-		try {
-			if (System.getenv("SPOON_SEED_CU_COMPARATOR") != null) {
-				this.sortList = false;
-			} else {
-				this.sortList = true;
-			}
-		} catch (NumberFormatException | SecurityException e) {
-			Launcher.LOGGER.error("Error while parsing Spoon seed for CU sorting", e);
-			this.sortList = true;
-		}
-
+		this.sortList = System.getenv("SPOON_SEED_CU_COMPARATOR") == null;
 	}
 
 	@Override
@@ -122,7 +114,8 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			throw new SpoonException("Model already built");
 		}
 
-		boolean srcSuccess, templateSuccess;
+		boolean srcSuccess;
+		boolean templateSuccess;
 		factory.getEnvironment().debugMessage("building sources: " + sources.getAllJavaFiles());
 		long t = System.currentTimeMillis();
 		javaCompliance = factory.getEnvironment().getComplianceLevel();
@@ -137,6 +130,12 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		factory.getEnvironment().debugMessage("built in " + (System.currentTimeMillis() - t) + " ms");
 		checkModel();
 		factory.getModel().setBuildModelIsFinished(true);
+
+		if (factory.getEnvironment().createPrettyPrinter() instanceof SniperJavaPrettyPrinter) {
+			//setup a model change collector
+			new SourceFragmentCreator().attachTo(factory.getEnvironment());
+		}
+
 		return srcSuccess && templateSuccess;
 	}
 
@@ -169,7 +168,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 		reportProblems(factory.getEnvironment());
 		factory.getEnvironment().debugMessage("compiled in " + (System.currentTimeMillis() - t) + " ms");
-		return probs.size() == 0;
+		return probs.isEmpty();
 	}
 
 	@Override
@@ -362,22 +361,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	/**
 	 * Get the units from the given source folder and build the Spoon Model.
-	 * @param jdtBuilder The instance of JDTBuilder to use to prepare the right arguments
-	 * @param sourcesFolder The source folder
-	 * @param classpath The complete classpath
-	 * @param debugMessagePrefix Useful to help debugging
-	 * @param buildOnlyOutdatedFiles This parameter is NEVER used
-	 * @return true if the model has been built without errors
-	 *
-	 * @deprecated (since Spoon 7.0.0) The parameter buildOnlyOutdatedFiles is not used anymore.
-	 */
-	@Deprecated
-	protected boolean buildUnitsAndModel(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
-		return buildUnitsAndModel(jdtBuilder, sourcesFolder, classpath, debugMessagePrefix);
-	}
-
-	/**
-	 * Get the units from the given source folder and build the Spoon Model.
 	 * @param jdtBuilder The instance of JDTBuilder to prepare the right JDT arguments
 	 * @param sourcesFolder The source folder
 	 * @param classpath The complete classpath
@@ -390,25 +373,10 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		// here we build the model in the template factory
 		buildModel(units);
 
-		return probs.size() == 0;
+		return probs.isEmpty();
 	}
 
 	private static final CompilationUnitDeclaration[] EMPTY_RESULT = new CompilationUnitDeclaration[0];
-
-	/**
-	 * Build the CompilationUnit found in the source folder
-	 * @param jdtBuilder The instance of JDTBuilder to prepare the right JDT arguments
-	 * @param sourcesFolder The source folder
-	 * @param classpath The complete classpath
-	 * @param debugMessagePrefix Useful to help debugging
-	 * @param buildOnlyOutdatedFiles This parameter is NEVER used
-	 * @return All compilationUnitDeclaration from JDT found in source folder
-	 * @deprecated (since Spoon 7.0.0) The parameter buildOnlyOutdatedFiles is not used anymore.
-	 */
-	@Deprecated
-	protected CompilationUnitDeclaration[] buildUnits(JDTBuilder jdtBuilder, SpoonFolder sourcesFolder, String[] classpath, String debugMessagePrefix, boolean buildOnlyOutdatedFiles) {
-		return this.buildUnits(jdtBuilder, sourcesFolder, classpath, debugMessagePrefix);
-	}
 
 	/**
 	 * Build the CompilationUnit found in the source folder
@@ -441,9 +409,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		getFactory().getEnvironment().debugMessage(debugMessagePrefix + "build args: " + Arrays.toString(args));
 		batchCompiler.configure(args);
 
-		CompilationUnitDeclaration[] units = batchCompiler.getUnits();
-
-		return units;
+		return batchCompiler.getUnits();
 	}
 
 	protected List<CompilationUnitDeclaration> sortCompilationUnits(CompilationUnitDeclaration[] units) {
@@ -550,7 +516,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		List<File> printedFiles = new ArrayList<>();
 		for (spoon.reflect.cu.CompilationUnit cu : factory.CompilationUnit().getMap().values()) {
 
-			if (cu.getDeclaredTypes().size() == 0) { // case of package-info
+			if (cu.getDeclaredTypes().isEmpty()) { // case of package-info
 				continue;
 			}
 
@@ -579,7 +545,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 				// the path must be given relatively to to the working directory
 				try (InputStream is = getCompilationUnitInputStream(cu.getFile().getPath());
-					FileOutputStream outFile = new FileOutputStream(file);) {
+					FileOutputStream outFile = new FileOutputStream(file)) {
 
 					IOUtils.copy(is, outFile);
 				}
@@ -616,7 +582,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	public void reportProblems(Environment environment) {
-		if (getProblems().size() > 0) {
+		if (!getProblems().isEmpty()) {
 			for (CategorizedProblem problem : getProblems()) {
 				if (problem != null) {
 					report(environment, problem);
@@ -672,10 +638,10 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		spoon.reflect.cu.CompilationUnit cu = factory.CompilationUnit().getMap().get(path);
 		List<CtType<?>> toBePrinted = cu.getDeclaredTypes();
 
-		PrettyPrinter printer = new DefaultJavaPrettyPrinter(env);
+		PrettyPrinter printer = env.createPrettyPrinter();
 		printer.calculate(cu, toBePrinted);
 
-		return new ByteArrayInputStream(printer.getResult().toString().getBytes());
+		return new ByteArrayInputStream(printer.getResult().getBytes());
 	}
 
 	protected Environment getEnvironment() {

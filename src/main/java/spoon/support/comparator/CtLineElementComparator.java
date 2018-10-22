@@ -30,6 +30,7 @@ public class CtLineElementComparator implements Comparator<CtElement>, Serializa
 	/**
 	 * Reurns -1 if o1 is before o2 in the file
 	 */
+	@Override
 	public int compare(CtElement o1, CtElement o2) {
 		if (o1.getPosition().isValidPosition() == false) {
 			return -1;

@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.imports;
 
 import org.junit.Test;
@@ -17,12 +33,15 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.JavaOutputProcessor;
+import spoon.test.imports.testclasses.ToBeModified;
+import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.security.AccessControlException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,6 +50,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -100,7 +120,7 @@ public class ImportScannerTest {
 			}
 
 			for (String computedImport : computedStaticImports) {
-				String typeOfStatic = computedImport.substring(0, computedImport.lastIndexOf("."));
+				String typeOfStatic = computedImport.substring(0, computedImport.lastIndexOf('.'));
 				if (!staticImports.contains(computedImport) && !typeImports.contains(typeOfStatic)) {
 					if (!unusedImports.containsKey(ctType)) {
 						unusedImports.put(ctType, new ArrayList<>());
@@ -119,7 +139,7 @@ public class ImportScannerTest {
 			}
 
 			for (String anImport : staticImports) {
-				String typeOfStatic = anImport.substring(0, anImport.lastIndexOf("."));
+				String typeOfStatic = anImport.substring(0, anImport.lastIndexOf('.'));
 				if (!computedStaticImports.contains(anImport) && !computedTypeImports.contains(typeOfStatic)) {
 					if (!missingImports.containsKey(ctType)) {
 						missingImports.put(ctType, new ArrayList<>());
@@ -188,8 +208,8 @@ public class ImportScannerTest {
 	private List<String> getStaticImportsFromSourceCode(String sourceCode) {
 		List<String> imports = new ArrayList<>();
 		String[] lines = sourceCode.split("\n");
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i].trim();
+		for (String aLine : lines) {
+			String line = aLine.trim();
 			if (line.startsWith("import static ")) {
 				line = line.substring(13, line.length() - 1);
 				imports.add(line.trim());
@@ -201,8 +221,8 @@ public class ImportScannerTest {
 	private List<String> getTypeImportsFromSourceCode(String sourceCode) {
 		List<String> imports = new ArrayList<>();
 		String[] lines = sourceCode.split("\n");
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i].trim();
+		for (String aLine : lines) {
+			String line = aLine.trim();
 			if (line.startsWith("import ") && !line.contains(" static ")) {
 				line = line.substring(7, line.length() - 1);
 				imports.add(line.trim());
@@ -244,7 +264,7 @@ public class ImportScannerTest {
 	}
 
 	@Test
-	public void testComputeImportsInClassWithSameName() throws Exception {
+	public void testComputeImportsInClassWithSameName() {
 		String packageName = "spoon.test.imports.testclasses2";
 		String className = "ImportSameName";
 		String qualifiedName = packageName + "." + className;
@@ -285,7 +305,7 @@ public class ImportScannerTest {
 	}
 
 	@Test
-	public void testTargetTypeNull() throws Exception {
+	public void testTargetTypeNull() {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.createFactory();
 		CtFieldReference fieldRef = factory.createFieldReference();
@@ -297,5 +317,31 @@ public class ImportScannerTest {
 		Collection<CtImport> imports = importScanner.getAllImports();
 
 		assertEquals(0, imports.size());
+	}
+
+	@Test
+	public void testImportByJavaDoc() throws Exception {
+		//contract imports are included only if type name is used in javadoc link, etc. Their occurrence in comment is not enough
+		CtType<?> type = ModelUtils.buildClass(launcher -> {
+			launcher.getEnvironment().setCommentEnabled(true);
+			launcher.getEnvironment().setAutoImports(true);
+		}, ToBeModified.class);
+
+		{
+			DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(type.getFactory().getEnvironment());
+			printer.calculate(type.getPosition().getCompilationUnit(), Arrays.asList(type));
+			assertTrue(printer.getResult().contains("import java.util.List;"));
+		}
+			
+		//delete first statement of method m
+		type.getMethodsByName("m").get(0).getBody().getStatement(0).delete();
+		//check that there is still javadoc comment which contains "List"
+		assertTrue(type.getMethodsByName("m").get(0).getComments().toString().indexOf("List")>=0);
+		
+		{
+			DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(type.getFactory().getEnvironment());
+			printer.calculate(type.getPosition().getCompilationUnit(), Arrays.asList(type));
+			assertFalse(printer.getResult().contains("import java.util.List;"));
+		}
 	}
 }

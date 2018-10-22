@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.support;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -20,14 +36,14 @@ import spoon.support.compiler.VirtualFolder;
 public class ResourceTest {
 
 	@Test
-	public void testEqualsFileSystemFile() throws Exception {
+	public void testEqualsFileSystemFile() {
 		// two files with equivalent paths are equals
 		String entry = "src/test/resources/spoon/test/api/Foo.java";
 		assertTrue(new FileSystemFile(new File(entry)).equals(new FileSystemFile(new File("./"+entry))));
 	}
 
 	@Test
-	public void testFileSystemFolder() throws Exception {
+	public void testFileSystemFolder() {
 		String dir = "src/test/resources/spoon/test/api/";
 		FileSystemFolder fileSystemFolder = new FileSystemFolder(new File(dir));
 
@@ -46,7 +62,7 @@ public class ResourceTest {
 	}
 
 	@Test
-	public void testVirtualFolder() throws Exception {
+	public void testVirtualFolder() {
 		String dir = "src/test/resources/spoon/test/api/";
 		FileSystemFolder fileSystemFolder = new FileSystemFolder(new File(dir));
 
@@ -64,7 +80,7 @@ public class ResourceTest {
 	}
 
 	@Test
-	public void testFilteringFolder() throws Exception {
+	public void testFilteringFolder() {
 		// contract: one can filter input files
 		// the core of this test is the removeIfMatches at the end
 

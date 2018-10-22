@@ -33,7 +33,6 @@ public class TemplateException extends SpoonException {
 	 * Empty exception.
 	 */
 	public TemplateException() {
-		super();
 	}
 
 	/**

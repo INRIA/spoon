@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.constructorcallnewclass;
 
 import org.junit.Before;
@@ -20,6 +36,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 public class ConstructorCallTest {
@@ -27,7 +44,7 @@ public class ConstructorCallTest {
 	private List<CtConstructorCall<?>> constructorCallsPanini;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/" + Foo.class.getCanonicalName().replace(".", "/") + ".java");
 		launcher.addInputResource("./src/test/java/" + Panini.class.getCanonicalName().replace(".", "/") + ".java");
@@ -44,11 +61,11 @@ public class ConstructorCallTest {
 		}));
 		constructorCalls = new ArrayList(ts);
 		final CtType<Panini> panini = factory.Type().get(Panini.class);
-		constructorCallsPanini = panini.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class));
+		constructorCallsPanini = panini.getElements(new TypeFilter<>(CtConstructorCall.class));
 	}
 
 	@Test
-	public void testConstructorCallStringWithoutParameters() throws Exception {
+	public void testConstructorCallStringWithoutParameters() {
 		final CtConstructorCall<?> constructorCall = constructorCalls.get(2);
 		assertConstructorCallWithType(String.class, constructorCall);
 		assertIsConstructor(constructorCall);
@@ -56,7 +73,7 @@ public class ConstructorCallTest {
 	}
 
 	@Test
-	public void testConstructorCallStringWithParameters() throws Exception {
+	public void testConstructorCallStringWithParameters() {
 		final CtConstructorCall<?> constructorCall = constructorCalls.get(1);
 		assertConstructorCallWithType(String.class, constructorCall);
 		assertIsConstructor(constructorCall);
@@ -64,7 +81,7 @@ public class ConstructorCallTest {
 	}
 
 	@Test
-	public void testConstructorCallObjectWithoutParameters() throws Exception {
+	public void testConstructorCallObjectWithoutParameters() {
 		final CtConstructorCall<?> constructorCall = constructorCalls.get(3);
 		assertConstructorCallWithType(Foo.class, constructorCall);
 		assertIsConstructor(constructorCall);
@@ -72,7 +89,7 @@ public class ConstructorCallTest {
 	}
 
 	@Test
-	public void testConstructorCallObjectWithParameters() throws Exception {
+	public void testConstructorCallObjectWithParameters() {
 		final CtConstructorCall<?> constructorCall = constructorCalls.get(4);
 		assertConstructorCallWithType(Foo.class, constructorCall);
 		assertIsConstructor(constructorCall);
@@ -80,7 +97,7 @@ public class ConstructorCallTest {
 	}
 
 	@Test
-	public void testConstructorCallWithGenericArray() throws Exception {
+	public void testConstructorCallWithGenericArray() {
 		final CtConstructorCall<?> ctConstructorCall = constructorCallsPanini.get(0);
 
 		assertEquals(1, ctConstructorCall.getType().getActualTypeArguments().size());
@@ -107,11 +124,11 @@ public class ConstructorCallTest {
 	}
 
 	private void assertConstructorCallWithType(Class<?> typeExpected, CtConstructorCall<?> constructorCall) {
-		assertEquals("Constructor call is typed by the class of the constructor", typeExpected, constructorCall.getType().getActualClass());
+		assertSame("Constructor call is typed by the class of the constructor", typeExpected, constructorCall.getType().getActualClass());
 	}
 
 	@Test
-	public void testCoreConstructorCall() throws Exception {
+	public void testCoreConstructorCall() {
 		Launcher spoon = new Launcher();
 		// the minimum is setType()
 		CtConstructorCall call = spoon.getFactory().Core().createConstructorCall();

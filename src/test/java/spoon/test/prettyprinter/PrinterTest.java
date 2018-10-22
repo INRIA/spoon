@@ -1,6 +1,23 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.prettyprinter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
@@ -39,7 +56,7 @@ public class PrinterTest {
 				SpoonResourceHelper
 						.resources(
 								"./src/test/java/spoon/test/annotation/testclasses/PersistenceProperty.java",
-								"./src/test/java/spoon/test/prettyprinter/Validation.java"))
+								"./src/test/java/spoon/test/prettyprinter/testclasses/Validation.java"))
 				.build();
 		for (CtType<?> t : factory.Type().getAll()) {
 			t.toString();
@@ -50,7 +67,7 @@ public class PrinterTest {
 	}
 
 	@Test
-	public void testChangeAutoImportModeWorks() throws Exception {
+	public void testChangeAutoImportModeWorks() {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setAutoImports(false);
 		PrettyPrinter printer = spoon.createPrettyPrinter();
@@ -149,7 +166,7 @@ public class PrinterTest {
 		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String result = printer.getResult();
 
-		//assertTrue("The result should contain direct this accessor for field: "+result, !result.contains("Rule.Phoneme.this.phonemeText"));
+		assertTrue("The result should contain direct this accessor for field: "+result, !result.contains("Rule.Phoneme.this.phonemeText"));
 		canBeBuilt(output, 7);
 	}
 
@@ -207,7 +224,7 @@ public class PrinterTest {
 			"instanceof"
 	));
 
-	private final String[] javaKeywordsJoined = new String[] {
+	private final String[] javaKeywordsJoined = {
 			"abstract continue for new switch",
 			"assert default goto package synchronized",
 			"boolean do if private this",
@@ -217,7 +234,8 @@ public class PrinterTest {
 			"catch extends int short try",
 			"char final interface static void",
 			"class finally long strictfp volatile",
-			"const float native super while"};
+			"const float native super while"
+	};
 
 	private final Set<String> javaKeywords = new HashSet<>();
 	{
@@ -243,8 +261,8 @@ public class PrinterTest {
 //this case needs longer, but checks contract on all spoon java sources
 //				.resources("./src/main/java/"))
 				.build();
-		
-		assertTrue(factory.Type().getAll().size() > 0);
+
+		assertFalse(factory.Type().getAll().isEmpty());
 		for (CtType<?> t : factory.Type().getAll()) {
 			//create DefaultJavaPrettyPrinter with standard DefaultTokenWriter
 			DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(factory.getEnvironment());
@@ -283,7 +301,7 @@ public class PrinterTest {
 				@Override
 				public TokenWriter writeLiteral(String literal) {
 					checkRepeatingOfTokens("writeLiteral");
-					assertTrue(literal.length() > 0);
+					assertFalse(literal.isEmpty());
 					handleTabs();
 					allTokens.append(literal);
 					return this;
@@ -311,7 +329,7 @@ public class PrinterTest {
 							assertTrue(Character.isJavaIdentifierPart(c));
 						}
 					}
-					assertTrue("Keyword found in Identifier: "+identifier, javaKeywords.contains(identifier) == false);
+					assertEquals("Keyword found in Identifier: " + identifier, false, javaKeywords.contains(identifier));
 					handleTabs();
 					allTokens.append(identifier);
 					return this;
@@ -361,7 +379,7 @@ public class PrinterTest {
 				@Override
 				public TokenWriter writeCodeSnippet(String token) {
 					checkRepeatingOfTokens("writeCodeSnippet");
-					assertTrue(token.length() > 0);
+					assertFalse(token.isEmpty());
 					handleTabs();
 					allTokens.append(token);
 					return this;
@@ -405,7 +423,7 @@ public class PrinterTest {
 						// nothing
 					} else {
 						//check only other tokens then writeln, which is the only one which can repeat
-						assertTrue("Two tokens of same type current:" + tokenType + " " + allTokens.toString(), tokenType.equals(this.lastToken)==false);
+						assertEquals("Two tokens of same type current:" + tokenType + " " + allTokens.toString(), false, tokenType.equals(this.lastToken));
 					}
 					this.lastToken = tokenType;
 				}
@@ -425,16 +443,16 @@ public class PrinterTest {
 
 	private void checkTokenWhitespace(String stringToken, boolean isWhitespace) {
 		//contract: there is no empty token
-		assertTrue(stringToken.length() > 0);
+		assertFalse(stringToken.isEmpty());
 		//contract: only whitespace token contains whitespace
 		for (int i = 0; i < stringToken.length(); i++) {
 			char c = stringToken.charAt(i);
 			if (isWhitespace) {
 				//a whitespace
-				assertTrue(Character.isWhitespace(c)==true);
+				assertEquals(true, Character.isWhitespace(c));
 			} else {
 				//not a whitespace
-				assertTrue(Character.isWhitespace(c)==false);
+				assertEquals(false, Character.isWhitespace(c));
 			}
 		}
 	}
@@ -451,7 +469,7 @@ public class PrinterTest {
 
 		ElementPrinterHelper elementPrinterHelper = pp.getElementPrinterHelper();
 
-		String[] listString = new String[] {"un", "deux", "trois"};
+		String[] listString = {"un", "deux", "trois"};
 
 		elementPrinterHelper.printList(Arrays.asList(listString), null, true, "start", true, true, "next", true, true, "end", s -> tw.writeIdentifier(s));
 

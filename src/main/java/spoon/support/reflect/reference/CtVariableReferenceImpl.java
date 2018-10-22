@@ -36,7 +36,6 @@ public abstract class CtVariableReferenceImpl<T> extends CtReferenceImpl impleme
 	CtTypeReference<T> type;
 
 	public CtVariableReferenceImpl() {
-		super();
 	}
 
 	@Override

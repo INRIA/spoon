@@ -19,6 +19,20 @@ package spoon.reflect.path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
+
+import spoon.SpoonException;
+import spoon.reflect.declaration.CtAnonymousExecutable;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModuleRequirement;
+import spoon.reflect.declaration.CtPackageExport;
+import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtUsedService;
+import spoon.support.Internal;
 
 /**
  * Identifies the roles of attributes of spoon model.
@@ -68,11 +82,11 @@ public enum CtRole {
 	ARGUMENT,
 	SUPER_TYPE,
 	TYPE_MEMBER,
-	NESTED_TYPE(TYPE_MEMBER),
-	CONSTRUCTOR(TYPE_MEMBER),
-	METHOD(TYPE_MEMBER),
-	ANNONYMOUS_EXECUTABLE(TYPE_MEMBER),
-	FIELD(TYPE_MEMBER),
+	NESTED_TYPE(TYPE_MEMBER, obj -> obj instanceof CtType),
+	CONSTRUCTOR(TYPE_MEMBER, obj -> obj instanceof CtConstructor),
+	METHOD(TYPE_MEMBER, obj -> obj instanceof CtMethod),
+	ANNONYMOUS_EXECUTABLE(TYPE_MEMBER, obj -> obj instanceof CtAnonymousExecutable),
+	FIELD(TYPE_MEMBER, obj -> obj instanceof CtField),
 	EXECUTABLE_REF,
 	CAST,
 	VALUE,
@@ -95,26 +109,28 @@ public enum CtRole {
 	ACCESSED_TYPE,
 	IMPORT_REFERENCE,
 	MODULE_DIRECTIVE,
-	REQUIRED_MODULE(MODULE_DIRECTIVE),
+	REQUIRED_MODULE(MODULE_DIRECTIVE, obj -> obj instanceof CtModuleRequirement),
 	MODULE_REF,
-	EXPORTED_PACKAGE(MODULE_DIRECTIVE),
-	OPENED_PACKAGE(MODULE_DIRECTIVE),
-	SERVICE_TYPE(MODULE_DIRECTIVE),
+	EXPORTED_PACKAGE(MODULE_DIRECTIVE, obj -> obj instanceof CtPackageExport && !((CtPackageExport) obj).isOpenedPackage()),
+	OPENED_PACKAGE(MODULE_DIRECTIVE, obj -> obj instanceof CtPackageExport && ((CtPackageExport) obj).isOpenedPackage()),
+	SERVICE_TYPE(MODULE_DIRECTIVE, obj -> obj instanceof CtUsedService),
 	IMPLEMENTATION_TYPE,
-	PROVIDED_SERVICE(MODULE_DIRECTIVE),
+	PROVIDED_SERVICE(MODULE_DIRECTIVE, obj -> obj instanceof CtProvidedService),
 	IS_INFERRED;
 
 	private final CtRole superRole;
 	private final List<CtRole> subRoles;
+	private final Predicate<Object> predicate;
 	private List<CtRole> initSubRoles;
 
 	CtRole() {
-		this(null);
+		this(null, null);
 	}
-	CtRole(CtRole superRole) {
+	CtRole(CtRole superRole, Predicate<Object> predicate) {
 		this.superRole = superRole;
 		this.initSubRoles = new ArrayList<>(0);
 		this.subRoles = Collections.unmodifiableList(this.initSubRoles);
+		this.predicate = predicate;
 		if (superRole != null) {
 			superRole.initSubRoles.add(this);
 		}
@@ -181,5 +197,26 @@ public enum CtRole {
 	 */
 	public List<CtRole> getSubRoles() {
 		return subRoles;
+	}
+
+	/**
+	 * @return sub role of this role, which match `item`.
+	 *
+	 * <pre><code>
+	 * CtMethod method = ...
+	 * CtRole role = CtRole.TYPE_MEMBER.getMatchingSubRoleFor(method);
+	 * </code></pre>
+	 */
+	@Internal
+	public CtRole getMatchingSubRoleFor(CtElement item) {
+		if (item == null) {
+			throw new SpoonException("Cannot detect sub role for null.");
+		}
+		for (CtRole subRole : this.subRoles) {
+			if (subRole.predicate.test(item)) {
+				return subRole;
+			}
+		}
+		throw new SpoonException("There is no sub role of CtRole." + name() + " for item class " + item.getClass());
 	}
 }

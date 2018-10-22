@@ -16,16 +16,18 @@
  */
 package spoon.support.reflect.cu;
 
+import spoon.SpoonException;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 
 import java.io.File;
@@ -39,6 +41,10 @@ import java.util.Set;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY;
 
+/**
+ * Implements a compilation unit. In Java, a compilation unit can contain only one
+ * public type declaration and other secondary types declarations (not public).
+ */
 public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	private static final long serialVersionUID = 1L;
 
@@ -53,6 +59,15 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 	CtModule ctModule;
 
 	File file;
+
+	private SourcePosition sourcePosition;
+	/**
+	 * The index of line breaks, as computed by JDT.
+	 * Used to compute line numbers afterwards.
+	 */
+	private int[] lineSeparatorPositions;
+
+	private ElementSourceFragment rootFragment;
 
 	@Override
 	public UNIT_TYPE getUnitType() {
@@ -93,7 +108,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		}
 		for (CtType<?> t : getDeclaredTypes()) {
 			String name = getFile().getName();
-			name = name.substring(0, name.lastIndexOf("."));
+			name = name.substring(0, name.lastIndexOf('.'));
 			if (t.getSimpleName().equals(name)) {
 				return t;
 			}
@@ -141,6 +156,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		this.ctPackage = ctPackage;
 	}
 
+	@Override
 	public void setFile(File file) {
 		this.file = file;
 	}
@@ -193,10 +209,11 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 
 	String originalSourceCode;
 
+	@Override
 	public String getOriginalSourceCode() {
 
-		if (originalSourceCode == null) {
-			try (FileInputStream s = new FileInputStream(getFile());) {
+		if (originalSourceCode == null && getFile() != null) {
+			try (FileInputStream s = new FileInputStream(getFile())) {
 				byte[] elementBytes = new byte[s.available()];
 				s.read(elementBytes);
 				originalSourceCode = new String(elementBytes, this.getFactory().getEnvironment().getEncoding());
@@ -207,6 +224,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		return originalSourceCode;
 	}
 
+	@Override
 	public int beginOfLineIndex(int index) {
 		int cur = index;
 		while (cur >= 0 && getOriginalSourceCode().charAt(cur) != '\n') {
@@ -215,6 +233,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		return cur + 1;
 	}
 
+	@Override
 	public int nextLineIndex(int index) {
 		int cur = index;
 		while (cur < getOriginalSourceCode().length()
@@ -224,6 +243,7 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		return cur + 1;
 	}
 
+	@Override
 	public int getTabCount(int index) {
 		int cur = index;
 		int tabCount = 0;
@@ -254,10 +274,12 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		this.imports = imports;
 	}
 
+	@Override
 	public Factory getFactory() {
 		return factory;
 	}
 
+	@Override
 	public void setFactory(Factory factory) {
 		this.factory = factory;
 	}
@@ -283,5 +305,46 @@ public class CompilationUnitImpl implements CompilationUnit, FactoryAccessor {
 		return myPartialSourcePosition;
 	}
 
+	@Override
+	public ElementSourceFragment getOriginalSourceFragment() {
+		if (rootFragment == null) {
+			if (ctModule != null) {
+				throw new SpoonException("Root source fragment of compilation unit of module is not supported");
+			}
+			if (ctPackage != null && declaredTypes.isEmpty()) {
+				throw new SpoonException("Root source fragment of compilation unit of package is not supported");
+			}
+			rootFragment = new ElementSourceFragment(this, null);
+			for (CtImport imprt : getImports()) {
+				rootFragment.addChild(new ElementSourceFragment(imprt, null /*TODO role for import of CU*/));
+			}
+			for (CtType<?> ctType : declaredTypes) {
+				rootFragment.addTreeOfSourceFragmentsOfElement(ctType);
+			}
+		}
+		return rootFragment;
+	}
 
+	@Override
+	public int[] getLineSeparatorPositions() {
+		return lineSeparatorPositions;
+	}
+
+	@Override
+	public void setLineSeparatorPositions(int[] lineSeparatorPositions) {
+		this.lineSeparatorPositions = lineSeparatorPositions;
+	}
+
+	@Override
+	public SourcePosition getPosition() {
+		if (sourcePosition == null) {
+			String sourceCode = getOriginalSourceCode();
+			if (sourceCode != null) {
+				sourcePosition = getFactory().Core().createSourcePosition(this, 0, sourceCode.length() - 1, getLineSeparatorPositions());
+			} else {
+				sourcePosition = SourcePosition.NOPOSITION;
+			}
+		}
+		return sourcePosition;
+	}
 }

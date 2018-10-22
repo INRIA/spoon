@@ -108,14 +108,12 @@ class JDTTreeBuilderQuery {
 	 * @return qualified name of the expected type.
 	 */
 	static String searchType(String typeName, ImportReference[] imports) {
-		if (typeName == null) {
-			return null;
-		} else if (imports == null) {
+		if (typeName == null || imports == null) {
 			return null;
 		}
 		for (ImportReference anImport : imports) {
 			final String importType = CharOperation.charToString(anImport.getImportName()[anImport.getImportName().length - 1]);
-			if (importType != null && importType.equals(typeName)) {
+			if (typeName.equals(importType)) {
 				return CharOperation.toString(anImport.getImportName());
 			}
 		}

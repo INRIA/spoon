@@ -100,6 +100,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
 import java.util.ArrayList;
@@ -197,7 +198,6 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (childJDT instanceof TypeParameter && child instanceof CtTypeParameter) {
 			e.addFormalCtTypeParameter((CtTypeParameter) child);
 		}
-		return;
 	}
 
 	@Override
@@ -908,10 +908,10 @@ public class ParentExiter extends CtInheritanceScanner {
 	}
 
 	@Override
-	public void visitCtTypeParameterReference(CtTypeParameterReference e) {
+	public void visitCtWildcardReference(CtWildcardReference e) {
 		if (childJDT instanceof TypeReference && child instanceof CtTypeAccess) {
-			e.addBound(((CtTypeAccess) child).getAccessedType());
+			e.setBoundingType(((CtTypeAccess) child).getAccessedType());
 		}
-		super.visitCtTypeParameterReference(e);
+		super.visitCtWildcardReference(e);
 	}
 }

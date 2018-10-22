@@ -42,17 +42,18 @@ public class ZipFolder implements SpoonFolder {
 	List<SpoonFile> files;
 
 	public ZipFolder(File file) throws IOException {
-		super();
 		if (!file.isFile()) {
 			throw new IOException(file.getName() + " is not a valid zip file");
 		}
 		this.file = file;
 	}
 
+	@Override
 	public List<SpoonFile> getAllFiles() {
 		return getFiles();
 	}
 
+	@Override
 	public List<SpoonFile> getAllJavaFiles() {
 		List<SpoonFile> files = new ArrayList<>();
 
@@ -68,27 +69,24 @@ public class ZipFolder implements SpoonFolder {
 		return files;
 	}
 
+	@Override
 	public List<SpoonFile> getFiles() {
 		// Indexing content
 		if (files == null) {
 			files = new ArrayList<>();
-			try (ZipInputStream zipInput = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)));) {
+			final int buffer = 2048;
+			try (ZipInputStream zipInput = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)));
+				ByteArrayOutputStream output = new ByteArrayOutputStream(buffer)) {
 				ZipEntry entry;
 				while ((entry = zipInput.getNextEntry()) != null) {
 					// deflate in buffer
-					final int buffer = 2048;
-					ByteArrayOutputStream output = new ByteArrayOutputStream(
-							buffer);
 					int count;
-					byte data[] = new byte[buffer];
+					byte[] data = new byte[buffer];
 					while ((count = zipInput.read(data, 0, buffer)) != -1) {
 						output.write(data, 0, count);
 					}
-					output.flush();
-					output.close();
-
-					files.add(new ZipFile(this, entry.getName(), output
-							.toByteArray()));
+					files.add(new ZipFile(this, entry.getName(), output.toByteArray()));
+					output.reset();
 				}
 			} catch (Exception e) {
 				Launcher.LOGGER.error(e.getMessage(), e);
@@ -97,10 +95,12 @@ public class ZipFolder implements SpoonFolder {
 		return files;
 	}
 
+	@Override
 	public String getName() {
 		return file.getName();
 	}
 
+	@Override
 	public SpoonFolder getParent() {
 		try {
 			return SpoonResourceHelper.createFolder(file.getParentFile());
@@ -110,10 +110,12 @@ public class ZipFolder implements SpoonFolder {
 		return null;
 	}
 
+	@Override
 	public List<SpoonFolder> getSubFolders() {
 		return new ArrayList<>(0);
 	}
 
+	@Override
 	public boolean isFile() {
 		return false;
 	}
@@ -123,6 +125,7 @@ public class ZipFolder implements SpoonFolder {
 		return getPath();
 	}
 
+	@Override
 	public String getPath() {
 		try {
 			return file.getCanonicalPath();
@@ -169,11 +172,11 @@ public class ZipFolder implements SpoonFolder {
 
 	/** physically extracts on disk all files of this zip file in the destinationDir `destDir` */
 	public void extract(File destDir) {
-		try (ZipInputStream zipInput = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)));) {
+		try (ZipInputStream zipInput = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))) {
 			ZipEntry entry;
 			while ((entry = zipInput.getNextEntry()) != null) {
 				File f = new File(destDir + File.separator + entry.getName());
-				if (entry.isDirectory()) { // if its a directory, create it
+				if (entry.isDirectory()) { // if it's a directory, create it
 					f.mkdir();
 					continue;
 				}
@@ -182,9 +185,9 @@ public class ZipFolder implements SpoonFolder {
 				// Force parent directory creation, sometimes directory was not yet handled
 				f.getParentFile().mkdirs();
 				// in the zip entry iteration
-				try (OutputStream output = new BufferedOutputStream(new FileOutputStream(f));) {
+				try (OutputStream output = new BufferedOutputStream(new FileOutputStream(f))) {
 					int count;
-					byte data[] = new byte[buffer];
+					byte[] data = new byte[buffer];
 					while ((count = zipInput.read(data, 0, buffer)) != -1) {
 						output.write(data, 0, count);
 					}

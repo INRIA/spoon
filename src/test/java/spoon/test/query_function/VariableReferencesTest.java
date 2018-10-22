@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.query_function;
 
 import org.junit.Before;
@@ -29,6 +45,7 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.filter.CatchVariableReferenceFunction;
 import spoon.reflect.visitor.filter.CatchVariableScopeFunction;
+import spoon.reflect.visitor.filter.FieldScopeFunction;
 import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
 import spoon.reflect.visitor.filter.LocalVariableScopeFunction;
 import spoon.reflect.visitor.filter.NamedElementFilter;
@@ -52,9 +69,9 @@ import static org.junit.Assert.*;
 
 public class VariableReferencesTest {
 	CtClass<?> modelClass;
-	
+
 	@Before
-	public void setup() throws Exception {
+	public void setup() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
 		launcher.getEnvironment().setCommentEnabled(true);
@@ -65,23 +82,22 @@ public class VariableReferencesTest {
 	}
 
 	@Test
-	public void testCheckModelConsistency() throws Exception {
-		
-		//1) search for all variable declarations with name isTestFieldName(name)==true 
+	public void testCheckModelConsistency() {
+		//1) search for all variable declarations with name isTestFieldName(name)==true
 		//2) check that each of them is using different identification value
 		class Context {
 			Map<Integer, CtElement> unique = new HashMap<>();
 			int maxKey = 0;
 			void checkKey(int key, CtElement ele) {
-				CtElement ambiquous = unique.put(key, ele);
-				if(ambiquous!=null) {
-					fail("Two variables ["+ambiquous.toString()+" in "+getParentMethodName(ambiquous)+","+ele.toString()+" in "+getParentMethodName(ele)+"] has same value");
+				CtElement ambiguous = unique.put(key, ele);
+				if(ambiguous!=null) {
+					fail("Two variables [" + ambiguous.toString() + " in " + getParentMethodName(ambiguous) + "," + ele.toString() + " in " + getParentMethodName(ele) + "] has same value");
 				}
 				maxKey = Math.max(maxKey, key);
 			}
 		}
 		Context context = new Context();
-		
+
 		modelClass.filterChildren((CtElement e)->{
 			if (e instanceof CtVariable) {
 				CtVariable<?> var = (CtVariable<?>) e;
@@ -90,19 +106,17 @@ public class VariableReferencesTest {
 				}
 				//check only these variables whose name is isTestFieldName(name)==true
 				Integer val = getLiteralValue(var);
-//				System.out.println("key = "+val+" - "+var.toString());
 				context.checkKey(val, var);
 			}
 			return false;
 		}).list();
-//		System.out.println("Next available key is: "+(context.maxKey+1));
-		assertTrue(context.unique.size()>0);
+		assertFalse(context.unique.isEmpty());
 		assertEquals("Only these keys were found: "+context.unique.keySet(), context.maxKey, context.unique.size());
 		assertEquals("AllLocalVars#maxValue must be equal to maximum value number ", (int)getLiteralValue((CtVariable)modelClass.filterChildren(new NamedElementFilter<>(CtVariable.class,"maxValue")).first()), context.maxKey);
 	}
-	
+
 	@Test
-	public void testCatchVariableReferenceFunction() throws Exception {
+	public void testCatchVariableReferenceFunction() {
 		//visits all the CtCatchVariable elements whose name is isTestFieldName(name)==true and search for all their references
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
@@ -118,7 +132,7 @@ public class VariableReferencesTest {
 	}
 
 	@Test
-	public void testLocalVariableReferenceFunction() throws Exception {
+	public void testLocalVariableReferenceFunction() {
 		//visits all the CtLocalVariable elements whose name is isTestFieldName(name)==true and search for all their references
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
@@ -131,10 +145,10 @@ public class VariableReferencesTest {
 			}
 			return false;
 		}).list();
-	}	
+	}
 
 	@Test
-	public void testParameterReferenceFunction() throws Exception {
+	public void testParameterReferenceFunction() {
 		//visits all the CtParameter elements whose name is isTestFieldName(name)==true and search for all their references
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
@@ -150,7 +164,7 @@ public class VariableReferencesTest {
 	}	
 
 	@Test
-	public void testVariableReferenceFunction() throws Exception {
+	public void testVariableReferenceFunction() {
 		//visits all the CtVariable elements whose name is isTestFieldName(name)==true and search for all their references
 		//The test detects whether found references are correct by these two checks:
 		//1) the each found reference is on the left side of binary operator and on the right side there is unique reference identification number. Like: (field == 7)
@@ -164,17 +178,17 @@ public class VariableReferencesTest {
 			return false;
 		}).list();
 	}
-	
+
 	private boolean isTestFieldName(String name) {
 		return "field".equals(name);
 	}
 
 	@Test
-	public void testVariableScopeFunction() throws Exception {
+	public void testVariableScopeFunction() {
 		//visits all the CtVariable elements whose name is "field" and search for all elements in their scopes
 		//Comparing with the result found by basic functions
 		List list = modelClass.filterChildren((CtVariable<?> var)->{
-			if(var.getSimpleName().equals("field")) {
+			if("field".equals(var.getSimpleName())) {
 				if(var instanceof CtField) {
 					//field scope is not supported
 					return false;
@@ -183,7 +197,7 @@ public class VariableReferencesTest {
 				if(var instanceof CtLocalVariable) {
 					assertArrayEquals(var.map(new LocalVariableScopeFunction()).list().toArray(new CtElement[0]), real);
 				} else if(var instanceof CtField) {
-					//assertArrayEquals(var.map(new FieldScopeFunction()).list().toArray(new CtElement[0]), real);
+					assertArrayEquals(var.map(new FieldScopeFunction()).list().toArray(new CtElement[0]), real);
 				} else if(var instanceof CtParameter) {
 					assertArrayEquals(var.map(new ParameterScopeFunction()).list().toArray(new CtElement[0]), real);
 				} else if(var instanceof CtCatchVariable) {
@@ -195,11 +209,11 @@ public class VariableReferencesTest {
 			}
 			return false;
 		}).list();
-		assertTrue(list.size()>0);
+		assertFalse(list.isEmpty());
 	}
-	
+
 	@Test
-	public void testLocalVariableReferenceDeclarationFunction() throws Exception {
+	public void testLocalVariableReferenceDeclarationFunction() {
 		modelClass.filterChildren((CtLocalVariableReference<?> varRef)->{
 			if(isTestFieldName(varRef.getSimpleName())) {
 				CtLocalVariable<?> var = varRef.getDeclaration();
@@ -209,7 +223,6 @@ public class VariableReferencesTest {
 			return false;
 		}).list();
 	}
-	
 
 	private void checkVariableAccess(CtVariable<?> var, int value, CtConsumableFunction<?> query) {
 		class Context {
@@ -242,7 +255,6 @@ public class VariableReferencesTest {
 			});
 			//check that both scans found same number of references
 			assertEquals("Number of references to field="+value+" does not match", context.expectedCount, context.realCount);
-//			System.out.println("field="+value+" found "+context.realCount+" referenes");
 			
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -262,7 +274,7 @@ public class VariableReferencesTest {
 			return ele.getParent(CtType.class).getSimpleName()+"#annonymous block";
 		}
 	}
-	
+
 	private int getVariableReferenceValue(CtVariableReference<?> fr) {
 		CtBinaryOperator binOp = fr.getParent(CtBinaryOperator.class);
 		if(binOp==null) {
@@ -294,21 +306,20 @@ public class VariableReferencesTest {
 			} else {
 				CtExecutableReference<?> l_execRef = l_exec.getReference();
 				List<CtAbstractInvocation<?>> list = l_exec.getFactory().Package().getRootPackage().filterChildren((CtAbstractInvocation inv)->{
-//					return inv.getExecutable().equals(l_execRef);
 					return inv.getExecutable().getExecutableDeclaration()==l_exec;
 				}).list();
 				CtAbstractInvocation inv = list.get(0);
 				Integer firstValue = getLiteralValue((CtExpression<?>)inv.getArguments().get(l_argIdx));
 				//check that all found method invocations are using same key
 				list.forEach(inv2->{
-					assertEquals(firstValue, getLiteralValue((CtExpression<?>)inv2.getArguments().get(l_argIdx)));
+					assertEquals(firstValue, getLiteralValue(inv2.getArguments().get(l_argIdx)));
 				});
 				return firstValue;
 			}
 		}
 		return getCommentValue(var);
 	}
-	
+
 	private int getCommentValue(CtElement e) {
 		while(true) {
 			if(e==null) {
@@ -325,11 +336,11 @@ public class VariableReferencesTest {
 		}
 		return -1;
 	}
-	
+
 	private Integer getLiteralValue(CtExpression<?> exp) {
 		return ((CtLiteral<Integer>) exp).getValue();
 	}
-	
+
 	private SourcePosition getPosition(CtElement e) {
 		SourcePosition sp = e.getPosition();
 		while(sp instanceof NoSourcePosition) {
@@ -341,7 +352,7 @@ public class VariableReferencesTest {
 		}
 		return sp;
 	}
-	
+
 	@Test
 	public void testPotentialVariableAccessFromStaticMethod() throws Exception {
 		Factory factory = ModelUtils.build(VariableReferencesFromStaticMethod.class);
@@ -353,5 +364,4 @@ public class VariableReferencesTest {
 		List<CtVariable> vars = varRef.map(new PotentialVariableDeclarationFunction()).list();
 		assertEquals("Found unexpected variable declaration.", 1, vars.size());
 	}
-
 }

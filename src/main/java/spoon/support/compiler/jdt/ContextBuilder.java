@@ -23,12 +23,12 @@ import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -73,8 +73,6 @@ public class ContextBuilder {
 
 	CompilationUnit compilationUnitSpoon;
 
-	Deque<String> label = new ArrayDeque<>();
-
 	boolean isBuildLambda = false;
 
 	boolean isBuildTypeCast = false;
@@ -108,9 +106,6 @@ public class ContextBuilder {
 			while (!casts.isEmpty()) {
 				((CtExpression<?>) current).addTypeCast(casts.remove(0).typeRef);
 			}
-		}
-		if (current instanceof CtStatement && !this.label.isEmpty()) {
-			((CtStatement) current).setLabel(this.label.pop());
 		}
 
 		try {
@@ -285,8 +280,7 @@ public class ContextBuilder {
 		if (lookingForFields) {
 			final CtReference potentialReferenceToField =
 					referenceBuilder.getDeclaringReferenceFromImports(name.toCharArray());
-			if (potentialReferenceToField != null
-					&& potentialReferenceToField instanceof CtTypeReference) {
+			if (potentialReferenceToField instanceof CtTypeReference) {
 				final CtTypeReference typeReference = (CtTypeReference) potentialReferenceToField;
 				try {
 					final Class classOfType = typeReference.getActualClass();

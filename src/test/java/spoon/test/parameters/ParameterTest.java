@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.parameters;
 
 import org.junit.Test;
@@ -14,10 +30,12 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ParameterTest {
+
 	@Test
-	public void testParameterInNoClasspath() throws Exception {
+	public void testParameterInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/parameter");
 		launcher.setSourceOutputDirectory("./target/parameter");
@@ -34,7 +52,7 @@ public class ParameterTest {
 	}
 
 	@Test
-	public void testGetParameterReferenceInLambdaNoClasspath() throws Exception {
+	public void testGetParameterReferenceInLambdaNoClasspath() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/Tacos.java");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -79,7 +97,7 @@ public class ParameterTest {
 						.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
-			CtTypeReference refType = (CtTypeReference) param.getReference().getType();
+			CtTypeReference refType = param.getReference().getType();
 			assertEquals(launcher.getFactory().Type().STRING, refType);
 		}
 
@@ -90,7 +108,7 @@ public class ParameterTest {
 				.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
-			CtTypeReference refType = (CtTypeReference) param.getReference().getType();
+			CtTypeReference refType = param.getReference().getType();
 			assertEquals(launcher.getFactory().Type().INTEGER, refType);
 		}
 
@@ -101,9 +119,9 @@ public class ParameterTest {
 				.getElements(new TypeFilter<>(CtParameter.class));
 		assertEquals(2, parameters.size());
 		for (final CtParameter param : parameters) {
-			CtTypeReference refType = (CtTypeReference) param.getReference().getType();
+			CtTypeReference refType = param.getReference().getType();
 			// unknown parameters have no type
-			assertEquals(null, refType);
+			assertNull(refType);
 		}
 	}
 }

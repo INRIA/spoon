@@ -47,7 +47,6 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 	private CtPackage rootPackage;
 
 	public CtModuleImpl() {
-		super();
 	}
 
 	@Override
@@ -90,34 +89,13 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		}
 		if (!this.moduleDirectives.contains(moduleDirective)) {
 			moduleDirective.setParent(this);
-			CtRole role = this.computeRoleFromModuleDirectory(moduleDirective);
+			CtRole role = CtRole.MODULE_DIRECTIVE.getMatchingSubRoleFor(moduleDirective);
 
 			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, role, this.moduleDirectives, moduleDirective);
 			this.moduleDirectives.add(moduleDirective);
 		}
 
 		return (T) this;
-	}
-
-	private CtRole computeRoleFromModuleDirectory(CtModuleDirective moduleDirective) {
-		CtRole role;
-		if (moduleDirective instanceof CtModuleRequirement) {
-			role = CtRole.REQUIRED_MODULE;
-		} else if (moduleDirective instanceof CtUsedService) {
-			role = CtRole.SERVICE_TYPE;
-		} else if (moduleDirective instanceof CtProvidedService) {
-			role = CtRole.PROVIDED_SERVICE;
-		} else if (moduleDirective instanceof CtPackageExport) {
-			CtPackageExport packageExport = (CtPackageExport) moduleDirective;
-			if (packageExport.isOpenedPackage()) {
-				role = CtRole.OPENED_PACKAGE;
-			} else {
-				role = CtRole.EXPORTED_PACKAGE;
-			}
-		} else {
-			role = CtRole.MODULE_DIRECTIVE;
-		}
-		return role;
 	}
 
 	@Override
@@ -131,7 +109,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 		}
 		if (!this.moduleDirectives.contains(moduleDirective)) {
 			moduleDirective.setParent(this);
-			CtRole role = this.computeRoleFromModuleDirectory(moduleDirective);
+			CtRole role = CtRole.MODULE_DIRECTIVE.getMatchingSubRoleFor(moduleDirective);
 
 			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, role, this.moduleDirectives, position, moduleDirective);
 			this.moduleDirectives.add(position, moduleDirective);
@@ -147,11 +125,11 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 
 	@Override
 	public <T extends CtModule> T removeModuleDirective(CtModuleDirective moduleDirective) {
-		if (moduleDirective == null || this.moduleDirectives.size() == 0) {
+		if (moduleDirective == null || this.moduleDirectives.isEmpty()) {
 			return (T) this;
 		}
 		if (this.moduleDirectives.contains(moduleDirective)) {
-			getFactory().getEnvironment().getModelChangeListener().onListDelete(this, this.computeRoleFromModuleDirectory(moduleDirective), this.moduleDirectives, this.moduleDirectives.indexOf(moduleDirective), moduleDirective);
+			getFactory().getEnvironment().getModelChangeListener().onListDelete(this, CtRole.MODULE_DIRECTIVE.getMatchingSubRoleFor(moduleDirective), this.moduleDirectives, this.moduleDirectives.indexOf(moduleDirective), moduleDirective);
 			if (this.moduleDirectives.size() == 1) {
 				this.moduleDirectives = CtElementImpl.emptyList();
 			} else {

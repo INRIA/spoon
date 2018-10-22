@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.testing;
 
 import org.junit.Test;
@@ -22,8 +38,9 @@ import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class CtPackageAssertTest {
+
 	@Test
-	public void testEqualityBetweenTwoCtPackage() throws Exception {
+	public void testEqualityBetweenTwoCtPackage() {
 		//contract: two packages, one made by test code, second made by compilation from sources are equal
 		final Factory factory = createFactory();
 		final CtPackage aRootPackage = factory.Package().getOrCreate("");
@@ -36,25 +53,23 @@ public class CtPackageAssertTest {
 		final CtPackage aRootPackage2 = build(new File("./src/test/java/spoon/testing/testclasses/")).Package().getRootPackage();
 		assertNotSame(aRootPackage, aRootPackage2);
 		assertThat(aRootPackage2).isEqualTo(aRootPackage);
-
 	}
 
 	@Test(expected = AssertionError.class)
-	public void testEqualityBetweenTwoDifferentCtPackage() throws Exception {
+	public void testEqualityBetweenTwoDifferentCtPackage() {
 		assertThat(build(new File("./src/test/java/spoon/testing/testclasses/")).Package().getRootPackage()).isEqualTo(createFactory().Package().getOrCreate("another.package"));
 	}
 
 	@Test(expected = AssertionError.class)
-	public void testEqualityBetweenTwoCtPackageWithDifferentTypes() throws Exception {
+	public void testEqualityBetweenTwoCtPackageWithDifferentTypes() {
 		final Factory factory = createFactory();
 		final CtPackage aRootPackage = factory.Package().getOrCreate("");
 		factory.Class().create("spoon.testing.testclasses.Foo").addModifier(ModifierKind.PUBLIC);
 		assertThat(build(new File("./src/test/java/spoon/testing/testclasses/")).Package().getRootPackage()).isEqualTo(aRootPackage);
 	}
-	
-	
+
 	@Test
-	public void testAddTypeToPackage() throws Exception {
+	public void testAddTypeToPackage() {
 		final Factory factory = createFactory();
 		final CtType<?> type = factory.Core().createClass();
 		type.setSimpleName("X");

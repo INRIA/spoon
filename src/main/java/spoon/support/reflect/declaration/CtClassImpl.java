@@ -56,7 +56,7 @@ import static spoon.reflect.path.CtRole.SUPER_TYPE;
  *
  * @author Renaud Pawlak
  */
-public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtClass<T> {
+public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = SUPER_TYPE)
@@ -85,13 +85,7 @@ public class CtClassImpl<T extends Object> extends CtTypeImpl<T> implements CtCl
 				continue;
 			}
 			CtConstructor<T> c = (CtConstructor<T>) typeMember;
-			boolean cont = c.getParameters().size() == parameterTypes.length;
-			for (int i = 0; cont && (i < c.getParameters().size()) && (i < parameterTypes.length); i++) {
-				if (!parameterTypes[i].getQualifiedName().equals(c.getParameters().get(i).getType().getQualifiedName())) {
-					cont = false;
-				}
-			}
-			if (cont) {
+			if (hasSameParameters(c, parameterTypes)) {
 				return c;
 			}
 		}

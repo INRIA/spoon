@@ -69,7 +69,7 @@ public class PatternBuilder {
 	 * @param patternModel a List of Spoon AST nodes, which represents a template of to be generated or to be matched code
 	 * @return new instance of {@link PatternBuilder}
 	 */
-	public static PatternBuilder create(List<CtElement> patternModel) {
+	public static PatternBuilder create(List<? extends CtElement> patternModel) {
 		return new PatternBuilder(patternModel);
 	}
 
@@ -84,7 +84,6 @@ public class PatternBuilder {
 
 	private CtTypeReference<?> templateTypeRef;
 	private final Map<String, AbstractParameterInfo> parameterInfos = new HashMap<>();
-//	ListOfNodes pattern;
 	CtQueryable patternQuery;
 	private ValueConvertor valueConvertor;
 	private boolean addGeneratedBy = false;
@@ -112,12 +111,12 @@ public class PatternBuilder {
 		}
 	}
 
-	protected PatternBuilder(List<CtElement> template) {
-		this.templateTypeRef = getDeclaringTypeRef(template);
-		this.patternModel = Collections.unmodifiableList(new ArrayList<>(template));
+	protected PatternBuilder(List<? extends CtElement> template) {
 		if (template == null) {
 			throw new SpoonException("Cannot create a Pattern from an null model");
 		}
+		this.templateTypeRef = getDeclaringTypeRef(template);
+		this.patternModel = Collections.unmodifiableList(new ArrayList<>(template));
 		this.valueConvertor = new ValueConvertorImpl();
 		patternNodes = ElementNode.create(this.patternModel, patternElementToSubstRequests);
 		patternQuery = new PatternBuilder.PatternQuery(getFactory().Query(), patternModel);
@@ -128,7 +127,7 @@ public class PatternBuilder {
 		}
 	}
 
-	private CtTypeReference<?> getDeclaringTypeRef(List<CtElement> template) {
+	private CtTypeReference<?> getDeclaringTypeRef(List<? extends CtElement> template) {
 		CtType<?> type = null;
 		for (CtElement ctElement : template) {
 			CtType t;
@@ -205,7 +204,7 @@ public class PatternBuilder {
 		if (newNode == null) {
 			throw new SpoonException("Removing of Node is not supported");
 		}
-		handleConflict(conflictMode, oldNode, newNode, (tobeUsedNode) -> {
+		handleConflict(conflictMode, oldNode, newNode, tobeUsedNode -> {
 			if (patternNodes.replaceNode(oldNode, tobeUsedNode) == false) {
 				if (conflictMode == ConflictResolutionMode.KEEP_OLD_NODE) {
 					//The parent of oldNode was already replaced. OK - Keep that parent old node
@@ -449,7 +448,7 @@ public class PatternBuilder {
 		if (templateTypeRef != null) {
 			return templateTypeRef.getFactory();
 		}
-		if (patternModel.size() > 0) {
+		if (!patternModel.isEmpty()) {
 			return patternModel.get(0).getFactory();
 		}
 		throw new SpoonException("PatternBuilder has no CtElement to provide a Factory");

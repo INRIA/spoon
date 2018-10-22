@@ -52,7 +52,7 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 			result = t.getFactory().Type().createReference(t, true);
 			isCopy = true;
 		}
-		if (result.getActualTypeArguments().size() > 0) {
+		if (!result.getActualTypeArguments().isEmpty()) {
 			//we have to adapt actual type arguments recursive too
 			if (isCopy == false) {
 				CtElement parent = result.getParent();
@@ -74,14 +74,13 @@ abstract class AbstractTypingContext implements GenericTypeAdapter {
 
 	private CtTypeReference<?> adaptTypeParameterReference(CtTypeParameterReference typeParamRef) {
 		if ((typeParamRef instanceof CtWildcardReference)) {
-			return adaptTypeParameterReferenceBoundingType(typeParamRef, typeParamRef.getBoundingType());
+			return adaptTypeParameterReferenceBoundingType((CtWildcardReference) typeParamRef, typeParamRef.getBoundingType());
 		}
-		CtTypeReference<?> typeRefAdapted = adaptTypeParameter(typeParamRef.getDeclaration());
-		return typeRefAdapted;
+		return adaptTypeParameter(typeParamRef.getDeclaration());
 	}
 
-	private CtTypeReference<?> adaptTypeParameterReferenceBoundingType(CtTypeParameterReference typeParamRef, CtTypeReference<?> boundingType) {
-		CtTypeParameterReference typeParamRefAdapted = typeParamRef.clone();
+	private CtTypeReference<?> adaptTypeParameterReferenceBoundingType(CtWildcardReference typeParamRef, CtTypeReference<?> boundingType) {
+		CtWildcardReference typeParamRefAdapted = typeParamRef.clone();
 		typeParamRefAdapted.setParent(typeParamRef.getParent());
 		typeParamRefAdapted.setBoundingType(boundingType.equals(boundingType.getFactory().Type().getDefaultBoundingType()) ? boundingType.getFactory().Type().getDefaultBoundingType() : adaptType(boundingType));
 		return typeParamRefAdapted;

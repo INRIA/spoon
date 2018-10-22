@@ -37,7 +37,7 @@ public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implem
 			variable = getFactory().Core().createLocalVariableReference();
 			variable.setParent(this);
 		}
-		return (CtVariableReference<T>) variable;
+		return variable;
 	}
 
 	@Override

@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.processing;
 
 import com.google.common.io.Files;
@@ -21,9 +37,9 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.test.processing.processors.RenameProcessor;
-import spoon.test.processing.testclasses.CtClassProcessor;
-import spoon.test.processing.testclasses.CtInterfaceProcessor;
-import spoon.test.processing.testclasses.CtTypeProcessor;
+import spoon.test.processing.processors.CtClassProcessor;
+import spoon.test.processing.processors.CtInterfaceProcessor;
+import spoon.test.processing.processors.CtTypeProcessor;
 import spoon.testing.utils.ProcessorUtils;
 
 import java.io.File;
@@ -38,6 +54,7 @@ import java.util.Map;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -81,8 +98,8 @@ public class ProcessingTest {
 		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(5).toString());
 		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(7).toString());
 
-		assertFalse("switch should not be the same", constructor.getBody().getStatement(6).equals(constructor.getBody().getStatement(8)));
-		assertFalse("switch should not be the same", constructor.getBody().getStatement(6).toString().equals(constructor.getBody().getStatement(8).toString()));
+		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6), constructor.getBody().getStatement(8));
+		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6).toString(), constructor.getBody().getStatement(8).toString());
 
 	}
 
@@ -120,13 +137,13 @@ public class ProcessingTest {
 		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(5).toString());
 		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(7).toString());
 
-		assertFalse("switch should not be the same", constructor.getBody().getStatement(6).equals(constructor.getBody().getStatement(8)));
-		assertFalse("switch should not be the same", constructor.getBody().getStatement(6).toString().equals(constructor.getBody().getStatement(8).toString()));
+		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6), constructor.getBody().getStatement(8));
+		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6).toString(), constructor.getBody().getStatement(8).toString());
 
 	}
 
 	@Test
-	public void testProcessorNotFoundThrowAnException() throws Exception {
+	public void testProcessorNotFoundThrowAnException() {
 		try {
 			new Launcher().run(new String[]{
 					"-p", "fr.inria.gforge.spoon.MakeAnAwesomeTacosProcessor"
@@ -149,7 +166,7 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testProcessorWithNoArgumentsInConstructor() throws Exception {
+	public void testProcessorWithNoArgumentsInConstructor() {
 
 		/* throw correctly an exception when trying to use a processor with constructor with args */
 
@@ -167,7 +184,7 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testInitProperties() throws Exception {
+	public void testInitProperties() {
 		class AProcessor extends AbstractManualProcessor {
 			@Property
 			String aString;
@@ -194,7 +211,7 @@ public class ProcessingTest {
 			public void process() {
 
 			}
-		};
+		}
 
 		AProcessor p = new AProcessor();
 		Launcher launcher = new Launcher();
@@ -206,11 +223,11 @@ public class ProcessingTest {
 		Object o = new Object();
 		props.set("anObject", o);
 
-		int[] arrayInt = new int[]{ 1, 2, 3};
+		int[] arrayInt = { 1, 2, 3};
 		props.set("arrayInt", arrayInt);
 		props.set("listString", Arrays.asList(new String[]{"42"}));
 
-		boolean[] arrayBoolean = new boolean[] {true};
+		boolean[] arrayBoolean = { true };
 		props.set("arrayBoolean", arrayBoolean);
 		HashMap<String,Double> mapTest = new HashMap<>();
 		mapTest.put("foobar",42.42);
@@ -228,7 +245,7 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testInitPropertiesWithWrongType() throws Exception {
+	public void testInitPropertiesWithWrongType() {
 		class AProcessor extends AbstractManualProcessor {
 			@Property
 			String aString;
@@ -243,7 +260,7 @@ public class ProcessingTest {
 			public void process() {
 
 			}
-		};
+		}
 
 		AProcessor p = new AProcessor();
 		Launcher launcher = new Launcher();
@@ -268,7 +285,7 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testInitPropertiesWithStringType() throws Exception {
+	public void testInitPropertiesWithStringType() {
 		class AProcessor extends AbstractManualProcessor {
 			@Property
 			String aString;
@@ -295,7 +312,7 @@ public class ProcessingTest {
 			public void process() {
 
 			}
-		};
+		}
 
 		AProcessor p = new AProcessor();
 		Launcher launcher = new Launcher();

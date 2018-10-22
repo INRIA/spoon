@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test;
 
 import spoon.metamodel.Metamodel;
@@ -32,11 +48,11 @@ public class SpoonTestHelpers {
 			return true;
 		}
 		// limit case because of a bug to be fixed
-		if (typeReference.getActualTypeArguments().size()>0 && "?".equals(typeReference.getActualTypeArguments()
+		if (!typeReference.getActualTypeArguments().isEmpty() && "?".equals(typeReference.getActualTypeArguments()
 				.get(0).getQualifiedName())) {
 			return false;
 		}
-		return (typeReference.getActualTypeArguments().size()>0
+		return (!typeReference.getActualTypeArguments().isEmpty()
 				&& typeReference.getActualTypeArguments()
 				.get(0).getTypeDeclaration()
 				.isSubtypeOf(ctElRef))
@@ -75,7 +91,6 @@ public class SpoonTestHelpers {
 		return result;
 	}
 
-
 	/** returns all possible setters related to CtElement */
 	public static List<CtMethod<?>> getAllSetters(CtType<?> baseType) {
 		List<CtMethod<?>> result = new ArrayList<>();
@@ -101,7 +116,6 @@ public class SpoonTestHelpers {
 		return result;
 	}
 
-
 	/** returns the corresponding setter, if several are possible returns the lowest one in the hierarchy */
 	public static CtMethod<?> getSetterOf(CtType<?> baseType, CtMethod<?> getter) {
 		String setterName = getter.getSimpleName().replaceFirst("^get", "set");
@@ -112,12 +126,11 @@ public class SpoonTestHelpers {
 
 		// return one that is as low as possible in the hierarchy
 		for(Object o : tentativeSetters) {
-			if (baseType.getPackage().getElements(new OverridingMethodFilter((CtMethod<?>) o)).size() == 0) {
+			if (baseType.getPackage().getElements(new OverridingMethodFilter((CtMethod<?>) o)).isEmpty()) {
 				return (CtMethod<?>) o;
 			}
 		}
 
-		//System.out.println(setterName+" "+tentativeSetters.length);
 		return (CtMethod<?>) tentativeSetters[0];
 	}
 
@@ -125,11 +138,10 @@ public class SpoonTestHelpers {
 	public static boolean isMetamodelProperty(CtType<?> baseType, CtMethod<?> m) {
 		return
 				m.getSimpleName().startsWith("get")
-						&& m.getParameters().size() == 0 // a getter has no parameter
+						&& m.getParameters().isEmpty() // a getter has no parameter
 						&& !m.hasAnnotation(DerivedProperty.class)
 						&&
 						// return type
 						isMetamodelRelatedType(m.getType());
 	}
-
 }

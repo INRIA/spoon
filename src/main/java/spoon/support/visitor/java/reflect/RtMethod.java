@@ -24,6 +24,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import spoon.SpoonException;
 
@@ -128,10 +129,10 @@ public class RtMethod {
 
 		RtMethod rtMethod = (RtMethod) o;
 
-		if (name != null ? !name.equals(rtMethod.name) : rtMethod.name != null) {
+		if (!Objects.equals(name, rtMethod.name)) {
 			return false;
 		}
-		if (returnType != null ? !returnType.equals(rtMethod.returnType) : rtMethod.returnType != null) {
+		if (!Objects.equals(returnType, rtMethod.returnType)) {
 			return false;
 		}
 		if (!Arrays.equals(parameterTypes, rtMethod.parameterTypes)) {
@@ -200,7 +201,7 @@ public class RtMethod {
 				}
 			}
 		}
-		return methods.toArray(new RtMethod[methods.size()]);
+		return methods.toArray(new RtMethod[0]);
 	}
 
 	private boolean isLightEquals(RtMethod rtMethod) {
@@ -211,7 +212,7 @@ public class RtMethod {
 			return false;
 		}
 
-		if (name != null ? !name.equals(rtMethod.name) : rtMethod.name != null) {
+		if (!Objects.equals(name, rtMethod.name)) {
 			return false;
 		}
 		return Arrays.equals(parameterTypes, rtMethod.parameterTypes);

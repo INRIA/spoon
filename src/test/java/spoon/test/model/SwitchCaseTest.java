@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.model;
 
 import org.junit.Test;
@@ -14,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -41,12 +58,12 @@ public class SwitchCaseTest {
 
 		assertEquals(3, sw.getCases().size());
 
-		CtCase<?> c = (CtCase<?>) sw.getCases().get(0);
+		CtCase<?> c = sw.getCases().get(0);
 
 		assertEquals(0, ((CtLiteral<?>) c.getCaseExpression()).getValue());
 		assertEquals(2, c.getStatements().size());
 
-		List<CtStatement> l = new ArrayList<CtStatement>();
+		List<CtStatement> l = new ArrayList<>();
 
 		// this compiles (thanks to the new CtCase extends CtStatementList)
 		for (CtStatement s : c) {
@@ -57,7 +74,7 @@ public class SwitchCaseTest {
 
 	@Test
 	public void testSwitchStatementOnAString() throws Exception {
-		CtClass<?> clazz = build("spoon.test.model", "SwitchStringClass");
+		CtClass<?> clazz = build("spoon.test.model.testclasses", "SwitchStringClass");
 
 		CtMethod<?> method = (CtMethod<?>) clazz.getMethods().toArray()[0];
 		CtSwitch<?> ctSwitch = method
@@ -65,7 +82,7 @@ public class SwitchCaseTest {
 				.get(0);
 
 		// Checks the selector is a string.
-		assertEquals(String.class,
+		assertSame(String.class,
 				ctSwitch.getSelector().getType().getActualClass());
 
 		// Checks all cases are strings.
@@ -74,7 +91,7 @@ public class SwitchCaseTest {
 				// default case
 				continue;
 			}
-			assertEquals(String.class,
+			assertSame(String.class,
 					aCase.getCaseExpression().getType().getActualClass());
 		}
 	}

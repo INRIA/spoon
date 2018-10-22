@@ -40,6 +40,7 @@ public class RegexFilter<E extends CtElement> implements Filter<E> {
 		this.regex = Pattern.compile(regex);
 	}
 
+	@Override
 	public boolean matches(E element) {
 		Matcher m = regex.matcher(element.toString());
 		return m.matches();

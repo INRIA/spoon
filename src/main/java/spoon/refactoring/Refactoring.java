@@ -84,12 +84,12 @@ public final class Refactoring {
 	/** See doc in {@link CtMethod#copyMethod()} */
 	public static CtMethod<?> copyMethod(final CtMethod<?> method) {
 		CtMethod<?> clone = method.clone();
-		String tentativeTypeName = method.getSimpleName() + "Copy";
+		StringBuilder tentativeTypeName = new StringBuilder(method.getSimpleName() + "Copy");
 		CtType parent = method.getParent(CtType.class);
-		while (parent.getMethodsByName(tentativeTypeName).size() > 0) {
-			tentativeTypeName += "X";
+		while (!parent.getMethodsByName(tentativeTypeName.toString()).isEmpty()) {
+			tentativeTypeName.append("X");
 		}
-		final String cloneMethodName = tentativeTypeName;
+		final String cloneMethodName = tentativeTypeName.toString();
 		clone.setSimpleName(cloneMethodName);
 		parent.addMethod(clone);
 		new CtScanner() {
@@ -116,11 +116,11 @@ public final class Refactoring {
 	/** See doc in {@link CtType#copyType()} */
 	public static CtType<?> copyType(final CtType<?> type) {
 		CtType<?> clone = type.clone();
-		String tentativeTypeName = type.getSimpleName() + "Copy";
+		StringBuilder tentativeTypeName = new StringBuilder(type.getSimpleName() + "Copy");
 		while (type.getFactory().Type().get(type.getPackage().getQualifiedName() + "." + tentativeTypeName) != null) {
-			tentativeTypeName += "X";
+			tentativeTypeName.append("X");
 		}
-		final String cloneTypeName = tentativeTypeName;
+		final String cloneTypeName = tentativeTypeName.toString();
 		clone.setSimpleName(cloneTypeName);
 		type.getPackage().addType(clone);
 		new CtScanner() {

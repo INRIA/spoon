@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.ctType;
 
 import java.lang.reflect.Executable;
@@ -21,7 +37,11 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.test.ctType.testclasses.ErasureModelA;
 import spoon.testing.utils.ModelUtils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CtTypeParameterTest {
 
@@ -31,16 +51,16 @@ public class CtTypeParameterTest {
 		CtClass<?> ctModel = (CtClass<?>) ModelUtils.buildClass(ErasureModelA.class);
 		//visit all methods of type ctModel
 		//visit all inner types and their methods recursively `getTypeErasure` returns expected value
-		//for each formal type parameter or method parameter check if 
+		//for each formal type parameter or method parameter check if
 		checkType(ctModel);
 	}
-	
+
 	private void checkType(CtType<?> type) throws NoSuchFieldException, SecurityException {
 		List<CtTypeParameter> formalTypeParameters = type.getFormalCtTypeParameters();
 		for (CtTypeParameter ctTypeParameter : formalTypeParameters) {
 			checkTypeParamErasureOfType(ctTypeParameter, type.getActualClass());
 		}
-		
+
 		for (CtTypeMember member : type.getTypeMembers()) {
 			if (member instanceof CtFormalTypeDeclarer) {
 				CtFormalTypeDeclarer ftDecl = (CtFormalTypeDeclarer) member;
@@ -61,16 +81,16 @@ public class CtTypeParameterTest {
 			}
 		}
 	}
-	
+
 	private void checkTypeParamErasureOfType(CtTypeParameter typeParam, Class<?> clazz) throws NoSuchFieldException, SecurityException {
-		Field field = clazz.getDeclaredField("param"+typeParam.getSimpleName());
-		assertEquals("TypeErasure of type param "+getTypeParamIdentification(typeParam), field.getType().getName(), typeParam.getTypeErasure().getQualifiedName());
+		Field field = clazz.getDeclaredField("param" + typeParam.getSimpleName());
+		assertEquals("TypeErasure of type param " + getTypeParamIdentification(typeParam), field.getType().getName(), typeParam.getTypeErasure().getQualifiedName());
 	}
 
-	private void checkTypeParamErasureOfExecutable(CtTypeParameter typeParam) throws NoSuchFieldException, SecurityException {
+	private void checkTypeParamErasureOfExecutable(CtTypeParameter typeParam) throws SecurityException {
 		CtExecutable<?> exec = (CtExecutable<?>) typeParam.getParent();
-		CtParameter<?> param = exec.filterChildren(new NamedElementFilter<>(CtParameter.class,"param"+typeParam.getSimpleName())).first();
-		assertNotNull("Missing param"+typeParam.getSimpleName() + " in "+ exec.getSignature(), param);
+		CtParameter<?> param = exec.filterChildren(new NamedElementFilter<>(CtParameter.class, "param" + typeParam.getSimpleName())).first();
+		assertNotNull("Missing param" + typeParam.getSimpleName() + " in " + exec.getSignature(), param);
 		int paramIdx = exec.getParameters().indexOf(param);
 		Class declClass = exec.getParent(CtType.class).getActualClass();
 		Executable declExec;
@@ -81,9 +101,9 @@ public class CtTypeParameterTest {
 		}
 		Class<?> paramType = declExec.getParameterTypes()[paramIdx];
 		// contract the type erasure given with Java reflection is the same as the one computed by spoon
-		assertEquals("TypeErasure of executable param "+getTypeParamIdentification(typeParam), paramType.getName(), typeParam.getTypeErasure().toString());
+		assertEquals("TypeErasure of executable param " + getTypeParamIdentification(typeParam), paramType.getTypeName(), param.getType().getTypeErasure().toString());
 	}
-	
+
 	private void checkParameterErasureOfExecutable(CtParameter<?> param) {
 		CtExecutable<?> exec = param.getParent();
 		CtTypeReference<?> typeErasure = param.getType().getTypeErasure();
@@ -98,36 +118,35 @@ public class CtTypeParameterTest {
 		Class<?> paramType = declExec.getParameterTypes()[paramIdx];
 		assertEquals(0, typeErasure.getActualTypeArguments().size());
 		// contract the type erasure of the method parameter given with Java reflection is the same as the one computed by spoon
-		assertEquals("TypeErasure of executable "+exec.getSignature()+" parameter "+param.getSimpleName(), paramType.getName(), typeErasure.getQualifiedName());
+		assertEquals("TypeErasure of executable " + exec.getSignature() + " parameter " + param.getSimpleName(), paramType.getTypeName(), typeErasure.getQualifiedName());
 	}
-	
-	
+
 	private Executable getMethodByName(Class declClass, String simpleName) {
 		for (Method method : declClass.getDeclaredMethods()) {
-			if(method.getName().equals(simpleName)) {
+			if (method.getName().equals(simpleName)) {
 				return method;
 			}
 		}
-		fail("Method "+simpleName+" not found in "+declClass.getName());
+		fail("Method " + simpleName + " not found in " + declClass.getName());
 		return null;
 	}
 
 	private String getTypeParamIdentification(CtTypeParameter typeParam) {
-		String result = "<"+typeParam.getSimpleName()+">";
+		String result = "<" + typeParam.getSimpleName() + ">";
 		CtFormalTypeDeclarer l_decl = typeParam.getParent(CtFormalTypeDeclarer.class);
 		if (l_decl instanceof CtType) {
-			return ((CtType) l_decl).getQualifiedName()+result;
+			return ((CtType) l_decl).getQualifiedName() + result;
 		}
 		if (l_decl instanceof CtExecutable) {
 			CtExecutable exec = (CtExecutable) l_decl;
 			if (exec instanceof CtMethod) {
-				result=exec.getSignature()+result;
+				result = exec.getSignature() + result;
 			}
-			return exec.getParent(CtType.class).getQualifiedName()+"#"+result;
+			return exec.getParent(CtType.class).getQualifiedName() + "#" + result;
 		}
 		throw new AssertionError();
 	}
-	
+
 	@Test
 	public void testTypeSame() throws Exception {
 		CtClass<?> ctModel = (CtClass<?>) ModelUtils.buildClass(ErasureModelA.class);
@@ -135,12 +154,12 @@ public class CtTypeParameterTest {
 		CtTypeParameter tpB = ctModel.getFormalCtTypeParameters().get(1);
 		CtTypeParameter tpC = ctModel.getFormalCtTypeParameters().get(2);
 		CtTypeParameter tpD = ctModel.getFormalCtTypeParameters().get(3);
-		
+
 		CtConstructor<?> ctModelCons = ctModel.getConstructors().iterator().next();
 		CtMethod<?> ctModelMethod = ctModel.getMethodsByName("method").get(0);
 		CtMethod<?> ctModelMethod2 = ctModel.getMethodsByName("method2").get(0);
-		
-		CtClass<?> ctModelB = ctModel.filterChildren(new NamedElementFilter<>(CtClass.class,"ModelB")).first();
+
+		CtClass<?> ctModelB = ctModel.filterChildren(new NamedElementFilter<>(CtClass.class, "ModelB")).first();
 		CtTypeParameter tpA2 = ctModelB.getFormalCtTypeParameters().get(0);
 		CtTypeParameter tpB2 = ctModelB.getFormalCtTypeParameters().get(1);
 		CtTypeParameter tpC2 = ctModelB.getFormalCtTypeParameters().get(2);
@@ -148,35 +167,36 @@ public class CtTypeParameterTest {
 
 		CtConstructor<?> ctModelBCons = ctModelB.getConstructors().iterator().next();
 		CtMethod<?> ctModelBMethod = ctModelB.getMethodsByName("method").get(0);
-		
+
 		//the type parameters of ErasureModelA and ErasureModelA$ModelB are same if they are on the same position.
 		checkIsSame(ctModel.getFormalCtTypeParameters(), ctModelB.getFormalCtTypeParameters(), true);
-		
+
 		//the type parameters of ErasureModelA#constructor and ErasureModelA$ModelB constructor are same, because constructors has same formal type parameters
 		//https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.4
 		checkIsSame(ctModelCons.getFormalCtTypeParameters(), ctModelBCons.getFormalCtTypeParameters(), true);
 		//the type parameters of ctModel ErasureModelA#method and ErasureModelA$ModelB#method are same if they are on the same position.
 		checkIsSame(ctModelMethod.getFormalCtTypeParameters(), ctModelBMethod.getFormalCtTypeParameters(), true);
-		
-		//the type parameters of ctModel ErasureModelA#constructor and ErasureModelA$ModelB#method are never same, because they have different type of scope (Method!=Constructor) 
+
+		//the type parameters of ctModel ErasureModelA#constructor and ErasureModelA$ModelB#method are never same, because they have different type of scope (Method!=Constructor)
 		checkIsSame(ctModelCons.getFormalCtTypeParameters(), ctModelBMethod.getFormalCtTypeParameters(), false);
-		//the type parameters of ctModel ErasureModelA#method and ErasureModelA#method2 are same, because they have same formal type parameters 
+		//the type parameters of ctModel ErasureModelA#method and ErasureModelA#method2 are same, because they have same formal type parameters
 		//https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.4
 		checkIsSame(ctModelMethod.getFormalCtTypeParameters(), ctModelMethod2.getFormalCtTypeParameters(), true);
-		
-		CtClass<?> ctModelC = ctModel.filterChildren(new NamedElementFilter<>(CtClass.class,"ModelC")).first();
+
+		CtClass<?> ctModelC = ctModel.filterChildren(new NamedElementFilter<>(CtClass.class, "ModelC")).first();
 	}
 
 	/**
 	 * checks that parameters on the same position are same and parameters on other positions are not same
+	 *
 	 * @param isSameOnSameIndex TODO
 	 */
 	private void checkIsSame(List<CtTypeParameter> tps1, List<CtTypeParameter> tps2, boolean isSameOnSameIndex) {
-		for(int i=0; i<tps1.size(); i++) {
+		for (int i = 0; i < tps1.size(); i++) {
 			CtTypeParameter tp1 = tps1.get(i);
-			for(int j=0; j<tps2.size(); j++) {
+			for (int j = 0; j < tps2.size(); j++) {
 				CtTypeParameter tp2 = tps2.get(j);
-				if(i==j && isSameOnSameIndex) {
+				if (i == j && isSameOnSameIndex) {
 					checkIsSame(tp1, tp2);
 				} else {
 					checkIsNotSame(tp1, tp2);
@@ -188,6 +208,7 @@ public class CtTypeParameterTest {
 	private void checkIsSame(CtTypeParameter tp1, CtTypeParameter tp2) {
 		assertTrue(isSame(tp1, tp2, false, true) || isSame(tp2, tp1, false, true));
 	}
+
 	private void checkIsNotSame(CtTypeParameter tp1, CtTypeParameter tp2) {
 		assertFalse(isSame(tp1, tp2, false, true) || isSame(tp2, tp1, false, true));
 	}

@@ -1,15 +1,22 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.refactoring;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
@@ -25,9 +32,18 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.test.refactoring.testclasses.TestTryRename;
 import spoon.test.refactoring.testclasses.CtRenameLocalVariableRefactoringTestSubject;
+import spoon.test.refactoring.testclasses.TestTryRename;
 import spoon.testing.utils.ModelUtils;
+
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class CtRenameLocalVariableRefactoringTest
 {
@@ -36,7 +52,8 @@ public class CtRenameLocalVariableRefactoringTest
 		//contract: check that all assertions in all methods of the RenameLocalVariableRefactorTestSubject are correct
 		new CtRenameLocalVariableRefactoringTestSubject().checkModelConsistency();
 	}
-	
+
+	/*"nestedClassMethodWithoutRefs", "var3", "var1"*/
 	/**
 	 * If you need to debug behavior of refactoring on the exact method and variable in the {@link CtRenameLocalVariableRefactoringTestSubject} model,
 	 * then provide
@@ -46,7 +63,7 @@ public class CtRenameLocalVariableRefactoringTest
 	 * then put breakpoint on the line `this.getClass();` below and the debugger stops just before 
 	 * the to be inspected refactoring starts
 	 */
-	private String[] DEBUG = new String[]{/*"nestedClassMethodWithoutRefs", "var3", "var1"*/};
+	private String[] DEBUG = {/*"nestedClassMethodWithoutRefs", "var3", "var1"*/};
 
 	/**
 	 * The {@link CtRenameLocalVariableRefactoringTestSubject} class is loaded as spoon model. Then:
@@ -68,7 +85,9 @@ public class CtRenameLocalVariableRefactoringTest
 		
 		varRenameClass.getMethods().forEach(method->{
 			//debugging support
-			if(DEBUG.length==3 && DEBUG[0].equals(method.getSimpleName())==false) return;
+			if(DEBUG.length==3 && DEBUG[0].equals(method.getSimpleName())==false) {
+				return;
+			}
 			method.filterChildren((CtVariable var)->true)
 				.map((CtVariable var)->var.getAnnotation(tryRename))
 				.forEach((CtAnnotation<TestTryRename> annotation)->{
@@ -93,8 +112,8 @@ public class CtRenameLocalVariableRefactoringTest
 				});
 		});
 	}
-	
-	protected void checkLocalVariableRename(Launcher launcher, CtLocalVariable<?> targetVariable, String newName, boolean renameShouldPass) {
+
+	private void checkLocalVariableRename(Launcher launcher, CtLocalVariable<?> targetVariable, String newName, boolean renameShouldPass) {
 		
 		String originName = targetVariable.getSimpleName();
 		CtRenameLocalVariableRefactoring refactor = new CtRenameLocalVariableRefactoring();
@@ -152,15 +171,12 @@ public class CtRenameLocalVariableRefactoringTest
 		
 //		 2) build it
 		try {
-//			launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
 			launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.CTTYPES);
 		} catch (Throwable e) {
 			new AssertionError("The compilation of java sources in "+launcher.getEnvironment().getBinaryOutputDirectory()+" failed after: "+refactoringDescription, e);
 		}
 //		 3) create instance using that new model and test consistency
-		try {
-//			varRenameClass.newInstance();
-			TestClassloader classLoader = new TestClassloader(launcher);
+		try (TestClassloader classLoader = new TestClassloader(launcher)) {
 			Class testModelClass = classLoader.loadClass(CtRenameLocalVariableRefactoringTestSubject.class.getName());
 			testModelClass.getMethod("checkModelConsistency").invoke(testModelClass.newInstance());
 		} catch (InvocationTargetException e) {
@@ -203,7 +219,7 @@ public class CtRenameLocalVariableRefactoringTest
 	@Test
 	public void testRefactorWrongUsage() throws Exception {
 		CtType varRenameClass = ModelUtils.buildClass(CtRenameLocalVariableRefactoringTestSubject.class);
-		CtLocalVariable<?> local1Var = varRenameClass.filterChildren((CtLocalVariable<?> var)->var.getSimpleName().equals("local1")).first();
+		CtLocalVariable<?> local1Var = varRenameClass.filterChildren((CtLocalVariable<?> var)-> "local1".equals(var.getSimpleName())).first();
 		
 		//contract: a target variable is not defined. Throw SpoonException
 		CtRenameLocalVariableRefactoring refactor = new CtRenameLocalVariableRefactoring();
@@ -251,7 +267,7 @@ public class CtRenameLocalVariableRefactoringTest
 	@Test
 	public void testRenameLocalVariableToSameName() throws Exception {
 		CtType varRenameClass = ModelUtils.buildClass(CtRenameLocalVariableRefactoringTestSubject.class);
-		CtLocalVariable<?> local1Var = varRenameClass.filterChildren((CtLocalVariable<?> var)->var.getSimpleName().equals("local1")).first();
+		CtLocalVariable<?> local1Var = varRenameClass.filterChildren((CtLocalVariable<?> var)-> "local1".equals(var.getSimpleName())).first();
 		
 		CtRenameLocalVariableRefactoring refactor = new CtRenameLocalVariableRefactoring();
 		refactor.setTarget(local1Var);

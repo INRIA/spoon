@@ -1,6 +1,21 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.intercession;
 
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
@@ -36,6 +51,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -43,6 +59,7 @@ import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class IntercessionTest {
 	Factory factory = createFactory();
+
 	@Test
 	public void testInsertBegin() {
 		CtClass<?> clazz = factory
@@ -72,7 +89,7 @@ public class IntercessionTest {
 				.compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 		CtMethod<?> fooClone = foo.clone();
-		Assert.assertEquals(foo, fooClone);
+		assertEquals(foo, fooClone);
 		CtBlock<?> body = foo.getBody();
 		assertEquals(2, body.getStatements().size());
 
@@ -82,8 +99,7 @@ public class IntercessionTest {
 		assertEquals(3, body.getStatements().size());
 		assertSame(returnStmt, body.getStatements().get(2));
 
-		Assert.assertNotEquals(foo, fooClone);
-
+		assertNotEquals(foo, fooClone);
 	}
 
 	@Test
@@ -95,7 +111,7 @@ public class IntercessionTest {
 				.compile();
 		CtConstructor<?> foo = (CtConstructor<?>) clazz.getConstructors().toArray()[0];
 		CtConstructor<?> fooClone = foo.clone();
-		Assert.assertEquals(foo, fooClone);
+		assertEquals(foo, fooClone);
 
 		CtBlock<?> body = foo.getBody();
 
@@ -109,7 +125,7 @@ public class IntercessionTest {
 		assertEquals(2, body.getStatements().size());
 
 		// constructor are not equals anymore
-		Assert.assertNotEquals(foo, fooClone);
+		assertNotEquals(foo, fooClone);
 	}
 
 	@Test
@@ -181,7 +197,7 @@ public class IntercessionTest {
 	}
 
 	@Test
-	public void testSettersAreAllGood() throws Exception {
+	public void testSettersAreAllGood() {
 		ArrayList classpath = new ArrayList();
 		for (String classpathEntry : System.getProperty("java.class.path").split(File.pathSeparator)) {
 			if (!classpathEntry.contains("test-classes")) {
@@ -242,7 +258,7 @@ public class IntercessionTest {
 
 	@Test
 	@Ignore // interesting but too fragile with conventions
-	public void testResetCollectionInSetters() throws Exception {
+	public void testResetCollectionInSetters() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		final Factory factory = launcher.getFactory();
@@ -315,11 +331,11 @@ public class IntercessionTest {
 				}
 				final CtInvocation inv = (CtInvocation) assignment;
 				if (collectionReference.equals(SET_REFERENCE)) {
-					if (!inv.getExecutable().getSimpleName().equals("emptySet")) {
+					if (!"emptySet".equals(inv.getExecutable().getSimpleName())) {
 						return false;
 					}
 				} else if (collectionReference.equals(LIST_REFERENCE)) {
-					if (!inv.getExecutable().getSimpleName().equals("emptyList")) {
+					if (!"emptyList".equals(inv.getExecutable().getSimpleName())) {
 						return false;
 					}
 				}

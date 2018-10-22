@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.variable;
 
 import org.junit.Test;
@@ -167,7 +183,7 @@ public class AccessTest {
 	}
 
 	@Test
-	public void testFieldWriteDeclaredInTheSuperclass() throws Exception {
+	public void testFieldWriteDeclaredInTheSuperclass() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
 				"-i", "./src/test/resources/spoon/test/variable/Tacos.java",
@@ -181,7 +197,7 @@ public class AccessTest {
 	}
 
 	@Test
-	public void testVariableAccessInNoClasspath() throws Exception {
+	public void testVariableAccessInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/resources/variable");
@@ -200,7 +216,7 @@ public class AccessTest {
 	}
 
 	@Test
-	public void testAccessToStringOnPostIncrement() throws Exception {
+	public void testAccessToStringOnPostIncrement() {
 		// contract: a target to a post increment on a variable access write brackets.
 		Factory factory = createFactory();
 		CtClass<?> clazz = factory.Code().createCodeSnippetStatement( //

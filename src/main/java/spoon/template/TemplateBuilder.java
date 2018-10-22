@@ -96,15 +96,11 @@ class TemplateBuilder {
 						return false;
 					}
 					//remove all Fields of type TemplateParameter
-					if (typeMember instanceof CtField<?> && ((CtField<?>) typeMember).getType().isSubtypeOf(templateParamRef)) {
-						return false;
-					}
-					//all other type members have to be part of the pattern model
-					return true;
+					return !(typeMember instanceof CtField<?>) || !((CtField<?>) typeMember).getType().isSubtypeOf(templateParamRef);
 				});
 				//remove `... extends Template`, which doesn't have to be part of pattern model
 				tv.removeSuperClass();
-			};
+			}
 			pb = new PatternBuilder(tv.getPatternElements());
 		} else {
 			pb = new PatternBuilder(Collections.singletonList(templateRoot));

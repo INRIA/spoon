@@ -16,8 +16,11 @@
  */
 package spoon.support.reflect;
 
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.support.sniper.internal.ElementSourceFragment;
 
 import java.io.Serializable;
 
@@ -25,7 +28,7 @@ import java.io.Serializable;
  * When a modifier is "implicit", it does not appear in the source code (eg public for interface methods)
  * ModifierKind in kept for sake of full backward-compatibility.
  */
-public class CtExtendedModifier implements Serializable {
+public class CtExtendedModifier implements SourcePositionHolder, Serializable {
 	private boolean implicit;
 	private ModifierKind kind;
 	private SourcePosition position;
@@ -55,6 +58,7 @@ public class CtExtendedModifier implements Serializable {
 		this.kind = kind;
 	}
 
+	@Override
 	public SourcePosition getPosition() {
 		if (position == null) {
 			return SourcePosition.NOPOSITION;
@@ -84,5 +88,17 @@ public class CtExtendedModifier implements Serializable {
 		int result = (implicit ? 1 : 0);
 		result = 31 * result + (kind != null ? kind.hashCode() : 0);
 		return result;
+	}
+
+	@Override
+	public ElementSourceFragment getOriginalSourceFragment() {
+		SourcePosition sp = this.getPosition();
+		CompilationUnit compilationUnit = sp.getCompilationUnit();
+		if (compilationUnit != null) {
+			ElementSourceFragment rootFragment = compilationUnit.getOriginalSourceFragment();
+			return rootFragment.getSourceFragmentOf(this, sp.getSourceStart(), sp.getSourceEnd() + 1);
+		} else {
+			return ElementSourceFragment.NO_SOURCE_FRAGMENT;
+		}
 	}
 }

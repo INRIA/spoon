@@ -18,6 +18,7 @@ package spoon.support.reflect.reference;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.SpoonClassNotFoundException;
@@ -34,7 +35,6 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	CtTypeReference<?> componentType;
 
 	public CtArrayTypeReferenceImpl() {
-		super();
 	}
 
 	@Override
@@ -46,7 +46,8 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	public CtTypeReference<?> getComponentType() {
 		if (componentType == null) {
 			// a sensible default component type to facilitate object creation and testing
-			componentType = getFactory().Type().OBJECT;
+			componentType = getFactory().Type().objectType();
+			componentType.setParent(this);
 		}
 		return componentType;
 	}
@@ -76,6 +77,11 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	}
 
 	@Override
+	public <T extends CtReference> T setSimpleName(String simplename) {
+		return (T) this;
+	}
+
+	@Override
 	public String getQualifiedName() {
 		return getComponentType().getQualifiedName() + "[]";
 	}
@@ -96,6 +102,18 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 			return ((CtArrayTypeReference<?>) getComponentType()).getDimensionCount() + 1;
 		}
 		return 1;
+	}
+
+	@Override
+	public CtTypeReference<?> getTypeErasure() {
+		CtTypeReference<?> originCT = getComponentType();
+		CtTypeReference<?> erasedCT = originCT.getTypeErasure();
+		if (originCT == erasedCT) {
+			return this;
+		}
+		CtArrayTypeReference<?> erased = this.clone();
+		erased.setComponentType(erasedCT);
+		return erased;
 	}
 
 	@Override

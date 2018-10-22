@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.comparison;
 
 import org.junit.Test;
@@ -25,7 +41,7 @@ import static org.junit.Assert.fail;
 public class EqualTest {
 
 	@Test
-	public void testEqualsEmptyException() throws Exception {
+	public void testEqualsEmptyException() {
 
 		Factory factory = new Launcher().createFactory();
 
@@ -50,27 +66,24 @@ public class EqualTest {
 
 		CtLiteral<?> argument1 = (CtLiteral<?>) invo.getArguments().get(0);
 
-		assertEquals(realParam1 , argument1.toString());
+		assertEquals(realParam1, argument1.toString());
 
 
 		CtReturn<?> returnStatement = (CtReturn<?>) method.getBody().getStatement(1);
 
 		CtLiteral<?> returnExp = (CtLiteral<?>) returnStatement.getReturnedExpression();
 
-		assertEquals(realParam1 , returnExp.toString() );
+		assertEquals(realParam1, returnExp.toString());
 
-		try{
+		try {
 			assertEquals(argument1, returnExp);
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-
-
 	}
 
 	@Test
-	public void testEqualsComment() throws Exception {
+	public void testEqualsComment() {
 		Factory factory = new Launcher().createFactory();
 		CtLocalVariable<?> var = factory.Code().createCodeSnippetStatement("int i=0").compile();
 		CtLocalVariable<?> var2 = var.clone();
@@ -80,7 +93,7 @@ public class EqualTest {
 	}
 
 	@Test
-	public void testEqualsMultitype() throws Exception {
+	public void testEqualsMultitype() {
 		Factory factory = new Launcher().createFactory();
 		CtTry var = factory.Code().createCodeSnippetStatement("try{}catch(RuntimeException | AssertionError e){}").compile();
 		CtTry var2 = var.clone();
@@ -92,7 +105,7 @@ public class EqualTest {
 	}
 
 	@Test
-	public void testEqualsActualTypeRef() throws Exception {
+	public void testEqualsActualTypeRef() {
 		// contract: actual type refs are part of the identity
 		Factory factory = new Launcher().createFactory();
 		CtLocalVariable var = factory.Code().createCodeSnippetStatement("java.util.List<String> l ").compile();
@@ -101,7 +114,7 @@ public class EqualTest {
 	}
 
 	@Test
-	public void testEqualsDetails() throws Exception {
+	public void testEqualsDetails() {
 		Factory factory = new Launcher().createFactory();
 		CtTry var = factory.Code().createCodeSnippetStatement("try{}catch(RuntimeException | AssertionError e){}").compile();
 		CtTry var2 = var.clone();

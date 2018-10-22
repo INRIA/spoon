@@ -41,7 +41,7 @@ public class ExtensionTemplate extends AbstractTemplate<CtType<?>> {
 			iface.delete();
 			target.addSuperInterface(iface);
 		}
-		for (CtTypeMember tm : new ArrayList<CtTypeMember>(generated.getTypeMembers())) {
+		for (CtTypeMember tm : new ArrayList<>(generated.getTypeMembers())) {
 			tm.delete();
 			target.addTypeMember(tm);
 		}

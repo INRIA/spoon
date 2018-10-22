@@ -64,6 +64,7 @@ public class EnumFactory extends TypeFactory {
 	 *
 	 * @return the enumeration or null if does not exist
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public CtEnum<?> get(String qualifiedName) {
 		try {

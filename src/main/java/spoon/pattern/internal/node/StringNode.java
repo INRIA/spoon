@@ -172,7 +172,7 @@ public class StringNode extends AbstractPrimitiveMatcher {
 				re.append(escapeRegExp(getStringValueWithMarkers().substring(start)));
 			}
 			regExpPattern = Pattern.compile(re.toString());
-			params = paramsByRegions.toArray(new ParameterInfo[paramsByRegions.size()]);
+			params = paramsByRegions.toArray(new ParameterInfo[0]);
 		}
 		return regExpPattern;
 	}
@@ -186,7 +186,6 @@ public class StringNode extends AbstractPrimitiveMatcher {
 		int to;
 
 		Region(ParameterInfo param, int from, int to) {
-			super();
 			this.param = param;
 			this.from = from;
 			this.to = to;
@@ -208,7 +207,7 @@ public class StringNode extends AbstractPrimitiveMatcher {
 	/**
 	 * Replaces all occurrences of `tobeReplacedSubstring` in `str` by `substrValue`
 	 * @param str to be modified string
-	 * @param tobeReplacedSubstring all occurences of this String will be replaced by `substrValue`
+	 * @param tobeReplacedSubstring all occurrences of this String will be replaced by `substrValue`
 	 * @param substrValue a replacement
 	 * @return replaced string
 	 */

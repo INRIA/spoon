@@ -1,6 +1,21 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.prettyprinter;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
@@ -56,13 +71,10 @@ public class QualifiedThisRefTest {
 	public void testQualifiedThisRef() {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(factory.getEnvironment());
 		CtType<?> ctClass = factory.Type().get(QualifiedThisRef.class);
-		Collection<CtImport> imports = printer.computeImports(ctClass);
 		final List<CtType<?>> ctTypes = new ArrayList<>();
 		ctTypes.add(ctClass);
-		printer.getElementPrinterHelper().writeHeader(ctTypes, imports);
 		printer.scan(ctClass);
-		Assert.assertTrue(printer.getResult().contains("Object o = this"));
-		Assert.assertTrue(printer.getResult().contains("Object o2 = QualifiedThisRef.this"));
+		assertTrue(printer.getResult().contains("Object o = this"));
 	}
 
 	@Test
@@ -73,11 +85,11 @@ public class QualifiedThisRefTest {
 		final CtMethod<?> m2 = adobada.getMethod("methodUsingjlObjectMethods");
 
 		CtThisAccess th = (CtThisAccess) m2.getElements(new TypeFilter(CtThisAccess.class)).get(0);
-		assertEquals(true,th.isImplicit());
+		assertTrue(th.isImplicit());
 		assertEquals("notify()",th.getParent().toString());
 		CtInvocation<?> clone = m2.clone().getBody().getStatement(0);
 		// clone preserves implicitness
-		assertEquals(true, clone.getTarget().isImplicit());
+		assertTrue(clone.getTarget().isImplicit());
 		assertEquals("notify()", clone.toString()); // the original bug
 
 		// note that this behavior means that you can only keep cloned "this" in the same class,
@@ -87,7 +99,7 @@ public class QualifiedThisRefTest {
 	}
 
 	@Test
-	public void testPrintCtFieldAccessWorkEvenWhenParentNotInitialized() throws Exception {
+	public void testPrintCtFieldAccessWorkEvenWhenParentNotInitialized() {
 		CtClass zeclass = factory.Class().get(QualifiedThisRef.class);
 
 		List<CtMethod> methods = zeclass.getMethodsByName("bla");
@@ -107,11 +119,10 @@ public class QualifiedThisRefTest {
 
 		CtTypeReference tmp = param.getType();
 
-		CtExpression arg = null;
 		CtFieldReference ctfe = factory.createFieldReference();
 		ctfe.setSimpleName("class");
 		ctfe.setDeclaringType(tmp.box());
-		arg = factory.Core().createFieldRead();
+		CtExpression arg = factory.Core().createFieldRead();
 		((CtFieldAccessImpl) arg).setVariable(ctfe);
 
 

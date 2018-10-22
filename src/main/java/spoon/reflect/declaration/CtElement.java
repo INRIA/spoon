@@ -19,6 +19,7 @@ package spoon.reflect.declaration;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
@@ -30,10 +31,12 @@ import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static spoon.reflect.path.CtRole.ANNOTATION;
@@ -46,7 +49,7 @@ import static spoon.reflect.path.CtRole.POSITION;
  * element).
  */
 @Root
-public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQueryable {
+public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQueryable, Serializable, SourcePositionHolder {
 
 	/**
 	 * Searches for an annotation of the given class that annotates the
@@ -132,6 +135,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * to detect whether return instance contains start/end indexes.
 	 */
 	@PropertyGetter(role = POSITION)
+	@Override
 	SourcePosition getPosition();
 
 	/**
@@ -286,6 +290,8 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 
 	/**
 	 * @return the {@link CtRole} of the parent's attribute where this element is used.
+	 * It returns the primary role. For example ((CtMethod) method).getRoleInParent() returns {@link CtRole#TYPE_MEMBER}.
+	 * <br>
 	 * Returns null if parent doesn't contain this element as direct children or if this element has no parent.
 	 */
 	CtRole getRoleInParent();
@@ -296,6 +302,11 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	void delete();
 
 	/**
+	 * Saves a bunch of metadata inside an Element
+	 */
+	<E extends CtElement> E setAllMetadata(Map<String, Object> metadata);
+
+	/**
 	 * Saves metadata inside an Element.
 	 */
 	<E extends CtElement> E putMetadata(String key, Object val);
@@ -304,6 +315,11 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * Retrieves metadata stored in an element. Returns null if it does not exist.
 	 */
 	Object getMetadata(String key);
+
+	/**
+	 * Retrieves all metadata stored in an element.
+	 */
+	Map<String, Object> getAllMetadata();
 
 	/**
 	 * Returns the metadata keys stored in an element.

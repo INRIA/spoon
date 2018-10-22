@@ -36,7 +36,7 @@ Get latest stable version with Maven:
 <dependency>
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-core</artifactId>
-    <version>6.2.0</version>
+    <version>7.1.0</version>
 </dependency>
 ```
 
@@ -90,7 +90,7 @@ Stable version:
 <dependency>
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-core</artifactId>
-    <version>6.2.0</version>
+    <version>7.1.0</version>
 </dependency>
 ```
 
@@ -101,7 +101,7 @@ Snapshot version:
 	<dependency>
 		<groupId>fr.inria.gforge.spoon</groupId>
 		<artifactId>spoon-core</artifactId>
-		<version>6.3.0-SNAPSHOT</version>
+		<version>7.2.0-SNAPSHOT</version>
 	</dependency>
 </dependencies>
 <repositories>
@@ -143,6 +143,7 @@ Alphabetical order of last names
 * Christophe Dufour
 * Thomas Durieux
 * Alcides Fonseca
+* Nicolas Harrand
 * Sebastian Lamelas Marcote
 * Romain Leventov
 * Matias Martinez

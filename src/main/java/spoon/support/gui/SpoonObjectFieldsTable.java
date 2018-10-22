@@ -40,7 +40,6 @@ public class SpoonObjectFieldsTable extends JFrame {
 		transient Object o;
 
 		public SpoonObjectTableModel(Object o) {
-			super();
 
 			this.o = o;
 			field = new ArrayList<>();
@@ -48,6 +47,7 @@ public class SpoonObjectFieldsTable extends JFrame {
 			scanFields(o.getClass());
 		}
 
+		@Override
 		public int getColumnCount() {
 			return columnsName.length;
 		}
@@ -57,10 +57,12 @@ public class SpoonObjectFieldsTable extends JFrame {
 			return columnsName[column];
 		}
 
+		@Override
 		public int getRowCount() {
 			return field.size();
 		}
 
+		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			Field m = field.get(rowIndex);
 			switch (columnIndex) {
@@ -101,7 +103,7 @@ public class SpoonObjectFieldsTable extends JFrame {
 		}
 	}
 
-	public static final String[] columnsName = new String[] {
+	public static final String[] columnsName = {
 			"Name", "FieldType", "currentType", "Value"
 	};
 
@@ -119,7 +121,6 @@ public class SpoonObjectFieldsTable extends JFrame {
 	 * This is the default constructor
 	 */
 	public SpoonObjectFieldsTable(Object o) {
-		super();
 		this.o = o;
 		initialize();
 	}

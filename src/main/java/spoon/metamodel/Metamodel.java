@@ -190,12 +190,20 @@ public class Metamodel {
 
 	private static final String CLASS_SUFFIX = "Impl";
 	/**
-	 * qualified names of packages which contains interfaces of spoon model
+	 * qualified names of packages which contain interfaces of spoon model
 	 */
 	public static final Set<String> MODEL_IFACE_PACKAGES = new HashSet<>(Arrays.asList(
 			"spoon.reflect.code",
 			"spoon.reflect.declaration",
 			"spoon.reflect.reference"));
+
+	/**
+	 * qualified names of packages which contain classes (implementations) of spoon model
+	 */
+	public static final Set<String> MODEL_CLASS_PACKAGES = new HashSet<>(Arrays.asList(
+			"spoon.support.reflect.code",
+			"spoon.support.reflect.declaration",
+			"spoon.support.reflect.reference"));
 
 	/**
 	 * {@link MetamodelConcept}s by name
@@ -240,7 +248,7 @@ public class Metamodel {
 	/**
 	 * @param factory already loaded factory with all Spoon model types
 	 */
-	private Metamodel(Factory factory) {
+	protected Metamodel(Factory factory) {
 		for (String apiPackage : MODEL_IFACE_PACKAGES) {
 			if (factory.Package().get(apiPackage) == null) {
 				throw new SpoonException("Spoon Factory model is missing API package " + apiPackage);
@@ -400,9 +408,8 @@ public class Metamodel {
 				"spoon/reflect/reference",
 				"spoon/support/reflect/declaration",
 				"spoon/support/reflect/code",
-				"spoon/support/reflect/reference").forEach(path -> {
-			launcher.addInputResource(new FileSystemFolder(new File(spoonJavaSourcesDirectory, path)));
-		});
+				"spoon/support/reflect/reference").forEach(path ->
+			launcher.addInputResource(new FileSystemFolder(new File(spoonJavaSourcesDirectory, path))));
 		launcher.buildModel();
 		return launcher.getFactory();
 	}
@@ -477,6 +484,7 @@ public class Metamodel {
 			"java.lang.Cloneable",
 			"java.lang.Object",
 			"spoon.processing.FactoryAccessor",
+			"spoon.reflect.cu.SourcePositionHolder",
 			"spoon.reflect.visitor.CtVisitable",
 			"spoon.reflect.visitor.chain.CtQueryable",
 			"spoon.template.TemplateParameter",
@@ -532,7 +540,7 @@ public class Metamodel {
 		col.add(o);
 		return true;
 	}
-	static boolean containsObject(Iterable<? extends Object> iter, Object o) {
+	static boolean containsObject(Iterable<?> iter, Object o) {
 		for (Object object : iter) {
 			if (object == o) {
 				return true;

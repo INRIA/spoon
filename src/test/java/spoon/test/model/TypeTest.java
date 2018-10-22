@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.model;
 
 import org.junit.Test;
@@ -62,7 +78,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testGetUsedTypesForTypeInRootPackage() throws Exception {
+	public void testGetUsedTypesForTypeInRootPackage() {
 		CtClass<?> cl = createFactory().Code().createCodeSnippetStatement("class X { X x; }").compile();
 		assertEquals(0, cl.getUsedTypes(false).size());
 	}
@@ -95,7 +111,7 @@ public class TypeTest {
 
 	@Test
 	public void testGetDeclaredOrIheritedFieldByReflection() throws Exception {
-		CtTypeReference<?> type = build("spoon.test.model", "ClassWithSuperOutOfModel").getReference();
+		CtTypeReference<?> type = build("spoon.test.model.testclasses", "ClassWithSuperOutOfModel").getReference();
 
 		assertEquals("buf", type.getDeclaredOrInheritedField("buf").getSimpleName());
 		assertEquals("count", type.getDeclaredOrInheritedField("count").getSimpleName());
@@ -105,9 +121,9 @@ public class TypeTest {
 	@Test
 	public void testTypeInfoIsInterface() throws Exception {
 		//contract: isInterface returns true only for interfaces
-		CtType<?> clazz = build("spoon.test.model", "ClassWithSuperOutOfModel");
+		CtType<?> clazz = build("spoon.test.model.testclasses", "ClassWithSuperOutOfModel");
 		checkIsSomething("class", clazz);
-		CtType<?> type = build("spoon.test.model", "InterfaceWrithFields");
+		CtType<?> type = build("spoon.test.model.testclasses", "InterfaceWrithFields");
 		checkIsSomething("interface", type);
 		checkIsSomething("enum", type.getFactory().Enum().create(type.getPackage(), "someEnum"));
 		CtType<?> ctAnnotation = type.getFactory().Annotation().create(type.getPackage(), "someAnnotation");

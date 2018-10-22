@@ -45,8 +45,7 @@ public abstract class ExpressionTemplate<T> extends AbstractTemplate<CtExpressio
 
 	private static CtBlock<?> getExpressionBlock(
 			CtClass<? extends ExpressionTemplate<?>> p) {
-		CtBlock<?> b = p.getMethod("expression").getBody();
-		return b;
+		return p.getMethod("expression").getBody();
 	}
 
 	/**
@@ -62,6 +61,7 @@ public abstract class ExpressionTemplate<T> extends AbstractTemplate<CtExpressio
 	 */
 	public abstract T expression() throws Throwable;
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public CtExpression<T> apply(CtType<?> targetType) {
 		CtClass<? extends ExpressionTemplate<?>> c = Substitution.getTemplateCtClass(targetType, this);

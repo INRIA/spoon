@@ -16,4 +16,3 @@ public class A2 {
 		c(param);
 	}
 }
-}

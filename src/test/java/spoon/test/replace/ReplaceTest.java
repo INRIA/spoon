@@ -1,6 +1,21 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.replace;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
@@ -40,7 +55,10 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -61,7 +79,7 @@ public class ReplaceTest {
 	}
 
 	@Test
-	public void testReplaceSet() throws Exception {
+	public void testReplaceSet() {
 
 		CtClass<?> foo = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
@@ -89,7 +107,7 @@ public class ReplaceTest {
 	}
 
 	@Test
-	public void testReplaceBlock() throws Exception {
+	public void testReplaceBlock() {
 		CtClass<?> foo = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 		CtMethod<?> m = foo.getElements(
@@ -119,7 +137,7 @@ public class ReplaceTest {
 	}
 
 	@Test
-	public void testReplaceReplace() throws Exception {
+	public void testReplaceReplace() {
 		// bug found by Benoit
 		CtClass<?> foo = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
@@ -210,23 +228,23 @@ public class ReplaceTest {
 		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 
-		Assert.assertEquals(factory.Type().createReference(int.class), sample.getField("i").getType());
+		assertEquals(factory.Type().createReference(int.class), sample.getField("i").getType());
 
 		// replace with another type
 		CtField replacement = factory.Core().createField();
 		replacement.setSimpleName("i");
 		replacement.setType(factory.Type().createReference(double.class));
 		sample.getField("i").replace(replacement);
-		Assert.assertEquals(factory.Type().createReference(double.class), sample.getField("i").getType());
+		assertEquals(factory.Type().createReference(double.class), sample.getField("i").getType());
 
 		// replace with another name
 		replacement = factory.Core().createField();
 		replacement.setSimpleName("j");
 		replacement.setType(factory.Type().createReference(double.class));
 		sample.getField("i").replace(replacement);
-		Assert.assertNull(sample.getField("i"));
-		Assert.assertNotNull(sample.getField("j"));
-		Assert.assertEquals(factory.Type().createReference(double.class), sample.getField("j").getType());
+		assertNull(sample.getField("i"));
+		assertNotNull(sample.getField("j"));
+		assertEquals(factory.Type().createReference(double.class), sample.getField("j").getType());
 	}
 
 	@Test
@@ -234,16 +252,16 @@ public class ReplaceTest {
 		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 
-		Assert.assertNotNull(sample.getMethod("foo"));
-		Assert.assertNull(sample.getMethod("notfoo"));
+		assertNotNull(sample.getMethod("foo"));
+		assertNull(sample.getMethod("notfoo"));
 
 		CtMethod bar = factory.Core().createMethod();
 		bar.setSimpleName("notfoo");
 		bar.setType(factory.Type().createReference(void.class));
 		sample.getMethod("foo").replace(bar);
 
-		Assert.assertNull(sample.getMethod("foo"));
-		Assert.assertNotNull(sample.getMethod("notfoo"));
+		assertNull(sample.getMethod("foo"));
+		assertNotNull(sample.getMethod("notfoo"));
 	}
 
 	@Test
@@ -251,8 +269,8 @@ public class ReplaceTest {
 		CtClass<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo");
 
-		Assert.assertNotNull(sample.getMethod("foo"));
-		Assert.assertNull(sample.getMethod("notfoo"));
+		assertNotNull(sample.getMethod("foo"));
+		assertNull(sample.getMethod("notfoo"));
 
 		CtMethod bar = factory.Core().createMethod();
 		bar.setSimpleName("notfoo");
@@ -263,10 +281,10 @@ public class ReplaceTest {
 		int originCountOfMethods = sample.getTypeMembers().size();
 		sample.getMethod("foo").replace(Arrays.asList(bar, bar2));
 
-		Assert.assertNull(sample.getMethod("foo"));
-		Assert.assertNotNull(sample.getMethod("notfoo"));
-		Assert.assertNotNull(sample.getMethod("notfoo2"));
-		Assert.assertEquals(originCountOfMethods+1, sample.getTypeMembers().size());
+		assertNull(sample.getMethod("foo"));
+		assertNotNull(sample.getMethod("notfoo"));
+		assertNotNull(sample.getMethod("notfoo2"));
+		assertEquals(originCountOfMethods+1, sample.getTypeMembers().size());
 	}
 
 	@Test
@@ -276,14 +294,14 @@ public class ReplaceTest {
 
 		CtVariable<?> var = sample.getBody().getStatement(0);
 
-		Assert.assertTrue(var.getDefaultExpression() instanceof CtLiteral);
-		Assert.assertEquals(3, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
+		assertTrue(var.getDefaultExpression() instanceof CtLiteral);
+		assertEquals(3, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
 
 		CtLiteral replacement = factory.Core().createLiteral();
 		replacement.setValue(42);
 		var.getDefaultExpression().replace(replacement);
 
-		Assert.assertEquals(42, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
+		assertEquals(42, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
 
 	}
 
@@ -292,12 +310,12 @@ public class ReplaceTest {
 		CtMethod<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo").getMethod("foo");
 
-		Assert.assertTrue(sample.getBody().getStatement(0) instanceof CtVariable);
+		assertTrue(sample.getBody().getStatement(0) instanceof CtVariable);
 
 		CtStatement replacement = factory.Core().createInvocation();
 		sample.getBody().getStatement(0).replace(replacement);
 
-		Assert.assertTrue(sample.getBody().getStatement(0) instanceof CtInvocation);
+		assertTrue(sample.getBody().getStatement(0) instanceof CtInvocation);
 	}
 
 	@Test
@@ -321,7 +339,7 @@ public class ReplaceTest {
 		final List<CtTypeReference> references = Query.getElements(factory, new ReferenceTypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
 			public boolean matches(CtTypeReference reference) {
-				return reference.getActualTypeArguments().size() > 0 && super.matches(reference);
+				return !reference.getActualTypeArguments().isEmpty() && super.matches(reference);
 			}
 		});
 
@@ -336,7 +354,7 @@ public class ReplaceTest {
 	}
 
 	@Test
-	public void testReplaceAPackageReferenceByAnotherOne() throws Exception {
+	public void testReplaceAPackageReferenceByAnotherOne() {
 		// contract: replace a package reference of a reference to another package.
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });

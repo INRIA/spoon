@@ -1,15 +1,22 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.method_overriding;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiFunction;
-
 import org.junit.Test;
-
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
@@ -20,12 +27,21 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.method_overriding.testclasses2.ObjectInterface;
 import spoon.testing.utils.ModelUtils;
 
-import static org.junit.Assert.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MethodOverriddingTest {
-	
+
 	@Test
-	public void testShadowInterfaceMethodsCanOverrideObjectMethods() throws Exception {
+	public void testShadowInterfaceMethodsCanOverrideObjectMethods() {
 		//contract: Interface (made by reflection) method equals overrides Object#equals
 		Factory f = new Launcher().getFactory();
 		CtType<?> iface = f.Interface().get(Comparator.class);
@@ -62,11 +78,12 @@ public class MethodOverriddingTest {
 	public void testMethodOverride() {
 		checkMethodOverride((m1, m2)->m1.isOverriding(m2));
 	}
+
 	@Test
 	public void testMethodOverrideByReference() {
 		checkMethodOverride((m1, m2)->m1.getReference().isOverriding(m2.getReference()));
 	}
-	
+
 	private void checkMethodOverride(BiFunction<CtMethod<?>, CtMethod<?>, Boolean> isOverriding) {
 		Factory factory = ModelUtils.build(new File("src/test/java/spoon/test/method_overriding/testclasses").listFiles());
 		Map<String, List<CtMethod>> methodsByName = new HashMap<>();
@@ -78,7 +95,7 @@ public class MethodOverriddingTest {
 			}
 			methods.add(m);
 		});
-		assertTrue(methodsByName.size()>0);
+		assertFalse(methodsByName.isEmpty());
 		for (Map.Entry<String, List<CtMethod>> e : methodsByName.entrySet()) {
 			combine(e.getValue(), 0, isOverriding);
 		}
@@ -104,6 +121,7 @@ public class MethodOverriddingTest {
 		assertTrue(descr(m1)+" overriding "+descr(m2), 		isOverriding.apply(m1, m2));
 		assertFalse(descr(m2)+" NOT overriding "+descr(m1), isOverriding.apply(m2, m1));
 	}
+
 	private void checkNotOverride(CtMethod m1, CtMethod m2, BiFunction<CtMethod<?>, CtMethod<?>, Boolean> isOverriding) {
 		assertFalse(descr(m1)+" NOT overriding "+descr(m2), isOverriding.apply(m1, m2));
 		assertFalse(descr(m2)+" NOT overriding "+descr(m1), isOverriding.apply(m2, m1));

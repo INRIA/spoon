@@ -27,10 +27,10 @@ import spoon.support.util.ImmutableMap;
  * Represents a single match of {@link Pattern}
  */
 public class Match {
-	private final List<? extends Object> matchingElements;
+	private final List<?> matchingElements;
 	private final ImmutableMap parameters;
 
-	public Match(List<? extends Object> matches, ImmutableMap parameters) {
+	public Match(List<?> matches, ImmutableMap parameters) {
 		this.parameters = parameters;
 		this.matchingElements = matches;
 	}

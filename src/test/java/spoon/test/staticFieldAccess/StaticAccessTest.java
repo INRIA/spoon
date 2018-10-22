@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.staticFieldAccess;
 
 import org.junit.Before;
@@ -9,6 +25,7 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.test.staticFieldAccess.processors.InsertBlockProcessor;
 
 import java.io.File;
 import java.util.Arrays;
@@ -37,9 +54,8 @@ public class StaticAccessTest {
     }
 
     @Test
-    public void testReferences() throws Exception {
-
-        CtType<?> type = (CtType<?>) factory.Type().get("spoon.test.staticFieldAccess.StaticAccessBug");
+    public void testReferences() {
+        CtType<?> type = factory.Type().get("spoon.test.staticFieldAccess.StaticAccessBug");
         CtBlock<?> block = type.getMethod("references").getBody();
         assertTrue(block.getStatement(0).toString().contains("Extends.MY_STATIC_VALUE"));
         assertTrue(block.getStatement(1).toString().contains("Extends.MY_OTHER_STATIC_VALUE"));

@@ -120,7 +120,6 @@ public abstract class CtScanner implements CtVisitor {
 	 * Default constructor.
 	 */
 	public CtScanner() {
-		super();
 	}
 
 	/**
@@ -742,7 +741,6 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.PACKAGE_REF, ref.getPackage());
 		scan(CtRole.DECLARING_TYPE, ref.getDeclaringType());
 		scan(CtRole.ANNOTATION, ref.getAnnotations());
-		scan(CtRole.BOUNDING_TYPE, ref.getBoundingType());
 		exit(ref);
 	}
 

@@ -120,6 +120,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 *
 	 * Overrides the return type.
 	 */
+	@Override
 	@DerivedProperty
 	CtTypeReference<T> getReference();
 
@@ -197,7 +198,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	<C extends CtType<T>> C setNestedTypes(Set<CtType<?>> nestedTypes);
 
 	/**
-	 * Compiles and replace all the code snippets that are found in this type.
+	 * Replace all the code snippets that are found in this type by the corresponding Spoon AST.
 	 *
 	 * @see CtCodeSnippet
 	 * @see spoon.reflect.code.CtCodeSnippetExpression

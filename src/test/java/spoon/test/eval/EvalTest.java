@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.eval;
 
 import org.junit.Test;
@@ -11,23 +27,21 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.visitor.AccessibleVariablesFinder;
-import spoon.reflect.visitor.CtInheritanceScanner;
-import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.eval.InlinePartialEvaluator;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
+import spoon.test.eval.testclasses.Foo;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class EvalTest {
 
 	@Test
 	public void testStringConcatenation() throws Exception {
-		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
 		CtBlock<?> b = type.getMethodsByName("testStrings").get(0).getBody();
@@ -41,7 +55,7 @@ public class EvalTest {
 
 	@Test
 	public void testArrayLength() throws Exception {
-		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
 		CtBlock<?> b = type.getMethodsByName("testArray").get(0).getBody();
@@ -52,7 +66,7 @@ public class EvalTest {
 
 	@Test
 	public void testDoNotSimplify() throws Exception {
-		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
 		CtBlock<?> b = type.getMethodsByName("testDoNotSimplify").get(0).getBody();
@@ -63,19 +77,19 @@ public class EvalTest {
 
 	@Test
 	public void testDoNotSimplifyCasts() throws Exception {
-		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
 		CtBlock<?> b = type.getMethodsByName("testDoNotSimplifyCasts").get(0).getBody();
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();
-		assertEquals("return ((U) ((java.lang.Object) (spoon.test.eval.ToEvaluate.castTarget(element).getClass())))", b.getStatements().get(0).toString());
+		assertEquals("return ((U) ((java.lang.Object) (spoon.test.eval.testclasses.ToEvaluate.castTarget(element).getClass())))", b.getStatements().get(0).toString());
 	}
 
 	@Test
 	public void testScanAPartiallyEvaluatedElement() throws Exception {
 		// contract: once partially evaluated a code element should be still visitable to find variables
-		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
 		CtBlock<?> b = type.getMethodsByName("testDoNotSimplifyCasts").get(0).getBody();
@@ -89,7 +103,7 @@ public class EvalTest {
 
 	@Test
 	public void testTryCatchAndStatement() throws Exception {
-		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
 		CtBlock<?> b = type.getMethodsByName("tryCatchAndStatement").get(0).getBody();
@@ -100,19 +114,19 @@ public class EvalTest {
 
 	@Test
 	public void testDoNotSimplifyToExpressionWhenStatementIsExpected() throws Exception {
-		CtClass<?> type = build("spoon.test.eval", "ToEvaluate");
+		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
 		CtBlock<?> b = type.getMethodsByName("simplifyOnlyWhenPossible").get(0).getBody();
 		assertEquals(3, b.getStatements().size());
 		b = b.partiallyEvaluate();
-		assertEquals("spoon.test.eval.ToEvaluate.class.getName()", b.getStatements().get(0).toString());
-		assertEquals("java.lang.System.out.println(spoon.test.eval.ToEvaluate.getClassLoader())", b.getStatements().get(1).toString());
-		assertEquals("return \"spoon.test.eval.ToEvaluate\"", b.getStatements().get(2).toString());
+		assertEquals("spoon.test.eval.testclasses.ToEvaluate.class.getName()", b.getStatements().get(0).toString());
+		assertEquals("java.lang.System.out.println(spoon.test.eval.testclasses.ToEvaluate.getClassLoader())", b.getStatements().get(1).toString());
+		assertEquals("return \"spoon.test.eval.testclasses.ToEvaluate\"", b.getStatements().get(2).toString());
 	}
 
 	@Test
-	public void testVisitorPartialEvaluator_binary() throws Exception {
+	public void testVisitorPartialEvaluator_binary() {
 		Launcher launcher = new Launcher();
 
 		{ // binary operator
@@ -142,27 +156,25 @@ public class EvalTest {
 			CtElement elnew = eval.evaluate(el);
 			assertEquals("false", elnew.toString());
 		}
-
 	}
 
 	@Test
-	public void testVisitorPartialEvaluator_if() throws Exception {
+	public void testVisitorPartialEvaluator_if() {
 		Launcher launcher = new Launcher();
 		{ // the untaken branch is removed
 			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetStatement("if (false) {System.out.println(\"foo\");} else {System.out.println(\"bar\");} ").compile();
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 			CtElement elnew = eval.evaluate(el);
-			assertEquals("{" + System.lineSeparator() +
-					"    java.lang.System.out.println(\"bar\");" + System.lineSeparator() +
-					"}", elnew.toString());
+			assertEquals("{" + System.lineSeparator()
+					+ "    java.lang.System.out.println(\"bar\");" + System.lineSeparator()
+					+ "}", elnew.toString());
 		}
-
 	}
 
 	@Test
-	public void testVisitorPartialEvaluatorScanner() throws Exception {
+	public void testVisitorPartialEvaluatorScanner() {
 		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/java/spoon/test/eval/Foo.java");
+		launcher.addInputResource("src/test/java/spoon/test/eval/testclasses/Foo.java");
 		launcher.buildModel();
 		VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 		CtType<?> foo = launcher.getFactory().Type().get((Class<?>) Foo.class);

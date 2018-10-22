@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.arrays;
 
 import org.junit.Test;
@@ -42,7 +58,7 @@ public class ArraysTest {
 	}
 
 	@Test
-	public void testInitializeWithNewArray() throws Exception {
+	public void testInitializeWithNewArray() {
 		Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/resources/noclasspath/Foo.java");
@@ -68,7 +84,7 @@ public class ArraysTest {
 	}
 
 	@Test
-	public void testCtNewArrayInnerCtNewArray() throws Exception {
+	public void testCtNewArrayInnerCtNewArray() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/java/spoon/test/arrays/testclasses/Foo.java");
 		launcher.setSourceOutputDirectory("target/foo");
@@ -82,7 +98,7 @@ public class ArraysTest {
 	}
 
 	@Test
-	public void testCtNewArrayWitComments() throws Exception {
+	public void testCtNewArrayWitComments() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/java/spoon/test/arrays/testclasses/NewArrayWithComment.java");
 		launcher.getEnvironment().setCommentEnabled(true);
@@ -95,7 +111,7 @@ public class ArraysTest {
 			fail(e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testParameterizedVarargReference() throws Exception {
 		//contract: check actual type arguments of parameter type: List<?>...
@@ -107,7 +123,7 @@ public class ArraysTest {
 		assertEquals(1, varArg1TypeRef.getComponentType().getActualTypeArguments().size());
 		assertEquals(0, varArg1TypeRef.getActualTypeArguments().size());
 	}
-	
+
 	@Test
 	public void testParameterizedArrayReference() throws Exception {
 		//contract: check actual type arguments of parameter type: List<?>[]
@@ -139,7 +155,7 @@ public class ArraysTest {
 		//contract: check actual type arguments of parameter type: List<?>
 		CtType<?> ctClass = ModelUtils.buildClass(VaragParam.class);
 		CtParameter<?> param1 = ctClass.getMethodsByName("m4").get(0).getParameters().get(0);
-		CtTypeReference<?> typeRef = (CtTypeReference<?>) param1.getType();
+		CtTypeReference<?> typeRef = param1.getType();
 		assertEquals("java.util.List<?>", typeRef.toString());
 		assertEquals(1, typeRef.getActualTypeArguments().size());
 	}

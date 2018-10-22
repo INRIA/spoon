@@ -1,6 +1,21 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import spoon.compiler.Environment;
@@ -15,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -28,14 +44,14 @@ public class LauncherTest {
 
 		final Environment environment = launcher.getEnvironment();
 		// specify the default values
-		Assert.assertFalse(environment.isAutoImports());
-		Assert.assertFalse(environment.isUsingTabulations());
-		Assert.assertFalse(environment.isPreserveLineNumbers());
+		assertFalse(environment.isAutoImports());
+		assertFalse(environment.isUsingTabulations());
+		assertFalse(environment.isPreserveLineNumbers());
 		assertEquals(4, environment.getTabulationSize());
-		Assert.assertTrue(environment.isCopyResources());
+		assertTrue(environment.isCopyResources());
 
 		JavaOutputProcessor processor = (JavaOutputProcessor) environment.getDefaultFileGenerator();
-		Assert.assertTrue(processor.getPrinter() instanceof DefaultJavaPrettyPrinter);
+		assertTrue(processor.getPrinter() instanceof DefaultJavaPrettyPrinter);
 
 		// now assertions on the model builder
 		final SpoonModelBuilder builder = launcher.getModelBuilder();
@@ -55,12 +71,12 @@ public class LauncherTest {
 		final Environment environment = launcher.getEnvironment();
 
 		// Verify if the environment is correct.
-		Assert.assertTrue(environment.isAutoImports());
-		Assert.assertTrue(environment.isUsingTabulations());
-		Assert.assertTrue(environment.isPreserveLineNumbers());
+		assertTrue(environment.isAutoImports());
+		assertTrue(environment.isUsingTabulations());
+		assertTrue(environment.isPreserveLineNumbers());
 		assertEquals(42, environment.getTabulationSize());
 		assertEquals(5, environment.getComplianceLevel());
-		Assert.assertFalse(environment.isCopyResources());
+		assertFalse(environment.isCopyResources());
 
 		final SpoonModelBuilder builder = launcher.getModelBuilder();
 		assertEquals(new File("spooned2").getCanonicalFile(), builder.getSourceOutputDirectory());
@@ -69,7 +85,6 @@ public class LauncherTest {
 		List<File> inputSources = new ArrayList<>(builder.getInputSources());
 		assertTrue(inputSources.get(0).getPath().replace('\\', '/').contains("src/main/java"));
 		assertEquals("UTF-16", environment.getEncoding().displayName());
-
 	}
 
 	@Test
@@ -94,7 +109,7 @@ public class LauncherTest {
 	}
 
 	@Test
-	public void testLLauncherBuildModelReturnAModel() throws Exception {
+	public void testLLauncherBuildModelReturnAModel() {
 		// contract: Launcher#buildModel should return a consistent CtModel
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/spoon/test/api/Foo.java");

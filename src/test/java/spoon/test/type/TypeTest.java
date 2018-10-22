@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2006-2015 INRIA and contributors
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -14,7 +14,6 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-
 package spoon.test.type;
 
 import org.junit.Test;
@@ -63,7 +62,7 @@ import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class TypeTest {
 	@Test
-	public void testTypeAccessForDotClass() throws Exception {
+	public void testTypeAccessForDotClass() {
 		// contract: When we use .class on a type, this must be a CtTypeAccess.
 		final String target = "./target/type";
 		final Launcher launcher = new Launcher();
@@ -90,7 +89,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testTypeAccessOnPrimitive() throws Exception {
+	public void testTypeAccessOnPrimitive() {
 		Factory factory = createFactory();
 		CtClass<?> clazz = factory.Code().createCodeSnippetStatement( //
 				"class X {" //
@@ -111,7 +110,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testTypeAccessForTypeAccessInInstanceOf() throws Exception {
+	public void testTypeAccessForTypeAccessInInstanceOf() {
 		// contract: the right hand operator must be a CtTypeAccess.
 		final String target = "./target/type";
 		final Launcher launcher = new Launcher();
@@ -123,7 +122,7 @@ public class TypeTest {
 		final CtClass<Pozole> aPozole = launcher.getFactory().Class().get(Pozole.class);
 		final CtMethod<?> eat = aPozole.getMethodsByName("eat").get(0);
 
-		final List<CtTypeAccess<?>> typeAccesses = eat.getElements(new TypeFilter<CtTypeAccess<?>>(CtTypeAccess.class));
+		final List<CtTypeAccess<?>> typeAccesses = eat.getElements(new TypeFilter<>(CtTypeAccess.class));
 		assertEquals(2, typeAccesses.size());
 
 		assertTrue(typeAccesses.get(0).getParent() instanceof CtBinaryOperator);
@@ -136,7 +135,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testTypeAccessOfArrayObjectInFullyQualifiedName() throws Exception {
+	public void testTypeAccessOfArrayObjectInFullyQualifiedName() {
 		// contract: A type access in fully qualified name must to rewrite well.
 		final String target = "./target/type";
 		final Launcher launcher = new Launcher();
@@ -148,7 +147,7 @@ public class TypeTest {
 		final CtClass<Pozole> aPozole = launcher.getFactory().Class().get(Pozole.class);
 		final CtMethod<?> season = aPozole.getMethodsByName("season").get(0);
 
-		final List<CtTypeAccess<?>> typeAccesses = season.getElements(new TypeFilter<CtTypeAccess<?>>(CtTypeAccess.class));
+		final List<CtTypeAccess<?>> typeAccesses = season.getElements(new TypeFilter<>(CtTypeAccess.class));
 		assertEquals(2, typeAccesses.size());
 
 		assertTrue(typeAccesses.get(0).getParent() instanceof CtBinaryOperator);
@@ -163,7 +162,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void test() throws Exception {
+	public void test() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/TorIntegration.java");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -172,14 +171,13 @@ public class TypeTest {
 		CtType<?> ctType = launcher.getFactory().Class().getAll().get(0);
 		List<CtNewClass> elements = ctType.getElements(new TypeFilter<>(CtNewClass.class));
 		assertEquals(4, elements.size());
-		for (int i = 0; i < elements.size(); i++) {
-			CtNewClass ctNewClass = elements.get(i);
+		for (CtNewClass ctNewClass : elements) {
 			assertEquals("android.content.DialogInterface$OnClickListener", ctNewClass.getAnonymousClass().getSuperclass().getQualifiedName());
 		}
 	}
 
 	@Test
-	public void testIntersectionTypeReferenceInGenericsAndCasts() throws Exception {
+	public void testIntersectionTypeReferenceInGenericsAndCasts() {
 		final String target = "./target/type";
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/type/testclasses");
@@ -201,7 +199,7 @@ public class TypeTest {
 		assertIntersectionTypeForPozolePrepareMethod(aPozole, typeParameter.getSuperclass());
 
 		// Intersection type in casts.
-		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class));
+		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<>(CtLambda.class));
 		assertEquals(1, lambdas.size());
 
 		assertEquals(1, lambdas.get(0).getTypeCasts().size());
@@ -224,7 +222,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testTypeReferenceInGenericsAndCasts() throws Exception {
+	public void testTypeReferenceInGenericsAndCasts() {
 		final String target = "./target/type";
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/type/testclasses");
@@ -246,7 +244,7 @@ public class TypeTest {
 		assertIntersectionTypeForPozoleFinishMethod(aPozole, typeParameter.getSuperclass());
 
 		// Intersection type in casts.
-		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class));
+		final List<CtLambda<?>> lambdas = prepare.getElements(new TypeFilter<>(CtLambda.class));
 		assertEquals(1, lambdas.size());
 
 		assertEquals(1, lambdas.get(0).getTypeCasts().size());
@@ -277,13 +275,13 @@ public class TypeTest {
 		assertNotNull(boundingType);
 		assertTrue(boundingType instanceof CtIntersectionTypeReference);
 		assertEquals(2, boundingType.asCtIntersectionTypeReference().getBounds().size());
-		assertEquals(Number.class, boundingType.asCtIntersectionTypeReference().getBounds().stream().collect(Collectors.toList()).get(0).getActualClass());
-		assertEquals(Comparable.class, boundingType.asCtIntersectionTypeReference().getBounds().stream().collect(Collectors.toList()).get(1).getActualClass());
+		assertSame(Number.class, boundingType.asCtIntersectionTypeReference().getBounds().stream().collect(Collectors.toList()).get(0).getActualClass());
+		assertSame(Comparable.class, boundingType.asCtIntersectionTypeReference().getBounds().stream().collect(Collectors.toList()).get(1).getActualClass());
 		assertEquals("public class Mole<NUMBER extends java.lang.Number & java.lang.Comparable<NUMBER>> {}", aMole.toString());
 	}
 
 	@Test
-	public void testUnboxingTypeReference() throws Exception {
+	public void testUnboxingTypeReference() {
 		// contract: When you call CtTypeReference#unbox on a class which doesn't exist
 		// in the spoon path, the method return the type reference itself.
 		final Factory factory = createFactory();
@@ -297,14 +295,14 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testDeclarationCreatedByFactory() throws Exception {
+	public void testDeclarationCreatedByFactory() {
 		final Factory factory = createFactory();
 		assertNotNull(factory.Interface().create("fr.inria.ITest").getReference().getDeclaration());
 		assertNotNull(factory.Enum().create("fr.inria.ETest").getReference().getDeclaration());
 	}
 
 	@Test
-	public void testPolyTypBindingInTernaryExpression() throws Exception {
+	public void testPolyTypBindingInTernaryExpression() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/ternary-bug");
 		launcher.getEnvironment().setNoClasspath(true);
@@ -321,7 +319,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testShadowType() throws Exception {
+	public void testShadowType() {
 
 		/* Objects and factory have to be the sames */
 
@@ -378,7 +376,7 @@ public class TypeTest {
 	}
 
 	@Test
-	public void testTypeMemberOrder() throws Exception {
+	public void testTypeMemberOrder() {
 		// contract: The TypeMembers keeps order of members same like in source file 
 		final String target = "./target/type";
 		final Launcher launcher = new Launcher();

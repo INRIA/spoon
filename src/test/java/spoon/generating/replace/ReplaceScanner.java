@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2017 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -90,7 +90,7 @@ public class ReplaceScanner extends CtScanner {
 			invArgs.remove(0);
 			CtInvocation getter = (CtInvocation) invArgs.get(0);
 
-			if (clone.getComments().size() == 0) {
+			if (clone.getComments().isEmpty()) {
 				// Add auto-generated comment.
 				final CtComment comment = factory.Core().createComment();
 				comment.setCommentType(CtComment.CommentType.INLINE);

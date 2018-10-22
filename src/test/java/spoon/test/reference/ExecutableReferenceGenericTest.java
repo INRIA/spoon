@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
+ *
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
+ */
 package spoon.test.reference;
 
 import org.junit.Before;
@@ -41,15 +57,15 @@ public class ExecutableReferenceGenericTest {
 		SpoonModelBuilder compiler = spoon.createCompiler(
 				factory,
 				SpoonResourceHelper.resources(
-						"./src/test/java/spoon/test/reference/MyClass.java",
-						"./src/test/java/spoon/test/reference/MyClass2.java",
-						"./src/test/java/spoon/test/reference/MyClass3.java"));
+						"./src/test/java/spoon/test/reference/testclasses/MyClass.java",
+						"./src/test/java/spoon/test/reference/testclasses/MyClass2.java",
+						"./src/test/java/spoon/test/reference/testclasses/MyClass3.java"));
 
 		compiler.build();
 	}
 
 	@Test
-	public void testReferencesBetweenConstructors() throws Exception {
+	public void testReferencesBetweenConstructors() {
 		final List<CtConstructor<?>> constructors = getConstructorsByClass("MyClass");
 
 		CtConstructor<?> emptyConstructor = constructors.get(0);
@@ -70,7 +86,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	@Test
-	public void testReferencesBetweenConstructorsInOtherClass() throws Exception {
+	public void testReferencesBetweenConstructorsInOtherClass() {
 		final List<CtConstructor<?>> constructors = getConstructorsByClass("MyClass2");
 		final CtConstructor<?> ctConstructor = constructors.get(0);
 		final List<CtExecutableReference<?>> refConstructors = getCtConstructorsReferencedInCtConstructor(ctConstructor);
@@ -94,7 +110,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	@Test
-	public void testOneReferenceBetweenMethodsInSameClass() throws Exception {
+	public void testOneReferenceBetweenMethodsInSameClass() {
 		final CtClass<?> clazz = getCtClassByName("MyClass");
 
 		CtMethod<?> method1 = getCtMethodByNameFromCtClass(clazz, "method1");
@@ -106,7 +122,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	@Test
-	public void testMultiReferenceBetweenMethodsWithGenericInSameClass() throws Exception {
+	public void testMultiReferenceBetweenMethodsWithGenericInSameClass() {
 		final CtClass<?> clazz = getCtClassByName("MyClass");
 
 		CtMethod<?> method2 = getCtMethodByNameFromCtClass(clazz, "method2");
@@ -119,13 +135,13 @@ public class ExecutableReferenceGenericTest {
 
 		//T has more information in the invocation than its declaration because of the argument type
 		//assertEquals(expectedMethod1, refsMethod2.get(0).getDeclaration());
-		assertEquals("method1(T extends java.lang.String)", execRefsMethods2.getSignature());
+		assertEquals("method1(java.lang.String)", execRefsMethods2.getSignature());
 		assertEquals(expectedMethod1, refsMethod2.get(1).getDeclaration());
 		assertEquals(expectedMethod5, refsMethod2.get(2).getDeclaration());
 	}
 
 	@Test
-	public void testMultiReferencesBetweenMethodsWithoutGenericInSameClass() throws Exception {
+	public void testMultiReferencesBetweenMethodsWithoutGenericInSameClass() {
 		final CtClass<?> clazz = getCtClassByName("MyClass");
 
 		CtMethod<?> method3 = getCtMethodByNameFromCtClass(clazz, "method3");
@@ -139,7 +155,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	@Test
-	public void testMethodWithoutReferences() throws Exception {
+	public void testMethodWithoutReferences() {
 		final CtClass<?> clazz = getCtClassByName("MyClass");
 
 		CtMethod<?> method4 = getCtMethodByNameFromCtClass(clazz, "method4");
@@ -149,7 +165,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	@Test
-	public void testMethodGenericWithoutReferences() throws Exception {
+	public void testMethodGenericWithoutReferences() {
 		final CtClass<?> clazz = getCtClassByName("MyClass");
 
 		CtMethod<?> method5 = getCtMethodByNameFromCtClass(clazz, "method5");
@@ -159,7 +175,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	@Test
-	public void testOneReferenceWithGenericMethodOutOfTheClass() throws Exception {
+	public void testOneReferenceWithGenericMethodOutOfTheClass() {
 		final CtClass<?> clazz = getCtClassByName("MyClass");
 		final CtClass<?> clazz2 = getCtClassByName("MyClass2");
 
@@ -172,11 +188,11 @@ public class ExecutableReferenceGenericTest {
 		CtExecutable execRefsMethods2 = refsMethodA.get(0).getDeclaration();
 		//T has more information in the invocation than its declaration because of the argument type
 		//	assertEquals(expectedMethod1, refsMethodA.get(0).getDeclaration());
-		assertEquals(execRefsMethods2.getSignature(), "method1(T extends java.lang.String)");
+		assertEquals("method1(java.lang.String)", execRefsMethods2.getSignature());
 	}
 
 	@Test
-	public void testOneReferenceWithMethodNotGenericOutOfTheClass() throws Exception {
+	public void testOneReferenceWithMethodNotGenericOutOfTheClass() {
 		final CtClass<?> clazz = getCtClassByName("MyClass");
 		final CtClass<?> clazz2 = getCtClassByName("MyClass2");
 
@@ -189,7 +205,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	@Test
-	public void testMultiReferenceWithGenericMethodOutOfTheClass() throws Exception {
+	public void testMultiReferenceWithGenericMethodOutOfTheClass() {
 		final CtClass<?> clazz2 = getCtClassByName("MyClass2");
 		final CtClass<?> clazz3 = getCtClassByName("MyClass3");
 
@@ -204,7 +220,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	@Test
-	public void testReferencesBetweenMethods() throws Exception {
+	public void testReferencesBetweenMethods() {
 		final CtClass<?> clazz2 = getCtClassByName("MyClass2");
 
 		CtMethod<?> methodD = getCtMethodByNameFromCtClass(clazz2, "methodD");
@@ -223,7 +239,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	@Test
-	public void testExecutableReferences() throws Exception {
+	public void testExecutableReferences() {
 		// factory has loaded MyClass, MyClass2 and MyClass3
 
 		CtClass<?> classMyClass = Query.getElements(factory, new NamedElementFilter<>(CtClass.class,"MyClass")).get(0);
@@ -248,7 +264,7 @@ public class ExecutableReferenceGenericTest {
 		assertEquals(10, refsExecutableClass1.size());
 		for (CtExecutableReference<?> ref : refsExecutableClass1) {
 			assertNotNull(ref);
-			if (!ref.toString().equals("java.lang.Object()")) {
+			if (!"java.lang.Object()".equals(ref.toString())) {
 				assertNotNull(ref.getDeclaration());
 			}
 		}
@@ -256,7 +272,7 @@ public class ExecutableReferenceGenericTest {
 		assertEquals(9, refsExecutableClass2.size());
 		for (CtExecutableReference<?> ref : refsExecutableClass2) {
 			assertNotNull(ref);
-			if (!ref.toString().equals("java.lang.Object()")) {
+			if (!"java.lang.Object()".equals(ref.toString())) {
 				assertNotNull(ref.getDeclaration());
 			}
 		}
@@ -272,7 +288,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	private List<CtExecutableReference<?>> getCtConstructorsByCtConstructor(CtConstructor<?> aConstructor) {
-		if (aConstructor.getBody().getStatements().size() == 0) {
+		if (aConstructor.getBody().getStatements().isEmpty()) {
 			return new ArrayList<>();
 		}
 		if (!(aConstructor.getBody().getStatement(0) instanceof CtInvocation)) {
@@ -309,7 +325,7 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	private List<CtExecutableReference<?>> getReferencesOfAMethod(CtMethod<?> method1) {
-		return method1.getElements(new ReferenceTypeFilter<CtExecutableReference<?>>(CtExecutableReference.class));
+		return method1.getElements(new ReferenceTypeFilter<>(CtExecutableReference.class));
 	}
 
 	private CtMethod<?> getCtMethodByNameFromCtClass(CtClass<?> clazz, String nameMethod5) {

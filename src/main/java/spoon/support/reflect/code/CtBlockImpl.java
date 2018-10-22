@@ -14,8 +14,10 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
+
 package spoon.support.reflect.code;
 
+import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtInvocation;
@@ -34,9 +36,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.path.CtRole.STATEMENT;
-
 public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	private static final long serialVersionUID = 1L;
 
@@ -49,11 +48,11 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		}
 		@Override
 		protected CtRole getRole() {
-			return STATEMENT;
+			return CtRole.STATEMENT;
 		}
 		@Override
 		protected int getDefaultCapacity() {
-			return BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
+			return ModelElementContainerDefaultCapacities.BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
 		}
 		@Override
 		protected void onSizeChanged(int newSize) {
@@ -63,6 +62,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 		}
 	};
 
+	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtBlock(this);
 	}
@@ -86,7 +86,7 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 
 	private boolean shouldInsertAfterSuper() {
 		try {
-			if (getParent() != null && getParent() instanceof CtConstructor && getStatements().size() > 0) {
+			if (getParent() != null && getParent() instanceof CtConstructor && !getStatements().isEmpty()) {
 				CtStatement first = getStatements().get(0);
 				if (first instanceof CtInvocation && ((CtInvocation<?>) first).getExecutable().isConstructor()) {
 					return true;

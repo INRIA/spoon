@@ -185,9 +185,9 @@ public class IncrementalLauncher extends Launcher {
 			oldFactory.getModel().setBuildModelIsFinished(false);
 
 			// Build model incrementally.
-			mRemovedSources = new HashSet<File>(CollectionUtils.subtract(mCacheInfo.inputSourcesMap.keySet(), mInputSources));
-			mAddedSources = new HashSet<File>(CollectionUtils.subtract(mInputSources, mCacheInfo.inputSourcesMap.keySet()));
-			mCommonSources = new HashSet<File>(CollectionUtils.intersection(mCacheInfo.inputSourcesMap.keySet(), mInputSources));
+			mRemovedSources = new HashSet<>(CollectionUtils.subtract(mCacheInfo.inputSourcesMap.keySet(), mInputSources));
+			mAddedSources = new HashSet<>(CollectionUtils.subtract(mInputSources, mCacheInfo.inputSourcesMap.keySet()));
+			mCommonSources = new HashSet<>(CollectionUtils.intersection(mCacheInfo.inputSourcesMap.keySet(), mInputSources));
 
 			Set<File> incrementalSources = new HashSet<>(mAddedSources);
 			for (File e : mCommonSources) {
@@ -241,7 +241,7 @@ public class IncrementalLauncher extends Launcher {
 			setBinaryOutputDirectory(mClassFilesDir);
 		}
 
-		getEnvironment().setSourceClasspath(mSourceClasspath.toArray(new String[mSourceClasspath.size()]));
+		getEnvironment().setSourceClasspath(mSourceClasspath.toArray(new String[0]));
 	}
 
 	/**
@@ -280,7 +280,7 @@ public class IncrementalLauncher extends Launcher {
 		newCacheInfo.lastBuildTime = System.currentTimeMillis();
 		Map<File, Set<File>> newSourcesMap = new HashMap<>();
 		for (Entry<String, CompilationUnit> e : factory.CompilationUnit().getMap().entrySet()) {
-			newSourcesMap.put(new File(e.getKey()), new HashSet<File>(e.getValue().getBinaryFiles()));
+			newSourcesMap.put(new File(e.getKey()), new HashSet<>(e.getValue().getBinaryFiles()));
 		}
 
 		if (mCacheInfo != null) {
