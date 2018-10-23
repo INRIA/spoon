@@ -332,12 +332,11 @@ public class ImportScannerTest {
 			printer.calculate(type.getPosition().getCompilationUnit(), Arrays.asList(type));
 			assertTrue(printer.getResult().contains("import java.util.List;"));
 		}
-			
+
 		//delete first statement of method m
 		type.getMethodsByName("m").get(0).getBody().getStatement(0).delete();
 		//check that there is still javadoc comment which contains "List"
-		assertTrue(type.getMethodsByName("m").get(0).getComments().toString().indexOf("List")>=0);
-		
+		assertTrue(type.getMethodsByName("m").get(0).getComments().toString().contains("List"));
 		{
 			DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(type.getFactory().getEnvironment());
 			printer.calculate(type.getPosition().getCompilationUnit(), Arrays.asList(type));
