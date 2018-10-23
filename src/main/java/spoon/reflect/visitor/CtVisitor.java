@@ -80,6 +80,7 @@ import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
@@ -508,4 +509,9 @@ public interface CtVisitor {
 	 * Visits a "uses" directive in a module declaration.
 	 */
 	void visitCtUsedService(CtUsedService usedService);
+
+	/**
+	 * Visits a package declaration
+	 */
+	void visitCtPackageDeclaration(CtPackageDeclaration packageDeclaration);
 }

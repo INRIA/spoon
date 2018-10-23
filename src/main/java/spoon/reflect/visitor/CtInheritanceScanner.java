@@ -100,6 +100,7 @@ import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtMultiTypedElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
@@ -999,5 +1000,11 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(usedService);
 		scanCtVisitable(usedService);
 		scanCtModuleDirective(usedService);
+	}
+
+	@Override
+	public void visitCtPackageDeclaration(CtPackageDeclaration packageDeclaration) {
+		scanCtElement(packageDeclaration);
+		scanCtVisitable(packageDeclaration);
 	}
 }
