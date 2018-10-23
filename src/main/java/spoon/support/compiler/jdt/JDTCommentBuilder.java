@@ -39,6 +39,7 @@ import spoon.reflect.code.CtSwitch;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -65,6 +66,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -487,12 +489,21 @@ class JDTCommentBuilder {
 			public void visitCtModule(CtModule module) {
 				addCommentToNear(comment, new ArrayList<>(module.getModuleDirectives()));
 			}
+
+			@Override
+			public <A extends Annotation> void visitCtAnnotation(CtAnnotation<A> e) {
+				addCommentToNear(comment, new ArrayList<>(e.getValues().values()));
+			}
 		};
 		insertionVisitor.scan(commentParent);
-		try {
-			comment.getParent();
-		} catch (ParentNotInitializedException e) {
-			LOGGER.error(comment + " is not added into the AST", e);
+
+		// postcondition
+		// now we make sure that there is a parent
+		// if there is no parent
+		if (!comment.isParentInitialized()) {
+			// that's a serious error, there is something to debug
+			LOGGER.error("\"" + comment + "\" cannot be added into the AST, with parent " + commentParent.getClass()
+					+ "please report the bug by posting on https://github.com/INRIA/spoon/issues/2482");
 		}
 	}
 
