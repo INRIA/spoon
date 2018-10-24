@@ -176,13 +176,26 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 	}
 
 	@Override
-	public CtCompilationUnit setDeclaredTypeReferences(List<CtTypeReference<?>> types) {
+	public CtCompilationUnitImpl setDeclaredTypeReferences(List<CtTypeReference<?>> types) {
 		this.declaredTypeReferences.set(types);
 		return this;
 	}
 
 	@Override
-	public CtCompilationUnit addDeclaredTypeReference(CtTypeReference<?> type) {
+	public CtCompilationUnit setDeclaredTypes(List<CtType<?>> types) {
+		return setDeclaredTypeReferences(types.stream().map(CtType::getReference).collect(Collectors.toList()));
+	}
+
+	@Override
+	public CtCompilationUnitImpl addDeclaredType(CtType<?> type) {
+		if (type != null) {
+			addDeclaredTypeReference(type.getReference());
+		}
+		return this;
+	}
+
+	@Override
+	public CtCompilationUnitImpl addDeclaredTypeReference(CtTypeReference<?> type) {
 		this.declaredTypeReferences.add(type);
 		return this;
 	}
@@ -198,14 +211,20 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 	}
 
 	@Override
-	public CtCompilationUnit setDeclaredModuleReference(CtModuleReference module) {
+	public CtCompilationUnitImpl setDeclaredModule(CtModule module) {
+		setDeclaredModuleReference(module == null ? null : module.getReference());
+		return this;
+	}
+
+	@Override
+	public CtCompilationUnitImpl setDeclaredModuleReference(CtModuleReference module) {
 		//Do not set compilation unit as parent of module
 		if (module != null) {
 			module.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.DECLARED_MODULE_REF, module, this.moduleReference);
 		this.moduleReference = module;
-		return (CtCompilationUnitImpl) this;
+		return this;
 	}
 
 	@Override
@@ -225,7 +244,13 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 	}
 
 	@Override
-	public CtCompilationUnit setPackageDeclaration(CtPackageDeclaration packageDeclaration) {
+	public CtCompilationUnitImpl setDeclaredPackage(CtPackage ctPackage) {
+		setPackageDeclaration(ctPackage == null ? null : getFactory().Package().createPackageDeclaration(ctPackage.getReference()));
+		return this;
+	}
+
+	@Override
+	public CtCompilationUnitImpl setPackageDeclaration(CtPackageDeclaration packageDeclaration) {
 		if (packageDeclaration != null) {
 			packageDeclaration.setParent(this);
 		}

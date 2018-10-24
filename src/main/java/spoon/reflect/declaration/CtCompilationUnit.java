@@ -92,6 +92,28 @@ public interface CtCompilationUnit extends CtElement {
 	CtCompilationUnit setDeclaredTypeReferences(List<CtTypeReference<?>> types);
 
 	/**
+	 * Sets the types declared in this compilation unit.
+	 * It is here for backward compatibility.
+	 * It calls internally {@link #setDeclaredTypeReferences(List)}
+	 * so the {@link CtCompilationUnit} contains type reference only.
+	 * It doesn't contain whole type, which belongs to it's CtPackage in primary `java concept` model.
+	 * Note that {@link CtCompilationUnit} represents a secondary model related to mapping of java modules, packages and types to file system.
+	 */
+	@DerivedProperty
+	CtCompilationUnit setDeclaredTypes(List<CtType<?>> types);
+
+	/**
+	 * Add a type to the list of declared types.
+	 * It is here for backward compatibility.
+	 * It calls internally {@link #addDeclaredTypeReference(CtTypeReference)}
+	 * so the {@link CtCompilationUnit} contains type reference only.
+	 * It doesn't contain whole type, which belongs to it's CtPackage in primary `java concept` model.
+	 * Note that {@link CtCompilationUnit} represents a secondary model related to mapping of java modules, packages and types to file system.
+	 */
+	@DerivedProperty
+	CtCompilationUnit addDeclaredType(CtType<?> type);
+
+	/**
 	 * Add a type reference to the list of declared types
 	 */
 	@PropertySetter(role = CtRole.DECLARED_TYPE_REF)
@@ -110,6 +132,15 @@ public interface CtCompilationUnit extends CtElement {
 	CtModuleReference getDeclaredModuleReference();
 
 	/**
+	 * Sets the declared module if the compilationUnit is "module-info.java"
+	 * It is here for backward compatibility.
+	 * It internally calls {@link #setDeclaredModuleReference(CtModuleReference)}
+	 * It doesn't contain whole CtModule, which belongs to CtModel in primary `java concept` model.
+	 * Note that {@link CtCompilationUnit} represents a secondary model related to mapping of java modules, packages and types to file system.
+	 */
+	@DerivedProperty
+	CtCompilationUnit setDeclaredModule(CtModule module);
+	/**
 	 * Sets the declared module reference if the compilationUnit is "module-info.java"
 	 */
 	@PropertySetter(role = CtRole.DECLARED_MODULE_REF)
@@ -126,6 +157,16 @@ public interface CtCompilationUnit extends CtElement {
 	 */
 	@PropertyGetter(role = CtRole.PACKAGE_DECLARATION)
 	CtPackageDeclaration getPackageDeclaration();
+
+	/**
+	 * Sets the package declaration using the instance of CtPackage.
+	 * It is here for backward compatibility.
+	 * It calls internally {@link #setPackageDeclaration(CtPackageDeclaration)}
+	 * It doesn't contain whole CtPackage, which belongs to it's parent package or to CtModule in primary `java concept` model.
+	 * Note that {@link CtCompilationUnit} represents a secondary model related to mapping of java modules, packages and types to file system.
+	 */
+	@DerivedProperty
+	CtCompilationUnit setDeclaredPackage(CtPackage ctPackage);
 
 	/**
 	 * Sets the package declaration

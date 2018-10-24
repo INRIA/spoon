@@ -781,10 +781,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			module = getFactory().Module().getUnnamedModule();
 		}
 
-		//it is (may be?) not enough to create a package reference. We should create a CtPackage here too, so it exists in model
-		CtPackage mayBeNewPackage = getFactory().Package().getOrCreate(CharOperation.toString(scope.currentPackageName), module);
-
-		context.compilationUnitSpoon.setPackageDeclaration(getFactory().Package().createPackageDeclaration(mayBeNewPackage.getReference()));
+		context.compilationUnitSpoon.setDeclaredPackage(getFactory().Package().getOrCreate(CharOperation.toString(scope.currentPackageName), module));
 		return true;
 	}
 
@@ -1675,7 +1672,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(ModuleDeclaration moduleDeclaration, CompilationUnitScope scope) {
 		CtModule module = getHelper().createModule(moduleDeclaration);
-		context.compilationUnitSpoon.setDeclaredModuleReference(module.getReference());
+		context.compilationUnitSpoon.setDeclaredModule(module);
 		return true;
 	}
 }

@@ -75,7 +75,7 @@ public class CompilationUnitFactory extends SubFactory {
 			try {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);
-				result.setPackageDeclaration(this.factory.Package().createPackageDeclaration(ctPackage.getReference()));
+				result.setDeclaredPackage(ctPackage);
 				if (ctPackage.getPosition() == SourcePosition.NOPOSITION) {
 					ctPackage.setPosition(this.factory.createPartialSourcePosition(result));
 				}
@@ -105,7 +105,7 @@ public class CompilationUnitFactory extends SubFactory {
 			try {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);
-				result.addDeclaredTypeReference(type.getReference());
+				result.addDeclaredType(type);
 				if (type.getPosition() == SourcePosition.NOPOSITION) {
 					type.setPosition(this.factory.createPartialSourcePosition(result));
 				}
@@ -126,7 +126,7 @@ public class CompilationUnitFactory extends SubFactory {
 			try {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);
-				result.setDeclaredModuleReference(module.getReference());
+				result.setDeclaredModule(module);
 				if (module.getPosition() == SourcePosition.NOPOSITION) {
 					module.setPosition(this.factory.createPartialSourcePosition(result));
 				}

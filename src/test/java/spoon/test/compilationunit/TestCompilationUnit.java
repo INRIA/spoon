@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -98,10 +99,10 @@ public class TestCompilationUnit {
 		CompilationUnit cu = launcher.getFactory().createCompilationUnit();
 		assertEquals(CompilationUnit.UNIT_TYPE.UNKNOWN, cu.getUnitType());
 		
-		cu.setPackageDeclaration(launcher.getFactory().Package().createPackageDeclaration(myPackage.getReference()));
+		cu.setDeclaredPackage(myPackage);
 		assertEquals(CompilationUnit.UNIT_TYPE.PACKAGE_DECLARATION, cu.getUnitType());
 
-		cu.addDeclaredTypeReference(launcher.getFactory().createCtTypeReference(Object.class));
+		cu.setDeclaredTypes(Collections.singletonList(launcher.getFactory().createClass()));
 		assertEquals(CompilationUnit.UNIT_TYPE.TYPE_DECLARATION, cu.getUnitType());
 	}
 
@@ -155,7 +156,7 @@ public class TestCompilationUnit {
 		assertEquals(3, cu.getDeclaredTypes().size());
 
 		CtType typeBla = launcher.getFactory().Class().create("spoon.test.model.Bla");
-		cu.addDeclaredTypeReference(typeBla.getReference());
+		cu.addDeclaredType(typeBla);
 
 		assertEquals(4, cu.getDeclaredTypes().size());
 
