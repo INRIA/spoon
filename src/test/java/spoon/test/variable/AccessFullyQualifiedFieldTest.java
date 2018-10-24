@@ -32,12 +32,6 @@ import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class AccessFullyQualifiedFieldTest {
-	@Test
-	public void testCheckAssignmentContracts() throws Exception {
-		final Factory factory = build(Tacos.class);
-
-		MainTest.checkAssignmentContracts(factory.Package().getRootPackage());
-	}
 
 	private String buildResourceAndReturnResult(String pathResource, String output) {
 		Launcher spoon = new Launcher();

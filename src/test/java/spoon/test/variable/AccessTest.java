@@ -183,20 +183,6 @@ public class AccessTest {
 	}
 
 	@Test
-	public void testFieldWriteDeclaredInTheSuperclass() {
-		final Launcher launcher = new Launcher();
-		launcher.run(new String[] {
-				"-i", "./src/test/resources/spoon/test/variable/Tacos.java",
-				"-o", "target/spooned/variable",
-				"--noclasspath",
-				"--compliance", "8",
-				"--level", "OFF"
-		});
-
-		MainTest.checkAssignmentContracts(launcher.getFactory().Package().getRootPackage());
-	}
-
-	@Test
 	public void testVariableAccessInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);

@@ -124,6 +124,5 @@ public class ExecutableTest {
 
 		assertEquals(valueOf, shadowValueOf);
 		assertEquals(valueOf.getDeclaration(), shadowValueOf.getDeclaration());
-		MainTest.checkShadow(shadowValueOf.getParent(CtPackage.class));
 	}
 }

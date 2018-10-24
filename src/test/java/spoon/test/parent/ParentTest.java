@@ -226,30 +226,6 @@ public class ParentTest {
 		assertEquals(aMethod, aMethod.getType().getParent());
 	}
 
-	public static void checkParentContract(CtPackage pack) {
-		pack.filterChildren(null).forEach((CtElement elem) -> {
-			// there is always one parent
-			assertTrue("no parent for "+elem.getClass()+"-"+elem.getPosition(), elem.isParentInitialized());
-		});
-
-		// the scanner and the parent are in correspondence
-		new CtScanner() {
-			Deque<CtElement> elementStack = new ArrayDeque<>();
-			@Override
-			public void scan(CtElement e) {
-				if (e==null) { return; }
-				if (e instanceof CtReference) { return; }
-				if (!elementStack.isEmpty()) {
-					assertEquals(elementStack.peek(), e.getParent());
-				}
-				elementStack.push(e);
-				e.accept(this);
-				elementStack.pop();
-			}
-		}.scan(pack);
-
-	}
-
 	@Test
 	public void testGetParentWithFilter() {
 		// addType should set Parent
