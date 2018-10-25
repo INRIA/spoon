@@ -76,9 +76,7 @@ public class CompilationUnitFactory extends SubFactory {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);
 				result.setDeclaredPackage(ctPackage);
-				if (ctPackage.getPosition() == SourcePosition.NOPOSITION) {
-					ctPackage.setPosition(this.factory.createPartialSourcePosition(result));
-				}
+				ctPackage.setPosition(this.factory.createPartialSourcePosition(result));
 				return result;
 			} catch (IOException e) {
 				throw new SpoonException("Cannot get path for file: " + file.getAbsolutePath(), e);
@@ -106,9 +104,7 @@ public class CompilationUnitFactory extends SubFactory {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);
 				result.addDeclaredType(type);
-				if (type.getPosition() == SourcePosition.NOPOSITION) {
-					type.setPosition(this.factory.createPartialSourcePosition(result));
-				}
+				type.setPosition(this.factory.createPartialSourcePosition(result));
 				return result;
 			} catch (IOException e) {
 				throw new SpoonException("Cannot get path for file: " + file.getAbsolutePath(), e);
@@ -127,9 +123,7 @@ public class CompilationUnitFactory extends SubFactory {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this.getOrCreate(path);
 				result.setDeclaredModule(module);
-				if (module.getPosition() == SourcePosition.NOPOSITION) {
-					module.setPosition(this.factory.createPartialSourcePosition(result));
-				}
+				module.setPosition(this.factory.createPartialSourcePosition(result));
 				return result;
 			} catch (IOException e) {
 				throw new SpoonException("Cannot get path for file: " + file.getAbsolutePath(), e);
