@@ -18,7 +18,6 @@ package spoon.reflect.factory;
 
 import spoon.SpoonException;
 import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;

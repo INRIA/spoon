@@ -44,6 +44,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 import spoon.support.sniper.internal.ElementSourceFragment;
@@ -182,11 +183,13 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 	}
 
 	@Override
+	@DerivedProperty
 	public CtCompilationUnit setDeclaredTypes(List<CtType<?>> types) {
 		return setDeclaredTypeReferences(types.stream().map(CtType::getReference).collect(Collectors.toList()));
 	}
 
 	@Override
+	@DerivedProperty
 	public CtCompilationUnitImpl addDeclaredType(CtType<?> type) {
 		if (type != null) {
 			addDeclaredTypeReference(type.getReference());
@@ -201,6 +204,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 	}
 
 	@Override
+	@DerivedProperty
 	public CtModule getDeclaredModule() {
 		return this.moduleReference != null ? this.moduleReference.getDeclaration() : null;
 	}
@@ -228,6 +232,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 	}
 
 	@Override
+	@DerivedProperty
 	public CtPackage getDeclaredPackage() {
 		if (packageDeclaration != null) {
 			return packageDeclaration.getReference().getDeclaration();
