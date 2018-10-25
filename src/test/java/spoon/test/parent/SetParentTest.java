@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.test.parent.ContractOnSettersParametrizedTest.createCompatibleObject;
@@ -77,6 +78,9 @@ public class SetParentTest<T extends CtVisitable> {
 		} else if ("CtModule".equals(toTest.getSimpleName())) {
 			// contract: module parent is necessarily the unnamedmodule
 			assertTrue(receiver.getParent() instanceof ModuleFactory.CtUnnamedModule);
+		} else if ("CtCompilationUnit".equals(toTest.getSimpleName())) {
+			// contract: CtCompilationUnit parent is null
+			assertNull(receiver.getParent());
 		} else {
 			// contract: there is no parent before
 			try {

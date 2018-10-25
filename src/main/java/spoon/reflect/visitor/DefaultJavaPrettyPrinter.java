@@ -74,13 +74,13 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.UnaryOperatorKind;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
@@ -215,7 +215,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Compilation unit we are printing.
 	 */
-	protected CompilationUnit sourceCompilationUnit;
+	protected CtCompilationUnit sourceCompilationUnit;
 
 	/**
 	 * Imports computed
@@ -1094,6 +1094,23 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	@Override
+	public void visitCtCompilationUnit(CtCompilationUnit compilationUnit) {
+		switch (compilationUnit.getUnitType()) {
+		case MODULE_DECLARATION:
+			//TODO print module declaration
+			break;
+		case PACKAGE_DECLARATION:
+			//TODO print package declaration
+			break;
+		case TYPE_DECLARATION:
+			calculate(compilationUnit, compilationUnit.getDeclaredTypes());
+			break;
+		default:
+			throw new SpoonException("Cannot print compilation unit of type " + compilationUnit.getUnitType());
+		}
+	}
+
+	@Override
 	public void visitCtPackageDeclaration(CtPackageDeclaration packageDeclaration) {
 		elementPrinterHelper.writePackageLine(packageDeclaration.getReference().getQualifiedName());
 	}
@@ -1969,7 +1986,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	@Override
-	public void calculate(CompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
+	public void calculate(CtCompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		// reset the importsContext to avoid errors with multiple CU
 		reset();
 

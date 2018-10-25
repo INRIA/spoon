@@ -1254,9 +1254,4 @@ public class FactoryImpl implements Factory, Serializable {
 	public CtPackageDeclaration createPackageDeclaration(CtPackageReference packageRef) {
 		return Package().createPackageDeclaration(packageRef);
 	}
-
-	@Override
-	public CtPackageDeclaration createPackageDeclaration(String name) {
-		return Package().createPackageDeclaration(name);
-	}
 }

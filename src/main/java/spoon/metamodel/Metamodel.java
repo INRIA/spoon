@@ -138,6 +138,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.declaration.CtAnonymousExecutable.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtClass.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtCodeSnippet.class));
+		result.add(factory.Type().get(spoon.reflect.declaration.CtCompilationUnit.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtConstructor.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtElement.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtEnum.class));

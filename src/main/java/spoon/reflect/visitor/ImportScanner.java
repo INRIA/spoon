@@ -50,5 +50,5 @@ public interface ImportScanner {
 	/**
 	 * Specify the original imports to use before computing new imports.
 	 */
-	void initWithImports(Set<CtImport> importCollection);
+	void initWithImports(Iterable<CtImport> importCollection);
 }

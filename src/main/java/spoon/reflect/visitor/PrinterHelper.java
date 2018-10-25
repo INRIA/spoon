@@ -17,8 +17,8 @@
 package spoon.reflect.visitor;
 
 import spoon.compiler.Environment;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 
@@ -262,7 +262,7 @@ public class PrinterHelper {
 		}
 	}
 
-	public void mapLine(CtElement e, CompilationUnit unitExpected) {
+	public void mapLine(CtElement e, CtCompilationUnit unitExpected) {
 		SourcePosition sp = e.getPosition();
 		if ((sp.isValidPosition())
 				&& (sp.getCompilationUnit() == unitExpected)

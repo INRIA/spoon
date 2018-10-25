@@ -289,5 +289,13 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 		((spoon.reflect.declaration.CtModuleRequirement) (other)).setRequiresModifiers(moduleRequirement.getRequiresModifiers());
 		super.visitCtModuleRequirement(moduleRequirement);
 	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtCompilationUnit(spoon.reflect.declaration.CtCompilationUnit compilationUnit) {
+		((spoon.reflect.declaration.CtCompilationUnit) (other)).setFile(compilationUnit.getFile());
+		((spoon.reflect.declaration.CtCompilationUnit) (other)).setLineSeparatorPositions(compilationUnit.getLineSeparatorPositions());
+		super.visitCtCompilationUnit(compilationUnit);
+	}
 }
 

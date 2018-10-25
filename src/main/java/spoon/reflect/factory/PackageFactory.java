@@ -98,18 +98,6 @@ public class PackageFactory extends SubFactory {
 	}
 
 	/**
-	 * Creates a package declaration of a package. The given name has to be a fully qualified name.
-	 *
-	 * @param name
-	 * 		full name of the package to reference
-	 */
-	public CtPackageDeclaration createPackageDeclaration(String name) {
-		CtPackageDeclaration pd = factory.Core().createPackageDeclaration();
-		pd.setReference(createReference(name));
-		return pd;
-	}
-
-	/**
 	 * Creates a new package (see also {@link #getOrCreate(String)}).
 	 *
 	 * @param parent

@@ -73,6 +73,9 @@ public final class ModelElementContainerDefaultCapacities {
 	// > 1 very rarely
 	public static final int COMPILATION_UNIT_DECLARED_TYPES_CONTAINER_DEFAULT_CAPACITY = 1;
 
+	// TODO detect best default
+	public static final int COMPILATION_UNIT_IMPORTS_CONTAINER_DEFAULT_CAPACITY = 10;
+
 	// > 1 very rarely
 	public static final int ANONYMOUS_EXECUTABLES_CONTAINER_DEFAULT_CAPACITY = 1;
 

@@ -1008,9 +1008,4 @@ public interface Factory {
 	 * @see PackageFactory#createPackageDeclaration(CtPackageReference)
 	 */
 	CtPackageDeclaration createPackageDeclaration(CtPackageReference packageRef);
-
-	/**
-	 * @see PackageFactory#createPackageDeclaration(String)
-	 */
-	CtPackageDeclaration createPackageDeclaration(String name);
 }

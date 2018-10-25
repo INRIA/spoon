@@ -75,6 +75,7 @@ import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
@@ -968,6 +969,18 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.SERVICE_TYPE, usedService.getServiceType());
 		scan(CtRole.ANNOTATION, usedService.getAnnotations());
 		exit(usedService);
+	}
+
+	@Override
+	public void visitCtCompilationUnit(CtCompilationUnit compilationUnit) {
+		enter(compilationUnit);
+		scan(CtRole.COMMENT, compilationUnit.getComments());
+		scan(CtRole.ANNOTATION, compilationUnit.getAnnotations());
+		scan(CtRole.PACKAGE_DECLARATION, compilationUnit.getPackageDeclaration());
+		scan(CtRole.DECLARED_IMPORT, compilationUnit.getImports());
+		scan(CtRole.DECLARED_MODULE_REF, compilationUnit.getDeclaredModuleReference());
+		scan(CtRole.DECLARED_TYPE_REF, compilationUnit.getDeclaredTypeReferences());
+		exit(compilationUnit);
 	}
 
 	@Override

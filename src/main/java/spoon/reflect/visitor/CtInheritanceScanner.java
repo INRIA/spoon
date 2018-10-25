@@ -82,6 +82,7 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCodeSnippet;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
@@ -1000,6 +1001,12 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(usedService);
 		scanCtVisitable(usedService);
 		scanCtModuleDirective(usedService);
+	}
+
+	@Override
+	public void visitCtCompilationUnit(CtCompilationUnit compilationUnit) {
+		scanCtElement(compilationUnit);
+		scanCtVisitable(compilationUnit);
 	}
 
 	@Override

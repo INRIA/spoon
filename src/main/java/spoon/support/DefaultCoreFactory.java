@@ -1049,6 +1049,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.declaration.CtUsedService.class)) {
 			return createUsedService();
 		}
+		if (klass.equals(spoon.reflect.declaration.CtCompilationUnit.class)) {
+			return createCompilationUnit();
+		}
 		if (klass.equals(spoon.reflect.declaration.CtPackageDeclaration.class)) {
 			return createPackageDeclaration();
 		}
