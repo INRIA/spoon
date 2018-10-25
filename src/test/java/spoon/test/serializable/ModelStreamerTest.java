@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import spoon.Launcher;
@@ -38,42 +38,69 @@ import spoon.support.SerializationModelStreamer;
 
 public class ModelStreamerTest {
 
-	private final String filename = "./src/test/resources/serialization/factory.ser";
+	private static final String SOURCE_DIRECTORY = "./src/main/java/spoon/reflect/declaration";
+	private final static String OUTPUT_FILENAME = "./src/test/resources/serialization/factory.ser";
+	private static File outputFile;
+	private static Factory factory;
 
-	private Factory factory;
-
-	private File file;
-
-	@Before
-    public void setUp() {
+	@BeforeClass
+    public static void setUp() {
+		System.out.println("Testing factory serialization with different "
+						 + "compressors with source folder: " + SOURCE_DIRECTORY);
 		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/main/java/spoon/reflect/declaration");
+		launcher.addInputResource(SOURCE_DIRECTORY);
 		launcher.buildModel();
-		this.factory = launcher.getFactory();
-		file = new File(filename);
-		file.deleteOnExit();
+		factory = launcher.getFactory();
+		outputFile = new File(OUTPUT_FILENAME);
+		outputFile.deleteOnExit();
     }
 
 	@Test
 	public void testDefaultCompressionType() throws IOException {
-		new SerializationModelStreamer().save(factory, new FileOutputStream(file));
-		Factory factoryFromFile = new SerializationModelStreamer().load(new FileInputStream(file));
+		new SerializationModelStreamer().save(factory, new FileOutputStream(outputFile));
+		FileInputStream in = new FileInputStream(outputFile);
+		System.out.println(in.getChannel().size() + " bytes for default");
+		Factory factoryFromFile = new SerializationModelStreamer().load(in);
 		compareFactoryModels(factory, factoryFromFile);
 	}
-	
+
 	@Test
 	public void testGZipCompressionType() throws IOException {
 		factory.getEnvironment().setCompressionType(CompressionType.GZIP);
-		new SerializationModelStreamer().save(factory, new FileOutputStream(file));
-		Factory factoryFromFile = new SerializationModelStreamer().load(new FileInputStream(file));
+		new SerializationModelStreamer().save(factory, new FileOutputStream(outputFile));
+		FileInputStream in = new FileInputStream(outputFile);
+		System.out.println(in.getChannel().size() + " bytes for " + CompressionType.GZIP);
+		Factory factoryFromFile = new SerializationModelStreamer().load(in);
+		compareFactoryModels(factory, factoryFromFile);
+	}
+
+	@Test
+	public void testBZip2CompressionType() throws IOException {
+		factory.getEnvironment().setCompressionType(CompressionType.BZIP2);
+		new SerializationModelStreamer().save(factory, new FileOutputStream(outputFile));
+		FileInputStream in = new FileInputStream(outputFile);
+		System.out.println(in.getChannel().size() + " bytes for " + CompressionType.BZIP2);
+		Factory factoryFromFile = new SerializationModelStreamer().load(in);
 		compareFactoryModels(factory, factoryFromFile);
 	}
 
 	@Test
 	public void testNoneCompressionType() throws IOException {
 		factory.getEnvironment().setCompressionType(CompressionType.NONE);
-		new SerializationModelStreamer().save(factory, new FileOutputStream(file));
-		Factory factoryFromFile = new SerializationModelStreamer().load(new FileInputStream(file));
+		new SerializationModelStreamer().save(factory, new FileOutputStream(outputFile));
+		FileInputStream in = new FileInputStream(outputFile);
+		System.out.println(in.getChannel().size() + " bytes for " + CompressionType.NONE);
+		Factory factoryFromFile = new SerializationModelStreamer().load(in);
+		compareFactoryModels(factory, factoryFromFile);
+	}
+
+	@Test
+	public void testLZMACompressionType() throws IOException {
+		factory.getEnvironment().setCompressionType(CompressionType.LZMA);
+		new SerializationModelStreamer().save(factory, new FileOutputStream(outputFile));
+		FileInputStream in = new FileInputStream(outputFile);
+		System.out.println(in.getChannel().size() + " bytes for " + CompressionType.LZMA);
+		Factory factoryFromFile = new SerializationModelStreamer().load(in);
 		compareFactoryModels(factory, factoryFromFile);
 	}
 
