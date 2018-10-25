@@ -559,7 +559,7 @@ class JDTCommentBuilder {
 		if (!spoonUnit.getDeclaredTypes().isEmpty()) {
 			findCommentParentScanner.scan(spoonUnit.getDeclaredTypes());
 		} else if (spoonUnit.getDeclaredModuleReference() != null) {
-			findCommentParentScanner.scan(spoonUnit.getDeclaredModule());
+			findCommentParentScanner.scan(spoonUnit.getDeclaredModuleReference().getDeclaration());
 		}
 
 		return findCommentParentScanner.commentParent;
