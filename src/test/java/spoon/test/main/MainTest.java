@@ -119,10 +119,13 @@ public class MainTest {
 		int n = 0;
 		Files.walk(Paths.get("src/test/java"))
 				.filter(path -> path.toFile().getAbsolutePath().contains("testclasses"))
+				.filter(path -> !path.toFile().getAbsolutePath().contains("fieldaccesses")) // carpet debugging
+				.filter(path -> !path.toFile().getAbsolutePath().contains("reference/testclasses/Stream"))// carpet debugging
+				.filter(path -> !path.toFile().getAbsolutePath().contains("packageprotected/AccessibleClassFromNonAccessibleInterf"))// carpet debugging
 				.forEach(x -> {
 					launcher.addInputResource(x.toString());
-					System.out.println(x);
-				}
+					System.out.println(x.toString());
+					}
 				);
 
 		launcher.buildModel();

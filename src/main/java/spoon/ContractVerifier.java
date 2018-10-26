@@ -50,6 +50,7 @@ import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.Experimental;
 import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.reflect.CtExtendedModifier;
 
@@ -70,6 +71,7 @@ import java.util.Set;
 import static spoon.testing.utils.Check.assertNotNull;
 
 /** Verifies all contracts that should hold on any AST */
+@Experimental
 public class ContractVerifier {
 
 	private CtPackage _rootPackage;
@@ -249,7 +251,7 @@ public class ContractVerifier {
 				}
 
 				if (reference.getDeclaration() == null && CtShadowable.class.isAssignableFrom(executableDeclaration.getClass())) {
-					assertTrue("execDecl must be shadow", ((CtShadowable) executableDeclaration).isShadow());
+					assertTrue("execDecl at " + reference.toString() + " must be shadow ", ((CtShadowable) executableDeclaration).isShadow());
 				}
 
 			}
@@ -266,6 +268,7 @@ public class ContractVerifier {
 					return;
 				}
 				final CtField<T> fieldDeclaration = reference.getFieldDeclaration();
+				System.out.println(reference.getPosition());
 				assertNotNull(fieldDeclaration);
 				assertEquals(reference.getSimpleName(), fieldDeclaration.getSimpleName());
 				assertEquals(reference.getType().getQualifiedName(), fieldDeclaration.getType().getQualifiedName());
