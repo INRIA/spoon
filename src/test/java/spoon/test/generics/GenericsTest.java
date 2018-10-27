@@ -43,6 +43,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -54,6 +55,8 @@ import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
+import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
+import spoon.support.reflect.reference.CtTypeReferenceImpl;
 import spoon.support.util.SortedList;
 import spoon.support.visitor.ClassTypingContext;
 import spoon.support.visitor.GenericTypeAdapter;
@@ -1465,5 +1468,36 @@ public class GenericsTest {
 		CtMethod m6B = b.getMethodsByName("m6").get(0);
 
 		assertTrue(m6B.isOverriding(m6A));
+	}
+
+	@Test
+	public void testDeepGenericsInExecutableReference() {
+		//the generic which extends another generic is handled well
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses4/C.java");
+		CtModel model = launcher.buildModel();
+
+		CtClass<?> c = model.getElements(new NamedElementFilter<>(CtClass.class, "C")).get(0);
+
+		
+		CtMethod<?> m = c.getMethodsByName("m").get(0);
+		CtTypeReference<?> execParamType = m.getParameters().get(0).getType();
+		assertEquals(CtTypeParameterReferenceImpl.class, execParamType.getClass());
+		assertEquals("W", execParamType.getSimpleName());
+		
+		{
+			CtExecutableReference<?> mRef = ((CtInvocation) m.getBody().getStatements().get(0)).getExecutable();
+	
+			CtTypeReference<?> execRefParamType = mRef.getParameters().get(0);
+			assertEquals(CtTypeReferenceImpl.class, execRefParamType.getClass());
+			assertEquals("java.util.List<java.lang.String>", execRefParamType.toString());
+		}
+		{
+			CtExecutableReference<?> mRef = m.getReference();
+	
+			CtTypeReference<?> execRefParamType = mRef.getParameters().get(0);
+			assertEquals(CtTypeReferenceImpl.class, execRefParamType.getClass());
+			assertEquals("java.util.List<java.lang.String>", execRefParamType.toString());
+		}
 	}
 }
