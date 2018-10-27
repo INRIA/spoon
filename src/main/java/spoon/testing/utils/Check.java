@@ -25,6 +25,7 @@ public final class Check {
 		throw new AssertionError();
 	}
 
+	/** throws AssertionError if "reference" is null */
 	public static <T> T assertNotNull(String msg, T reference) {
 		if (reference == null) {
 			throw new AssertionError(msg);

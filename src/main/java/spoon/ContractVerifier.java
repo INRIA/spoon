@@ -17,7 +17,6 @@
 package spoon;
 
 
-import spoon.SpoonModelBuilder.InputType;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
@@ -51,12 +50,10 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.Experimental;
-import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.reflect.CtExtendedModifier;
+import spoon.support.sniper.internal.ElementSourceFragment;
+import spoon.support.visitor.equals.EqualsVisitor;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayDeque;
@@ -64,7 +61,6 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -97,8 +93,8 @@ public class ContractVerifier {
 
 	public void checkModifiers() {
 		// the explicit modifier should be present in the original source code
-		for (CtModifiable modifiable: _rootPackage.getElements(new TypeFilter<>(CtModifiable.class))) {
-			for (CtExtendedModifier modifier: modifiable.getExtendedModifiers()) {
+		for (CtModifiable modifiable : _rootPackage.getElements(new TypeFilter<>(CtModifiable.class))) {
+			for (CtExtendedModifier modifier : modifiable.getExtendedModifiers()) {
 				if (modifier.isImplicit()) {
 					continue;
 				}
@@ -114,6 +110,10 @@ public class ContractVerifier {
 		if (!conditionThatMustHold) {
 			throw new AssertionError(msg);
 		}
+	}
+
+	private void assertFalse(boolean condition) {
+		assertTrue("", !condition);
 	}
 
 
@@ -137,6 +137,7 @@ public class ContractVerifier {
 	private void assertSame(Object element, Object other) {
 		assertSame("assertSame violation", element, other);
 	}
+
 	private void assertSame(String msg, Object element, Object other) {
 		if (element != other) {
 			throw new AssertionError(msg);
@@ -150,16 +151,21 @@ public class ContractVerifier {
 	public void checkParentContract() {
 		_rootPackage.filterChildren(null).forEach((CtElement elem) -> {
 			// there is always one parent
-			assertTrue("no parent for "+elem.getClass()+"-"+elem.getPosition(), elem.isParentInitialized());
+			assertTrue("no parent for " + elem.getClass() + "-" + elem.getPosition(), elem.isParentInitialized());
 		});
 
 		// the scanner and the parent are in correspondence
 		new CtScanner() {
 			Deque<CtElement> elementStack = new ArrayDeque<>();
+
 			@Override
 			public void scan(CtElement e) {
-				if (e==null) { return; }
-				if (e instanceof CtReference) { return; }
+				if (e == null) {
+					return;
+				}
+				if (e instanceof CtReference) {
+					return;
+				}
 				if (!elementStack.isEmpty()) {
 					assertEquals(elementStack.peek(), e.getParent());
 				}
@@ -172,7 +178,7 @@ public class ContractVerifier {
 	}
 
 
-	private void checkBoundAndUnboundTypeReference() {
+	public void checkBoundAndUnboundTypeReference() {
 		new CtScanner() {
 			@Override
 			public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
@@ -221,7 +227,7 @@ public class ContractVerifier {
 					return;
 				}
 				final CtExecutable<T> executableDeclaration = reference.getExecutableDeclaration();
-				assertNotNull("cannot find decl for " + reference.toString(),executableDeclaration);
+				assertNotNull("cannot find decl for " + reference.toString(), executableDeclaration);
 				assertEquals(reference.getSimpleName(), executableDeclaration.getSimpleName());
 
 				// when a generic type is used in a parameter and return type, the shadow type doesn't have these information.
@@ -268,7 +274,6 @@ public class ContractVerifier {
 					return;
 				}
 				final CtField<T> fieldDeclaration = reference.getFieldDeclaration();
-				System.out.println(reference.getPosition());
 				assertNotNull(fieldDeclaration);
 				assertEquals(reference.getSimpleName(), fieldDeclaration.getSimpleName());
 				assertEquals(reference.getType().getQualifiedName(), fieldDeclaration.getType().getQualifiedName());
@@ -290,11 +295,7 @@ public class ContractVerifier {
 		}.visitCtPackage(_rootPackage);
 	}
 
-	private void assertFalse(boolean condition) {
-		assertTrue("", !condition);
-	}
-
-	private void checkContractCtScanner() {
+	public void checkContractCtScanner() {
 		class Counter {
 			int scan;
 			int enter;
@@ -329,14 +330,15 @@ public class ContractVerifier {
 
 		}.scan(_rootPackage);
 
-		assertTrue("violated contract: when enter is called, exit is also called",counter.enter == counter.exit);
+		assertTrue("violated contract: when enter is called, exit is also called", counter.enter == counter.exit);
 
-		assertTrue(" violated contract: all scanned elements ust call enter",counter.enter == counter.scan);
+		assertTrue(" violated contract: all scanned elements ust call enter", counter.enter == counter.scan);
 
 		Counter counterBiScan = new Counter();
 		class ActualCounterScanner extends CtBiScannerDefault {
 			@Override
 			public void biScan(CtElement element, CtElement other) {
+				super.biScan(element, other);
 				counterBiScan.scan++;
 				if (element == null) {
 					if (other != null) {
@@ -346,10 +348,20 @@ public class ContractVerifier {
 					fail("other can't be null if element isn't null.");
 				} else {
 					// contract: all elements have been cloned and are still equal
-					assertEquals(element, other);
+					EqualsVisitor ev = new EqualsVisitor();
+					boolean res = ev.checkEquals(element, other);
+					Object notEqualOther = ev.getNotEqualOther();
+					String pb = "";
+					if (notEqualOther != null) {
+						notEqualOther.toString();
+					}
+					if (notEqualOther instanceof CtElement) {
+						pb += " " + ((CtElement) notEqualOther).getPosition().toString();
+					}
+					assertTrue("not equal: " + pb, res);
+
 					assertNotSame(element, other);
 				}
-				super.biScan(element, other);
 			}
 		}
 		final ActualCounterScanner actual = new ActualCounterScanner();
@@ -378,7 +390,7 @@ public class ContractVerifier {
 			CtExpression assigned = assign.getAssigned();
 			if (!(assigned instanceof CtFieldWrite
 					|| assigned instanceof CtVariableWrite || assigned instanceof CtArrayWrite)) {
-				throw new AssertionError("AssignmentContract error:" + assign.getPosition()+"\n"+assign.toString()+"\nAssigned is "+assigned.getClass());
+				throw new AssertionError("AssignmentContract error:" + assign.getPosition() + "\n" + assign.toString() + "\nAssigned is " + assigned.getClass());
 			}
 		}
 	}
@@ -387,6 +399,7 @@ public class ContractVerifier {
 		final Set<CtElement> inconsistentParents = new HashSet<>();
 		new CtScanner() {
 			private Deque<CtElement> previous = new ArrayDeque();
+
 			@Override
 			protected void enter(CtElement e) {
 				if (e != null) {
@@ -434,7 +447,7 @@ public class ContractVerifier {
 			Exception secondStack = dummyException;
 			Exception firstStack = allElements.put(ele, secondStack);
 			if (firstStack != null) {
-				if(firstStack == dummyException) {
+				if (firstStack == dummyException) {
 					fail("The Spoon model is not a tree. The " + ele.getClass().getSimpleName() + ":" + ele.toString() + " is shared");
 				}
 				//the element ele was already visited. It means it used on more places
@@ -497,7 +510,7 @@ public class ContractVerifier {
 	}
 
 	public void checkElementToPathToElementEquivalence() {
-		_rootPackage.getPackage("spoon").getElements(e->true).parallelStream().forEach(element -> {
+		_rootPackage.getPackage("spoon").getElements(e -> true).parallelStream().forEach(element -> {
 			CtPath path = element.getPath();
 			String pathStr = path.toString();
 			try {
@@ -525,7 +538,7 @@ public class ContractVerifier {
 					//contract: element is contained in attribute of element's parent
 					CtElement parent = element.getParent();
 					Object attributeOfParent = parent.getValueByRole(role);
-					if(attributeOfParent instanceof CtElement) {
+					if (attributeOfParent instanceof CtElement) {
 						assertSame("Element of type " + element.getClass().getName()
 								+ " is not the value of attribute of role " + role.name()
 								+ " of parent type " + parent.getClass().getName(), element, attributeOfParent);
@@ -534,7 +547,7 @@ public class ContractVerifier {
 										+ " not found in Collection value of attribute of role " + role.name()
 										+ " of parent type " + parent.getClass().getName(),
 								((Collection<CtElement>) attributeOfParent).stream().anyMatch(e -> e == element));
-					} else if (attributeOfParent instanceof Map){
+					} else if (attributeOfParent instanceof Map) {
 						assertTrue("Element of type " + element.getClass().getName()
 										+ " not found in Map#values of attribute of role " + role.name()
 										+ " of parent type " + parent.getClass().getName(),
