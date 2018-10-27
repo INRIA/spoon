@@ -2,15 +2,17 @@
 #
 # Compiles an open-source project, spoons the project, runs the tests
 # and checks at each step if there aren't errors. To execute this
-# script, create a job in jenkins. 
+# script, create a job in jenkins.
 #
 # is also run in Travis to check this script and the compatibility with Spoon Maven Plugin
 #
 # Typical usage:
-# 
+#
 # $ cd my-maven-project-with-pom
 # $ curl http://spoon.gforge.inria.fr/jenkins/build.sh | bash
 
+# Allow to define some options to the maven command, such as debug or memory options
+MAVEN_COMMAND="mvn $MVN_OPTS"
 
 echo " "
 echo "-------------------------------------------------------"
@@ -85,7 +87,7 @@ echo " "
 
 # Compiles project.
 START_COMPILE_PROJECT=$(($(date +%s%N)/1000000))
-mvn clean install 
+$MAVEN_COMMAND clean install
 if [ "$?" -ne 0 ]; then
     echo "Error: Maven compile original project unsuccessful!"
     exit 1
@@ -172,11 +174,11 @@ rm pom.bak*.xml
 
 # Purge the project from snapshots
 # Avoid to use an old snapshot of Spoon and force the resolution
-mvn dependency:purge-local-repository -DmanualInclude="fr.inria.gforge.spoon:spoon-core" -DsnapshotsOnly=true
+$MAVEN_COMMAND dependency:purge-local-repository -DmanualInclude="fr.inria.gforge.spoon:spoon-core" -DsnapshotsOnly=true
 
 # Compiles project with spoon configuration.
 START_COMPILE_WITH_SPOON=$(($(date +%s%N)/1000000))
-mvn clean install 
+$MAVEN_COMMAND clean install
 if [ "$?" -ne 0 ]; then
     echo "Error: Maven compile with spoon unsuccessful!"
     exit 1
@@ -266,7 +268,7 @@ done
 
 # Compiles project with source spooned.
 START_COMPILE_SPOON_SPOON=$(($(date +%s%N)/1000000))
-mvn clean install 
+$MAVEN_COMMAND clean install
 if [ "$?" -ne 0 ]; then
     echo "Error: Maven compile with spoon(spoon) unsuccessful!"
     exit 1
