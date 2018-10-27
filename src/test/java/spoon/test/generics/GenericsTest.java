@@ -17,6 +17,7 @@
 package spoon.test.generics;
 
 import org.junit.Test;
+import spoon.ContractVerifier;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
@@ -1432,7 +1433,9 @@ public class GenericsTest {
 		 */
 		assertEquals(adaptedMethod.getParameters().get(0).getType(), classGetter.getType());
 		assertEquals(adaptedMethod.getParameters().get(0).getType(), classSetter.getParameters().get(0).getType());
-		
+
+		new ContractVerifier(launcher.getFactory().getModel().getRootPackage()).checkParentConsistency();
+		new ContractVerifier().checkParentConsistency(adaptedMethod);
 	}
 
 	@Test

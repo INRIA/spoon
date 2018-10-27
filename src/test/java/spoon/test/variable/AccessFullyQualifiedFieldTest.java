@@ -17,6 +17,7 @@
 package spoon.test.variable;
 
 import org.junit.Test;
+import spoon.ContractVerifier;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -32,6 +33,12 @@ import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class AccessFullyQualifiedFieldTest {
+	@Test
+	public void testCheckAssignmentContracts() throws Exception {
+		final Factory factory = build(Tacos.class);
+
+		new ContractVerifier(factory.Package().getRootPackage()).checkAssignmentContracts();
+	}
 
 	private String buildResourceAndReturnResult(String pathResource, String output) {
 		Launcher spoon = new Launcher();

@@ -17,6 +17,7 @@
 package spoon.test.variable;
 
 import org.junit.Test;
+import spoon.ContractVerifier;
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -180,6 +181,20 @@ public class AccessTest {
 	public void testRHS() throws Exception {
 		CtType<RHSSample> type = buildClass(RHSSample.class);
 		assertEquals(4,  type.getElements(new TypeFilter<>(CtRHSReceiver.class)).size());
+	}
+
+	@Test
+	public void testFieldWriteDeclaredInTheSuperclass() {
+		final Launcher launcher = new Launcher();
+		launcher.run(new String[] {
+				"-i", "./src/test/resources/spoon/test/variable/Tacos.java",
+				"-o", "target/spooned/variable",
+				"--noclasspath",
+				"--compliance", "8",
+				"--level", "OFF"
+		});
+
+		new ContractVerifier(launcher.getFactory().Package().getRootPackage()).checkAssignmentContracts();
 	}
 
 	@Test

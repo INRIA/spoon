@@ -66,7 +66,9 @@ import java.util.Set;
 
 import static spoon.testing.utils.Check.assertNotNull;
 
-/** Verifies all contracts that should hold on any AST */
+/**
+ * Verifies all contracts that should hold on any AST.
+ */
 @Experimental
 public class ContractVerifier {
 
@@ -76,10 +78,11 @@ public class ContractVerifier {
 		this._rootPackage = rootPackage;
 	}
 
+	/** verify all possible contracts in this class */
 	public void verify() {
 		checkShadow();
 		checkParentContract();
-		checkParentConsistency();
+		checkParentConsistency(_rootPackage);
 		checkModifiers();
 		checkAssignmentContracts();
 		checkContractCtScanner();
@@ -91,8 +94,8 @@ public class ContractVerifier {
 		checkRoleInParent();
 	}
 
-	public void checkModifiers() {
-		// the explicit modifier should be present in the original source code
+	/** verifies that the explicit modifier should be present in the original source code */
+	 public void checkModifiers() {
 		for (CtModifiable modifiable : _rootPackage.getElements(new TypeFilter<>(CtModifiable.class))) {
 			for (CtExtendedModifier modifier : modifiable.getExtendedModifiers()) {
 				if (modifier.isImplicit()) {
@@ -148,6 +151,7 @@ public class ContractVerifier {
 		throw new AssertionError(msg);
 	}
 
+	/** checks that there is always one parent, corresponding to the scanning order */
 	public void checkParentContract() {
 		_rootPackage.filterChildren(null).forEach((CtElement elem) -> {
 			// there is always one parent
@@ -191,6 +195,7 @@ public class ContractVerifier {
 		}.scan(_rootPackage);
 	}
 
+	/** check that we have all shadow elements, and that they are correctly isShadow */
 	public void checkShadow() {
 		new CtScanner() {
 			@Override
@@ -295,6 +300,7 @@ public class ContractVerifier {
 		}.visitCtPackage(_rootPackage);
 	}
 
+	/** verifies the core scanning contracts (enter implies exit, etc) */
 	public void checkContractCtScanner() {
 		class Counter {
 			int scan;
@@ -385,6 +391,7 @@ public class ContractVerifier {
 		assertEquals(counterInclNull.scan, counterBiScan2.scan);
 	}
 
+	/** checks that all assignments are aither a CtFieldWrite, a CtVariableWrite or a CtArrayWrite */
 	public void checkAssignmentContracts() {
 		for (CtAssignment assign : _rootPackage.getElements(new TypeFilter<>(CtAssignment.class))) {
 			CtExpression assigned = assign.getAssigned();
@@ -395,7 +402,8 @@ public class ContractVerifier {
 		}
 	}
 
-	public void checkParentConsistency() {
+	/** checks that the scanner behavior and the parents correspond */
+	public void checkParentConsistency(CtElement element) {
 		final Set<CtElement> inconsistentParents = new HashSet<>();
 		new CtScanner() {
 			private Deque<CtElement> previous = new ArrayDeque();
@@ -429,13 +437,12 @@ public class ContractVerifier {
 				}
 				super.exit(e);
 			}
-		}.scan(_rootPackage);
+		}.scan(element);
 		assertEquals("All parents have to be consistent", 0, inconsistentParents.size());
 	}
 
-	/*
-	 * contract: each element is used only once
-	 * For example this is always true: field.getType() != field.getDeclaringType()
+	/*!
+	 * contract: each element is used only once in the model
 	 */
 	public void checkModelIsTree() {
 		Exception dummyException = new Exception("STACK");
@@ -509,6 +516,7 @@ public class ContractVerifier {
 		return nr;
 	}
 
+	/** checks that for all elements, the path can be obtained, parsed, and give the same element when evaluated */
 	public void checkElementToPathToElementEquivalence() {
 		_rootPackage.getPackage("spoon").getElements(e -> true).parallelStream().forEach(element -> {
 			CtPath path = element.getPath();
@@ -530,6 +538,7 @@ public class ContractVerifier {
 		});
 	}
 
+	/** contract: element is contained in attribute of element's parent */
 	public void checkElementIsContainedInAttributeOfItsParent() {
 		_rootPackage.accept(new CtScanner() {
 			@Override
