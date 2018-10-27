@@ -50,6 +50,7 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.Experimental;
+import spoon.support.Internal;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.visitor.equals.EqualsVisitor;
@@ -68,6 +69,8 @@ import static spoon.testing.utils.Check.assertNotNull;
 
 /**
  * Verifies all contracts that should hold on any AST.
+ *
+ * Usage: `new ContractVerifier(pack).verifyAll();`
  */
 @Experimental
 public class ContractVerifier {
@@ -78,11 +81,16 @@ public class ContractVerifier {
 		this._rootPackage = rootPackage;
 	}
 
+	/** use at your own risk, not part of the public API */
+	public ContractVerifier() {
+	}
+
+
 	/** verify all possible contracts in this class */
 	public void verify() {
 		checkShadow();
 		checkParentContract();
-		checkParentConsistency(_rootPackage);
+		checkParentConsistency();
 		checkModifiers();
 		checkAssignmentContracts();
 		checkContractCtScanner();
@@ -403,6 +411,12 @@ public class ContractVerifier {
 	}
 
 	/** checks that the scanner behavior and the parents correspond */
+	public void checkParentConsistency() {
+		checkParentConsistency(_rootPackage);
+	}
+
+	// for internal usage only
+	@Internal
 	public void checkParentConsistency(CtElement element) {
 		final Set<CtElement> inconsistentParents = new HashSet<>();
 		new CtScanner() {
