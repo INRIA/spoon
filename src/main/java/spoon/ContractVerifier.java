@@ -415,7 +415,7 @@ public class ContractVerifier {
 		checkParentConsistency(_rootPackage);
 	}
 
-	// for internal usage only
+	/** public modifier for testing purpose only, not in the public API */
 	@Internal
 	public void checkParentConsistency(CtElement element) {
 		final Set<CtElement> inconsistentParents = new HashSet<>();
@@ -455,7 +455,7 @@ public class ContractVerifier {
 		assertEquals("All parents have to be consistent", 0, inconsistentParents.size());
 	}
 
-	/*!
+	/**
 	 * contract: each element is used only once in the model
 	 */
 	public void checkModelIsTree() {
