@@ -103,7 +103,7 @@ public class ContractVerifier {
 	}
 
 	/** verifies that the explicit modifier should be present in the original source code */
-	 public void checkModifiers() {
+	public void checkModifiers() {
 		for (CtModifiable modifiable : _rootPackage.getElements(new TypeFilter<>(CtModifiable.class))) {
 			for (CtExtendedModifier modifier : modifiable.getExtendedModifiers()) {
 				if (modifier.isImplicit()) {
