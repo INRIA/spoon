@@ -286,7 +286,7 @@ public class SpoonPom implements SpoonResource {
 		return environment.getComplianceLevel();
 	}
 
-	private int correctJavaVersion(String javaVersion){
+	private int correctJavaVersion(String javaVersion) {
 		String version = extractVariable(javaVersion);
 		return Integer.parseInt((version.contains(".") ? version.substring(2) : version));
 	}
