@@ -256,7 +256,8 @@ public class SpoonPom implements SpoonResource {
 			javaVersion = getSourceVersion(model.getBuild());
 		}
 		if (javaVersion != null) {
-			return Integer.parseInt(extractVariable(javaVersion).substring(2));
+			String version = extractVariable(javaVersion);
+			return Integer.parseInt((version.contains(".") ? version.substring(2) : version));
 		}
 		for (Profile profile: model.getProfiles()) {
 			if (profile.getActivation() != null && profile.getActivation().isActiveByDefault()) {
