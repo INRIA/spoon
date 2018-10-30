@@ -45,6 +45,7 @@ import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.reflect.visitor.PrintingContext.Writable;
 
@@ -304,8 +305,8 @@ public class ElementPrinterHelper {
 					break;
 
 				case ALL_STATIC_MEMBERS:
-					CtTypeReference typeStarRef = (CtTypeReference) ctImport.getReference();
-					importTypeStr = typeStarRef.getQualifiedName();
+					CtWildcardStaticTypeMemberReference typeStarRef = (CtWildcardStaticTypeMemberReference) ctImport.getReference();
+					importTypeStr = typeStarRef.getTypeReference().getQualifiedName();
 					if (!isJavaLangClasses(importTypeStr)) {
 						setStaticImports.add(this.removeInnerTypeSeparator(importTypeStr));
 					}

@@ -500,9 +500,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 					if ((isExecRef || isFieldRef) && refDeclaringType != null) {
 						String qualifiedName = refDeclaringType.getQualifiedName();
 						CtWildcardStaticTypeMemberReferenceImpl importRef = (CtWildcardStaticTypeMemberReferenceImpl) ctImport.getReference();
-						String importRefStr = importRef.getQualifiedName();
-
-						importRefStr = importRefStr.substring(0, importRefStr.lastIndexOf('.'));
+						String importRefStr = importRef.getTypeReference().getQualifiedName();
 						if (qualifiedName.equals(importRefStr)) {
 							return this.setImportUsed(ctImport);
 						}

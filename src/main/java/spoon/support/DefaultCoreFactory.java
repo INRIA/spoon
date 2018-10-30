@@ -109,6 +109,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 import spoon.support.reflect.code.CtAnnotationFieldAccessImpl;
 import spoon.support.reflect.code.CtArrayReadImpl;
 import spoon.support.reflect.code.CtArrayWriteImpl;
@@ -1034,6 +1035,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.reference.CtModuleReference.class)) {
 			return createModuleReference();
 		}
+		if (klass.equals(spoon.reflect.reference.CtWildcardStaticTypeMemberReference.class)) {
+			return createWildcardStaticTypeMemberReference();
+		}
 		if (klass.equals(spoon.reflect.declaration.CtModule.class)) {
 			return createModule();
 		}
@@ -1059,11 +1063,12 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	}
 
 	@Override
-	public CtTypeReference createWildcardStaticTypeMemberReference() {
-		CtTypeReference result = new CtWildcardStaticTypeMemberReferenceImpl();
+	public CtWildcardStaticTypeMemberReference createWildcardStaticTypeMemberReference() {
+		CtWildcardStaticTypeMemberReference result = new CtWildcardStaticTypeMemberReferenceImpl();
 		result.setFactory(getMainFactory());
 		return result;
 	}
+
 	@Override
 	public CtModule createModule() {
 		CtModule module = new CtModuleImpl();

@@ -107,6 +107,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 
 
 /**
@@ -990,6 +991,13 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.ANNOTATION, packageDeclaration.getAnnotations());
 		scan(CtRole.PACKAGE_REF, packageDeclaration.getReference());
 		exit(packageDeclaration);
+	}
+
+	@Override
+	public void visitCtWildcardStaticTypeMemberReference(CtWildcardStaticTypeMemberReference wildcardReference) {
+		enter(wildcardReference);
+		scan(CtRole.TYPE_REF, wildcardReference.getTypeReference());
+		exit(wildcardReference);
 	}
 }
 

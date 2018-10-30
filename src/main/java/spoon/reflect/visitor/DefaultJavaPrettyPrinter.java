@@ -118,6 +118,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
 import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 import spoon.reflect.visitor.printer.CommentOffset;
@@ -810,7 +811,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (fieldReference.getDeclaringType() == null) {
 				return false;
 			}
-			CtTypeReference staticTypeMemberReference = fieldReference.getFactory().Type().createWildcardStaticTypeMemberReference(fieldReference.getDeclaringType());
+			CtWildcardStaticTypeMemberReference staticTypeMemberReference = fieldReference.getFactory().Type().createWildcardStaticTypeMemberReference(fieldReference.getDeclaringType());
 			CtImport staticClassImport = fieldReference.getFactory().createImport(staticTypeMemberReference);
 			return this.imports.contains(staticClassImport);
 		}
@@ -825,7 +826,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (executableReference.getDeclaringType() == null) {
 				return false;
 			}
-			CtTypeReference staticTypeMemberReference = executableReference.getFactory().Type().createWildcardStaticTypeMemberReference(executableReference.getDeclaringType());
+			CtWildcardStaticTypeMemberReference staticTypeMemberReference = executableReference.getFactory().Type().createWildcardStaticTypeMemberReference(executableReference.getDeclaringType());
 			CtImport staticClassImport = executableReference.getFactory().createImport(staticTypeMemberReference);
 			return this.imports.contains(staticClassImport);
 		}
@@ -1014,7 +1015,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				case ALL_STATIC_MEMBERS:
 					printer.writeKeyword("static");
 					printer.writeSpace();
-					visitCtTypeReference((CtTypeReference) ctImport.getReference());
+					visitCtTypeReference(((CtWildcardStaticTypeMemberReference) ctImport.getReference()).getTypeReference());
+					printer.writeSeparator(".");
+					printer.writeIdentifier("*");
 					break;
 			}
 			printer.writeSeparator(";");
@@ -1113,6 +1116,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void visitCtPackageDeclaration(CtPackageDeclaration packageDeclaration) {
 		elementPrinterHelper.writePackageLine(packageDeclaration.getReference().getQualifiedName());
+	}
+
+	@Override
+	public void visitCtWildcardStaticTypeMemberReference(CtWildcardStaticTypeMemberReference wildcardReference) {
+		scan(wildcardReference.getTypeReference());
+		printer.writeSeparator(".").writeSeparator("*");
 	}
 
 	@Override
