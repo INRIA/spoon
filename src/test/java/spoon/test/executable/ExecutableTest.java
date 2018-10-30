@@ -17,6 +17,7 @@
 package spoon.test.executable;
 
 import org.junit.Test;
+import spoon.ContractVerifier;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
@@ -124,6 +125,6 @@ public class ExecutableTest {
 
 		assertEquals(valueOf, shadowValueOf);
 		assertEquals(valueOf.getDeclaration(), shadowValueOf.getDeclaration());
-		MainTest.checkShadow(shadowValueOf.getParent(CtPackage.class));
+		new ContractVerifier(shadowValueOf.getParent(CtPackage.class)).checkShadow();
 	}
 }

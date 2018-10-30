@@ -17,6 +17,7 @@
 package spoon.test.variable;
 
 import org.junit.Test;
+import spoon.ContractVerifier;
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -193,7 +194,7 @@ public class AccessTest {
 				"--level", "OFF"
 		});
 
-		MainTest.checkAssignmentContracts(launcher.getFactory().Package().getRootPackage());
+		new ContractVerifier(launcher.getFactory().Package().getRootPackage()).checkAssignmentContracts();
 	}
 
 	@Test
