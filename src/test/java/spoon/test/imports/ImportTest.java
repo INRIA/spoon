@@ -41,8 +41,12 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
+import spoon.reflect.visitor.CtImportVisitor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
@@ -1343,6 +1347,77 @@ public class ImportTest {
 
 		ctImport = spoon.getFactory().createImport(aType.getPackage().getReference());
 		assertEquals(CtImportKind.ALL_TYPES, ctImport.getImportKind());
+	}
+	
+	@Test
+	public void testVisitImportByKind() {
+		// contract: the CtImportVisitor is called based on the reference class type and the boolean isImportAllStaticTypeMembers
+		final Launcher spoon = new Launcher();
+
+		CtType aType = spoon.getFactory().Type().get(Reflection.class);
+
+		CtTypeReference<?> typeRef;
+		
+		CtImport ctImport = spoon.getFactory().createImport(aType.getReference());
+		assertImportVisitor(ctImport);
+
+		ctImport = spoon.getFactory().createImport(spoon.getFactory().Type().createWildcardStaticTypeMemberReference(aType.getReference()));
+		assertImportVisitor(ctImport);
+
+		ctImport = spoon.getFactory().createImport(((CtMethod)aType.getAllMethods().iterator().next()).getReference());
+		assertImportVisitor(ctImport);
+
+		ctImport = spoon.getFactory().createImport(((CtField)aType.getFields().get(0)).getReference());
+		assertImportVisitor(ctImport);
+
+		ctImport = spoon.getFactory().createImport(aType.getPackage().getReference());
+		assertImportVisitor(ctImport);
+	}
+
+	private void assertImportVisitor(CtImport imprt) {
+		class ImportInfo {
+			CtImportKind kind;
+			void setKind(CtImportKind kind) {
+				if (this.kind != null) {
+					fail();
+				}
+				this.kind = kind;
+			}
+		}
+		ImportInfo info = new ImportInfo();
+		imprt.accept(new CtImportVisitor() {
+			
+			@Override
+			public <T> void visitTypeImport(CtTypeReference<T> typeReference) {
+				info.setKind(CtImportKind.TYPE);
+				assertSame(imprt.getReference(), typeReference);
+			}
+			
+			@Override
+			public <T> void visitMethodImport(CtExecutableReference<T> executableReference) {
+				info.setKind(CtImportKind.METHOD);
+				assertSame(imprt.getReference(), executableReference);
+			}
+			
+			@Override
+			public <T> void visitFieldImport(CtFieldReference<T> fieldReference) {
+				info.setKind(CtImportKind.FIELD);
+				assertSame(imprt.getReference(), fieldReference);
+			}
+			
+			@Override
+			public void visitAllTypesImport(CtPackageReference packageReference) {
+				info.setKind(CtImportKind.ALL_TYPES);
+				assertSame(imprt.getReference(), packageReference);
+			}
+			
+			@Override
+			public <T> void visitAllStaticMembersImport(CtWildcardStaticTypeMemberReference typeReference) {
+				info.setKind(CtImportKind.ALL_STATIC_MEMBERS);
+				assertSame(imprt.getReference(), typeReference);
+			}
+		});
+		assertSame(imprt.getImportKind(), info.kind);
 	}
 
 	@Test
