@@ -62,7 +62,7 @@ public class InsertMethodsTest {
 						+ "  int y=0;" //
 						+ "  int z=x+y;" //
 						+ " }" //
-						+ "};").compile();
+						+ "}").compile();
 		insertExampleClass = factory.Package().get("spoon.test.intercession.insertBefore").getType("InsertBeforeExample");
 	}
 
