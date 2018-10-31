@@ -4,6 +4,39 @@ title: Spoon Patterns
 
 Spoon patterns enables you to find code elements. A Spoon pattern is based on a one or several AST nodes, which represent the code to match, where some parts of the AST are pattern parameters. When a pattern is matched, one can access to the code matched in each pattern parameter.
 
+The unique feature of Spoon pattern matching is that we are matching on AST tree of sources. Not on text of java sources. It means that:
+* source code formating is ignored. For example:
+
+```java
+void m() {}
+//matches with
+void	m(){
+}
+```
+* comments are ignored. For example:
+
+```java
+void m() {}
+//matches with
+/**
+ javadoc is ignored
+*/
+/* was public before */ void m(/*this is ignored too*/) {
+	//and line comments are ignored too
+}
+```
+
+* implicit and explicit elements are understood as same. For example:
+
+```java
+if (something) 
+	list = (List<String>) new ArrayList<>(FIELD_COUNT);
+//matches with
+if (something) {
+	OuterType.this.list = (java.util.List<java.lang.String>) new java.util.ArrayList<java.lang.String>(Constants.FIELD_COUNT);
+}
+```
+
 The main classes of Spoon patterns are those in package `spoon.pattern`:
 
 * classes: PatternBuilder, Pattern, Match, PatternBuilderHelper, PatternParameterConfigurator, InlinedStatementConfigurator 
