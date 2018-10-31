@@ -43,4 +43,13 @@ public class Foo {
 			break;
 		} while (true);
 	}
+
+	void m4() {
+		if (false) {}
+
+		if (false);
+
+		if (false);
+		else System.out.println();
+	}
 }

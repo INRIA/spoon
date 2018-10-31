@@ -31,6 +31,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ConditionalTest {
 	String newLine = System.getProperty("line.separator");
@@ -96,5 +98,21 @@ public class ConditionalTest {
 				+ "else" + newLine
 				+ "    java.lang.System.out.println();" + newLine,
 				method.getBody().getStatement(0).toString());
+	}
+
+	@Test
+	public void testNoThenBlock() throws Exception {
+		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
+		CtMethod<Object> method = aFoo.getMethod("m4");
+		final List<CtIf> conditions = method.getElements(new TypeFilter<>(CtIf.class));
+
+		assertNotNull(conditions.get(0).getThenStatement());
+		assertNull(conditions.get(0).getElseStatement());
+
+		assertNull(conditions.get(1).getThenStatement());
+		assertNull(conditions.get(1).getElseStatement());
+
+		assertNull(conditions.get(2).getThenStatement());
+		assertNotNull(conditions.get(2).getElseStatement());
 	}
 }
