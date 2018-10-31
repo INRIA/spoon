@@ -18,6 +18,7 @@ package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.EmptyStatement;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
@@ -94,7 +95,8 @@ public class ContextBuilder {
 	void enter(CtElement e, ASTNode node) {
 		stack.push(new ASTPair(e, node));
 		if (!(e instanceof CtPackage) || (compilationUnitSpoon.getFile() != null && compilationUnitSpoon.getFile().getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION))) {
-			if (compilationunitdeclaration != null && !e.isImplicit()) {
+			if (compilationunitdeclaration != null && !e.isImplicit()
+					|| node instanceof EmptyStatement) {
 				e.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPositionCtElement(e, node));
 			}
 		}

@@ -140,6 +140,7 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -444,12 +445,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 				//label: while(true);
 				childStmt.setLabel(block.getLabel());
 				SourcePosition oldPos = childStmt.getPosition();
-				int newSourceStart = Math.min(oldPos.getSourceStart(), block.getPosition().getSourceStart());
-				if (newSourceStart != oldPos.getSourceStart()) {
-					childStmt.setPosition(block.getFactory().Core().createSourcePosition(
-							oldPos.getCompilationUnit(),
-							newSourceStart, oldPos.getSourceEnd(),
-							oldPos.getCompilationUnit().getLineSeparatorPositions()));
+				if (!(oldPos instanceof NoSourcePosition)) {
+					int newSourceStart = Math.min(oldPos.getSourceStart(), block.getPosition().getSourceStart());
+					if (newSourceStart != oldPos.getSourceStart()) {
+						childStmt.setPosition(block.getFactory().Core().createSourcePosition(
+								oldPos.getCompilationUnit(),
+								newSourceStart, oldPos.getSourceEnd(),
+								oldPos.getCompilationUnit().getLineSeparatorPositions()));
+					}
 				}
 				//use childStmt instead of helper block
 				//1) disconnect childStmt from it's helper block
