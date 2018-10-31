@@ -124,7 +124,6 @@ public class ConditionalTest {
 		CtMethod<Object> method = aFoo.getMethod("bug");
 		final List<CtIf> conditions = method.getElements(new TypeFilter<>(CtIf.class));
 
-		System.out.println(conditions.get(0).getThenStatement().toString());
 		// contract: an empty statement is transformed into an empty block with a comment
 		assertTrue(conditions.get(0).getThenStatement() instanceof CtBlock);
 		assertTrue(((CtBlock)conditions.get(0).getThenStatement()).getStatements().get(0) instanceof CtComment);
