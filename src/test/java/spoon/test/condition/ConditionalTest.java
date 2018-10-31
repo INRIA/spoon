@@ -18,6 +18,7 @@ package spoon.test.condition;
 
 import org.junit.Test;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
@@ -25,6 +26,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.condition.testclasses.Foo;
+import spoon.test.condition.testclasses.Foo2;
 import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
@@ -102,6 +104,7 @@ public class ConditionalTest {
 
 	@Test
 	public void testNoThenBlock() throws Exception {
+		// contract: corner cases provided by @Egor18 are well handled
 		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
 		CtMethod<Object> method = aFoo.getMethod("m4");
 		final List<CtIf> conditions = method.getElements(new TypeFilter<>(CtIf.class));
@@ -109,10 +112,25 @@ public class ConditionalTest {
 		assertNotNull(conditions.get(0).getThenStatement());
 		assertNull(conditions.get(0).getElseStatement());
 
-		assertNull(conditions.get(1).getThenStatement());
+		assertTrue(conditions.get(1).getThenStatement() instanceof CtBlock);
 		assertNull(conditions.get(1).getElseStatement());
+	}
 
-		assertNull(conditions.get(2).getThenStatement());
-		assertNotNull(conditions.get(2).getElseStatement());
+	@Test
+	public void testNoThenBlockBug() throws Exception {
+		// contract: empty statement are correctly handled
+		// the fix consists of addind visit(EmptyStatement) in JDTTreeBuilder
+		final CtType aFoo = ModelUtils.buildClass(Foo2.class);
+		CtMethod<Object> method = aFoo.getMethod("bug");
+		final List<CtIf> conditions = method.getElements(new TypeFilter<>(CtIf.class));
+
+		System.out.println(conditions.get(0).getThenStatement().toString());
+		// contract: an empty statement is transformed into an empty block with a comment
+		assertTrue(conditions.get(0).getThenStatement() instanceof CtBlock);
+		assertTrue(((CtBlock)conditions.get(0).getThenStatement()).getStatements().get(0) instanceof CtComment);
+
+		// and we have the correct else statement
+		assertNotNull(conditions.get(0).getElseStatement());
+		assertEquals("java.lang.System.out.println();\n", conditions.get(0).getElseStatement().toString());
 	}
 }

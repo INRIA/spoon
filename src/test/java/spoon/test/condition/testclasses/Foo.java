@@ -48,8 +48,5 @@ public class Foo {
 		if (false) {}
 
 		if (false);
-
-		if (false);
-		else System.out.println();
 	}
 }

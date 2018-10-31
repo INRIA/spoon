@@ -605,11 +605,14 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		} else if (child instanceof CtStatement) {
 			CtStatement child = (CtStatement) this.child;
+
+			// we create implict blocks everywhere for facilitating transformation
 			if (!(this.child instanceof CtBlock)) {
 				child = jdtTreeBuilder.getFactory().Code().createCtBlock(child);
 				child.setImplicit(true);
 				child.setPosition(this.child.getPosition());
 			}
+
 			if (ifElement.getThenStatement() == null) {
 				ifElement.setThenStatement(child);
 				return;

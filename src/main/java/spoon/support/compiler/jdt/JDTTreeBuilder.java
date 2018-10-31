@@ -46,6 +46,7 @@ import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ContinueStatement;
 import org.eclipse.jdt.internal.compiler.ast.DoStatement;
 import org.eclipse.jdt.internal.compiler.ast.DoubleLiteral;
+import org.eclipse.jdt.internal.compiler.ast.EmptyStatement;
 import org.eclipse.jdt.internal.compiler.ast.EqualExpression;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral;
@@ -124,6 +125,7 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtExpression;
@@ -1188,6 +1190,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.enter(factory.Core().createIf(), ifStatement);
 		return true;
 	}
+
+	@Override
+	public boolean visit(EmptyStatement emptyStatement, BlockScope scope) {
+		context.enter(factory.Code().createComment("EmptyStatement", CtComment.CommentType.BLOCK).setImplicit(true), emptyStatement);
+		return true;
+	}
+	@Override
+	public void endVisit(EmptyStatement emptyStatement, BlockScope scope) {
+		context.exit(emptyStatement);
+	}
+
 
 	@Override
 	public boolean visit(Initializer initializer, MethodScope scope) {
