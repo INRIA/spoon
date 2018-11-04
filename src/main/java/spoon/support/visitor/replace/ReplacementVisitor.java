@@ -1326,10 +1326,10 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtWildcardStaticTypeMemberReferenceTypeReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.reference.CtWildcardStaticTypeMemberReference element;
+	class CtTypeMemberWildcardImportReferenceTypeReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.reference.CtTypeMemberWildcardImportReference element;
 
-		CtWildcardStaticTypeMemberReferenceTypeReferenceReplaceListener(spoon.reflect.reference.CtWildcardStaticTypeMemberReference element) {
+		CtTypeMemberWildcardImportReferenceTypeReferenceReplaceListener(spoon.reflect.reference.CtTypeMemberWildcardImportReference element) {
 			this.element = element;
 		}
 
@@ -2216,8 +2216,8 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	@java.lang.Override
-	public void visitCtWildcardStaticTypeMemberReference(spoon.reflect.reference.CtWildcardStaticTypeMemberReference wildcardReference) {
-		replaceElementIfExist(wildcardReference.getTypeReference(), new spoon.support.visitor.replace.ReplacementVisitor.CtWildcardStaticTypeMemberReferenceTypeReferenceReplaceListener(wildcardReference));
+	public void visitCtTypeMemberWildcardImportReference(spoon.reflect.reference.CtTypeMemberWildcardImportReference wildcardReference) {
+		replaceElementIfExist(wildcardReference.getTypeReference(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeMemberWildcardImportReferenceTypeReferenceReplaceListener(wildcardReference));
 	}
 }
 

@@ -483,7 +483,7 @@ public class Metamodel {
 
 			));
 
-			types.add(new Type("CtWildcardStaticTypeMemberReference", spoon.reflect.reference.CtWildcardStaticTypeMemberReference.class, spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl.class, fm -> fm
+			types.add(new Type("CtTypeMemberWildcardImportReference", spoon.reflect.reference.CtTypeMemberWildcardImportReference.class, spoon.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl.class, fm -> fm
 				.field(CtRole.NAME, true, true)
 				.field(CtRole.IS_IMPLICIT, true, true)
 				.field(CtRole.POSITION, false, false)

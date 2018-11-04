@@ -45,7 +45,7 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.SpoonClassNotFoundException;
-import spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl;
+import spoon.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -499,7 +499,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 				case ALL_STATIC_MEMBERS:
 					if ((isExecRef || isFieldRef) && refDeclaringType != null) {
 						String qualifiedName = refDeclaringType.getQualifiedName();
-						CtWildcardStaticTypeMemberReferenceImpl importRef = (CtWildcardStaticTypeMemberReferenceImpl) ctImport.getReference();
+						CtTypeMemberWildcardImportReferenceImpl importRef = (CtTypeMemberWildcardImportReferenceImpl) ctImport.getReference();
 						String importRefStr = importRef.getTypeReference().getQualifiedName();
 						if (qualifiedName.equals(importRefStr)) {
 							return this.setImportUsed(ctImport);

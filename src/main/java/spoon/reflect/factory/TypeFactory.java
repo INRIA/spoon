@@ -32,7 +32,7 @@ import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -351,8 +351,8 @@ public class TypeFactory extends SubFactory {
 	/**
 	 * Create a wildcard reference to a simple type
 	 */
-	public CtWildcardStaticTypeMemberReference createWildcardStaticTypeMemberReference(CtTypeReference typeReference) {
-		CtWildcardStaticTypeMemberReference ref = factory.Core().createWildcardStaticTypeMemberReference();
+	public CtTypeMemberWildcardImportReference createTypeMemberWildcardImportReference(CtTypeReference typeReference) {
+		CtTypeMemberWildcardImportReference ref = factory.Core().createTypeMemberWildcardImportReference();
 		ref.setTypeReference(typeReference.clone());
 		return ref;
 	}

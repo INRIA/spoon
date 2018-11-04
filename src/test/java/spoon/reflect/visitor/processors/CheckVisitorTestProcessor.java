@@ -34,7 +34,7 @@ import java.util.List;
  */
 public class CheckVisitorTestProcessor<T extends CtVisitor> extends AbstractProcessor<CtClass<?>> {
 	private Class<T> visitor;
-	private final List<String> excludingClasses = Arrays.asList("CompilationUnitVirtualImpl", "CtWildcardStaticTypeMemberReferenceImpl", "InvisibleArrayConstructorImpl");
+	private final List<String> excludingClasses = Arrays.asList("CompilationUnitVirtualImpl", "CtTypeMemberWildcardImportReferenceImpl", "InvisibleArrayConstructorImpl");
 	private boolean hasScanners;
 	private boolean hasVisitors;
 

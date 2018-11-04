@@ -1332,7 +1332,7 @@ public class ImportTest {
 		CtImport ctImport = spoon.getFactory().createImport(aType.getReference());
 		assertEquals(CtImportKind.TYPE, ctImport.getImportKind());
 
-		ctImport = spoon.getFactory().createImport(spoon.getFactory().Type().createWildcardStaticTypeMemberReference(aType.getReference()));
+		ctImport = spoon.getFactory().createImport(spoon.getFactory().Type().createTypeMemberWildcardImportReference(aType.getReference()));
 		assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
 
 		ctImport = spoon.getFactory().createImport(((CtMethod)aType.getAllMethods().iterator().next()).getReference());

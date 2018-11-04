@@ -33,7 +33,7 @@ import spoon.support.UnsettableProperty;
  * Example:
  * <code>somePackage.Type.*;</code>
  */
-public interface CtWildcardStaticTypeMemberReference extends CtReference {
+public interface CtTypeMemberWildcardImportReference extends CtReference {
 
 	/**
 	 * Returns the fully qualified name of type followed by `.*`
@@ -49,10 +49,10 @@ public interface CtWildcardStaticTypeMemberReference extends CtReference {
 	CtTypeReference<?> getTypeReference();
 
 	@PropertySetter(role = CtRole.TYPE_REF)
-	CtWildcardStaticTypeMemberReference setTypeReference(CtTypeReference<?> typeReference);
+	CtTypeMemberWildcardImportReference setTypeReference(CtTypeReference<?> typeReference);
 
 	@Override
-	CtWildcardStaticTypeMemberReference clone();
+	CtTypeMemberWildcardImportReference clone();
 
 	@Override
 	@DerivedProperty

@@ -1069,12 +1069,12 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	@java.lang.Override
-	public void visitCtWildcardStaticTypeMemberReference(spoon.reflect.reference.CtWildcardStaticTypeMemberReference wildcardReference) {
-		spoon.reflect.reference.CtWildcardStaticTypeMemberReference aCtWildcardStaticTypeMemberReference = wildcardReference.getFactory().Core().createWildcardStaticTypeMemberReference();
-		aCtWildcardStaticTypeMemberReference.setTypeReference(this.cloneHelper.clone(wildcardReference.getTypeReference()));
-		this.builder.copy(wildcardReference, aCtWildcardStaticTypeMemberReference);
-		this.cloneHelper.tailor(wildcardReference, aCtWildcardStaticTypeMemberReference);
-		this.other = aCtWildcardStaticTypeMemberReference;
+	public void visitCtTypeMemberWildcardImportReference(spoon.reflect.reference.CtTypeMemberWildcardImportReference wildcardReference) {
+		spoon.reflect.reference.CtTypeMemberWildcardImportReference aCtTypeMemberWildcardImportReference = wildcardReference.getFactory().Core().createTypeMemberWildcardImportReference();
+		aCtTypeMemberWildcardImportReference.setTypeReference(this.cloneHelper.clone(wildcardReference.getTypeReference()));
+		this.builder.copy(wildcardReference, aCtTypeMemberWildcardImportReference);
+		this.cloneHelper.tailor(wildcardReference, aCtTypeMemberWildcardImportReference);
+		this.other = aCtTypeMemberWildcardImportReference;
 	}
 }
 

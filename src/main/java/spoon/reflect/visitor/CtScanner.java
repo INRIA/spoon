@@ -107,7 +107,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 
 
 /**
@@ -994,7 +994,7 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	@Override
-	public void visitCtWildcardStaticTypeMemberReference(CtWildcardStaticTypeMemberReference wildcardReference) {
+	public void visitCtTypeMemberWildcardImportReference(CtTypeMemberWildcardImportReference wildcardReference) {
 		enter(wildcardReference);
 		scan(CtRole.TYPE_REF, wildcardReference.getTypeReference());
 		exit(wildcardReference);

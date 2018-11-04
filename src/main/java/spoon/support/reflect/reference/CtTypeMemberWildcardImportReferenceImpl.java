@@ -29,7 +29,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.Experimental;
@@ -43,7 +43,7 @@ import spoon.support.reflect.declaration.CtElementImpl;
  * import static org.junit.Assert.*;
  */
 @Experimental
-public class CtWildcardStaticTypeMemberReferenceImpl extends CtElementImpl implements CtWildcardStaticTypeMemberReference {
+public class CtTypeMemberWildcardImportReferenceImpl extends CtElementImpl implements CtTypeMemberWildcardImportReference {
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = CtRole.TYPE_REF)
@@ -55,7 +55,7 @@ public class CtWildcardStaticTypeMemberReferenceImpl extends CtElementImpl imple
 	}
 
 	@Override
-	public CtWildcardStaticTypeMemberReferenceImpl setTypeReference(CtTypeReference<?> typeReference) {
+	public CtTypeMemberWildcardImportReferenceImpl setTypeReference(CtTypeReference<?> typeReference) {
 		if (typeReference != null) {
 			typeReference.setParent(this);
 		}
@@ -77,12 +77,12 @@ public class CtWildcardStaticTypeMemberReferenceImpl extends CtElementImpl imple
 
 	@Override
 	public void accept(CtVisitor visitor) {
-		visitor.visitCtWildcardStaticTypeMemberReference(this);
+		visitor.visitCtTypeMemberWildcardImportReference(this);
 	}
 
 	@Override
-	public CtWildcardStaticTypeMemberReferenceImpl clone() {
-		return (CtWildcardStaticTypeMemberReferenceImpl) super.clone();
+	public CtTypeMemberWildcardImportReferenceImpl clone() {
+		return (CtTypeMemberWildcardImportReferenceImpl) super.clone();
 	}
 
 	@Override

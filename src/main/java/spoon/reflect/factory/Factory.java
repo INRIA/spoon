@@ -116,7 +116,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.visitor.chain.CtQuery;
 import spoon.support.visitor.GenericTypeAdapter;
 
@@ -966,9 +966,9 @@ public interface Factory {
 	CtImport createImport(CtReference reference);
 
 	/**
-	 * @see TypeFactory#createWildcardStaticTypeMemberReference(CtTypeReference)
+	 * @see TypeFactory#createTypeMemberWildcardImportReference(CtTypeReference)
 	 */
-	CtWildcardStaticTypeMemberReference createWildcardStaticTypeMemberReference(CtTypeReference<?> typeReference);
+	CtTypeMemberWildcardImportReference createTypeMemberWildcardImportReference(CtTypeReference<?> typeReference);
 
 	/**
 	 * @see ModuleFactory#createPackageExport(CtPackageReference)

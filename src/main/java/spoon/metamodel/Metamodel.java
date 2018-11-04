@@ -177,7 +177,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.reference.CtUnboundVariableReference.class));
 		result.add(factory.Type().get(spoon.reflect.reference.CtVariableReference.class));
 		result.add(factory.Type().get(spoon.reflect.reference.CtWildcardReference.class));
-		result.add(factory.Type().get(spoon.reflect.reference.CtWildcardStaticTypeMemberReference.class));
+		result.add(factory.Type().get(spoon.reflect.reference.CtTypeMemberWildcardImportReference.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtImport.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtImportKind.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtModule.class));
