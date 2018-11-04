@@ -31,6 +31,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
 
 import spoon.IncrementalLauncher;
 import spoon.reflect.CtModel;
@@ -55,7 +57,6 @@ public class IncrementalLauncherTest {
 	@Test
 	public void testCache() throws IOException {
 		// Build model from A.java, B.java, C.java, D.java, and then load the same model from cache several times.
-		FileUtils.deleteDirectory(WORKING_DIR);
 		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, WORKING_DIR);
 
 		Set<File> inputResources = Collections.singleton(WORKING_DIR);
@@ -90,7 +91,6 @@ public class IncrementalLauncherTest {
 	@Test
 	public void testIncremental1() throws IOException, InterruptedException {
 		// Build model from A.java, B.java, C.java, D.java, then change D.java => load A, B, C from cache and build D.
-		FileUtils.deleteDirectory(WORKING_DIR);
 		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, WORKING_DIR);
 
 		Set<File> inputResources = Collections.singleton(WORKING_DIR);
@@ -137,7 +137,6 @@ public class IncrementalLauncherTest {
 	@Test
 	public void testIncremental2() throws IOException {
 		// Build model from A.java, B.java, C.java, then remove C.java and add D.java
-		FileUtils.deleteDirectory(WORKING_DIR);
 		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, WORKING_DIR);
 
 		Set<File> inputResources = new HashSet<>();
@@ -179,7 +178,6 @@ public class IncrementalLauncherTest {
 	public void testIncremental3() throws IOException, InterruptedException {
 		// Build model from A.java, B.java, C.java, then change type of field val in C.
 		// B refers to C, so we should check reference resolution in B as well.
-		FileUtils.deleteDirectory(WORKING_DIR);
 		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, WORKING_DIR);
 
 		Set<File> inputResources = new HashSet<>();
@@ -225,7 +223,8 @@ public class IncrementalLauncherTest {
 		assertTrue("float".equals(lhs2.getType().getSimpleName()));
 	}
 
-	@Test
+	@Before
+	@After
 	public void cleanup() throws IOException {
 		FileUtils.deleteDirectory(WORKING_DIR);
 	}
