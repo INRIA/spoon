@@ -46,7 +46,6 @@ import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ContinueStatement;
 import org.eclipse.jdt.internal.compiler.ast.DoStatement;
 import org.eclipse.jdt.internal.compiler.ast.DoubleLiteral;
-import org.eclipse.jdt.internal.compiler.ast.EmptyStatement;
 import org.eclipse.jdt.internal.compiler.ast.EqualExpression;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.eclipse.jdt.internal.compiler.ast.ExtendedStringLiteral;
@@ -125,7 +124,6 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCatch;
-import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtExpression;
@@ -140,7 +138,6 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -445,14 +442,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 				//label: while(true);
 				childStmt.setLabel(block.getLabel());
 				SourcePosition oldPos = childStmt.getPosition();
-				if (!(oldPos instanceof NoSourcePosition)) {
-					int newSourceStart = Math.min(oldPos.getSourceStart(), block.getPosition().getSourceStart());
-					if (newSourceStart != oldPos.getSourceStart()) {
-						childStmt.setPosition(block.getFactory().Core().createSourcePosition(
-								oldPos.getCompilationUnit(),
-								newSourceStart, oldPos.getSourceEnd(),
-								oldPos.getCompilationUnit().getLineSeparatorPositions()));
-					}
+				int newSourceStart = Math.min(oldPos.getSourceStart(), block.getPosition().getSourceStart());
+				if (newSourceStart != oldPos.getSourceStart()) {
+					childStmt.setPosition(block.getFactory().Core().createSourcePosition(
+							oldPos.getCompilationUnit(),
+							newSourceStart, oldPos.getSourceEnd(),
+							oldPos.getCompilationUnit().getLineSeparatorPositions()));
 				}
 				//use childStmt instead of helper block
 				//1) disconnect childStmt from it's helper block
@@ -1193,17 +1188,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.enter(factory.Core().createIf(), ifStatement);
 		return true;
 	}
-
-	@Override
-	public boolean visit(EmptyStatement emptyStatement, BlockScope scope) {
-		context.enter(factory.Code().createComment("EmptyStatement", CtComment.CommentType.BLOCK).setImplicit(true), emptyStatement);
-		return true;
-	}
-	@Override
-	public void endVisit(EmptyStatement emptyStatement, BlockScope scope) {
-		context.exit(emptyStatement);
-	}
-
 
 	@Override
 	public boolean visit(Initializer initializer, MethodScope scope) {

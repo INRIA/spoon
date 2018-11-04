@@ -28,6 +28,7 @@ import org.eclipse.jdt.internal.compiler.ast.CastExpression;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.ForStatement;
+import org.eclipse.jdt.internal.compiler.ast.IfStatement;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
@@ -37,6 +38,8 @@ import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+
+import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -115,6 +118,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	private CtElement child;
 	private ASTNode childJDT;
+	private ASTNode parentJDT;
 	private Map<CtTypedElement<?>, List<CtAnnotation>> annotationsMap = new HashMap<>();
 
 	/**
@@ -130,6 +134,10 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	public void setChild(ASTNode child) {
 		this.childJDT = child;
+	}
+
+	public void setParent(ASTNode parent) {
+		this.parentJDT = parent;
 	}
 
 	@Override
@@ -605,20 +613,24 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		} else if (child instanceof CtStatement) {
 			CtStatement child = (CtStatement) this.child;
-
-			// we create implict blocks everywhere for facilitating transformation
+			// we create implicit blocks everywhere for facilitating transformation
 			if (!(this.child instanceof CtBlock)) {
 				child = jdtTreeBuilder.getFactory().Code().createCtBlock(child);
 				child.setImplicit(true);
 				child.setPosition(this.child.getPosition());
 			}
 
-			if (ifElement.getThenStatement() == null) {
+			IfStatement ifJDT = (IfStatement) this.parentJDT;
+			if (ifJDT.thenStatement == this.childJDT) {
+				//we are visiting `then` of `if`
 				ifElement.setThenStatement(child);
 				return;
-			} else if (ifElement.getElseStatement() == null) {
+			} else if (ifJDT.elseStatement == this.childJDT) {
+				//we are visiting `else` of `if`
 				ifElement.setElseStatement(child);
 				return;
+			} else {
+				throw new SpoonException("Unexpected call of ParentExiter on CtIf");
 			}
 		}
 		super.visitCtIf(ifElement);

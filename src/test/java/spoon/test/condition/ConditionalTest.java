@@ -16,9 +16,16 @@
  */
 package spoon.test.condition;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
 import org.junit.Test;
+
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
@@ -28,13 +35,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.condition.testclasses.Foo;
 import spoon.test.condition.testclasses.Foo2;
 import spoon.testing.utils.ModelUtils;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 public class ConditionalTest {
 	String newLine = System.getProperty("line.separator");
@@ -112,7 +112,7 @@ public class ConditionalTest {
 		assertNotNull(conditions.get(0).getThenStatement());
 		assertNull(conditions.get(0).getElseStatement());
 
-		assertTrue(conditions.get(1).getThenStatement() instanceof CtBlock);
+		assertNull(conditions.get(1).getThenStatement());
 		assertNull(conditions.get(1).getElseStatement());
 	}
 
@@ -125,11 +125,10 @@ public class ConditionalTest {
 		final List<CtIf> conditions = method.getElements(new TypeFilter<>(CtIf.class));
 
 		// contract: an empty statement is transformed into an empty block with a comment
-		assertTrue(conditions.get(0).getThenStatement() instanceof CtBlock);
-		assertTrue(((CtBlock)conditions.get(0).getThenStatement()).getStatements().get(0) instanceof CtComment);
+		assertNull(conditions.get(0).getThenStatement());
 
 		// and we have the correct else statement
 		assertNotNull(conditions.get(0).getElseStatement());
-		assertEquals("java.lang.System.out.println();\n", conditions.get(0).getElseStatement().toString());
+		assertEquals("java.lang.System.out.println();", conditions.get(0).getElseStatement().toString().trim());
 	}
 }

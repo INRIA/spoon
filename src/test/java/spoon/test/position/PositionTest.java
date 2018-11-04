@@ -1097,7 +1097,7 @@ public class PositionTest {
 			assertEquals("items", contentAtPosition(classContent, forEach.getExpression().getPosition()));
 		}
 		{
-			CtForEach forEach = stmts.get(caseIdx + 1);// +1 is used to skip the empty statement
+			CtForEach forEach = stmts.get(caseIdx++);
 			assertEquals("for (/*1*/ final @Deprecated /*2*/ String /*3*/ i /*4*/ : items) \n" + 
 					"			this.getClass();", contentAtPosition(classContent, forEach.getPosition()));
 			assertEquals("/*1*/ final @Deprecated /*2*/ String /*3*/ i", contentAtPosition(classContent, forEach.getVariable().getPosition()));
@@ -1143,8 +1143,6 @@ public class PositionTest {
 		List<CtStatement> stmts = foo.getMethodsByName("m").get(0).getBody().getStatements();
 		int idx = 0;
 		assertEquals("label1: while(x) {}", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
-		// empty statement
-		assertEquals(";", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
 		assertEquals("label2: getClass();", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
 		assertEquals("labelx: label3: new String();", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
 		//contract: the nested label from previous line is not moved to next statement
@@ -1177,12 +1175,12 @@ public class PositionTest {
 		{
 			CtStatementList stmts = ((CtSwitch<?>) foo.getMethodsByName("m5").get(0).getBody().getStatement(0)).getCases().get(0);
 
-			CtStatement labelledEmtpyStatement = stmts.getStatement(1);
+			CtStatement labelledEmtpyStatement = stmts.getStatement(0);
 			assertTrue(labelledEmtpyStatement instanceof CtBlock);
 			assertTrue(labelledEmtpyStatement.isImplicit());
 			assertEquals("label:;", contentAtPosition(classContent, labelledEmtpyStatement.getPosition()));
 
-			CtStatement multiLatbelledStatement = stmts.getStatement(2);
+			CtStatement multiLatbelledStatement = stmts.getStatement(1);
 			assertTrue(multiLatbelledStatement instanceof CtBlock);
 			assertTrue(multiLatbelledStatement.isImplicit());
 			assertEquals("laval3: label1: label2: while(true);", contentAtPosition(classContent, multiLatbelledStatement.getPosition()));
