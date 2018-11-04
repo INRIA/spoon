@@ -44,8 +44,14 @@ has exactly same AST node elements. The only difference is that some nodes of AS
 
 ### Unique features of JavaParser
 
-* JavaParser is much faster with building of AST.
-* JavaParser is lighter. Spoon has transitive dependencies to Eclipse JDK compiler and others.
+* JavaParser (JP) was born to be just a parser and to be extremely easy to use.
+When you need just a parser we believe that JP is a very good choice because it is extremely easy to use,
+it is fast, it has been tested on millions of files, it has a very large user base.
+* JavaParser Symbol solving is something JP added over time and there are still some TODOs.
+People have used it and are using it to transforming code (especially since we introduced lexical preservation)
+and do all sort of analysis. It has an API that is not obvious because of the nature of the project
+(it is first of all a parser and symbol solving is something optional). But all in all it is being used quite successfully.
+* JavaParser is light. Spoon has transitive dependencies to Eclipse JDK compiler and others.
 
 ### Unique features of Spoon:
 
