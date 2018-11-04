@@ -37,7 +37,7 @@ public interface CtScannerListener {
 	/**
 	 * Called before the scanner enters an element
 	 *
-	 * @param role the {@link CtRole}, which `element` has in it's parent. It is null for the first scanned element
+	 * @param role the {@link CtRole}, which `element` has in its parent. It is null for the first scanned element
 	 * @param element the element about to be scanned.
 	 * @return a {@link ScanningMode} that drives how the scanner processes this element and its children.
 	 * For instance, returning {@link ScanningMode#SKIP_ALL} causes that element and all children to be skipped and {@link #exit(CtElement)} are be NOT called for that element.
@@ -60,7 +60,7 @@ public interface CtScannerListener {
 	 * This method is NOT called if an exception is thrown in {@link #enter(CtElement)} or during the scanning of the element or any of its children element.
 	 * This method is NOT called for an element for which {@link #enter(CtElement)} returned {@link ScanningMode#SKIP_ALL}.
 	 *
-	 * @param role the {@link CtRole}, which `element` has in it's parent. It is null for the first scanned element
+	 * @param role the {@link CtRole}, which `element` has in its parent. It is null for the first scanned element
 	 * @param element the element that has just been scanned.
 	 */
 	default void exit(CtRole role, CtElement element) {
