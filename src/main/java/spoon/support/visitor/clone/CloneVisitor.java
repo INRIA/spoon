@@ -1039,5 +1039,32 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		this.cloneHelper.tailor(usedService, aCtUsedService);
 		this.other = aCtUsedService;
 	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtCompilationUnit(spoon.reflect.declaration.CtCompilationUnit compilationUnit) {
+		spoon.reflect.declaration.CtCompilationUnit aCtCompilationUnit = compilationUnit.getFactory().Core().createCompilationUnit();
+		aCtCompilationUnit.setComments(this.cloneHelper.clone(compilationUnit.getComments()));
+		aCtCompilationUnit.setAnnotations(this.cloneHelper.clone(compilationUnit.getAnnotations()));
+		aCtCompilationUnit.setPackageDeclaration(this.cloneHelper.clone(compilationUnit.getPackageDeclaration()));
+		aCtCompilationUnit.setImports(this.cloneHelper.clone(compilationUnit.getImports()));
+		aCtCompilationUnit.setDeclaredModuleReference(this.cloneHelper.clone(compilationUnit.getDeclaredModuleReference()));
+		aCtCompilationUnit.setDeclaredTypeReferences(this.cloneHelper.clone(compilationUnit.getDeclaredTypeReferences()));
+		this.builder.copy(compilationUnit, aCtCompilationUnit);
+		this.cloneHelper.tailor(compilationUnit, aCtCompilationUnit);
+		this.other = aCtCompilationUnit;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtPackageDeclaration(spoon.reflect.declaration.CtPackageDeclaration packageDeclaration) {
+		spoon.reflect.declaration.CtPackageDeclaration aCtPackageDeclaration = packageDeclaration.getFactory().Core().createPackageDeclaration();
+		aCtPackageDeclaration.setComments(this.cloneHelper.clone(packageDeclaration.getComments()));
+		aCtPackageDeclaration.setAnnotations(this.cloneHelper.clone(packageDeclaration.getAnnotations()));
+		aCtPackageDeclaration.setReference(this.cloneHelper.clone(packageDeclaration.getReference()));
+		this.builder.copy(packageDeclaration, aCtPackageDeclaration);
+		this.cloneHelper.tailor(packageDeclaration, aCtPackageDeclaration);
+		this.other = aCtPackageDeclaration;
+	}
 }
 

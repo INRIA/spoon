@@ -347,6 +347,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 	static {
 		roleToSkippedClass.put(CtRole.COMMENT, new Class[]{Object.class});
 		roleToSkippedClass.put(CtRole.POSITION, new Class[]{Object.class});
+		roleToSkippedClass.put(CtRole.IS_IMPLICIT, new Class[]{Object.class});
 		roleToSkippedClass.put(CtRole.TYPE, new Class[]{CtExecutableReference.class});
 		roleToSkippedClass.put(CtRole.DECLARING_TYPE, new Class[]{CtExecutableReference.class});
 	}

@@ -87,6 +87,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
@@ -174,6 +175,7 @@ import spoon.support.reflect.declaration.CtInterfaceImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.support.reflect.declaration.CtModuleImpl;
 import spoon.support.reflect.declaration.CtModuleRequirementImpl;
+import spoon.support.reflect.declaration.CtPackageDeclarationImpl;
 import spoon.support.reflect.declaration.CtPackageExportImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
@@ -738,6 +740,13 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	}
 
 	@Override
+	public CtPackageDeclaration createPackageDeclaration() {
+		CtPackageDeclaration e = new CtPackageDeclarationImpl();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
 	public Factory getMainFactory() {
 		return factory;
 	}
@@ -1039,6 +1048,12 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		}
 		if (klass.equals(spoon.reflect.declaration.CtUsedService.class)) {
 			return createUsedService();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtCompilationUnit.class)) {
+			return createCompilationUnit();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtPackageDeclaration.class)) {
+			return createPackageDeclaration();
 		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}

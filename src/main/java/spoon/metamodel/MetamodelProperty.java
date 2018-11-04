@@ -22,6 +22,7 @@ import static spoon.metamodel.Metamodel.getOrCreate;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -600,7 +601,7 @@ public class MetamodelProperty {
 		if (Map.class.isAssignableFrom(valueClass)) {
 			return ContainerKind.MAP;
 		}
-		if (Set.class.isAssignableFrom(valueClass)) {
+		if (Collection.class.isAssignableFrom(valueClass)) {
 			return ContainerKind.SET;
 		}
 		return ContainerKind.SINGLE;

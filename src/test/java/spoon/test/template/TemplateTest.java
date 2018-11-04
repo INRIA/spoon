@@ -468,10 +468,11 @@ public class TemplateTest {
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher2")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
-			assertEquals(1, matcher.find(klass).size());
-			assertThat(asList("bov"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			assertEquals(2, matcher.find(klass).size());
+			assertThat(asList("bou", "bov"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
 			matcher.forEachMatch(klass, (match) -> {
-				assertTrue(checkParameters("bov", match, "_col_", "new java.util.ArrayList<>()"));
+				assertTrue(checkParameters("bov", match, "_col_", "new java.util.ArrayList<>()")
+						|| checkParameters("bou", match, "_col_", "new java.util.ArrayList<>()"));
 			});
 		}
 
@@ -553,15 +554,31 @@ public class TemplateTest {
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher6")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
-			assertEquals(2, matcher.find(klass).size());
-			assertThat(asList("baz","bou"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
+			assertEquals(6, matcher.find(klass).size());
+			assertThat(asList("foo","foo2","fbar","baz","bou","bov"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
 			matcher.forEachMatch(klass, (match) -> {
 				assertTrue(
-						checkParameters("baz", match,
+						checkParameters("foo", match,
+								"_x_", "(new java.util.ArrayList<>().size())",
+								"_y_", "10",
+								"_stmt_", "throw new java.lang.IndexOutOfBoundsException()")
+						||checkParameters("foo2", match, 
+								"_x_", "(new java.util.ArrayList<>().size())",
+								"_y_", "11",
+								"_stmt_", "throw new java.lang.IndexOutOfBoundsException()")
+						||checkParameters("fbar", match,
+								"_x_", "(l.size())",
+								"_y_", "10",
+								"_stmt_", "throw new java.lang.IndexOutOfBoundsException()")
+						||checkParameters("baz", match,
 								"_x_", "(new java.util.ArrayList<>().size())",
 								"_y_", "10",
 								"_stmt_", "null")
 						||checkParameters("bou", match,
+								"_x_", "(new java.util.ArrayList<>().size())",
+								"_y_", "10",
+								"_stmt_", "java.lang.System.out.println()")
+						||checkParameters("bov", match,
 								"_x_", "(new java.util.ArrayList<>().size())",
 								"_y_", "10",
 								"_stmt_", "java.lang.System.out.println()")
@@ -626,7 +643,7 @@ public class TemplateTest {
 				String key = keyValues[i * 2];
 				String expectedValue = keyValues[i * 2 + 1];
 				Object realValue = allParams.remove(key);
-				assertEquals(expectedValue, getOptimizedString(realValue));
+				assertEquals("parameter " + key, expectedValue, getOptimizedString(realValue));
 			}
 			assertTrue("Unexpected parameter values: " + allParams, allParams.isEmpty());
 			return true;

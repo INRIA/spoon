@@ -2,49 +2,61 @@
 
 This article is a short summary of the [official documentation of sonatype](http://central.sonatype.org/pages/ossrh-guide.html), an [article by yegor](http://www.yegor256.com/2014/08/19/how-to-release-to-maven-central.html) and [official documentation of maven release plugin](http://maven.apache.org/maven-release/maven-release-plugin/).
 
-## Main Workflow
-1. open an account on `https://gforge.inria.fr`, add an SSH key there, check that you are a member of project `spoon`
+## Core tasks:
+
+* [ ] Release on Maven Central
+* [ ] Release on Github
+* [ ] PR to update the information
+* [ ] PR to remove deprecated methods
+
+## Prerequisites
+
+1. Gforge: open an account on `https://gforge.inria.fr`, add an SSH key there, check that you are a member of project `spoon`
 1. check that gpg2, keepass are installed
-1. take the latest commit of master (`git pull` on master)
-1. get the GPG credentials of Spoon (on `davs://partage.inria.fr/alfresco/webdav/Sites/spirals/documentLibrary/security/`, in `Spirals Team >> Document Library >> security >> keepass.kdbx`)
-  1. download the keepass file
-  1. import the keys with `gpg2 --import` (doc in keypass.kdbx)
-  1. check with `gpg2 --list-keys`
-1. update  `~/.m2/settings.xml`  with passphrase and keyname (see below and don't forget monperrus key also in keypass!)
+1. get the Sonatype credentials for Spoon (on `davs://partage.inria.fr/alfresco/webdav/Sites/spirals/documentLibrary/security/`, in `Spirals Team >> Document Library >> security >> spoon.kdbx`)
+1. get the GPG credentials for Spoon (on `davs://partage.inria.fr/alfresco/webdav/Sites/spirals/documentLibrary/security/`, in `Spirals Team >> Document Library >> security >> spoon.kdbx`)
+    1. download the keepass file
+    1. import the keys with `gpg2 --import` (one key for Spoon, one key for Spoon Maven plugin)
+    1. check with `gpg2 --list-keys`
+1. update  `~/.m2/settings.xml`  with
+    * Sonatype username and password
+    * GPG keyname and passphrase
+
+## Maven Release
+
 1. clean your project for the release and prepare the release `mvn release:clean release:prepare`
 1. `mvn release:perform` (sends the new version on Maven Central)
 1. check that the new version is on Maven Central (connect to `oss.sonatype.org`)
-1. push the release commit on Github (git push origin master)
+1. alternatively `mvn -Prelease deploy`
+
+## Github Release
+1. push the release tag on Github (git push origin master)
     - `git push origin master`
     - `git push origin spoon-core-X.X.X`
-1. update the doc, etc., see checklist below
+1. open `Releases` tab, click on `Draft a new release`.
 
-### Checklists 
+## Checklists 
 
-**Before the release**
+**Before release**
 
-- Verify that all critical bug fixes from stable to master branch
+- Prepare changelog with [changelog_generator](https://github.com/INRIA/spoon/tree/master/doc/_release/changelog_generator)
+- Abnnounce the release with a new issue, a few days in advance (eg #2489)
 
 **After release**
 
-- Uploads archives on Maven Central (see above)
-- Uploads archives on INRIA's forge
-- Prepare changelog with [changelog_generator](https://github.com/INRIA/spoon/tree/master/doc/_release/changelog_generator)
-- Create Pull request on Github with
-    - Update of Spoon's website
-    	- News section in `doc/doc_homepage.md`
-    	- Maven version in `doc/_config.yml`
+- Create Pull request on Github with (example #1732)
+    - News section in `doc/doc_homepage.md`
+    - Maven version in `doc/_config.yml`
     - Updates main `README.md`
-- Add changelog on release page on GitHub
+    - Information in `pom.xml`
 - Update version information and date on [INRIA's BIL](http://bil.inria.fr/)
-- For major releases, announce the release:
+- Announce the release:
   * mailing-lists (gdr-gpl, OW2)
   * social media (twitter, reddit, linkedin)  
   * news feed in https://projects.ow2.org/view/spoon/
-- If necessary, removes all methods deprecated after the release!
 
-
-###  `settings.xml` of your Maven
+## Additional Information
+###  Typical `settings.xml` for Maven
 
 ```
 <settings>
@@ -72,32 +84,12 @@ This article is a short summary of the [official documentation of sonatype](http
 </settings>
 ```
 
-## How to generate new keys with GPG
+### How to generate new keys with GPG
 
 To push your archive on Maven Central, you must sign before your jar with GPG, a tool multi platform based on a pair of keys (public/private).
 
 1. Generate your pair of keys: `gpg --gen-key`
 2. Check if your key is generated: `gpg2 --list-keys`
 3. Distributing your public key on a server key (used by maven release plugin): `gpg2 --keyserver hkp://pool.sks-keyservers.net --send-keys <your-public-id-key>`
-
-
-## Create a repo for your project in Sonatype
-
-In the JIRA of Sonatype, create a new ticket to create your repository. You will fill a form with some information about your project like Git repository, scm, etc.
-
-This process may take +/- 48 hours.
-
-After that, you can update your `settings.xml` of your Maven:
-
-
-## Initialize the project
-
-All steps in this section are detailed in the [official documentation](http://central.sonatype.org/pages/apache-maven.html) and modify `pom.xml` of the project.
-
-1. Specify sonatype plugin and distributions managements for release and snapshot (if necessary).
-3. Specify GPG plugin to verify and sign your project.
-4. Specify Nexus staging plugin if you would like push your archive on the sonatype and manually push it on the central.
-5. Specify sonatype as parent of your pom.xml.
-6. Specify a scm about your Sonatype repository.
 
 

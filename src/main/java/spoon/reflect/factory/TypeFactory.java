@@ -291,7 +291,7 @@ public class TypeFactory extends SubFactory {
 	}
 
 	/**
-	 * Creates a reference to an n-dimension array of given type.
+	 * Creates a reference to a n-dimension array of given type.
 	 */
 	public CtArrayTypeReference<?> createArrayReference(CtTypeReference<?> reference, int n) {
 		CtTypeReference<?> componentType;
@@ -540,7 +540,7 @@ public class TypeFactory extends SubFactory {
 
 	/**
 	 * Gets a type from its runtime Java class. If the class isn't in the spoon path,
-	 * the class will be build from the Java reflection and will be marked as
+	 * the class will be built from the Java reflection and will be marked as
 	 * shadow (see {@link spoon.reflect.declaration.CtShadowable}).
 	 *
 	 * @param <T>
@@ -678,7 +678,7 @@ public class TypeFactory extends SubFactory {
 			}
 		}
 		Visitor visitor = new Visitor();
-		((CtElement) formalTypeDeclarer).accept(visitor);
+		formalTypeDeclarer.accept(visitor);
 		return visitor.adapter;
 	}
 
@@ -715,5 +715,4 @@ public class TypeFactory extends SubFactory {
 		CtImport ctImport = factory.Core().createImport();
 		return ctImport.setReference(reference.clone());
 	}
-
 }

@@ -14,15 +14,36 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support;
+package spoon.reflect.declaration;
+
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtPackageReference;
 
 /**
- *	Different types of compressions used, e.g. for serialization
- *	@see SerializationModelStreamer
+ * This element represents an package declaration.
+ *
+ * Example:
+ * <pre>
+ *     package your.nice.package.name;
+ * </pre>
+ *
  */
-public enum CompressionType {
-	NONE,
-	GZIP,
-	LZMA,
-	BZIP2;
+public interface CtPackageDeclaration extends CtElement {
+
+	/**
+	 * Returns the reference to the package.
+	 */
+	@PropertyGetter(role = CtRole.PACKAGE_REF)
+	CtPackageReference getReference();
+
+	/**
+	 * Sets the reference to the package.
+	 */
+	@PropertySetter(role = CtRole.PACKAGE_REF)
+	CtPackageDeclaration setReference(CtPackageReference reference);
+
+	@Override
+	CtPackageDeclaration clone();
 }

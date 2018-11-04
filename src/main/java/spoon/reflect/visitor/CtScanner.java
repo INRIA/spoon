@@ -75,6 +75,7 @@ import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
@@ -87,6 +88,7 @@ import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
@@ -967,6 +969,27 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.SERVICE_TYPE, usedService.getServiceType());
 		scan(CtRole.ANNOTATION, usedService.getAnnotations());
 		exit(usedService);
+	}
+
+	@Override
+	public void visitCtCompilationUnit(CtCompilationUnit compilationUnit) {
+		enter(compilationUnit);
+		scan(CtRole.COMMENT, compilationUnit.getComments());
+		scan(CtRole.ANNOTATION, compilationUnit.getAnnotations());
+		scan(CtRole.PACKAGE_DECLARATION, compilationUnit.getPackageDeclaration());
+		scan(CtRole.DECLARED_IMPORT, compilationUnit.getImports());
+		scan(CtRole.DECLARED_MODULE_REF, compilationUnit.getDeclaredModuleReference());
+		scan(CtRole.DECLARED_TYPE_REF, compilationUnit.getDeclaredTypeReferences());
+		exit(compilationUnit);
+	}
+
+	@Override
+	public void visitCtPackageDeclaration(CtPackageDeclaration packageDeclaration) {
+		enter(packageDeclaration);
+		scan(CtRole.COMMENT, packageDeclaration.getComments());
+		scan(CtRole.ANNOTATION, packageDeclaration.getAnnotations());
+		scan(CtRole.PACKAGE_REF, packageDeclaration.getReference());
+		exit(packageDeclaration);
 	}
 }
 

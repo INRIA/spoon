@@ -21,9 +21,15 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
+import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 import spoon.test.api.testclasses.Bar;
 
@@ -31,11 +37,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -90,7 +98,7 @@ public class TestCompilationUnit {
 		CtPackage myPackage = launcher.getFactory().Package().getOrCreate("my.package");
 		CompilationUnit cu = launcher.getFactory().createCompilationUnit();
 		assertEquals(CompilationUnit.UNIT_TYPE.UNKNOWN, cu.getUnitType());
-
+		
 		cu.setDeclaredPackage(myPackage);
 		assertEquals(CompilationUnit.UNIT_TYPE.PACKAGE_DECLARATION, cu.getUnitType());
 
@@ -183,5 +191,80 @@ public class TestCompilationUnit {
 
 		File f = new File(Launcher.OUTPUTDIR, "my/new/MyClass.java");
 		assertEquals(f.getCanonicalFile(), cu.getFile());
+	}
+
+	@Test
+	public void testCompilationUnitModelContracts() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses/Bar.java");
+		launcher.buildModel();
+
+		CtType type = launcher.getFactory().Type().get(Bar.class);
+		//contract: type built from model has BodyHolderSourcePosition
+		assertTrue(type.getPosition() instanceof BodyHolderSourcePosition);
+		//contract: type has compilation unit in position
+		CompilationUnit compilationUnit = type.getPosition().getCompilationUnit();
+
+		//contract: parent of compilationUnit is always null
+		//compilation unit is not part of factory.getModel()
+		assertNull(compilationUnit.getParent());
+
+		//contract: parent of CtImport is CompilationUnit
+		CtImport anImport = compilationUnit.getImports().iterator().next();
+		assertSame(compilationUnit, anImport.getParent());
+		
+		//contract: parent of type declared in Compilation unit is a package (never CompilationUnit)
+		assertTrue(compilationUnit.getMainType().getParent() instanceof CtPackage);
+		
+		//contract: compilation unit which contains types has null declared module
+		assertNull(compilationUnit.getDeclaredModule());
+		//contract: compilation unit knows declared package
+		assertSame(type.getPackage(), compilationUnit.getDeclaredPackage());
+		
+		//the package declaration exists and points to correct package
+		assertEquals(type.getPackage().getReference(), compilationUnit.getPackageDeclaration().getReference());
+		
+		assertSame(compilationUnit, compilationUnit.getPackageDeclaration().getParent());
+		
+		//contract: types and imports are scanned exactly once when scanning starts from compilation unit
+		//note: therefore compilationUnit.getDeclaredPackage() must return null
+		List<CtType<?>> types = new ArrayList<>();
+		List<CtTypeReference<?>> typeRefs = new ArrayList<>();
+		List<CtImport> imports = new ArrayList<>();
+		new CtScanner() {
+			public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
+				typeRefs.add(reference);
+			}
+			public <T> void visitCtClass(CtClass<T> ctClass) {
+				types.add(ctClass);
+			}
+			public <T> void visitCtInterface(CtInterface<T> intrface) {
+				types.add(intrface);
+			}
+			public void visitCtImport(CtImport ctImport) {
+				imports.add(ctImport);
+				assertSame(compilationUnit, ctImport.getParent());
+			}
+		}.scan(compilationUnit);
+		
+		assertEquals(0, types.size());
+		assertEquals(compilationUnit.getDeclaredTypeReferences(), typeRefs);
+		assertEquals(compilationUnit.getImports(), imports);
+		
+		//contract: compilation unit is not visited by scanner when scanning started from model
+		new CtScanner() {
+			@Override
+			public void visitCtCompilationUnit(CtCompilationUnit compilationUnit) {
+				fail("CtCompilation unit must not be scanned when started from model unnamed module");
+			}
+		}.scan(type.getFactory().getModel().getUnnamedModule());
+
+		new CtScanner() {
+			@Override
+			public void visitCtCompilationUnit(CtCompilationUnit compilationUnit) {
+				fail("CtCompilation unit must not be scanned when started from model root package");
+			}
+		}.scan(type.getFactory().getModel().getRootPackage());
 	}
 }

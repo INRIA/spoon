@@ -25,11 +25,16 @@ public final class Check {
 		throw new AssertionError();
 	}
 
-	public static <T> T assertNotNull(T reference) {
+	/** throws AssertionError if "reference" is null */
+	public static <T> T assertNotNull(String msg, T reference) {
 		if (reference == null) {
-			throw new AssertionError("Your parameter can't be null.");
+			throw new AssertionError(msg);
 		}
 		return reference;
+	}
+
+	public static <T> T assertNotNull(T reference) {
+		return assertNotNull("Your parameter can't be null.", reference);
 	}
 
 	public static <T extends File> T assertExists(T file) {

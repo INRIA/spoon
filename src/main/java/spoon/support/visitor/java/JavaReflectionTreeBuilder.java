@@ -210,6 +210,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 				field.setSimpleName(ctMethod.getSimpleName());
 				field.setModifiers(ctMethod.getModifiers());
 				field.setType(ctMethod.getType());
+				field.setShadow(true);
 				ctAnnotationType.addMethod(field);
 			}
 		});

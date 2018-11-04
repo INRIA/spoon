@@ -69,7 +69,7 @@ public class SwitchCaseTest {
 	}
 
 	private <T extends CtElement> List<T> elementsOfType(Class<T> type, Factory factory) {
-		return (List) Query.getElements(factory, new TypeFilter<>(type));
+		return Query.getElements(factory, new TypeFilter<>(type));
 	}
 
 	private Factory factoryFor(String packageName, String className) throws Exception {

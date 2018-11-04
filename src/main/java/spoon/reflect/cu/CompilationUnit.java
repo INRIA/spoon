@@ -16,109 +16,14 @@
  */
 package spoon.reflect.cu;
 
-import spoon.processing.FactoryAccessor;
-import spoon.reflect.declaration.CtImport;
-import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
-import spoon.support.Experimental;
-
-import java.io.File;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
+import spoon.reflect.declaration.CtCompilationUnit;
 
 /**
  * Defines a compilation unit. In Java, a compilation unit can contain only one
  * public type declaration and other secondary types declarations (not public).
  */
-public interface CompilationUnit extends FactoryAccessor, SourcePositionHolder, Serializable {
+public interface CompilationUnit extends CtCompilationUnit {
 
-	enum UNIT_TYPE {
-		TYPE_DECLARATION,
-		PACKAGE_DECLARATION,
-		MODULE_DECLARATION,
-		UNKNOWN
-	}
-
-	/**
-	 * Returns the declaration type of the compilation unit.
-	 */
-	UNIT_TYPE getUnitType();
-
-	/**
-	 * Gets the file that corresponds to this compilation unit if any (contains
-	 * the source code).
-	 */
-	File getFile();
-
-	/**
-	 * Sets the file that corresponds to this compilation unit.
-	 */
-	void setFile(File file);
-
-	/**
-	 * @return array of offsets in the origin source file, where occurs line separator
-	 */
-	int[] getLineSeparatorPositions();
-
-	/**
-	 * @param lineSeparatorPositions array of offsets in the origin source file, where occurs line separator
-	 */
-	void setLineSeparatorPositions(int[] lineSeparatorPositions);
-
-	/**
-	 * Gets all binary (.class) files that corresponds to this compilation unit
-	 * and have been created by calling
-	 * {@link spoon.SpoonModelBuilder#compile(spoon.SpoonModelBuilder.InputType...)}.
-	 */
-	List<File> getBinaryFiles();
-
-	/**
-	 * Gets all the types declared in this compilation unit.
-	 */
-	List<CtType<?>> getDeclaredTypes();
-
-	/**
-	 * Sets the types declared in this compilation unit.
-	 */
-	void setDeclaredTypes(List<CtType<?>> types);
-
-	/**
-	 * Add a type to the list of declared types
-	 */
-	void addDeclaredType(CtType type);
-
-	/**
-	 * Gets the declared module if the compilationUnit is "module-info.java"
-	 */
-	CtModule getDeclaredModule();
-
-	/**
-	 * Sets the declared module if the compilationUnit is "module-info.java"
-	 */
-	void setDeclaredModule(CtModule module);
-
-	/**
-	 * Gets the package declared in the top level type of the compilation unit.
-	 */
-	CtPackage getDeclaredPackage();
-
-	/**
-	 * Sets the package declared in the top level type of the compilation unit.
-	 */
-	void setDeclaredPackage(CtPackage ctPackage);
-
-	/**
-	 * Searches and returns the main type (the type which has the same name as
-	 * the file).
-	 */
-	CtType<?> getMainType();
-
-	/**
-	 * Gets the original source code as a string.
-	 */
-	String getOriginalSourceCode();
 
 	/**
 	 * Helper method to get the begin index of the line that corresponds to the
@@ -128,6 +33,7 @@ public interface CompilationUnit extends FactoryAccessor, SourcePositionHolder, 
 	 * 		an arbitrary index in the source code
 	 * @return the index where the line starts
 	 */
+	@Deprecated
 	int beginOfLineIndex(int index);
 
 	/**
@@ -138,6 +44,7 @@ public interface CompilationUnit extends FactoryAccessor, SourcePositionHolder, 
 	 * 		an arbitrary index in the source code
 	 * @return the index where the next line starts
 	 */
+	@Deprecated
 	int nextLineIndex(int index);
 
 	/**
@@ -147,22 +54,6 @@ public interface CompilationUnit extends FactoryAccessor, SourcePositionHolder, 
 	 * 		the index where the line starts in the source code
 	 * @return the number of tabs for this line
 	 */
+	@Deprecated
 	int getTabCount(int index);
-
-	/**
-	 * Get the imports computed for this CU.
-	 * WARNING: This method is tagged as experimental, as its signature and/or usage might change in future release.
-	 * @return All the imports from the original source code
-	 */
-	@Experimental
-	Set<CtImport> getImports();
-
-	/**
-	 * Set the imports of this CU
-	 * WARNING: This method is tagged as experimental, as its signature and/or usage might change in future release.
-	 * @param imports All the imports of the original source code
-	 */
-	@Experimental
-	void setImports(Set<CtImport> imports);
-
 }

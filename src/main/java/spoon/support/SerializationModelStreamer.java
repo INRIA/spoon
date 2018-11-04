@@ -26,6 +26,13 @@ import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
+import org.apache.commons.compress.compressors.lzma.LZMACompressorOutputStream;
+
 import spoon.Launcher;
 import spoon.reflect.ModelStreamer;
 import spoon.reflect.declaration.CtElement;
@@ -48,6 +55,10 @@ public class SerializationModelStreamer implements ModelStreamer {
 	public void save(Factory f, OutputStream out) throws IOException {
 		if (f.getEnvironment().getCompressionType() == CompressionType.GZIP) {
 			out = new GZIPOutputStream(out);
+		} else if (f.getEnvironment().getCompressionType() == CompressionType.LZMA) {
+			out = new LZMACompressorOutputStream(out);
+		} else if (f.getEnvironment().getCompressionType() == CompressionType.BZIP2) {
+			out = new BZip2CompressorOutputStream(out);
 		}
 		try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(out))) {
 			oos.writeObject(f);
@@ -57,19 +68,21 @@ public class SerializationModelStreamer implements ModelStreamer {
 
 	@Override
 	public Factory load(InputStream in) throws IOException {
-		if (!in.markSupported()) {
-			in = new BufferedInputStream(in);
-		}
-		// Check if it is a GZIP
-		in.mark(2);
-		int ch1 = in.read();
-		int ch2 = in.read();
-		int header = ((ch2 << 8) + (ch1 << 0));
-		in.reset();
-		if (header == GZIPInputStream.GZIP_MAGIC) {
-			in = new GZIPInputStream(in);
-		}
-		try (ObjectInputStream ois = new ObjectInputStream(in)) {
+		try {
+			BufferedInputStream buffered = new BufferedInputStream(in);
+			try {
+				String s = CompressorStreamFactory.detect(buffered);
+				if (s.equals(CompressorStreamFactory.GZIP)) {
+					in = new GZIPInputStream(buffered);
+				} else if (s.equals(CompressorStreamFactory.LZMA)) {
+					in = new LZMACompressorInputStream(buffered);
+				} else if (s.equals(CompressorStreamFactory.BZIP2)) {
+					in = new BZip2CompressorInputStream(buffered);
+				}
+			} catch (CompressorException e) {
+				in = buffered;
+			}
+			ObjectInputStream ois = new ObjectInputStream(in);
 			final Factory f = (Factory) ois.readObject();
 			//create query using factory directly
 			//because any try to call CtElement#map or CtElement#filterChildren will fail on uninitialized factory

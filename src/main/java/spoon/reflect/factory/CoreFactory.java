@@ -85,6 +85,7 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
@@ -537,6 +538,11 @@ public interface CoreFactory {
 	 * Creates an import.
 	 */
 	CtImport createImport();
+
+	/**
+	 * Creates a package declaration.
+	 */
+	CtPackageDeclaration createPackageDeclaration();
 
 	/**
 	 * Gets the main factory of that core factory (cannot be <code>null</code>).

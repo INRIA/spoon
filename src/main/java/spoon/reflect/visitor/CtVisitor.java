@@ -69,6 +69,7 @@ import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
@@ -80,6 +81,7 @@ import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
@@ -508,4 +510,14 @@ public interface CtVisitor {
 	 * Visits a "uses" directive in a module declaration.
 	 */
 	void visitCtUsedService(CtUsedService usedService);
+
+	/**
+	 * Visits a compilation unit
+	 */
+	void visitCtCompilationUnit(CtCompilationUnit compilationUnit);
+
+	/**
+	 * Visits a package declaration
+	 */
+	void visitCtPackageDeclaration(CtPackageDeclaration packageDeclaration);
 }

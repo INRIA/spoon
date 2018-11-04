@@ -50,14 +50,13 @@ import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtPackageExport;
-import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
+import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
@@ -120,7 +119,7 @@ public class JDTTreeBuilderHelper {
 	 * Creates a catch variable from a type reference.
 	 *
 	 * @param typeReference
-	 * 		Correspond to the exception type declared in the catch.
+	 * 		Corresponds to the exception type declared in the catch.
 	 * @return a catch variable.
 	 */
 	CtCatchVariable<Throwable> createCatchVariable(TypeReference typeReference) {
@@ -174,13 +173,13 @@ public class JDTTreeBuilderHelper {
 	 * Analyzes if {@code singleNameReference} points to a {@link CtVariable} visible in current
 	 * scope and, if existent, returns its corresponding {@link CtVariableAccess}. Returns
 	 * {@code null} if {@code singleNameReference} could not be resolved as variable access. Since
-	 * we are in noclasspath mode this function may also returns {@code null} if
+	 * we are in noclasspath mode this function may also return {@code null} if
 	 * {@code singleNameReference} points to a variable declared by an unknown class.
 	 *
 	 * @param singleNameReference
 	 * 		The potential variable access.
 	 * @return A {@link CtVariableAccess} if {@code singleNameReference} points to a variable
-	 * 		   visible in current scope, {@code null} otherwise.
+	 * 		visible in current scope, {@code null} otherwise.
 	 */
 	<T> CtVariableAccess<T> createVariableAccessNoClasspath(SingleNameReference singleNameReference) {
 		final CoreFactory coreFactory = jdtTreeBuilder.getFactory().Core();
@@ -226,20 +225,7 @@ public class JDTTreeBuilderHelper {
 						// create an 'empty' type reference since we have no further information
 						// available
 						executableJDT.binding == null ? coreFactory.createTypeReference()
-								: referenceBuilder.getTypeReference(
-										executableJDT.binding.declaringClass);
-
-				// If executable is a constructor, `executable.getType()` returns null since the
-				// parent is not available yet. Fortunately, however, the return type of a
-				// constructor is its declaring class which, in our case, is already available with
-				// declaringReferenceOfExecutable.
-				CtTypeReference executableTypeReference = executable instanceof CtConstructor
-						// IMPORTANT: Create a clone of the type reference (rt) if retrieved by
-						// other AST elements as `executableFactory.createReference` (see below)
-						// indirectly sets the parent of `rt` and, thus, may break the AST!
-						? declaringReferenceOfExecutable.clone()
-						: executable.getType().clone();
-
+								: referenceBuilder.getTypeReference(executableJDT.binding.declaringClass);
 			}
 			variableReference = parameterReference;
 			variableAccess = isLhsAssignment(contextBuilder, singleNameReference)
@@ -298,7 +284,7 @@ public class JDTTreeBuilderHelper {
 			sourceStart = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32);
 			for (FieldBinding b : qualifiedNameReference.otherBindings) {
 				isOtherBinding = qualifiedNameReference.otherBindings.length == i + 1;
-				CtFieldAccess<T> other = createFieldAccess(//
+				CtFieldAccess<T> other = createFieldAccess(
 						jdtTreeBuilder.getReferencesBuilder().<T>getVariableReference(b, qualifiedNameReference.tokens[i + 1]), va, isOtherBinding && fromAssignment);
 				//set source position of fa
 				if (i + qualifiedNameReference.indexOfFirstFieldBinding >= qualifiedNameReference.otherBindings.length) {
@@ -412,7 +398,7 @@ public class JDTTreeBuilderHelper {
 		fieldAccess.getVariable().setDeclaringType(declaringRef);
 		fieldAccess.getVariable().setStatic(true);
 		fieldAccess.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(declaringRef));
-		// In no classpath mode and with qualified name, the binding don't have a good name.
+		// In no classpath mode and with qualified name, the binding doesn't have a good name.
 		fieldAccess.getVariable()
 				.setSimpleName(createQualifiedTypeName(CharOperation.subarray(qualifiedNameReference.tokens, qualifiedNameReference.tokens.length - 1, qualifiedNameReference.tokens.length)));
 		return fieldAccess;

@@ -232,14 +232,9 @@ public class IntercessionTest {
 		for (CtMethod<?> setter : setters) {
 			final String methodLog = setter.getSimpleName() + " in " +
 					setter.getDeclaringType().getSimpleName();
-			if (setter.getFormalCtTypeParameters().size() <= 0) {
-				fail("Your setter " + methodLog + " don't have a generic type for its return type.");
-			}
-			boolean isMatch = false;
 			// New type parameter declaration.
 			for (CtTypeParameter typeParameter : setter.getFormalCtTypeParameters()) {
 				if (setter.getType().getSimpleName().equals(typeParameter.getSimpleName())) {
-					isMatch = true;
 
 					if (setter.getAnnotation(Override.class) != null) {
 						// Override annotation means that the current method come from a super
@@ -248,11 +243,10 @@ public class IntercessionTest {
 					}
 
 					if (!setter.getDeclaringType().getSimpleName().equals(typeParameter.getSuperclass().getSimpleName())) {
-						fail("Your setter " + methodLog + " has a type reference who don't extends " + setter.getDeclaringType().getSimpleName());
+						fail("Your setter " + methodLog + " has a type reference who doesn't extends " + setter.getDeclaringType().getSimpleName());
 					}
 				}
 			}
-			assertTrue("The type of " + methodLog + " don't match with generic types.", isMatch);
 		}
 	}
 

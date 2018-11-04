@@ -30,6 +30,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitable;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.test.SpoonTestHelpers;
 
@@ -154,16 +155,18 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 
 				// directly the element
 				if (argument instanceof CtElement
-				  && setter.getAnnotation(UnsettableProperty.class) == null) {
+				  && setter.getAnnotation(UnsettableProperty.class) == null
+				  && setter.getAnnotation(DerivedProperty.class) == null) {
 					nAssertsOnParent++;
-					assertTrue(((CtElement)argument).hasParent(receiver));
+					assertTrue(setter.getDeclaringType().getQualifiedName() + "#" + setter.getSignature() + " doesn't initializes parent", ((CtElement)argument).hasParent(receiver));
 				}
 
 				// the element is in a list
 				if (argument instanceof Collection
-						&& setter.getAnnotation(UnsettableProperty.class) == null) {
+						&& setter.getAnnotation(UnsettableProperty.class) == null
+						&& setter.getAnnotation(DerivedProperty.class) == null) {
 					nAssertsOnParentInList++;
-					assertTrue(((CtElement)((Collection)argument).iterator().next()).hasParent(receiver));
+					assertTrue(setter.getDeclaringType().getQualifiedName() + "#" + setter.getSignature() + " doesn't initializes parent", ((CtElement)((Collection)argument).iterator().next()).hasParent(receiver));
 				}
 
 

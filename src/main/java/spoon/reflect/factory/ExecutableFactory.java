@@ -123,7 +123,7 @@ public class ExecutableFactory extends SubFactory {
 
 	private CtTypeReference<?> getMethodParameterType(CtTypeReference<?> paramType) {
 		if (paramType instanceof CtTypeParameterReference) {
-			paramType = ((CtTypeParameterReference) paramType).getBoundingType();
+			return getMethodParameterType(((CtTypeParameterReference) paramType).getBoundingType());
 		}
 		if (paramType instanceof CtArrayTypeReference) {
 			CtArrayTypeReference atr = (CtArrayTypeReference) paramType;

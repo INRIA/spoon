@@ -92,6 +92,7 @@ import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -1002,4 +1003,9 @@ public interface Factory {
 	 * @see CoreFactory#createPartialSourcePosition(CompilationUnit)
 	 */
 	SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit);
+
+	/**
+	 * @see PackageFactory#createPackageDeclaration(CtPackageReference)
+	 */
+	CtPackageDeclaration createPackageDeclaration(CtPackageReference packageRef);
 }
