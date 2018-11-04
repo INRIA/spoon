@@ -128,12 +128,12 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 			doScan(scannedRole, element, ScanningMode.NORMAL);
 		} else {
 			//the listener is defined, call it's enter method first
-			ScanningMode mode = listener.enter(element);
+			ScanningMode mode = listener.enter(scannedRole, element);
 			if (mode != ScanningMode.SKIP_ALL) {
 				//the listener decided to visit this element and may be children
 				doScan(scannedRole, element, mode);
 				//then call exit, only if enter returned true
-				listener.exit(element);
+				listener.exit(scannedRole, element);
 			} //else the listener decided to skip this element and all children. Do not call exit.
 		}
 	}
