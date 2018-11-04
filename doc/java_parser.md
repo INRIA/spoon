@@ -20,8 +20,7 @@ JavaParser AST is near to source code representation. You can find AST nodes lik
 Spoon's AST is pure java semantic model. It means it contains nodes, which represent the same **concepts**, which are used by java programmer when s/he thinks about java program. Spoon AST contains also implicit elements, which are not visible in java source at all. For example this code
 
 ```java
-if (something) 
-	list = (List<String>) new ArrayList<>(FIELD_COUNT);
+if (something) list = (List<String>) new ArrayList<>(FIELD_COUNT);
 ```
 
 and this code
