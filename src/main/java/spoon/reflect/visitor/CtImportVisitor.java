@@ -20,7 +20,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 
 /**
  * This interface defines the visitor for the different types of CtImport
@@ -50,5 +50,5 @@ public interface CtImportVisitor {
 	 * Called for import like:
 	 * <code>import apackage.Type.*;</code>
 	 */
-	<T> void visitAllStaticMembersImport(CtWildcardStaticTypeMemberReference typeReference);
+	<T> void visitAllStaticMembersImport(CtTypeMemberWildcardImportReference typeReference);
 }

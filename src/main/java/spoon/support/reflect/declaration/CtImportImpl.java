@@ -26,7 +26,7 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.visitor.CtImportVisitor;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl;
@@ -99,7 +99,7 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 			break;
 
 		case ALL_STATIC_MEMBERS:
-			visitor.visitAllStaticMembersImport((CtWildcardStaticTypeMemberReference) localReference);
+			visitor.visitAllStaticMembersImport((CtTypeMemberWildcardImportReference) localReference);
 			break;
 		default:
 			throw new SpoonException("Unexpected import kind: " + getImportKind());

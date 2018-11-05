@@ -45,7 +45,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtWildcardStaticTypeMemberReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.visitor.CtImportVisitor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.ImportScanner;
@@ -1361,7 +1361,7 @@ public class ImportTest {
 		CtImport ctImport = spoon.getFactory().createImport(aType.getReference());
 		assertImportVisitor(ctImport);
 
-		ctImport = spoon.getFactory().createImport(spoon.getFactory().Type().createWildcardStaticTypeMemberReference(aType.getReference()));
+		ctImport = spoon.getFactory().createImport(spoon.getFactory().Type().createTypeMemberWildcardImportReference(aType.getReference()));
 		assertImportVisitor(ctImport);
 
 		ctImport = spoon.getFactory().createImport(((CtMethod)aType.getAllMethods().iterator().next()).getReference());
@@ -1412,7 +1412,7 @@ public class ImportTest {
 			}
 			
 			@Override
-			public <T> void visitAllStaticMembersImport(CtWildcardStaticTypeMemberReference typeReference) {
+			public <T> void visitAllStaticMembersImport(CtTypeMemberWildcardImportReference typeReference) {
 				info.setKind(CtImportKind.ALL_STATIC_MEMBERS);
 				assertSame(imprt.getReference(), typeReference);
 			}
