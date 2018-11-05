@@ -27,7 +27,7 @@ import static spoon.reflect.path.CtRole.IMPORT_REFERENCE;
  * This element represents an import declaration.
  * The given reference should be of type {@link spoon.reflect.reference.CtTypeReference},
  * {@link spoon.reflect.reference.CtPackageReference}, {@link spoon.reflect.reference.CtExecutableReference},
- * {@link spoon.reflect.reference.CtFieldReference} or {@link spoon.support.reflect.reference.CtWildcardStaticTypeMemberReferenceImpl}
+ * {@link spoon.reflect.reference.CtFieldReference} or {@link spoon.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl}
  *
  * <pre>
  *     import static import static org.junit.Assert.*;

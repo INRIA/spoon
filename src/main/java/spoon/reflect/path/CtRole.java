@@ -120,7 +120,8 @@ public enum CtRole {
 	SERVICE_TYPE(MODULE_DIRECTIVE, obj -> obj instanceof CtUsedService),
 	IMPLEMENTATION_TYPE,
 	PROVIDED_SERVICE(MODULE_DIRECTIVE, obj -> obj instanceof CtProvidedService),
-	IS_INFERRED;
+	IS_INFERRED,
+	TYPE_REF;
 
 	private final CtRole superRole;
 	private final List<CtRole> subRoles;

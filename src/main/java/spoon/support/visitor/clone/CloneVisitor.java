@@ -1066,5 +1066,15 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		this.cloneHelper.tailor(packageDeclaration, aCtPackageDeclaration);
 		this.other = aCtPackageDeclaration;
 	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtTypeMemberWildcardImportReference(spoon.reflect.reference.CtTypeMemberWildcardImportReference wildcardReference) {
+		spoon.reflect.reference.CtTypeMemberWildcardImportReference aCtTypeMemberWildcardImportReference = wildcardReference.getFactory().Core().createTypeMemberWildcardImportReference();
+		aCtTypeMemberWildcardImportReference.setTypeReference(this.cloneHelper.clone(wildcardReference.getTypeReference()));
+		this.builder.copy(wildcardReference, aCtTypeMemberWildcardImportReference);
+		this.cloneHelper.tailor(wildcardReference, aCtTypeMemberWildcardImportReference);
+		this.other = aCtTypeMemberWildcardImportReference;
+	}
 }
 

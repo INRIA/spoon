@@ -99,6 +99,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 
 import java.lang.annotation.Annotation;
 
@@ -520,4 +521,9 @@ public interface CtVisitor {
 	 * Visits a package declaration
 	 */
 	void visitCtPackageDeclaration(CtPackageDeclaration packageDeclaration);
+
+	/**
+	 * Visits an import wildcard static type member reference
+	 */
+	void visitCtTypeMemberWildcardImportReference(CtTypeMemberWildcardImportReference wildcardReference);
 }

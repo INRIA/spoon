@@ -483,6 +483,15 @@ public class Metamodel {
 
 			));
 
+			types.add(new Type("CtTypeMemberWildcardImportReference", spoon.reflect.reference.CtTypeMemberWildcardImportReference.class, spoon.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl.class, fm -> fm
+				.field(CtRole.NAME, true, true)
+				.field(CtRole.IS_IMPLICIT, true, true)
+				.field(CtRole.POSITION, false, false)
+				.field(CtRole.COMMENT, true, true)
+				.field(CtRole.ANNOTATION, true, true)
+				.field(CtRole.TYPE_REF, false, false)
+			));
+
 			types.add(new Type("CtThisAccess", spoon.reflect.code.CtThisAccess.class, spoon.support.reflect.code.CtThisAccessImpl.class, fm -> fm
 				.field(CtRole.IS_IMPLICIT, false, false)
 				.field(CtRole.POSITION, false, false)
