@@ -142,6 +142,7 @@ import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -449,14 +450,18 @@ public class JDTTreeBuilder extends ASTVisitor {
 							newSourceStart, oldPos.getSourceEnd(),
 							oldPos.getCompilationUnit().getLineSeparatorPositions()));
 				}
+				//call exit with origin labeled statement
+				//because some listeners needs origin one
+				//we cannot call exit on unexpected child
+				context.exit(labeledStatement);
 				//use childStmt instead of helper block
-				//1) disconnect childStmt from it's helper block
-				childStmt.setParent(null);
-				//2) inject childStmt instead of block into context.stack,
-				//so ParentExiter will use it instead of block
-				pair.element = childStmt;
-				pair.node = labeledStatement.statement;
-				context.exit(pair.node);
+				CtElement parent = block.getParent();
+				//remember whether parent was implicit
+				boolean parentIsImplicit = parent.isImplicit();
+				//because replace resets CtBlock#isImplicit to false
+				block.replace(childStmt);
+				//but we need to keep it as it was before
+				parent.setImplicit(parentIsImplicit);
 				return;
 			}
 		}
