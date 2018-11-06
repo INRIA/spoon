@@ -1067,4 +1067,17 @@ public class CommentTest {
 		CtMethod<?> method = nestedIface.getMethodsByName("mytest").get(0);
 		assertEquals(1, method.getComments().size());
 	}
+
+	@Test
+	public void testEmptyStatementComments() {
+		//contract: model building should not produce NPE, comments should exist
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/EmptyStatementComments.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+
+		CtModel model = launcher.buildModel();
+		List<CtIf> conditions = model.getElements(new TypeFilter<>(CtIf.class));
+		assertEquals("comment", conditions.get(0).getComments().get(0).getContent());
+		assertEquals("comment", conditions.get(1).getComments().get(0).getContent());
+	}
 }

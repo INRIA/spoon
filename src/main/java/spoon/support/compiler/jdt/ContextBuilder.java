@@ -129,7 +129,10 @@ public class ContextBuilder {
 		if (!stack.isEmpty()) {
 			this.jdtTreeBuilder.getExiter().setChild(current);
 			this.jdtTreeBuilder.getExiter().setChild(pair.node);
-			this.jdtTreeBuilder.getExiter().scan(stack.peek().element);
+			ASTPair parentPair = stack.peek();
+			this.jdtTreeBuilder.getExiter().setParent(parentPair.node);
+			//visit ParentExiter using parent Spoon node, while it has access to parent's JDT node and child Spoon and JDT node
+			this.jdtTreeBuilder.getExiter().scan(parentPair.element);
 		}
 	}
 

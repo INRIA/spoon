@@ -431,10 +431,12 @@ class JDTCommentBuilder {
 
 			@Override
 			public void visitCtIf(CtIf e) {
-				if (!(e.getThenStatement() instanceof CtBlock)) {
-					if (comment.getPosition().getSourceEnd() <= e.getThenStatement().getPosition().getSourceStart()) {
-						e.getThenStatement().addComment(comment);
-						return;
+				if (e.getThenStatement() != null) {
+					if (!(e.getThenStatement() instanceof CtBlock)) {
+						if (comment.getPosition().getSourceEnd() <= e.getThenStatement().getPosition().getSourceStart()) {
+							e.getThenStatement().addComment(comment);
+							return;
+						}
 					}
 				}
 				if (e.getElseStatement() != null) {
