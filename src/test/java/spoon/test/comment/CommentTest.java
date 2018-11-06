@@ -1067,4 +1067,29 @@ public class CommentTest {
 		CtMethod<?> method = nestedIface.getMethodsByName("mytest").get(0);
 		assertEquals(1, method.getComments().size());
 	}
+
+	@Test
+	public void testCommentGetRawContent() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/comment/JavaDocComment.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.run();
+
+		CtClass<?> type = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.comment.testclasses.JavaDocComment");
+		//\n here is OS independent, because getContent always returns cleaned comment content with \n a EOL
+		assertEquals("JavaDoc test class.\n" + 
+				"\n" + 
+				"Long description", type.getComments().get(0).getContent());
+		//\r here is OS independent, because original source code was made on MAC and contains \r as EOL
+		assertEquals("/**\r" + 
+				" * JavaDoc test class.\r" + 
+				" *\r" + 
+				" * Long description\r" + 
+				" *\r" + 
+				" * @deprecated\r" + 
+				" * @since 1.3\r" + 
+				" * @author Thomas Durieux\r" + 
+				" * @version 1.0\r" + 
+				" */", type.getComments().get(0).getRawContent());
+	}
 }
