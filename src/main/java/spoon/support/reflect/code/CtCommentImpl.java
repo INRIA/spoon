@@ -19,6 +19,8 @@ package spoon.support.reflect.code;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
@@ -43,6 +45,19 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 	@Override
 	public String getContent() {
 		return content;
+	}
+
+	@Override
+	public String getRawContent() {
+		SourcePosition pos = getPosition();
+		CtCompilationUnit cu = pos.getCompilationUnit();
+		if (cu != null) {
+			String source = cu.getOriginalSourceCode();
+			if (source != null) {
+				return source.substring(pos.getSourceStart(), pos.getSourceEnd() + 1);
+			}
+		}
+		return null;
 	}
 
 	@Override
