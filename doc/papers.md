@@ -54,7 +54,7 @@ Source Code](https://pdfs.semanticscholar.org/8805/3bf61a22821f25e8ce1f8b446330c
 
 [Spoon: Program Analysis and Transformation in Java.](http://hal.inria.fr/inria-00071366) (Pawlak, R., Noguera, C., Petitprez, N.), INRIA Research Report #5901, May 2006.
 
-[Spoon: Compile-time Annotation Processing for Middleware](http://www.computer.org/csdl/mags/ds/index.html) (Pawlak R.), IEEE Distributed Systems Online, vol. 7, no. 11, 2006, art. no. 0611-oy001
+[Spoon: Compile-time Annotation Processing for Middleware](https://www.computer.org/csdl/magazine/ds/2006/11/oy001/13rRUxASu7G) (Pawlak R.), IEEE Distributed Systems Online, vol. 7, no. 11, 2006, art. no. 0611-oy001
 
 [Spoon: Annotation-Driven Program Transformation - The AOP Case](http://middleware05.objectweb.org/WSProceedings/AOMD05/a6-pawlak.pdf) (Pawlak, R.), First Workshop on Aspect-Orientation for Middleware Development. Middleware 2005, Grenoble, France.
 
