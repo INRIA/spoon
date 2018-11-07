@@ -57,7 +57,7 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 				return source.substring(pos.getSourceStart(), pos.getSourceEnd() + 1);
 			}
 		}
-		return null;
+		return "";
 	}
 
 	@Override
