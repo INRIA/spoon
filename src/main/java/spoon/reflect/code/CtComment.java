@@ -73,7 +73,7 @@ public interface CtComment extends CtStatement {
 	 * @return the original raw comment from the source file including comment prefix and suffix, indentation (including TABs) original EOLs,
 	 * based on the attached position object (the returned value is "derived" from the position).
 	 * If the file pointed to in the position object does not exist on disk anymore,
-	 * then `null` is returned
+	 * then the empty string "" is returned
 	 * Note: the call of {@link #setContent(String)} doesn't influence the returned value, only the value of the position object.
 	 */
 	@DerivedProperty
