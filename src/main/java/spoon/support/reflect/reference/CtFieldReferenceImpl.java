@@ -67,7 +67,8 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 			return getDeclaringType().getActualClass().getDeclaredField(
 					getSimpleName());
 		} catch (Exception e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
+			// it's ok, this can happen in noclasspath, we don't have to print a scary stacktrace
+			Launcher.LOGGER.error("getActualField returns nothing, it's OK if you're in noclasspath");
 		}
 		return null;
 	}
