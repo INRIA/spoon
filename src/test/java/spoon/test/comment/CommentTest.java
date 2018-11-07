@@ -1076,11 +1076,11 @@ public class CommentTest {
 		launcher.run();
 
 		CtClass<?> type = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.comment.testclasses.JavaDocComment");
-		//\n here is OS independent, because getContent always returns cleaned comment content with \n a EOL
+		//contract: getContent always returns cleaned comment content with \n as EOL
 		assertEquals("JavaDoc test class.\n" + 
 				"\n" + 
 				"Long description", type.getComments().get(0).getContent());
-		//\r here is OS independent, because original source code was made on MAC and contains \r as EOL
+		// contract: return the full original comment with prefix and suffix, incl. the original EOL (\r as EOL here)
 		assertEquals("/**\r" + 
 				" * JavaDoc test class.\r" + 
 				" *\r" + 
