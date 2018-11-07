@@ -70,9 +70,11 @@ public interface CtComment extends CtStatement {
 	<E extends CtComment> E setContent(String content);
 
 	/**
-	 * @return the original raw content from the source file including origin comment prefix, suffix including TABs and EOLs.
-	 * Note: the call of {@link #setContent(String)} doesn't influence the returned value.
-	 * If origin raw content is not available then `null` is returned
+	 * @return the original raw comment from the source file including comment prefix and suffix, indentation (including TABs) original EOLs,
+	 * based on the attached position object (the returned value is "derived" from the position).
+	 * If the file pointed to in the position object does not exist on disk anymore,
+	 * then `null` is returned
+	 * Note: the call of {@link #setContent(String)} doesn't influence the returned value, only the value of the position object.
 	 */
 	@DerivedProperty
 	String getRawContent();
