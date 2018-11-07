@@ -16,7 +16,15 @@
  */
 package spoon.test.condition;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
 import org.junit.Test;
+
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
@@ -25,12 +33,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.condition.testclasses.Foo;
+import spoon.test.condition.testclasses.Foo2;
 import spoon.testing.utils.ModelUtils;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class ConditionalTest {
 	String newLine = System.getProperty("line.separator");
@@ -96,5 +100,35 @@ public class ConditionalTest {
 				+ "else" + newLine
 				+ "    java.lang.System.out.println();" + newLine,
 				method.getBody().getStatement(0).toString());
+	}
+
+	@Test
+	public void testNoThenBlock() throws Exception {
+		// contract: corner cases provided by @Egor18 are well handled
+		final CtType<Foo> aFoo = ModelUtils.buildClass(Foo.class);
+		CtMethod<Object> method = aFoo.getMethod("m4");
+		final List<CtIf> conditions = method.getElements(new TypeFilter<>(CtIf.class));
+
+		assertNotNull(conditions.get(0).getThenStatement());
+		assertNull(conditions.get(0).getElseStatement());
+
+		assertNull(conditions.get(1).getThenStatement());
+		assertNull(conditions.get(1).getElseStatement());
+	}
+
+	@Test
+	public void testNoThenBlockBug() throws Exception {
+		// contract: empty statement are correctly handled
+		// the fix consists of addind visit(EmptyStatement) in JDTTreeBuilder
+		final CtType aFoo = ModelUtils.buildClass(Foo2.class);
+		CtMethod<Object> method = aFoo.getMethod("bug");
+		final List<CtIf> conditions = method.getElements(new TypeFilter<>(CtIf.class));
+
+		// contract: an empty statement is transformed into an empty block with a comment
+		assertNull(conditions.get(0).getThenStatement());
+
+		// and we have the correct else statement
+		assertNotNull(conditions.get(0).getElseStatement());
+		assertEquals("java.lang.System.out.println();", conditions.get(0).getElseStatement().toString().trim());
 	}
 }
