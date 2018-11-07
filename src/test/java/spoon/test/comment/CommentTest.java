@@ -1069,6 +1069,31 @@ public class CommentTest {
 	}
 
 	@Test
+	public void testCommentGetRawContent() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/comment/JavaDocComment.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.run();
+
+		CtClass<?> type = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.comment.testclasses.JavaDocComment");
+		//contract: getContent always returns cleaned comment content with \n as EOL
+		assertEquals("JavaDoc test class.\n" + 
+				"\n" + 
+				"Long description", type.getComments().get(0).getContent());
+		// contract: return the full original comment with prefix and suffix, incl. the original EOL (\r as EOL here)
+		assertEquals("/**\r" + 
+				" * JavaDoc test class.\r" + 
+				" *\r" + 
+				" * Long description\r" + 
+				" *\r" + 
+				" * @deprecated\r" + 
+				" * @since 1.3\r" + 
+				" * @author Thomas Durieux\r" + 
+				" * @version 1.0\r" + 
+				" */", type.getComments().get(0).getRawContent());
+	}
+  
+  @Test
 	public void testEmptyStatementComments() {
 		//contract: model building should not produce NPE, comments should exist
 		Launcher launcher = new Launcher();

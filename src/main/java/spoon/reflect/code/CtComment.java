@@ -18,6 +18,7 @@ package spoon.reflect.code;
 
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.support.DerivedProperty;
 
 import static spoon.reflect.path.CtRole.COMMENT_TYPE;
 import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
@@ -67,6 +68,16 @@ public interface CtComment extends CtStatement {
 
 	@PropertySetter(role = COMMENT_CONTENT)
 	<E extends CtComment> E setContent(String content);
+
+	/**
+	 * @return the original raw comment from the source file including comment prefix and suffix, indentation (including TABs) original EOLs,
+	 * based on the attached position object (the returned value is "derived" from the position).
+	 * If the file pointed to in the position object does not exist on disk anymore,
+	 * then the empty string "" is returned
+	 * Note: the call of {@link #setContent(String)} doesn't influence the returned value, only the value of the position object.
+	 */
+	@DerivedProperty
+	String getRawContent();
 
 	/**
 	 * Get the type of the comment
