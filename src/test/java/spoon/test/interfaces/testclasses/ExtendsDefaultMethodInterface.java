@@ -5,7 +5,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 public interface ExtendsDefaultMethodInterface extends InterfaceWithDefaultMethods {
-	default public ZonedDateTime getZonedDateTime(String zoneString) {
+	public default ZonedDateTime getZonedDateTime(String zoneString) {
 		try {
 			return ZonedDateTime.of(getLocalDateTime(), ZoneId.of(zoneString));
 		} catch (DateTimeException e) {
