@@ -5,7 +5,7 @@ public class A {
 		return 1;
 	}
 
-	public final static int getInt2() {
+	public static final int getInt2() {
 		return 2;
 	}
 
