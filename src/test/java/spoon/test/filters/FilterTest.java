@@ -620,7 +620,7 @@ public class FilterTest {
 	@Test
 	public void testFilterQueryStep() {
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
@@ -634,7 +634,7 @@ public class FilterTest {
 	@Test
 	public void testFilterChildrenWithoutFilterQueryStep() {
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
@@ -655,7 +655,7 @@ public class FilterTest {
 	@Test
 	public void testFunctionQueryStep() {
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
@@ -672,7 +672,7 @@ public class FilterTest {
 			.map((CtMethod<?> method)-> "make".equals(method.getSimpleName()))
 			.map((CtMethod<?> m)->m.getType())
 			.map((CtTypeReference<?> t)->t.getTypeDeclaration());
-		((CtQueryImpl)query).logging(true);
+//		((CtQueryImpl)query).logging(true);
 		query.forEach((CtInterface<?> c)->{
 				assertEquals("ITostada", c.getSimpleName());
 				context.count++;
@@ -684,7 +684,7 @@ public class FilterTest {
 		// contract: with default policy an exception is thrown is the input type of a query step
 		// does not correspond to the output type of the previous step
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
@@ -705,7 +705,7 @@ public class FilterTest {
 		// and only valid elements are kept for the next step
 
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
@@ -728,7 +728,7 @@ public class FilterTest {
 	public void testElementMapFunction() {
 		// contract: a map(Function) can be followed by a forEach(...) or by a list()
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
@@ -774,7 +774,7 @@ public class FilterTest {
 	public void testReuseOfQuery() {
 		// contract: a query created from an existing element can be reused on other inputs
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
@@ -802,7 +802,7 @@ public class FilterTest {
 	public void testReuseOfBaseQuery() {
 		// contract: an empty  query can be used on several inputs
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
@@ -822,7 +822,7 @@ public class FilterTest {
 		// contract: QueryFactory allows to create query with an optional number of inputs
 		// the input can be provided as Array or Iterable
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 
@@ -855,7 +855,7 @@ public class FilterTest {
 		// a simple consumer.accept() is equivalent to a single return in a CtFunction
 
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		CtClass<?> cls = launcher.getFactory().Class().get(Tacos.class);
@@ -877,7 +877,7 @@ public class FilterTest {
 	@Test
 	public void testQueryInQuery() {
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
@@ -966,7 +966,7 @@ public class FilterTest {
 		// This test could fail with a version of JDK <= 8.0.40. 
 
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
@@ -1113,7 +1113,7 @@ public class FilterTest {
 		// contract: a method first evaluates query until first element is found and then terminates the query
 
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
@@ -1159,7 +1159,7 @@ public class FilterTest {
 		// contract: a mapping function which returns all parents of CtElement
 
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
@@ -1196,7 +1196,7 @@ public class FilterTest {
 		// contract: CtScannerFunction can be subclassed and configured by a CtScannerListener
 
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.run();
 		
@@ -1279,7 +1279,7 @@ public class FilterTest {
 	public void testSubInheritanceHierarchyResolver() {
 		// contract; SubInheritanceHierarchyResolver supports finding subtypes in an incremental manner
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput","--level","info" });
+		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/filters/testclasses");
 		launcher.buildModel();
 
