@@ -23,17 +23,17 @@ public class Main {
 	public void m1() {
 	}
 
-	final public static int INTEGER = 42;
-	final public static String STRING = "Hello World!";
-	final public static String STRING1 = "Hello";
-	final public static String STRING2 = "world";
-	final public static boolean BOOLEAN = false;
-	final public static byte BYTE = 42;
-	final public static char CHAR = 'c';
-	final public static short SHORT = 42;
-	final public static short LONG = 42;
-	final public static float FLOAT = 3.14f;
-	final public static double DOUBLE = 3.14159;
+	public static final int INTEGER = 42;
+	public static final String STRING = "Hello World!";
+	public static final String STRING1 = "Hello";
+	public static final String STRING2 = "world";
+	public static final boolean BOOLEAN = false;
+	public static final byte BYTE = 42;
+	public static final char CHAR = 'c';
+	public static final short SHORT = 42;
+	public static final short LONG = 42;
+	public static final float FLOAT = 3.14f;
+	public static final double DOUBLE = 3.14159;
 
 	@AnnotParamTypes(
 			integer = INTEGER, integers = { INTEGER },
