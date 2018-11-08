@@ -1,7 +1,7 @@
 package spoon.test.fieldaccesses.testclasses.internal;
 
 abstract class Bar {
-	static abstract class Inner {
+	abstract static class Inner {
 		public static int i;
 
 		public static class SubInner {
