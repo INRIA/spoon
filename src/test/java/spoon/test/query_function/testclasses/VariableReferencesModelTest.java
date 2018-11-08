@@ -26,7 +26,11 @@ public class VariableReferencesModelTest {
 				int field = 1;
 				assertTrue(field == 1);
 			}
-			int f1,f2,f3,field = 2,f4;
+			int f1;
+			int f2;
+			int f3;
+			int field = 2;
+			int f4;
 			assertTrue(field == 2);
 		}
 		int field = 3;
