@@ -19,6 +19,7 @@ package spoon.reflect.declaration;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.visitor.CtImportVisitor;
 import spoon.support.DerivedProperty;
 
 import static spoon.reflect.path.CtRole.IMPORT_REFERENCE;
@@ -59,6 +60,11 @@ public interface CtImport extends CtElement {
 	 */
 	@PropertySetter(role = IMPORT_REFERENCE)
 	<T extends CtImport> T setReference(CtReference reference);
+
+	/**
+	 * Accepts a {@link CtImportVisitor}
+	 */
+	void accept(CtImportVisitor visitor);
 
 	@Override
 	CtImport clone();

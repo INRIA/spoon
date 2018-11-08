@@ -26,6 +26,8 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
+import spoon.reflect.visitor.CtImportVisitor;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl;
 
@@ -78,7 +80,34 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 	}
 
 	@Override
-	public CtImport clone() {
-		return (CtImport) super.clone();
+	public void accept(CtImportVisitor visitor) {
+		switch (getImportKind()) {
+		case TYPE:
+			visitor.visitTypeImport((CtTypeReference<?>) localReference);
+			break;
+
+		case METHOD:
+			visitor.visitMethodImport((CtExecutableReference<?>) localReference);
+			break;
+
+		case FIELD:
+			visitor.visitFieldImport((CtFieldReference<?>) localReference);
+			break;
+
+		case ALL_TYPES:
+			visitor.visitAllTypesImport((CtPackageReference) localReference);
+			break;
+
+		case ALL_STATIC_MEMBERS:
+			visitor.visitAllStaticMembersImport((CtTypeMemberWildcardImportReference) localReference);
+			break;
+		default:
+			throw new SpoonException("Unexpected import kind: " + getImportKind());
+		}
+	}
+
+	@Override
+	public CtImportImpl clone() {
+		return (CtImportImpl) super.clone();
 	}
 }
