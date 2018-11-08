@@ -17,6 +17,7 @@
 package spoon.support.reflect.reference;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
@@ -26,6 +27,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.SpoonClassNotFoundException;
 import spoon.support.util.RtHelper;
 
 import java.lang.reflect.AnnotatedElement;
@@ -59,17 +61,29 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 
 	@Override
 	public Member getActualField() {
-		try {
-			if (getDeclaringType().getActualClass().isAnnotation()) {
-				return getDeclaringType().getActualClass().getDeclaredMethod(
-						getSimpleName());
-			}
-			return getDeclaringType().getActualClass().getDeclaredField(
-					getSimpleName());
-		} catch (Exception e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
+		CtTypeReference<?> typeRef = getDeclaringType();
+		if (typeRef == null) {
+			throw new SpoonException("Declaring type of field " + getSimpleName() + " isn't defined");
 		}
-		return null;
+		Class<?> clazz;
+		try {
+			clazz = typeRef.getActualClass();
+		} catch (SpoonClassNotFoundException e) {
+			if (getFactory().getEnvironment().getNoClasspath()) {
+				Launcher.LOGGER.info("The class " + typeRef.getQualifiedName() + " of field " + getSimpleName() + " is not on class path. Problem ignored in noclasspath mode");
+				return null;
+			}
+			throw e;
+		}
+		try {
+			if (clazz.isAnnotation()) {
+				return clazz.getDeclaredMethod(getSimpleName());
+			} else {
+				return clazz.getDeclaredField(getSimpleName());
+			}
+		} catch (NoSuchMethodException | NoSuchFieldException e) {
+			throw new SpoonException("The field " + getQualifiedName() + " not found", e);
+		}
 	}
 
 	@Override
