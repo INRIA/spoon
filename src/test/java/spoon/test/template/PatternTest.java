@@ -1111,7 +1111,7 @@ public class PatternTest {
 		}
 	}
 
-	private List<String> toListOfStrings(List<? extends Object> list) {
+	private List<String> toListOfStrings(List<?> list) {
 		if (list == null) {
 			return Collections.emptyList();
 		}
