@@ -10,7 +10,7 @@ public class Foo<T> extends SuperClass {
 	Foo foo;
 	Bar bar;
 	Fii.Fuu fuu;
-	final static int p;
+	static final int p;
 
 	static {
 		p = 0;
