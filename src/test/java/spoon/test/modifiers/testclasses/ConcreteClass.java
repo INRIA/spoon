@@ -1,7 +1,7 @@
 package spoon.test.modifiers.testclasses;
 
 final class ConcreteClass extends AbstractClass {
-    public final static String className = ConcreteClass.class.getName();
+    public static final String className = ConcreteClass.class.getName();
 
     private static int test = 42;
 
