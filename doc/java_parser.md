@@ -11,13 +11,16 @@ Spoon and [JavaParser](https://github.com/javaparser/javaparser) can both be use
 
 ### Parsing
 
-Spoon is using Eclipse JDK compiler to build AST of sources, then Spoon AST is then made from compiler AST.
-JavaParser parses java source on their own. So JavaParser is faster, but all the heavy work (resolving of fully qualified type names, detection of implicit elements, ...) is done by JavaParser (@ftomassetti could you add there some comment about status)
+Spoon is using Eclipse JDK compiler to build AST of sources, then Spoon AST is made from the compiler's AST.
+
+JavaParser has own parser. JavaParser can work incrementally. It can work on snippets or entire files. Optionally it can also perform symbol resolution, which is again implemented from scratch and it is very flexible.
+
+Eclipse JDK compiler heavier and slower then JavaParser, but on the other side it is 100% correct in java symbol resolving, which is very complicated task. The symbol resolver of JavaParser is faster and mature. But in some rare corner cases it is not that correct like Eclipse JDK compiler. 
 
 ### AST model
 
 JavaParser AST is near to source code representation. You can find AST nodes like `EnclosedExpr`, which represents brackets like `(x+y)`or `Name`, which represents any java identifier. 
-Spoon's AST is pure java semantic model. It means it contains nodes, which represent the same **concepts**, which are used by java programmer when s/he thinks about java program. Spoon AST contains also implicit elements, which are not visible in java source at all. For example this code
+Spoon's AST is pure java semantic model. It means it contains nodes, which represent the same **concepts**, which are used by java programmers when they think about java program. Spoon AST contains also implicit elements, which are not visible in java source at all. For example this code
 
 ```java
 if (something) list = (List<String>) new ArrayList<>(FIELD_COUNT);
