@@ -522,6 +522,9 @@ public class JDTCommentBuilder {
 	}
 
 	public static String cleanComment(String comment) {
+		if (comment == null) {
+			return "";
+		}
 		return cleanComment(new StringReader(comment));
 	}
 
