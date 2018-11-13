@@ -47,6 +47,7 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -1195,5 +1196,14 @@ public class PositionTest {
 			assertEquals("label2", stmt3.getLabel());
 			assertEquals("label2: while(true);", contentAtPosition(classContent, stmt3.getPosition()));
 		}
+	}
+	@Test
+	public void testPackageDeclaration() throws Exception {
+		//contract: check position of package declaration
+		final Factory build = build(FooLabel.class);
+		final CtType<FooLabel> foo = build.Type().get(FooLabel.class);
+		String classContent = getClassContent(foo);
+		CtPackageDeclaration packDecl = foo.getPosition().getCompilationUnit().getPackageDeclaration();
+		assertEquals("package spoon.test.position.testclasses;", contentAtPosition(classContent, packDecl.getPosition()));
 	}
 }
