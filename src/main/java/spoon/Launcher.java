@@ -679,7 +679,12 @@ public class Launcher implements SpoonAPI {
 	}
 
 	public JavaOutputProcessor createOutputWriter() {
-		JavaOutputProcessor outputProcessor = new JavaOutputProcessor(createPrettyPrinter());
+		/*
+		 * create without printer, because Launcher is not initialized yet
+		 * so we cannot setup correct printer validators at this time
+		 * The printer is created lazily using Environment
+		 */
+		JavaOutputProcessor outputProcessor = new JavaOutputProcessor();
 		outputProcessor.setFactory(this.getFactory());
 		return outputProcessor;
 	}

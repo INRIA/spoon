@@ -56,7 +56,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	}
 
 	/**
-	 * usedful for testing
+	 * Such processor will use printer created by {@link Environment#createPrettyPrinter()}
 	 */
 	public JavaOutputProcessor() {
 	}
@@ -67,6 +67,10 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	}
 
 	public PrettyPrinter getPrinter() {
+		if (printer == null) {
+			//create printer using CURRENT Environment settings
+			return getFactory().getEnvironment().createPrettyPrinter();
+		}
 		return printer;
 	}
 
@@ -117,6 +121,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 		List<CtType<?>> toBePrinted = new ArrayList<>();
 		toBePrinted.add(element);
 
+		PrettyPrinter printer = getPrinter();
 		printer.calculate(cu, toBePrinted);
 
 
@@ -168,7 +173,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 			printedFiles.add(packageAnnot);
 		}
 		try (PrintStream stream = new PrintStream(packageAnnot)) {
-			stream.println(printer.printPackageInfo(pack));
+			stream.println(getPrinter().printPackageInfo(pack));
 		} catch (FileNotFoundException e) {
 			Launcher.LOGGER.error(e.getMessage(), e);
 		}
@@ -181,7 +186,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 				printedFiles.add(moduleFile);
 			}
 			try (PrintStream stream = new PrintStream(moduleFile)) {
-				stream.println(printer.printModuleInfo(module));
+				stream.println(getPrinter().printModuleInfo(module));
 			} catch (FileNotFoundException e) {
 				Launcher.LOGGER.error(e.getMessage(), e);
 			}
