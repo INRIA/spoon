@@ -26,6 +26,8 @@ import spoon.reflect.visitor.CtVisitor;
 
 import java.util.Objects;
 
+import static spoon.support.compiler.jdt.JDTCommentBuilder.cleanComment;
+
 public class CtCommentImpl extends CtStatementImpl implements CtComment {
 	private static final long serialVersionUID = 1L;
 
@@ -63,7 +65,7 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 	@Override
 	public <E extends CtComment> E setContent(String content) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.COMMENT_CONTENT, content, this.content);
-		this.content = content;
+		this.content = cleanComment(content);
 		return (E) this;
 	}
 
