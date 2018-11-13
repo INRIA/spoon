@@ -537,8 +537,8 @@ public class JDTCommentBuilder {
 		try (BufferedReader br = new BufferedReader(comment)) {
 			String line = br.readLine();
 			// nothing in the first line
-			if (line == null || line.length() == 0) {
-				return "";
+			if (line == null) {
+				return ret.toString();
 			}
 			boolean isLastLine = false;
 			if (line.length() >= 2 && line.charAt(1) == '/') {
