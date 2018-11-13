@@ -21,10 +21,12 @@ import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
+import spoon.support.reflect.code.CtJavaDocImpl;
 import spoon.test.javadoc.testclasses.Bar;
 
 import static org.junit.Assert.assertEquals;
@@ -99,4 +101,14 @@ public class JavaDocTest {
 			}
 		}.scan(launcher.getModel().getRootPackage());
 	}
-}
+
+	@Test
+	public void testBugSetContent() {
+		// contract: call to setContent directly should also set tags.
+		CtJavaDoc j = (CtJavaDoc) new Launcher().getFactory().createComment("/** sd\n@see foo */", CtComment.CommentType.JAVADOC);
+		assertEquals("sd", j.getLongDescription());
+		assertEquals(1, j.getTags().size());
+		assertEquals("foo", j.getTags().get(0).getContent());
+	}
+
+	}
