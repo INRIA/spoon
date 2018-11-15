@@ -295,11 +295,6 @@
                     <failsOnError>true</failsOnError>
                     <configLocation>../checkstyle.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
-                    <!-- we exclude the generated files, see CtGenerationTest -->
-                    <excludes>spoon/support/visitor/clone/CloneBuilder.java</excludes>
-                    <excludes>spoon/reflect/visitor/CtBiScannerDefault.java</excludes>
-                    <excludes>spoon/support/visitor/equals/EqualsVisitor.java</excludes>
-                    <excludes>spoon/support/visitor/replace/ReplacementVisitor.java</excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -354,7 +349,7 @@
                     <alwaysCheckForReleaseVersion>false</alwaysCheckForReleaseVersion>
                     <oldVersion>LATEST</oldVersion>
                     <analysisConfigurationFiles>
-                        <file>${project.basedir}/revapi.json</file>
+                        <file>../revapi.json</file>
                     </analysisConfigurationFiles>
                 </configuration>
             </plugin>
@@ -413,12 +408,10 @@
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
                     <configuration>
-                        <header>LICENSE-short.txt</header>
+                        <header>../LICENSE-short.txt</header>
                         <basedir>src</basedir>
                         <includes>
                             <include>main/java/**</include>
-                            <!-- We also want to check the license in templates to generate files with the proper header -->
-                            <include>test/java/spoon/generating/clone/*</include>
                         </includes>
                     </configuration>
                     <executions>
@@ -480,7 +473,7 @@
                         <version>2.17</version>
                         <configuration>
                             <failsOnError>true</failsOnError>
-                            <configLocation>checkstyle-test.xml</configLocation>
+                            <configLocation>../checkstyle-test.xml</configLocation>
                             <consoleOutput>true</consoleOutput>
                         </configuration>
                     </plugin>

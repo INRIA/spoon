@@ -5,4 +5,6 @@
 
 source /opt/jdk_switcher/jdk_switcher.sh
 
-jdk_switcher use oraclejdk8 & cd spoon-bytecode & mvn -Djava.src.version=1.8 test
+cd spoon-bytecode
+
+jdk_switcher use oraclejdk8 & mvn -Djava.src.version=1.8 test
