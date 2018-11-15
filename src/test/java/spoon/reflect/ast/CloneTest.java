@@ -49,6 +49,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.testing.utils.Check.assertCtElementEquals;
 
 public class CloneTest {
 
@@ -166,7 +167,7 @@ public class CloneTest {
 			//contract: there exists cloned target for each visitable element
 			CtElement targetElement = cl.sourceToTarget.remove(sourceElement);
 			assertNotNull("Missing target for sourceElement\n" + sourceElement, targetElement);
-			assertEquals("Source and Target are not equal", sourceElement, targetElement);
+			assertCtElementEquals((CtElement) sourceElement, targetElement);
 		});
 		//contract: each visitable elements was cloned exactly once. No more no less.
 		assertTrue(cl.sourceToTarget.isEmpty());

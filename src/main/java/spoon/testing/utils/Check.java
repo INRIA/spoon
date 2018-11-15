@@ -17,6 +17,7 @@
 package spoon.testing.utils;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.support.visitor.equals.EqualsVisitor;
 
 import java.io.File;
 
@@ -25,6 +26,23 @@ public final class Check {
 		throw new AssertionError();
 	}
 
+	/** if ct1 is not equals to ct2, tells the exact difference */
+	public static void assertCtElementEquals(CtElement ct1, CtElement ct2) {
+		EqualsVisitor ev = new EqualsVisitor();
+		ev.checkEquals(ct1, ct2);
+		if (!ev.isEqual()) {
+			Object notEqual1 = ev.getNotEqualElement();
+			Object notEqual2 = ev.getNotEqualOther();
+			throw new AssertionError("elements no equal -- difference:\n"
+					+ ev.getNotEqualRole() + "\n"
+					+ (notEqual1 instanceof CtElement && ((CtElement) notEqual1).getPosition() != null ? ((CtElement) notEqual1).getPosition().toString() : "<unknown position>") + " \n"
+					+ (notEqual1 != null ? notEqual1.toString() : "null")
+					+ "\n is not \n"
+					+ (notEqual2 != null ? notEqual2.toString() : "null")
+			);
+		}
+
+	}
 	/** throws AssertionError if "reference" is null */
 	public static <T> T assertNotNull(String msg, T reference) {
 		if (reference == null) {
