@@ -18,6 +18,7 @@ package spoon.testing;
 
 import spoon.reflect.declaration.CtElement;
 
+import static spoon.testing.utils.Check.assertCtElementEquals;
 import static spoon.testing.utils.Check.assertNotNull;
 import static spoon.testing.utils.Check.assertIsSame;
 import static spoon.testing.utils.ProcessorUtils.process;
@@ -40,9 +41,9 @@ public abstract class AbstractCtElementAssert<T extends AbstractCtElementAssert<
 
 		process(actual.getFactory(), processors);
 
-		if (!actual.equals(expected)) {
-			throw new AssertionError();
-		}
+		// using the new method to have a nice error message
+		assertCtElementEquals(expected, actual);
+		
 		return this.myself;
 	}
 
