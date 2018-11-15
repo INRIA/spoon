@@ -211,12 +211,6 @@
       <name>Maven Repository for Spoon Snapshots</name>
       <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
     </repository>
-    <!-- This repository is needed for cfr -->
-    <repository>
-      <id>inria</id>
-      <name>triskell-public-release</name>
-      <url>http://maven.inria.fr/artifactory/triskell-public-release</url>
-    </repository>
   </repositories>
 
   <dependencies>
@@ -309,24 +303,11 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.jboss.windup.decompiler.fernflower/fernflower -->
-    <dependency>
-      <groupId>org.jboss.windup.decompiler.fernflower</groupId>
-      <artifactId>fernflower</artifactId>
-      <version>2.5.0.Final</version>
-    </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-invoker</artifactId>
       <version>3.0.1</version>
     </dependency>
-      <dependency>
-	  <!-- released on maven.inria.fr -->
-          <groupId>org.benf</groupId>
-          <artifactId>cfr</artifactId>
-	  <!-- 0.132 is the version of July 2018 -->
-          <version>0.132.0</version>
-      </dependency>
   </dependencies>
 
   <build>

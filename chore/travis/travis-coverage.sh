@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script computes and publish (through coveralls) the coverage of Spoon
-# It is meant to berun on TravisCI
+# It is meant to be run on TravisCI
 #
 # Note thet Coveralls/Jacoco does not work on JDK9, see https://github.com/trautonen/coveralls-maven-plugin/issues/112
 
