@@ -116,6 +116,11 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 
 		tags.clear();
 
+		// avoiding NPE later
+		if (content == null) {
+			content = "";
+		}
+
 		String longDescription = "";
 		String currentTagContent = "";
 		CtJavaDocTag.TagType currentTag = null;
