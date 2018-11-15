@@ -113,12 +113,14 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 	 * @return a CtComment or a CtJavaDoc comment with a defined content
 	 */
 	private void parseTags(String content) {
+
+		tags.clear();
+
 		String longDescription = "";
 		String currentTagContent = "";
 		CtJavaDocTag.TagType currentTag = null;
 
-		// TODO: remove the " *", see spoon.test.javadoc.JavaDocTest.testJavaDocReprint()
-		String[] lines = content.split("\n");
+		String[] lines = content.split("\n|\r\n|\r");
 		boolean tagStarted = false;
 		for (String aLine : lines) {
 			String line = aLine.trim();
