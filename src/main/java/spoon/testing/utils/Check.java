@@ -35,9 +35,9 @@ public final class Check {
 			Object notEqual2 = ev.getNotEqualOther();
 			throw new AssertionError("elements no equal -- difference:\n"
 					+ ev.getNotEqualRole() + "\n"
+					+ (notEqual1 instanceof CtElement && ((CtElement) notEqual1).getPosition() != null ? ((CtElement) notEqual1).getPosition().toString() : "<unknown position>") + " \n"
 					+ (notEqual1 != null ? notEqual1.toString() : "null")
 					+ "\n is not \n"
-					+ (notEqual1 instanceof CtElement && ((CtElement) notEqual1).getPosition() != null ? ((CtElement) notEqual1).getPosition().toString() : "<unknown position>") + " \n"
 					+ (notEqual2 != null ? notEqual2.toString() : "null")
 			);
 		}
