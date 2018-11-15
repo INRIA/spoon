@@ -184,7 +184,6 @@
     <java.test.version>1.8</java.test.version>
     <runtime.log>target/velocity.log</runtime.log>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <version.cfr>0.132.0</version.cfr>
   </properties>
 
   <distributionManagement>
