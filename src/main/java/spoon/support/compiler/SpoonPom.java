@@ -256,7 +256,7 @@ public class SpoonPom implements SpoonResource {
 			javaVersion = getSourceVersion(model.getBuild());
 		}
 		if (javaVersion != null) {
-			return Integer.parseInt(extractVariable(javaVersion).substring(2));
+			return correctJavaVersion(javaVersion);
 		}
 		for (Profile profile: model.getProfiles()) {
 			if (profile.getActivation() != null && profile.getActivation().isActiveByDefault()) {
@@ -264,26 +264,31 @@ public class SpoonPom implements SpoonResource {
 			}
 		}
 		if (javaVersion != null) {
-			return Integer.parseInt(extractVariable(javaVersion).substring(2));
+			return correctJavaVersion(javaVersion);
 		}
 		javaVersion = getProperty("java.version");
 		if (javaVersion != null) {
-			return Integer.parseInt(extractVariable(javaVersion).substring(2));
+			return correctJavaVersion(javaVersion);
 		}
 		javaVersion = getProperty("java.src.version");
 		if (javaVersion != null) {
-			return Integer.parseInt(extractVariable(javaVersion).substring(2));
+			return correctJavaVersion(javaVersion);
 		}
 		javaVersion = getProperty("maven.compiler.source");
 		if (javaVersion != null) {
-			return Integer.parseInt(extractVariable(javaVersion).substring(2));
+			return correctJavaVersion(javaVersion);
 		}
 		javaVersion = getProperty("maven.compile.source");
 		if (javaVersion != null) {
-			return Integer.parseInt(extractVariable(javaVersion).substring(2));
+			return correctJavaVersion(javaVersion);
 		}
 		// return the current compliance level of spoon
 		return environment.getComplianceLevel();
+	}
+
+	private int correctJavaVersion(String javaVersion) {
+		String version = extractVariable(javaVersion);
+		return Integer.parseInt((version.contains(".") ? version.substring(2) : version));
 	}
 
 	private String getSourceVersion(BuildBase build) {
