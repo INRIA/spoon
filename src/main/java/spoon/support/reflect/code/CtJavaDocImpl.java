@@ -99,21 +99,11 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 		}
 	}
 
+	/**
+	 * Parses the content string to split in two: the description and the Javadoc tags
+	 */
 	@Override
 	public <E extends CtComment> E setContent(String content) {
-		// in Javadoc we parse the tags
-		parseTags(cleanComment(content));
-		return (E) this;
-	}
-
-	/**
-	 * Parse the content of a comment to extract the tags
-	 * @param comment the original comment
-	 * @param commentContent the content of the comment
-	 * @return a CtComment or a CtJavaDoc comment with a defined content
-	 */
-	private void parseTags(String content) {
-
 		tags.clear();
 
 		// avoiding NPE later
@@ -125,7 +115,7 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 		String currentTagContent = "";
 		CtJavaDocTag.TagType currentTag = null;
 
-		String[] lines = content.split("\n|\r\n|\r");
+		String[] lines = cleanComment(content).split("\n|\r\n|\r");
 		boolean tagStarted = false;
 		for (String aLine : lines) {
 			String line = aLine.trim();
@@ -152,8 +142,17 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 			}
 		}
 		defineCommentContent(currentTagContent, currentTag);
-		super.setContent(longDescription);
+
+		// we cannot call super.setContent because it does cleanComment
+		// and we don't want to clean the comment twice (already done before in this method)
+		String contentWithTags = longDescription.trim();// trim is required for backward compatibility
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.COMMENT_CONTENT, contentWithTags, this.content);
+		this.content = contentWithTags;
+
+		return (E) this;
 	}
+
+
 
 	/**
 	 * Define the content of the comment

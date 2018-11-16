@@ -25,10 +25,10 @@ The generic type of `CtExpression` is used to add static type-checking when tran
 
 ```java
 
-int[] array = new int[10];
-System.out.println(
-array[0] // <-- array read
-);
+    int[] array = new int[10];
+    System.out.println(
+    array[0] // <-- array read
+    );
 
 ```
 ### CtArrayWrite
@@ -36,9 +36,9 @@ array[0] // <-- array read
 
 ```java
 
-Object[] array = new Object[10];
-// array write
-array[0] = "new value";
+    Object[] array = new Object[10];
+    // array write
+    array[0] = "new value";
 
 ```
 ### CtAssert
@@ -52,8 +52,8 @@ assert 1+1==2
 
 ```java
 
-int x;
-x = 4; // <-- an assignment
+    int x;
+    x = 4; // <-- an assignment
 
 ```
 ### CtBinaryOperator
@@ -61,8 +61,8 @@ x = 4; // <-- an assignment
 
 ```java
 
-// 3+4 is the binary expression
-int x = 3 + 4;
+    // 3+4 is the binary expression
+    int x = 3 + 4;
 
 ```
 ### CtBlock
@@ -70,21 +70,21 @@ int x = 3 + 4;
 
 ```java
 
-{ // <-- block start
-System.out.println("foo");
-}
-
+ { // <-- block start
+  System.out.println("foo");
+ }
+	
 ```
 ### CtBreak
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtBreak.html)
 
 ```java
 
-for(int i=0; i<10; i++) {
-if (i>3) {
-break; // <-- break statement
-}
-}
+    for(int i=0; i<10; i++) {
+        if (i>3) {
+				break; // <-- break statement
+        }
+    }
 
 ```
 ### CtCase
@@ -94,8 +94,8 @@ break; // <-- break statement
 
 int x = 0;
 switch(x) {
-case 1: // <-- case statement
-System.out.println("foo");
+    case 1: // <-- case statement
+      System.out.println("foo");
 }
 ```
 ### CtConditional
@@ -103,9 +103,9 @@ System.out.println("foo");
 
 ```java
 
-System.out.println(
-1==0 ? "foo" : "bar" // <-- ternary conditional
-);
+    System.out.println(
+       1==0 ? "foo" : "bar" // <-- ternary conditional
+    );
 
 ```
 ### CtConstructorCall
@@ -113,7 +113,7 @@ System.out.println(
 
 ```java
 
-new Object();
+    new Object();
 
 ```
 ### CtContinue
@@ -121,11 +121,11 @@ new Object();
 
 ```java
 
-for(int i=0; i<10; i++) {
-if (i>3) {
-continue; // <-- continue statement
-}
-}
+    for(int i=0; i<10; i++) {
+        if (i>3) {
+				continue; // <-- continue statement
+        }
+    }
 
 ```
 ### CtDo
@@ -133,10 +133,10 @@ continue; // <-- continue statement
 
 ```java
 
-int x = 0;
-do {
-x=x+1;
-} while (x<10);
+    int x = 0;
+    do {
+        x=x+1;
+    } while (x<10);
 
 ```
 ### CtExecutableReferenceExpression
@@ -144,8 +144,8 @@ x=x+1;
 
 ```java
 
-java.util.function.Supplier p =
-Object::new;
+    java.util.function.Supplier p =
+      Object::new;
 
 ```
 ### CtFieldRead
@@ -153,9 +153,9 @@ Object::new;
 
 ```java
 
-class Foo { int field; }
-Foo x = new Foo();
-System.out.println(x.field);
+    class Foo { int field; }
+    Foo x = new Foo();
+    System.out.println(x.field);
 
 ```
 ### CtFieldWrite
@@ -163,9 +163,9 @@ System.out.println(x.field);
 
 ```java
 
-class Foo { int field; }
-Foo x = new Foo();
-x.field = 0;
+    class Foo { int field; }
+    Foo x = new Foo();
+    x.field = 0;
 
 ```
 ### CtFor
@@ -173,10 +173,10 @@ x.field = 0;
 
 ```java
 
-// a for statement
-for(int i=0; i<10; i++) {
-System.out.println("foo");
-}
+    // a for statement
+    for(int i=0; i<10; i++) {
+    	System.out.println("foo");
+    }
 
 ```
 ### CtForEach
@@ -184,10 +184,10 @@ System.out.println("foo");
 
 ```java
 
-java.util.List l = new java.util.ArrayList();
-for(Object o : l) { // <-- foreach loop
-System.out.println(o);
-}
+    java.util.List l = new java.util.ArrayList();
+    for(Object o : l) { // <-- foreach loop
+    	System.out.println(o);
+    }
 
 ```
 ### CtIf
@@ -195,11 +195,11 @@ System.out.println(o);
 
 ```java
 
-if (1==0) {
-System.out.println("foo");
-} else {
-System.out.println("bar");
-}
+    if (1==0) {
+    	System.out.println("foo");
+    } else {
+    	System.out.println("bar");
+    }
 
 ```
 ### CtInvocation
@@ -207,9 +207,9 @@ System.out.println("bar");
 
 ```java
 
-// invocation of method println
-// the target is "System.out"
-System.out.println("foo");
+    // invocation of method println
+    // the target is "System.out"
+    System.out.println("foo");
 
 ```
 ### CtJavaDoc
@@ -218,8 +218,8 @@ System.out.println("foo");
 ```java
 
 /**
-Description
-@tag a tag in the javadoc
+ * Description
+ * @tag a tag in the javadoc
 */
 
 ```
@@ -228,10 +228,10 @@ Description
 
 ```java
 
-java.util.List l = new java.util.ArrayList();
-l.stream().map(
-x -> { return x.toString(); } // a lambda
-);
+    java.util.List l = new java.util.ArrayList();
+    l.stream().map(
+      x -> { return x.toString(); } // a lambda
+    );
 
 ```
 ### CtLiteral
@@ -239,7 +239,7 @@ x -> { return x.toString(); } // a lambda
 
 ```java
 
-int x = 4; // 4 is a literal
+    int x = 4; // 4 is a literal
 
 ```
 ### CtLocalVariable
@@ -247,12 +247,12 @@ int x = 4; // 4 is a literal
 
 ```java
 
-// defines a local variable x
-int x = 0;
+    // defines a local variable x
+    int x = 0;
 
 
-// local variable in Java 10
-var x = 0;
+    // local variable in Java 10
+    var x = 0;
 
 ```
 ### CtNewArray
@@ -260,8 +260,8 @@ var x = 0;
 
 ```java
 
-// inline creation of array content
-int[] x = new int[] { 0, 1, 42}
+    // inline creation of array content
+    int[] x = new int[] { 0, 1, 42}
 
 ```
 ### CtNewClass
@@ -269,13 +269,13 @@ int[] x = new int[] { 0, 1, 42}
 
 ```java
 
-// an anonymous class creation
-Runnable r = new Runnable() {
-@Override
-public void run() {
-System.out.println("foo");
-}
-};
+   // an anonymous class creation
+   Runnable r = new Runnable() {
+    	@Override
+    	public void run() {
+    	  System.out.println("foo");
+    	}
+   };
 
 ```
 ### CtOperatorAssignment
@@ -283,8 +283,8 @@ System.out.println("foo");
 
 ```java
 
-int x = 0;
-x *= 3; // <-- a CtOperatorAssignment
+    int x = 0;
+    x *= 3; // <-- a CtOperatorAssignment
 
 ```
 ### CtReturn
@@ -292,12 +292,12 @@ x *= 3; // <-- a CtOperatorAssignment
 
 ```java
 
-Runnable r = new Runnable() {
-@Override
-public void run() {
-return; // <-- CtReturn statement
-}
-};
+   Runnable r = new Runnable() {
+    	@Override
+    	public void run() {
+    	  return; // <-- CtReturn statement
+    	}
+   };
 
 ```
 ### CtSuperAccess
@@ -305,12 +305,12 @@ return; // <-- CtReturn statement
 
 ```java
 
-class Foo { int foo() { return 42;}};
-class Bar extends Foo {
-int foo() {
-return super.foo(); // <-- access to super
-}
-};
+    class Foo { int foo() { return 42;}};
+    class Bar extends Foo {
+    int foo() {
+      return super.foo(); // <-- access to super
+    }
+    };
 
 ```
 ### CtSwitch
@@ -320,8 +320,8 @@ return super.foo(); // <-- access to super
 
 int x = 0;
 switch(x) { // <-- switch statement
-case 1:
-System.out.println("foo");
+    case 1:
+      System.out.println("foo");
 }
 ```
 ### CtSynchronized
@@ -329,10 +329,10 @@ System.out.println("foo");
 
 ```java
 
-java.util.List l = new java.util.ArrayList();
-synchronized(l) {
-System.out.println("foo");
-}
+   java.util.List l = new java.util.ArrayList();
+   synchronized(l) {
+    	System.out.println("foo");
+   }
 
 ```
 ### CtThisAccess
@@ -340,12 +340,12 @@ System.out.println("foo");
 
 ```java
 
-class Foo {
-int value = 42;
-int foo() {
-return this.value; // <-- access to this
-}
-};
+    class Foo {
+    int value = 42;
+    int foo() {
+      return this.value; // <-- access to this
+    }
+    };
 
 
 ```
@@ -354,7 +354,7 @@ return this.value; // <-- access to this
 
 ```java
 
-throw new RuntimeException("oops")
+    throw new RuntimeException("oops")
 
 ```
 ### CtTry
@@ -362,9 +362,9 @@ throw new RuntimeException("oops")
 
 ```java
 
-try {
-System.out.println("foo");
-} catch (Exception ignore) {}
+    try {
+    	System.out.println("foo");
+    } catch (Exception ignore) {}
 
 ```
 ### CtTryWithResource
@@ -372,10 +372,10 @@ System.out.println("foo");
 
 ```java
 
-// br is the resource
-try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader("/foo"))) {
-br.readLine();
-}
+   // br is the resource
+   try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader("/foo"))) {
+   	br.readLine();
+  }
 
 ```
 ### CtTypeAccess
@@ -383,25 +383,25 @@ br.readLine();
 
 ```java
 
-// access to static field
-java.io.PrintStream ps = System.out;
+    // access to static field
+    java.io.PrintStream ps = System.out;
 
 
-// call to static method
-Class.forName("Foo")
+    // call to static method
+    Class.forName("Foo")
 
 
-// method reference
-java.util.function.Supplier p =
-Object::new;
+    // method reference
+    java.util.function.Supplier p =
+      Object::new;
 
 
-// instanceof test
-boolean x = new Object() instanceof Integer // Integer is represented as an access to type Integer
+    // instanceof test
+    boolean x = new Object() instanceof Integer // Integer is represented as an access to type Integer
 
 
-// fake field "class"
-Class x = Number.class
+    // fake field "class"
+    Class x = Number.class
 
 ```
 ### CtUnaryOperator
@@ -409,8 +409,8 @@ Class x = Number.class
 
 ```java
 
-int x=3;
---x; // <-- unary --
+    int x=3;
+    --x; // <-- unary --
 
 ```
 ### CtVariableRead
@@ -418,10 +418,10 @@ int x=3;
 
 ```java
 
-String variable = "";
-System.out.println(
-variable // <-- a variable read
-);
+    String variable = "";
+    System.out.println(
+      variable // <-- a variable read
+    );
 
 ```
 ### CtVariableWrite
@@ -429,12 +429,12 @@ variable // <-- a variable read
 
 ```java
 
-String variable = "";
-variable = "new value"; // variable write
+    String variable = "";
+    variable = "new value"; // variable write
 
 
-String variable = "";
-variable += "";
+    String variable = "";
+    variable += "";
 
 ```
 ### CtWhile
@@ -442,10 +442,10 @@ variable += "";
 
 ```java
 
-int x = 0;
-while (x!=10) {
-x=x+1;
-};
+    int x = 0;
+    while (x!=10) {
+        x=x+1;
+    };
 
 ```
 ### CtAnnotation
@@ -453,9 +453,9 @@ x=x+1;
 
 ```java
 
-// statement annotated by annotation @SuppressWarnings
-@SuppressWarnings("unchecked")
-java.util.List<?> x = new java.util.ArrayList<>()
+    // statement annotated by annotation @SuppressWarnings
+    @SuppressWarnings("unchecked")
+    java.util.List<?> x = new java.util.ArrayList<>()
 
 ```
 ### CtClass
@@ -463,9 +463,9 @@ java.util.List<?> x = new java.util.ArrayList<>()
 
 ```java
 
-// a class definition
-class Foo {
-int x;
-}
+    // a class definition
+    class Foo {
+       int x;
+    }
 
 ```
