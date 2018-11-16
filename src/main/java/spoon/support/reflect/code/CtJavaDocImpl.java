@@ -143,9 +143,9 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 		}
 		defineCommentContent(currentTagContent, currentTag);
 
-		// we cannot call super.setContent because it does cleanComment
-		// and we don't want to clean the comment twice (already done before in this method)
-		String contentWithTags = longDescription.trim();// trim is required for backward compatibility
+		// we cannot call super.setContent because it calls cleanComment (which has already been done above)
+		// and we don't want to clean the comment twice
+		String contentWithTags = longDescription.trim(); // trim is required for backward compatibility
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.COMMENT_CONTENT, contentWithTags, this.content);
 		this.content = contentWithTags;
 
