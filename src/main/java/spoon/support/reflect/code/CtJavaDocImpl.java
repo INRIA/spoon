@@ -135,9 +135,9 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 				}
 			} else {
 				if (tagStarted == false) {
-					longDescription += "\n" + aLine;
+					longDescription += CtComment.LINE_SEPARATOR + aLine;
 				} else {
-					currentTagContent += "\n" + aLine;
+					currentTagContent += CtComment.LINE_SEPARATOR + aLine;
 				}
 			}
 		}
