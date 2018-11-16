@@ -43,7 +43,7 @@ public abstract class AbstractCtElementAssert<T extends AbstractCtElementAssert<
 
 		// using the new method to have a nice error message
 		assertCtElementEquals(expected, actual);
-		
+
 		return this.myself;
 	}
 
