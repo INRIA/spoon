@@ -123,8 +123,8 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 				clone.getBody().getStatement(0).delete();
 				clone.getBody().getStatement(clone.getBody().getStatements().size() - 1).delete();
 
+				clone.getBody().insertBegin(createCloneBuilderCopyInvocation(elementVarRead, localVarRead)); // call to copy
 				clone.getBody().insertBegin(localCloningElement); // declaration of local variable
-				clone.getBody().insertEnd(createCloneBuilderCopyInvocation(elementVarRead, localVarRead)); // call to copy
 				clone.getBody().insertEnd(createTailorerScanInvocation(elementVarRead, localVarRead)); // call to tailor
 				clone.getBody().insertEnd(factory.Code().createVariableAssignment(other, false, localVarRead)); // final assignment
 
