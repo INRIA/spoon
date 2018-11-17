@@ -26,7 +26,6 @@
     <relativePath>spoon-pom</relativePath>
   </parent>
 
-  <groupId>fr.inria.gforge.spoon</groupId>
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
   <version>7.2.0-SNAPSHOT</version>
@@ -35,9 +34,14 @@
   <url>http://spoon.gforge.inria.fr/</url>
   <inceptionYear>2007</inceptionYear>
 
+  <properties>
+    <java.src.version>1.8</java.src.version>
+    <java.test.version>1.8</java.test.version>
+    <runtime.log>target/velocity.log</runtime.log>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
-
-  <distributionManagement>
+  <!--<distributionManagement>
     <repository>
       <id>ossrh</id>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
@@ -52,7 +56,7 @@
       <name>inria</name>
       <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/mvnsites/spoon-core</url>
     </site>
-  </distributionManagement>
+  </distributionManagement>-->
 
   <repositories>
     <!-- This repository is actually needed for revapi to compare against the last Spoon Snapshot -->
