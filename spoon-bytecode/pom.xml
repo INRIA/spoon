@@ -19,11 +19,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!--<parent>
+    <parent>
         <groupId>fr.inria.gforge.spoon</groupId>
-        <artifactId>spoon-core</artifactId>
+        <artifactId>spoon-pom</artifactId>
         <version>7.2.0-SNAPSHOT</version>
-    </parent>-->
+        <relativePath>../spoon-pom</relativePath>
+    </parent>
 
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-bytecode</artifactId>
@@ -33,40 +34,6 @@
     <description>Extension of spoon for bytecode through decompilation</description>
     <url>http://spoon.gforge.inria.fr/</url>
     <inceptionYear>2007</inceptionYear>
-
-    <licenses>
-        <license>
-            <name>CeCILL-C</name>
-            <comments>French equivalent to LGPL</comments>
-            <url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <organization>
-        <name>Inria</name>
-        <url>http://www.inria.fr</url>
-    </organization>
-
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/INRIA/spoon/issues</url>
-    </issueManagement>
-
-    <scm>
-        <url>https://github.com/INRIA/spoon</url>
-        <connection>scm:git:https://github.com/INRIA/spoon.git</connection>
-        <developerConnection>scm:git:ssh://github.com/INRIA/spoon.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
-
-    <properties>
-        <java.src.version>1.8</java.src.version>
-        <java.test.version>1.8</java.test.version>
-        <runtime.log>target/velocity.log</runtime.log>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.cfr>0.132.0</version.cfr>
-    </properties>
 
     <distributionManagement>
         <repository>
@@ -101,11 +68,11 @@
     </repositories>
 
     <dependencies>
-        <dependency>
+        <!--<dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
             <version>7.2.0-SNAPSHOT</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
