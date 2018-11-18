@@ -59,12 +59,6 @@
             <name>Maven Repository for Spoon Snapshots</name>
             <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
         </repository>
-        <!-- This repository is needed for cfr -->
-        <repository>
-            <id>inria</id>
-            <name>triskell-public-release</name>
-            <url>http://maven.inria.fr/artifactory/triskell-public-release</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -86,11 +80,9 @@
             <version>2.5.0.Final</version>
         </dependency>
         <dependency>
-            <!-- released on maven.inria.fr -->
             <groupId>org.benf</groupId>
             <artifactId>cfr</artifactId>
-            <!-- 0.132 is the version of July 2018 -->
-            <version>0.132.0</version>
+            <version>0.135</version>
         </dependency>
     </dependencies>
 
