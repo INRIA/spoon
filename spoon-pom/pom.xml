@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!--<parent>
+    <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
-    </parent>-->
+    </parent>
 
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-pom</artifactId>
@@ -15,6 +15,15 @@
     <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
     <url>http://spoon.gforge.inria.fr/</url>
     <inceptionYear>2007</inceptionYear>
+
+    <repositories>
+        <!-- This repository is actually needed for revapi to compare against the last Spoon Snapshot -->
+        <repository>
+            <id>maven.inria.fr-snapshot</id>
+            <name>Maven Repository for Spoon Snapshots</name>
+            <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
+        </repository>
+    </repositories>
 
     <licenses>
         <license>
