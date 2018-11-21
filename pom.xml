@@ -177,7 +177,7 @@
         <version>2.17</version>
         <configuration>
           <failsOnError>true</failsOnError>
-          <configLocation>/home/nharrand/Documents/spoon/checkstyle.xml</configLocation>
+          <configLocation>checkstyle.xml</configLocation>
           <consoleOutput>true</consoleOutput>
           <!-- we exclude the generated files, see CtGenerationTest -->
           <excludes>spoon/support/visitor/clone/CloneBuilder.java</excludes>
