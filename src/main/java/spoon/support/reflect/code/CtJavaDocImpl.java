@@ -115,7 +115,8 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 		String currentTagContent = "";
 		CtJavaDocTag.TagType currentTag = null;
 
-		String[] lines = cleanComment(content).split("\n|\r\n|\r");
+		// we can split only on \n because cleanComment has already regularized the end of lines to \n
+		String[] lines = cleanComment(content).split("\n");
 		boolean tagStarted = false;
 		for (String aLine : lines) {
 			String line = aLine.trim();
@@ -164,8 +165,6 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 		if (tagType != null) {
 			CtJavaDocTag docTag = this.getFactory().Code().createJavaDocTag(tagContent, tagType);
 			this.addTag(docTag);
-		} else if (!tagContent.isEmpty()) {
-			this.setContent(tagContent.trim());
 		}
 	}
 	@Override
