@@ -17,6 +17,8 @@
 package spoon.test.model;
 
 import org.junit.Test;
+import spoon.Launcher;
+import spoon.compiler.ModelBuildingException;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
@@ -29,6 +31,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
@@ -132,6 +135,24 @@ public class TypeTest {
 		ctTypeParam.setSimpleName("T");
 		clazz.addFormalCtTypeParameter(ctTypeParam);
 		checkIsSomething("generics", ctTypeParam);
+	}
+
+	@Test(expected = ModelBuildingException.class)
+	public void testMultiClassNotEnable() {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("src/test/resources/multiclass/module1");
+		spoon.addInputResource("src/test/resources/multiclass/module2");
+		spoon.buildModel();
+	}
+
+	@Test
+	public void testMultiClassEnable() {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("src/test/resources/multiclass/module1");
+		spoon.addInputResource("src/test/resources/multiclass/module2");
+		spoon.getEnvironment().setAllowMutliTypeDefinition(true);
+		spoon.buildModel();
+		assertNotNull(spoon.getFactory().Class().get("A"));
 	}
 	
 	private void checkIsSomething(String expectedType, CtType type) {

@@ -114,6 +114,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean sniperMode = false;
 
+	private boolean allowMultiTypeDefinition = false;
+
 	private Supplier<PrettyPrinter> prettyPrinterCreator;
 
 	/**
@@ -630,5 +632,15 @@ private transient  ClassLoader inputClassloader;
 	@Override
 	public void setPrettyPrinterCreator(Supplier<PrettyPrinter> creator) {
 		this.prettyPrinterCreator = creator;
+	}
+
+	@Override
+	public boolean isAllowMutliTypeDefinition() {
+		return allowMultiTypeDefinition;
+	}
+
+	@Override
+	public void setAllowMutliTypeDefinition(boolean allowMultiTypeDefinition) {
+		this.allowMultiTypeDefinition = allowMultiTypeDefinition;
 	}
 }

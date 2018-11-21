@@ -418,4 +418,16 @@ public interface Environment {
 	 *
 	 */
 	void setPrettyPrinterCreator(Supplier<PrettyPrinter> creator);
+
+
+	/**
+	 * @return true if spoon is allowed to create a model of a project that contains multiple times the same class
+	 */
+	boolean isAllowMutliTypeDefinition();
+
+	/**
+	 * @param allowMultiTypeDefinition (default false)  set to true to allow spoon to create a model of a project that
+	 *                                 contains multiple times the same class
+	 */
+	void setAllowMutliTypeDefinition(boolean allowMultiTypeDefinition);
 }

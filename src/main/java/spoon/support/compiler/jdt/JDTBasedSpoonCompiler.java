@@ -575,10 +575,12 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		// we can not accept this problem, even in noclasspath mode
 		// otherwise a nasty null pointer exception occurs later
 		if (pb.getID() == IProblem.DuplicateTypes) {
-			throw new ModelBuildingException(pb.getMessage());
+			if (getFactory().getEnvironment().isAllowMutliTypeDefinition() == false) {
+				throw new ModelBuildingException(pb.getMessage());
+			}
+		} else {
+			probs.add(pb);
 		}
-
-		probs.add(pb);
 	}
 
 	public void reportProblems(Environment environment) {
