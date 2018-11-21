@@ -13,7 +13,7 @@ source /opt/jdk_switcher/jdk_switcher.sh
 
 jdk_switcher use oraclejdk9
 
-cd spoon-bytecode
+cd spoon-decompiler
 
 mvn -Djava.src.version=1.9 verify license:check site javadoc:jar install -DskipTests -DadditionalJOption=-Xdoclint:none
 

@@ -27,7 +27,7 @@
     </parent>
 
     <groupId>fr.inria.gforge.spoon</groupId>
-    <artifactId>spoon-bytecode</artifactId>
+    <artifactId>spoon-decompiler</artifactId>
     <packaging>jar</packaging>
     <version>0.1.0-SNAPSHOT</version>
     <name>Spoon Bytecode</name>
