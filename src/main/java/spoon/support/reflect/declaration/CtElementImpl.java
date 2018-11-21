@@ -21,8 +21,6 @@ import spoon.Launcher;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtJavaDoc;
-import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
@@ -74,6 +72,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static spoon.reflect.visitor.CommentHelper.printComment;
 
 /**
  * Contains the default implementation of most CtElement methods.
@@ -186,12 +186,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	public String getDocComment() {
 		for (CtComment ctComment : comments) {
 			if (ctComment.getCommentType() == CtComment.CommentType.JAVADOC) {
-				StringBuilder result = new StringBuilder();
-				result.append(ctComment.getContent() + System.lineSeparator());
-				for (CtJavaDocTag tag: ((CtJavaDoc) ctComment).getTags()) {
-					result.append(tag.toString()); // the tag already contains a new line
-				}
-				return result.toString();
+				return printComment(ctComment);
 			}
 		}
 		return "";
