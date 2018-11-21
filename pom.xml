@@ -36,13 +36,6 @@
   <properties>
     <java.src.version>1.8</java.src.version>
   </properties>
-  <!--<properties>
-    <java.src.version>1.8</java.src.version>
-    <java.test.version>1.8</java.test.version>
-    <junit.version>4.12</junit.version>
-    <runtime.log>target/velocity.log</runtime.log>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>-->
 
   <dependencies>
     <dependency>
