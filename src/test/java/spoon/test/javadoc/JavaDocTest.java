@@ -21,14 +21,18 @@ import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
+import spoon.support.reflect.code.CtJavaDocImpl;
 import spoon.test.javadoc.testclasses.Bar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static spoon.testing.utils.Check.assertCtElementEquals;
 
 public class JavaDocTest {
 
@@ -63,14 +67,19 @@ public class JavaDocTest {
 		assertEquals("", aClass.getDocComment());
 
 		// contract: getDocComment returns the comment content together with the tag content
+		CtMethod<?> method = aClass.getMethodsByName("create").get(0);
 		assertEquals("Creates an annotation type." + System.lineSeparator()
 				+ "@param owner" + System.lineSeparator()
 				+ "\t\tthe package of the annotation type" + System.lineSeparator()
 				+ "@param simpleName" + System.lineSeparator()
 				+ "\t\tthe name of annotation" + System.lineSeparator()
-				, aClass.getMethodsByName("create").get(0).getDocComment());
+				, method.getDocComment());
 
-		assertEquals(2, aClass.getMethodsByName("create").get(0).getComments().get(0).asJavaDoc().getTags().size());
+		CtJavaDoc ctJavaDoc = method.getComments().get(0).asJavaDoc();
+		assertEquals(2, ctJavaDoc.getTags().size());
+
+		assertEquals(2, ctJavaDoc.clone().getTags().size());
+		assertCtElementEquals(ctJavaDoc, ctJavaDoc.clone());
 
 	}
 
@@ -99,4 +108,14 @@ public class JavaDocTest {
 			}
 		}.scan(launcher.getModel().getRootPackage());
 	}
-}
+
+	@Test
+	public void testBugSetContent() {
+		// contract: call to setContent directly should also set tags.
+		CtJavaDoc j = (CtJavaDoc) new Launcher().getFactory().createComment("/** sd\n@see foo */", CtComment.CommentType.JAVADOC);
+		assertEquals("sd", j.getLongDescription());
+		assertEquals(1, j.getTags().size());
+		assertEquals("foo", j.getTags().get(0).getContent());
+	}
+
+	}

@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
-
 import spoon.SpoonException;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
@@ -30,8 +29,6 @@ import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtJavaDoc;
-import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -39,8 +36,8 @@ import spoon.reflect.code.CtSwitch;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
-import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -61,7 +58,6 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
 import java.io.BufferedReader;
-import java.io.CharArrayReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -75,7 +71,7 @@ import java.util.regex.Pattern;
 /**
  * The comment builder that will insert all element of a CompilationUnitDeclaration into the Spoon AST
  */
-class JDTCommentBuilder {
+public class JDTCommentBuilder {
 
 	private static final Logger LOGGER = Logger.getLogger(JDTCommentBuilder.class);
 
@@ -141,77 +137,14 @@ class JDTCommentBuilder {
 			}
 		}
 
-		/**
-		 * Comment, which contains only javadoc tags never set content.
-		 * So set content now, to avoid unexpected null content.
-		 */
-		comment.setContent("");
+		comment.setContent(getCommentContent(start, end));
 
-		String commentContent = getCommentContent(start, end);
-
+		// set the position
 		int[] lineSeparatorPositions = declarationUnit.compilationResult.lineSeparatorPositions;
 		SourcePosition sourcePosition = factory.Core().createSourcePosition(spoonUnit, start, end - 1, lineSeparatorPositions);
-
-		// create the Spoon comment element
-		comment = parseTags(comment, commentContent);
 		comment.setPosition(sourcePosition);
 
 		insertCommentInAST(comment);
-	}
-
-	/**
-	 * Parse the content of a comment to extract the tags
-	 * @param comment the original comment
-	 * @param commentContent the content of the comment
-	 * @return a CtComment or a CtJavaDoc comment with a defined content
-	 */
-	private CtComment parseTags(CtComment comment, String commentContent) {
-		if (!(comment instanceof CtJavaDoc)) {
-			comment.setContent(commentContent);
-			return comment;
-		}
-
-		String currentTagContent = "";
-		CtJavaDocTag.TagType currentTag = null;
-
-		// TODO: remove the " *", see spoon.test.javadoc.JavaDocTest.testJavaDocReprint()
-		String[] lines = commentContent.split("\n");
-		for (String aLine : lines) {
-			String line = aLine.trim();
-			if (line.startsWith(CtJavaDocTag.JAVADOC_TAG_PREFIX)) {
-				int endIndex = line.indexOf(' ');
-				if (endIndex == -1) {
-					endIndex = line.length();
-				}
-				defineCommentContent(comment, currentTagContent, currentTag);
-
-				currentTag = CtJavaDocTag.TagType.tagFromName(line.substring(1, endIndex).toLowerCase());
-				if (endIndex == line.length()) {
-					currentTagContent = "";
-				} else {
-					currentTagContent = line.substring(endIndex + 1);
-				}
-			} else {
-				currentTagContent += "\n" + aLine;
-			}
-		}
-		defineCommentContent(comment, currentTagContent, currentTag);
-		return comment;
-	}
-
-	/**
-	 * Define the content of the comment
-	 * @param comment the comment
-	 * @param tagContent the tagContent of the tag
-	 * @param tagType the tag type
-	 */
-	private void defineCommentContent(CtComment comment, String tagContent, CtJavaDocTag.TagType tagType) {
-		if (tagType != null) {
-			CtJavaDocTag docTag = comment.getFactory().Code().createJavaDocTag(tagContent, tagType);
-			((CtJavaDoc) comment).addTag(docTag);
-		} else if (!tagContent.isEmpty()) {
-			comment.setContent(tagContent.trim());
-		}
 	}
 
 	/**
@@ -585,10 +518,13 @@ class JDTCommentBuilder {
 	 * @return the content of the comment
 	 */
 	private String getCommentContent(int start, int end) {
-		return cleanComment(new CharArrayReader(contents, start, end - start));
+		return new String(contents, start, end - start);
 	}
 
 	public static String cleanComment(String comment) {
+		if (comment == null) {
+			return "";
+		}
 		return cleanComment(new StringReader(comment));
 	}
 
@@ -600,11 +536,12 @@ class JDTCommentBuilder {
 		StringBuilder ret = new StringBuilder();
 		try (BufferedReader br = new BufferedReader(comment)) {
 			String line = br.readLine();
-			if (line.length() < 2 || line.charAt(0) != '/') {
-				throw new SpoonException("Unexpected beginning of comment");
+			// nothing in the first line
+			if (line == null) {
+				return ret.toString();
 			}
 			boolean isLastLine = false;
-			if (line.charAt(1) == '/') {
+			if (line.length() >= 2 && line.charAt(1) == '/') {
 				//it is single line comment, which starts with "//"
 				isLastLine = true;
 				line = line.substring(2);

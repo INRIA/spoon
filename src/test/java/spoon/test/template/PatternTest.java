@@ -1166,72 +1166,72 @@ public class PatternTest {
 			);
 		Pattern p = OldPattern.createPatternFromMethodPatternModel(f);
 		assertEquals("if (/* CtInvocation"+nl+"" +
-				"    / <= ${useStartKeyword}"+nl+"" +
+				"/ <= ${useStartKeyword}"+nl+"" +
 				" */"+nl+"" +
 				"useStartKeyword()) {"+nl+"" +
 				"    /* CtInvocation"+nl+"" +
-				"        /argument/ <= ${startKeyword}"+nl+"" +
+				"    /argument/ <= ${startKeyword}"+nl+"" +
 				"     */"+nl+"" +
 				"    /* CtInvocation"+nl+"" +
-				"        /target/ <= ${printer}"+nl+"" +
+				"    /target/ <= ${printer}"+nl+"" +
 				"     */"+nl+"" +
 				"    /* CtInvocation"+nl+"" +
-				"        / <= ${printer}"+nl+"" +
+				"    / <= ${printer}"+nl+"" +
 				"     */"+nl+"" +
 				"    printer().writeSpace().writeKeyword(/* CtInvocation"+nl+"" +
-				"        / <= ${startKeyword}"+nl+"" +
+				"    / <= ${startKeyword}"+nl+"" +
 				"     */"+nl+"" +
 				"    startKeyword()).writeSpace();"+nl+"" +
 				"}"+nl+"" +
 				"try (final spoon.reflect.visitor.ListPrinter lp = /* CtInvocation"+nl+"" +
-				"    /argument/ <= ${end}"+nl+"" +
-				"    /target/ <= ${elementPrinterHelper}"+nl+"" +
+				"/argument/ <= ${end}"+nl+"" +
+				"/target/ <= ${elementPrinterHelper}"+nl+"" +
 				" */"+nl+"" +
 				"/* CtInvocation"+nl+"" +
-				"    / <= ${elementPrinterHelper}"+nl+"" +
+				"/ <= ${elementPrinterHelper}"+nl+"" +
 				" */"+nl+"" +
 				"elementPrinterHelper().createListPrinter(/* CtInvocation"+nl+"" +
-				"    / <= ${startPrefixSpace}"+nl+"" +
+				"/ <= ${startPrefixSpace}"+nl+"" +
 				" */"+nl+"" +
 				"startPrefixSpace(), /* CtInvocation"+nl+"" +
-				"    / <= ${start}"+nl+"" +
+				"/ <= ${start}"+nl+"" +
 				" */"+nl+"" +
 				"start(), /* CtInvocation"+nl+"" +
-				"    / <= ${startSuffixSpace}"+nl+"" +
+				"/ <= ${startSuffixSpace}"+nl+"" +
 				" */"+nl+"" +
 				"startSuffixSpace(), /* CtInvocation"+nl+"" +
-				"    / <= ${nextPrefixSpace}"+nl+"" +
+				"/ <= ${nextPrefixSpace}"+nl+"" +
 				" */"+nl+"" +
 				"nextPrefixSpace(), /* CtInvocation"+nl+"" +
-				"    / <= ${next}"+nl+"" +
+				"/ <= ${next}"+nl+"" +
 				" */"+nl+"" +
 				"next(), /* CtInvocation"+nl+"" +
-				"    / <= ${nextSuffixSpace}"+nl+"" +
+				"/ <= ${nextSuffixSpace}"+nl+"" +
 				" */"+nl+"" +
 				"nextSuffixSpace(), /* CtInvocation"+nl+"" +
-				"    / <= ${endPrefixSpace}"+nl+"" +
+				"/ <= ${endPrefixSpace}"+nl+"" +
 				" */"+nl+"" +
 				"endPrefixSpace(), /* CtInvocation"+nl+"" +
-				"    / <= ${end}"+nl+"" +
+				"/ <= ${end}"+nl+"" +
 				" */"+nl+"" +
 				"end())) {"+nl+"" +
 				"    /* CtForEach"+nl+"" +
-				"        /expression/ <= ${getIterable}"+nl+"" +
-				"        /foreachVariable/ <= ${item}"+nl+"" +
+				"    /expression/ <= ${getIterable}"+nl+"" +
+				"    /foreachVariable/ <= ${item}"+nl+"" +
 				"     */"+nl+"" +
 				"    for (/* CtLocalVariable"+nl+"" +
-				"        / <= ${item}"+nl+"" +
+				"    / <= ${item}"+nl+"" +
 				"     */"+nl+"" +
 				"    java.lang.Object item : /* CtInvocation"+nl+"" +
-				"        / <= ${getIterable}"+nl+"" +
+				"    / <= ${getIterable}"+nl+"" +
 				"     */"+nl+"" +
 				"    getIterable()) /* CtBlock"+nl+"" +
-				"        /statement/ <= ${statements}"+nl+"" +
+				"    /statement/ <= ${statements}"+nl+"" +
 				"     */"+nl+"" +
 				"    {"+nl+"" +
 				"        lp.printSeparatorIfAppropriate();"+nl+"" +
 				"        /* CtInvocation"+nl+"" +
-				"            / <= ${statements}"+nl+"" +
+				"        / <= ${statements}"+nl+"" +
 				"         */"+nl+"" +
 				"        statements();"+nl+"" +
 				"    }"+nl+"" +
@@ -1247,13 +1247,13 @@ public class PatternTest {
 				new File("./src/test/java/spoon/test/template/testclasses/replace")
 			);
 		Pattern p = OldPattern.createPatternFromMethodPatternModel(f);
-		assertEquals("if (useStartKeyword()) {" + nl + 
-				"    printer().writeSpace().writeKeyword(startKeyword()).writeSpace();" + nl + 
-				"}" + nl + 
-				"try (final spoon.reflect.visitor.ListPrinter lp = elementPrinterHelper().createListPrinter(startPrefixSpace(), start(), startSuffixSpace(), nextPrefixSpace(), next(), nextSuffixSpace(), endPrefixSpace(), end())) {" + nl + 
-				"    for (java.lang.Object item : getIterable()) {" + nl + 
-				"        lp.printSeparatorIfAppropriate();" + nl + 
-				"        statements();" + nl + 
+		assertEquals("if (useStartKeyword()) {" + nl +
+				"    printer().writeSpace().writeKeyword(startKeyword()).writeSpace();" + nl +
+				"}" + nl +
+				"try (final spoon.reflect.visitor.ListPrinter lp = elementPrinterHelper().createListPrinter(startPrefixSpace(), start(), startSuffixSpace(), nextPrefixSpace(), next(), nextSuffixSpace(), endPrefixSpace(), end())) {" + nl +
+				"    for (java.lang.Object item : getIterable()) {" + nl +
+				"        lp.printSeparatorIfAppropriate();" + nl +
+				"        statements();" + nl +
 				"    }" + nl + 
 				"}" + nl, p.print(false));
 	}
