@@ -74,7 +74,7 @@ public class CommentHelper {
 				break;
 			default:
 				// per line suffix
-				printCommentContent(printer, comment, s -> { return (" * " + s).replaceAll(" *$",""); });
+				printCommentContent(printer, comment, s -> { return (" * " + s).replaceAll(" *$", ""); });
 		}
 		// suffix
 		switch (commentType) {
