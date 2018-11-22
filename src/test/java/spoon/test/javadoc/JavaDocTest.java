@@ -68,7 +68,7 @@ public class JavaDocTest {
 
 		// contract: getDocComment returns the comment content together with the tag content
 		CtMethod<?> method = aClass.getMethodsByName("create").get(0);
-		assertEquals("Creates an annotation type." + System.lineSeparator()
+		assertEquals("Creates an annotation type." + System.lineSeparator() + System.lineSeparator()
 				+ "@param owner" + System.lineSeparator()
 				+ "\t\tthe package of the annotation type" + System.lineSeparator()
 				+ "@param simpleName" + System.lineSeparator()
