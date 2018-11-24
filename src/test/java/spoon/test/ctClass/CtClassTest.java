@@ -169,7 +169,7 @@ public class CtClassTest {
 		assertEquals("class", ac.getVariable().getSimpleName());
 		assertEquals(true, ac.getTarget() instanceof CtTypeAccess);
 
-		// contract: one can call getModifiers on ".class", it does not crash and it returns 0
+		// contract: one can call getModifiers on ".class" of "Aclass.class", it does not crash and it returns 0
 		assertEquals(0, ac.getVariable().getModifiers().size());
 
 		Factory factory = aPozole.getFactory();
