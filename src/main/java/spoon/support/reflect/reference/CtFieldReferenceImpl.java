@@ -19,6 +19,8 @@ package spoon.support.reflect.reference;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
@@ -237,6 +239,12 @@ public class CtFieldReferenceImpl<T> extends CtVariableReferenceImpl<T> implemen
 		CtVariable<?> v = getDeclaration();
 		if (v != null) {
 			return v.getModifiers();
+		}
+		// the modifiers of the "class" of AClass.class is the empty set
+		if (this.isParentInitialized()
+				&& this.getParent() instanceof CtFieldAccess
+				&& ((CtFieldAccess) this.getParent()).getTarget() instanceof CtTypeAccess) {
+			return emptySet();
 		}
 		Member m = getActualField();
 		if (m != null) {

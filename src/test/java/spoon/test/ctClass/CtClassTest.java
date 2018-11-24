@@ -37,9 +37,14 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
@@ -47,6 +52,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.ctClass.testclasses.Foo;
@@ -157,7 +163,14 @@ public class CtClassTest {
 		final Set<? extends CtConstructor<?>> constructors = cook.getConstructors();
 		final String expectedConstructor = "public Cook() {" + System.lineSeparator() + "}";
 		assertEquals(expectedConstructor, constructors.toArray(new CtConstructor[constructors.size()])[0].toString());
-		assertEquals("final java.lang.Class<Cook> cookClass = Cook.class", cook.getMethod("m").getBody().getStatement(0).toString());
+		CtLocalVariable m = cook.getMethod("m").getBody().getStatement(0);
+		assertEquals("final java.lang.Class<Cook> cookClass = Cook.class", m.toString());
+		CtFieldAccess ac = (CtFieldAccess) m.getAssignment();
+		assertEquals("class", ac.getVariable().getSimpleName());
+		assertEquals(true, ac.getTarget() instanceof CtTypeAccess);
+
+		// contract: one can call getModifiers on ".class", it does not crash and it returns 0
+		assertEquals(0, ac.getVariable().getModifiers().size());
 
 		Factory factory = aPozole.getFactory();
 
