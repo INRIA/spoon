@@ -3,6 +3,8 @@
 # This script intends to be run on TravisCI
 # it runs verify and site maven goals
 # and to check documentation links
+#
+# It also run test, verify and checkstyle goals on spoon-decompiler
 
 # fails if anything fails
 set -e
