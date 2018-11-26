@@ -19,3 +19,14 @@ mvn -Djava.src.version=1.9 verify license:check site javadoc:jar install -DskipT
 mvn  checkstyle:checkstyle -Pcheckstyle-test
 
 python ./chore/check-links-in-doc.py
+
+# Coverage
+mvn -Pcoveralls test jacoco:report coveralls:report --fail-never
+
+# Maven 3.3.9
+wget archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip
+unzip -qq apache-maven-3.3.9-bin.zip
+export M2_HOME=$PWD/apache-maven-3.3.9
+
+$M2_HOME/bin/mvn --version
+$M2_HOME/bin/mvn clean install -DskipTests=true
