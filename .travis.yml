@@ -11,7 +11,7 @@ env:
   - M2_HOME="/usr/local/maven"
   matrix:
   - SCRIPT=travis-jdk10.sh
-  - SCRIPT=travis-jdk11.sh
+  - SCRIPT=travis-jdk9.sh
   - SCRIPT=travis-coverage.sh
   - SCRIPT=travis-verify.sh
   - SCRIPT=travis-maven339-jdk8.sh
