@@ -18,14 +18,6 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <parent>
-        <groupId>fr.inria.gforge.spoon</groupId>
-        <artifactId>spoon-pom</artifactId>
-        <version>7.2.0-SNAPSHOT</version>
-        <relativePath>../spoon-pom</relativePath>
-    </parent>
-
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-decompiler</artifactId>
     <packaging>jar</packaging>
@@ -34,11 +26,19 @@
     <description>Extension of spoon for bytecode through decompilation</description>
     <url>http://spoon.gforge.inria.fr/</url>
 
+    
+    <parent>
+        <groupId>fr.inria.gforge.spoon</groupId>
+        <artifactId>spoon-pom</artifactId>
+        <version>1.0</version>
+        <relativePath>../spoon-pom/pom.xml</relativePath>
+    </parent>
+    
     <dependencies>
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>${spoon.version}</version>
+            <version>7.2.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

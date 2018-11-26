@@ -5,35 +5,27 @@
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
+        
+        <!-- must be empty otherwise reads ../pom.xml by default -->
+        <relativePath></relativePath>
     </parent>
 
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-pom</artifactId>
     <packaging>pom</packaging>
-    <version>7.2.0-SNAPSHOT</version>
+    <version>1.0</version>
     <name>Spoon POM</name>
-    <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
+    <description>Common Maven config for Spoon modules</description>
     <url>http://spoon.gforge.inria.fr/</url>
     <inceptionYear>2007</inceptionYear>
 
     <properties>
-        <root.dir>..</root.dir>
         <java.src.version>1.8</java.src.version>
         <java.test.version>1.8</java.test.version>
         <junit.version>4.12</junit.version>
         <runtime.log>target/velocity.log</runtime.log>
-        <spoon.version>7.2.0-SNAPSHOT</spoon.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <licenses>
-        <license>
-            <name>CeCILL-C</name>
-            <comments>French equivalent to LGPL</comments>
-            <url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
 
     <repositories>
         <!-- This repository is actually needed for revapi to compare against the last Spoon Snapshot -->
@@ -128,7 +120,7 @@
                     </compilerArgs>
                     <!-- incremental compilation is broken in maven, see https://issues.apache.org/jira/browse/MCOMPILER-205  -->
                     <!-- useIncrementalCompilation=false actually means that we won't recompile everything each time -->
-                    <!-- it's not a joka, test by yourself :-) -->
+                    <!-- it's not a joke, test by yourself :-) -->
                     <useIncrementalCompilation>false</useIncrementalCompilation>
                 </configuration>
             </plugin>
@@ -164,19 +156,6 @@
                 </dependencies>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>spoon.Launcher</mainClass>
-                            <addClasspath>true</addClasspath>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -212,25 +191,6 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
             <!-- Used for checking backward compatibility (binary and source) -->
             <plugin>
@@ -258,13 +218,6 @@
                         <file>../revapi.json</file>
                     </analysisConfigurationFiles>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.pitest</groupId>
-                <artifactId>pitest-maven</artifactId>
-                <!--           We use the latest, so we don't specify an actual version number       -->
-                <!--          <version></version>-->
             </plugin>
         </plugins>
 
@@ -401,6 +354,27 @@
                         <groupId>org.eluder.coveralls</groupId>
                         <artifactId>coveralls-maven-plugin</artifactId>
                         <version>4.3.0</version>
+                    </plugin>
+
+                
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.1</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
