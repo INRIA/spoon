@@ -7,4 +7,4 @@
 
 source /opt/jdk_switcher/jdk_switcher.sh
 
-jdk_switcher use oraclejdk8 && mvn test jacoco:report && mvn coveralls:report -Pcoveralls --fail-never
+jdk_switcher use oraclejdk8 && mvn -Pcoveralls test jacoco:report coveralls:report --fail-never
