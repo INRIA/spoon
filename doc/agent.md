@@ -54,4 +54,4 @@ public class InsertPrintTransformer implements TypeTransformer {
 	}
 }
 ```
-:warning: The `SpoonClassFileTransformer` feature (and all features relying on decompilation) are not included in `spoon-core` but in `spoon-decompiler`. If you want to use them you should declare a dependency to `spoon-bytecode`.
+:warning: The `SpoonClassFileTransformer` feature (and all features relying on decompilation) are not included in `spoon-core` but in `spoon-decompiler`. If you want to use them you should declare a dependency to `spoon-decompiler`.
