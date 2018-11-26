@@ -48,20 +48,6 @@ CtClass l = Launcher.parseClass("class A { void m() { System.out.println(\"yeah\
 
 Some examples about the usage of Spoon can be found on [spoon-examples](https://github.com/SpoonLabs/spoon-examples).
 
-:warning: We introduced in Spoon 7.1.0 an external dependency that is not available on Maven Central. 
-In order to use it properly, please add also the following repository in your pom:
-
-```
-<repositories>
-<repository>
-      <id>inria</id>
-      <name>triskell-public-release</name>
-      <url>http://maven.inria.fr/artifactory/triskell-public-release</url>
-</repository>
-</repositories>
-```
-
-
 ## Contributing in 2 seconds
 
 Create your first pull-request to improve the documentation, see [doc](https://github.com/INRIA/spoon/tree/master/doc)! Proceed with your first bug fix! The community is open-minded, respectful and patient. All external contributions are welcome.
