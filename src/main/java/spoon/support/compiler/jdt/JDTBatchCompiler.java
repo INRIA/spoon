@@ -108,7 +108,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 					} else {
 						for (Map.Entry<String, CompilationUnit> entry : pathToModCU.entrySet()) {
 							if (fileName.startsWith(entry.getKey())) { // associate CUs to module by common prefix
-								compilationUnit.setModule(entry.getValue());
+								//compilationUnit.setModule(entry.getValue());
 								break;
 							}
 						}
