@@ -565,7 +565,7 @@ public class CtQueryImpl implements CtQuery {
 
 	//In some implementation of jdk11 the message for ClassCastException is slightly different
 	private static final Pattern cceMessagePattern2 = Pattern.compile("class (\\S+) cannot be cast to class (\\S+)(.*)");
-	
+
 	private static final int indexOfCallerInStack = getIndexOfCallerInStackOfLambda();
 	/**
 	 * JVM implementations reports exception in call of lambda in different way.
