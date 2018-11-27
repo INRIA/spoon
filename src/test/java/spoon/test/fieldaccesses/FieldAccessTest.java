@@ -375,15 +375,7 @@ public class FieldAccessTest {
 			@Override
 			public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
 				visited++;
-				String varName = null;
-				if(fieldWrite.getTarget() instanceof CtVariableWrite) {
-					varName = ((CtVariableWrite) fieldWrite.getTarget()).getVariable().getSimpleName();
-				} else if(fieldWrite.getTarget() instanceof CtVariableRead) {
-					//With oracle jdk 11, fieldWrite.getTarget() is instanceof CtVariableRead
-					varName = ((CtVariableRead) fieldWrite.getTarget()).getVariable().getSimpleName();
-				}
-				assertEquals("array", varName);
-				//assertEquals("array", ((CtVariableWrite) fieldWrite.getTarget()).getVariable().getSimpleName());
+				assertEquals("array", ((CtVariableAccess) fieldWrite.getTarget()).getVariable().getSimpleName());
 				assertEquals("length", fieldWrite.getVariable().getSimpleName());
 			}
 		}
