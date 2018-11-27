@@ -34,6 +34,7 @@ import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -379,9 +380,19 @@ public interface Environment {
 	Charset getEncoding();
 
 	/**
+	 * Get callback, which is used to detect encoding for each file separately
+	 */
+	Function<byte[], Charset> getEncodingDetectionCallback();
+
+	/**
 	 * Set the encoding to use for parsing source code
 	 */
 	void setEncoding(Charset encoding);
+
+	/**
+	 * Set callback, which is used to detect encoding for each file separately
+	 */
+	void setEncodingDetectionCallback(Function<byte[], Charset> callback);
 
 	/**
 	 * Set the output type used for processing files

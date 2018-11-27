@@ -17,6 +17,7 @@
 package spoon.support.compiler.jdt;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,8 +65,15 @@ public class FileCompilerConfig implements SpoonModelBuilder.InputType {
 
 				String fName = f.isActualFile() ? f.getPath() : f.getName();
 				inputStream = f.getContent();
-				char[] content = IOUtils.toCharArray(inputStream, jdtCompiler.getEnvironment().getEncoding());
-				cuList.add(new CompilationUnit(content, fName, jdtCompiler.getEnvironment().getEncoding().displayName()));
+				if (jdtCompiler.getEnvironment().getEncodingDetectionCallback() == null) {
+					char[] content = IOUtils.toCharArray(inputStream, jdtCompiler.getEnvironment().getEncoding());
+					cuList.add(new CompilationUnit(content, fName, jdtCompiler.getEnvironment().getEncoding().displayName()));
+				} else {
+					byte[] bytes = IOUtils.toByteArray(inputStream);
+					Charset encoding = jdtCompiler.getEnvironment().getEncodingDetectionCallback().apply(bytes);
+					char[] content = new String(bytes, encoding).toCharArray();
+					cuList.add(new CompilationUnit(content, fName, encoding.displayName()));
+				}
 				IOUtils.closeQuietly(inputStream);
 			}
 		} catch (Exception e) {

@@ -55,6 +55,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 
@@ -99,6 +100,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private transient FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
 	private transient Charset encoding = Charset.defaultCharset();
+
+	private transient Function<byte[], Charset> encodingDetectionCallback;
 
 	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
 
@@ -583,8 +586,18 @@ private transient  ClassLoader inputClassloader;
 	}
 
 	@Override
+	public Function<byte[], Charset> getEncodingDetectionCallback() {
+		return encodingDetectionCallback;
+	}
+
+	@Override
 	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
+	}
+
+	@Override
+	public void setEncodingDetectionCallback(Function<byte[], Charset> encodingDetectionCallback) {
+		this.encodingDetectionCallback = encodingDetectionCallback;
 	}
 
 	@Override
