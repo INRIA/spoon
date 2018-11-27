@@ -18,20 +18,7 @@ package spoon.test.fieldaccesses;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.reflect.code.CtArrayWrite;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
-import spoon.reflect.code.CtFieldRead;
-import spoon.reflect.code.CtFieldWrite;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLambda;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtOperatorAssignment;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -388,7 +375,15 @@ public class FieldAccessTest {
 			@Override
 			public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
 				visited++;
-				assertEquals("array", ((CtVariableWrite) fieldWrite.getTarget()).getVariable().getSimpleName());
+				String varName = null;
+				if(fieldWrite.getTarget() instanceof CtVariableWrite) {
+					varName = ((CtVariableWrite) fieldWrite.getTarget()).getVariable().getSimpleName();
+				} else if(fieldWrite.getTarget() instanceof CtVariableRead) {
+					//With oracle jdk 11, fieldWrite.getTarget() is instanceof CtVariableRead
+					varName = ((CtVariableRead) fieldWrite.getTarget()).getVariable().getSimpleName();
+				}
+				assertEquals("array", varName);
+				//assertEquals("array", ((CtVariableWrite) fieldWrite.getTarget()).getVariable().getSimpleName());
 				assertEquals("length", fieldWrite.getVariable().getSimpleName());
 			}
 		}
