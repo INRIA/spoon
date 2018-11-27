@@ -118,7 +118,7 @@ Spoon provides two out of the shelf decompilers, CFR by default, and Fernflower.
 JarLauncher launcher = new JarLauncher("<path_to_jar>", "<path_to_output_src_dir>", "<path_to_pom>", new FernflowerDecompiler(new File("<path_to_output_src_dir>/src/main/java")));
 ```
 
-:warning: The `JarLauncher` feature (and all features relying on decompilation) are not included in `spoon-core` but in `spoon-bytecode`. If you want to use them you should declare a dependency to `spoon-bytecode`.
+:warning: The `JarLauncher` feature (and all features relying on decompilation) are not included in `spoon-core` but in `spoon-decompiler`. If you want to use them you should declare a dependency to `spoon-decompiler`.
 
 ## About the classpath
 
