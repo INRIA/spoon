@@ -696,7 +696,10 @@ public class FilterTest {
 				});
 			fail();
 		} catch (ClassCastException e) {
-			assertTrue(e.getMessage().contains("spoon.support.reflect.declaration.CtClassImpl cannot be cast to spoon.reflect.declaration.CtMethod"));
+			//Catching ClassCastException message for (hopefully) all jvm implementations
+			assertTrue(e.getMessage().contains("spoon.support.reflect.declaration.CtClassImpl")
+					&& e.getMessage().contains("cannot be cast to")
+					&& e.getMessage().contains("spoon.reflect.declaration.CtMethod"));
 		}
 	}
 	@Test
