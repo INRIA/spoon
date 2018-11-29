@@ -54,8 +54,7 @@ public interface SpoonFile extends SpoonResource {
 	 */
 	default char[] getContentChars(Environment env) {
 		byte[] bytes;
-		try {
-			InputStream contentStream = getContent();
+		try (InputStream contentStream = getContent()) {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			IOUtils.copy(contentStream, outputStream);
 			bytes = outputStream.toByteArray();
