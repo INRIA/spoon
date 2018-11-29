@@ -641,7 +641,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		PrettyPrinter printer = env.createPrettyPrinter();
 		printer.calculate(cu, toBePrinted);
 
-		return new ByteArrayInputStream(printer.getResult().getBytes());
+		return new ByteArrayInputStream(printer.getResult().getBytes(env.getEncoding()));
 	}
 
 	protected Environment getEnvironment() {
