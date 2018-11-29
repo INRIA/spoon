@@ -63,6 +63,9 @@ public class ChangeCollectorTest {
 		assertEquals(new HashSet<>(Arrays.asList(CtRole.CONTAINED_TYPE)), changeCollector.getChanges(ctClass.getPackage()));
 		assertEquals(new HashSet<>(Arrays.asList()), changeCollector.getDirectChanges(ctClass.getPackage()));
 
+		assertEquals(new HashSet<>(Arrays.asList(CtRole.DECLARED_TYPE)), changeCollector.getChanges(ctClass.getPosition().getCompilationUnit()));
+		assertEquals(new HashSet<>(Arrays.asList()), changeCollector.getDirectChanges(ctClass.getPosition().getCompilationUnit()));
+
 		assertEquals(new HashSet<>(Arrays.asList(CtRole.NAME)), changeCollector.getChanges(ctClass));
 		assertEquals(new HashSet<>(Arrays.asList(CtRole.NAME)), changeCollector.getDirectChanges(ctClass));
 

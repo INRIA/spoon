@@ -138,6 +138,9 @@ public class ChangeCollector {
 	}
 
 	private static class Scanner extends EarlyTerminatingScanner<Void> {
+		Scanner() {
+			setVisitCompilationUnitContent(true);
+		}
 		CtRole getScannedRole() {
 			return scannedRole;
 		}
