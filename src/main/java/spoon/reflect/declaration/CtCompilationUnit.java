@@ -78,6 +78,7 @@ public interface CtCompilationUnit extends CtElement {
 	 * Gets all the types declared in this compilation unit.
 	 */
 	@DerivedProperty
+	@PropertyGetter(role = CtRole.DECLARED_TYPE)
 	List<CtType<?>> getDeclaredTypes();
 
 	/**
@@ -124,6 +125,7 @@ public interface CtCompilationUnit extends CtElement {
 	 * Gets the declared module if the compilationUnit is "module-info.java"
 	 */
 	@DerivedProperty
+	@PropertyGetter(role = CtRole.DECLARED_MODULE)
 	CtModule getDeclaredModule();
 
 	/**

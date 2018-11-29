@@ -127,9 +127,9 @@ public class MetamodelTest {
 		}
 		assertTrue("You might need to update api/Metamodel.java: " + String.join("\n", problems), problems.isEmpty());
 	}
-
+	
 	@Test
-	public void testGetterSetterFroRole() {
+	public void testGetterSetterForRole() {
 		// contract: all roles in spoon metamodel must at least have a setter and a getter
 		SpoonAPI interfaces = new Launcher();
 		interfaces.addInputResource("src/main/java/spoon/reflect/declaration");
@@ -151,6 +151,9 @@ public class MetamodelTest {
 		Set<CtMethod<?>> isNotSetter = setters.stream().filter(m -> !(m.getSimpleName().startsWith("set") || m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert") || m.getSimpleName().startsWith("remove"))).collect(Collectors.toSet());
 
 		assertEquals(expectedRoles, getterRoles);
+		//these two derived roles has no setter
+		expectedRoles.remove(CtRole.DECLARED_MODULE.name());
+		expectedRoles.remove(CtRole.DECLARED_TYPE.name());
 		assertEquals(expectedRoles, setterRoles);
 		assertEquals(Collections.EMPTY_SET, isNotGetter);
 		assertEquals(Collections.EMPTY_SET, isNotSetter);
