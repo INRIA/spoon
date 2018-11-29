@@ -72,7 +72,7 @@ Star Spoon on Github: [https://github.com/INRIA/spoon](https://github.com/INRIA/
 
 ### Jar file
 
-Latest version: <https://search.maven.org/remote_content?g=fr.inria.gforge.spoon&a=spoon-core&v=LATEST&c=jar-with-dependencies> - [Javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs)
+Latest version: <https://search.maven.org/remote_content?g=fr.inria.gforge.spoon&a=spoon-core&v=LATEST&c=jar-with-dependencies> - [Javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/index.html)
 
 ### Maven
 
