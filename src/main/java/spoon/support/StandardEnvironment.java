@@ -26,6 +26,7 @@ import spoon.compiler.Environment;
 import spoon.compiler.InvalidClassPathException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
+import spoon.compiler.builder.EncodingProvider;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -99,6 +100,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private transient FineModelChangeListener modelChangeListener = new EmptyModelChangeListener();
 
 	private transient Charset encoding = Charset.defaultCharset();
+
+	private transient EncodingProvider encodingProvider;
 
 	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
 
@@ -583,8 +586,18 @@ private transient  ClassLoader inputClassloader;
 	}
 
 	@Override
+	public EncodingProvider getEncodingProvider() {
+		return encodingProvider;
+	}
+
+	@Override
 	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
+	}
+
+	@Override
+	public void setEncodingProvider(EncodingProvider encodingProvider) {
+		this.encodingProvider = encodingProvider;
 	}
 
 	@Override

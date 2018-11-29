@@ -18,6 +18,7 @@ package spoon.compiler;
 
 import org.apache.log4j.Level;
 import spoon.OutputType;
+import spoon.compiler.builder.EncodingProvider;
 import spoon.support.modelobs.FineModelChangeListener;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
@@ -379,9 +380,19 @@ public interface Environment {
 	Charset getEncoding();
 
 	/**
+	 * Get encoding provider, which is used to detect encoding for each file separately
+	 */
+	EncodingProvider getEncodingProvider();
+
+	/**
 	 * Set the encoding to use for parsing source code
 	 */
 	void setEncoding(Charset encoding);
+
+	/**
+	 * Set encoding provider, which is used to detect encoding for each file separately
+	 */
+	void setEncodingProvider(EncodingProvider encodingProvider);
 
 	/**
 	 * Set the output type used for processing files

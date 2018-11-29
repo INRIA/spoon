@@ -46,7 +46,7 @@ public class FileSystemFolderTest {
 		try {
 			spoon.buildModel();
 		} catch (SpoonException spe) {
-			Throwable containedException = spe.getCause().getCause();
+			Throwable containedException = spe.getCause();
 			assertTrue(containedException instanceof FileNotFoundException);
 		}
 	}

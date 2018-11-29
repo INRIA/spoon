@@ -19,6 +19,9 @@ package spoon.test.compilationunit;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.SpoonException;
+import spoon.compiler.SpoonFile;
+import spoon.reflect.CtModel;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
@@ -42,11 +45,13 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 
 /**
  * Created by urli on 18/08/2017.
@@ -266,5 +271,41 @@ public class TestCompilationUnit {
 				fail("CtCompilation unit must not be scanned when started from model root package");
 			}
 		}.scan(type.getFactory().getModel().getRootPackage());
+	}
+
+	private Charset detectEncodingDummy(SpoonFile unused, byte[] fileBytes) {
+		if (fileBytes.length == 76) {
+			return Charset.forName("Cp1251");
+		} else if (fileBytes.length == 86) {
+			return Charset.forName("UTF-8");
+		}
+		throw new SpoonException("unexpected length");
+	}
+
+	@Test
+	public void testDifferentEncodings() throws Exception {
+		//contract: both utf-8 and cp1251 files in the same project should be handled properly
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/encodings/Cp1251.java");
+		launcher.addInputResource("./src/test/resources/encodings/Utf8.java");
+		launcher.getEnvironment().setEncodingProvider(this::detectEncodingDummy);
+		CtModel model = launcher.buildModel();
+
+		CtType<?> utf8Type = model.getAllTypes()
+				.stream()
+				.filter(t -> "Utf8".equals(t.getSimpleName()))
+				.findFirst()
+				.get();
+
+		CtType<?> cp1251Type = model.getAllTypes()
+				.stream()
+				.filter(t -> "Cp1251".equals(t.getSimpleName()))
+				.findFirst()
+				.get();
+
+		assertEquals("\"Привет мир\"", utf8Type.getField("s1").getAssignment().toString());
+		assertEquals("\"Привет мир\"", cp1251Type.getField("s1").getAssignment().toString());
+		assertEquals(utf8Type.getField("s1"), cp1251Type.getField("s1"));
+		assertNotEquals(utf8Type.getField("s2"), cp1251Type.getField("s2"));
 	}
 }
