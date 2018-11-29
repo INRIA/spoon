@@ -18,3 +18,6 @@ public class Bar {
 		return null;
 	}
 }
+
+/** This is a {@link Exception} */
+class Foo {}
