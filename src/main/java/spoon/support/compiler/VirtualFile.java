@@ -23,7 +23,6 @@ import spoon.compiler.SpoonFolder;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 
 public class VirtualFile implements SpoonFile {
 	public static final String VIRTUAL_FILE_NAME = "virtual_file";
@@ -48,13 +47,7 @@ public class VirtualFile implements SpoonFile {
 
 	@Override
 	public char[] getContentChars(Environment env) {
-		byte[] bytes = content.getBytes();
-		if (env.getEncodingProvider() == null) {
-			return new String(bytes, env.getEncoding()).toCharArray();
-		} else {
-			Charset encoding = env.getEncodingProvider().detectEncoding(this, bytes);
-			return new String(bytes, encoding).toCharArray();
-		}
+		return content.toCharArray();
 	}
 
 	@Override

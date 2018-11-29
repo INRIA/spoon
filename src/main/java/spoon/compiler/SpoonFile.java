@@ -16,8 +16,10 @@
  */
 package spoon.compiler;
 
+import org.apache.commons.io.IOUtils;
 import spoon.SpoonException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -54,8 +56,9 @@ public interface SpoonFile extends SpoonResource {
 		byte[] bytes;
 		try {
 			InputStream contentStream = getContent();
-			bytes = new byte[contentStream.available()];
-			contentStream.read(bytes);
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			IOUtils.copy(contentStream, outputStream);
+			bytes = outputStream.toByteArray();
 		} catch (IOException e) {
 			throw new SpoonException(e);
 		}
