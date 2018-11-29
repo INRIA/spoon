@@ -122,7 +122,7 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 		CtJavaDocTag.TagType currentTag = null;
 
 		javadoc = Javadoc.parse(cleanComment(content));
-		for(JavadocBlockTag tag: javadoc.getBlockTags()) {
+		for (JavadocBlockTag tag: javadoc.getBlockTags()) {
 			addTag(getFactory().createJavaDocTag(tag.getContent().toText(), CtJavaDocTag.TagType.tagFromName(tag.getTagName())));
 		}
 
