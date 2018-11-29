@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.compiler.SpoonFile;
 import spoon.reflect.CtModel;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
@@ -272,7 +273,7 @@ public class TestCompilationUnit {
 		}.scan(type.getFactory().getModel().getRootPackage());
 	}
 
-	private Charset detectEncodingDummy(byte[] fileBytes) {
+	private Charset detectEncodingDummy(SpoonFile unused, byte[] fileBytes) {
 		if (fileBytes.length == 76) {
 			return Charset.forName("Cp1251");
 		} else if (fileBytes.length == 86) {
@@ -287,7 +288,7 @@ public class TestCompilationUnit {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/encodings/Cp1251.java");
 		launcher.addInputResource("./src/test/resources/encodings/Utf8.java");
-		launcher.getEnvironment().setEncodingDetectionCallback(this::detectEncodingDummy);
+		launcher.getEnvironment().setEncodingProvider(this::detectEncodingDummy);
 		CtModel model = launcher.buildModel();
 
 		CtType<?> utf8Type = model.getAllTypes()

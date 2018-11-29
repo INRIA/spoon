@@ -16,7 +16,11 @@
  */
 package spoon.compiler;
 
+import spoon.SpoonException;
+
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 /**
  * This interface represents files that can be used as resources for the Spoon
@@ -41,4 +45,25 @@ public interface SpoonFile extends SpoonResource {
 	 * @return
 	 */
 	boolean isActualFile();
+
+	/**
+	 * Gets the file content as a char array, considering encoding or encoding
+	 * provider.
+	 */
+	default char[] getContentChars(Environment env) {
+		byte[] bytes;
+		try {
+			InputStream contentStream = getContent();
+			bytes = new byte[contentStream.available()];
+			contentStream.read(bytes);
+		} catch (IOException e) {
+			throw new SpoonException(e);
+		}
+		if (env.getEncodingProvider() == null) {
+			return new String(bytes, env.getEncoding()).toCharArray();
+		} else {
+			Charset encoding = env.getEncodingProvider().detectEncoding(this, bytes);
+			return new String(bytes, encoding).toCharArray();
+		}
+	}
 }
