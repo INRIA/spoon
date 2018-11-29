@@ -273,6 +273,10 @@
                             <include>main/java/**</include>
                             <!-- We also want to check the license in templates to generate files with the proper header -->
                             <include>test/java/spoon/generating/clone/*</include>
+                            <excludes>
+                                <!--  excluding the code coming from Javaparser -->
+                                <exclude>main/java/spoon/javadoc/**</exclude>                
+                            </excludes>
                         </includes>
                     </configuration>
                     <executions>

@@ -98,5 +98,6 @@ public interface CtJavaDoc extends CtComment {
 	CtJavaDoc clone();
 
 	/** Returns the list of parsed Javadoc elements */
+	@DerivedProperty
 	List<JavadocDescriptionElement> getJavadocElements();
 }
