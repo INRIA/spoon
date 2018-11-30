@@ -18,6 +18,13 @@ env:
   - SCRIPT=travis-maven339-jdk8.sh
   - SCRIPT=travis-spoon-decompiler.sh
 
+# in langage:java, Travis executes by default "mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V"
+# This is not what we want because:
+#   - it executes checkstyle (we have a specific job for this)
+#   - it's useless ("mvn test" later does all the necessary tasks automatically)
+#   - it makes the build longer (we want a fast job)
+install: true
+
 script: ./chore/travis/$SCRIPT
 
 cache:
