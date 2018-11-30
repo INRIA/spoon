@@ -18,14 +18,17 @@ package spoon.test.model;
 
 import org.junit.Test;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -50,6 +53,19 @@ public class TypeTest {
 		// we have 3  methods in Foo + 2 in Baz - 1 common in Foo.bar (m) + 12 in Object + 1 explicit constructor in Foo
 		Collection<CtExecutableReference<?>> allExecutables = type.getAllExecutables();
 		assertEquals(17, allExecutables.size());
+	}
+
+	@Test
+	public void testAllTypeMembersFunctionMode() throws Exception {
+		// contract: AllTypeMembersFunction can be configured to return all members or only internally visible members
+		CtClass<?> type = build("spoon.test.model", "Foo");
+		List<CtMethod> internallyAccessibleMethods = type.map(new AllTypeMembersFunction(CtMethod.class).setMode(AllTypeMembersFunction.Mode.INERNALLY_ACCESSIBLE)).list();
+		List<CtMethod> allMethods = type.map(new AllTypeMembersFunction(CtMethod.class)).list();
+		assertEquals(16, internallyAccessibleMethods.size());
+		assertEquals(17, allMethods.size());
+		allMethods.removeAll(internallyAccessibleMethods);
+		assertEquals(1, allMethods.size());
+		assertEquals("registerNatives()", allMethods.get(0).getSignature());
 	}
 
 	@Test
