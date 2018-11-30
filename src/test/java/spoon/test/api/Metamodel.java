@@ -1132,7 +1132,7 @@ public class Metamodel {
 
 			types.add(new Type("CtTypeAccess", spoon.reflect.code.CtTypeAccess.class, spoon.support.reflect.code.CtTypeAccessImpl.class, fm -> fm
 				.field(CtRole.TYPE, true, true)
-				.field(CtRole.IS_IMPLICIT, false, false)
+				.field(CtRole.IS_IMPLICIT, true, false)
 				.field(CtRole.POSITION, false, false)
 				.field(CtRole.ANNOTATION, false, false)
 				.field(CtRole.CAST, false, false)

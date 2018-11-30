@@ -41,6 +41,7 @@ import spoon.support.SpoonClassNotFoundException;
 import spoon.test.type.testclasses.Mole;
 import spoon.test.type.testclasses.Pozole;
 import spoon.test.type.testclasses.TypeMembersOrder;
+import spoon.testing.utils.ModelUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -159,6 +160,25 @@ public class TypeTest {
 		assertEquals("a instanceof java.lang.Object[]", typeAccesses.get(1).getParent().toString());
 
 		canBeBuilt(target, 8, true);
+	}
+
+	@Test
+	public void testTypeAccessImplicitIsDerived() throws Exception {
+		// contract: A CtTypeAccess#implicit is derived
+		CtType<?> aPozole = ModelUtils.buildClass(Pozole.class);
+		final CtMethod<?> season = aPozole.getMethodsByName("season").get(0);
+
+		CtTypeAccess<?> typeAccesses = season.getElements(new TypeFilter<>(CtTypeAccess.class)).get(0);
+		assertFalse(typeAccesses.isImplicit());
+		assertFalse(typeAccesses.getAccessedType().isImplicit());
+		//contract: setting the value on accessed type influences value on type access too
+		typeAccesses.getAccessedType().setImplicit(true);
+		assertTrue(typeAccesses.isImplicit());
+		assertTrue(typeAccesses.getAccessedType().isImplicit());
+		//contract: setting the value on type access influences value on type too
+		typeAccesses.setImplicit(false);
+		assertFalse(typeAccesses.isImplicit());
+		assertFalse(typeAccesses.getAccessedType().isImplicit());
 	}
 
 	@Test
