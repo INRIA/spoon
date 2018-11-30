@@ -270,13 +270,11 @@
                         <header>../LICENSE-short.txt</header>
                         <basedir>src</basedir>
                         <includes>
-                            <include>main/java/**</include>
+                            <include>../src/main/java/**</include>
                             <!-- We also want to check the license in templates to generate files with the proper header -->
                             <include>test/java/spoon/generating/clone/*</include>
-                            <excludes>
-                                <!--  excluding the code coming from Javaparser -->
-                                <exclude>main/java/spoon/javadoc/**</exclude>                
-                            </excludes>
+                            <!--  excluding the code coming from Javaparser -->
+                            <exclude>../src/main/java/spoon/javadoc/internal/*</exclude>
                         </includes>
                     </configuration>
                     <executions>

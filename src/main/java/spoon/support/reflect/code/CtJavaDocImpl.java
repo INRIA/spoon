@@ -35,7 +35,7 @@ import static spoon.support.compiler.jdt.JDTCommentBuilder.cleanComment;
 public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 
 	/** the structured object resulting from parsing */
-	private Javadoc javadoc;
+	private transient Javadoc javadoc;
 
 	@MetamodelPropertyField(role = CtRole.COMMENT_TAG)
 	private final ModelList<CtJavaDocTag> tags = new ModelList<CtJavaDocTag>() {
