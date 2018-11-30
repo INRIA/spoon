@@ -97,4 +97,20 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 	public CtIntersectionTypeReference<T> clone() {
 		return (CtIntersectionTypeReference<T>) super.clone();
 	}
+
+	@Override
+	public boolean isImplicitParent() {
+		if (bounds != null && bounds.size() > 0) {
+			return bounds.get(0).isImplicitParent();
+		}
+		return false;
+	}
+
+	@Override
+	public CtIntersectionTypeReferenceImpl<T> setImplicitParent(boolean packageIsImplicit) {
+		if (bounds != null && bounds.size() > 0) {
+			bounds.get(0).setImplicitParent(packageIsImplicit);
+		}
+		return this;
+	}
 }
