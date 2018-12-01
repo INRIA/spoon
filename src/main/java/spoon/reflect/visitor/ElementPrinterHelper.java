@@ -345,6 +345,7 @@ public class ElementPrinterHelper {
 	/**
 	 * Write the compilation unit header.
 	 */
+	@Deprecated
 	public void writeHeader(List<CtType<?>> types, Collection<CtImport> imports) {
 		if (!types.isEmpty()) {
 			for (CtType<?> ctType : types) {
@@ -363,6 +364,7 @@ public class ElementPrinterHelper {
 	/**
 	 * Write the compilation unit footer.
 	 */
+	@Deprecated
 	public void writeFooter(List<CtType<?>> types) {
 		if (!types.isEmpty()) {
 			for (CtType<?> ctType : types) {

@@ -276,9 +276,10 @@ public class CommentTest {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(InlineComment.class);
 		List<CtComment> comments = type.getComments();
-		assertEquals(6, comments.size());
+		List<CtComment> compilationUnitComments = type.getPosition().getCompilationUnit().getComments();
+		assertEquals(6, comments.size() + compilationUnitComments.size());
 		type.removeComment(comments.get(0));
-		assertEquals(5, type.getComments().size());
+		assertEquals(5, type.getComments().size() +  + compilationUnitComments.size());
 	}
 
 	@Test
@@ -286,25 +287,25 @@ public class CommentTest {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(InlineComment.class);
 		String strType = type.toString();
+		
+		List<CtComment> compilationUnitComments = type.getPosition().getCompilationUnit().getComments();
+		assertEquals(2, compilationUnitComments.size());
+		assertEquals(CtComment.CommentType.BLOCK, compilationUnitComments.get(0).getCommentType());
+		assertEquals("Top File\nLine 2", compilationUnitComments.get(0).getContent());
+		assertEquals("Bottom File", compilationUnitComments.get(1).getContent());
 
 		List<CtComment> comments = type.getElements(new TypeFilter<>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
-		assertEquals(69, comments.size());
+		assertEquals(67, comments.size());
 
 		// verify that all comments present in the AST are printed
 		for (CtComment comment : comments) {
-			if (comment.getCommentType() == CtComment.CommentType.FILE) {
-				// the header of the file is not printed with the toString
-				continue;
-			}
 			assertNotNull(comment.getParent());
 			assertTrue(comment.toString() + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
 		}
 
-		assertEquals(6, type.getComments().size());
-		assertEquals(CtComment.CommentType.FILE, type.getComments().get(0).getCommentType());
-		assertEquals(createFakeComment(f, "comment class"), type.getComments().get(1));
-		assertEquals("Bottom File", type.getComments().get(5).getContent());
+		assertEquals(4, type.getComments().size());
+		assertEquals(createFakeComment(f, "comment class"), type.getComments().get(0));
 
 		CtField<?> field = type.getField("field");
 		assertEquals(4, field.getComments().size());
@@ -484,24 +485,23 @@ public class CommentTest {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(BlockComment.class);
 		String strType = type.toString();
+		
+		List<CtComment> compilationUnitComments = type.getPosition().getCompilationUnit().getComments();
+		assertEquals(2, compilationUnitComments.size());
+		assertEquals("Bottom File", compilationUnitComments.get(1).getContent());
 
 		List<CtComment> comments = type.getElements(new TypeFilter<>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
-		assertEquals(52, comments.size());
+		assertEquals(50, comments.size());
 
 		// verify that all comments present in the AST are printed
 		for (CtComment comment : comments) {
-			if (comment.getCommentType() == CtComment.CommentType.FILE) {
-				// the header of the file is not printed with the toString
-				continue;
-			}
 			assertNotNull(comment.getParent());
 			assertTrue(comment.toString() + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
 		}
 
-		assertEquals(5, type.getComments().size());
-		assertEquals(createFakeBlockComment(f, "comment class"), type.getComments().get(1));
-		assertEquals("Bottom File", type.getComments().get(4).getContent());
+		assertEquals(3, type.getComments().size());
+		assertEquals(createFakeBlockComment(f, "comment class"), type.getComments().get(0));
 
 		CtField<?> field = type.getField("field");
 		assertEquals(2, field.getComments().size());
@@ -799,6 +799,7 @@ public class CommentTest {
 	@Test
 	public void testDocumentationContract() throws Exception {
 		// contract: all metamodel classes must be commented with an example.
+		
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);

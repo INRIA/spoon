@@ -18,14 +18,18 @@ package spoon.test.prettyprinter;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.processing.Processor;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.ImportValidator;
+import spoon.reflect.visitor.NameConflictValidator;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
@@ -35,6 +39,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -175,8 +180,17 @@ public class TestSniperPrinter {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(getResourcePath(testClass));
 		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
-			return new SniperJavaPrettyPrinter(launcher.getEnvironment()); }
-		);
+			SniperJavaPrettyPrinter printer = new SniperJavaPrettyPrinter(launcher.getEnvironment());
+			printer.setPreprocessors(Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
+					//remove unused imports first. Do not add new imports at time when conflicts are not resolved
+					new ImportValidator().setCanAddImports(false),
+					//solve conflicts, the current imports are relevant too
+					new NameConflictValidator(),
+					//compute final imports
+					new ImportValidator()
+				)));
+			return printer;
+		});
 		launcher.buildModel();
 		Factory f = launcher.getFactory();
 
@@ -228,12 +242,6 @@ public class TestSniperPrinter {
 	private void assertIsPrintedWithExpectedChanges(CtType<?> ctClass, String printedSource, String... regExpReplacements) {
 		assertEquals(0, regExpReplacements.length % 2);
 		String originSource = ctClass.getPosition().getCompilationUnit().getOriginalSourceCode();
-		//TODO REMOVE THIS BLOCK AFTER SNIPER PRINTING OF IMPORTS WORKS
-		{
-			//skip imports, which are not handled well yet
-			originSource = sourceWithoutImports(originSource);
-			printedSource = sourceWithoutImports(printedSource);
-		}
 		//apply all expected replacements using Regular expressions
 		int nrChanges = regExpReplacements.length / 2;
 		for (int i = 0; i < nrChanges; i++) {

@@ -89,7 +89,7 @@ public class NameScopeTest {
 
 		//contract: the local variables are visible after they are declared
 		checkThatScopeContains(scopes[0], Arrays.asList(), "count");
-		checkThatScopeContains(scopes[0], Arrays.asList("String theme"), "theme");
+		checkThatScopeContains(scopes[0], Arrays.asList("java.lang.String theme"), "theme");
 		checkThatScopeContains(scopes[0], Arrays.asList(methodDraw), "draw");
 		checkThatScopeContains(scopes[0], Arrays.asList(typeTereza), "Tereza");
 		checkThatScopeContains(scopes[0], Arrays.asList(fieldMichal), "michal");

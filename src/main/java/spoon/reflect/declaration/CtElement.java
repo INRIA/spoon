@@ -391,4 +391,13 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 */
 	List<CtElement> getDirectChildren();
 
+	/**
+	 * @return pretty printed source code of this element.
+	 *
+	 * Note: `implicit` elements are not printed.
+	 * The model is not modified by printing.
+	 * It means it doesn't try to fix model inconsistencies (if any)
+	 * so invalid model causes printing of invalid sources.
+	 */
+	String print();
 }
