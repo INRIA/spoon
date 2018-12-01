@@ -49,12 +49,10 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
@@ -175,7 +173,7 @@ public class GenericsTest {
 
 		// the diamond is resolved to String but we don't print it, so we use the fully qualified name.
 		assertTrue(val.getType().getActualTypeArguments().get(0).isImplicit());
-		assertEquals("", val.getType().getActualTypeArguments().get(0).toString());
+		assertEquals("", val.getType().getActualTypeArguments().get(0).print());
 		assertEquals("java.lang.String", val.getType().getActualTypeArguments().get(0).getQualifiedName());
 		assertEquals("new java.util.ArrayList<>()",val.toString());
 	}
@@ -291,21 +289,18 @@ public class GenericsTest {
 			CtField<?> x = type.getElements(new NamedElementFilter<>(CtField.class,"x"))
 					.get(0);
 			CtTypeReference<?> ref = x.getType();
-			DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(
-					new StandardEnvironment());
 
 			// qualifed name
 			assertEquals("java.util.Map$Entry", ref.getQualifiedName());
 
-			// toString uses DefaultJavaPrettyPrinter
+			// toString uses DefaultJavaPrettyPrinter with forced fully qualified names
 			assertEquals("java.util.Map.Entry", ref.toString());
 
-			// now visitCtTypeReference
 			assertSame(java.util.Map.class, ref.getDeclaringType()
 					.getActualClass());
-			pp.visitCtTypeReference(ref);
 
-			assertEquals("java.util.Map.Entry", pp.getResult());
+			//print prints model following implicit same like in origin source
+			assertEquals("Map.Entry", ref.print());
 
 			CtField<?> y = type.getElements(new NamedElementFilter<>(CtField.class,"y"))
 					.get(0);

@@ -28,6 +28,7 @@ import java.util.Set;
  * The import scanner API might still change in future release, that's why it is marked as experimental.
  */
 @Experimental
+@Deprecated
 public interface ImportScanner {
 
 	/**

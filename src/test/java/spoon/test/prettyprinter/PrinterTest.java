@@ -176,8 +176,8 @@ public class PrinterTest {
 		//delete the field, so the model is broken.
 		//It may happen during substitution operations and then it is helpful to display descriptive error message
 		type.getField("testedField").delete();
-		//contract: printer fails with descriptive exception and not with NPE
-		assertEquals("/* ERROR: Missing field \"testedField\", please check your model. The code may not compile. */ testedField = 1", type.getMethodsByName("failingMethod").get(0).getBody().getStatement(0).toString());
+		//contract: printer doesn't fail, but prints the field reference even if there is no declaration visible
+		assertEquals("testedField = 1", type.getMethodsByName("failingMethod").get(0).getBody().getStatement(0).toString());
 	}
 
 	private final Set<String> separators = new HashSet<>(Arrays.asList("->","::","..."));

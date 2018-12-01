@@ -657,7 +657,7 @@ public class ParentExiter extends CtInheritanceScanner {
 				if (child instanceof CtThisAccess) {
 					final CtTypeReference<?> declaringType = invocation.getExecutable().getDeclaringType();
 					if (declaringType != null && invocation.getExecutable().isStatic() && child.isImplicit()) {
-						invocation.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(declaringType, declaringType.isAnonymous()));
+						invocation.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(declaringType, true));
 					} else {
 						invocation.setTarget((CtThisAccess<?>) child);
 					}

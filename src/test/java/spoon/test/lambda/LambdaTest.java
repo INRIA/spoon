@@ -26,6 +26,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -41,6 +42,7 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.LambdaFilter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.imports.ImportTest;
 import spoon.test.lambda.testclasses.Bar;
 import spoon.test.lambda.testclasses.Foo;
 import spoon.test.lambda.testclasses.Kuu;
@@ -286,7 +288,7 @@ public class LambdaTest {
 						+ "    java.lang.System.err.println(\"Enjoy, you have more than 18.\");" + System
 						.lineSeparator()
 						+ "}";
-		assertEquals("Condition must be well printed", expected, condition.toString());
+		assertEquals("Condition must be well printed", expected, printByPrinter(condition));
 	}
 
 	@Test
@@ -303,7 +305,8 @@ public class LambdaTest {
 		final CtParameter<?> ctParameterFirstLambda = lambda1.getParameters().get(0);
 		assertEquals("s", ctParameterFirstLambda.getSimpleName());
 		assertTrue(ctParameterFirstLambda.getType().isImplicit());
-		assertEquals("", ctParameterFirstLambda.getType().toString());
+		assertEquals("", ctParameterFirstLambda.getType().print());
+		assertEquals("spoon.test.lambda.testclasses.Bar.SingleSubscriber<? super T>", ctParameterFirstLambda.getType().toString());
 		assertEquals("SingleSubscriber", ctParameterFirstLambda.getType().getSimpleName());
 	}
 	@Test
@@ -330,7 +333,8 @@ public class LambdaTest {
 
 		final CtArrayTypeReference typeParameter = (CtArrayTypeReference) ctParameter.getType();
 		assertTrue(typeParameter.getComponentType().isImplicit());
-		assertEquals("", typeParameter.getComponentType().toString());
+		assertEquals("", typeParameter.getComponentType().print());
+		assertEquals("java.lang.Object", typeParameter.getComponentType().toString());
 		assertEquals("Object", typeParameter.getComponentType().getSimpleName());
 	}
 
@@ -342,13 +346,15 @@ public class LambdaTest {
 		final CtParameter<?> firstParam = lambda.getParameters().get(0);
 		assertEquals("rs", firstParam.getSimpleName());
 		assertTrue(firstParam.getType().isImplicit());
-		assertEquals("", firstParam.getType().toString());
+		assertEquals("", firstParam.getType().print());
+		assertEquals("java.sql.ResultSet", firstParam.getType().toString());
 		assertEquals("ResultSet", firstParam.getType().getSimpleName());
 
 		final CtParameter<?> secondParam = lambda.getParameters().get(1);
 		assertEquals("i", secondParam.getSimpleName());
 		assertTrue(secondParam.getType().isImplicit());
-		assertEquals("", secondParam.getType().toString());
+		assertEquals("", secondParam.getType().print());
+		assertEquals("int", secondParam.getType().toString());
 		assertEquals("int", secondParam.getType().getSimpleName());
 	}
 
@@ -473,7 +479,11 @@ public class LambdaTest {
 	}
 
 	private void assertIsWellPrinted(String expected, CtLambda<?> lambda) {
-		assertEquals("Lambda must be well printed", expected, lambda.toString());
+		assertEquals("Lambda must be well printed", expected, printByPrinter(lambda));
+	}
+	
+	private static String printByPrinter(CtElement element) {
+		return ImportTest.printByPrinter(element);
 	}
 
 	// note that the lambda number in simple name depends on the classloader

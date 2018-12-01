@@ -30,6 +30,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -41,6 +42,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
+import spoon.test.imports.ImportTest;
 import spoon.test.prettyprinter.testclasses.AClass;
 import spoon.testing.utils.ModelUtils;
 
@@ -123,7 +125,10 @@ public class DefaultPrettyPrinterTest {
 			+ "}";
 
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
-		assertEquals(expected, aClass.toString());
+		//TODO remove that after implicit is set correctly for these cases
+		assertTrue(factory.getEnvironment().createPrettyPrinter().printTypes(aClass).contains(expected));
+		
+		assertEquals(expected, aClass.print());
 
 		final CtConstructorCall<?> constructorCall = aClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class)).get(0);
 
@@ -149,7 +154,7 @@ public class DefaultPrettyPrinterTest {
 			+ "}";
 
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
-		assertEquals(expected, aClass.getMethodsByName("aMethod").get(0).toString());
+		assertEquals(expected, printByPrinter(aClass.getMethodsByName("aMethod").get(0)));
 
 		final CtConstructorCall<?> constructorCall =
 				aClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class))
@@ -174,7 +179,7 @@ public class DefaultPrettyPrinterTest {
 		final String expected = "public List<? extends ArrayList> aMethodWithGeneric() {" + System.lineSeparator()
 				+ "    return new ArrayList<>();" + System.lineSeparator()
 				+ "}";
-		assertEquals(expected, aClass.getMethodsByName("aMethodWithGeneric").get(0).toString());
+		assertEquals(expected, printByPrinter(aClass.getMethodsByName("aMethodWithGeneric").get(0)));
 
 		final CtConstructorCall<?> constructorCall =
 				aClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class))
@@ -186,6 +191,10 @@ public class DefaultPrettyPrinterTest {
 		assertEquals("Object", ctTypeReference.getSimpleName());
 	}
 
+	private static String printByPrinter(CtElement element) {
+		return ImportTest.printByPrinter(element);
+	}
+
 	@Test
 	public void autoImportUsesFullyQualifiedNameWhenImportedNameAlreadyPresent() {
 		final Launcher launcher = new Launcher();
@@ -195,6 +204,8 @@ public class DefaultPrettyPrinterTest {
 		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/sub/TypeIdentifierCollision.java"));
 		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/TypeIdentifierCollision.java"));
 		compiler.build();
+		//apply auto import validators
+		launcher.prettyprint();
 
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(spoon.test.prettyprinter.testclasses.TypeIdentifierCollision.class);
 
@@ -206,12 +217,12 @@ public class DefaultPrettyPrinterTest {
 		String computed = aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0).toString();
 		assertEquals("We use FQN for E1", expected, computed);
 
-		expected = //This is correct however it could be more concise.
+		expected = 
 			"public void setFieldUsingLocallyDefinedEnum() {" + nl
-			+ "    localField = TypeIdentifierCollision.ENUM.E1.ordinal();" + nl
+			+ "    localField = ENUM.E1.ordinal();" + nl
 			+ "}";
 
-		computed = aClass.getMethodsByName("setFieldUsingLocallyDefinedEnum").get(0).toString();
+		computed = aClass.getMethodsByName("setFieldUsingLocallyDefinedEnum").get(0).print();
 		assertEquals(expected, computed);
 
 		expected =
@@ -219,18 +230,18 @@ public class DefaultPrettyPrinterTest {
 			+ "    spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField = localField;" + nl
 			+ "}";
 
-		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).toString();
+		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).print();
 		assertEquals("The static field of an external type with the same identifier as the compilation unit is printed with FQN", expected, computed);
 
-		expected = //This is correct however it could be more concise.
+		expected =
 			"public void referToTwoInnerClassesWithTheSameName() {" + nl
-			+ "    TypeIdentifierCollision.Class0.ClassA.VAR0 = TypeIdentifierCollision.Class0.ClassA.getNum();" + nl
-			+ "    TypeIdentifierCollision.Class1.ClassA.VAR1 = TypeIdentifierCollision.Class1.ClassA.getNum();" + nl
+			+ "    ClassA.VAR0 = ClassA.getNum();" + nl
+			+ "    Class1.ClassA.VAR1 = Class1.ClassA.getNum();" + nl
 			+ "}";
 
 		//Ensure the ClassA of Class0 takes precedence over an import statement for ClassA in Class1, and its identifier can be the short version.
 
-		computed = aClass.getMethodsByName("referToTwoInnerClassesWithTheSameName").get(0).toString();
+		computed = aClass.getMethodsByName("referToTwoInnerClassesWithTheSameName").get(0).print();
 		assertEquals("where inner types have the same identifier only one may be shortened and the other should be fully qualified", expected, computed);
 
 		expected =
@@ -244,7 +255,7 @@ public class DefaultPrettyPrinterTest {
 			+ "    }" + nl
 			+ "}";
 
-		computed = aClass.getNestedType("ENUM").toString();
+		computed = aClass.getNestedType("ENUM").print();
 		assertEquals(expected, computed);
 	}
 
@@ -284,7 +295,7 @@ public class DefaultPrettyPrinterTest {
 		File javaFile = new File(pathname);
 		assertTrue(javaFile.exists());
 
-		assertEquals("package foo;" + nl + nl + nl + "class Bar {}" + nl + nl,
+		assertEquals("package foo;" + nl + "class Bar {}",
 				IOUtils.toString(new FileInputStream(javaFile), "UTF-8"));
 	}
 

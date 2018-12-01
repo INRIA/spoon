@@ -65,6 +65,7 @@ import java.util.regex.Pattern;
 /**
  * A scanner that calculates the imports for a given model.
  */
+@Deprecated
 public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 	private static final Collection<String> namesPresentInJavaLang8 =

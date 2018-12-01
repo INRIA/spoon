@@ -1,5 +1,19 @@
+/**
+ * Javadoc at top of file
+ */
+/* comment before package declaration*/
 package spoon.test.position.testclasses;
 
+/*
+ * Comment before import
+ */
+import java.lang.Deprecated;
+
+import java.lang.Class;
+
+/*
+ * Comment before type
+ */
 public class FooSourceFragments {
 	void m1(int x) {
 		if(x > 0){this.getClass();}else{/*empty*/}
@@ -28,5 +42,7 @@ public class FooSourceFragments {
 	void m5(double f) {
 		f = 7.2;
 	}
-
+	//after last type member
 }
+
+//comment at the end of file

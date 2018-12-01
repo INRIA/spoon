@@ -25,6 +25,7 @@ import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.PrettyPrinter;
@@ -35,6 +36,7 @@ import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -441,4 +443,18 @@ public interface Environment {
 	 *                                 contains multiple times the same class
 	 */
 	void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations);
+
+	/**
+	 * @return list of {@link Processor}, which are used to validate and fix model before it's printing
+	 *
+	 * Note: by default the validators depends on {@link #isAutoImports()}
+	 */
+	List<Processor<CtCompilationUnit>> getCompilationUnitValidators();
+
+	/**
+	 * @param compilationUnitValidators list of {@link Processor}, which have to be used to validate and fix model before it's printing
+	 *
+	 * Note: once this method is called, the calling of {@link #setAutoImports(boolean)} makes no sense
+	 */
+	void setCompilationUnitValidators(List<Processor<CtCompilationUnit>> compilationUnitValidators);
 }

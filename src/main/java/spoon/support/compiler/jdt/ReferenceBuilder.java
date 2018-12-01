@@ -32,6 +32,7 @@ import org.eclipse.jdt.internal.compiler.ast.ParameterizedSingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
+import org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.Wildcard;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
@@ -228,6 +229,12 @@ public class ReferenceBuilder {
 			}
 			this.jdtTreeBuilder.getContextBuilder().exit(type);
 			currentReference = currentReference.getDeclaringType();
+		}
+		//detect whether something is implicit
+		if (type instanceof SingleTypeReference) {
+			typeReference.setImplicitParent(true);
+		} else if (type instanceof QualifiedTypeReference) {
+			jdtTreeBuilder.getHelper().handleImplicit((QualifiedTypeReference) type, typeReference);
 		}
 		return typeReference;
 	}
@@ -502,9 +509,15 @@ public class ReferenceBuilder {
 		CtTypeReference<T> ctRef = getTypeReference(binding);
 		if (ctRef != null && isCorrectTypeReference(ref)) {
 			insertGenericTypesInNoClasspathFromJDTInSpoon(ref, ctRef);
-			return ctRef;
+		} else {
+			ctRef = getTypeReference(ref);
 		}
-		return getTypeReference(ref);
+		if (ref instanceof SingleTypeReference) {
+			ctRef.setImplicitParent(true);
+		} else if (ref instanceof QualifiedTypeReference) {
+			jdtTreeBuilder.getHelper().handleImplicit((QualifiedTypeReference) ref, ctRef);
+		}
+		return ctRef;
 	}
 
 	CtTypeReference<Object> getTypeParameterReference(TypeBinding binding, TypeReference ref) {

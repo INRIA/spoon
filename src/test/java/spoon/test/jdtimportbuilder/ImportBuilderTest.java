@@ -42,8 +42,6 @@ import static org.junit.Assert.assertTrue;
  */
 public class ImportBuilderTest {
 
-	private static final String nl = System.getProperty("line.separator");
-
 	@Test
 	public void testWithNoImport() {
 		// contract: when the source code has no import, none is created when building model
@@ -72,7 +70,7 @@ public class ImportBuilderTest {
 		assertEquals(1, imports.size());
 
 		CtImport ref = imports.iterator().next();
-		assertEquals("import spoon.test.annotation.testclasses.GlobalAnnotation;" + nl, ref.toString());
+		assertEquals("import spoon.test.annotation.testclasses.GlobalAnnotation;", ref.toString());
 		assertTrue(ref.getReference() instanceof CtTypeReference);
 
 		CtTypeReference refType = (CtTypeReference) ref.getReference();
@@ -85,7 +83,8 @@ public class ImportBuilderTest {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/ClassWithInvocation.java");
 		spoon.getEnvironment().setAutoImports(false);
-		spoon.buildModel();
+		//build and print model. During printing the autoImport==false validators are applied
+		spoon.run();
 
 		CtClass classA = spoon.getFactory().Class().get(ClassWithInvocation.class);
 		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
@@ -170,7 +169,7 @@ public class ImportBuilderTest {
 		assertEquals(1, imports.size());
 		CtImport ctImport = imports.iterator().next();
 		assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
-		assertEquals("import static spoon.test.jdtimportbuilder.testclasses.staticimport.DependencySubClass.*;" + nl, ctImport.toString());
+		assertEquals("import static spoon.test.jdtimportbuilder.testclasses.staticimport.DependencySubClass.*;", ctImport.toString());
 	}
 
 	@Test
@@ -191,6 +190,6 @@ public class ImportBuilderTest {
 		CtImport ctImport = imports.iterator().next();
 
 		assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
-		assertEquals("import static jdtimportbuilder.itf.DumbItf.*;" + nl, ctImport.toString());
+		assertEquals("import static jdtimportbuilder.itf.DumbItf.*;", ctImport.toString());
 	}
 }

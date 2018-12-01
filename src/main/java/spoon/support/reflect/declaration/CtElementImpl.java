@@ -25,7 +25,6 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
@@ -285,14 +284,21 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public String toString() {
+		return print(true);
+	}
+
+	@Override
+	public String print() {
+		return print(false);
+	}
+
+	private String print(boolean forceFullyQualified) {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
+		printer.setForceFullyQualified(forceFullyQualified);
+		//the printer is created here directly without any ImportValidator
+		//which would change the model content - it is not wanted!
 		String errorMessage = "";
 		try {
-			// we do not want to compute imports of for CtImport and CtReference
-			// as it may change the print of a reference
-			if (!(this instanceof CtImport) && !(this instanceof CtReference)) {
-				printer.getImportsContext().computeImports(this);
-			}
 			printer.scan(this);
 		} catch (ParentNotInitializedException ignore) {
 			LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);

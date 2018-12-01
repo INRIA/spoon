@@ -825,7 +825,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return true;
 	}
 
-
 	@Override
 	public boolean visit(ReferenceExpression referenceExpression, BlockScope blockScope) {
 		context.enter(helper.createExecutableReferenceExpression(referenceExpression), referenceExpression);
@@ -939,7 +938,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtTypeReference<Object> objectCtTypeReference = references.buildTypeReference(arrayTypeReference, scope);
 		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(objectCtTypeReference);
 		if (typeAccess.getAccessedType() instanceof CtArrayTypeReference) {
-			((CtArrayTypeReference) typeAccess.getAccessedType()).getArrayType().setAnnotations(this.references.buildTypeReference(arrayTypeReference, scope).getAnnotations());
+			CtTypeReference<?> arrayType = ((CtArrayTypeReference) typeAccess.getAccessedType()).getArrayType();
+			arrayType.setAnnotations(this.references.buildTypeReference(arrayTypeReference, scope).getAnnotations());
+			arrayType.setImplicitParent(true);
 		}
 		context.enter(typeAccess, arrayTypeReference);
 		return true;
@@ -1441,7 +1442,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(helper.createVariableAccess(qualifiedNameRef), qualifiedNameRef);
 			return true;
 		} else if (qualifiedNameRef.binding instanceof TypeBinding) {
-			context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference((TypeBinding) qualifiedNameRef.binding)), qualifiedNameRef);
+			TypeBinding typeBinding = (TypeBinding) qualifiedNameRef.binding;
+			CtTypeReference<?> typeRef = references.getTypeReference(typeBinding);
+			helper.handleImplicit(typeBinding.getPackage(), qualifiedNameRef, null, typeRef);
+			context.enter(factory.Code().createTypeAccessWithoutCloningReference(typeRef), qualifiedNameRef);
 			return true;
 		} else if (qualifiedNameRef.binding instanceof ProblemBinding) {
 			if (context.stack.peek().element instanceof CtInvocation) {
@@ -1499,7 +1503,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		} else if (singleNameReference.binding instanceof VariableBinding) {
 			context.enter(helper.createVariableAccess(singleNameReference), singleNameReference);
 		} else if (singleNameReference.binding instanceof TypeBinding) {
-			context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference((TypeBinding) singleNameReference.binding)), singleNameReference);
+			context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference((TypeBinding) singleNameReference.binding).setImplicitParent(true)), singleNameReference);
 		} else if (singleNameReference.binding instanceof ProblemBinding) {
 			if (context.stack.peek().element instanceof CtInvocation && Character.isUpperCase(CharOperation.charToString(singleNameReference.token).charAt(0))) {
 				context.enter(helper.createTypeAccessNoClasspath(singleNameReference), singleNameReference);
@@ -1587,7 +1591,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(helper.createCatchVariable(singleTypeReference), singleTypeReference);
 			return true;
 		}
-		context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.buildTypeReference(singleTypeReference, scope)), singleTypeReference);
+		CtTypeReference<?> typeRef = references.buildTypeReference(singleTypeReference, scope);
+		if (typeRef != null) {
+			typeRef.setImplicitParent(true);
+		}
+		context.enter(factory.Code().createTypeAccessWithoutCloningReference(typeRef), singleTypeReference);
 		return true;
 	}
 

@@ -664,17 +664,17 @@ public class TypeReferenceTest {
 		// contract: CtTypeReference#isImplicitParent can be used read / write implicit value of the parent
 		CtType<?> type = ModelUtils.buildClass(SuperAccess.class);
 		CtTypeReference<?> typeRef = type.getSuperclass();
-		assertFalse(typeRef.isImplicitParent());
-		assertFalse(typeRef.getPackage().isImplicit());
-		
-		//calling of setImplicitParent influences implicitnes of parent
-		typeRef.setImplicitParent(true);
 		assertTrue(typeRef.isImplicitParent());
 		assertTrue(typeRef.getPackage().isImplicit());
-
-		//calling of setImplicit on parent influences return value of isImplicitParent
-		typeRef.getPackage().setImplicit(false);
+		
+		//calling of setImplicitParent influences implicitnes of parent
+		typeRef.setImplicitParent(false);
 		assertFalse(typeRef.isImplicitParent());
 		assertFalse(typeRef.getPackage().isImplicit());
+
+		//calling of setImplicit on parent influences return value of isImplicitParent
+		typeRef.getPackage().setImplicit(true);
+		assertTrue(typeRef.isImplicitParent());
+		assertTrue(typeRef.getPackage().isImplicit());
 	}
 }

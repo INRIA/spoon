@@ -33,12 +33,18 @@ import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.visitor.DefaultImportComparator;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.ForceFullyQualifiedProcessor;
+import spoon.reflect.visitor.ForceImportProcessor;
+import spoon.reflect.visitor.ImportValidator;
 import spoon.reflect.visitor.PrettyPrinter;
+import spoon.reflect.visitor.NameConflictValidator;
 import spoon.support.compiler.FileSystemFolder;
 import spoon.support.compiler.SpoonProgress;
 import spoon.support.modelobs.EmptyModelChangeListener;
@@ -53,6 +59,7 @@ import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -120,6 +127,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private boolean ignoreDuplicateDeclarations = false;
 
 	private Supplier<PrettyPrinter> prettyPrinterCreator;
+
+	private List<Processor<CtCompilationUnit>> compilationUnitValidators;
 
 	/**
 	 * Creates a new environment with a <code>null</code> default file
@@ -637,7 +646,9 @@ private transient  ClassLoader inputClassloader;
 		if (prettyPrinterCreator == null) {
 			// DJPP is the default mode
 			// fully backward compatible
-			return new DefaultJavaPrettyPrinter(this);
+			DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
+			printer.setPreprocessors(getCompilationUnitValidators());
+			return printer;
 		}
 		return prettyPrinterCreator.get();
 	}
@@ -655,5 +666,45 @@ private transient  ClassLoader inputClassloader;
 	@Override
 	public void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations) {
 		this.ignoreDuplicateDeclarations = ignoreDuplicateDeclarations;
+	}
+
+	@Override
+	public List<Processor<CtCompilationUnit>> getCompilationUnitValidators() {
+		if (compilationUnitValidators == null) {
+			if (isAutoImports()) {
+				return Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
+					//try to import as much types as possible
+					new ForceImportProcessor(),
+					//remove unused imports first. Do not add new imports at time when conflicts are not resolved
+					new ImportValidator().setCanAddImports(false),
+					//solve conflicts, the current imports are relevant too
+					new NameConflictValidator(),
+					//compute final imports
+					new ImportValidator().setImportComparator(new DefaultImportComparator())
+				));
+			} else {
+				return Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
+						//force fully qualified
+						new ForceFullyQualifiedProcessor(),
+						//remove unused imports first. Do not add new imports at time when conflicts are not resolved
+						new ImportValidator().setCanAddImports(false),
+						//solve conflicts, the current imports are relevant too
+						new NameConflictValidator(),
+						//compute final imports
+						new ImportValidator().setImportComparator(new DefaultImportComparator())
+					));
+			}
+		}
+		return Collections.unmodifiableList(compilationUnitValidators);
+	}
+
+	@Override
+	public void setCompilationUnitValidators(List<Processor<CtCompilationUnit>> compilationUnitValidators) {
+		if (compilationUnitValidators != null) {
+			this.compilationUnitValidators = new ArrayList<>(compilationUnitValidators);
+		} else {
+			//use default validators again
+			this.compilationUnitValidators = null;
+		}
 	}
 }

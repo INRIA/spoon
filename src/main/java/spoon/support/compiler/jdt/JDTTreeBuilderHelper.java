@@ -26,6 +26,7 @@ import org.eclipse.jdt.internal.compiler.ast.ModuleReference;
 import org.eclipse.jdt.internal.compiler.ast.OpensStatement;
 import org.eclipse.jdt.internal.compiler.ast.ProvidesStatement;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
+import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.RequiresStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
@@ -39,9 +40,11 @@ import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
+import spoon.SpoonException;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
@@ -357,7 +360,7 @@ public class JDTTreeBuilderHelper {
 		if (va.getVariable() != null) {
 			final CtFieldReference<T> ref = va.getVariable();
 			if (ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
-				va.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(ref.getDeclaringType()));
+				va.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(ref.getDeclaringType(), true));
 			} else if (!ref.isStatic()) {
 				va.setTarget(jdtTreeBuilder.getFactory().Code().createThisAccess(jdtTreeBuilder.getReferencesBuilder().getTypeReference(singleNameReference.actualReceiverType), true));
 			}
@@ -384,7 +387,7 @@ public class JDTTreeBuilderHelper {
 		final CtReference declaring = jdtTreeBuilder.getReferencesBuilder().getDeclaringReferenceFromImports(singleNameReference.token);
 		if (declaring instanceof CtTypeReference && va.getVariable() != null) {
 			final CtTypeReference<Object> declaringRef = (CtTypeReference<Object>) declaring;
-			va.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(declaringRef));
+			va.setTarget(jdtTreeBuilder.getFactory().Code().createTypeAccess(declaringRef, true));
 			va.getVariable().setDeclaringType(declaringRef);
 			va.getVariable().setStatic(true);
 		}
@@ -459,7 +462,6 @@ public class JDTTreeBuilderHelper {
 				fieldReference.setDeclaringType(jdtTreeBuilder.getReferencesBuilder().getTypeReference(receiverType));
 			}
 		}
-
 		CtTypeAccess<?> typeAccess = jdtTreeBuilder.getFactory().Code().createTypeAccess(fieldReference.getDeclaringType());
 		if (qualifiedNameReference.indexOfFirstFieldBinding > 1) {
 			// the array sourcePositions contains the position of each element of the qualifiedNameReference
@@ -467,12 +469,120 @@ public class JDTTreeBuilderHelper {
 			long[] positions = qualifiedNameReference.sourcePositions;
 			typeAccess.setPosition(
 					jdtTreeBuilder.getPositionBuilder().buildPosition(qualifiedNameReference.sourceStart(), (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32) - 2));
+			handleImplicit(
+					qualifiedNameReference.actualReceiverType.getPackage(),
+					qualifiedNameReference, fieldReference.getSimpleName(), typeAccess.getAccessedType());
 		} else {
 			typeAccess.setImplicit(qualifiedNameReference.isImplicitThis());
 		}
-
 		return typeAccess;
 	}
+
+	static void handleImplicit(PackageBinding packageBinding, QualifiedNameReference qualifiedNameReference, String simpleName, CtTypeReference<?> typeRef) {
+		handleImplicit(
+				packageBinding,
+				qualifiedNameReference.tokens,
+				qualifiedNameReference.otherBindings == null ? 0 : qualifiedNameReference.otherBindings.length,
+				qualifiedNameReference, simpleName, typeRef);
+	}
+
+	static void handleImplicit(QualifiedTypeReference qualifiedTypeReference, CtTypeReference<?> typeRef) {
+		if (qualifiedTypeReference.resolvedType instanceof ProblemReferenceBinding || qualifiedTypeReference.resolvedType == null) {
+			//cannot detect implicitness of parts of qualifiedTypeReference, when its type is not known
+			return;
+		}
+		handleImplicit(
+				qualifiedTypeReference.resolvedType.getPackage(),
+				qualifiedTypeReference.tokens,
+				0,
+				qualifiedTypeReference, null, typeRef);
+	}
+
+	private static void handleImplicit(PackageBinding packageBinding, char[][] tokens, int countOfOtherBindings, Object qualifiedNameReference, String simpleName, CtTypeReference<?> typeRef) {
+		char[][] packageNames = null;
+		if (packageBinding != null) {
+			packageNames = packageBinding.compoundName;
+		}
+		CtTypeReference<?> originTypeRef = typeRef;
+		//get component type of arrays
+		while (typeRef instanceof CtArrayTypeReference<?>) {
+			typeRef = ((CtArrayTypeReference<?>) typeRef).getComponentType();
+		}
+		int off = tokens.length - 1;
+		off = off - countOfOtherBindings;
+		if (off > 0) {
+			if (simpleName != null) {
+				if (!simpleName.equals(new String(tokens[off]))) {
+					throw new SpoonException("Unexpected field reference simple name: \"" + new String(tokens[off]) + "\" expected: \"" + simpleName + "\"");
+				}
+				off--;
+			}
+			while (off >= 0) {
+				String token = new String(tokens[off]);
+				if (!typeRef.getSimpleName().equals(token)) {
+					/*
+					 * Actually it may happen when type reference full qualified name
+					 * (e.g. spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected) doesn't match with access path
+					 * (e.g. spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected)
+					 * In such rare case we cannot detect and set implicitness
+					 */
+					typeRef.getFactory().getEnvironment().debugMessage("Compiler's type path: " + qualifiedNameReference + " doesn't matches with Spoon qualified type name: " + originTypeRef);
+					return;
+					//throw new SpoonException("Unexpected type reference simple name: \"" + token + "\" expected: \"" + typeRef.getSimpleName() + "\"");
+				}
+				CtTypeReference<?> declTypeRef = typeRef.getDeclaringType();
+				if (declTypeRef != null) {
+					typeRef = declTypeRef;
+					off--;
+					continue;
+				}
+				CtPackageReference packageRef = typeRef.getPackage();
+				if (packageRef != null) {
+					if (packageNames != null && packageNames.length == off) {
+						//there is full package name
+						//keep it explicit
+						return;
+					}
+					if (off == 0) {
+						//the package name is implicit
+						packageRef.setImplicit(true);
+						return;
+					}
+					throw new SpoonException("Unexpected QualifiedNameReference tokens " + qualifiedNameReference + " for typeRef: " + originTypeRef);
+				}
+			}
+			typeRef.setImplicit(true);
+		}
+	}
+
+//
+//	private boolean isFullyQualified(QualifiedNameReference qualifiedNameReference) {
+//		char[][] tokens = qualifiedNameReference.tokens;
+//		PackageBinding packageBinding = qualifiedNameReference.actualReceiverType.getPackage();
+//		char[][] packageNames = null;
+//		if (packageBinding != null) {
+//			packageNames = packageBinding.compoundName;
+//		}
+//		int idx = 0;
+//		if (packageNames != null) {
+//			while (idx < packageNames.length) {
+//				if (idx >= tokens.length) {
+//					return false;
+//				}
+//				if (!Arrays.equals(tokens[idx], packageNames[idx])) {
+//					return false;
+//				}
+//				idx++;
+//			}
+//		}
+//		if (idx >= tokens.length) {
+//			return false;
+//		}
+//		if (!Arrays.equals(tokens[idx], qualifiedNameReference.actualReceiverType.sourceName())) {
+//			return false;
+//		}
+//		return true;
+//	}
 
 	/**
 	 * Creates a type access from its qualified name.

@@ -75,9 +75,11 @@ import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.internal.ChildClass;
 import spoon.testing.utils.ModelUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -296,7 +298,7 @@ public class ImportTest {
 		assertEquals(2, allImports.size());
 
 		//check that printer did not used the package protected class like "SuperClass.InnerClassProtected"
-		assertTrue(anotherClass.toString().indexOf("InnerClass extends ChildClass.InnerClassProtected")>0);
+		assertTrue(printByPrinter(anotherClass).indexOf("InnerClass extends ChildClass.InnerClassProtected")>0);
 		importScanner = new ImportScannerImpl();
 		importScanner.computeImports(classWithInvocation);
 		// java.lang imports are also computed
@@ -444,7 +446,7 @@ public class ImportTest {
 		final CtType<Object> aTacos = launcher.getFactory().Type().get(Tacos.class);
 		final CtStatement assignment = aTacos.getMethod("m").getBody().getStatement(0);
 		assertTrue(assignment instanceof CtLocalVariable);
-		assertEquals("Constants.CONSTANT.foo", ((CtLocalVariable) assignment).getAssignment().toString());
+		assertEquals("Constants.CONSTANT.foo", printByPrinter(((CtLocalVariable) assignment).getAssignment()));
 	}
 
 	@Test
@@ -684,11 +686,15 @@ public class ImportTest {
 
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap");
 		CtClass<?> mmwli = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$WrappedList$WrappedListIterator");
-		assertEquals("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}",mmwli.toString());
+		//toString prints fully qualified names
+		assertEquals("private class WrappedListIterator extends spoon.test.imports.testclasses2.AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}",mmwli.toString());
+		//pretty printer prints optimized names
+		assertEquals("private class WrappedListIterator extends WrappedIterator {}",printByPrinter(mmwli));
 		assertTrue(mm.toString().contains("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator"));
 
 		CtClass<?> mmwliother = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$OtherWrappedList$WrappedListIterator");
-		assertEquals("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.OtherWrappedList.WrappedIterator {}",mmwliother.toString());
+		assertEquals("private class WrappedListIterator extends spoon.test.imports.testclasses2.AbstractMapBasedMultimap<K, V>.OtherWrappedList.WrappedIterator {}",mmwliother.toString());
+		assertEquals("private class WrappedListIterator extends WrappedIterator {}",printByPrinter(mmwliother));
 	}
 
 	@Test
@@ -722,7 +728,10 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
-		assertTrue(mm.toString().contains("List<Interners.WeakInterner.Dummy> list;"));
+		//printer does not add FQ for inner types
+		assertTrue(printByPrinter(mm).contains("List<Dummy> list;"));
+		//to string forces fully qualified
+		assertTrue(mm.toString().contains("java.util.List<spoon.test.imports.testclasses2.Interners.WeakInterner.Dummy> list;"));
 	}
 
 	@Test
@@ -756,7 +765,7 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.StaticWithNested");
-		assertTrue("new StaticWithNested.StaticNested.StaticNested2<K>();", mm.toString().contains("new StaticWithNested.StaticNested.StaticNested2<K>();"));
+		assertTrue("new StaticNested2<K>();", printByPrinter(mm).contains("new StaticNested2<K>();"));
 	}
 
 	private Factory getFactory(String...inputs) {
@@ -1325,6 +1334,24 @@ public class ImportTest {
 
 		int totalImports = nbStandardImports + nbStaticImports;
 		assertEquals("Exactly "+totalImports+" should have been counted.", (nbStandardImports+nbStaticImports), countImports);
+		//contract: each `assertEquals` calls is using implicit type.
+		assertContainsLine("assertEquals(\"bla\", \"truc\");", output);
+		assertContainsLine("assertEquals(7, 12);", output);
+		assertContainsLine("assertEquals(new String[0], new String[0]);", output);
+	}
+
+	private void assertContainsLine(String expectedLine, String output) {
+		try (BufferedReader br = new BufferedReader(new StringReader(output))) {
+			String line;
+			while ((line = br.readLine()) != null) {
+				if (line.trim().equals(expectedLine)) {
+					return;
+				}
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+	}
+		fail("Missing line: " + expectedLine);
 	}
 
 	@Test
@@ -1530,10 +1557,28 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 				"    }" + nl +
 				"" + nl +
 				"    public static void main(String[] args) {" + nl +
-				"        System.out.println(JavaLongUse.method());" + nl +
+				"        System.out.println(method());" + nl +
 				"    }" + nl +
-				"}", launcher.getFactory().Type().get("spoon.test.imports.testclasses.JavaLongUse").toString());
+				"}", printByPrinter(launcher.getFactory().Type().get("spoon.test.imports.testclasses.JavaLongUse")));
 	}
+	
+	public static String printByPrinter(CtElement element) {
+		DefaultJavaPrettyPrinter pp = (DefaultJavaPrettyPrinter) element.getFactory().getEnvironment().createPrettyPrinter();
+		//this call applies print validators, which modifies model before printing
+		//and then it prints everything
+		String printedCU = pp.printCompilationUnit(element.getPosition().getCompilationUnit());
+		//this code just prints required element (the validators already modified model in previous command)
+		String printedElement = element.print();
+		//check that element is printed same like it would be done by printer
+		//but we have to ignore indentation first
+		assertTrue(removeIndentation(printedCU).indexOf(removeIndentation(printedElement)) >= 0);
+		return printedElement;
+	}
+
+	private static String removeIndentation(String str) {
+		return str.replaceAll("(?m)^\\s+", "");
+	}
+
 	@Test
 	public void testImportReferenceIsFullyQualifiedAndNoGeneric() {
 		//contract: the reference of CtImport is always fully qualified and contains no actual type arguments

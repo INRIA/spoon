@@ -30,6 +30,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.reflect.code.CtJavaDocImpl;
+import spoon.test.imports.ImportTest;
 import spoon.test.javadoc.testclasses.Bar;
 
 import static org.junit.Assert.assertEquals;
@@ -64,7 +65,7 @@ public class JavaDocTest {
 				+ "    public <T> CtAnnotationType<?> create(CtPackage owner, String simpleName) {" + System.lineSeparator()
 				+ "        return null;" + System.lineSeparator()
 				+ "    }" + System.lineSeparator()
-				+ "}", aClass.toString());
+				+ "}", ImportTest.printByPrinter(aClass));
 
 		// contract: getDocComment never returns null, it returns an empty string if no comment
 		assertEquals("", aClass.getDocComment());

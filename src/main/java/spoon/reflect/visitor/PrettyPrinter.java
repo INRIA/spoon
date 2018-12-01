@@ -30,6 +30,11 @@ import java.util.Map;
 public interface PrettyPrinter {
 
 	/**
+	 * Prints the compilation unit of module-info, package-info or types.
+	 */
+	String printCompilationUnit(CtCompilationUnit compilationUnit);
+
+	/**
 	 * Prints the package info.
 	 * It always resets the printing context at the beginning of this process.
 	 */
@@ -40,6 +45,12 @@ public interface PrettyPrinter {
 	 * It always resets the printing context at the beginning of this process.
 	 */
 	String printModuleInfo(CtModule module);
+
+	/**
+	 * Prints the types of one compilation unit
+	 * It always resets the printing context at the beginning of this process.
+	 */
+	String printTypes(CtType<?>... type);
 
 	/**
 	 * Gets the contents of the compilation unit.
