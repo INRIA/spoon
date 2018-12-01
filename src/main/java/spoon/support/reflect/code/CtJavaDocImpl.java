@@ -153,7 +153,7 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 				JavadocInlineTag tag = (JavadocInlineTag) fragment;
 				if (tag.getType().equals(JavadocInlineTag.Type.LINK)) {
 					String stype;
-					String suffix= "";
+					String suffix = "";
 					if (tag.getContent().contains("#")) {
 						// link to a method
 						String[] split = tag.getContent().split("#");
