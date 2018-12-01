@@ -58,10 +58,14 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.path.CtPath;
+import spoon.reflect.path.CtPathStringBuilder;
 import spoon.reflect.visitor.filter.AbstractFilter;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
+import spoon.support.SerializationModelStreamer;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.test.comment.testclasses.BlockComment;
@@ -158,6 +162,7 @@ public class CommentTest {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(OtherJavaDoc.class);
 		CtJavaDoc classJavaDoc = (CtJavaDoc) type.getComments().get(0);
+		assertEquals("A short description without a proper end", classJavaDoc.getContent());
 		assertEquals("A short description without a proper end", classJavaDoc.getShortDescription());
 		assertEquals("A short description without a proper end", classJavaDoc.getLongDescription());
 	}
@@ -1024,6 +1029,34 @@ public class CommentTest {
 	}
 
 	@Test
+	public void testCommentWithLinkInFQNMode() {
+		// contract: in FQN mode links should be written in FQN too
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/JavadocLinkComment.java");
+		launcher.addInputResource("./src/main/java/spoon/support/reflect/reference/CtTypeMemberWildcardImportReferenceImpl.java");
+		launcher.addInputResource("./src/main/java/spoon/reflect/declaration/CtElement.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.getEnvironment().setAutoImports(false);
+		CtModel model = launcher.buildModel();
+
+		CtClass<?> javadocLinkComment = model.getElements(new NamedElementFilter<>(CtClass.class, "JavadocLinkComment")).get(0);
+
+		List<CtComment> comments = javadocLinkComment.getComments();
+		assertEquals(1, comments.size());
+
+		CtComment comment = comments.get(0);
+		String commentString = comment.toString();
+
+		assertTrue(commentString, commentString.contains("{@link spoon.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl}"));
+
+		assertTrue(commentString, commentString.contains("{@link spoon.reflect.declaration.CtElement#toString()}"));
+
+		CtMethod<?> method = javadocLinkComment.getMethodsByName("method").get(0);
+		comments = method.getComments();
+		assertEquals(1, comments.size());
+
+	}
+
 	public void testStatementComments() {
 		// contract: the statements have their comment even if they are nested in another block
 		Launcher launcher = new Launcher();
@@ -1066,6 +1099,32 @@ public class CommentTest {
 		assertEquals(4, nestedIface.getComments().size());
 		CtMethod<?> method = nestedIface.getMethodsByName("mytest").get(0);
 		assertEquals(1, method.getComments().size());
+	}
+
+
+	@Test
+	public void testJavadocSer() throws IOException {
+		// contract: javadoc can be serialized
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/main/java/spoon/reflect/declaration/CtAnnotation.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		CtModel model = launcher.buildModel();
+		File file = new File("target/testDefaultCompressionType.ser");
+		CtPath p2 = new CtPathStringBuilder().fromString(".**.getAnnotationType#comment");
+		CtElement el = p2.evaluateOn(model.getRootPackage()).get(0);
+
+		CtPath p3 = new CtPathStringBuilder().fromString(".**.CtAnnotation");
+		List<CtComment> comments = p3.evaluateOn(model.getRootPackage()).get(0).getComments();
+
+		new SerializationModelStreamer().save(launcher.getFactory(), new FileOutputStream(file));
+		Factory factoryFromFile = new SerializationModelStreamer().load(new FileInputStream(file));
+		CtElement elAfter = p2.evaluateOn(factoryFromFile.getModel().getRootPackage()).get(0);
+		assertEquals(el, elAfter);
+		assertEquals("/**" + System.lineSeparator() +
+				" * Returns the annotation type of this annotation." + System.lineSeparator() +
+				" *" + System.lineSeparator() +
+				" * @return a reference to the type of this annotation" + System.lineSeparator() +
+				" */", elAfter.toString());
 	}
 
 	@Test

@@ -19,13 +19,16 @@ package spoon.support.reflect.code;
 import spoon.javadoc.internal.Javadoc;
 import spoon.javadoc.internal.JavadocBlockTag;
 import spoon.javadoc.internal.JavadocDescriptionElement;
+import spoon.javadoc.internal.JavadocInlineTag;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.util.ModelList;
 
 import java.util.List;
@@ -126,6 +129,9 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 			addTag(getFactory().createJavaDocTag(tag.getContent().toText(), CtJavaDocTag.TagType.tagFromName(tag.getTagName())));
 		}
 
+		// if we work in fully-qualified mode, we also fully qualify the {@link}
+		updatedInlineLinksInJavadoc();
+
 		// we cannot call super.setContent because it calls cleanComment (which has already been done above)
 		// and we don't want to clean the comment twice
 		String contentWithTags = javadoc.getDescription().toText().trim(); // trim is required for backward compatibility
@@ -137,6 +143,37 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 	}
 
 
+	/** transforms all {@link XXX} into fully qualified name */
+	private void updatedInlineLinksInJavadoc() {
+		if (this.getFactory().getEnvironment().isAutoImports() == true) {
+			return;
+		}
+		for (JavadocDescriptionElement fragment : getJavadocElements()) {
+			if (fragment instanceof JavadocInlineTag) {
+				JavadocInlineTag tag = (JavadocInlineTag) fragment;
+				if (tag.getType().equals(JavadocInlineTag.Type.LINK)) {
+					String stype;
+					String suffix= "";
+					if (tag.getContent().contains("#")) {
+						// link to a method
+						String[] split = tag.getContent().split("#");
+						stype = split[0];
+						suffix = "#" + split[1];
+					} else {
+						// link to a class
+						stype = tag.getContent();
+					}
+
+					// is there such a type in the model?
+					CtType type = this.getFactory().getModel().filterChildren(new NamedElementFilter<>(CtType.class, stype)).first(CtType.class);
+					if (type != null) {
+						// we write it fully qualified
+						tag.setContent(type.getQualifiedName() + suffix);
+					}
+				}
+			}
+		}
+	}
 
 	@Override
 	public String getLongDescription() {
