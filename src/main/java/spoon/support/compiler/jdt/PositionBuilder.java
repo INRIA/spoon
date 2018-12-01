@@ -578,13 +578,16 @@ public class PositionBuilder {
 	 * Note: all kinds of java comments are understood as whitespace too.
 	 * The search must start out of comment or on the first character of the comment
 	 */
-	private int findNextNonWhitespace(char[] content, int maxOff, int off) {
+	static int findNextNonWhitespace(char[] content, int maxOff, int off) {
+		return findNextNonWhitespace(true, content, maxOff, off);
+	}
+	static int findNextNonWhitespace(boolean commentIsWhiteSpace, char[] content, int maxOff, int off) {
 		maxOff = Math.min(maxOff, content.length - 1);
 		while (off >= 0 && off <= maxOff) {
 			char c = content[off];
 			if (Character.isWhitespace(c) == false) {
 				//non whitespace found
-				int endOfCommentOff = getEndOfComment(content, maxOff, off);
+				int endOfCommentOff = commentIsWhiteSpace ? getEndOfComment(content, maxOff, off) : -1;
 				if (endOfCommentOff == -1) {
 					//it is not a comment. Finish
 					return off;
@@ -603,7 +606,7 @@ public class PositionBuilder {
 	 * Can return `off` if it is already a non whitespace.
 	 * Note: all kinds of java comments are understood as whitespace too. Then it returns offset of the first character of the comment
 	 */
-	private int findNextWhitespace(char[] content, int maxOff, int off) {
+	static int findNextWhitespace(char[] content, int maxOff, int off) {
 		maxOff = Math.min(maxOff, content.length - 1);
 		while (off >= 0 && off <= maxOff) {
 			char c = content[off];
@@ -620,7 +623,7 @@ public class PositionBuilder {
 	 * @return index of first non whitespace char, searching backward. Can return `off` if it is already a non whitespace.
 	 * Note: all kinds of java comments are understood as whitespace too. Then it returns offset of the first non whitespace character before the comment
 	 */
-	int findPrevNonWhitespace(char[] content, int minOff, int off) {
+	static int findPrevNonWhitespace(char[] content, int minOff, int off) {
 		minOff = Math.max(0, minOff);
 		while (off >= minOff) {
 			char c = content[off];
@@ -644,7 +647,7 @@ public class PositionBuilder {
 	 * Note: all kinds of java comments are understood as whitespace too. Then it returns offset of the last comment character.
 	 * in case of line comment it returns last character of EOL which ends the comment
 	 */
-	private int findPrevWhitespace(char[] content, int minOff, int off) {
+	static int findPrevWhitespace(char[] content, int minOff, int off) {
 		minOff = Math.max(0, minOff);
 		while (off >= minOff) {
 			char c = content[off];
@@ -660,7 +663,7 @@ public class PositionBuilder {
 	 * @return if the off points at start of comment then it returns offset which points on last character of the comment
 	 * if the off does not point at start of comment then it returns -1
 	 */
-	private int getEndOfComment(char[] content, int maxOff, int off) {
+	static int getEndOfComment(char[] content, int maxOff, int off) {
 		maxOff = Math.min(maxOff, content.length - 1);
 		if (off + 1 <= maxOff) {
 			if (content[off] == '/' && content[off + 1] == '*') {
@@ -707,7 +710,7 @@ public class PositionBuilder {
 	 * @return if the off points at end of comment then it returns offset which points on first character of the comment
 	 * if the off does not point at the end of comment then it returns -1
 	 */
-	private int getStartOfComment(char[] content, int minOff, int off) {
+	static int getStartOfComment(char[] content, int minOff, int off) {
 		if (off < 2) {
 			//there cannot start comment
 			return -1;
