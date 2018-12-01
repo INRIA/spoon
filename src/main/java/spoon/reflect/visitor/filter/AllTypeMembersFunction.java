@@ -47,7 +47,7 @@ public class AllTypeMembersFunction implements CtConsumableFunction<CtTypeInform
 		 * Returns only type members, which are accessible from the input `type`.
 		 * It means that inherited private type members are skipped
 		 */
-		INERNALLY_ACCESSIBLE
+		SKIP_PRIVATE
 	}
 
 	private CtQuery query;
@@ -96,7 +96,7 @@ public class AllTypeMembersFunction implements CtConsumableFunction<CtTypeInform
 						switch (mode) {
 						case ALL:
 							break;
-						case INERNALLY_ACCESSIBLE:
+						case SKIP_PRIVATE:
 							if (typeMember.hasModifier(ModifierKind.PRIVATE) && !isInputType) {
 								continue loop;
 							}
