@@ -42,6 +42,7 @@ import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.CompoundSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
@@ -59,6 +60,7 @@ import spoon.test.comment.testclasses.Comment1;
 import spoon.test.position.testclasses.AnnonymousClassNewIface;
 import spoon.test.position.testclasses.ArrayArgParameter;
 import spoon.test.position.testclasses.CatchPosition;
+import spoon.test.position.testclasses.CompilationUnitComments;
 import spoon.test.position.testclasses.Expressions;
 import spoon.test.position.testclasses.Foo;
 import spoon.test.position.testclasses.FooAbstractMethod;
@@ -81,6 +83,7 @@ import spoon.test.position.testclasses.PositionTry;
 import spoon.test.position.testclasses.SomeEnum;
 import spoon.test.position.testclasses.TypeParameter;
 import spoon.test.query_function.testclasses.VariableReferencesModelTest;
+import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -1215,5 +1218,37 @@ public class PositionTest {
 		String classContent = getClassContent(type);
 		final CtPackageDeclaration packDecl = type.getPosition().getCompilationUnit().getPackageDeclaration();
 		assertEquals("package spoon.test.comment.testclasses;", contentAtPosition(classContent, packDecl.getPosition()));
+	}
+
+	@Test
+	public void testImportPosition() throws Exception {
+		// contract: import position includes its comment
+		CtType<?> type = ModelUtils.buildClass(cfg -> {
+			cfg.getEnvironment().setCommentEnabled(true);
+			cfg.getEnvironment().setAutoImports(true);
+		}, CompilationUnitComments.class);
+		String classContent = getClassContent(type);
+		
+		CtCompilationUnit cu = type.getPosition().getCompilationUnit();
+		CtImport imprt = cu.getImports().get(0);
+		
+		assertEquals("//import comment\n" + 
+				"import java.util.ArrayList;", contentAtPosition(classContent, imprt.getPosition()));
+	}
+
+	@Test
+	public void testPackageDeclarationWithCommentPosition() throws Exception {
+		// contract: package declaration position includes its comment. The file comment is not included
+		CtType<?> type = ModelUtils.buildClass(cfg -> {
+			cfg.getEnvironment().setCommentEnabled(true);
+			cfg.getEnvironment().setAutoImports(true);
+		}, CompilationUnitComments.class);
+		String classContent = getClassContent(type);
+		
+		CtCompilationUnit cu = type.getPosition().getCompilationUnit();
+		CtPackageDeclaration packageDecl = cu.getPackageDeclaration();
+		
+		assertEquals("/* package declaration comments*/\n" + 
+				"package spoon.test.position.testclasses;", contentAtPosition(classContent, packageDecl.getPosition()));
 	}
 }
