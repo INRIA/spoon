@@ -221,6 +221,14 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentContext {
 	}
 
 	/**
+	 * @return true if there is more child tokens to be processed.
+	 * 	false if all tokens were processed
+	 */
+	protected boolean hasNextChildToken() {
+		return childFragmentIdx + 1 < childFragments.size();
+	}
+
+	/**
 	 * looks for next child token which contains exactly same token
 	 * @param token String of searched token
 	 * @return index of first same token or -1 if not found
