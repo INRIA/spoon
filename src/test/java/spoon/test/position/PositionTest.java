@@ -54,6 +54,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.comment.testclasses.BlockComment;
 import spoon.test.comment.testclasses.Comment1;
 import spoon.test.position.testclasses.AnnonymousClassNewIface;
 import spoon.test.position.testclasses.ArrayArgParameter;
@@ -1205,5 +1206,14 @@ public class PositionTest {
 		String classContent = getClassContent(foo);
 		CtPackageDeclaration packDecl = foo.getPosition().getCompilationUnit().getPackageDeclaration();
 		assertEquals("package spoon.test.position.testclasses;", contentAtPosition(classContent, packDecl.getPosition()));
+	}
+	@Test
+	public void testPackageDeclarationPosition() throws Exception {
+		//contract: check position of package declaration after file comment
+		final Factory build = build(BlockComment.class);
+		final CtType<?> type = build.Type().get(BlockComment.class);
+		String classContent = getClassContent(type);
+		final CtPackageDeclaration packDecl = type.getPosition().getCompilationUnit().getPackageDeclaration();
+		assertEquals("package spoon.test.comment.testclasses;", contentAtPosition(classContent, packDecl.getPosition()));
 	}
 }

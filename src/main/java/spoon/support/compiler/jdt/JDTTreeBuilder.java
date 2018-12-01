@@ -793,12 +793,26 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (packageDeclaration != null) {
 			ImportReference packageRef = compilationUnitDeclaration.currentPackage;
 			if (packageRef != null) {
+				char[] content = compilationUnitDeclaration.compilationResult.compilationUnit.getContents();
+				int declStart = packageRef.declarationSourceStart;
+				//look for first comment
+				int firstComment = PositionBuilder.findNextNonWhitespace(false, content, packageRef.sourceStart(), 0);
+				if (firstComment < packageRef.sourceStart() && content[firstComment] == '/' && content[firstComment + 1] == '*') {
+					//there is a `/*` or `/**`comment before package reference;
+					//such comment is understood as compilation unit comment
+					//all next comments belong to package declaration
+					int commentEnd = PositionBuilder.getEndOfComment(content, packageRef.sourceStart(), firstComment);
+					declStart = PositionBuilder.findNextNonWhitespace(false, content, packageRef.sourceStart(), commentEnd + 1);
+				} else {
+					declStart = firstComment;
+				}
 				packageDeclaration.setPosition(factory.Core().createCompoundSourcePosition(
-						context.compilationUnitSpoon, packageRef.sourceStart(), packageRef.sourceEnd(), packageRef.declarationSourceStart, packageRef.declarationEnd, context.compilationUnitSpoon.getLineSeparatorPositions()));
+						context.compilationUnitSpoon, packageRef.sourceStart(), packageRef.sourceEnd(), declStart, packageRef.declarationEnd, context.compilationUnitSpoon.getLineSeparatorPositions()));
 			}
 		}
 		return true;
 	}
+
 
 	@Override
 	public boolean visit(ReferenceExpression referenceExpression, BlockScope blockScope) {
