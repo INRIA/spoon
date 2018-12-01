@@ -26,6 +26,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
@@ -707,6 +708,18 @@ public class TypeFactory extends SubFactory {
 	 */
 	public CtImport createImport(CtReference reference) {
 		CtImport ctImport = factory.Core().createImport();
-		return ctImport.setReference(reference.clone());
+		CtReference importRef = reference.clone();
+		//import reference is always fully qualified and has no generic arguments
+		new CtScanner() {
+			@Override
+			protected void enter(CtElement e) {
+				e.setImplicit(false);
+				if (e instanceof CtActualTypeContainer) {
+					CtActualTypeContainer atc = (CtActualTypeContainer) e;
+					atc.setActualTypeArguments(Collections.emptyList());
+				}
+			}
+		}.scan(importRef);
+		return ctImport.setReference(importRef);
 	}
 }
