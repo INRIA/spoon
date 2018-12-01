@@ -110,8 +110,12 @@ class JDTImportBuilder {
 	}
 
 	private CtImport createImportWithPosition(CtReference ref, ImportReference importRef) {
+		char[] content = sourceUnit.getContents();
 		CtImport imprt = factory.Type().createImport(ref);
-		imprt.setPosition(factory.Core().createCompoundSourcePosition(spoonUnit, importRef.sourceStart(), importRef.sourceEnd(), importRef.declarationSourceStart, importRef.declarationEnd, spoonUnit.getLineSeparatorPositions()));
+		//include comment before import
+		int declStart = importRef.declarationSourceStart;
+		int commentStart = PositionBuilder.findNextNonWhitespace(false, content, declStart, PositionBuilder.findPrevNonWhitespace(content, 0, declStart - 1) + 1);
+		imprt.setPosition(factory.Core().createCompoundSourcePosition(spoonUnit, importRef.sourceStart(), importRef.sourceEnd(), commentStart, importRef.declarationEnd, spoonUnit.getLineSeparatorPositions()));
 		//TODO initialize source position of ref
 		return imprt;
 	}
