@@ -59,7 +59,7 @@ public class TypeTest {
 	public void testAllTypeMembersFunctionMode() throws Exception {
 		// contract: AllTypeMembersFunction can be configured to return all members or only internally visible members
 		CtClass<?> type = build("spoon.test.model", "Foo");
-		List<CtMethod> internallyAccessibleMethods = type.map(new AllTypeMembersFunction(CtMethod.class).setMode(AllTypeMembersFunction.Mode.INERNALLY_ACCESSIBLE)).list();
+		List<CtMethod> internallyAccessibleMethods = type.map(new AllTypeMembersFunction(CtMethod.class).setMode(AllTypeMembersFunction.Mode.SKIP_PRIVATE)).list();
 		List<CtMethod> allMethods = type.map(new AllTypeMembersFunction(CtMethod.class)).list();
 		assertEquals(16, internallyAccessibleMethods.size());
 		assertEquals(17, allMethods.size());
