@@ -16,74 +16,26 @@
  */
 package spoon.test.main;
 
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.Assertion;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
+
 import spoon.ContractVerifier;
 import spoon.Launcher;
-import spoon.SpoonModelBuilder.InputType;
-import spoon.reflect.code.CtArrayWrite;
-import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldWrite;
-import spoon.reflect.code.CtLambda;
-import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.path.CtPath;
-import spoon.reflect.path.CtPathException;
-import spoon.reflect.path.CtPathStringBuilder;
-import spoon.reflect.path.CtRole;
-import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtTypeParameterReference;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtBiScannerDefault;
-import spoon.reflect.visitor.CtScanner;
-import spoon.reflect.visitor.PrinterHelper;
-import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.sniper.internal.ElementSourceFragment;
-import spoon.support.reflect.CtExtendedModifier;
-import spoon.test.parent.ParentTest;
-import spoon.test.visibility.testclasses.MethodeWithNonAccessibleTypeArgument;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class MainTest {
 
@@ -130,25 +82,25 @@ public class MainTest {
 				// in order to make progress on this important blocking first refactoring
 
 				// bug 1: those three classes together trigger a bug somewhere in inner class
-				.filter(path -> !path.toFile().getAbsolutePath().contains("fieldaccesses/testclasses/Tacos")) // carpet debugging
-				.filter(path -> !path.toFile().getAbsolutePath().contains("fieldaccesses/testclasses/internal/Bar"))
-				.filter(path -> !path.toFile().getAbsolutePath().contains("fieldaccesses/testclasses/internal/Foo"))
-				.filter(path -> !path.toFile().getAbsolutePath().contains("reference/testclasses/Stream"))
+				.filter(path -> !filePathContains(path, "fieldaccesses/testclasses/Tacos")) // carpet debugging
+				.filter(path -> !filePathContains(path, "fieldaccesses/testclasses/internal/Bar"))
+				.filter(path -> !filePathContains(path, "fieldaccesses/testclasses/internal/Foo"))
+				.filter(path -> !filePathContains(path, "reference/testclasses/Stream"))
 
 				// bug 2: remove the filter to trigger it
-				.filter(path -> !path.toFile().getAbsolutePath().contains("AccessibleClassFromNonAccessibleInterf"))
+				.filter(path -> !filePathContains(path, "AccessibleClassFromNonAccessibleInterf"))
 
 				// bug 3: remove the filter to trigger it
-				.filter(path -> !path.toFile().getAbsolutePath().contains("MethodeWithNonAccessibleTypeArgument"))
+				.filter(path -> !filePathContains(path, "MethodeWithNonAccessibleTypeArgument"))
 
 				// bug 4: remove the filter to trigger it
-				.filter(path -> !path.toFile().getAbsolutePath().contains("lambda/testclasses/Bar"))
+				.filter(path -> !filePathContains(path, "lambda/testclasses/Bar"))
 
 				// bug 5: remove the filter to trigger it
-				.filter(path -> !path.toFile().getAbsolutePath().contains("LambdaRxJava"))
+				.filter(path -> !filePathContains(path, "LambdaRxJava"))
 
 				// bug 6: remove the filter to trigger it
-				.filter(path -> !path.toFile().getAbsolutePath().contains("Tapas"))
+				.filter(path -> !filePathContains(path, "Tapas"))
 
 				.forEach(x -> {
 					launcher.addInputResource(x.toString());
@@ -161,6 +113,10 @@ public class MainTest {
 
 		// we verify all the contracts
 		new ContractVerifier(rootPackage).verify();
+	}
+	
+	private boolean filePathContains(Path path, String substring) {
+		return path.toFile().getAbsolutePath().replace('\\', '/').contains(substring);
 	}
 
 
