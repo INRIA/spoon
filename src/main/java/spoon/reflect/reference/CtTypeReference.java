@@ -21,6 +21,7 @@ import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
@@ -156,6 +157,13 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * @return true if this can access that type
 	 */
 	boolean canAccess(CtTypeReference<?> type);
+
+	/**
+	 * Checks visibility based on public, protected, package protected and private modifiers of type member
+	 * @param typeMember
+	 * @return true if this type can access that `typeMember`
+	 */
+	boolean canAccess(CtTypeMember typeMember);
 
 	/**
 	 * Returns this, or top level type of this, if this is an inner type

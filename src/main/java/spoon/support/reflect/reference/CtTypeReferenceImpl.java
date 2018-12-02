@@ -27,6 +27,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtActualTypeContainer;
@@ -610,6 +611,49 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			//if the modifiers cannot be resolved then we expect that it is visible
 			return true;
 		}
+	}
+
+	@Override
+	public boolean canAccess(CtTypeMember typeMember) {
+		CtType<?> declaringType = typeMember.getDeclaringType();
+		if (declaringType == null) {
+			//noclasspath mode
+			return true;
+		}
+		CtTypeReference<?> declaringTypeRef = declaringType.getReference();
+		if (!canAccess(declaringTypeRef)) {
+			return false;
+		}
+		Set<ModifierKind> modifiers = typeMember.getModifiers();
+
+		if (modifiers.contains(ModifierKind.PUBLIC)) {
+			return true;
+		}
+		if (modifiers.contains(ModifierKind.PROTECTED)) {
+			if (isImplementationOf(declaringTypeRef)) {
+				//type is visible in code which implements declaringType
+				return true;
+			} //else it is visible in same package, like package protected
+			return isInSamePackage(declaringTypeRef);
+		}
+		if (modifiers.contains(ModifierKind.PRIVATE)) {
+			//it is visible in scope of the same class only
+			return declaringType.getTopLevelType().getQualifiedName().equals(this.getTopLevelType().getQualifiedName());
+		}
+		/*
+		 * no modifier, we have to check if it is nested type and if yes, if parent is interface or class.
+		 * In case of no parent then implicit access is package protected
+		 * In case of parent is interface, then implicit access is PUBLIC
+		 * In case of parent is class, then implicit access is package protected
+		 */
+		CtType<?> declaringTypeDeclaringType = declaringType.getDeclaringType();
+		if (declaringTypeDeclaringType != null && declaringTypeDeclaringType.isInterface()) {
+			//the declaring type is interface, then implicit access is PUBLIC
+			return true;
+		}
+		//package protected
+		//visible only in scope of the same package
+		return isInSamePackage(declaringTypeRef);
 	}
 
 	private boolean isInSamePackage(CtTypeReference<?> type) {
