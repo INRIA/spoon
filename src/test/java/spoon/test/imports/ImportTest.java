@@ -581,6 +581,65 @@ public class ImportTest {
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$PublicInterface$NestedOfPublicInterface", true, true, true/*canAccess, has access to first accessType, but not to full accesspath*/, "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface", "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface");
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$PublicInterface$NestedPublicInterface", true, true, true/*canAccess, has access to first accessType, but not to full accesspath*/, "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface", "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface");
 	}
+	
+	@Test
+	public void testCanAccessTypeMember() {
+		Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses/memberaccess", "--with-imports"
+		});
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		CtType<?> typeA = factory.Class().get(spoon.test.imports.testclasses.memberaccess.A.class);
+		CtType<?> iface = factory.Interface().get(spoon.test.imports.testclasses.memberaccess.Iface.class);
+		
+		//contract: A can access own fields
+		assertTrue(typeA.getReference().canAccess(typeA.getField("privateField")));
+		assertTrue(typeA.getReference().canAccess(typeA.getField("protectedField")));
+		assertTrue(typeA.getReference().canAccess(typeA.getField("field")));
+		assertTrue(typeA.getReference().canAccess(typeA.getField("publicField")));
+		assertTrue(typeA.getReference().canAccess(iface.getField("field")));
+		
+		//contract: ExtendsA of same package can access fields of A, excluding private
+		{
+			CtType<?> typeExtendsA = factory.Class().get(spoon.test.imports.testclasses.memberaccess.ExtendsA.class);
+			assertFalse(typeExtendsA.getReference().canAccess(typeA.getField("privateField")));
+			assertTrue(typeExtendsA.getReference().canAccess(typeA.getField("protectedField")));
+			assertTrue(typeExtendsA.getReference().canAccess(typeA.getField("field")));
+			assertTrue(typeExtendsA.getReference().canAccess(typeA.getField("publicField")));
+			assertTrue(typeExtendsA.getReference().canAccess(iface.getField("field")));
+		}
+		
+		//contract: DoesnotExtendA of same package can access fields of A, excluding private
+		{
+			CtType<?> typeDoesnotExtendA = factory.Class().get(spoon.test.imports.testclasses.memberaccess.DoesnotExtendA.class);
+			assertFalse(typeDoesnotExtendA.getReference().canAccess(typeA.getField("privateField")));
+			assertTrue(typeDoesnotExtendA.getReference().canAccess(typeA.getField("protectedField")));
+			assertTrue(typeDoesnotExtendA.getReference().canAccess(typeA.getField("field")));
+			assertTrue(typeDoesnotExtendA.getReference().canAccess(typeA.getField("publicField")));
+			assertTrue(typeDoesnotExtendA.getReference().canAccess(iface.getField("field")));
+		}
+
+		//contract: ExtendsA in different package can access fields of A, excluding private and package protected
+		{
+			CtType<?> typeExtendsA = factory.Class().get(spoon.test.imports.testclasses.memberaccess2.ExtendsA.class);
+			assertFalse(typeExtendsA.getReference().canAccess(typeA.getField("privateField")));
+			assertTrue(typeExtendsA.getReference().canAccess(typeA.getField("protectedField")));
+			assertFalse(typeExtendsA.getReference().canAccess(typeA.getField("field")));
+			assertTrue(typeExtendsA.getReference().canAccess(typeA.getField("publicField")));
+			assertTrue(typeExtendsA.getReference().canAccess(iface.getField("field")));
+		}
+		
+		//contract: DoesnotExtendA in different package can access fields of A, excluding private, protected and package protected
+		{
+			CtType<?> typeDoesnotExtendA = factory.Class().get(spoon.test.imports.testclasses.memberaccess2.DoesnotExtendA.class);
+			assertFalse(typeDoesnotExtendA.getReference().canAccess(typeA.getField("privateField")));
+			assertFalse(typeDoesnotExtendA.getReference().canAccess(typeA.getField("protectedField")));
+			assertFalse(typeDoesnotExtendA.getReference().canAccess(typeA.getField("field")));
+			assertTrue(typeDoesnotExtendA.getReference().canAccess(typeA.getField("publicField")));
+			assertTrue(typeDoesnotExtendA.getReference().canAccess(iface.getField("field")));
+		}
+	}
 
 	@Test
 	public void testNestedAccessPathWithTypedParameter() {
