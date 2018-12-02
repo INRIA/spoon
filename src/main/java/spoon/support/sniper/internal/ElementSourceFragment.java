@@ -22,13 +22,14 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.SourcePositionHolder;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.support.Experimental;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
@@ -142,15 +143,12 @@ public class ElementSourceFragment implements SourceFragment {
 		Deque<ElementSourceFragment> parents = new ArrayDeque<>();
 		parents.push(this);
 		//scan all children of `element` and build tree of SourceFragments
-		new CtScanner() {
-			CtRole scannedRole;
-			@Override
-			public void scan(CtRole role, CtElement element) {
-				scannedRole = role;
-				super.scan(role, element);
-			}
+		new EarlyTerminatingScanner<Void>() {
 			@Override
 			protected void enter(CtElement e) {
+				if (e instanceof CtCompilationUnit) {
+					return;
+				}
 				ElementSourceFragment newFragment = addChild(parents.peek(), scannedRole, e);
 				if (newFragment != null) {
 					parents.push(newFragment);
@@ -165,12 +163,17 @@ public class ElementSourceFragment implements SourceFragment {
 			}
 			@Override
 			protected void exit(CtElement e) {
+				if (e instanceof CtCompilationUnit) {
+					return;
+				}
 				ElementSourceFragment topFragment = parents.peek();
 				if (topFragment != null && topFragment.getElement() == e) {
 					parents.pop();
 				}
 			}
-		}.scan(element.getRoleInParent(), element);
+		}
+		.setVisitCompilationUnitContent(true)
+		.scan(element.getRoleInParent(), element);
 	}
 	/**
 	 * @param parentFragment the parent {@link ElementSourceFragment}, which will receive {@link ElementSourceFragment} made for `otherElement`
@@ -235,9 +238,6 @@ public class ElementSourceFragment implements SourceFragment {
 
 	private RoleHandler getRoleHandler(CtRole roleInParent, SourcePositionHolder otherElement) {
 		SourcePositionHolder parent = element;
-		if (parent instanceof CompilationUnit) {
-			parent = null;
-		}
 		if (parent == null) {
 			if (otherElement instanceof CtElement) {
 				parent = ((CtElement) otherElement).getParent();
@@ -523,6 +523,7 @@ public class ElementSourceFragment implements SourceFragment {
 					i++;
 				}
 				//add suffix space
+				/*
 				if (i < flatChildren.size()) {
 					SourceFragment nextChild = flatChildren.get(i);
 					if (isSpaceFragment(nextChild)) {
@@ -530,6 +531,7 @@ public class ElementSourceFragment implements SourceFragment {
 						i++;
 					}
 				}
+				*/
 				result.add(new CollectionSourceFragment(childrenInSameCollection));
 			} else {
 				throw new SpoonException("Unexpected SourceFragment of type " + child.getClass());

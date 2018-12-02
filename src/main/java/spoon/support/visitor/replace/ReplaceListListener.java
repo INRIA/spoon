@@ -16,8 +16,8 @@
  */
 package spoon.support.visitor.replace;
 
-import java.util.List;
+import java.util.Collection;
 
-public interface ReplaceListListener<T extends List> {
+public interface ReplaceListListener<T extends Collection> {
 	void set(T replace);
 }

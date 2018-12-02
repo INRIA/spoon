@@ -184,7 +184,7 @@ public class TestSourceFragment {
 				"/**\n" + 
 				"	 * c0\n" + 
 				"	 */", 
-				group("\n\t", "public", "\n\t", "@Deprecated", " ", "//c1 ends with tab and space\t ", "\n\t", "static", " "), "/*c2*/", " ",
+				group("\n\t", "public", "\n\t", "@Deprecated", " ", "//c1 ends with tab and space\t ", "\n\t", "static"), " ", "/*c2*/", " ",
 				"<", group("T", ",", " ", "U"), ">",
 				" ", "T", " ", "m3", "(", group("U param", ",", " ", "@Deprecated int p2"), ")", " ", "{\n" + 
 						"		return null;\n" + 

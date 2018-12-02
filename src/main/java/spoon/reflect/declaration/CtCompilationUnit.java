@@ -29,6 +29,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.support.Experimental;
 import spoon.support.UnsettableProperty;
+import spoon.support.util.ModelList;
 
 /**
  * Defines a compilation unit. In Java, a compilation unit can contain only one
@@ -196,7 +197,7 @@ public interface CtCompilationUnit extends CtElement {
 	 */
 	@Experimental
 	@PropertyGetter(role = CtRole.DECLARED_IMPORT)
-	List<CtImport> getImports();
+	ModelList<CtImport> getImports();
 
 	@Override
 	CtCompilationUnit clone();
