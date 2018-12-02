@@ -51,6 +51,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.EnumValue;
 import spoon.test.reference.testclasses.Panini;
 import spoon.test.reference.testclasses.ParamRefs;
+import spoon.test.reference.testclasses.SuperAccess;
+import spoon.testing.utils.ModelUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -655,5 +657,24 @@ public class TypeReferenceTest {
 
 		assertEquals("spoon.test.imports.testclasses.withgenerics.Target", fieldTypeRef.getQualifiedName());
 		assertEquals(2, fieldTypeRef.getActualTypeArguments().size());
+	}
+	
+	@Test
+	public void testTypeReferenceImplicitParent() throws Exception {
+		// contract: CtTypeReference#isImplicitParent can be used read / write implicit value of the parent
+		CtType<?> type = ModelUtils.buildClass(SuperAccess.class);
+		CtTypeReference<?> typeRef = type.getSuperclass();
+		assertFalse(typeRef.isImplicitParent());
+		assertFalse(typeRef.getPackage().isImplicit());
+		
+		//calling of setImplicitParent influences implicitnes of parent
+		typeRef.setImplicitParent(true);
+		assertTrue(typeRef.isImplicitParent());
+		assertTrue(typeRef.getPackage().isImplicit());
+
+		//calling of setImplicit on parent influences return value of isImplicitParent
+		typeRef.getPackage().setImplicit(false);
+		assertFalse(typeRef.isImplicitParent());
+		assertFalse(typeRef.getPackage().isImplicit());
 	}
 }
