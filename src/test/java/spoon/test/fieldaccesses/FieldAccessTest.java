@@ -388,8 +388,8 @@ public class FieldAccessTest {
 			@Override
 			public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
 				visited++;
-				assertEquals("array", ((CtVariableWrite) fieldWrite.getTarget()).getVariable().getSimpleName());
-				assertEquals("length", fieldWrite.getVariable().getSimpleName());
+				assertEquals("a", ((CtVariableWrite) fieldWrite.getTarget()).getVariable().getSimpleName());
+				assertEquals("l", fieldWrite.getVariable().getSimpleName());
 			}
 		}
 
