@@ -3,7 +3,7 @@ For contributing to Spoon, the recommended way is to create a pull request (PR) 
 The integrator code of conduct
 ------------------------------
 
-The integrators are the developers who have write access to the repository. Developers are given the integrator role after lasting and significant contributions, as assessed by the other integrators. They shall respect the following rules:
+The integrators are the developers who have write access to the repository. The integrators shall respect the following rules:
 
 * Spoon integrators only merge atomic pull requests (single bug fix or single feature)
 * Spoon integrators only merge well tested and well documented pull requests, after thorough code review
@@ -12,6 +12,8 @@ The integrators are the developers who have write access to the repository. Deve
 * Spoon integrators  never merge their own pull request
 * Spoon integrators leave pull requests opened at least 1 day before merging, so that the community is aware and can comment on them
 * Serious conflicts, who cannot be resolved by time and discussion, are resolved by a vote among integrators.
+
+How to become integrator? The integrators are the developers who have made significant contributions over the last 12 months (gliding window). Significance is assessed by the current set of integrators who co-opt the new ones.
 
 Current integrators (alphabetical order):
 
