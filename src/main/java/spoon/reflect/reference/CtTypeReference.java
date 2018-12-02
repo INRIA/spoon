@@ -159,9 +159,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	boolean canAccess(CtTypeReference<?> type);
 
 	/**
-	 * Checks visibility based on public, protected, package protected and private modifiers of type member
-	 * @param typeMember
-	 * @return true if this type can access that `typeMember`
+	 * @return true if this type can access that the `typeMember` in another type based on public, protected, package protected and private modifiers.
 	 */
 	boolean canAccess(CtTypeMember typeMember);
 
