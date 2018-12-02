@@ -81,7 +81,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 	@Override
 	public CompilationUnit[] getCompilationUnits() {
 
-		Map<String, CompilationUnit> pathToModCU = new HashMap<>();
+		Map<String, char[]> pathToModName = new HashMap<>();
 
 		for (int round = 0; round < 2; round++) {
 			for (CompilationUnit compilationUnit : this.compilationUnits) {
@@ -94,7 +94,6 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 						int lastSlash = CharOperation.lastIndexOf(File.separatorChar, charName);
 						if (lastSlash != -1) {
 							char[] modulePath = CharOperation.subarray(charName, 0, lastSlash);
-							pathToModCU.put(String.valueOf(modulePath), compilationUnit);
 
 							lastSlash = CharOperation.lastIndexOf(File.separatorChar, modulePath);
 							if (lastSlash == -1) {
@@ -102,13 +101,14 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 							} else {
 								lastSlash += 1;
 							}
-
+							//TODO the module name parsed by JDK compiler is in `this.modNames`
 							compilationUnit.module = CharOperation.subarray(modulePath, lastSlash, modulePath.length);
+							pathToModName.put(String.valueOf(modulePath), compilationUnit.module);
 						}
 					} else {
-						for (Map.Entry<String, CompilationUnit> entry : pathToModCU.entrySet()) {
+						for (Map.Entry<String, char[]> entry : pathToModName.entrySet()) {
 							if (fileName.startsWith(entry.getKey())) { // associate CUs to module by common prefix
-								//compilationUnit.setModule(entry.getValue());
+								compilationUnit.module = entry.getValue();
 								break;
 							}
 						}
