@@ -208,7 +208,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	@Override
 	public SniperJavaPrettyPrinter scan(CtElement element) {
 		if (element != null) {
-			CtRole role = element.getRoleInParent();
+			CtRole role = getRoleInCompilationUnit(element);
 			onPrintEvent(new ElementPrinterEvent(role, element) {
 				@Override
 				public void print(Boolean muted) {
@@ -221,6 +221,14 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 			});
 		}
 		return this;
+	}
+
+	private CtRole getRoleInCompilationUnit(CtElement element) {
+		CtRole role = element.getRoleInParent();
+		if (role == CtRole.CONTAINED_TYPE) {
+			role = CtRole.DECLARED_TYPE;
+		}
+		return role;
 	}
 
 	/**

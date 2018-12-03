@@ -38,6 +38,7 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.internal.MapUtils;
@@ -800,5 +801,27 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		CtTypeReference<?> erasedRef = clone();
 		erasedRef.getActualTypeArguments().clear();
 		return erasedRef;
+	}
+
+	@Override
+	@DerivedProperty
+	public boolean isImplicitParent() {
+		if (pack != null) {
+			return pack.isImplicit();
+		} else if (declaringType != null) {
+			return declaringType.isImplicit();
+		}
+		return false;
+	}
+
+	@Override
+	@DerivedProperty
+	public CtTypeReferenceImpl<T> setImplicitParent(boolean parentIsImplicit) {
+		if (pack != null) {
+			pack.setImplicit(parentIsImplicit);
+		} else if (declaringType != null) {
+			declaringType.setImplicit(parentIsImplicit);
+		}
+		return this;
 	}
 }

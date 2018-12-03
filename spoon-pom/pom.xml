@@ -270,9 +270,11 @@
                         <header>../LICENSE-short.txt</header>
                         <basedir>src</basedir>
                         <includes>
-                            <include>main/java/**</include>
+                            <include>../src/main/java/**</include>
                             <!-- We also want to check the license in templates to generate files with the proper header -->
                             <include>test/java/spoon/generating/clone/*</include>
+                            <!--  excluding the code coming from Javaparser -->
+                            <exclude>../src/main/java/spoon/javadoc/internal/*</exclude>
                         </includes>
                     </configuration>
                     <executions>
@@ -304,12 +306,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.0-M1</version>
+                <version>3.0.1</version>
                 <configuration>
                     <quiet>true</quiet>
-                    <additionalparam>-Xdoclint:none</additionalparam>
-                    <!--maven-javadoc-plugin version 2.9 onwards uses additionalJOption, see https://stackoverflow.com/questions/39616344/how-to-disable-javadoc-warnings-in-maven-javadoc-plugin/48511911#48511911 -->
-                    <additionalJOption>-Xdoclint:none</additionalJOption>
+                    <!-- doclin, since 3.0.1, see https://stackoverflow.com/a/53497998/1153476 -->
+                    <doclint>none</doclint>
                 </configuration>
                 <reportSets>
                     <reportSet>

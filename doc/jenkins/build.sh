@@ -155,7 +155,11 @@ rm pom.bak*.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins" --type elem -n plugin -v "" pom.xml > pom.bak.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n groupId -v "fr.inria.gforge.spoon" pom.bak.xml > pom.bak2.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n artifactId -v "spoon-maven-plugin" pom.bak2.xml > pom.bak3.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n version -v "2.4" pom.bak3.xml > pom.bak4.xml
+
+# we depend on the latest version of spoon-maven-plugin, one that does not use http://spoon.gforge.inria.fr/repositories/snapshots/ (decommissioned)
+# but the correct http://maven.inria.fr/artifactory/spoon-public-snapshot/ (Inria's artifactory) 
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n version -v "3.1" pom.bak3.xml > pom.bak4.xml
+
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n executions -v "" pom.bak4.xml > pom.bak5.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions" --type elem -n execution -v "" pom.bak5.xml > pom.bak6.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions/x:execution" --type elem -n phase -v "generate-sources" pom.bak6.xml > pom.bak7.xml
@@ -168,7 +172,7 @@ xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies" --type elem -n dependency -v "" pom.bak14.xml > pom.bak19.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n groupId -v "fr.inria.gforge.spoon" pom.bak19.xml > pom.bak20.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n artifactId -v "spoon-core" pom.bak20.xml > pom.bak21.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n version -v "[5.5.0-SNAPSHOT,)" pom.bak21.xml > pom.bak22.xml
+xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:dependencies/x:dependency[last()]" --type elem -n version -v "[7.0.0-SNAPSHOT,)" pom.bak21.xml > pom.bak22.xml
 mv pom.bak22.xml pom.xml
 rm pom.bak*.xml
 

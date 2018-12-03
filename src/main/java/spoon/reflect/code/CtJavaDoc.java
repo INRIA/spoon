@@ -16,6 +16,7 @@
  */
 package spoon.reflect.code;
 
+import spoon.javadoc.internal.JavadocDescriptionElement;
 import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
@@ -95,4 +96,8 @@ public interface CtJavaDoc extends CtComment {
 
 	@Override
 	CtJavaDoc clone();
+
+	/** Returns the list of parsed Javadoc elements */
+	@DerivedProperty
+	List<JavadocDescriptionElement> getJavadocElements();
 }

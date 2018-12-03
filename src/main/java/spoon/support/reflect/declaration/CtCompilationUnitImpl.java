@@ -40,6 +40,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -131,7 +132,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 			if (getDeclaredTypes().isEmpty()) {
 				if (getDeclaredModuleReference() != null) {
 					return UNIT_TYPE.MODULE_DECLARATION;
-				} else if (getPackageDeclaration() != null) {
+				} else if (packageDeclaration != null) {
 					return UNIT_TYPE.PACKAGE_DECLARATION;
 				} else {
 					return UNIT_TYPE.UNKNOWN;
@@ -245,6 +246,15 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 
 	@Override
 	public CtPackageDeclaration getPackageDeclaration() {
+		if (packageDeclaration == null) {
+			CtPackageReference packRef;
+			if (declaredTypeReferences.size() > 0) {
+				packRef = declaredTypeReferences.get(0).getPackage().clone();
+			} else {
+				packRef = getFactory().getModel().getRootPackage().getReference();
+			}
+			packageDeclaration = getFactory().Package().createPackageDeclaration(packRef);
+		}
 		return packageDeclaration;
 	}
 
@@ -267,6 +277,8 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 	@Override
 	public CtCompilationUnitImpl setFile(File file) {
 		this.file = file;
+		//reset cached position (if any)
+		this.position = SourcePosition.NOPOSITION;
 		return this;
 	}
 
@@ -334,7 +346,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 
 
 	@Override
-	public List<CtImport> getImports() {
+	public ModelList<CtImport> getImports() {
 		return this.imports;
 	}
 
@@ -354,12 +366,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 				throw new SpoonException("Root source fragment of compilation unit of package is not supported");
 			}
 			rootFragment = new ElementSourceFragment(this, null);
-			for (CtImport imprt : getImports()) {
-				rootFragment.addChild(new ElementSourceFragment(imprt, null /*TODO role for import of CU*/));
-			}
-			for (CtTypeReference<?> ctType : declaredTypeReferences) {
-				rootFragment.addTreeOfSourceFragmentsOfElement(ctType.getTypeDeclaration());
-			}
+			rootFragment.addTreeOfSourceFragmentsOfElement(this);
 		}
 		return rootFragment;
 	}
@@ -381,6 +388,9 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 			String sourceCode = getOriginalSourceCode();
 			if (sourceCode != null) {
 				position = getFactory().Core().createSourcePosition((CompilationUnit) this, 0, sourceCode.length() - 1, getLineSeparatorPositions());
+			} else {
+				//it is a virtual compilation unit (e.g. for Snippet)
+				position = getFactory().Core().createSourcePosition((CompilationUnit) this, 0, Integer.MAX_VALUE - 1, getLineSeparatorPositions());
 			}
 		}
 		return position;

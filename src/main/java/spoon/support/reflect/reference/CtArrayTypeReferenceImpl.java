@@ -27,8 +27,7 @@ import java.lang.reflect.Array;
 
 import static spoon.reflect.path.CtRole.TYPE;
 
-public class
-CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTypeReference<T> {
+public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTypeReference<T> {
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = TYPE)
@@ -119,5 +118,21 @@ CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTyp
 	@Override
 	public CtArrayTypeReference<T> clone() {
 		return (CtArrayTypeReference<T>) super.clone();
+	}
+
+	@Override
+	public boolean isImplicitParent() {
+		if (componentType != null) {
+			return componentType.isImplicitParent();
+		}
+		return false;
+	}
+
+	@Override
+	public CtArrayTypeReferenceImpl<T> setImplicitParent(boolean packageIsImplicit) {
+		if (componentType != null) {
+			componentType.setImplicitParent(packageIsImplicit);
+		}
+		return this;
 	}
 }

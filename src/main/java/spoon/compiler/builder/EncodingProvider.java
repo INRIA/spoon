@@ -14,10 +14,15 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package spoon.support.visitor.replace;
+package spoon.compiler.builder;
 
-import java.util.Collection;
+import spoon.compiler.SpoonFile;
+import java.nio.charset.Charset;
 
-public interface ReplaceListListener<T extends Collection> {
-	void set(T replace);
+public interface EncodingProvider {
+
+	/**
+	* User-defined function, which is used to detect encoding for each file
+	*/
+	Charset detectEncoding(SpoonFile file, byte[] fileBytes);
 }

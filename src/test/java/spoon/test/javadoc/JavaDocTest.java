@@ -20,6 +20,8 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
+import spoon.javadoc.internal.JavadocDescriptionElement;
+import spoon.javadoc.internal.JavadocInlineTag;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.declaration.CtClass;
@@ -35,6 +37,7 @@ import static org.junit.Assert.fail;
 import static spoon.testing.utils.Check.assertCtElementEquals;
 
 public class JavaDocTest {
+
 
 	@Test
 	public void testJavaDocReprint() {
@@ -80,6 +83,17 @@ public class JavaDocTest {
 
 		assertEquals(2, ctJavaDoc.clone().getTags().size());
 		assertCtElementEquals(ctJavaDoc, ctJavaDoc.clone());
+
+		// contract: one can parse the content of the javadoc
+		CtClass<?> bar = factory.Class().get("spoon.test.javadoc.testclasses.Foo");
+		CtJavaDoc javadoc = (CtJavaDoc) bar.getComments().get(0);
+		assertEquals(2, javadoc.getJavadocElements().size());
+		assertEquals("This is a ", javadoc.getJavadocElements().get(0).toText());
+		JavadocInlineTag link = (JavadocInlineTag) javadoc.getJavadocElements().get(1);
+		assertEquals("{@link Exception}", link.toText());
+		assertEquals("link", link.getName());
+		assertEquals("Exception", link.getContent());
+
 
 	}
 

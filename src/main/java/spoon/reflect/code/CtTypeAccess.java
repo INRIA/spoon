@@ -18,6 +18,7 @@ package spoon.reflect.code;
 
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
@@ -83,6 +84,20 @@ public interface CtTypeAccess<A> extends CtExpression<Void> {
 	@Override
 	@UnsettableProperty
 	<C extends CtTypedElement> C setType(CtTypeReference<Void> type);
+
+	/**
+	 * @return {@link #getAccessedType()}.isImplicit()
+	 */
+	@Override
+	@DerivedProperty
+	boolean isImplicit();
+
+	/**
+	 * Calls {@link #getAccessedType()}.setImplicit()
+	 */
+	@Override
+	@DerivedProperty
+	<E extends CtElement> E setImplicit(boolean implicit);
 
 	@Override
 	CtTypeAccess<A> clone();

@@ -737,7 +737,9 @@ public class Metamodel {
 				.field(CtRole.IS_IMPLICIT, false, false)
 				.field(CtRole.POSITION, true, true)
 				.field(CtRole.DECLARED_TYPE_REF, false, false)
+				.field(CtRole.DECLARED_TYPE, true, true)
 				.field(CtRole.DECLARED_MODULE_REF, false, false)
+				.field(CtRole.DECLARED_MODULE, true, true)
 				.field(CtRole.PACKAGE_DECLARATION, false, false)
 				.field(CtRole.DECLARED_IMPORT, false, false)
 				.field(CtRole.ANNOTATION, false, false)
@@ -1130,7 +1132,7 @@ public class Metamodel {
 
 			types.add(new Type("CtTypeAccess", spoon.reflect.code.CtTypeAccess.class, spoon.support.reflect.code.CtTypeAccessImpl.class, fm -> fm
 				.field(CtRole.TYPE, true, true)
-				.field(CtRole.IS_IMPLICIT, false, false)
+				.field(CtRole.IS_IMPLICIT, true, false)
 				.field(CtRole.POSITION, false, false)
 				.field(CtRole.ANNOTATION, false, false)
 				.field(CtRole.CAST, false, false)

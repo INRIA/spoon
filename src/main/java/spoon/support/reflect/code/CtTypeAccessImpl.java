@@ -18,9 +18,11 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
+import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import static spoon.reflect.path.CtRole.ACCESSED_TYPE;
@@ -60,6 +62,24 @@ public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTyp
 	public <C extends CtTypedElement> C setType(CtTypeReference<Void> type) {
 		// type is used in setAccessedType now.
 		return (C) this;
+	}
+
+	@Override
+	@DerivedProperty
+	public boolean isImplicit() {
+		if (type != null) {
+			return type.isImplicit();
+		}
+		return false;
+	}
+
+	@Override
+	@DerivedProperty
+	public <E extends CtElement> E setImplicit(boolean implicit) {
+		if (type != null) {
+			type.setImplicit(implicit);
+		}
+		return (E) this;
 	}
 
 	@Override
