@@ -225,9 +225,14 @@ public class TypeTest {
 		assertEquals(1, lambdas.get(0).getTypeCasts().size());
 		assertTrue(lambdas.get(0).getTypeCasts().get(0) instanceof CtIntersectionTypeReference);
 		final CtIntersectionTypeReference<?> intersectionType = lambdas.get(0).getTypeCasts().get(0).asCtIntersectionTypeReference();
-		assertEquals("java.lang.Runnable & java.io.Serializable", intersectionType.toString());
-		assertEquals(aPozole.getFactory().Type().createReference(Runnable.class), intersectionType.getBounds().stream().collect(Collectors.toList()).get(0));
-		assertEquals(aPozole.getFactory().Type().createReference(Serializable.class), intersectionType.getBounds().stream().collect(Collectors.toList()).get(1));
+		assertTrue(intersectionType.toString().contains("java.lang.Runnable")
+			&& intersectionType.toString().contains("java.io.Serializable"));
+		CtTypeReference refRunnable = aPozole.getFactory().Type().createReference(Runnable.class);
+		CtTypeReference refSerializable = aPozole.getFactory().Type().createReference(Serializable.class);
+		CtTypeReference ref0 = intersectionType.getBounds().stream().collect(Collectors.toList()).get(0);
+		CtTypeReference ref1 = intersectionType.getBounds().stream().collect(Collectors.toList()).get(1);
+		assertTrue((ref0.equals(refRunnable) || ref0.equals(refSerializable))
+			&& (ref1.equals(refRunnable) || ref1.equals(refSerializable)));
 
 		canBeBuilt(target, 8, true);
 	}
