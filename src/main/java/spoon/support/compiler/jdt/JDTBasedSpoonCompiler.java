@@ -68,6 +68,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Main class of Spoon to build the model.
@@ -424,53 +425,55 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	protected void buildModel(CompilationUnitDeclaration[] units) {
-		if (getEnvironment().getSpoonProgress() != null) {
-			getEnvironment().getSpoonProgress().start(SpoonProgress.Process.MODEL);
-		}
 		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
 		List<CompilationUnitDeclaration> unitList = this.sortCompilationUnits(units);
 
+		forEachCompilationUnit(unitList, SpoonProgress.Process.MODEL, unit -> {
+			// we need first to go through the whole model before getting the right reference for imports
+			unit.traverse(builder, unit.scope);
+		});
+		if (getFactory().getEnvironment().isAutoImports()) {
+			//we need first imports before we can place comments. Mainly comments on imports need that
+			forEachCompilationUnit(unitList, SpoonProgress.Process.IMPORT, unit -> {
+				new JDTImportBuilder(unit, factory).build();
+			});
+		}
+		if (getFactory().getEnvironment().isCommentsEnabled()) {
+			forEachCompilationUnit(unitList, SpoonProgress.Process.COMMENT_LINKING, unit -> {
+				new JDTCommentBuilder(unit, factory).build();
+			});
+		}
+	}
+
+	private void forEachCompilationUnit(List<CompilationUnitDeclaration> unitList, SpoonProgress.Process process, Consumer<CompilationUnitDeclaration> consumer) {
+		if (getEnvironment().getSpoonProgress() != null) {
+			getEnvironment().getSpoonProgress().start(process);
+		}
 		int i = 0;
-		unitLoop:
 		for (CompilationUnitDeclaration unit : unitList) {
 			if (unit.isModuleInfo() || !unit.isEmpty()) {
 				final String unitPath = new String(unit.getFileName());
-				for (final CompilationUnitFilter cuf : compilationUnitFilters) {
-					if (cuf.exclude(unitPath)) {
-						// do not traverse this unit
-						continue unitLoop;
-					}
-				}
-				unit.traverse(builder, unit.scope);
-				if (getFactory().getEnvironment().isCommentsEnabled()) {
-					new JDTCommentBuilder(unit, factory).build();
+				if (canProcessCompilationUnit(unitPath)) {
+					consumer.accept(unit);
 				}
 				if (getEnvironment().getSpoonProgress() != null) {
-					getEnvironment().getSpoonProgress().step(SpoonProgress.Process.MODEL, new String(unit.getFileName()), ++i, unitList.size());
+					getEnvironment().getSpoonProgress().step(process, unitPath, ++i, unitList.size());
 				}
 			}
 		}
 		if (getEnvironment().getSpoonProgress() != null) {
-			getEnvironment().getSpoonProgress().end(SpoonProgress.Process.MODEL);
+			getEnvironment().getSpoonProgress().end(process);
 		}
+	}
 
-		// we need first to go through the whole model before getting the right reference for imports
-		if (getFactory().getEnvironment().isAutoImports()) {
-			if (getEnvironment().getSpoonProgress() != null) {
-				getEnvironment().getSpoonProgress().start(SpoonProgress.Process.IMPORT);
-			}
-
-			i = 0;
-			for (CompilationUnitDeclaration unit : units) {
-				new JDTImportBuilder(unit, factory).build();
-				if (getEnvironment().getSpoonProgress() != null) {
-					getEnvironment().getSpoonProgress().step(SpoonProgress.Process.IMPORT, new String(unit.getFileName()), ++i, units.length);
-				}
-			}
-			if (getEnvironment().getSpoonProgress() != null) {
-				getEnvironment().getSpoonProgress().end(SpoonProgress.Process.IMPORT);
+	private boolean canProcessCompilationUnit(String unitPath) {
+		for (final CompilationUnitFilter cuf : compilationUnitFilters) {
+			if (cuf.exclude(unitPath)) {
+				// do not traverse this unit
+				return false;
 			}
 		}
+		return true;
 	}
 
 	protected void generateProcessedSourceFilesUsingTypes(Filter<CtType<?>> typeFilter) {
