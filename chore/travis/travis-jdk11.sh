@@ -12,4 +12,4 @@ export JAVA_HOME=$HOME/openjdk8
 # Use the default (the one present in the base container) collection of trusted certificate authority (CA) certificates for java
 source ./install-jdk.sh -f 11 -c
 
-mvn -Djava.src.version=1.11 test
+mvn -Djava.src.version=11 test
