@@ -429,15 +429,15 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		List<CompilationUnitDeclaration> unitList = this.sortCompilationUnits(units);
 
 		forEachCompilationUnit(unitList, SpoonProgress.Process.MODEL, unit -> {
+			// we need first to go through the whole model before getting the right reference for imports
 			unit.traverse(builder, unit.scope);
 		});
 		if (getFactory().getEnvironment().isAutoImports()) {
-			// we need first to go through the whole model before getting the right reference for imports
+			//we need first imports before we can place comments. Mainly comments on imports need that
 			forEachCompilationUnit(unitList, SpoonProgress.Process.IMPORT, unit -> {
 				new JDTImportBuilder(unit, factory).build();
 			});
 		}
-		//we need first imports before we can place comments. Mainly comments on imports need that
 		if (getFactory().getEnvironment().isCommentsEnabled()) {
 			forEachCompilationUnit(unitList, SpoonProgress.Process.COMMENT_LINKING, unit -> {
 				new JDTCommentBuilder(unit, factory).build();
