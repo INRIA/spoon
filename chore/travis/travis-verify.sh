@@ -3,6 +3,8 @@
 # This script intends to be run on TravisCI
 # it runs verify and site maven goals
 # and to check documentation links
+#
+# It also run test, verify and checkstyle goals on spoon-decompiler
 
 # fails if anything fails
 set -e
@@ -19,3 +21,13 @@ mvn -Djava.src.version=1.9 verify license:check site javadoc:jar install -DskipT
 mvn  checkstyle:checkstyle -Pcheckstyle-test
 
 python ./chore/check-links-in-doc.py
+
+#Spoon-decompiler
+cd spoon-decompiler
+
+mvn test
+
+mvn verify license:check site javadoc:jar install -DskipTests -DadditionalJOption=-Xdoclint:none
+
+# checkstyle in src/tests
+mvn  checkstyle:checkstyle -Pcheckstyle-test
