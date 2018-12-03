@@ -116,6 +116,7 @@ public class MainTest {
 	}
 	
 	private boolean filePathContains(Path path, String substring) {
+		//normalize path separators to linux, to simplify searching for substring
 		return path.toFile().getAbsolutePath().replace('\\', '/').contains(substring);
 	}
 
