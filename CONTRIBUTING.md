@@ -17,6 +17,7 @@ How to become integrator? The integrators are the developers who have made signi
 
 Current integrators (alphabetical order):
 
+- Nicolas Harrand [@nharrand](https://github.com/nharrand/)
 - Benjamin Danglot @danglotb
 - Thomas Durieux @tdurieux
 - Martin Monperrus @monperrus
