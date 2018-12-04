@@ -40,6 +40,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -57,6 +58,8 @@ import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
 import spoon.test.imports.testclasses.A;
@@ -89,6 +92,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
@@ -1530,5 +1534,26 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 				"    }" + nl +
 				"}", launcher.getFactory().Type().get("spoon.test.imports.testclasses.JavaLongUse").toString());
 	}
-
+	@Test
+	public void testImportReferenceIsFullyQualifiedAndNoGeneric() {
+		//contract: the reference of CtImport is always fully qualified and contains no actual type arguments
+		Factory f = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
+		CtTypeReference<?> typeRef = f.Type().createReference("some.package.SomeType");
+		typeRef.addActualTypeArgument(f.Type().createTypeParameterReference("T"));
+		assertEquals("some.package.SomeType<T>", typeRef.toString());
+		typeRef.setImplicit(true);
+		typeRef.setImplicitParent(true);
+		assertTrue(typeRef.isImplicit());
+		assertTrue(typeRef.getPackage().isImplicit());
+		CtImport imprt = f.Type().createImport(typeRef);
+		CtTypeReference<?> typeRef2 = (CtTypeReference<?>) imprt.getReference();
+		assertNotSame(typeRef2, typeRef);
+		assertEquals("some.package.SomeType", typeRef2.toString());
+		assertFalse(typeRef2.isImplicit());
+		assertFalse(typeRef2.getPackage().isImplicit());
+		//origin reference did not changed
+		assertEquals(1, typeRef.getActualTypeArguments().size());
+		assertTrue(typeRef.isImplicit());
+		assertTrue(typeRef.getPackage().isImplicit());
+	}
 }
