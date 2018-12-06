@@ -1197,6 +1197,7 @@ public class PositionTest {
 			assertEquals("label2: while(true);", contentAtPosition(classContent, stmt3.getPosition()));
 		}
 	}
+
 	@Test
 	public void testPackageDeclaration() throws Exception {
 		//contract: check position of package declaration
@@ -1205,5 +1206,13 @@ public class PositionTest {
 		String classContent = getClassContent(foo);
 		CtPackageDeclaration packDecl = foo.getPosition().getCompilationUnit().getPackageDeclaration();
 		assertEquals("package spoon.test.position.testclasses;", contentAtPosition(classContent, packDecl.getPosition()));
+	}
+
+	@Test
+	public void testCommentedOutClass() {
+		//contract: commented out class should not fail model build
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/TestCommentedOutClass.java"));
+		CtType<?> type = build.Type().get("spoon.test.position.testclasses.TestCommentedOutClass");
+		assertNull(type);
 	}
 }

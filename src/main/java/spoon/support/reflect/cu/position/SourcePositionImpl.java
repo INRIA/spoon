@@ -118,10 +118,6 @@ public class SourcePositionImpl implements SourcePosition, Serializable {
 			throw new SpoonException("Mandatory parameter compilationUnit is null");
 		}
 		this.compilationUnit = compilationUnit;
-		//TODD: this check will be removed after we remove lineSeparatorPositions from the Constructor
-		if (compilationUnit.getLineSeparatorPositions() != lineSeparatorPositions) {
-			throw new SpoonException("Unexpected lineSeparatorPositions");
-		}
 		this.sourceEnd = sourceEnd;
 		this.sourceStart = sourceStart;
 	}
