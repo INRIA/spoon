@@ -7,4 +7,13 @@ public class Foo2 {
 		if (false);
 		else System.out.println();
 	}
+
+	void bug2() {
+		if (false)
+			System.out.println("valid");
+		else if (false);
+			// Do nothing...
+		else
+			System.out.println("invalid");
+	}
 }

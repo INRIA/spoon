@@ -373,10 +373,12 @@ public class JDTCommentBuilder {
 					}
 				}
 				if (e.getElseStatement() != null) {
-					SourcePosition thenPosition = e.getThenStatement().getPosition().isValidPosition() == false ? ((CtBlock) e.getThenStatement()).getStatement(0).getPosition() : e.getThenStatement().getPosition();
-					SourcePosition elsePosition = e.getElseStatement().getPosition().isValidPosition() == false ? ((CtBlock) e.getElseStatement()).getStatement(0).getPosition() : e.getElseStatement().getPosition();
-					if (comment.getPosition().getSourceStart() > thenPosition.getSourceEnd() && comment.getPosition().getSourceEnd() < elsePosition.getSourceStart()) {
-						e.getElseStatement().addComment(comment);
+					if (e.getThenStatement() != null) {
+						SourcePosition thenPosition = e.getThenStatement().getPosition().isValidPosition() == false ? ((CtBlock) e.getThenStatement()).getStatement(0).getPosition() : e.getThenStatement().getPosition();
+						SourcePosition elsePosition = e.getElseStatement().getPosition().isValidPosition() == false ? ((CtBlock) e.getElseStatement()).getStatement(0).getPosition() : e.getElseStatement().getPosition();
+						if (comment.getPosition().getSourceStart() > thenPosition.getSourceEnd() && comment.getPosition().getSourceEnd() < elsePosition.getSourceStart()) {
+							e.getElseStatement().addComment(comment);
+						}
 					}
 				}
 				try {
