@@ -123,6 +123,7 @@ public final class Refactoring {
 		final String cloneTypeName = tentativeTypeName.toString();
 		clone.setSimpleName(cloneTypeName);
 		type.getPackage().addType(clone);
+		//fix cloned type name
 		new CtScanner() {
 			@Override
 			public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
@@ -131,9 +132,6 @@ public final class Refactoring {
 				}
 				if (reference.getDeclaration() == type) {
 					reference.setSimpleName(cloneTypeName);
-				}
-				if (reference.getDeclaration() != clone) {
-					throw new SpoonException("post condition broken " + reference);
 				}
 				super.visitCtTypeReference(reference);
 			}
@@ -146,9 +144,6 @@ public final class Refactoring {
 				}
 				if (declaration.hasParent(type)) {
 					reference.getDeclaringType().setSimpleName(cloneTypeName);
-				}
-				if (!reference.getDeclaration().hasParent(clone)) {
-					throw new SpoonException("post condition broken " + reference);
 				}
 				super.visitCtExecutableReference(reference);
 
@@ -163,7 +158,43 @@ public final class Refactoring {
 				if (declaration.hasParent(type)) {
 					reference.getDeclaringType().setSimpleName(cloneTypeName);
 				}
-				if (reference.getDeclaration() == null || !reference.getDeclaration().hasParent(clone)) {
+				super.visitCtFieldReference(reference);
+			}
+
+		}.scan(clone);
+		//check that everything is OK
+		new CtScanner() {
+			@Override
+			public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
+				if (reference.getDeclaration() == null) {
+					return;
+				}
+				if (reference.getDeclaration().getTopLevelType() != clone) {
+					throw new SpoonException("post condition broken " + reference);
+				}
+				super.visitCtTypeReference(reference);
+			}
+
+			@Override
+			public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
+				CtExecutable<T> declaration = reference.getDeclaration();
+				if (declaration == null) {
+					return;
+				}
+				if (!declaration.hasParent(clone)) {
+					throw new SpoonException("post condition broken " + reference);
+				}
+				super.visitCtExecutableReference(reference);
+
+			}
+
+			@Override
+			public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
+				CtField<T> declaration = reference.getDeclaration();
+				if (declaration == null) {
+					return;
+				}
+				if (!declaration.hasParent(clone)) {
 					throw new SpoonException("post condition broken " + reference);
 				}
 				super.visitCtFieldReference(reference);
