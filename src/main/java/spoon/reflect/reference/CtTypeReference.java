@@ -21,6 +21,7 @@ import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
@@ -158,6 +159,11 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	boolean canAccess(CtTypeReference<?> type);
 
 	/**
+	 * @return true if this type can access that the `typeMember` in another type based on public, protected, package protected and private modifiers.
+	 */
+	boolean canAccess(CtTypeMember typeMember);
+
+	/**
 	 * Returns this, or top level type of this, if this is an inner type
 	 */
 	@DerivedProperty
@@ -213,5 +219,17 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	@DerivedProperty
 	CtTypeParameter getTypeParameterDeclaration();
 
+	/**
+	 * @param parentIsImplicit false then fully qualified name is printed.
+	 * 		true then type simple name is printed.
+	 */
+	@DerivedProperty
+	CtTypeReference<T> setImplicitParent(boolean parentIsImplicit);
 
+	/**
+	 * @return false then fully qualified name is printed.
+	 * 		true then type simple name is printed.
+	 */
+	@DerivedProperty
+	boolean isImplicitParent();
 }

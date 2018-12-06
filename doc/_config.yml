@@ -18,9 +18,16 @@ include: [_includes]
 # variables
 
 sidebar_tagline: Spoon
-sidebar_version: version 7.0.0
-spoon_release: "7.1.0"
-spoon_snapshot: "7.2.0-SNAPSHOT"
+
+# this is replaced at deployment time by job https://ci.inria.fr/sos/job/Website Deployer/
+# LATESTVERSION=`curl -s "http://search.maven.org/solrsearch/select?q=g:%22fr.inria.gforge.spoon%22+AND+a:%22spoon-core%22" | jq .response.docs[0].latestVersion`
+# sed -i -e "s/^spoon_release: .*/spoon_release: $LATESTVERSION/" _config.yml
+spoon_release: "TO_BE_REPLACED"
+
+# this is replaced at deployment time by job https://ci.inria.fr/sos/job/Website Deployer/
+# SNAPSHOTVERSION=`xmlstarlet sel -t -v /_:project/_:version ../pom.xml`
+# sed -i -e "s/^spoon_snapshot: .*/spoon_snapshot: \"$SNAPSHOTVERSION\"/" _config.yml
+spoon_snapshot: "TO_BE_REPLACED"
 
 exclude:
   - _site

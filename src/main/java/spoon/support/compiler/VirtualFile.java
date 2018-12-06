@@ -16,6 +16,7 @@
  */
 package spoon.support.compiler;
 
+import spoon.compiler.Environment;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 
@@ -42,6 +43,11 @@ public class VirtualFile implements SpoonFile {
 	@Override
 	public InputStream getContent() {
 		return new ByteArrayInputStream(content.getBytes());
+	}
+
+	@Override
+	public char[] getContentChars(Environment env) {
+		return content.toCharArray();
 	}
 
 	@Override

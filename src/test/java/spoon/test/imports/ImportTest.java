@@ -40,6 +40,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
@@ -57,6 +58,8 @@ import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DefaultCoreFactory;
+import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
 import spoon.test.imports.testclasses.A;
@@ -89,6 +92,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
@@ -580,6 +584,65 @@ public class ImportTest {
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$PublicInterface", true, true, true/*canAccess, but has no access to accessType*/, "spoon.test.imports.testclasses.internal.ChildClass", null);
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$PublicInterface$NestedOfPublicInterface", true, true, true/*canAccess, has access to first accessType, but not to full accesspath*/, "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface", "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface");
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$PublicInterface$NestedPublicInterface", true, true, true/*canAccess, has access to first accessType, but not to full accesspath*/, "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface", "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface");
+	}
+	
+	@Test
+	public void testCanAccessTypeMember() {
+		Launcher launcher = new Launcher();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/imports/testclasses/memberaccess", "--with-imports"
+		});
+		launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		CtType<?> typeA = factory.Class().get(spoon.test.imports.testclasses.memberaccess.A.class);
+		CtType<?> iface = factory.Interface().get(spoon.test.imports.testclasses.memberaccess.Iface.class);
+		
+		//contract: A can access own fields
+		assertTrue(typeA.getReference().canAccess(typeA.getField("privateField")));
+		assertTrue(typeA.getReference().canAccess(typeA.getField("protectedField")));
+		assertTrue(typeA.getReference().canAccess(typeA.getField("field")));
+		assertTrue(typeA.getReference().canAccess(typeA.getField("publicField")));
+		assertTrue(typeA.getReference().canAccess(iface.getField("field")));
+		
+		//contract: ExtendsA of same package can access fields of A, excluding private
+		{
+			CtType<?> typeExtendsA = factory.Class().get(spoon.test.imports.testclasses.memberaccess.ExtendsA.class);
+			assertFalse(typeExtendsA.getReference().canAccess(typeA.getField("privateField")));
+			assertTrue(typeExtendsA.getReference().canAccess(typeA.getField("protectedField")));
+			assertTrue(typeExtendsA.getReference().canAccess(typeA.getField("field")));
+			assertTrue(typeExtendsA.getReference().canAccess(typeA.getField("publicField")));
+			assertTrue(typeExtendsA.getReference().canAccess(iface.getField("field")));
+		}
+		
+		//contract: DoesnotExtendA of same package can access fields of A, excluding private
+		{
+			CtType<?> typeDoesnotExtendA = factory.Class().get(spoon.test.imports.testclasses.memberaccess.DoesnotExtendA.class);
+			assertFalse(typeDoesnotExtendA.getReference().canAccess(typeA.getField("privateField")));
+			assertTrue(typeDoesnotExtendA.getReference().canAccess(typeA.getField("protectedField")));
+			assertTrue(typeDoesnotExtendA.getReference().canAccess(typeA.getField("field")));
+			assertTrue(typeDoesnotExtendA.getReference().canAccess(typeA.getField("publicField")));
+			assertTrue(typeDoesnotExtendA.getReference().canAccess(iface.getField("field")));
+		}
+
+		//contract: ExtendsA in different package can access fields of A, excluding private and package protected
+		{
+			CtType<?> typeExtendsA = factory.Class().get(spoon.test.imports.testclasses.memberaccess2.ExtendsA.class);
+			assertFalse(typeExtendsA.getReference().canAccess(typeA.getField("privateField")));
+			assertTrue(typeExtendsA.getReference().canAccess(typeA.getField("protectedField")));
+			assertFalse(typeExtendsA.getReference().canAccess(typeA.getField("field")));
+			assertTrue(typeExtendsA.getReference().canAccess(typeA.getField("publicField")));
+			assertTrue(typeExtendsA.getReference().canAccess(iface.getField("field")));
+		}
+		
+		//contract: DoesnotExtendA in different package can access fields of A, excluding private, protected and package protected
+		{
+			CtType<?> typeDoesnotExtendA = factory.Class().get(spoon.test.imports.testclasses.memberaccess2.DoesnotExtendA.class);
+			assertFalse(typeDoesnotExtendA.getReference().canAccess(typeA.getField("privateField")));
+			assertFalse(typeDoesnotExtendA.getReference().canAccess(typeA.getField("protectedField")));
+			assertFalse(typeDoesnotExtendA.getReference().canAccess(typeA.getField("field")));
+			assertTrue(typeDoesnotExtendA.getReference().canAccess(typeA.getField("publicField")));
+			assertTrue(typeDoesnotExtendA.getReference().canAccess(iface.getField("field")));
+		}
 	}
 
 	@Test
@@ -1196,11 +1259,11 @@ public class ImportTest {
 		while(st.hasMoreTokens()) {
 			String line = st.nextToken();
 			if(line.startsWith("import")) {
-				line = line.substring(0, line.length() - 2); // we remove the last ';' to be able to compare x.y and x.y.z
+				line = line.substring(0, line.length() - 1); // we remove the last ';' to be able to compare x.y and x.y.z
 				countOfImports++;
 				if(lastImport!=null) {
 					//check that next import is alphabetically higher then last import
-					assertTrue(lastImport+" should be before "+line, lastImport.compareTo(line) < 0);
+					assertTrue(lastImport+" should be after "+line, lastImport.compareTo(line) < 0);
 				}
 				lastImport = line;
 			} else {
@@ -1471,5 +1534,26 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 				"    }" + nl +
 				"}", launcher.getFactory().Type().get("spoon.test.imports.testclasses.JavaLongUse").toString());
 	}
-
+	@Test
+	public void testImportReferenceIsFullyQualifiedAndNoGeneric() {
+		//contract: the reference of CtImport is always fully qualified and contains no actual type arguments
+		Factory f = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
+		CtTypeReference<?> typeRef = f.Type().createReference("some.package.SomeType");
+		typeRef.addActualTypeArgument(f.Type().createTypeParameterReference("T"));
+		assertEquals("some.package.SomeType<T>", typeRef.toString());
+		typeRef.setImplicit(true);
+		typeRef.setImplicitParent(true);
+		assertTrue(typeRef.isImplicit());
+		assertTrue(typeRef.getPackage().isImplicit());
+		CtImport imprt = f.Type().createImport(typeRef);
+		CtTypeReference<?> typeRef2 = (CtTypeReference<?>) imprt.getReference();
+		assertNotSame(typeRef2, typeRef);
+		assertEquals("some.package.SomeType", typeRef2.toString());
+		assertFalse(typeRef2.isImplicit());
+		assertFalse(typeRef2.getPackage().isImplicit());
+		//origin reference did not changed
+		assertEquals(1, typeRef.getActualTypeArguments().size());
+		assertTrue(typeRef.isImplicit());
+		assertTrue(typeRef.getPackage().isImplicit());
+	}
 }

@@ -41,6 +41,7 @@ import spoon.support.SpoonClassNotFoundException;
 import spoon.test.type.testclasses.Mole;
 import spoon.test.type.testclasses.Pozole;
 import spoon.test.type.testclasses.TypeMembersOrder;
+import spoon.testing.utils.ModelUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -162,6 +163,25 @@ public class TypeTest {
 	}
 
 	@Test
+	public void testTypeAccessImplicitIsDerived() throws Exception {
+		// contract: A CtTypeAccess#implicit is derived
+		CtType<?> aPozole = ModelUtils.buildClass(Pozole.class);
+		final CtMethod<?> season = aPozole.getMethodsByName("season").get(0);
+
+		CtTypeAccess<?> typeAccesses = season.getElements(new TypeFilter<>(CtTypeAccess.class)).get(0);
+		assertFalse(typeAccesses.isImplicit());
+		assertFalse(typeAccesses.getAccessedType().isImplicit());
+		//contract: setting the value on accessed type influences value on type access too
+		typeAccesses.getAccessedType().setImplicit(true);
+		assertTrue(typeAccesses.isImplicit());
+		assertTrue(typeAccesses.getAccessedType().isImplicit());
+		//contract: setting the value on type access influences value on type too
+		typeAccesses.setImplicit(false);
+		assertFalse(typeAccesses.isImplicit());
+		assertFalse(typeAccesses.getAccessedType().isImplicit());
+	}
+
+	@Test
 	public void test() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/TorIntegration.java");
@@ -205,9 +225,14 @@ public class TypeTest {
 		assertEquals(1, lambdas.get(0).getTypeCasts().size());
 		assertTrue(lambdas.get(0).getTypeCasts().get(0) instanceof CtIntersectionTypeReference);
 		final CtIntersectionTypeReference<?> intersectionType = lambdas.get(0).getTypeCasts().get(0).asCtIntersectionTypeReference();
-		assertEquals("java.lang.Runnable & java.io.Serializable", intersectionType.toString());
-		assertEquals(aPozole.getFactory().Type().createReference(Runnable.class), intersectionType.getBounds().stream().collect(Collectors.toList()).get(0));
-		assertEquals(aPozole.getFactory().Type().createReference(Serializable.class), intersectionType.getBounds().stream().collect(Collectors.toList()).get(1));
+		assertTrue(intersectionType.toString().contains("java.lang.Runnable")
+			&& intersectionType.toString().contains("java.io.Serializable"));
+		CtTypeReference refRunnable = aPozole.getFactory().Type().createReference(Runnable.class);
+		CtTypeReference refSerializable = aPozole.getFactory().Type().createReference(Serializable.class);
+		CtTypeReference ref0 = intersectionType.getBounds().stream().collect(Collectors.toList()).get(0);
+		CtTypeReference ref1 = intersectionType.getBounds().stream().collect(Collectors.toList()).get(1);
+		assertTrue((ref0.equals(refRunnable) || ref0.equals(refSerializable))
+			&& (ref1.equals(refRunnable) || ref1.equals(refSerializable)));
 
 		canBeBuilt(target, 8, true);
 	}

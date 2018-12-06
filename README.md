@@ -31,14 +31,7 @@ If you use Spoon for academic purposes, please cite: Renaud Pawlak, Martin Monpe
 
 ## Getting started in 2 seconds
 
-Get latest stable version with Maven:
-```xml
-<dependency>
-    <groupId>fr.inria.gforge.spoon</groupId>
-    <artifactId>spoon-core</artifactId>
-    <version>7.1.0</version>
-</dependency>
-```
+Get latest stable version with Maven, see <https://search.maven.org/artifact/fr.inria.gforge.spoon/spoon-core>
 
 And start using it:
 
@@ -83,34 +76,7 @@ mvn test
 
 ### Download
 
-Stable version:
-
-```xml
-<dependency>
-    <groupId>fr.inria.gforge.spoon</groupId>
-    <artifactId>spoon-core</artifactId>
-    <version>7.1.0</version>
-</dependency>
-```
-
-Snapshot version:
-
-```xml
-<dependencies>
-	<dependency>
-		<groupId>fr.inria.gforge.spoon</groupId>
-		<artifactId>spoon-core</artifactId>
-		<version>7.2.0-SNAPSHOT</version>
-	</dependency>
-</dependencies>
-<repositories>
-	<repository>
-      <id>maven.inria.fr-snapshot</id>
-      <name>Maven Repository for Spoon Snapshots</name>
-      <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
-    </repository>
-</repositories>
-```
+The download information is at <http://spoon.gforge.inria.fr/>.
 
 ### Eclipse IDE Setup
 

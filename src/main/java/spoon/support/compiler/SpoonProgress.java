@@ -26,6 +26,7 @@ public interface SpoonProgress {
 		COMMENT,
 		MODEL,
 		IMPORT,
+		COMMENT_LINKING,
 		PROCESS,
 		PRINT
 	}

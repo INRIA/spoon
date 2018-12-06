@@ -16,6 +16,7 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.chain.CtScannerListener;
@@ -42,6 +43,7 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 	private T result;
 	private CtScannerListener listener;
 	protected CtRole scannedRole;
+	private boolean visitCompilationUnitContent = false;
 
 	protected void terminate() {
 		terminate = true;
@@ -153,6 +155,24 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 		}
 	}
 
+	@Override
+	public void visitCtCompilationUnit(CtCompilationUnit compilationUnit) {
+		if (isVisitCompilationUnitContent()) {
+			enter(compilationUnit);
+			scan(CtRole.COMMENT, compilationUnit.getComments());
+			scan(CtRole.ANNOTATION, compilationUnit.getAnnotations());
+			scan(CtRole.PACKAGE_DECLARATION, compilationUnit.getPackageDeclaration());
+			scan(CtRole.DECLARED_IMPORT, compilationUnit.getImports());
+			//visit directly the module (instead of reference only)
+			scan(CtRole.DECLARED_MODULE, compilationUnit.getDeclaredModule());
+			//visit directly the types (instead of references only)
+			scan(CtRole.DECLARED_TYPE, compilationUnit.getDeclaredTypes());
+			exit(compilationUnit);
+		} else {
+			super.visitCtCompilationUnit(compilationUnit);
+		}
+	}
+
 	/**
 	 * Called for each scanned element. The call of this method is influenced by {@link ScanningMode} defined by {@link CtScannerListener}
 	 * @param role a role of `element` in parent
@@ -178,5 +198,21 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 				}
 			}
 		}
+	}
+
+	/**
+	 * @return true if types and modules are visited. false if only their references are visited. false is default
+	 */
+	public boolean isVisitCompilationUnitContent() {
+		return visitCompilationUnitContent;
+	}
+
+	/**
+	 * @param visitCompilationUnitContent use true if types and modules have to be visited. false if only their references have to be visited.
+	 * false is default
+	 */
+	public EarlyTerminatingScanner<T> setVisitCompilationUnitContent(boolean visitCompilationUnitContent) {
+		this.visitCompilationUnitContent = visitCompilationUnitContent;
+		return this;
 	}
 }

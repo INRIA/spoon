@@ -243,7 +243,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					if (excludesFields.contains(ctField.getSimpleName())) {
 						continue;
 					}
-					if (isConstantOrStatic(ctField)) {
+					if (isConstantOrStaticOrTransient(ctField)) {
 						continue;
 					}
 					if (isSubTypeOfCtElement(ctField.getType())) {
@@ -520,8 +520,8 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 				return false;
 			}
 
-			private boolean isConstantOrStatic(CtField<?> ctField) {
-				return ctField.getModifiers().contains(ModifierKind.FINAL) || ctField.getModifiers().contains(ModifierKind.STATIC);
+			private boolean isConstantOrStaticOrTransient(CtField<?> ctField) {
+				return ctField.getModifiers().contains(ModifierKind.FINAL) || ctField.getModifiers().contains(ModifierKind.STATIC)  || ctField.getModifiers().contains(ModifierKind.TRANSIENT) ;
 			}
 		}.scan(getFactory().Class().get(CtInheritanceScanner.class));
 	}

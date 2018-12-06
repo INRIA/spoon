@@ -29,6 +29,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.support.Experimental;
 import spoon.support.UnsettableProperty;
+import spoon.support.util.ModelList;
 
 /**
  * Defines a compilation unit. In Java, a compilation unit can contain only one
@@ -78,6 +79,7 @@ public interface CtCompilationUnit extends CtElement {
 	 * Gets all the types declared in this compilation unit.
 	 */
 	@DerivedProperty
+	@PropertyGetter(role = CtRole.DECLARED_TYPE)
 	List<CtType<?>> getDeclaredTypes();
 
 	/**
@@ -124,6 +126,7 @@ public interface CtCompilationUnit extends CtElement {
 	 * Gets the declared module if the compilationUnit is "module-info.java"
 	 */
 	@DerivedProperty
+	@PropertyGetter(role = CtRole.DECLARED_MODULE)
 	CtModule getDeclaredModule();
 
 	/**
@@ -194,7 +197,7 @@ public interface CtCompilationUnit extends CtElement {
 	 */
 	@Experimental
 	@PropertyGetter(role = CtRole.DECLARED_IMPORT)
-	List<CtImport> getImports();
+	ModelList<CtImport> getImports();
 
 	@Override
 	CtCompilationUnit clone();

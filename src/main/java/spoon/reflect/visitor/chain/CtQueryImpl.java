@@ -559,7 +559,13 @@ public class CtQueryImpl implements CtQuery {
 	}
 
 	private static final String JDK9_BASE_PREFIX = "java.base/";
+
+	//Pre jdk11 ClassCastException message parsing
 	private static final Pattern cceMessagePattern = Pattern.compile("(\\S+) cannot be cast to (\\S+)");
+
+	//In some implementation of jdk11 the message for ClassCastException is slightly different
+	private static final Pattern cceMessagePattern2 = Pattern.compile("class (\\S+) cannot be cast to class (\\S+)(.*)");
+
 	private static final int indexOfCallerInStack = getIndexOfCallerInStackOfLambda();
 	/**
 	 * JVM implementations reports exception in call of lambda in different way.
@@ -594,28 +600,34 @@ public class CtQueryImpl implements CtQuery {
 		}
 	}
 
+	private static Class<?> processCCE(String objectClassName, String expectedClassName, Object input) {
+		if (objectClassName.startsWith(JDK9_BASE_PREFIX)) {
+			objectClassName = objectClassName.substring(JDK9_BASE_PREFIX.length());
+		}
+		if (objectClassName.equals(input.getClass().getName())) {
+			try {
+				return Class.forName(expectedClassName);
+			} catch (ClassNotFoundException e1) {
+				/*
+				 * It wasn't able to load the expected class from the CCE.
+				 * OK, so we cannot optimize next call and we have to let JVM to throw next CCE, but it is only performance problem. Not functional.
+				 */
+			}
+		}
+		return null;
+	}
+
 	private static Class<?> detectTargetClassFromCCE(ClassCastException e, Object input) {
 		//detect expected class from CCE message, because we have to quickly and silently ignore elements of other types
 		String message = e.getMessage();
 		if (message != null) {
 			Matcher m = cceMessagePattern.matcher(message);
 			if (m.matches()) {
-				String objectClassName = m.group(1);
-				String expectedClassName = m.group(2);
-
-
-				if (objectClassName.startsWith(JDK9_BASE_PREFIX)) {
-					objectClassName = objectClassName.substring(JDK9_BASE_PREFIX.length());
-				}
-				if (objectClassName.equals(input.getClass().getName())) {
-					try {
-						return Class.forName(expectedClassName);
-					} catch (ClassNotFoundException e1) {
-						/*
-						 * It wasn't able to load the expected class from the CCE.
-						 * OK, so we cannot optimize next call and we have to let JVM to throw next CCE, but it is only performance problem. Not functional.
-						 */
-					}
+				return processCCE(m.group(1), m.group(2), input);
+			} else {
+				Matcher m2 = cceMessagePattern2.matcher(message);
+				if (m2.matches()) {
+					return processCCE(m2.group(1), m2.group(2), input);
 				}
 			}
 		}

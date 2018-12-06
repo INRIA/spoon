@@ -16,6 +16,9 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.javadoc.internal.Javadoc;
+import spoon.javadoc.internal.JavadocBlockTag;
+import spoon.javadoc.internal.JavadocDescriptionElement;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
@@ -30,6 +33,9 @@ import java.util.List;
 import static spoon.support.compiler.jdt.JDTCommentBuilder.cleanComment;
 
 public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
+
+	/** the structured object resulting from parsing */
+	private transient Javadoc javadoc;
 
 	@MetamodelPropertyField(role = CtRole.COMMENT_TAG)
 	private final ModelList<CtJavaDocTag> tags = new ModelList<CtJavaDocTag>() {
@@ -115,38 +121,15 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 		String currentTagContent = "";
 		CtJavaDocTag.TagType currentTag = null;
 
-		// we can split only on \n because cleanComment has already regularized the end of lines to \n
-		String[] lines = cleanComment(content).split("\n");
-		boolean tagStarted = false;
-		for (String aLine : lines) {
-			String line = aLine.trim();
-			if (line.startsWith(CtJavaDocTag.JAVADOC_TAG_PREFIX)) {
-				tagStarted = true;
-				int endIndex = line.indexOf(' ');
-				if (endIndex == -1) {
-					endIndex = line.length();
-				}
-				defineCommentContent(currentTagContent, currentTag);
-
-				currentTag = CtJavaDocTag.TagType.tagFromName(line.substring(1, endIndex).toLowerCase());
-				if (endIndex == line.length()) {
-					currentTagContent = "";
-				} else {
-					currentTagContent = line.substring(endIndex + 1);
-				}
-			} else {
-				if (tagStarted == false) {
-					longDescription += CtComment.LINE_SEPARATOR + aLine;
-				} else {
-					currentTagContent += CtComment.LINE_SEPARATOR + aLine;
-				}
-			}
+		javadoc = Javadoc.parse(cleanComment(content));
+		for (JavadocBlockTag tag: javadoc.getBlockTags()) {
+			addTag(getFactory().createJavaDocTag(tag.getContent().toText(), CtJavaDocTag.TagType.tagFromName(tag.getTagName())));
 		}
-		defineCommentContent(currentTagContent, currentTag);
 
 		// we cannot call super.setContent because it calls cleanComment (which has already been done above)
 		// and we don't want to clean the comment twice
-		String contentWithTags = longDescription.trim(); // trim is required for backward compatibility
+		String contentWithTags = javadoc.getDescription().toText().trim(); // trim is required for backward compatibility
+
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.COMMENT_CONTENT, contentWithTags, this.content);
 		this.content = contentWithTags;
 
@@ -155,18 +138,6 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 
 
 
-	/**
-	 * Define the content of the comment
-	 * @param comment the comment
-	 * @param tagContent the tagContent of the tag
-	 * @param tagType the tag type
-	 */
-	private void defineCommentContent(String tagContent, CtJavaDocTag.TagType tagType) {
-		if (tagType != null) {
-			CtJavaDocTag docTag = this.getFactory().Code().createJavaDocTag(tagContent, tagType);
-			this.addTag(docTag);
-		}
-	}
 	@Override
 	public String getLongDescription() {
 		int indexStartLongDescription = getShortDescription().length();
@@ -187,5 +158,10 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 	@Override
 	public CtJavaDoc clone() {
 		return (CtJavaDoc) super.clone();
+	}
+
+	@Override
+	public List<JavadocDescriptionElement> getJavadocElements() {
+		return javadoc.getDescription().getElements();
 	}
 }

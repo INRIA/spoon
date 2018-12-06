@@ -212,4 +212,15 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	protected boolean isWildcard() {
 		return false;
 	}
+
+	@Override
+	public boolean isImplicitParent() {
+		return false;
+	}
+
+	@Override
+	@UnsettableProperty
+	public CtTypeParameterReferenceImpl setImplicitParent(boolean packageIsImplicit) {
+		return this;
+	}
 }

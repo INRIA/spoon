@@ -15,8 +15,6 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 package spoon.support.visitor.replace;
-
-
 /**
  * Used to replace an element by another one.
  *
@@ -1270,7 +1268,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCompilationUnitImportsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	class CtCompilationUnitImportsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.Collection> {
 		private final spoon.reflect.declaration.CtCompilationUnit element;
 
 		CtCompilationUnitImportsReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
@@ -1278,7 +1276,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		}
 
 		@java.lang.Override
-		public void set(java.util.List replace) {
+		public void set(java.util.Collection replace) {
 			this.element.setImports(replace);
 		}
 	}
@@ -1341,7 +1339,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	public static void replace(spoon.reflect.declaration.CtElement original, spoon.reflect.declaration.CtElement replace) {
 		try {
-			new spoon.support.visitor.replace.ReplacementVisitor(original, (replace == null ? spoon.support.visitor.replace.ReplacementVisitor.EMPTY : new spoon.reflect.declaration.CtElement[]{ replace })).scan(original.getParent());
+			new spoon.support.visitor.replace.ReplacementVisitor(original, (replace == null ? EMPTY : new spoon.reflect.declaration.CtElement[]{ replace })).scan(original.getParent());
 		} catch (spoon.support.visitor.replace.InvalidReplaceException e) {
 			throw e;
 		}
@@ -1363,7 +1361,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	private ReplacementVisitor(spoon.reflect.declaration.CtElement original, spoon.reflect.declaration.CtElement... replace) {
 		this.original = original;
-		this.replace = (replace == null) ? spoon.support.visitor.replace.ReplacementVisitor.EMPTY : replace;
+		this.replace = (replace == null) ? EMPTY : replace;
 	}
 
 	private <K, V extends spoon.reflect.declaration.CtElement> void replaceInMapIfExist(java.util.Map<K, V> mapProtected, spoon.support.visitor.replace.ReplaceMapListener listener) {
@@ -2220,4 +2218,3 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceElementIfExist(wildcardReference.getTypeReference(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeMemberWildcardImportReferenceTypeReferenceReplaceListener(wildcardReference));
 	}
 }
-

@@ -19,6 +19,7 @@ package spoon.support.sniper.internal;
 import java.util.List;
 
 import spoon.SpoonException;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.path.CtRole;
 
 import static spoon.support.sniper.internal.ElementSourceFragment.isSpaceFragment;
@@ -41,12 +42,18 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 	@Override
 	public boolean matchesPrinterEvent(PrinterEvent event) {
 		CtRole role = event.getRole();
+		if (!hasNextChildToken()) {
+			//there are no more tokens to process. Leave this context
+			return false;
+		}
 		if (event.isWhitespace() || role == CtRole.COMMENT) {
 			return true;
 		}
 		if (role != null) {
 			//the collection context accepts event as long as it is for same role
 			return findIndexOfNextChildTokenOfRole(0, role) >= 0;
+		} else if (event.getElement() instanceof CtCompilationUnit) {
+			return findIndexOfNextChildTokenOfElement(event.getElement()) >= 0;
 		}
 		if (event instanceof TokenPrinterEvent) {
 			TokenPrinterEvent tpe = (TokenPrinterEvent) event;
