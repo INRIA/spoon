@@ -52,7 +52,7 @@ class JDTImportBuilder {
 		this.sourceUnit = declarationUnit.compilationResult.compilationUnit;
 		this.filePath = CharOperation.charToString(sourceUnit.getFileName());
 		// get the CU: it has already been built during model building in JDTBasedSpoonCompiler
-		this.spoonUnit = factory.CompilationUnit().getOrCreate(filePath);
+		this.spoonUnit = JDTTreeBuilder.getOrCreateCompilationUnit(declarationUnit, factory);
 		this.imports = new HashSet<>();
 	}
 

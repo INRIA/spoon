@@ -86,10 +86,9 @@ public class PositionBuilder {
 			return SourcePosition.NOPOSITION;
 		}
 		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();
-		CompilationUnit cu = this.jdtTreeBuilder.getFactory().CompilationUnit().getOrCreate(new String(this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
+		CompilationUnit cu = this.jdtTreeBuilder.getContextBuilder().compilationUnitSpoon;
 		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
 		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
-		cu.setLineSeparatorPositions(lineSeparatorPositions);
 		char[] contents = cr.compilationUnit.getContents();
 
 		int sourceStart = node.sourceStart;
@@ -509,7 +508,7 @@ public class PositionBuilder {
 
 	private void setModifiersPosition(CtModifiable e, int start, int end) {
 		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();
-		CompilationUnit cu = this.jdtTreeBuilder.getFactory().CompilationUnit().getOrCreate(new String(this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.getFileName()));
+		CompilationUnit cu = this.jdtTreeBuilder.getContextBuilder().compilationUnitSpoon;
 		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
 		char[] contents = cr.compilationUnit.getContents();
 

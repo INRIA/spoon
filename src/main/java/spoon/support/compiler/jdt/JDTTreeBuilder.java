@@ -138,6 +138,7 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -775,10 +776,20 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return false;
 	}
 
+	static CompilationUnit getOrCreateCompilationUnit(CompilationUnitDeclaration compilationUnitDeclaration, Factory factory) {
+		CompilationUnit compilationUnitSpoon = factory.CompilationUnit().getOrCreate(new String(compilationUnitDeclaration.getFileName()));
+		if (compilationUnitSpoon.getLineSeparatorPositions() == null) {
+			compilationUnitSpoon.setLineSeparatorPositions(compilationUnitDeclaration.compilationResult.lineSeparatorPositions);
+		} else if (compilationUnitSpoon.getLineSeparatorPositions() != compilationUnitDeclaration.compilationResult.lineSeparatorPositions) {
+			throw new SpoonException("Unexpected CompilationUnit lineSeparatorPositions");
+		}
+		return compilationUnitSpoon;
+	}
+
 	@Override
 	public boolean visit(CompilationUnitDeclaration compilationUnitDeclaration, CompilationUnitScope scope) {
 		context.compilationunitdeclaration = scope.referenceContext;
-		context.compilationUnitSpoon = getFactory().CompilationUnit().getOrCreate(new String(context.compilationunitdeclaration.getFileName()));
+		context.compilationUnitSpoon = getOrCreateCompilationUnit(context.compilationunitdeclaration, getFactory());
 		ModuleBinding enclosingModule = scope.fPackage.enclosingModule;
 
 		CtModule module;
