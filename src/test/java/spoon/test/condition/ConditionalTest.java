@@ -25,6 +25,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
@@ -118,7 +120,7 @@ public class ConditionalTest {
 
 	@Test
 	public void testNoThenBlockBug() throws Exception {
-		// contract: empty statement are correctly handled
+		// contract: an empty statement is correctly handled
 		// the fix consists of addind visit(EmptyStatement) in JDTTreeBuilder
 		final CtType aFoo = ModelUtils.buildClass(Foo2.class);
 		CtMethod<Object> method = aFoo.getMethod("bug");
@@ -130,5 +132,32 @@ public class ConditionalTest {
 		// and we have the correct else statement
 		assertNotNull(conditions.get(0).getElseStatement());
 		assertEquals("java.lang.System.out.println();", conditions.get(0).getElseStatement().toString().trim());
+	}
+
+	@Test
+	public void testNoThenBlockBug2() throws Exception {
+		// contract: an empty statement is correctly handled
+		// no NPE should be produced during the model build
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/java/spoon/test/condition/testclasses/Foo2.java");
+		CtModel m = launcher.buildModel();
+
+		// check if we have correct then-else statements
+		CtType<?> aFoo = m.getAllTypes().stream()
+				.filter(t -> t.getSimpleName().equals("Foo2"))
+				.findFirst()
+				.get();
+
+		CtMethod<Object> method = aFoo.getMethod("bug2");
+		final List<CtIf> conditions = method.getElements(new TypeFilter<>(CtIf.class));
+		CtIf cond = conditions.get(0);
+		CtStatement thenStatement = cond.getThenStatement();
+		CtStatement elseStatement = cond.getElseStatement();
+
+		assertEquals("java.lang.System.out.println(\"valid\");", thenStatement.toString().trim());
+		CtIf innerIf = ((CtBlock) elseStatement).getStatement(0);
+
+		assertNull(innerIf.getThenStatement());
+		assertEquals("java.lang.System.out.println(\"invalid\");", innerIf.getElseStatement().toString().trim());
 	}
 }

@@ -364,19 +364,23 @@ public class JDTCommentBuilder {
 
 			@Override
 			public void visitCtIf(CtIf e) {
-				if (e.getThenStatement() != null) {
-					if (!(e.getThenStatement() instanceof CtBlock)) {
-						if (comment.getPosition().getSourceEnd() <= e.getThenStatement().getPosition().getSourceStart()) {
-							e.getThenStatement().addComment(comment);
+				CtStatement thenStatement = e.getThenStatement();
+				if (thenStatement != null) {
+					if (!(thenStatement instanceof CtBlock)) {
+						if (comment.getPosition().getSourceEnd() <= thenStatement.getPosition().getSourceStart()) {
+							thenStatement.addComment(comment);
 							return;
 						}
 					}
 				}
-				if (e.getElseStatement() != null) {
-					SourcePosition thenPosition = e.getThenStatement().getPosition().isValidPosition() == false ? ((CtBlock) e.getThenStatement()).getStatement(0).getPosition() : e.getThenStatement().getPosition();
-					SourcePosition elsePosition = e.getElseStatement().getPosition().isValidPosition() == false ? ((CtBlock) e.getElseStatement()).getStatement(0).getPosition() : e.getElseStatement().getPosition();
+				CtStatement elseStatement = e.getElseStatement();
+				if (elseStatement != null && thenStatement != null) {
+					CtStatement thenExpression = ((CtBlock) thenStatement).getStatement(0);
+					CtStatement elseExpression = ((CtBlock) thenStatement).getStatement(0);
+					SourcePosition thenPosition = thenStatement.getPosition().isValidPosition() ? thenStatement.getPosition() : thenExpression.getPosition();
+					SourcePosition elsePosition = elseStatement.getPosition().isValidPosition() ? elseStatement.getPosition() : elseExpression.getPosition();
 					if (comment.getPosition().getSourceStart() > thenPosition.getSourceEnd() && comment.getPosition().getSourceEnd() < elsePosition.getSourceStart()) {
-						e.getElseStatement().addComment(comment);
+						elseStatement.addComment(comment);
 					}
 				}
 				try {

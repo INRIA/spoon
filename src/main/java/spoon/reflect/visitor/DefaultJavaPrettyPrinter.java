@@ -1231,14 +1231,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		scan(ifElement.getCondition());
 		printer.writeSeparator(")");
 		CtStatement thenStmt = ifElement.getThenStatement();
+		CtStatement elseStmt = ifElement.getElseStatement();
 		elementPrinterHelper.writeIfOrLoopBlock(thenStmt);
-		if (ifElement.getElseStatement() != null) {
+		if (elseStmt != null) {
 			List<CtComment> comments = elementPrinterHelper.getComments(ifElement, CommentOffset.INSIDE);
-			for (CtComment comment : comments) {
-				SourcePosition thenPosition =
-						ifElement.getThenStatement().getPosition().isValidPosition() ? ifElement.getThenStatement().getPosition() : ((CtBlock) ifElement.getThenStatement()).getStatement(0).getPosition();
-				if (comment.getPosition().getSourceStart() > thenPosition.getSourceEnd()) {
-					elementPrinterHelper.writeComment(comment);
+			if (thenStmt != null) {
+				SourcePosition thenPosition = thenStmt.getPosition();
+				if (!thenPosition.isValidPosition()) {
+					CtStatement thenExpression = ((CtBlock) thenStmt).getStatement(0);
+					thenPosition = thenExpression.getPosition();
+				}
+				for (CtComment comment : comments) {
+					if (comment.getPosition().getSourceStart() > thenPosition.getSourceEnd()) {
+						elementPrinterHelper.writeComment(comment);
+					}
 				}
 			}
 			if (thenStmt instanceof CtBlock && !thenStmt.isImplicit()) {
@@ -1246,7 +1252,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printer.writeSpace();
 			}
 			printer.writeKeyword("else");
-			elementPrinterHelper.writeIfOrLoopBlock(ifElement.getElseStatement());
+			elementPrinterHelper.writeIfOrLoopBlock(elseStmt);
 		}
 		exitCtStatement(ifElement);
 	}
