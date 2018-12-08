@@ -55,6 +55,7 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.comment.testclasses.BlockComment;
 import spoon.test.comment.testclasses.Comment1;
 import spoon.test.position.testclasses.AnnonymousClassNewIface;
@@ -77,6 +78,7 @@ import spoon.test.position.testclasses.FooLabel;
 import spoon.test.position.testclasses.FooMethod;
 import spoon.test.position.testclasses.FooStatement;
 import spoon.test.position.testclasses.FooSwitch;
+import spoon.test.position.testclasses.Kokos;
 import spoon.test.position.testclasses.NoMethodModifiers;
 import spoon.test.position.testclasses.PositionParameterTypeWithReference;
 import spoon.test.position.testclasses.PositionTry;
@@ -794,6 +796,22 @@ public class PositionTest {
 		assertEquals("m", contentAtPosition(classContent, bhsp.getNameStart(), bhsp.getNameEnd()));
 		assertEquals(end, bhsp.getBodyStart());
 		assertEquals(end - 1, bhsp.getBodyEnd());
+	}
+
+	@Test
+	public void testTypeModifiersPositionAfterComment() throws Exception {
+		// contract: the modifier position is correct even when comment contains modifier name too
+		CtType<?> type = ModelUtils.buildClass(cfg -> {
+			cfg.getEnvironment().setCommentEnabled(true);
+		}, Kokos.class);
+		String classContent = getClassContent(type);
+		
+		CtExtendedModifier modifier = type.getExtendedModifiers().iterator().next();
+		SourcePosition commentPos = type.getComments().get(0).getPosition();
+		//modifier is not positioned in comment, but after comment
+		assertTrue(commentPos.getSourceEnd() < modifier.getPosition().getSourceStart());
+		
+		assertEquals("public", contentAtPosition(classContent, modifier.getPosition()));
 	}
 
 	@Test
