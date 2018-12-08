@@ -56,8 +56,10 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
@@ -280,7 +282,7 @@ public class PositionBuilder {
 										findPrevWhitespace(contents, modifiersSourceStart - 1,
 											findPrevNonWhitespace(contents, modifiersSourceStart - 1, sourceStart - 1)));
 			if (e instanceof CtModifiable) {
-				setModifiersPosition((CtModifiable) e, modifiersSourceStart, bodyStart);
+				setModifiersPosition((CtModifiable) e, modifiersSourceStart, modifiersSourceEnd);
 			}
 			if (modifiersSourceEnd < modifiersSourceStart) {
 				//there is no modifier
@@ -514,20 +516,37 @@ public class PositionBuilder {
 		char[] contents = cr.compilationUnit.getContents();
 
 		Set<CtExtendedModifier> modifiers = e.getExtendedModifiers();
-		String modifierContent = String.valueOf(contents, start, end - start + 1);
+		Map<String, CtExtendedModifier> explicitModifiersByName = new HashMap<>();
 		for (CtExtendedModifier modifier: modifiers) {
 			if (modifier.isImplicit()) {
 				modifier.setPosition(cf.createPartialSourcePosition(cu));
 				continue;
 			}
-			int index = modifierContent.indexOf(modifier.getKind().toString());
-			if (index == -1) {
-				throw new SpoonException("Explicit modifier not found");
+			if (explicitModifiersByName.put(modifier.getKind().toString(), modifier) != null) {
+				throw new SpoonException("The modifier " + modifier.getKind().toString() + " found twice");
 			}
-			int indexStart = index + start;
-			int indexEnd = indexStart + modifier.getKind().toString().length() - 1;
+		}
 
-			modifier.setPosition(cf.createSourcePosition(cu, indexStart, indexEnd, cr.lineSeparatorPositions));
+		//move end after the last char
+		end++;
+		while (start < end && explicitModifiersByName.size() > 0) {
+			int o1 = findNextNonWhitespace(contents, end - 1, start);
+			if (o1 == -1) {
+				break;
+			}
+			int o2 = findNextWhitespace(contents, end - 1, o1);
+			if (o2 == -1) {
+				o2 = end;
+			}
+			String modifierName = String.valueOf(contents, o1, o2 - o1);
+			CtExtendedModifier modifier = explicitModifiersByName.remove(modifierName);
+			if (modifier != null) {
+				modifier.setPosition(cf.createSourcePosition(cu, o1, o2 - 1, cr.lineSeparatorPositions));
+			}
+			start = o2;
+		}
+		if (explicitModifiersByName.size() > 0) {
+			throw new SpoonException("Position of CtExtendedModifiers: [" + String.join(", ", explicitModifiersByName.keySet()) + "] not found in " + String.valueOf(contents, start, end - start));
 		}
 	}
 
