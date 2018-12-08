@@ -22,7 +22,6 @@
     <properties>
         <java.src.version>1.8</java.src.version>
         <java.test.version>1.8</java.test.version>
-        <junit.version>4.12</junit.version>
         <runtime.log>target/velocity.log</runtime.log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -36,6 +35,17 @@
         </repository>
     </repositories>
 
+    <dependencies>
+        
+        <!-- we all depend on Junit with scope=test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+        
     <organization>
         <name>Inria</name>
         <url>http://www.inria.fr</url>
