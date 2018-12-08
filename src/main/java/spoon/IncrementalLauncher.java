@@ -44,6 +44,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.support.SerializationModelStreamer;
 
 /**
@@ -212,11 +213,13 @@ public class IncrementalLauncher extends Launcher {
 					type.delete();
 					continue;
 				}
+				// If a type refers to some changed type, we should rebuild it.
+				Set<CtTypeReference<?>> referencedTypes = type.getReferencedTypes();
 				for (CtType<?> changedType : changedTypes) {
-					// We should also rebuild types, that refer to changed types.
-					if (type.getReferencedTypes().contains(changedType.getReference())) {
+					if (referencedTypes.contains(changedType.getReference())) {
 						incrementalSources.add(typeFile);
 						type.delete();
+						break;
 					}
 				}
 			}
