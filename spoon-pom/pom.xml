@@ -66,7 +66,7 @@
         <site>
             <id>gforge.inria.fr-site</id>
             <name>inria</name>
-            <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/mvnsites/spoon-core</url>
+            <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/mvnsites</url>
         </site>
     </distributionManagement>
 
