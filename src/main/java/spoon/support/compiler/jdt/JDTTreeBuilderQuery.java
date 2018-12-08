@@ -82,14 +82,16 @@ class JDTTreeBuilderQuery {
 			return null;
 		}
 		for (CompilationUnitDeclaration unitToProcess : unitsToProcess) {
-			for (TypeDeclaration type : unitToProcess.types) {
-				if (qualifiedName.equals(CharOperation.toString(type.binding.compoundName))) {
-					return type.binding;
-				}
-				if (type.memberTypes != null) {
-					for (TypeDeclaration memberType : type.memberTypes) {
-						if (qualifiedName.equals(CharOperation.toString(memberType.binding.compoundName))) {
-							return type.binding;
+			if (unitToProcess.types != null) {
+				for (TypeDeclaration type : unitToProcess.types) {
+					if (qualifiedName.equals(CharOperation.toString(type.binding.compoundName))) {
+						return type.binding;
+					}
+					if (type.memberTypes != null) {
+						for (TypeDeclaration memberType : type.memberTypes) {
+							if (qualifiedName.equals(CharOperation.toString(memberType.binding.compoundName))) {
+								return type.binding;
+							}
 						}
 					}
 				}
