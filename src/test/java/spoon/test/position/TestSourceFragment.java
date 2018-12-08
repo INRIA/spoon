@@ -32,16 +32,20 @@ import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.support.sniper.internal.SourceFragment;
 import spoon.support.sniper.internal.CollectionSourceFragment;
 import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
+import spoon.test.position.testclasses.FooField;
 import spoon.test.position.testclasses.FooSourceFragments;
 import spoon.test.position.testclasses.NewArrayList;
 import spoon.testing.utils.ModelUtils;
@@ -197,6 +201,39 @@ public class TestSourceFragment {
 		checkElementFragments(foo.getMethodsByName("m5").get(0).getBody().getStatement(0),"f", " ", "=", " ", "7.2", ";");
 		checkElementFragments(((CtAssignment)foo.getMethodsByName("m5").get(0).getBody().getStatement(0)).getAssignment(),"7.2");
 				 
+	}
+
+	@Test
+	public void testSourceFragmentsOfFieldAccess() throws Exception {
+		//contract: SourceFragments of field access are as expected
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(false);
+		launcher.getEnvironment().setCommentEnabled(true);
+		SpoonModelBuilder comp = launcher.createCompiler();
+		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/" + FooField.class.getName().replace('.', '/') + ".java"));
+		comp.build();
+		Factory f = comp.getFactory();
+		
+		final CtType<?> foo = f.Type().get(FooField.class);
+		
+		CtAssignment<?, ?> assignment =  (CtAssignment<?, ?>) foo.getMethodsByName("m").get(0).getBody().getStatements().get(0);
+		CtFieldWrite<?> fieldWrite = (CtFieldWrite<?>) assignment.getAssigned();
+		CtFieldReference<?> fieldRef = fieldWrite.getVariable();
+		CtFieldRead<?> fieldRead = (CtFieldRead<?>) fieldWrite.getTarget();
+		CtFieldReference<?> fieldRef2 = fieldRead.getVariable();
+		
+		ElementSourceFragment fieldWriteSF = fieldWrite.getOriginalSourceFragment();
+		List<SourceFragment> children = fieldWriteSF.getChildrenFragments();
+		assertEquals(3, children.size());
+		assertEquals("FooField.f", children.get(0).getSourceCode());
+		assertEquals(".", children.get(1).getSourceCode());
+		assertEquals("field2", children.get(2).getSourceCode());
+
+		List<SourceFragment> children2 = ((ElementSourceFragment) children.get(0)).getChildrenFragments();
+		assertEquals(3, children2.size());
+		assertEquals("FooField", children2.get(0).getSourceCode());
+		assertEquals(".", children2.get(1).getSourceCode());
+		assertEquals("f", children2.get(2).getSourceCode());
 	}
 
 	@Test

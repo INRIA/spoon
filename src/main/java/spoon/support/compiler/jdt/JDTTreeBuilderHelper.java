@@ -266,21 +266,19 @@ public class JDTTreeBuilderHelper {
 		boolean isOtherBinding = qualifiedNameReference.otherBindings == null || qualifiedNameReference.otherBindings.length == 0;
 		if (qualifiedNameReference.binding instanceof FieldBinding) {
 			ref = jdtTreeBuilder.getReferencesBuilder().getVariableReference(qualifiedNameReference.fieldBinding());
-			ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+			ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(getVariableReferenceSourceStart(sourceStart, sourceEnd), sourceEnd));
 
 			va = createFieldAccess(ref, createTargetFieldAccess(qualifiedNameReference, (CtFieldReference<Object>) ref), isOtherBinding && fromAssignment);
 		} else {
 			ref = jdtTreeBuilder.getReferencesBuilder().getVariableReference((VariableBinding) qualifiedNameReference.binding);
-			ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
+			ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(getVariableReferenceSourceStart(sourceStart, sourceEnd), sourceEnd));
 
 			va = createVariableAccess(ref, isOtherBinding && fromAssignment);
 		}
 
-		ref.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
-
 		if (qualifiedNameReference.otherBindings != null) {
 			int i = 0; //positions index;
-			va.setPosition(ref.getPosition());
+			va.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(sourceStart, sourceEnd));
 			sourceStart = (int) (positions[qualifiedNameReference.indexOfFirstFieldBinding - 1] >>> 32);
 			for (FieldBinding b : qualifiedNameReference.otherBindings) {
 				isOtherBinding = qualifiedNameReference.otherBindings.length == i + 1;
@@ -310,6 +308,19 @@ public class JDTTreeBuilderHelper {
 		}
 		va.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(qualifiedNameReference.sourceStart(), qualifiedNameReference.sourceEnd()));
 		return va;
+	}
+
+	private int getVariableReferenceSourceStart(int sourceStart, int sourceEnd) {
+		char[] contents = jdtTreeBuilder.getContextBuilder().getCompilationUnitContents();
+		//search for last dot, which is not contained in comment
+		int lastIdentifierStart = sourceStart;
+		while (true) {
+			int dotIdx = PositionBuilder.findNextChar(contents, sourceEnd, lastIdentifierStart, '.');
+			if (dotIdx < 0) {
+				return lastIdentifierStart;
+			}
+			lastIdentifierStart = dotIdx + 1;
+		}
 	}
 
 	/**
