@@ -804,7 +804,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (packageDeclaration != null) {
 			ImportReference packageRef = compilationUnitDeclaration.currentPackage;
 			if (packageRef != null) {
-				char[] content = compilationUnitDeclaration.compilationResult.compilationUnit.getContents();
+				char[] content = context.getCompilationUnitContents();
 				int declStart = packageRef.declarationSourceStart;
 				//look for first comment
 				int firstComment = PositionBuilder.findNextNonWhitespace(false, content, packageRef.sourceStart(), 0);

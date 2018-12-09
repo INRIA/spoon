@@ -401,4 +401,18 @@ public class ContextBuilder {
 			terminate();
 		}
 	}
+
+	/**
+	 * @return line separator positions of actually processed compilation unit
+	 */
+	public int[] getCompilationUnitLineSeparatorPositions() {
+		return compilationunitdeclaration.compilationResult.lineSeparatorPositions;
+	}
+
+	/**
+	 * @return char content of actually processed compilation unit
+	 */
+	public char[] getCompilationUnitContents() {
+		return compilationunitdeclaration.compilationResult.compilationUnit.getContents();
+	}
 }
