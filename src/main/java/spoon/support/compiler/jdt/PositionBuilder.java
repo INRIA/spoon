@@ -562,6 +562,15 @@ public class PositionBuilder {
 					//TODO handle comments correctly here. E.g. List<T /*ccc*/ >
 					sourceEnd = findNextNonWhitespace(contents, contents.length - 1, getSourceEndOfTypeReference(contents, tr, tr.sourceEnd) + 1);
 				}
+			} else {
+				//SomeType<>
+				int startIdx = findNextNonWhitespace(contents, contents.length - 1, sourceEnd + 1);
+				if (startIdx != -1 && contents[startIdx] == '<') {
+					int endIdx = findNextNonWhitespace(contents, contents.length - 1, startIdx + 1);
+					if (endIdx != -1 && contents[endIdx] == '>') {
+						sourceEnd = endIdx;
+					}
+				}
 			}
 		}
 		if (node instanceof Wildcard) {

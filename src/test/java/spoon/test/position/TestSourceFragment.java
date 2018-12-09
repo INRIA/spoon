@@ -31,6 +31,7 @@ import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtAssignment;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
@@ -42,6 +43,8 @@ import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
 import spoon.test.position.testclasses.FooSourceFragments;
+import spoon.test.position.testclasses.NewArrayList;
+import spoon.testing.utils.ModelUtils;
 
 public class TestSourceFragment {
 
@@ -194,6 +197,30 @@ public class TestSourceFragment {
 		checkElementFragments(foo.getMethodsByName("m5").get(0).getBody().getStatement(0),"f", " ", "=", " ", "7.2", ";");
 		checkElementFragments(((CtAssignment)foo.getMethodsByName("m5").get(0).getBody().getStatement(0)).getAssignment(),"7.2");
 				 
+	}
+
+	@Test
+	public void testSourceFragmentsOfNewArrayList() throws Exception {
+		//contract: SourceFragments of constructor call is as expected
+		final CtType<?> type = ModelUtils.buildClass(NewArrayList.class);
+		
+		CtConstructorCall<?> constCall =  (CtConstructorCall<?>) type.getMethodsByName("m").get(0).getBody().getStatements().get(0);
+		//new ArrayList<>();
+		ElementSourceFragment constCallSF = constCall.getOriginalSourceFragment();
+		List<SourceFragment> children = constCallSF.getChildrenFragments();
+		assertEquals(6, children.size());
+		assertEquals("new", children.get(0).getSourceCode());
+		assertEquals(" ", children.get(1).getSourceCode());
+		assertEquals("ArrayList<>", children.get(2).getSourceCode());
+		assertEquals("(", children.get(3).getSourceCode());
+		assertEquals(")", children.get(4).getSourceCode());
+		assertEquals(";", children.get(5).getSourceCode());
+		
+		List<SourceFragment> children2 = ((ElementSourceFragment) children.get(2)).getChildrenFragments();
+		assertEquals(3, children2.size());
+		assertEquals("ArrayList", children2.get(0).getSourceCode());
+		assertEquals("<", children2.get(1).getSourceCode());
+		assertEquals(">", children2.get(2).getSourceCode());
 	}
 
 	private void checkElementFragments(CtElement ele, Object... expectedFragments) {
