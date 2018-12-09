@@ -819,6 +819,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 				}
 				packageDeclaration.setPosition(factory.Core().createCompoundSourcePosition(
 						context.compilationUnitSpoon, packageRef.sourceStart(), packageRef.sourceEnd(), declStart, packageRef.declarationEnd, context.compilationUnitSpoon.getLineSeparatorPositions()));
+				packageDeclaration.getReference().setPosition(factory.Core().createSourcePosition(context.compilationUnitSpoon, packageRef.sourceStart(), packageRef.sourceEnd(), context.compilationUnitSpoon.getLineSeparatorPositions()));
 			}
 		}
 		return true;
