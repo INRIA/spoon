@@ -116,7 +116,7 @@ class JDTImportBuilder {
 		int declStart = importRef.declarationSourceStart;
 		int commentStart = PositionBuilder.findNextNonWhitespace(false, content, declStart, PositionBuilder.findPrevNonWhitespace(content, 0, declStart - 1) + 1);
 		imprt.setPosition(factory.Core().createCompoundSourcePosition(spoonUnit, importRef.sourceStart(), importRef.sourceEnd(), commentStart, importRef.declarationEnd, spoonUnit.getLineSeparatorPositions()));
-		//TODO initialize source position of ref
+		imprt.getReference().setPosition(factory.Core().createSourcePosition(spoonUnit, importRef.sourceStart(), importRef.sourceEnd(), spoonUnit.getLineSeparatorPositions()));
 		return imprt;
 	}
 

@@ -1253,6 +1253,7 @@ public class PositionTest {
 		
 		assertEquals("//import comment\n" + 
 				"import java.util.ArrayList;", contentAtPosition(classContent, imprt.getPosition()));
+		assertEquals("java.util.ArrayList", contentAtPosition(classContent, imprt.getReference().getPosition()));
 	}
 
 	@Test
@@ -1269,6 +1270,7 @@ public class PositionTest {
 		
 		assertEquals("/* package declaration comments*/\n" + 
 				"package spoon.test.position.testclasses;", contentAtPosition(classContent, packageDecl.getPosition()));
+		assertEquals("spoon.test.position.testclasses", contentAtPosition(classContent, packageDecl.getReference().getPosition()));
 	}
 
 	@Test
