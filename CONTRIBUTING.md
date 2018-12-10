@@ -15,8 +15,9 @@ The integrators are the developers who have write access to the repository. The 
 
 How to become integrator? The integrators are the developers who have made significant contributions over the last 12 months (gliding window). Significance is assessed by the current set of integrators who co-opt the new ones.
 
-Current integrators (alphabetical order):
+Current integrators:
 
+- Nicolas Harrand [@nharrand](https://github.com/nharrand/)
 - Benjamin Danglot @danglotb
 - Thomas Durieux @tdurieux
 - Martin Monperrus @monperrus
