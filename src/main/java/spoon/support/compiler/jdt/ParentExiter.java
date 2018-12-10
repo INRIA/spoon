@@ -418,7 +418,7 @@ public class ParentExiter extends CtInheritanceScanner {
 					SourcePosition oldPos = operator.getPosition();
 					if (oldPos.isValidPosition() && oldPos.getSourceEnd() < childEnd) {
 						//fix parent position if right hand expression is `x instanceof List<?>` which has bad sourceEnd ending before `<?>
-						int[] lineSeparatorPositions = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult.lineSeparatorPositions;
+						int[] lineSeparatorPositions = jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions();
 						operator.setPosition(operator.getFactory().Core().createSourcePosition(
 								oldPos.getCompilationUnit(),
 								oldPos.getSourceStart(), childEnd,
@@ -433,7 +433,7 @@ public class ParentExiter extends CtInheritanceScanner {
 				op.setLeftHandOperand(operator.getRightHandOperand());
 				op.setRightHandOperand((CtExpression<?>) child);
 				operator.setRightHandOperand(op);
-				int[] lineSeparatorPositions = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult.lineSeparatorPositions;
+				int[] lineSeparatorPositions = jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions();
 				SourcePosition leftPosition = op.getLeftHandOperand().getPosition();
 				SourcePosition rightPosition = op.getRightHandOperand().getPosition();
 				op.setPosition(op.getFactory().createSourcePosition(leftPosition.getCompilationUnit(), leftPosition.getSourceStart(), rightPosition.getSourceEnd(), lineSeparatorPositions));

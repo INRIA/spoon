@@ -16,7 +16,6 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
@@ -77,7 +76,7 @@ public class PositionBuilder {
 
 	SourcePosition buildPosition(int sourceStart, int sourceEnd) {
 		CompilationUnit cu = this.jdtTreeBuilder.getContextBuilder().compilationUnitSpoon;
-		final int[] lineSeparatorPositions = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult.lineSeparatorPositions;
+		final int[] lineSeparatorPositions = this.jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions();
 		return this.jdtTreeBuilder.getFactory().Core().createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
 	}
 
@@ -89,9 +88,8 @@ public class PositionBuilder {
 		}
 		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();
 		CompilationUnit cu = this.jdtTreeBuilder.getContextBuilder().compilationUnitSpoon;
-		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
-		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
-		char[] contents = cr.compilationUnit.getContents();
+		int[] lineSeparatorPositions = jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions();
+		char[] contents = jdtTreeBuilder.getContextBuilder().getCompilationUnitContents();
 
 		int sourceStart = node.sourceStart;
 		int sourceEnd = node.sourceEnd;
@@ -440,8 +438,7 @@ public class PositionBuilder {
 	private static final String CATCH = "catch";
 
 	SourcePosition buildPosition(CtCatch catcher) {
-		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
-		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
+		int[] lineSeparatorPositions = jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions();
 
 		CtTry tryElement = catcher.getParent(CtTry.class);
 		//offset after last bracket before catch
@@ -467,8 +464,7 @@ public class PositionBuilder {
 			//There are no statements. Keep origin position
 			return oldPosition;
 		}
-		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
-		int[] lineSeparatorPositions = cr.lineSeparatorPositions;
+		int[] lineSeparatorPositions = this.jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions();
 
 		int bodyStart = child.getPosition().getSourceEnd() + 1;
 		int bodyEnd = statements.get(statements.size() - 1).getPosition().getSourceEnd();
@@ -511,8 +507,7 @@ public class PositionBuilder {
 	private void setModifiersPosition(CtModifiable e, int start, int end) {
 		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();
 		CompilationUnit cu = this.jdtTreeBuilder.getContextBuilder().compilationUnitSpoon;
-		CompilationResult cr = this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.compilationResult;
-		char[] contents = cr.compilationUnit.getContents();
+		char[] contents = jdtTreeBuilder.getContextBuilder().getCompilationUnitContents();
 
 		Set<CtExtendedModifier> modifiers = e.getExtendedModifiers();
 		Map<String, CtExtendedModifier> explicitModifiersByName = new HashMap<>();
@@ -540,7 +535,7 @@ public class PositionBuilder {
 			String modifierName = String.valueOf(contents, o1, o2 - o1);
 			CtExtendedModifier modifier = explicitModifiersByName.remove(modifierName);
 			if (modifier != null) {
-				modifier.setPosition(cf.createSourcePosition(cu, o1, o2 - 1, cr.lineSeparatorPositions));
+				modifier.setPosition(cf.createSourcePosition(cu, o1, o2 - 1, jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions()));
 			}
 			start = o2;
 		}
