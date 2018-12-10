@@ -47,6 +47,7 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
+import spoon.support.Internal;
 import spoon.support.SpoonClassNotFoundException;
 
 import java.util.ArrayDeque;
@@ -58,6 +59,7 @@ import java.util.List;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
 import static java.lang.String.format;
 
+@Internal
 public class ContextBuilder {
 
 	Deque<String> annotationValueName = new ArrayDeque<>();
