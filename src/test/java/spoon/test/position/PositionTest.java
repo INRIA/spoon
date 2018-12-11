@@ -26,6 +26,8 @@ import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
@@ -53,6 +55,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtExtendedModifier;
@@ -1279,5 +1282,23 @@ public class PositionTest {
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/TestCommentedOutClass.java"));
 		CtType<?> type = build.Type().get("spoon.test.position.testclasses.TestCommentedOutClass");
 		assertNull(type);
+	}
+
+	@Test
+	public void testSourcePositionOfFieldReference() throws Exception {
+		//contract: Source position of field reference is as expected
+		CtType<?> foo = ModelUtils.buildClass(cfg -> {
+			cfg.getEnvironment().setCommentEnabled(true);
+			cfg.getEnvironment().setAutoImports(true);
+		}, FooField.class);
+		String classContent = getClassContent(foo);
+		
+		CtAssignment<?, ?> assignment =  (CtAssignment<?, ?>) foo.getMethodsByName("m").get(0).getBody().getStatements().get(0);
+		CtFieldWrite<?> fieldWrite = (CtFieldWrite<?>) assignment.getAssigned();
+		assertEquals("FooField.f.field2", contentAtPosition(classContent, fieldWrite.getPosition()));
+		CtFieldRead<?> fieldRead = (CtFieldRead<?>) fieldWrite.getTarget();
+		assertEquals("FooField.f", contentAtPosition(classContent, fieldRead.getPosition()));
+		CtFieldReference<?> fieldRef2 = fieldRead.getVariable();
+		assertEquals("f", contentAtPosition(classContent, fieldRef2.getPosition()));
 	}
 }

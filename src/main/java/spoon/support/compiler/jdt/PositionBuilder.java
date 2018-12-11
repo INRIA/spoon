@@ -579,11 +579,11 @@ public class PositionBuilder {
 
 	/**
 	 * @return index of first character `expectedChar`, searching forward..
-	 * Can return 'off' if it `expectedChar`.
+	 * Can return 'off' if it is `expectedChar`. returns -1 if not found
 	 * Note: all kinds of java comments are understood as whitespace.
 	 * The search must start out of comment or on the first character of the comment
 	 */
-	private int findNextChar(char[] contents, int maxOff, int off, char expectedChar) {
+	static int findNextChar(char[] contents, int maxOff, int off, char expectedChar) {
 		while ((off = findNextNonWhitespace(contents, maxOff, off)) >= 0) {
 			if (contents[off] == expectedChar) {
 				return off;
