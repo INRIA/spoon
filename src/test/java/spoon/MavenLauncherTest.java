@@ -135,6 +135,12 @@ public class MavenLauncherTest {
 	}
 
 	@Test
+	public void testSystemDependency() {
+		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/system-dependency", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		assertEquals(1, launcher.getEnvironment().getSourceClasspath().length);
+	}
+
+	@Test
 	public void mavenLauncherTestWithVerySimpleProject() {
 		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/very-simple", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 		assertEquals(1, launcher.getModelBuilder().getInputSources().size());
