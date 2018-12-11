@@ -579,7 +579,7 @@ public class PositionBuilder {
 
 	/**
 	 * @return index of first character `expectedChar`, searching forward..
-	 * Can return 'off' if it is `expectedChar`. return -1 if not found
+	 * Can return 'off' if it is `expectedChar`. returns -1 if not found
 	 * Note: all kinds of java comments are understood as whitespace.
 	 * The search must start out of comment or on the first character of the comment
 	 */

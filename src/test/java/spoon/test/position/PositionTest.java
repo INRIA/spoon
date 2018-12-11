@@ -1296,8 +1296,6 @@ public class PositionTest {
 		CtAssignment<?, ?> assignment =  (CtAssignment<?, ?>) foo.getMethodsByName("m").get(0).getBody().getStatements().get(0);
 		CtFieldWrite<?> fieldWrite = (CtFieldWrite<?>) assignment.getAssigned();
 		assertEquals("FooField.f.field2", contentAtPosition(classContent, fieldWrite.getPosition()));
-//		CtFieldReference<?> fieldRef = fieldWrite.getVariable();
-//		assertEquals("field2", contentAtPosition(classContent, fieldRef.getPosition()));
 		CtFieldRead<?> fieldRead = (CtFieldRead<?>) fieldWrite.getTarget();
 		assertEquals("FooField.f", contentAtPosition(classContent, fieldRead.getPosition()));
 		CtFieldReference<?> fieldRef2 = fieldRead.getVariable();
