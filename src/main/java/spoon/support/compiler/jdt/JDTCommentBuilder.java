@@ -375,10 +375,18 @@ public class JDTCommentBuilder {
 				}
 				CtStatement elseStatement = e.getElseStatement();
 				if (elseStatement != null && thenStatement != null) {
-					CtStatement thenExpression = ((CtBlock) thenStatement).getStatement(0);
-					CtStatement elseExpression = ((CtBlock) thenStatement).getStatement(0);
-					SourcePosition thenPosition = thenStatement.getPosition().isValidPosition() ? thenStatement.getPosition() : thenExpression.getPosition();
-					SourcePosition elsePosition = elseStatement.getPosition().isValidPosition() ? elseStatement.getPosition() : elseExpression.getPosition();
+					SourcePosition thenPosition = thenStatement.getPosition();
+					if (!thenPosition.isValidPosition())
+					{
+						CtStatement thenExpression = ((CtBlock) thenStatement).getStatement(0);
+						thenPosition = thenExpression.getPosition();
+					}
+					SourcePosition elsePosition = elseStatement.getPosition();
+					if (!elsePosition.isValidPosition())
+					{
+						CtStatement elseExpression = ((CtBlock) elseStatement).getStatement(0);
+						elsePosition = elseExpression.getPosition();
+					}
 					if (comment.getPosition().getSourceStart() > thenPosition.getSourceEnd() && comment.getPosition().getSourceEnd() < elsePosition.getSourceStart()) {
 						elseStatement.addComment(comment);
 					}
