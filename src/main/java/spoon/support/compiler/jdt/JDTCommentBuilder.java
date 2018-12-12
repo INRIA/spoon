@@ -376,14 +376,12 @@ public class JDTCommentBuilder {
 				CtStatement elseStatement = e.getElseStatement();
 				if (elseStatement != null && thenStatement != null) {
 					SourcePosition thenPosition = thenStatement.getPosition();
-					if (!thenPosition.isValidPosition())
-					{
+					if (!thenPosition.isValidPosition()) {
 						CtStatement thenExpression = ((CtBlock) thenStatement).getStatement(0);
 						thenPosition = thenExpression.getPosition();
 					}
 					SourcePosition elsePosition = elseStatement.getPosition();
-					if (!elsePosition.isValidPosition())
-					{
+					if (!elsePosition.isValidPosition()) {
 						CtStatement elseExpression = ((CtBlock) elseStatement).getStatement(0);
 						elsePosition = elseExpression.getPosition();
 					}
