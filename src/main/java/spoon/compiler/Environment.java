@@ -423,11 +423,11 @@ public interface Environment {
 	/**
 	 * @return true if spoon is allowed to create a model of a project that contains multiple times the same class
 	 */
-	boolean isAllowMultiTypeDefinitions();
+	boolean isIgnoreDuplicateDeclarations();
 
 	/**
-	 * @param allowMultiTypeDefinition (default false)  set to true to allow spoon to create a model of a project that
+	 * @param ignoreDuplicateDeclarations (default false)  set to true to allow spoon to create a model of a project that
 	 *                                 contains multiple times the same class
 	 */
-	void setAllowMultiTypeDefinitions(boolean allowMultiTypeDefinition);
+	void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations);
 }

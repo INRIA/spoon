@@ -1653,7 +1653,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		} else {
 			CtModule module;
 			// skip the type declaration that are already declared
-			if (typeDeclaration.binding == null && getFactory().getEnvironment().isAllowMultiTypeDefinitions()) {
+			if (typeDeclaration.binding == null && getFactory().getEnvironment().isIgnoreDuplicateDeclarations()) {
 				return false;
 			}
 			if (typeDeclaration.binding.module != null && !typeDeclaration.binding.module.isUnnamed() && typeDeclaration.binding.module.shortReadableName() != null && typeDeclaration.binding.module.shortReadableName().length > 0) {

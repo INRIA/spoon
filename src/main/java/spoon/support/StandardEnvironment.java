@@ -114,7 +114,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean sniperMode = false;
 
-	private boolean allowMultiTypeDefinitions = false;
+	private boolean ignoreDuplicateDeclarations = false;
 
 	private Supplier<PrettyPrinter> prettyPrinterCreator;
 
@@ -635,12 +635,12 @@ private transient  ClassLoader inputClassloader;
 	}
 
 	@Override
-	public boolean isAllowMultiTypeDefinitions() {
-		return allowMultiTypeDefinitions;
+	public boolean isIgnoreDuplicateDeclarations() {
+		return ignoreDuplicateDeclarations;
 	}
 
 	@Override
-	public void setAllowMultiTypeDefinitions(boolean allowMultiTypeDefinitions) {
-		this.allowMultiTypeDefinitions = allowMultiTypeDefinitions;
+	public void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations) {
+		this.ignoreDuplicateDeclarations = ignoreDuplicateDeclarations;
 	}
 }

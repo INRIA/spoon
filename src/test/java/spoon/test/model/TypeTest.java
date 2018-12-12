@@ -150,7 +150,7 @@ public class TypeTest {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("src/test/resources/multiclass/module1");
 		spoon.addInputResource("src/test/resources/multiclass/module2");
-		spoon.getEnvironment().setAllowMultiTypeDefinitions(true);
+		spoon.getEnvironment().setIgnoreDuplicateDeclarations(true);
 		spoon.buildModel();
 		assertNotNull(spoon.getFactory().Class().get("A"));
 	}
