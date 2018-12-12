@@ -6,7 +6,7 @@ keywords: usage, java
 
 ## The Launcher class
 
-The Spoon `Launcher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/Launcher.html)) is used to create the AST model of a project. It can be as short as:
+The Spoon `Launcher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/Launcher.html)) is used to create the AST model of a project. It can be as short as:
 
 ```java
 CtClass l = Launcher.parseClass("class A { void m() { System.out.println(\"yeah\");} }");
@@ -55,7 +55,7 @@ launcher.getEnvironment().setPrettyPrinterCreator(() -> {
 
 ## The MavenLauncher class
 
-The Spoon `MavenLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/MavenLauncher.html)) is used to create the AST model of a Maven project.
+The Spoon `MavenLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/MavenLauncher.html)) is used to create the AST model of a Maven project.
 It automatically infers the list of source folders and the dependencies from the `pom.xml` file.
 This Launcher handles multi-module Maven projects.
 
@@ -91,7 +91,7 @@ To avoid invoking maven over and over to build a classpath that has not changed,
 
 ## The JarLauncher class
 
-The Spoon `JarLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/JarLauncher.html)) is used to create the AST model from a jar.
+The Spoon `JarLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/JarLauncher.html)) is used to create the AST model from a jar.
 It automatically decompiles class files contained in the jar and analyzes them.
 If a pom file corresponding to the jar is provided, it will be used to build the classpath containing all dependencies.
 
@@ -156,7 +156,7 @@ compile 'fr.inria.gforge.spoon:spoon-core:{{site.spoon_release}}'
 
 ## Incremental Launcher
 
-`IncrementalLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/IncrementalLauncher.html)) allows cache AST and compiled classes. Any spoon analysis can then be restarted from where it stopped instead of restarting from scratch.
+`IncrementalLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/IncrementalLauncher.html)) allows cache AST and compiled classes. Any spoon analysis can then be restarted from where it stopped instead of restarting from scratch.
 
 ```java
 final File cache = new File("<path_to_cache>");

@@ -4,8 +4,8 @@ tags: [quering]
 keywords: quering, query, path, ast, elements
 ---
 
-`CtPath` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPath.html))
-defines the path to a `CtElement` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtElement.html))
+`CtPath` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/path/CtPath.html))
+defines the path to a `CtElement` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/declaration/CtElement.html))
 in a model, similarly to XPath for XML. For example, `.spoon.test.path.testclasses.Foo.foo#body#statement[index=0]` represents the first statement of the body of method foo.
 A `CtPath`is based on: names of elements (eg `foo`), and roles of elements with respect to their parent (eg `body`).
 A role is a relation between two AST nodes.
@@ -32,7 +32,7 @@ CtPath path = anElement.getPath();
 
 ### From a string
 
-`CtPathStringBuilder` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPathStringBuilder.html)), creates a path object from a string according to the following syntax:
+`CtPathStringBuilder` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/path/CtPathStringBuilder.html)), creates a path object from a string according to the following syntax:
 
 - `.<name>` which denotes a child element with name `name`, eg `.fr.inria.Spoon` (the fully qualified name)
 - `#<role>` which denotes all children on `CtRole` `role` .statements, `#body#statement[index=2]#else` is the else branch of the second statement of a method body
@@ -44,17 +44,17 @@ CtPath path = anElement.getPath();
 
 ### From the API
 
-The low-level `CtPathBuilder` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPathBuilder.html)) defines a fluent api to build your path:
+The low-level `CtPathBuilder` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/path/CtPathBuilder.html)) defines a fluent api to build your path:
 
-- `name(String, String[])` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPathBuilder.html#name-java.lang.String-java.lang.String:A...-))
+- `name(String, String[])` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/path/CtPathBuilder.html#name-java.lang.String-java.lang.String:A...-))
 adds a name matcher to the current path.
-- `type(Class, String[])` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPathBuilder.html#type-java.lang.Class-java.lang.String:A...-))
+- `type(Class, String[])` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/path/CtPathBuilder.html#type-java.lang.Class-java.lang.String:A...-))
 matches on element of a given type.
-- `role(CtPathRole, String[])` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPathBuilder.html#role-spoon.reflect.path.CtPathRole-java.lang.String:A...-))
+- `role(CtPathRole, String[])` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/path/CtPathBuilder.html#role-spoon.reflect.path.CtPathRole-java.lang.String:A...-))
 matches on elements by their role (where `CtPathRole` gives all constants supported).
-- `wildcard()` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPathBuilder.html#wildcard--))
+- `wildcard()` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/path/CtPathBuilder.html#wildcard--))
 matches only on elements child of current one.
-- `recursiveWildcard()` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPathBuilder.html#recursiveWildcard--))
+- `recursiveWildcard()` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/path/CtPathBuilder.html#recursiveWildcard--))
 matches on any child and sub-children.
 
 For instance, if we want all elements named by "toto" and with a default value in

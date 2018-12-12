@@ -26,7 +26,7 @@ interface, class, variable, method, annotation, and enum declarations.
 - The code part contains the executable Java code, such as the one found in method bodies.
 - The reference part models the references to program elements (for instance a reference to a type).
 
-As shown in the figure, all elements inherit from `CtElement` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtElement.html)) 
+As shown in the figure, all elements inherit from `CtElement` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/declaration/CtElement.html)) 
 which declares a parent element denoting the containment relation in the source file. 
 For instance, the parent of a method node is a class node. All names are prefixed by 
 "CT" which means "compile-time".

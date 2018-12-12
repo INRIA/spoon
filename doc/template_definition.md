@@ -36,10 +36,10 @@ This template specifies a
 statement (in method `statement`) that is a precondition to check that a list 
 is smaller than a certain size. This piece of code will be injected at the 
 beginning of all methods dealing with size-bounded lists. This template has 
-one single template parameter called `_col_`, typed by `TemplateParameter` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/template/TemplateParameter.html)). 
+one single template parameter called `_col_`, typed by `TemplateParameter` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/template/TemplateParameter.html)). 
 In this case, the template parameter is meant to be an expression (`CtExpression`) 
 that returns a Collection (see constructor, line 3). All meta-model classes, 
-incl. `CtExpression` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtExpression.html)), 
+incl. `CtExpression` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtExpression.html)), 
 implement interface `TemplateParameter`. A template parameter has a special method 
 (named `S`, for Substitution) that is used as a marker to indicate the places where 
 a template parameter substitution should occur. For a `CtExpression`, method `S()` 

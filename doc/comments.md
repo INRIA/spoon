@@ -12,7 +12,7 @@ In Spoon there are four different kinds of comments:
 * Block comments (from /* to */) `CtComment.CommentType.BLOCK`
 * Javadoc comments (from /** to */) `CtComment.CommentType.JAVADOC`
 
-The comments are represented in Spoon with a `CtComment` class ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtComment.html)). 
+The comments are represented in Spoon with a `CtComment` class ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtComment.html)). 
 This class exposes an API to get the content `CtComment.getContent()`, the type `CtComment.getCommentType()` and the position `CtComment.getPosition()` of an comment.
 
 We also try to understand to which element they are attached.
@@ -96,11 +96,11 @@ public class CtCommentProcessor extends AbstractProcessor<CtComment> {
 
 # Source Position
 
-`SourcePosition` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/cu/SourcePosition.html)) defines the position of the `CtElement` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtElement.html)) in the original source file. 
+`SourcePosition` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/cu/SourcePosition.html)) defines the position of the `CtElement` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/declaration/CtElement.html)) in the original source file. 
 SourcePosition is extended by three specialized positions:
 
-- `DeclarationSourcePosition` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/cu/position/DeclarationSourcePosition.html)) 
-- `BodyHolderSourcePosition` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/cu/position/BodyHolderSourcePosition.html)).
+- `DeclarationSourcePosition` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/cu/position/DeclarationSourcePosition.html)) 
+- `BodyHolderSourcePosition` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/cu/position/BodyHolderSourcePosition.html)).
 
 These three specializations are used to define the position of specific CtElement.
 For example DeclarationSourcePosition is used to define the position of all declarations (variable, type, method, ...).

@@ -34,4 +34,4 @@ Since the references are weak, the targets of references do not have to exist be
 
 The price to pay for this low coupling is that to navigate from one code element to another, 
 one has to chain a navigation to the reference and then to the target. For instance, 
-to navigate from a field to the type of the field, one writes `field.getType().getDeclaration()` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/reference/CtTypeReference.html#getDeclaration--)).
+to navigate from a field to the type of the field, one writes `field.getType().getDeclaration()` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/reference/CtTypeReference.html#getDeclaration--)).

@@ -6,22 +6,22 @@ keywords: code, elements, ast, meta, model
 
 Figure at the end of this page shows the meta model for Java executable code. 
 There are two main kinds of code elements. 
-First, statements `CtStatement` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtStatement.html)) 
+First, statements `CtStatement` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtStatement.html)) 
 are untyped top-level instructions that can be used directly in a block of code. 
-Second, expressions `CtExpression` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtExpression.html)) 
-are used inside the statements. For instance, a `CtLoop` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtLoop.html)) 
+Second, expressions `CtExpression` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtExpression.html)) 
+are used inside the statements. For instance, a `CtLoop` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtLoop.html)) 
 (which is a statement) points to `CtExpression` which expresses its boolean condition.
 
 Some code elements such as invocations and assignments are both statements 
 and expressions (multiple inheritance links). Concretely, this is translated as an 
-interface `CtInvocation` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtInvocation.html)) 
+interface `CtInvocation` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtInvocation.html)) 
 inheriting from both interfaces `CtStatement` and `CtExpression`. 
 The generic type of `CtExpression` is used to add static type-checking when transforming programs.
 
 ![Code part of the Spoon Java 8 metamodel]({{ "/images/code-elements.png" | prepend: site.baseurl }})
 
 ### CtArrayRead
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtArrayRead.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtArrayRead.html)
 
 ```java
 
@@ -32,7 +32,7 @@ The generic type of `CtExpression` is used to add static type-checking when tran
 
 ```
 ### CtArrayWrite
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtArrayWrite.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtArrayWrite.html)
 
 ```java
 
@@ -42,13 +42,13 @@ The generic type of `CtExpression` is used to add static type-checking when tran
 
 ```
 ### CtAssert
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtAssert.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtAssert.html)
 
 ```java
 assert 1+1==2
 ```
 ### CtAssignment
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtAssignment.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtAssignment.html)
 
 ```java
 
@@ -57,7 +57,7 @@ assert 1+1==2
 
 ```
 ### CtBinaryOperator
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtBinaryOperator.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtBinaryOperator.html)
 
 ```java
 
@@ -66,7 +66,7 @@ assert 1+1==2
 
 ```
 ### CtBlock
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtBlock.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtBlock.html)
 
 ```java
 
@@ -76,7 +76,7 @@ assert 1+1==2
 	
 ```
 ### CtBreak
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtBreak.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtBreak.html)
 
 ```java
 
@@ -88,7 +88,7 @@ assert 1+1==2
 
 ```
 ### CtCase
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtCase.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtCase.html)
 
 ```java
 
@@ -99,7 +99,7 @@ switch(x) {
 }
 ```
 ### CtConditional
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtConditional.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtConditional.html)
 
 ```java
 
@@ -109,7 +109,7 @@ switch(x) {
 
 ```
 ### CtConstructorCall
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtConstructorCall.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtConstructorCall.html)
 
 ```java
 
@@ -117,7 +117,7 @@ switch(x) {
 
 ```
 ### CtContinue
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtContinue.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtContinue.html)
 
 ```java
 
@@ -129,7 +129,7 @@ switch(x) {
 
 ```
 ### CtDo
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtDo.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtDo.html)
 
 ```java
 
@@ -140,7 +140,7 @@ switch(x) {
 
 ```
 ### CtExecutableReferenceExpression
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtExecutableReferenceExpression.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtExecutableReferenceExpression.html)
 
 ```java
 
@@ -149,7 +149,7 @@ switch(x) {
 
 ```
 ### CtFieldRead
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtFieldRead.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtFieldRead.html)
 
 ```java
 
@@ -159,7 +159,7 @@ switch(x) {
 
 ```
 ### CtFieldWrite
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtFieldWrite.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtFieldWrite.html)
 
 ```java
 
@@ -169,7 +169,7 @@ switch(x) {
 
 ```
 ### CtFor
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtFor.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtFor.html)
 
 ```java
 
@@ -180,7 +180,7 @@ switch(x) {
 
 ```
 ### CtForEach
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtForEach.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtForEach.html)
 
 ```java
 
@@ -191,7 +191,7 @@ switch(x) {
 
 ```
 ### CtIf
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtIf.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtIf.html)
 
 ```java
 
@@ -203,7 +203,7 @@ switch(x) {
 
 ```
 ### CtInvocation
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtInvocation.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtInvocation.html)
 
 ```java
 
@@ -213,7 +213,7 @@ switch(x) {
 
 ```
 ### CtJavaDoc
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtJavaDoc.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtJavaDoc.html)
 
 ```java
 
@@ -224,7 +224,7 @@ switch(x) {
 
 ```
 ### CtLambda
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtLambda.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtLambda.html)
 
 ```java
 
@@ -235,7 +235,7 @@ switch(x) {
 
 ```
 ### CtLiteral
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtLiteral.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtLiteral.html)
 
 ```java
 
@@ -243,7 +243,7 @@ switch(x) {
 
 ```
 ### CtLocalVariable
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtLocalVariable.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtLocalVariable.html)
 
 ```java
 
@@ -256,7 +256,7 @@ switch(x) {
 
 ```
 ### CtNewArray
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtNewArray.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtNewArray.html)
 
 ```java
 
@@ -265,7 +265,7 @@ switch(x) {
 
 ```
 ### CtNewClass
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtNewClass.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtNewClass.html)
 
 ```java
 
@@ -279,7 +279,7 @@ switch(x) {
 
 ```
 ### CtOperatorAssignment
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtOperatorAssignment.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtOperatorAssignment.html)
 
 ```java
 
@@ -288,7 +288,7 @@ switch(x) {
 
 ```
 ### CtReturn
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtReturn.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtReturn.html)
 
 ```java
 
@@ -301,7 +301,7 @@ switch(x) {
 
 ```
 ### CtSuperAccess
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtSuperAccess.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtSuperAccess.html)
 
 ```java
 
@@ -314,7 +314,7 @@ switch(x) {
 
 ```
 ### CtSwitch
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtSwitch.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtSwitch.html)
 
 ```java
 
@@ -325,7 +325,7 @@ switch(x) { // <-- switch statement
 }
 ```
 ### CtSynchronized
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtSynchronized.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtSynchronized.html)
 
 ```java
 
@@ -336,7 +336,7 @@ switch(x) { // <-- switch statement
 
 ```
 ### CtThisAccess
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtThisAccess.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtThisAccess.html)
 
 ```java
 
@@ -350,7 +350,7 @@ switch(x) { // <-- switch statement
 
 ```
 ### CtThrow
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtThrow.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtThrow.html)
 
 ```java
 
@@ -358,7 +358,7 @@ switch(x) { // <-- switch statement
 
 ```
 ### CtTry
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtTry.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtTry.html)
 
 ```java
 
@@ -368,7 +368,7 @@ switch(x) { // <-- switch statement
 
 ```
 ### CtTryWithResource
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtTryWithResource.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtTryWithResource.html)
 
 ```java
 
@@ -379,7 +379,7 @@ switch(x) { // <-- switch statement
 
 ```
 ### CtTypeAccess
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtTypeAccess.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtTypeAccess.html)
 
 ```java
 
@@ -405,7 +405,7 @@ switch(x) { // <-- switch statement
 
 ```
 ### CtUnaryOperator
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtUnaryOperator.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtUnaryOperator.html)
 
 ```java
 
@@ -414,7 +414,7 @@ switch(x) { // <-- switch statement
 
 ```
 ### CtVariableRead
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtVariableRead.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtVariableRead.html)
 
 ```java
 
@@ -425,7 +425,7 @@ switch(x) { // <-- switch statement
 
 ```
 ### CtVariableWrite
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtVariableWrite.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtVariableWrite.html)
 
 ```java
 
@@ -438,7 +438,7 @@ switch(x) { // <-- switch statement
 
 ```
 ### CtWhile
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtWhile.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/code/CtWhile.html)
 
 ```java
 
@@ -449,7 +449,7 @@ switch(x) { // <-- switch statement
 
 ```
 ### CtAnnotation
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtAnnotation.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/declaration/CtAnnotation.html)
 
 ```java
 
@@ -459,7 +459,7 @@ switch(x) { // <-- switch statement
 
 ```
 ### CtClass
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtClass.html)
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/spoon/reflect/declaration/CtClass.html)
 
 ```java
 
