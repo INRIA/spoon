@@ -197,6 +197,7 @@ for (int i=0; i<n; i++) {
 ```
 
 One mark code to be matched inlined using method `configureInlineStatements`, which receives a  InlinedStatementConfigurator as follows:
+
 ```java
 Pattern t = PatternBuilder.create(...select pattern model...)
 	//...configure parameters...
