@@ -1,16 +1,16 @@
 /**
  * The MIT License
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,9 +23,8 @@
 package fr.inria.controlflow;
 
 import org.jgrapht.DirectedGraph;
-import spoon.reflect.code.*;
-import spoon.reflect.declaration.*;
-import spoon.reflect.reference.*;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtVisitor;
 
 import java.util.ArrayList;
@@ -40,40 +39,41 @@ import java.util.List;
  */
 public abstract class TransferFunctionVisitor implements CtVisitor {
 
-    /**
-     * Control graph over the data flow is being exists
-     */
-    DirectedGraph<CtStatement, CtStatement> controlGraph;
+	/**
+	 * Control graph over the data flow is being exists
+	 */
+	DirectedGraph<CtStatement, CtStatement> controlGraph;
 
-    /**
-     * Outputs of the statement calling the transfer.
-     */
-    protected List<Value> output;
+	/**
+	 * Outputs of the statement calling the transfer.
+	 */
+	protected List<Value> output;
 
-    public DirectedGraph<CtStatement, CtStatement> getControlGraph() {
-        return controlGraph;
-    }
+	public DirectedGraph<CtStatement, CtStatement> getControlGraph() {
+		return controlGraph;
+	}
 
-    public void setControlGraph(DirectedGraph<CtStatement, CtStatement> controlGraph) {
-        this.controlGraph = controlGraph;
-    }
+	public void setControlGraph(DirectedGraph<CtStatement, CtStatement> controlGraph) {
+		this.controlGraph = controlGraph;
+	}
 
-    /**
-     * Output of the last node that called the transfer function
-     *
-     * @return
-     */
-    public List<Value> getOutput() {
-        if ( output == null ) output = new ArrayList<Value>();
-        return output;
-    }
+	/**
+	 * Output of the last node that called the transfer function
+	 *
+	 * @return
+	 */
+	public List<Value> getOutput() {
+		if (output == null) {
+			output = new ArrayList<Value>();
+		}
+		return output;
+	}
 
-    public List<Value> transfer(CtElement statement) {
-        output = new ArrayList<Value>();
-        statement.accept(this);
-        return output;
-    }
-
+	public List<Value> transfer(CtElement statement) {
+		output = new ArrayList<Value>();
+		statement.accept(this);
+		return output;
+	}
 
 
 }

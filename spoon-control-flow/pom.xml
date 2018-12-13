@@ -33,6 +33,25 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <failsOnError>true</failsOnError>
+                    <configLocation>../checkstyle.xml</configLocation>
+                    <consoleOutput>true</consoleOutput>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>checkstyle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -43,7 +62,7 @@
                         <header>LICENSE.txt</header>
                         <basedir>src</basedir>
                         <includes>
-                            <include>src/main/java/**</include>
+                            <include>main/java/**</include>
                         </includes>
                     </configuration>
                     <executions>

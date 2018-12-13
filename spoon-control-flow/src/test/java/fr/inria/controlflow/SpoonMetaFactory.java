@@ -1,16 +1,16 @@
 /**
  * The MIT License
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,6 +23,7 @@
 package fr.inria.controlflow;
 
 //import fr.inria.diversify.util.Log;
+
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
@@ -30,7 +31,6 @@ import spoon.support.StandardEnvironment;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -39,44 +39,45 @@ import java.util.Collection;
  */
 public class SpoonMetaFactory {
 
-    public Factory buildNewFactory(String srcDirectory, int javaVersion) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        ArrayList<String> a = new ArrayList<String>();
-        a.add(srcDirectory);
-        return buildNewFactory(a, javaVersion);
-    }
-    public Factory buildNewFactory(Collection<String> srcDirectory,
-                                   int javaVersion) throws
-            ClassNotFoundException, IllegalAccessException, InstantiationException {
-        //String srcDirectory = DiversifyProperties.getProperty("project") + "/" + DiversifyProperties.getProperty("src");
+	public Factory buildNewFactory(String srcDirectory, int javaVersion) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+		ArrayList<String> a = new ArrayList<String>();
+		a.add(srcDirectory);
+		return buildNewFactory(a, javaVersion);
+	}
 
-        StandardEnvironment env = new StandardEnvironment();
-        env.setComplianceLevel(javaVersion);
-        env.setVerbose(true);
-        env.setDebug(true);
+	public Factory buildNewFactory(Collection<String> srcDirectory,
+	                               int javaVersion) throws
+			ClassNotFoundException, IllegalAccessException, InstantiationException {
+		//String srcDirectory = DiversifyProperties.getProperty("project") + "/" + DiversifyProperties.getProperty("src");
 
-        DefaultCoreFactory f = new DefaultCoreFactory();
+		StandardEnvironment env = new StandardEnvironment();
+		env.setComplianceLevel(javaVersion);
+		env.setVerbose(true);
+		env.setDebug(true);
 
-        Factory factory = new FactoryImpl(f, env);
+		DefaultCoreFactory f = new DefaultCoreFactory();
 
-        JDTBasedSpoonCompiler compiler = new JDTBasedSpoonCompiler(factory);
+		Factory factory = new FactoryImpl(f, env);
 
-        for (String s : srcDirectory) {
-            for (String dir : s.split(System.getProperty("path.separator"))) {
-                    //Log.debug("add {} to classpath", dir);
-                    File dirFile = new File(dir);
-                    if (dirFile.isDirectory()) {
-                        compiler.addInputSource(dirFile);
-                    }
-            }
-        }
-        try {
-            compiler.build();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+		JDTBasedSpoonCompiler compiler = new JDTBasedSpoonCompiler(factory);
 
-        return factory;
-    }
+		for (String s : srcDirectory) {
+			for (String dir : s.split(System.getProperty("path.separator"))) {
+				//Log.debug("add {} to classpath", dir);
+				File dirFile = new File(dir);
+				if (dirFile.isDirectory()) {
+					compiler.addInputSource(dirFile);
+				}
+			}
+		}
+		try {
+			compiler.build();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+		return factory;
+	}
 
 
 }
