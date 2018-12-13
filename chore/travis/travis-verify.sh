@@ -33,7 +33,7 @@ mvn verify license:check site javadoc:jar install -DskipTests -DadditionalJOptio
 mvn  checkstyle:checkstyle -Pcheckstyle-test
 
 #Spoon-control-flow
-cd spoon-control-flow
+cd ../spoon-control-flow
 
 mvn test
 
