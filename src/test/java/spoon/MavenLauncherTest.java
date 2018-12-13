@@ -135,6 +135,14 @@ public class MavenLauncherTest {
 	}
 
 	@Test
+	public void testSystemDependency() {
+		//contract: scope dependencies are added to classpath
+		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/system-dependency", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		assertEquals(1, launcher.getEnvironment().getSourceClasspath().length);
+		assertTrue(launcher.getEnvironment().getSourceClasspath()[0].endsWith("lib/bridge-method-annotation-1.13.jar"));
+	}
+
+	@Test
 	public void mavenLauncherTestWithVerySimpleProject() {
 		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/very-simple", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 		assertEquals(1, launcher.getModelBuilder().getInputSources().size());
