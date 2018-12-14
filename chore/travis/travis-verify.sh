@@ -31,3 +31,13 @@ mvn verify license:check site javadoc:jar install -DskipTests -DadditionalJOptio
 
 # checkstyle in src/tests
 mvn  checkstyle:checkstyle -Pcheckstyle-test
+
+#Spoon-control-flow
+cd ../spoon-control-flow
+
+mvn test
+
+mvn verify license:check site javadoc:jar install -DskipTests -DadditionalJOption=-Xdoclint:none
+
+# checkstyle in src/tests
+mvn  checkstyle:checkstyle -Pcheckstyle-test
