@@ -1237,7 +1237,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			List<CtComment> comments = elementPrinterHelper.getComments(ifElement, CommentOffset.INSIDE);
 			if (thenStmt != null) {
 				SourcePosition thenPosition = thenStmt.getPosition();
-				if (!thenPosition.isValidPosition()) {
+				if (!thenPosition.isValidPosition() && thenStmt instanceof CtBlock) {
 					CtStatement thenExpression = ((CtBlock) thenStmt).getStatement(0);
 					thenPosition = thenExpression.getPosition();
 				}

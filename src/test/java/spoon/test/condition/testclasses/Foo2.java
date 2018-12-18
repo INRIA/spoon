@@ -16,4 +16,9 @@ public class Foo2 {
 		else
 			System.out.println("invalid");
 	}
+
+	void bug3() {
+		if (false) {} // some comment
+		else if (false) {}
+	}
 }
