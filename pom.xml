@@ -53,12 +53,6 @@
       <version>3.15.0</version>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.github.stefanbirkner</groupId>
       <artifactId>system-rules</artifactId>
       <version>1.9.0</version>
@@ -66,8 +60,8 @@
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>2.0.2-beta</version>
+      <artifactId>mockito-core</artifactId>
+      <version>2.23.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>

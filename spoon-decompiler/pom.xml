@@ -40,12 +40,6 @@
             <artifactId>spoon-core</artifactId>
             <version>7.2.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.jboss.windup.decompiler.fernflower/fernflower -->
         <dependency>
             <groupId>org.jboss.windup.decompiler.fernflower</groupId>
