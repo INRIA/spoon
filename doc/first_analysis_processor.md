@@ -31,7 +31,7 @@ This super class takes a generic type parameter to know what type you want inspe
 For this tutorial, we inspect a catch, a `CtCatch` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtCatch.html)).
 
 {{site.data.alerts.note}} 
-You can view the complete meta model of Spoon at <http://spoon.gforge.inria.fr/structural_elements.html> and <http://spoon.gforge.inria.fr/code_elements.html>. 
+You can view the complete meta model of Spoon <a href="structural_elements.html">there</a> and <a href="code_elements.html">there</a>.
 It is a simple way to know what you can inspect with processors.
 {{site.data.alerts.end}}
 
