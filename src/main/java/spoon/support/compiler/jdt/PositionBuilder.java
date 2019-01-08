@@ -34,7 +34,6 @@ import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.Wildcard;
-
 import spoon.SpoonException;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
@@ -538,9 +537,6 @@ public class PositionBuilder {
 				modifier.setPosition(cf.createSourcePosition(cu, o1, o2 - 1, jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions()));
 			}
 			start = o2;
-		}
-		if (explicitModifiersByName.size() > 0) {
-			throw new SpoonException("Position of CtExtendedModifiers: [" + String.join(", ", explicitModifiersByName.keySet()) + "] not found in " + String.valueOf(contents, start, end - start));
 		}
 	}
 
