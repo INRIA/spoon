@@ -27,7 +27,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 
 /**
- * {@link NameScope} for exact set of named elements. There can be:
+ * {@link LexicalScope} for exact set of named elements. There can be:
  * <ul>
  * <li>parameter names of constructor, method or lambda
  * <li>parameter name of catch variable
@@ -38,7 +38,7 @@ class SimpleNameScope extends AbstractNameScope {
 
 	private final Map<String, CtNamedElement> elementsByName;
 
-	SimpleNameScope(NameScope parent, CtElement scopeElement, List<CtParameter<?>> parameters) {
+	SimpleNameScope(LexicalScope parent, CtElement scopeElement, List<CtParameter<?>> parameters) {
 		super(parent, scopeElement);
 		elementsByName = new HashMap<>(parameters.size());
 		for (CtParameter<?> parameter : parameters) {
@@ -46,7 +46,7 @@ class SimpleNameScope extends AbstractNameScope {
 		}
 	}
 
-	SimpleNameScope(NameScope parent, CtElement scopeElement) {
+	SimpleNameScope(LexicalScope parent, CtElement scopeElement) {
 		super(parent, scopeElement);
 		elementsByName = new HashMap<>();
 	}

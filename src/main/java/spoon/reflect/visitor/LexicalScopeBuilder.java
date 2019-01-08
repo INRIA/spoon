@@ -2,7 +2,10 @@ package spoon.reflect.visitor;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
+import java.util.List;
 import java.util.function.Function;
 
 import spoon.SpoonException;
@@ -21,21 +24,21 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 
 /**
- * The {@link EarlyTerminatingScanner} implementation,
- * which knows mapping of simple names to elements in the actually scanned scope.
+ * Responsible for building lexical scopes.
  *
- * @param <T> the type of the result produced by this scanner.
  */
-public class NameScopeScanner<T> extends EarlyTerminatingScanner<T> {
-	private final Deque<NameScope> scopes = new ArrayDeque<>();
+public class LexicalScopeBuilder extends EarlyTerminatingScanner<Object> {
+	private final List<LexicalScope> allScopes = new ArrayList<>();
+	private final Deque<LexicalScope> scopes = new ArrayDeque<>();
 	protected void enter(spoon.reflect.declaration.CtElement e) {
-		NameScope newFinder = onElement(scopes.peek(), e);
+		LexicalScope newFinder = onElement(scopes.peek(), e);
 		if (newFinder != null) {
 			scopes.push(newFinder);
+			allScopes.add(newFinder);
 		}
 	}
 	protected void exit(spoon.reflect.declaration.CtElement e) {
-		NameScope topFinder = scopes.peek();
+		LexicalScope topFinder = scopes.peek();
 		if (topFinder != null && topFinder.getScopeElement() == e) {
 			//we are living scope of this ConflictFinder. Pop it
 			scopes.pop();
@@ -48,20 +51,29 @@ public class NameScopeScanner<T> extends EarlyTerminatingScanner<T> {
 		}
 	};
 	/**
-	 * @return {@link NameScope} of actually scanned element. The {@link NameScope#forEachElementByName(String, java.util.function.Function)} can be used
+	 * @return {@link LexicalScope} of actually scanned element. The {@link LexicalScope#forEachElementByName(String, java.util.function.Function)} can be used
 	 * to get all {@link CtElement}s which are mapped to that simple name
 	 */
-	public NameScope getNameScope() {
-		NameScope ns = scopes.peek();
+	public LexicalScope getCurrentNameScope() {
+		LexicalScope ns = scopes.peek();
 		return ns == null ? EMPTY : ns;
 	}
+
+	/**
+	 * Returns all the collected name scopes
+	 *
+	 */
+	public List<LexicalScope> getNameScopes() {
+		return Collections.unmodifiableList(allScopes);
+	}
+
 	/**
 	 * Call it for each visited CtElement
 	 * @param parent the parent ConflictFinder
 	 * @param target an element
 	 * @return new {@link AbstractNameScope} if `target` element declares new naming scope or null if there is no new scope
 	 */
-	private AbstractNameScope onElement(NameScope parent, CtElement target) {
+	private AbstractNameScope onElement(LexicalScope parent, CtElement target) {
 		class Visitor extends CtAbstractVisitor {
 			AbstractNameScope finder = null;
 			@Override

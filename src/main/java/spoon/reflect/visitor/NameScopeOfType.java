@@ -38,14 +38,14 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 
 /**
- * Represents NameScope of Type. Knows all accessible fields, nested type names and method names
+ * Represents LexicalScope of Type. Knows all accessible fields, nested type names and method names
  */
 class NameScopeOfType extends AbstractNameScope {
 	private Map<String, CtNamedElement> fieldsByName;
 	private Map<String, CtNamedElement> typesByName;
 	private Map<String, CtNamedElement> methodsByName;
 
-	NameScopeOfType(NameScope conflictFinder, CtType<?> p_type) {
+	NameScopeOfType(LexicalScope conflictFinder, CtType<?> p_type) {
 		super(conflictFinder, p_type);
 	}
 

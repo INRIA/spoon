@@ -28,16 +28,13 @@ import java.util.List;
 
 import org.junit.Test;
 
-import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.path.CtRole;
-import spoon.reflect.visitor.NameScope;
-import spoon.reflect.visitor.NameScopeScanner;
-import spoon.reflect.visitor.chain.CtScannerListener;
-import spoon.reflect.visitor.chain.ScanningMode;
+import spoon.reflect.visitor.LexicalScope;
+import spoon.reflect.visitor.LexicalScopeBuilder;
 import spoon.test.imports.name_scope.testclasses.Renata;
 import spoon.testing.utils.ModelUtils;
 
@@ -45,7 +42,7 @@ public class NameScopeTest {
 
 	@Test
 	public void testNameScopeScanner() throws Exception {
-		//contract: check that NameScope knows expected name.
+		//contract: check that LexicalScope knows expected name.
 		CtType<?> typeRenata = ModelUtils.buildClass(launcher -> {
 			//needed to compute imports
 			launcher.getEnvironment().setAutoImports(true);
@@ -63,53 +60,62 @@ public class NameScopeTest {
 		CtType<?> typeFiles = typeRenata.getFactory().Type().createReference(Files.class).getTypeDeclaration();
 		CtMethod<?> methodsNewDirectoryStream = typeFiles.getMethodsByName("newDirectoryStream").get(0);
 		
-		NameScopeScanner<Void> scanner = new NameScopeScanner<>();
+		LexicalScopeBuilder scanner = new LexicalScopeBuilder();
 		scanner.setVisitCompilationUnitContent(true);
-		scanner.setListener(new CtScannerListener() {
-			@Override
-			public ScanningMode enter(CtRole role, CtElement element) {
-				if (element instanceof CtLiteral) {
-					CtLiteral<String> literal = (CtLiteral<String>) element;
-					//check that NameScope is aware of all names, which are visible at position of the literals
-					if ("1".equals(literal.getValue())) {
-						//contract: the local variables are visible after they are declared
-						assertNameScope(Arrays.asList(), scanner.getNameScope(), "count");
-						assertNameScope(Arrays.asList("String theme"), scanner.getNameScope(), "theme");
-						assertNameScope(Arrays.asList(methodDraw), scanner.getNameScope(), "draw");
-						assertNameScope(Arrays.asList(typeTereza), scanner.getNameScope(), "Tereza");
-						assertNameScope(Arrays.asList(fieldMichal), scanner.getNameScope(), "michal");
-						assertNameScope(Arrays.asList(typeRenata), scanner.getNameScope(), "Renata");
-						//contract: imported types are visible too
-						assertNameScope(Arrays.asList(typeFile), scanner.getNameScope(), "File");
-						//contract: imported static methods are visible too
-						assertNameScope(Arrays.asList(methodCurrentTimeMillis), scanner.getNameScope(), "currentTimeMillis");
-						//contract: type members imported by wildcard are visible too
-						assertNameScope(Arrays.asList(methodsNewDirectoryStream), scanner.getNameScope(), "newDirectoryStream");
-						//contract: The names are case sensitive
-						assertNameScope(Arrays.asList(), scanner.getNameScope(), "Michal");
-						//the names which are not visible, must not be returned
-						assertNameScope(Arrays.asList(), scanner.getNameScope(), "void");
-						assertNameScope(Arrays.asList(), scanner.getNameScope(), "String");
-						//type members of System are not visible
-						assertNameScope(Arrays.asList(), scanner.getNameScope(), "setIn");
-						//type member itself whose field is imported is not visible
-						assertNameScope(Arrays.asList(), scanner.getNameScope(), "System");
-						//type member itself whose type members are imported by wildcard are not visible
-						assertNameScope(Arrays.asList(), scanner.getNameScope(), "Fields");
-					} else if ("2".equals(literal.getValue())) {
-						//contract: the local variables are visible after they are declared
-						assertNameScope(Arrays.asList("int count"), scanner.getNameScope(), "count");
-					}
-				}
-				return ScanningMode.NORMAL;
-			}
-		});
+		// we collect all scopes
 		scanner.scan(typeRenata.getPosition().getCompilationUnit());
+
+		// we have 8 scopes in Renata
+		List<LexicalScope> lexicalScopes = scanner.getNameScopes();
+		assertEquals(8, lexicalScopes.size());
+
+		LexicalScope n1 = getNameScope(scanner, "draw");
+
+		//contract: the local variables are visible after they are declared
+		checkThatScopeContains(n1, Arrays.asList(), "count");
+		checkThatScopeContains(n1, Arrays.asList("String theme"), "theme");
+		checkThatScopeContains(n1, Arrays.asList(methodDraw), "draw");
+		checkThatScopeContains(n1, Arrays.asList(typeTereza), "Tereza");
+		checkThatScopeContains(n1, Arrays.asList(fieldMichal), "michal");
+		checkThatScopeContains(n1, Arrays.asList(typeRenata), "Renata");
+		//contract: imported types are visible too
+		checkThatScopeContains(n1, Arrays.asList(typeFile), "File");
+		//contract: imported static methods are visible too
+		checkThatScopeContains(n1, Arrays.asList(methodCurrentTimeMillis), "currentTimeMillis");
+		//contract: type members imported by wildcard are visible too
+		checkThatScopeContains(n1, Arrays.asList(methodsNewDirectoryStream), "newDirectoryStream");
+		//contract: The names are case sensitive
+		checkThatScopeContains(n1, Arrays.asList(), "Michal");
+		//the names which are not visible, must not be returned
+		checkThatScopeContains(n1, Arrays.asList(), "void");
+		checkThatScopeContains(n1, Arrays.asList(), "String");
+		//type members of System are not visible
+		checkThatScopeContains(n1, Arrays.asList(), "setIn");
+		//type member itself whose field is imported is not visible
+		checkThatScopeContains(n1, Arrays.asList(), "System");
+		//type member itself whose type members are imported by wildcard are not visible
+		checkThatScopeContains(n1, Arrays.asList(), "Fields");
+
+		//contract: the local variables is only visible in the block scope (not the method one)
+		checkThatScopeContains(n1, Arrays.asList(), "count");
+		checkThatScopeContains(lexicalScopes.get(7), Arrays.asList("int count"), "count");
 	}
-	
-	private void assertNameScope(List<?> expectedElements, NameScope nameScope, String name) {
+
+
+	private LexicalScope getNameScope(LexicalScopeBuilder builder, String name) {
+		for (LexicalScope n: builder.getNameScopes()) {
+			System.out.println(n.getScopeElement().toString());
+			if (n.getScopeElement() instanceof CtNamedElement && ((CtNamedElement)n.getScopeElement()).getSimpleName().equals(name)) {
+				return n;
+			}
+		}
+		throw  new IllegalStateException();
+	}
+
+
+	private void checkThatScopeContains(LexicalScope lexicalScope, List<?> expectedElements, String name) {
 		List<CtElement> realElements = new ArrayList<>();
-		nameScope.forEachElementByName(name, e -> realElements.add(e));
+		lexicalScope.forEachElementByName(name, e -> realElements.add(e));
 		assertEquals(expectedElements.size(), realElements.size());
 		for (int i = 0; i < expectedElements.size(); i++) {
 			Object expected = expectedElements.get(i);

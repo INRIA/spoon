@@ -16,7 +16,6 @@
  */
 package spoon.reflect.visitor;
 
-import java.util.Optional;
 import java.util.function.Function;
 
 import spoon.reflect.declaration.CtElement;
@@ -24,23 +23,20 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.support.Experimental;
 
 /**
- * Maps simple names to {@link CtElement}, which represents that simple name in current scope
+ * Represents that a lexical scope in the language
+ *
+ * See https://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping
  */
 @Experimental
-public interface NameScope {
+public interface LexicalScope {
 	/**
 	 * @return the {@link CtElement} which represents the current scope
 	 */
 	CtElement getScopeElement();
 
 	/**
-	 * @return outer scope
-	 */
-	Optional<NameScope> getParent();
-
-	/**
 	 * @param name to be searched simple name
-	 * @param fnc is called for each named element with same simple name, which is defined in this or parent {@link NameScope}.
+	 * @param fnc is called for each named element with same simple name, which is defined in this or parent {@link LexicalScope}.
 	 * 	Function `fnc` is called as long as there are some matching elements and `fnc` returns null.
 	 * 	If `fnc` returns not null value then searching is stopped and that value is a returned
 	 * @return the value returned by `fnc` or null

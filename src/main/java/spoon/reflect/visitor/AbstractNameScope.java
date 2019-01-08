@@ -26,12 +26,12 @@ import spoon.reflect.declaration.CtNamedElement;
 /**
  * Maps names to CtElements, which are visible at current scanning place
  */
-abstract class AbstractNameScope implements NameScope {
+abstract class AbstractNameScope implements LexicalScope {
 
-	private final NameScope parent;
+	private final LexicalScope parent;
 	private final CtElement scopeElement;
 
-	protected AbstractNameScope(NameScope parent, CtElement scopeElement) {
+	protected AbstractNameScope(LexicalScope parent, CtElement scopeElement) {
 		this.parent = parent;
 		this.scopeElement = scopeElement;
 	}
@@ -44,8 +44,7 @@ abstract class AbstractNameScope implements NameScope {
 		return scopeElement;
 	}
 
-	@Override
-	public final Optional<NameScope> getParent() {
+	public final Optional<LexicalScope> getParent() {
 		return Optional.ofNullable(parent);
 	}
 
