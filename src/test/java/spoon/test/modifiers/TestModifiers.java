@@ -19,6 +19,7 @@ package spoon.test.modifiers;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
@@ -26,6 +27,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.test.modifiers.testclasses.AbstractClass;
 import spoon.test.modifiers.testclasses.MethodVarArgs;
+import spoon.test.modifiers.testclasses.NoSpaceBeforeFinal;
 import spoon.test.modifiers.testclasses.StaticMethod;
 import spoon.testing.utils.ModelUtils;
 
@@ -37,7 +39,20 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class TestModifiers {
+public class ModifiersTest {
+
+    @Test
+    public void testNoSpaceBeforeFinal() {
+        // contract: Modifiers that are not preceeded by a white space do not throw exceptions
+        Launcher spoon = new Launcher();
+        spoon.addInputResource("./src/test/java/spoon/test/modifiers/testclasses/NoSpaceBeforeFinal.java");
+        spoon.buildModel();
+
+        CtType<?> myClass = spoon.getFactory().Type().get(NoSpaceBeforeFinal.class);
+        CtTryWithResource ctTry = myClass.getMethodsByName("m").get(0).getBody().getStatement(0);
+
+        assertTrue(ctTry.getResources().get(0).getModifiers().contains(ModifierKind.FINAL));
+    }
 
     @Test
     public void testMethodWithVarargsDoesNotBecomeTransient() {

@@ -523,7 +523,7 @@ public class PositionBuilder {
 		//move end after the last char
 		end++;
 		while (start < end && explicitModifiersByName.size() > 0) {
-			int o1 = findNextNonWhitespace(contents, end - 1, start);
+			int o1 = findNextNonWhitespaceNorParenthesis(contents, end - 1, start);
 			if (o1 == -1) {
 				break;
 			}
@@ -537,6 +537,9 @@ public class PositionBuilder {
 				modifier.setPosition(cf.createSourcePosition(cu, o1, o2 - 1, jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions()));
 			}
 			start = o2;
+		}
+		if (explicitModifiersByName.size() > 0) {
+			throw new SpoonException("Position of CtExtendedModifiers: [" + String.join(", ", explicitModifiersByName.keySet()) + "] not found in " + String.valueOf(contents, start, end - start));
 		}
 	}
 
@@ -583,6 +586,35 @@ public class PositionBuilder {
 		while ((off = findNextNonWhitespace(contents, maxOff, off)) >= 0) {
 			if (contents[off] == expectedChar) {
 				return off;
+			}
+			off++;
+		}
+		return -1;
+	}
+
+	/**
+	 * @param maxOff maximum acceptable return value
+	 * @return index of first non whitespace char, searching forward.
+	 * Can return 'off' if it is non whitespace.
+	 * Note: all kinds of java comments are understood as whitespace too.
+	 * The search must start out of comment or on the first character of the comment
+	 */
+	static int findNextNonWhitespaceNorParenthesis(char[] content, int maxOff, int off) {
+		return findNextNonWhitespaceNorParenthesis(true, content, maxOff, off);
+	}
+	static int findNextNonWhitespaceNorParenthesis(boolean commentIsWhiteSpace, char[] content, int maxOff, int off) {
+		maxOff = Math.min(maxOff, content.length - 1);
+		while (off >= 0 && off <= maxOff) {
+			char c = content[off];
+			if (Character.isWhitespace(c) == false && c != '(') {
+				//non whitespace found
+				int endOfCommentOff = commentIsWhiteSpace ? getEndOfComment(content, maxOff, off) : -1;
+				if (endOfCommentOff == -1) {
+					//it is not a comment. Finish
+					return off;
+				}
+				//it is a comment move to the end of comment and continue
+				off = endOfCommentOff;
 			}
 			off++;
 		}
