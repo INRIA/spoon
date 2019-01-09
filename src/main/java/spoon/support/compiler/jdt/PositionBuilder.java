@@ -16,6 +16,7 @@
  */
 package spoon.support.compiler.jdt;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
@@ -503,6 +504,7 @@ public class PositionBuilder {
 		return nr;
 	}
 
+	private static char[] ignoreChars = new char[] {'('};
 	private void setModifiersPosition(CtModifiable e, int start, int end) {
 		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();
 		CompilationUnit cu = this.jdtTreeBuilder.getContextBuilder().compilationUnitSpoon;
@@ -523,7 +525,7 @@ public class PositionBuilder {
 		//move end after the last char
 		end++;
 		while (start < end && explicitModifiersByName.size() > 0) {
-			int o1 = findNextNonWhitespaceNorParenthesis(contents, end - 1, start);
+			int o1 = findNextNonWhitespace(false, contents, end - 1, start, ignoreChars);
 			if (o1 == -1) {
 				break;
 			}
@@ -599,43 +601,21 @@ public class PositionBuilder {
 	 * Note: all kinds of java comments are understood as whitespace too.
 	 * The search must start out of comment or on the first character of the comment
 	 */
-	static int findNextNonWhitespaceNorParenthesis(char[] content, int maxOff, int off) {
-		return findNextNonWhitespaceNorParenthesis(true, content, maxOff, off);
-	}
-	static int findNextNonWhitespaceNorParenthesis(boolean commentIsWhiteSpace, char[] content, int maxOff, int off) {
-		maxOff = Math.min(maxOff, content.length - 1);
-		while (off >= 0 && off <= maxOff) {
-			char c = content[off];
-			if (Character.isWhitespace(c) == false && c != '(') {
-				//non whitespace found
-				int endOfCommentOff = commentIsWhiteSpace ? getEndOfComment(content, maxOff, off) : -1;
-				if (endOfCommentOff == -1) {
-					//it is not a comment. Finish
-					return off;
-				}
-				//it is a comment move to the end of comment and continue
-				off = endOfCommentOff;
-			}
-			off++;
-		}
-		return -1;
-	}
-
-	/**
-	 * @param maxOff maximum acceptable return value
-	 * @return index of first non whitespace char, searching forward.
-	 * Can return 'off' if it is non whitespace.
-	 * Note: all kinds of java comments are understood as whitespace too.
-	 * The search must start out of comment or on the first character of the comment
-	 */
 	static int findNextNonWhitespace(char[] content, int maxOff, int off) {
 		return findNextNonWhitespace(true, content, maxOff, off);
 	}
 	static int findNextNonWhitespace(boolean commentIsWhiteSpace, char[] content, int maxOff, int off) {
+		return findNextNonWhitespace(commentIsWhiteSpace, content, maxOff, off, new char[]{});
+	}
+
+	/**
+	 * @param ignore optional list of characters to be ignored as whitespaces
+	 */
+	static int findNextNonWhitespace(boolean commentIsWhiteSpace, char[] content, int maxOff, int off, char[] ignore) {
 		maxOff = Math.min(maxOff, content.length - 1);
 		while (off >= 0 && off <= maxOff) {
 			char c = content[off];
-			if (Character.isWhitespace(c) == false) {
+			if (Character.isWhitespace(c) == false && !ArrayUtils.contains(ignore, c)) {
 				//non whitespace found
 				int endOfCommentOff = commentIsWhiteSpace ? getEndOfComment(content, maxOff, off) : -1;
 				if (endOfCommentOff == -1) {
