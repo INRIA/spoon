@@ -33,6 +33,11 @@ class NameScopeImpl implements LexicalScope {
 
 	private final LexicalScope parent;
 	private final CtElement scopeElement;
+
+	public Map<String, CtNamedElement> getElementsByName() {
+		return elementsByName;
+	}
+
 	private final Map<String, CtNamedElement> elementsByName = new HashMap<>();
 
 	NameScopeImpl(LexicalScope parent, CtElement scopeElement, List<CtParameter<?>> parameters) {

@@ -15,23 +15,18 @@ import spoon.reflect.declaration.CtMethod;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
-import java.util.List;
 
 /**
  * Responsible for building lexical scopes.
  *
  */
 public class LexicalScopeBuilder extends EarlyTerminatingScanner<Object> {
-	private final List<LexicalScope> allScopes = new ArrayList<>();
 	private final Deque<LexicalScope> scopes = new ArrayDeque<>();
 	protected void enter(spoon.reflect.declaration.CtElement e) {
 		LexicalScope newFinder = onElement(scopes.peek(), e);
 		if (newFinder != null) {
 			scopes.push(newFinder);
-			allScopes.add(newFinder);
 		}
 	}
 	protected void exit(spoon.reflect.declaration.CtElement e) {
@@ -49,14 +44,6 @@ public class LexicalScopeBuilder extends EarlyTerminatingScanner<Object> {
 	public LexicalScope getCurrentNameScope() {
 		LexicalScope ns = scopes.peek();
 		return ns == null ? EMPTY : ns;
-	}
-
-	/**
-	 * Returns all the collected name scopes
-	 *
-	 */
-	public List<LexicalScope> getNameScopes() {
-		return Collections.unmodifiableList(allScopes);
 	}
 
 	/**

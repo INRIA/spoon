@@ -16,10 +16,19 @@
  */
 package spoon.test.imports.name_scope;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtLiteral;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.visitor.LexicalScope;
+import spoon.reflect.visitor.LexicalScopeBuilder;
+import spoon.reflect.visitor.chain.CtScannerListener;
+import spoon.reflect.visitor.chain.ScanningMode;
+import spoon.test.imports.name_scope.testclasses.Renata;
+import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -27,17 +36,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.visitor.LexicalScope;
-import spoon.reflect.visitor.LexicalScopeBuilder;
-import spoon.test.imports.name_scope.testclasses.Renata;
-import spoon.testing.utils.ModelUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 
 public class NameScopeTest {
 
@@ -63,54 +65,58 @@ public class NameScopeTest {
 		
 		LexicalScopeBuilder scanner = new LexicalScopeBuilder();
 		scanner.setVisitCompilationUnitContent(true);
+		final LexicalScope[] scopes = new LexicalScope[2];
+		scanner.setListener(new CtScannerListener() {
+			@Override
+			public ScanningMode enter(CtElement element) {
+				// saving the scope of method 'draw'
+				if (element instanceof CtBlock) {
+					scopes[0] = scanner.getCurrentNameScope();
+				}
+
+				// saving the scope at 'System.out.println("2");'
+				if (element instanceof CtLiteral && ((CtLiteral) element).getValue().equals("2")) {
+					scopes[1] = scanner.getCurrentNameScope();
+				}
+				return ScanningMode.NORMAL;
+			}
+		});
 		// we collect all scopes
 		scanner.scan(typeRenata.getPosition().getCompilationUnit());
 
-		// we have 8 scopes in Renata
-		List<LexicalScope> lexicalScopes = scanner.getNameScopes();
-		assertEquals(8, lexicalScopes.size());
-
-		LexicalScope n1 = getNameScope(scanner, "draw");
+		// we have two different scopes
+		assertNotSame(scopes[0], scopes[1]);
 
 		//contract: the local variables are visible after they are declared
-		checkThatScopeContains(n1, Arrays.asList(), "count");
-		checkThatScopeContains(n1, Arrays.asList("String theme"), "theme");
-		checkThatScopeContains(n1, Arrays.asList(methodDraw), "draw");
-		checkThatScopeContains(n1, Arrays.asList(typeTereza), "Tereza");
-		checkThatScopeContains(n1, Arrays.asList(fieldMichal), "michal");
-		checkThatScopeContains(n1, Arrays.asList(typeRenata), "Renata");
+		checkThatScopeContains(scopes[0], Arrays.asList(), "count");
+		checkThatScopeContains(scopes[0], Arrays.asList("String theme"), "theme");
+		checkThatScopeContains(scopes[0], Arrays.asList(methodDraw), "draw");
+		checkThatScopeContains(scopes[0], Arrays.asList(typeTereza), "Tereza");
+		checkThatScopeContains(scopes[0], Arrays.asList(fieldMichal), "michal");
+		checkThatScopeContains(scopes[0], Arrays.asList(typeRenata), "Renata");
 		//contract: imported types are visible too
-		checkThatScopeContains(n1, Arrays.asList(typeFile), "File");
+		checkThatScopeContains(scopes[0], Arrays.asList(typeFile), "File");
 		//contract: imported static methods are visible too
-		checkThatScopeContains(n1, Arrays.asList(methodCurrentTimeMillis), "currentTimeMillis");
+		checkThatScopeContains(scopes[0], Arrays.asList(methodCurrentTimeMillis), "currentTimeMillis");
 		//contract: type members imported by wildcard are visible too
-		checkThatScopeContains(n1, Arrays.asList(methodsNewDirectoryStream), "newDirectoryStream");
+		checkThatScopeContains(scopes[0], Arrays.asList(methodsNewDirectoryStream), "newDirectoryStream");
 		//contract: The names are case sensitive
-		checkThatScopeContains(n1, Arrays.asList(), "Michal");
+		checkThatScopeContains(scopes[0], Arrays.asList(), "Michal");
 		//the names which are not visible, must not be returned
-		checkThatScopeContains(n1, Arrays.asList(), "void");
-		checkThatScopeContains(n1, Arrays.asList(), "String");
+		checkThatScopeContains(scopes[0], Arrays.asList(), "void");
+		checkThatScopeContains(scopes[0], Arrays.asList(), "String");
 		//type members of System are not visible
-		checkThatScopeContains(n1, Arrays.asList(), "setIn");
+		checkThatScopeContains(scopes[0], Arrays.asList(), "setIn");
 		//type member itself whose field is imported is not visible
-		checkThatScopeContains(n1, Arrays.asList(), "System");
+		checkThatScopeContains(scopes[0], Arrays.asList(), "System");
 		//type member itself whose type members are imported by wildcard are not visible
-		checkThatScopeContains(n1, Arrays.asList(), "Fields");
+		checkThatScopeContains(scopes[0], Arrays.asList(), "Fields");
 
 		//contract: the local variables is only visible in the block scope (not the method one)
-		checkThatScopeContains(n1, Arrays.asList(), "count");
-		checkThatScopeContains(lexicalScopes.get(7), Arrays.asList("int count"), "count");
+		checkThatScopeContains(scopes[0], Arrays.asList(), "count");
+		checkThatScopeContains(scopes[1], Arrays.asList("int count"), "count");
 	}
 
-
-	private LexicalScope getNameScope(LexicalScopeBuilder builder, String name) {
-		for (LexicalScope n: builder.getNameScopes()) {
-			if (n.getScopeElement() instanceof CtNamedElement && ((CtNamedElement)n.getScopeElement()).getSimpleName().equals(name)) {
-				return n;
-			}
-		}
-		throw  new IllegalStateException();
-	}
 
 
 	private void checkThatScopeContains(LexicalScope lexicalScope, List<?> expectedElements, String name) {
