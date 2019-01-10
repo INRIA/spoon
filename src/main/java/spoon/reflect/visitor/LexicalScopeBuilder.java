@@ -1,14 +1,5 @@
 package spoon.reflect.visitor;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.List;
-import java.util.function.Function;
-
-import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtLambda;
@@ -21,7 +12,13 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtNamedElement;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.List;
 
 /**
  * Responsible for building lexical scopes.
@@ -44,12 +41,7 @@ public class LexicalScopeBuilder extends EarlyTerminatingScanner<Object> {
 			scopes.pop();
 		}
 	}
-	private static AbstractNameScope EMPTY = new AbstractNameScope(null, null) {
-		@Override
-		protected <T> T forEachLocalElementByName(String name, Function<? super CtNamedElement, T> consumer) {
-			return null;
-		}
-	};
+	private static NameScopeImpl EMPTY = new NameScopeImpl(null, null);
 	/**
 	 * @return {@link LexicalScope} of actually scanned element. The {@link LexicalScope#forEachElementByName(String, java.util.function.Function)} can be used
 	 * to get all {@link CtElement}s which are mapped to that simple name
@@ -71,11 +63,11 @@ public class LexicalScopeBuilder extends EarlyTerminatingScanner<Object> {
 	 * Call it for each visited CtElement
 	 * @param parent the parent ConflictFinder
 	 * @param target an element
-	 * @return new {@link AbstractNameScope} if `target` element declares new naming scope or null if there is no new scope
+	 * @return new {@link NameScopeImpl} if `target` element declares new naming scope or null if there is no new scope
 	 */
-	private AbstractNameScope onElement(LexicalScope parent, CtElement target) {
+	private NameScopeImpl onElement(LexicalScope parent, CtElement target) {
 		class Visitor extends CtAbstractVisitor {
-			AbstractNameScope finder = null;
+			NameScopeImpl finder = null;
 			@Override
 			public void visitCtCompilationUnit(CtCompilationUnit compilationUnit) {
 				//compilation unit items are added in NameScopeOfType, because they depend on the inhertance hierarchy of the type itself
@@ -98,31 +90,27 @@ public class LexicalScopeBuilder extends EarlyTerminatingScanner<Object> {
 			}
 			@Override
 			public <T> void visitCtMethod(CtMethod<T> m) {
-				finder = new SimpleNameScope(parent, m, m.getParameters());
+				finder = new NameScopeImpl(parent, m, m.getParameters());
 			}
 			@Override
 			public <T> void visitCtConstructor(CtConstructor<T> c) {
-				finder = new SimpleNameScope(parent, c, c.getParameters());
+				finder = new NameScopeImpl(parent, c, c.getParameters());
 			}
 			@Override
 			public <T> void visitCtLambda(CtLambda<T> lambda) {
-				finder = new SimpleNameScope(parent, lambda, lambda.getParameters());
+				finder = new NameScopeImpl(parent, lambda, lambda.getParameters());
 			}
 			@Override
 			public void visitCtCatch(CtCatch catchBlock) {
-				finder = new SimpleNameScope(parent, catchBlock).addVariable(catchBlock.getParameter());
+				finder = new NameScopeImpl(parent, catchBlock).addNamedElement(catchBlock.getParameter());
 			}
 			@Override
 			public <R> void visitCtBlock(CtBlock<R> block) {
-				finder = new SimpleNameScope(parent, block);
+				finder = new NameScopeImpl(parent, block);
 			}
 			@Override
 			public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
-				if (parent instanceof SimpleNameScope) {
-					((SimpleNameScope) parent).addVariable(localVariable);
-				} else {
-					throw new SpoonException("Cannot add local variable when parent is missing");
-				}
+				parent.addNamedElement(localVariable);
 			}
 		};
 		Visitor scanner = new Visitor();

@@ -40,7 +40,7 @@ import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 /**
  * Represents LexicalScope of Type. Knows all accessible fields, nested type names and method names
  */
-class NameScopeOfType extends AbstractNameScope {
+class NameScopeOfType extends NameScopeImpl {
 	private Map<String, CtNamedElement> fieldsByName;
 	private Map<String, CtNamedElement> typesByName;
 	private Map<String, CtNamedElement> methodsByName;
@@ -50,7 +50,8 @@ class NameScopeOfType extends AbstractNameScope {
 	}
 
 	@Override
-	protected <T> T forEachLocalElementByName(String name, Function<? super CtNamedElement, T> consumer) {
+	public <T> T forEachElementByName(String name, Function<? super CtNamedElement, T> consumer) {
+		super.forEachElementByName(name, consumer);
 		assureCacheInitialized();
 		T r = forEachByName(fieldsByName, name, consumer);
 		if (r != null) {
@@ -67,6 +68,9 @@ class NameScopeOfType extends AbstractNameScope {
 		return null;
 	}
 
+	private void putType(CtType<?> t) {
+		putIfNotExists(typesByName, t);
+	}
 	private void assureCacheInitialized() {
 		if (fieldsByName == null) {
 			//collect names of type members which are visible in this type
@@ -79,7 +83,7 @@ class NameScopeOfType extends AbstractNameScope {
 				if (typeMember instanceof CtField) {
 					putIfNotExists(fieldsByName, (CtField<?>) typeMember);
 				} else if (typeMember instanceof CtType) {
-					putIfNotExists(typesByName, (CtType<?>) typeMember);
+					putType((CtType<?>) typeMember);
 				} else if (typeMember instanceof CtMethod) {
 					putIfNotExists(methodsByName, (CtMethod<?>) typeMember);
 				}
@@ -125,7 +129,7 @@ class NameScopeOfType extends AbstractNameScope {
 			aImport.accept(new CtImportVisitor() {
 				@Override
 				public <T> void visitTypeImport(CtTypeReference<T> typeReference) {
-					putIfNotExists(typesByName, typeReference.getTypeDeclaration());
+					putType(typeReference.getTypeDeclaration());
 				}
 				@Override
 				public <T> void visitMethodImport(CtExecutableReference<T> executableReference) {
@@ -141,7 +145,7 @@ class NameScopeOfType extends AbstractNameScope {
 					if (pack != null) {
 						for (CtType<?> type : pack.getTypes()) {
 							//add only types which are not yet imported. Explicit import wins over wildcard import
-							putIfNotExists(typesByName, type);
+							putType(type);
 						}
 					}
 				}
@@ -164,7 +168,7 @@ class NameScopeOfType extends AbstractNameScope {
 		CtPackage pack = compilationUnit.getDeclaredPackage();
 		if (pack != null) {
 			for (CtType<?> packageType : pack.getTypes()) {
-				if (!typesByName.containsKey(packageType.getSimpleName())) {
+				if (packageType != getScopeElement() && !typesByName.containsKey(packageType.getSimpleName())) {
 					typesByName.put(packageType.getSimpleName(), packageType);
 				}
 			}

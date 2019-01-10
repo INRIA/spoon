@@ -16,24 +16,41 @@
  */
 package spoon.reflect.visitor;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtParameter;
 
 /**
  * Maps names to CtElements, which are visible at current scanning place
  */
-abstract class AbstractNameScope implements LexicalScope {
+class NameScopeImpl implements LexicalScope {
 
 	private final LexicalScope parent;
 	private final CtElement scopeElement;
+	private final Map<String, CtNamedElement> elementsByName = new HashMap<>();
 
-	protected AbstractNameScope(LexicalScope parent, CtElement scopeElement) {
+	NameScopeImpl(LexicalScope parent, CtElement scopeElement, List<CtParameter<?>> parameters) {
+		this(parent, scopeElement);
+		for (CtParameter<?> parameter : parameters) {
+			addNamedElement(parameter);
+		}
+	}
+
+	protected NameScopeImpl(LexicalScope parent, CtElement scopeElement) {
 		this.parent = parent;
 		this.scopeElement = scopeElement;
+	}
+
+	@Override
+	public NameScopeImpl addNamedElement(CtNamedElement element) {
+		elementsByName.put(element.getSimpleName(), element);
+		return this;
 	}
 
 	/**
@@ -50,16 +67,13 @@ abstract class AbstractNameScope implements LexicalScope {
 
 	/**
 	 * @param name to be searched simple name
-	 * @param consumer is called for each named element with same name which are accessible from this {@link AbstractNameScope}
+	 * @param consumer is called for each named element with same name which are accessible from this {@link NameScopeImpl}
 	 * 	as long as there are some elements and consumer returns null. If `consumer` return not null value then it is returned
 	 * @return the value returned by `consumer` or null
 	 */
 	@Override
-	public final <T> T forEachElementByName(String name, Function<? super CtNamedElement, T> consumer) {
-		T r = forEachLocalElementByName(name, consumer);
-		if (r != null) {
-			return r;
-		}
+	public <T> T forEachElementByName(String name, Function<? super CtNamedElement, T> consumer) {
+		T r = forEachByName(elementsByName, name, consumer);
 		if (scopeElement instanceof CtNamedElement) {
 			CtNamedElement named = (CtNamedElement) scopeElement;
 			if (name.equals(named.getSimpleName())) {
@@ -74,8 +88,6 @@ abstract class AbstractNameScope implements LexicalScope {
 		}
 		return null;
 	}
-
-	protected abstract <T> T forEachLocalElementByName(String name, Function<? super CtNamedElement, T> consumer);
 
 	protected static <T> T forEachByName(Map<String, CtNamedElement> map, String name, Function<? super CtNamedElement, T> consumer) {
 		CtNamedElement named = map.get(name);

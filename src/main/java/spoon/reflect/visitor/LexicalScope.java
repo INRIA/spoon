@@ -16,19 +16,32 @@
  */
 package spoon.reflect.visitor;
 
-import java.util.function.Function;
-
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.support.Experimental;
 
+import java.util.function.Function;
+
 /**
  * Represents that a lexical scope in the language
+ *
+ * Note that scopes are changing after variable declaration. For example:
+ *
+ * void draw() {
+ *  //scope1
+ * int a;
+ * //scope2
+ * int b;
+ * //scope3
+ * }
  *
  * See https://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping
  */
 @Experimental
 public interface LexicalScope {
+	/** adds an element to the scope */
+	LexicalScope addNamedElement(CtNamedElement element);
+
 	/**
 	 * @return the {@link CtElement} which represents the current scope
 	 */
@@ -42,4 +55,5 @@ public interface LexicalScope {
 	 * @return the value returned by `fnc` or null
 	 */
 	<T> T forEachElementByName(String name, Function<? super CtNamedElement, T> fnc);
+
 }

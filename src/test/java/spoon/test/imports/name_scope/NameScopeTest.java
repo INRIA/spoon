@@ -19,6 +19,7 @@ package spoon.test.imports.name_scope;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -104,7 +105,6 @@ public class NameScopeTest {
 
 	private LexicalScope getNameScope(LexicalScopeBuilder builder, String name) {
 		for (LexicalScope n: builder.getNameScopes()) {
-			System.out.println(n.getScopeElement().toString());
 			if (n.getScopeElement() instanceof CtNamedElement && ((CtNamedElement)n.getScopeElement()).getSimpleName().equals(name)) {
 				return n;
 			}
@@ -115,7 +115,9 @@ public class NameScopeTest {
 
 	private void checkThatScopeContains(LexicalScope lexicalScope, List<?> expectedElements, String name) {
 		List<CtElement> realElements = new ArrayList<>();
-		lexicalScope.forEachElementByName(name, e -> realElements.add(e));
+		lexicalScope.forEachElementByName(name, e -> {realElements.add(e);
+			//System.out.println(e.getPosition().toString());
+			return true;});
 		assertEquals(expectedElements.size(), realElements.size());
 		for (int i = 0; i < expectedElements.size(); i++) {
 			Object expected = expectedElements.get(i);
