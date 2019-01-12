@@ -57,23 +57,23 @@ public class LexicalScopeBuilder extends EarlyTerminatingScanner<Object> {
 			NameScopeImpl finder = null;
 			@Override
 			public void visitCtCompilationUnit(CtCompilationUnit compilationUnit) {
-				//compilation unit items are added in NameScopeOfType, because they depend on the inhertance hierarchy of the type itself
+				//compilation unit items are added in TypeNameScope, because they depend on the inhertance hierarchy of the type itself
 			}
 			@Override
 			public <T> void visitCtClass(CtClass<T> ctClass) {
-				finder = new NameScopeOfType(parent, ctClass);
+				finder = new TypeNameScope(parent, ctClass);
 			}
 			@Override
 			public <T> void visitCtInterface(CtInterface<T> intrface) {
-				finder = new NameScopeOfType(parent, intrface);
+				finder = new TypeNameScope(parent, intrface);
 			}
 			@Override
 			public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
-				finder = new NameScopeOfType(parent, ctEnum);
+				finder = new TypeNameScope(parent, ctEnum);
 			}
 			@Override
 			public <A extends Annotation> void visitCtAnnotationType(CtAnnotationType<A> annotationType) {
-				finder = new NameScopeOfType(parent, annotationType);
+				finder = new TypeNameScope(parent, annotationType);
 			}
 			@Override
 			public <T> void visitCtMethod(CtMethod<T> m) {
