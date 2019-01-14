@@ -21,7 +21,7 @@ import java.util.Deque;
  * Responsible for building lexical scopes.
  *
  */
-public class LexicalScopeBuilder extends EarlyTerminatingScanner<Object> {
+public class LexicalScopeScanner extends EarlyTerminatingScanner<Object> {
 	private final Deque<LexicalScope> scopes = new ArrayDeque<>();
 	protected void enter(spoon.reflect.declaration.CtElement e) {
 		LexicalScope newFinder = onElement(scopes.peek(), e);

@@ -40,7 +40,7 @@ import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 /**
  * Represents a lexical scope of a type, with all accessible fields, nested type names and method names
  */
-class TypeNameScope extends NameScopeImpl {
+	class TypeNameScope extends NameScopeImpl {
 	private Map<String, CtNamedElement> fieldsByName;
 	private Map<String, CtNamedElement> typesByName;
 	private Map<String, CtNamedElement> methodsByName;

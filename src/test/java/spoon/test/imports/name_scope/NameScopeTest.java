@@ -24,7 +24,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.LexicalScope;
-import spoon.reflect.visitor.LexicalScopeBuilder;
+import spoon.reflect.visitor.LexicalScopeScanner;
 import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.test.imports.name_scope.testclasses.Renata;
@@ -63,7 +63,7 @@ public class NameScopeTest {
 		CtType<?> typeFiles = typeRenata.getFactory().Type().createReference(Files.class).getTypeDeclaration();
 		CtMethod<?> methodsNewDirectoryStream = typeFiles.getMethodsByName("newDirectoryStream").get(0);
 		
-		LexicalScopeBuilder scanner = new LexicalScopeBuilder();
+		LexicalScopeScanner scanner = new LexicalScopeScanner();
 		scanner.setVisitCompilationUnitContent(true);
 		final LexicalScope[] scopes = new LexicalScope[2];
 		scanner.setListener(new CtScannerListener() {
