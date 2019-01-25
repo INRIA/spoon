@@ -41,7 +41,7 @@ public class LexicalScopeScanner extends EarlyTerminatingScanner<Object> {
 	 * @return {@link LexicalScope} of actually scanned element. The {@link LexicalScope#forEachElementByName(String, java.util.function.Function)} can be used
 	 * to get all {@link CtElement}s which are mapped to that simple name
 	 */
-	public LexicalScope getCurrentNameScope() {
+	public LexicalScope getCurrentLexicalScope() {
 		LexicalScope ns = scopes.peek();
 		return ns == null ? EMPTY : ns;
 	}

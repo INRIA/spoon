@@ -71,12 +71,12 @@ public class NameScopeTest {
 			public ScanningMode enter(CtElement element) {
 				// saving the scope of method 'draw'
 				if (element instanceof CtBlock) {
-					scopes[0] = scanner.getCurrentNameScope();
+					scopes[0] = scanner.getCurrentLexicalScope();
 				}
 
 				// saving the scope at 'System.out.println("2");'
 				if (element instanceof CtLiteral && ((CtLiteral) element).getValue().equals("2")) {
-					scopes[1] = scanner.getCurrentNameScope();
+					scopes[1] = scanner.getCurrentLexicalScope();
 				}
 				return ScanningMode.NORMAL;
 			}
