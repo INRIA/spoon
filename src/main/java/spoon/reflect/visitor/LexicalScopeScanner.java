@@ -18,8 +18,8 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 /**
- * Responsible for building lexical scopes.
- *
+ * A {@link CtScanner} which provides current lexical scope
+ * of currently scanned AST node.
  */
 public class LexicalScopeScanner extends EarlyTerminatingScanner<Object> {
 	private final Deque<LexicalScope> scopes = new ArrayDeque<>();
