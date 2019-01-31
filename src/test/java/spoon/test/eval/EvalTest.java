@@ -21,6 +21,7 @@ import spoon.Launcher;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -35,6 +36,7 @@ import spoon.test.eval.testclasses.Foo;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class EvalTest {
@@ -155,6 +157,14 @@ public class EvalTest {
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 			CtElement elnew = eval.evaluate(el);
 			assertEquals("false", elnew.toString());
+
+			// how can I know if the expression is constant at compile-time?
+			// we can use VisitorPartialEvaluator
+			VisitorPartialEvaluator eval2 = new VisitorPartialEvaluator();
+			// is "el" a constant known at compile-time?
+			CtElement el3 = eval2.evaluate(el);
+			boolean isConstant = el3 instanceof CtLiteral;
+			assertTrue(isConstant);
 		}
 	}
 
