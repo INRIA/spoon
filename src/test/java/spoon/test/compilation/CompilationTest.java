@@ -32,7 +32,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.jdt.core.compiler.CategorizedProblem;
+import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.junit.Test;
 
@@ -63,6 +66,37 @@ import spoon.test.compilation.testclasses.Ifoo;
 import spoon.testing.utils.ModelUtils;
 
 public class CompilationTest {
+
+    @Test
+    public void compileTestWithImportStaticWildcard() {
+
+		/*
+			Test the compilation of a java file with an import static with wildcard
+		 */
+
+        Launcher launcher = new Launcher();
+        launcher.addInputResource("src/test/resources/compilation/");
+        launcher.getEnvironment().setShouldCompile(true);
+        launcher.getEnvironment().setAutoImports(true);
+        launcher.getEnvironment().setNoClasspath(true);
+        launcher.getEnvironment().setCommentEnabled(true);
+        launcher.getEnvironment().setBinaryOutputDirectory("target/spooned-classes/");
+        launcher.getEnvironment().setSourceOutputDirectory(new File("target/spooned/"));
+        launcher.run();
+
+        SpoonModelBuilder compiler = launcher.createCompiler();
+        boolean compile = compiler.compile(SpoonModelBuilder.InputType.CTTYPES);
+        final String nl = System.getProperty("line.separator");
+        assertTrue(
+                nl + "the compilation should succeed: " + nl +
+                        ((JDTBasedSpoonCompiler) compiler).getProblems()
+                                .stream()
+                                .filter(IProblem::isError)
+                                .map(CategorizedProblem::toString)
+                                .collect(Collectors.joining(nl)),
+                compile
+        );
+    }
 
 	@Test
 	public void compileCommandLineTest() {
