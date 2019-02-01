@@ -599,10 +599,7 @@ public class JavaReflectionTreeBuilderTest {
 				.getPath());
 		launcher.getEnvironment().setSourceClasspath(
 				new String[]{
-						JavaReflectionTreeBuilderTest.class
-								.getClassLoader()
-								.getResource("annotated-parameter-on-nested-class-constructor/classes")
-								.getPath()
+						"src/test/resources"
 				});
 		launcher.getEnvironment().setAutoImports(true);
 		//contract: No error due to runtime annotation of a parameter of a constructor of a shadow nested class
