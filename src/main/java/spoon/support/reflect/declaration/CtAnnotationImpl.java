@@ -16,10 +16,8 @@
  */
 package spoon.support.reflect.declaration;
 
-import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
@@ -31,11 +29,9 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -48,7 +44,6 @@ import spoon.support.reflect.code.CtExpressionImpl;
 import spoon.support.reflect.eval.EvalHelper;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

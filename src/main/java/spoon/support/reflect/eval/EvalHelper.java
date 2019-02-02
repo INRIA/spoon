@@ -16,55 +16,18 @@
  */
 package spoon.support.reflect.eval;
 
-import spoon.Launcher;
 import spoon.SpoonException;
-import spoon.reflect.code.CtAnnotationFieldAccess;
-import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCatch;
-import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtConditional;
-import spoon.reflect.code.CtDo;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
-import spoon.reflect.code.CtFieldWrite;
-import spoon.reflect.code.CtFor;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtSynchronized;
-import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableAccess;
-import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtEnumValue;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.eval.PartialEvaluator;
-import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtScanner;
-import spoon.support.util.RtHelper;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class EvalHelper {
