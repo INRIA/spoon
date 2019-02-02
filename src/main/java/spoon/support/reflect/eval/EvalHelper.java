@@ -58,18 +58,17 @@ public class EvalHelper {
 			// Replace literal by his value
 			return ((CtLiteral<?>) value).getValue();
 		} else if (value instanceof CtFieldRead) {
-			// recaple enum value by actual enum value
-			CtFieldReference<?> fieldRef = ((CtFieldRead<?>) value).getVariable();
-			Class<?> c;
 			try {
-				c = fieldRef.getDeclaringType().getActualClass();
+				// replace enum value by actual enum value
+				CtFieldReference<?> fieldRef = ((CtFieldRead<?>) value).getVariable();
+				Class<?> c = fieldRef.getDeclaringType().getActualClass();
+				CtField<?> field = fieldRef.getDeclaration();
+				if (Enum.class.isAssignableFrom(c)) {
+					// Value references a Enum field
+					return Enum.valueOf((Class<? extends Enum>) c, fieldRef.getSimpleName());
+				}
 			} catch (Exception e) {
-				throw new SpoonException();
-			}
-			CtField<?> field = fieldRef.getDeclaration();
-			if (Enum.class.isAssignableFrom(c)) {
-				// Value references a Enum field
-				return Enum.valueOf((Class<? extends Enum>) c, fieldRef.getSimpleName());
+				throw new SpoonException("cannot get runtime enum value", e);
 			}
 		}
 
