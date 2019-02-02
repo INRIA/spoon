@@ -36,8 +36,8 @@ public class EvalHelper {
 	}
 
 	/**
-	 * Convert CtExpression (mostly) to their equivalent runtime objects
-	 * eg CtLiteral(3) -> 3
+	 * Evaluates and converts CtExpression to their equivalent runtime objects
+	 * eg "CtLiteral(3) + CtLiteral(4)" -> 7
 	 */
 	@SuppressWarnings("unchecked")
 	public static Object convertElementToRuntimeObject(CtElement value) {
@@ -48,6 +48,10 @@ public class EvalHelper {
 		throw new SpoonException("not possible to convert to runtime object " + value);
 	}
 
+	/**
+	 * Returns the runtime object corresponding to the expression
+	 * eg CtLiteral(3) -> 3
+	 */
 	public static Object getCorrespondingRuntimeObject(CtExpression<?> value) {
 		if (value instanceof CtNewArray) {
 			return toArray((CtNewArray) value);
