@@ -72,4 +72,15 @@ public class ToEvaluate {
 		//this can be simplified because return expects expression
 		return ToEvaluate.class.getName();
 	}
+	int foo(int x) {
+		return x+1;
+	}
+	final int ff=3;
+	int foo2() {
+		return ff+1;
+	}
+	final Class ff3=String.class;
+	Class foo3() {
+		return ff3;
+	}
 }

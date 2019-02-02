@@ -267,7 +267,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		CtExpression expr = getWrappedValue(key);
 
 		// no such value, per the contract of the method
-		if (expr ==null) {
+		if (expr == null) {
 			return null;
 		}
 

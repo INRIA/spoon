@@ -49,25 +49,6 @@ public class EvalHelper {
 		throw new SpoonException("not possible to convert to runtime object " + value);
 	}
 
-
-	/** returns true if the value is known at compile tome */
-	public static boolean isKnownAtCompileTime(CtExpression<?> exp) {
-		if (exp instanceof CtLiteral) {
-			return true;
-		}
-
-		if (exp instanceof CtTypeAccess) {
-			return true;
-		}
-
-		return false;
-	}
-
-	/** returns the evaluated expression */
-	public static <T> CtExpression<T> getEvaluatedExpression(CtExpression<T> exp) {
-		return exp.partiallyEvaluate();
-	}
-
 	public static Object getCorrespondingRuntimeObject(CtExpression<?> value) {
 		if (value instanceof CtNewArray) {
 			return toArray((CtNewArray) value);
@@ -78,6 +59,7 @@ public class EvalHelper {
 			// Replace literal by his value
 			return ((CtLiteral<?>) value).getValue();
 		} else if (value instanceof CtFieldRead) {
+			// recaple enum value by actual enum value
 			CtFieldReference<?> fieldRef = ((CtFieldRead<?>) value).getVariable();
 			Class<?> c;
 			try {
@@ -92,7 +74,7 @@ public class EvalHelper {
 			}
 		}
 
-			throw new SpoonException("not possible to transform to runtime object " + value + " " + value.getClass().getName());
+		throw new SpoonException("not possible to transform to runtime object " + value + " " + value.getClass().getName());
 	}
 
 	/** creating a real low level Java array from a CtNewArray */
@@ -108,6 +90,20 @@ public class EvalHelper {
 		}
 
 		return array;
+	}
+
+	/** returns true if the expression is known at compile time
+	 * Bonus method for @oscarlvp :-)
+	 */
+	public static boolean isKnownAtCompileTime(CtExpression<?> exp) {
+		try {
+			CtExpression evaled = exp.partiallyEvaluate();
+			getCorrespondingRuntimeObject(evaled);
+			// no exception, it is known
+			return true;
+		} catch (SpoonException e) {
+			return false;
+		}
 	}
 
 
