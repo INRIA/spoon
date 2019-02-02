@@ -1547,4 +1547,16 @@ public class AnnotationTest {
 		assertTrue(shadowAnnotationOne.getValue("role") instanceof CtLiteral); // should be CtLiteral
 		assertEquals(annotationOne.getValue("role"), shadowAnnotationOne.getValue("role")); // should pass
 	}
+
+	@Test(expected = SpoonException.class)
+	public void testGetValueAsObject() {
+		// contract: when one cannt evaluate an expression, throw an exception
+		CtClass<?> cl =
+				Launcher.parseClass(
+						"public class C { @SuppressWarnings(\"a+\"+Integer.SIZE) void m() {} }");
+		CtAnnotation<?> annot = cl.getMethodsByName("m").get(0).getAnnotations().get(0);
+		Object value = annot.getValueAsObject("value");
+		assertEquals("a"+Integer.SIZE, value);
+	}
+
 }

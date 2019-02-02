@@ -307,13 +307,6 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				return;
 			}
 		}
-		if (fieldAccess.getFactory().Type().ENUM
-				.isSubtypeOf(fieldAccess.getVariable().getDeclaringType())) {
-			CtLiteral<CtFieldReference<?>> l = fieldAccess.getFactory().Core().createLiteral();
-			l.setValue(fieldAccess.getVariable());
-			setResult(l);
-			return;
-		}
 		CtField<?> f = fieldAccess.getVariable().getDeclaration();
 		if ((f != null) && f.getModifiers().contains(ModifierKind.FINAL)) {
 			setResult(evaluate(f.getDefaultExpression()));

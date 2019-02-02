@@ -45,6 +45,7 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.reflect.code.CtExpressionImpl;
+import spoon.support.reflect.eval.EvalHelper;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
@@ -214,64 +215,6 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		return addValueExpression(elementName, value);
 	}
 
-	/**
-	 * Convert CtExpression (mostly) to their equivalent runtime objects
-	 * eg CtLiteral(3) -> 3
-	 */
-	@SuppressWarnings("unchecked")
-	private Object convertElementToRuntimeObject(CtElement value) {
-		if (value instanceof CtFieldReference) {
-			Class<?> c;
-			try {
-				c = ((CtFieldReference<?>) value).getDeclaringType().getActualClass();
-			} catch (Exception e) {
-				return ((CtLiteral<?>) ((CtFieldReference<?>) value).getDeclaration().getDefaultExpression()
-						.partiallyEvaluate()).getValue();
-			}
-
-			if ("class".equals(((CtFieldReference<?>) value).getSimpleName())) {
-				return c;
-			}
-			CtField<?> field = ((CtFieldReference<?>) value).getDeclaration();
-			if (Enum.class.isAssignableFrom(c)) {
-				// Value references a Enum field
-				return Enum.valueOf((Class<? extends Enum>) c, ((CtFieldReference<?>) value).getSimpleName());
-			}
-			// Value is a static final
-			if (field != null) {
-				return convertElementToRuntimeObject(field.getDefaultExpression());
-			} else {
-				try {
-					return ((Field) ((CtFieldReference<?>) value).getActualField()).get(null);
-				} catch (Exception e) {
-					Launcher.LOGGER.error(e.getMessage(), e);
-				}
-				return null;
-			}
-		} else if (value instanceof CtFieldAccess) {
-			// Get variable
-			return convertElementToRuntimeObject(((CtFieldAccess<?>) value).getVariable());
-		} else if (value instanceof CtNewArray) {
-			return toArray((CtNewArray) value);
-		} else if (value instanceof CtAnnotation) {
-			// Get proxy
-			return ((CtAnnotation<?>) value).getActualAnnotation();
-		} else if (value instanceof CtLiteral) {
-			// Replace literal by his value
-			return ((CtLiteral<?>) value).getValue();
-		} else if (value instanceof CtCodeElement) {
-			// Evaluate code elements
-			PartialEvaluator eval = getFactory().Eval().createPartialEvaluator();
-			CtElement ret = eval.evaluate((CtCodeElement) value);
-
-			return this.convertElementToRuntimeObject(ret);
-		} else if (value instanceof CtTypeReference) {
-			// Get RT class for References
-			return ((CtTypeReference<?>) value).getActualClass();
-		}
-		return value;
-	}
-
 	private Class<?> getElementType(String name) {
 		// Try by CT reflection
 		CtType<?> t = getAnnotationType().getDeclaration();
@@ -327,7 +270,13 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	@Override
 	public Object getValueAsObject(String key) {
 		CtExpression expr = getWrappedValue(key);
-		Object ret = convertElementToRuntimeObject(expr);
+
+		// no such value, per the contract of the method
+		if (expr ==null) {
+			return null;
+		}
+
+		Object ret = EvalHelper.convertElementToRuntimeObject(expr);
 		Class<?> type = getElementType(key);
 		return forceObjectToType(ret, type);
 	}
@@ -355,21 +304,6 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 		return ret;
 	}
 
-
-	/** creating a real low level Java array from a CtNewArray */
-	private Object toArray(CtNewArray value) {
-		CtNewArray<?> arrayExpression = (CtNewArray<?>) value;
-
-		Class<?> componentType = arrayExpression.getType().getActualClass().getComponentType();
-		List<CtExpression<?>> elements = arrayExpression.getElements();
-
-		Object array = Array.newInstance(componentType, elements.size());
-		for (int i = 0; i < elements.size(); i++) {
-			Array.set(array, i, this.convertElementToRuntimeObject(elements.get(i)));
-		}
-
-		return array;
-	}
 
 	private CtExpression getValueAsExpression(String key) {
 
