@@ -52,7 +52,6 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.util.RtHelper;
@@ -307,15 +306,11 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				return;
 			}
 		}
-		if (fieldAccess.getFactory().Type().ENUM
-				.isSubtypeOf(fieldAccess.getVariable().getDeclaringType())) {
-			CtLiteral<CtFieldReference<?>> l = fieldAccess.getFactory().Core().createLiteral();
-			l.setValue(fieldAccess.getVariable());
-			setResult(l);
-			return;
-		}
 		CtField<?> f = fieldAccess.getVariable().getDeclaration();
-		if ((f != null) && f.getModifiers().contains(ModifierKind.FINAL)) {
+		if ((f != null) && f.getModifiers().contains(ModifierKind.FINAL)
+				// enum values have no meaningful default expression to be evaluated
+				&& !fieldAccess.getVariable().getDeclaringType().isSubtypeOf(fieldAccess.getFactory().Type().ENUM)
+				) {
 			setResult(evaluate(f.getDefaultExpression()));
 			return;
 		}

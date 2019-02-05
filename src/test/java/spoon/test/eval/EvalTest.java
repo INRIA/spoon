@@ -20,14 +20,17 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.visitor.AccessibleVariablesFinder;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.eval.EvalHelper;
 import spoon.support.reflect.eval.InlinePartialEvaluator;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.eval.testclasses.Foo;
@@ -35,6 +38,8 @@ import spoon.test.eval.testclasses.Foo;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class EvalTest {
@@ -123,6 +128,26 @@ public class EvalTest {
 		assertEquals("spoon.test.eval.testclasses.ToEvaluate.class.getName()", b.getStatements().get(0).toString());
 		assertEquals("java.lang.System.out.println(spoon.test.eval.testclasses.ToEvaluate.getClassLoader())", b.getStatements().get(1).toString());
 		assertEquals("return \"spoon.test.eval.testclasses.ToEvaluate\"", b.getStatements().get(2).toString());
+	}
+
+	@Test
+	public void testIsKnownAtCompileTime() throws Exception {
+		// contract: one can ask whether an expression is known at compile time
+		Launcher launcher = new Launcher();
+		CtExpression el = launcher.getFactory().Code().createCodeSnippetExpression("(0+1)*3").compile();
+		assertTrue(EvalHelper.isKnownAtCompileTime(el));
+
+		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
+		assertEquals("ToEvaluate", type.getSimpleName());
+		CtExpression<?> foo = ((CtReturn)type.getMethodsByName("foo").get(0).getBody().getStatement(0)).getReturnedExpression();
+		assertFalse(EvalHelper.isKnownAtCompileTime(foo));
+
+		CtExpression<?> foo2 = ((CtReturn)type.getMethodsByName("foo2").get(0).getBody().getStatement(0)).getReturnedExpression();
+		assertTrue(EvalHelper.isKnownAtCompileTime(foo2));
+
+		CtExpression<?> foo3 = ((CtReturn)type.getMethodsByName("foo3").get(0).getBody().getStatement(0)).getReturnedExpression();
+		assertTrue(EvalHelper.isKnownAtCompileTime(foo3));
+
 	}
 
 	@Test
