@@ -308,7 +308,7 @@ public class ElementPrinterHelper {
 					CtTypeMemberWildcardImportReference typeStarRef = (CtTypeMemberWildcardImportReference) ctImport.getReference();
 					importTypeStr = typeStarRef.getTypeReference().getQualifiedName();
 					if (!isJavaLangClasses(importTypeStr)) {
-						setStaticImports.add(this.removeInnerTypeSeparator(importTypeStr));
+						setStaticImports.add(this.removeInnerTypeSeparator(importTypeStr) + ".*");
 					}
 					break;
 			}
