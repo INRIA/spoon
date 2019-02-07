@@ -644,7 +644,7 @@ public class ReferenceBuilder {
 			setPackageOrDeclaringType(main, declaring);
 		} else if (name.startsWith("?")) {
 			return (CtTypeReference) this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
-		} else {
+		} else if (this.jdtTreeBuilder.getFactory().Type().get(name) != null){
 			return this.jdtTreeBuilder.getFactory().createReference(name);
 		}
 		return main;
