@@ -1,3 +1,4 @@
+package spoon.test.noclasspath.exceptions
 public class Bar {
     void testMultiCatchQualifiedExceptionsInLambda() {
         ExecutorService executor = Executors.newSingleThreadExecutor();

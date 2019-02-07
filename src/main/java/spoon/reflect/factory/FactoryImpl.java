@@ -1255,4 +1255,9 @@ public class FactoryImpl implements Factory, Serializable {
 	public CtPackageDeclaration createPackageDeclaration(CtPackageReference packageRef) {
 		return Package().createPackageDeclaration(packageRef);
 	}
+
+	@Override
+	public <T> CtTypeReference<T> createReference(String qualifiedName) {
+		return Type().createReference(qualifiedName);
+	}
 }
