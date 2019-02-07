@@ -139,4 +139,11 @@ public class ExceptionTest {
 		assertEquals(variable1.getMultiTypes(), variable2.getMultiTypes());
 		assertEquals(variable2, variable1);
 	}
+
+	@Test
+	public void testIssue2860() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/spoon/test/noclasspath/exceptions/Bar.java");
+		launcher.buildModel();
+	}
 }
