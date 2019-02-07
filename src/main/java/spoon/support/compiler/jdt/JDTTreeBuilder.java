@@ -1468,8 +1468,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		if (context.stack.peekFirst().node instanceof UnionTypeReference) {
 			CtTypeReference<Throwable> reference = references.<Throwable>getTypeReference(qualifiedTypeReference.resolvedType);
-			if (reference == null) {
-				reference = references.getTypeReference(qualifiedTypeReference.toString());
+			if (reference == null && getFactory().Type().get(qualifiedTypeReference.toString()) != null) {
+				reference = getFactory().createReference(qualifiedTypeReference.toString());
 			}
 			context.enter(reference, qualifiedTypeReference);
 			return true;
