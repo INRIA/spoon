@@ -91,7 +91,7 @@ To avoid invoking maven over and over to build a classpath that has not changed,
 
 ## The JarLauncher class
 
-The Spoon `JarLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/JarLauncher.html)) is used to create the AST model from a jar.
+The Spoon `JarLauncher` ([JavaDoc](https://github.com/INRIA/spoon/blob/master/spoon-decompiler/src/main/java/spoon/JarLauncher.java)) is used to create the AST model from a jar.
 It automatically decompiles class files contained in the jar and analyzes them.
 If a pom file corresponding to the jar is provided, it will be used to build the classpath containing all dependencies.
 
