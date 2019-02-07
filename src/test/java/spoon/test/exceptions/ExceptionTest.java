@@ -152,5 +152,8 @@ public class ExceptionTest {
 		CtCatch c = type.filterChildren(new TypeFilter<CtCatch>(CtCatch.class)).first();
 		// the upper type of java.io.IOException | java.lang.InterruptedException is java.lang.Exception
 		assertEquals("java.lang.Exception", c.getParameter().getType().toString());
+		assertEquals("java.io.IOException", c.getParameter().getMultiTypes().get(0).toString());
+		assertEquals("java.lang.InterruptedException", c.getParameter().getMultiTypes().get(1).toString());
+		assertEquals("InterruptedException", c.getParameter().getMultiTypes().get(1).getSimpleName().toString());
 	}
 }
