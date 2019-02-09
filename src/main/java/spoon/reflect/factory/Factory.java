@@ -1009,4 +1009,9 @@ public interface Factory {
 	 * @see PackageFactory#createPackageDeclaration(CtPackageReference)
 	 */
 	CtPackageDeclaration createPackageDeclaration(CtPackageReference packageRef);
+
+	/**
+	 * @see TypeFactory#createReference(String)
+	 */
+	<T> CtTypeReference<T> createReference(String qualifiedName);
 }

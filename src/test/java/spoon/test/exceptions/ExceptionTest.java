@@ -24,6 +24,8 @@ import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.declaration.CtMultiTypedElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -138,5 +140,20 @@ public class ExceptionTest {
 
 		assertEquals(variable1.getMultiTypes(), variable2.getMultiTypes());
 		assertEquals(variable2, variable1);
+	}
+
+	@Test
+	public void testIssue2860() {
+		// contract: no exceptions is thrown in mutlicatch in lambda
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/spoon/test/noclasspath/exceptions/Bar.java");
+		launcher.buildModel();
+		CtType<Object> type = launcher.getFactory().Type().get("spoon.test.noclasspath.exceptions.Bar");
+		CtCatch c = type.filterChildren(new TypeFilter<CtCatch>(CtCatch.class)).first();
+		// the upper type of java.io.IOException | java.lang.InterruptedException is java.lang.Exception
+		assertEquals("java.lang.Exception", c.getParameter().getType().toString());
+		assertEquals("java.io.IOException", c.getParameter().getMultiTypes().get(0).toString());
+		assertEquals("java.lang.InterruptedException", c.getParameter().getMultiTypes().get(1).toString());
+		assertEquals("InterruptedException", c.getParameter().getMultiTypes().get(1).getSimpleName().toString());
 	}
 }

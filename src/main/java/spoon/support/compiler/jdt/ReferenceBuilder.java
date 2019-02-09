@@ -614,7 +614,7 @@ public class ReferenceBuilder {
 	 * Try to build a CtTypeReference from a simple name with specified generic types but
 	 * returns null if the name doesn't correspond to a type (not start by an upper case).
 	 */
-	private <T> CtTypeReference<T> getTypeReference(String name) {
+	public <T> CtTypeReference<T> getTypeReference(String name) {
 		CtTypeReference<T> main = null;
 		if (name.matches(".*(<.+>)")) {
 			Pattern pattern = Pattern.compile("([^<]+)<(.+)>");

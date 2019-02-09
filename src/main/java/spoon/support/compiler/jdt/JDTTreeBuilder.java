@@ -1467,7 +1467,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		}
 		if (context.stack.peekFirst().node instanceof UnionTypeReference) {
-			context.enter(references.<Throwable>getTypeReference(qualifiedTypeReference.resolvedType), qualifiedTypeReference);
+			CtTypeReference<Throwable> reference = references.<Throwable>getTypeReference(qualifiedTypeReference.resolvedType);
+			if (reference == null) {
+				reference = getFactory().createReference(qualifiedTypeReference.toString());
+			}
+			context.enter(reference, qualifiedTypeReference);
 			return true;
 		} else if (context.stack.peekFirst().element instanceof CtCatch) {
 			context.enter(helper.createCatchVariable(qualifiedTypeReference), qualifiedTypeReference);
