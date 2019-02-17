@@ -51,17 +51,19 @@ public class ArraysTest {
 		assertEquals("@spoon.test.arrays.testclasses.ArrayClass.TypeAnnotation(integer = 1)", arrayTypeReference.getArrayType().getAnnotations().get(0).toString());
 
 		CtField<?> x = type.getField("x");
-		assertTrue(x.getType() instanceof CtArrayTypeReference);
-		assertEquals("int[]", x.getType().getSimpleName());
-		assertEquals("int[]", x.getType().getQualifiedName());
-		assertEquals("int", ((CtArrayTypeReference<?>) x.getType()).getComponentType().getSimpleName());
-		assertTrue(((CtArrayTypeReference<?>) x.getType()).getComponentType().getActualClass().equals(int.class));
+		CtTypeReference<?> typeRef = x.getType();
+		assertTrue(typeRef instanceof CtArrayTypeReference);
+		assertEquals("int[]", typeRef.getSimpleName());
+		assertEquals("int[]", typeRef.getQualifiedName());
+		assertEquals("int", ((CtArrayTypeReference<?>) typeRef).getComponentType().getSimpleName());
+		assertTrue(((CtArrayTypeReference<?>) typeRef).getComponentType().getActualClass().equals(int.class));
 
-		CtType<?> ctType = x.getType().getTypeDeclaration();
+		CtType<?> ctType = typeRef.getTypeDeclaration();
 		assertEquals("int[]", ctType.getQualifiedName());
 
 		// is there a way to check if a CtType is an array type?
-		assertTrue(x.getType().getSimpleName().contains("[]"));
+		assertTrue(typeRef instanceof CtArrayTypeReference); // it works well for a type reference
+		assertTrue(typeRef.getSimpleName().contains("[]"));
 		assertTrue(ctType.getSimpleName().contains("[]"));
 
 
