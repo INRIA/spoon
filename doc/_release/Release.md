@@ -5,7 +5,9 @@ This article is a short summary of the [official documentation of sonatype](http
 ## Core tasks:
 
 * [ ] Release on Maven Central
+    * with `mvn deploy` (using profile `release`, see below)
 * [ ] Release on Github
+    * With `git push` (git push <release_tag>)
 * [ ] PR to update the information
 * [ ] PR to remove deprecated methods
 
@@ -24,16 +26,20 @@ This article is a short summary of the [official documentation of sonatype](http
 
 ## Maven Release
 
-1. clean your project for the release and prepare the release `mvn release:clean release:prepare`
-1. `mvn release:perform` (sends the new version on Maven Central)
+1. update the version number (remove the snapshopt)
+    * `mvn release:clean release:prepare`
+    * alternatively, change `pom.xml` if master is a protected branch on Github
+1. send to Maven Central
+    * `mvn release:perform` (sends the new version on Maven Central)
+    * alternatively `mvn -Prelease deploy`
 1. check that the new version is on Maven Central (connect to `oss.sonatype.org`)
-1. alternatively `mvn -Prelease deploy`
 
 ## Github Release
-1. push the release tag on Github (git push origin master)
+1. push the release tag on Github (git push)
     - `git push origin master`
     - `git push origin spoon-core-X.X.X`
 1. open `Releases` tab, click on `Draft a new release`.
+    - Add the changelod (`node doc/_release/changelog_generator/changelog.js 7.2.0`)
 
 ## Checklists 
 
@@ -46,14 +52,12 @@ This article is a short summary of the [official documentation of sonatype](http
 
 - Create Pull request on Github with (example #1732)
     - News section in `doc/doc_homepage.md`
-    - Maven version in `doc/_config.yml`
-    - Updates main `README.md`
     - Information in `pom.xml`
-- Update version information and date on [INRIA's BIL](http://bil.inria.fr/)
+- Update version information and date on [INRIA's BIL](https://bil.inria.fr/en/software/view/251/tab)
+- Update version information on <https://projects.ow2.org/view/spoon/>
 - Announce the release:
   * mailing-lists (gdr-gpl, OW2)
   * social media (twitter, reddit, linkedin)  
-  * news feed in https://projects.ow2.org/view/spoon/
 
 ## Additional Information
 ###  Typical `settings.xml` for Maven
