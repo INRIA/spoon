@@ -30,6 +30,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.arrays.testclasses.VaragParam;
 import spoon.testing.utils.ModelUtils;
 
+import java.lang.reflect.Array;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -55,6 +56,20 @@ public class ArraysTest {
 		assertEquals("int[]", x.getType().getQualifiedName());
 		assertEquals("int", ((CtArrayTypeReference<?>) x.getType()).getComponentType().getSimpleName());
 		assertTrue(((CtArrayTypeReference<?>) x.getType()).getComponentType().getActualClass().equals(int.class));
+
+		CtType<?> ctType = x.getType().getTypeDeclaration();
+		assertEquals("int[]", ctType.getQualifiedName());
+
+		// is there a way to check if a CtType is an array type?
+		assertTrue(x.getType().getSimpleName().contains("[]"));
+		assertTrue(ctType.getSimpleName().contains("[]"));
+
+
+		// bug: isSubtypeOf does not work for array types
+       //assertTrue(x.getType().isSubtypeOf(x.getFactory().Type().get(Array.class).getReference()));
+
+		// bug: getActualClass() does not work for array type
+		// assertEquals("", ctType.getActualClass().getName());
 	}
 
 	@Test
