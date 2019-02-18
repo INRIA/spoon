@@ -19,6 +19,7 @@ package spoon.test.fieldaccesses;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayWrite;
+import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
@@ -52,6 +53,7 @@ import spoon.test.fieldaccesses.testclasses.Pozole;
 import spoon.test.fieldaccesses.testclasses.Tacos;
 import spoon.test.fieldaccesses.testclasses.MyClass;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -172,20 +174,43 @@ public class FieldAccessTest {
 	public void testTargetedAccessPosition() throws Exception {
 		CtType<?> type = build("spoon.test.fieldaccesses.testclasses", "TargetedAccessPosition");
 		List<CtFieldAccess<?>> vars = type.getElements(new TypeFilter<>(CtFieldAccess.class));
-		//vars is [t.ta.ta, t.ta]
-		assertEquals(2, vars.size());
+		//vars is [t.ta.ta.ta.ta, t.ta.ta.ta, t.ta.ta, t.ta]
+		assertEquals(4, vars.size());
 
 		assertEquals(vars.get(1), vars.get(0).getTarget());
 
 		// 6 is length(t.ta.ta) - 1
-		assertEquals(6, vars.get(0).getPosition().getSourceEnd() - vars.get(0).getPosition().getSourceStart());
+		assertEquals(6, vars.get(2).getPosition().getSourceEnd() - vars.get(0).getPosition().getSourceStart());
 
 		// 3 is length(t.ta) - 1
-		assertEquals(3, vars.get(0).getTarget().getPosition().getSourceEnd() - vars.get(0).getTarget().getPosition().getSourceStart());
+		assertEquals(3, vars.get(2).getTarget().getPosition().getSourceEnd() - vars.get(0).getTarget().getPosition().getSourceStart());
 
 		// 0 is length(t)-1
-		assertEquals(0, ((CtFieldAccess<?>) vars.get(0).getTarget()).getTarget().getPosition().getSourceEnd() -
-				((CtFieldAccess<?>) vars.get(0).getTarget()).getTarget().getPosition().getSourceStart());
+		assertEquals(0, ((CtFieldAccess<?>) vars.get(2).getTarget()).getTarget().getPosition().getSourceEnd() -
+				((CtFieldAccess<?>) vars.get(2).getTarget()).getTarget().getPosition().getSourceStart());
+	}
+
+	@Test
+	public void testFieldAccess() throws Exception {
+		CtType<?> type = build("spoon.test.fieldaccesses.testclasses", "TargetedAccessPosition");
+		List<Object> list1 = type.filterChildren(new TypeFilter<>(CtFieldWrite.class)).list();
+		assertEquals(1, list1.size());
+
+		List<CtFieldRead> list2 = type.filterChildren(new TypeFilter<>(CtFieldRead.class)).list();
+		assertEquals(3, list2.size());
+
+		// this is the tricky part :-)
+		Collections.reverse(list2);
+
+		// now we replace them all
+		for(CtFieldRead r : list2) {
+			// quick'n'dirty solution with snippets
+			// a better way is to create a CtInvocation
+			CtCodeSnippetExpression s = r.getFactory().createCodeSnippetExpression("f("+r.toString()+")");
+			r.replace(s);
+		}
+
+		assertEquals("f(f(f(t.ta).ta).ta).ta = t", type.getMethodsByName("foo").get(0).getBody().getStatement(2).toString());
 	}
 
 	@Test
