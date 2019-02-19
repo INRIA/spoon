@@ -210,7 +210,7 @@ public class FieldAccessTest {
 			r.replace(s);
 		}
 
-		assertEquals("f(f(f(t.ta).ta).ta).ta = t", type.getMethodsByName("foo").get(0).getBody().getStatement(2).toString());
+		assertEquals("f(f(f(t.ta).ta).ta).ta = t", type.getMethodsByName("foo").get(0).getBody().getStatement(1).toString());
 	}
 
 	@Test
