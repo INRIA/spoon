@@ -69,8 +69,10 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 		return (E) this;
 	}
 
-	/** FOR ADVANCED USAGE ONLY
-	 * Set the comment content, without doing all the work on setContent (calling the cahnge listener, cleaning the comment to get the canonical version; etc)
+	/**
+	 * FOR ADVANCED USAGE ONLY
+	 * Set the comment content, without cleaning the comment, if the cleaning behavior to get a canonical version does not work for you.
+	 * Does not ensure any AST contract such as calling the cahnge listener
 	 * You have to cast your comment to CtCommentImpl, it's not beautiful, but it's known :-)
 	 */
 	public <E extends CtComment> E _setRawContent(String content) {
