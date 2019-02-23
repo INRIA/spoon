@@ -16,6 +16,7 @@
  */
 package spoon.reflect.factory;
 
+import spoon.SpoonException;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -641,6 +642,9 @@ public class TypeFactory extends SubFactory {
 	 * 		the name of the formal parameter
 	 */
 	public CtTypeParameterReference createTypeParameterReference(String name) {
+		if ("?".equals(name)) {
+			throw new SpoonException("the Spoon metamodel has evolved, use Factory.createWildcardReference() instead");
+		}
 		CtTypeParameterReference typeParam = factory.Core().createTypeParameterReference();
 		typeParam.setSimpleName(name);
 		return typeParam;
