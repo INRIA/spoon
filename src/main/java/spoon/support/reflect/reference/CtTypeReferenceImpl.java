@@ -46,6 +46,7 @@ import spoon.support.util.internal.MapUtils;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -242,8 +243,13 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (isPrimitive() || type.isPrimitive()) {
 			return equals(type);
 		}
-		if (((this instanceof CtArrayTypeReference) && (type instanceof CtArrayTypeReference))) {
-			return ((CtArrayTypeReference<?>) this).getComponentType().isSubtypeOf(((CtArrayTypeReference<?>) type).getComponentType());
+		if (this instanceof CtArrayTypeReference) {
+			if (type instanceof CtArrayTypeReference) {
+				return ((CtArrayTypeReference<?>) this).getComponentType().isSubtypeOf(((CtArrayTypeReference<?>) type).getComponentType());
+			}
+			if (Array.class.getName().equals(type.getQualifiedName())) {
+				return true;
+			}
 		}
 		if (Object.class.getName().equals(type.getQualifiedName())) {
 			//everything is a sub type of Object

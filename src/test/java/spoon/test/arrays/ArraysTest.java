@@ -34,6 +34,7 @@ import java.lang.reflect.Array;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -58,6 +59,9 @@ public class ArraysTest {
 		assertEquals("int", ((CtArrayTypeReference<?>) typeRef).getComponentType().getSimpleName());
 		assertTrue(((CtArrayTypeReference<?>) typeRef).getComponentType().getActualClass().equals(int.class));
 
+		//@monperrus, should it really return something? I would suggest to return null or an exception ...
+		//there is no real class declaration like:
+		//class int[] implements Serializable, Cloneble {}
 		CtType<?> ctType = typeRef.getTypeDeclaration();
 		assertEquals("int[]", ctType.getQualifiedName());
 
@@ -68,10 +72,12 @@ public class ArraysTest {
 
 
 		// bug: isSubtypeOf does not work for array types
-       //assertTrue(x.getType().isSubtypeOf(x.getFactory().Type().get(Array.class).getReference()));
+        assertTrue(x.getType().isSubtypeOf(x.getFactory().Type().get(Array.class).getReference()));
 
 		// bug: getActualClass() does not work for array type
-		// assertEquals("", ctType.getActualClass().getName());
+//		assertEquals("", ctType.getActualClass().getName());
+        //you can ask for actual class using type reference
+		assertSame(int[].class, typeRef.getActualClass());
 	}
 
 	@Test
