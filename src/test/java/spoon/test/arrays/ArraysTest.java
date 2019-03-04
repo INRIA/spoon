@@ -73,11 +73,11 @@ public class ArraysTest {
 		// contract: one can use isSubtypeOf
         assertTrue(x.getType().isSubtypeOf(x.getFactory().Type().get(Array.class).getReference()));
 
-		// you can ask for actual class using type reference
+		// you can ask for actual class and then the component type if any
 		assertTrue(typeRef.getActualClass().getComponentType() != null);
 		assertTrue(ctType.getActualClass().getComponentType() != null);
 
-		// basic checks thatgetActualClass() works both on the ref and on the elem
+		// basic checks that getActualClass() works both on the ref and on the elem
 		assertSame(int[].class, typeRef.getActualClass());
 		assertEquals(int.class, ctType.getActualClass().getComponentType());
 		assertEquals(int[].class, ctType.getActualClass());
