@@ -17,6 +17,7 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -134,5 +135,13 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implemen
 			componentType.setImplicitParent(packageIsImplicit);
 		}
 		return this;
+	}
+
+	@Override
+	public <E extends CtElement> E setImplicit(boolean implicit) {
+		if(componentType != null) {
+			componentType.setImplicit(implicit);
+		}
+		return super.setImplicit(implicit);
 	}
 }
