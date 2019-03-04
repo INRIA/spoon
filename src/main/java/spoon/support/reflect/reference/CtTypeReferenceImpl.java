@@ -160,7 +160,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		String qualifiedName = getQualifiedName();
 		ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
 
-		// by convention an array class does not crash, but return java.lang.reflect.Array
+		// an array class should not crash
 		// see https://github.com/INRIA/spoon/pull/2882
 		if (getSimpleName().contains("[]")) {
 			// Class.forName does not work for primitive types and arrays :-(
