@@ -52,35 +52,38 @@ public class ArraysTest {
 		assertEquals("@spoon.test.arrays.testclasses.ArrayClass.TypeAnnotation(integer = 1)", arrayTypeReference.getArrayType().getAnnotations().get(0).toString());
 
 		CtField<?> x = type.getField("x");
-		CtTypeReference<?> typeRef = x.getType();
+		CtArrayTypeReference<?> typeRef = (CtArrayTypeReference<?>) x.getType();
 		assertTrue(typeRef instanceof CtArrayTypeReference);
 		assertEquals("int[]", typeRef.getSimpleName());
 		assertEquals("int[]", typeRef.getQualifiedName());
-		assertEquals("int", ((CtArrayTypeReference<?>) typeRef).getComponentType().getSimpleName());
+		assertEquals("int", typeRef.getComponentType().getSimpleName());
 		assertTrue(((CtArrayTypeReference<?>) typeRef).getComponentType().getActualClass().equals(int.class));
 
-		//@monperrus, should it really return something? I would suggest to return null or an exception ...
-		//there is no real class declaration like:
-		//class int[] implements Serializable, Cloneble {}
 		CtType<?> ctType = typeRef.getTypeDeclaration();
 		assertEquals("int[]", ctType.getQualifiedName());
 
 		// is there a way to check if a CtType is an array type?
+
+		// solution 1: instanceof CtArrayTypeReference
 		assertTrue(typeRef instanceof CtArrayTypeReference); // it works well for a type reference
+
+		// solution 2: string test :-(
 		assertTrue(typeRef.getSimpleName().contains("[]"));
 		assertTrue(ctType.getSimpleName().contains("[]"));
 
-		// contract: one can use isSubtypeOf
+		// solution 3:  use isSubtypeOf
         assertTrue(x.getType().isSubtypeOf(x.getFactory().Type().get(Array.class).getReference()));
 
-		// you can ask for actual class and then the component type if any
+		// solution 4: you can ask for actual class and then the component type if any
 		assertTrue(typeRef.getActualClass().getComponentType() != null);
 		assertTrue(ctType.getActualClass().getComponentType() != null);
+		assertTrue(typeRef.getComponentType() != null);
+		assertEquals("int", typeRef.getComponentType().getSimpleName());
 
-		// basic checks that getActualClass() works both on the ref and on the elem
+		// solution 5: use getActualClass if you know it already
 		assertSame(int[].class, typeRef.getActualClass());
-		assertEquals(int.class, ctType.getActualClass().getComponentType());
 		assertEquals(int[].class, ctType.getActualClass());
+		assertEquals(int.class, ctType.getActualClass().getComponentType());
 		assertEquals("int[]", ctType.getActualClass().getSimpleName());
 	}
 
