@@ -70,14 +70,15 @@ public class ArraysTest {
 		assertTrue(typeRef.getSimpleName().contains("[]"));
 		assertTrue(ctType.getSimpleName().contains("[]"));
 
-
-		// bug: isSubtypeOf does not work for array types
+		// contract: one can use isSubtypeOf
         assertTrue(x.getType().isSubtypeOf(x.getFactory().Type().get(Array.class).getReference()));
 
-		// bug: getActualClass() does not work for array type
-//		assertEquals("", ctType.getActualClass().getName());
-        //you can ask for actual class using type reference
+		// you can ask for actual class using type reference
 		assertSame(int[].class, typeRef.getActualClass());
+
+		// contract: getActualClass() also work for array type
+		assertEquals(int[].class, ctType.getActualClass());
+		assertEquals("int[]", ctType.getActualClass().getSimpleName());
 	}
 
 	@Test
