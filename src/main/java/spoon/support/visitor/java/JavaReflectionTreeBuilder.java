@@ -302,8 +302,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 				&& modifiers.contains(ModifierKind.PUBLIC)
 				&& field.getType().isPrimitive()
 				) {
-				CtLiteral<Object> defaultExpression = factory.createLiteral().setValue(field.get(null));
-				defaultExpression.setType((CtTypeReference<Object>) factory.Type().createReference(field.getType()));
+				CtLiteral<Object> defaultExpression = factory.createLiteral(field.get(null));
 				ctField.setDefaultExpression(defaultExpression);
 			}
 		} catch (IllegalAccessException e) {
