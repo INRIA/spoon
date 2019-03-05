@@ -64,6 +64,7 @@ import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
+import spoon.support.reflect.code.CtCommentImpl;
 import spoon.test.comment.testclasses.BlockComment;
 import spoon.test.comment.testclasses.Comment1;
 import spoon.test.comment.testclasses.Comment2;
@@ -635,6 +636,28 @@ public class CommentTest {
 				+ "/* comment before name parameter */" + newLine
 				+ "int i) throws java.lang.Error, java.lang.Exception {" + newLine
 				+ "}", m2.toString());
+
+		// contract: one does not crash when setting a comment starting with '//' in a block comment
+		// https://github.com/INRIA/spoon/issues/2887
+		CtComment ctComment = m2.getComments().get(0);
+		ctComment.setContent("// foo");
+		assertEquals(CtComment.CommentType.BLOCK, ctComment.getCommentType());
+		// it's a limitation, you cannot start with ''
+		assertEquals("/* foo */", ctComment.toString());
+
+		// workaround #1: the comment can start with '  //'
+		ctComment.setContent("  // foo");
+		assertEquals(CtComment.CommentType.BLOCK, ctComment.getCommentType());
+		// it's a limitation, you cannot start with ''
+		assertEquals("/* // foo */", ctComment.toString());
+
+		// workaround #2: one can cast and call '_setRawContent'
+		// without setting the comment field through reflection
+		((CtCommentImpl) ctComment)._setRawContent("// foo");
+		assertEquals(CtComment.CommentType.BLOCK, ctComment.getCommentType());
+		// it's a limitation, you cannot start with ''
+		assertEquals("/* // foo */", ctComment.toString());
+
 	}
 
 	@Test

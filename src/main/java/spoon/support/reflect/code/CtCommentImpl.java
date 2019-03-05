@@ -69,6 +69,17 @@ public class CtCommentImpl extends CtStatementImpl implements CtComment {
 		return (E) this;
 	}
 
+	/**
+	 * FOR ADVANCED USAGE ONLY
+	 * Set the comment content, without cleaning the comment, if the cleaning behavior to get a canonical version does not work for you.
+	 * Does not ensure any AST contract such as calling the change listener
+	 * You have to cast your comment to CtCommentImpl, it's not beautiful, but it's known :-)
+	 */
+	public <E extends CtComment> E _setRawContent(String content) {
+		this.content = content;
+		return (E) this;
+	}
+
 	@Override
 	public CommentType getCommentType() {
 		return type;
