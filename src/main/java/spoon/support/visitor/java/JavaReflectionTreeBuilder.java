@@ -16,6 +16,7 @@
  */
 package spoon.support.visitor.java;
 
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -301,7 +302,9 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 				&& modifiers.contains(ModifierKind.PUBLIC)
 				&& field.getType().isPrimitive()
 				) {
-				ctField.setDefaultExpression(factory.createLiteral().setValue(field.get(null)));
+				CtLiteral<Object> defaultExpression = factory.createLiteral().setValue(field.get(null));
+				defaultExpression.setType((CtTypeReference<Object>) factory.Type().createReference(field.getType()));
+				ctField.setDefaultExpression(defaultExpression);
 			}
 		} catch (IllegalAccessException e) {
 			// ignore
