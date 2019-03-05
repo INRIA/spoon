@@ -62,21 +62,21 @@ public class EvalHelper {
 			// Replace literal by his value
 			return ((CtLiteral<?>) value).getValue();
 		} else if (value instanceof CtFieldRead) {
-			try {
-				// replace enum value by actual enum value
-				CtFieldReference<?> fieldRef = ((CtFieldRead<?>) value).getVariable();
-				Class<?> c = fieldRef.getDeclaringType().getActualClass();
-				CtField<?> field = fieldRef.getDeclaration();
-				if (Enum.class.isAssignableFrom(c)) {
-					// Value references a Enum field
-					return Enum.valueOf((Class<? extends Enum>) c, fieldRef.getSimpleName());
-				}
-			} catch (Exception e) {
-				throw new SpoonException("cannot get runtime enum value", e);
+			// replace enum value by actual enum value
+			CtFieldReference<?> fieldRef = ((CtFieldRead<?>) value).getVariable();
+			Class<?> c = fieldRef.getDeclaringType().getActualClass();
+			CtField<?> field = fieldRef.getFieldDeclaration();
+			if (Enum.class.isAssignableFrom(c)) {
+				// Value references a Enum field
+				return Enum.valueOf((Class<? extends Enum>) c, fieldRef.getSimpleName());
+			}
+			// handling primitive types
+			if (field.getDefaultExpression() instanceof CtLiteral) {
+				return ((CtLiteral) field.getDefaultExpression()).getValue();
 			}
 		}
 
-		throw new SpoonException("not possible to transform to runtime object " + value + " " + value.getClass().getName());
+		throw new SpoonException("not possible to transform to expression \"" + value + "\" (" + value.getClass().getName()+ ")");
 	}
 
 	/** creating a real low level Java array from a CtNewArray */

@@ -18,6 +18,7 @@ package spoon.test.eval;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
@@ -40,6 +41,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class EvalTest {
@@ -207,5 +209,28 @@ public class EvalTest {
 		assertEquals("false", foo.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0).getDefaultExpression().toString());
 		// the if has been removed
 		assertEquals(0, foo.getElements(new TypeFilter<>(CtIf.class)).size());
+	}
+
+	@Test
+	public void testconvertElementToRuntimeObject() {
+		// contract: getCorrespondingRuntimeObject works well for all kinds of expression
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/java/spoon/test/eval/testclasses/Foo.java");
+		launcher.buildModel();
+		CtType<?> foo = launcher.getFactory().Type().get((Class<?>) Foo.class);
+
+		// also works for non-enum fields with partial evaluation embedded in convertElementToRuntimeObject
+		assertEquals(false, EvalHelper.convertElementToRuntimeObject(foo.getField("b6").getDefaultExpression()));
+
+		// impossible with no partial evaluation
+		try {
+			assertEquals(false, EvalHelper.getCorrespondingRuntimeObject(foo.getField("b6").getDefaultExpression()));
+			fail();
+		} catch (SpoonException expected) {}
+
+		// also works for static runtime fields
+		assertEquals(Integer.MAX_VALUE, EvalHelper.convertElementToRuntimeObject(foo.getField("i1").getDefaultExpression()));
+		assertEquals(Integer.MAX_VALUE, EvalHelper.getCorrespondingRuntimeObject(foo.getField("i1").getDefaultExpression()));
+
 	}
 }
