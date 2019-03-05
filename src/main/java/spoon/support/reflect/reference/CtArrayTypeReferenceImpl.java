@@ -139,7 +139,7 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implemen
 
 	@Override
 	public <E extends CtElement> E setImplicit(boolean implicit) {
-		if(componentType != null) {
+		if (componentType != null) {
 			componentType.setImplicit(implicit);
 		}
 		return super.setImplicit(implicit);

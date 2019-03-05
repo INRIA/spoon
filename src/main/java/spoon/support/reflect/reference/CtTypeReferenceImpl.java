@@ -871,7 +871,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public <E extends CtElement> E setImplicit(boolean implicit) {
-		for(CtTypeReference<?> arguments : getActualTypeArguments()) {
+		for (CtTypeReference<?> arguments : getActualTypeArguments()) {
 			arguments.setImplicit(implicit);
 		}
 		return super.setImplicit(implicit);
