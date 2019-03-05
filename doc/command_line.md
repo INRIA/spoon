@@ -4,12 +4,7 @@ tags: [usage]
 keywords: command, line, usage, java, jar
 ---
 
-To run Spoon in command line, you first have to download the corresponding jar file.
-There are two ways to download it:
-
-- You can download it from [INRIA's gforge](https://gforge.inria.fr/frs/?group_id=73) 
-(take the version with all dependencies).
-- You can download it from [Maven Central](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22fr.inria.gforge.spoon%22%20AND%20a%3A%22spoon-core%22) 
+To run Spoon in command line, you first have to download the corresponding jar file on [Maven Central](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22fr.inria.gforge.spoon%22%20AND%20a%3A%22spoon-core%22) 
 (take the version with all dependencies).
 
 When you have downloaded the desired version of Spoon, you can directly use it. 
