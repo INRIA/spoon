@@ -76,7 +76,7 @@ public class EvalHelper {
 			}
 		}
 
-		throw new SpoonException("not possible to transform to expression \"" + value + "\" (" + value.getClass().getName()+ ")");
+		throw new SpoonException("not possible to transform to expression \"" + value + "\" (" + value.getClass().getName() + ")");
 	}
 
 	/** creating a real low level Java array from a CtNewArray */
