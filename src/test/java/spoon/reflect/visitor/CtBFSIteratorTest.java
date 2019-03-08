@@ -5,7 +5,6 @@ import spoon.Launcher;
 import spoon.reflect.declaration.CtElement;
 
 import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;

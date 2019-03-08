@@ -19,7 +19,6 @@ package spoon.reflect.visitor;
 import spoon.reflect.declaration.CtElement;
 
 import java.util.ArrayDeque;
-import java.util.Collection;
 import java.util.Iterator;
 /**
  * A class to be able to iterate over the children elements in the tree of a given node, in breadth-first order.
