@@ -57,6 +57,14 @@ list3 = rootPackage.filterChildren(
 ).list();
 ```
 
+Scanners
+--------
+
+CtScanner (Anonymous class exemple
+CtIterator
+EarlyTerminatingScanner (return first)
+CtBFSScanner
+
 Queries
 -------
 
