@@ -30,9 +30,12 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.arrays.testclasses.VaragParam;
 import spoon.testing.utils.ModelUtils;
 
+import java.lang.reflect.Array;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -50,11 +53,45 @@ public class ArraysTest {
 		assertEquals("@spoon.test.arrays.testclasses.ArrayClass.TypeAnnotation(integer = 1)", arrayTypeReference.getArrayType().getAnnotations().get(0).toString());
 
 		CtField<?> x = type.getField("x");
-		assertTrue(x.getType() instanceof CtArrayTypeReference);
-		assertEquals("int[]", x.getType().getSimpleName());
-		assertEquals("int[]", x.getType().getQualifiedName());
-		assertEquals("int", ((CtArrayTypeReference<?>) x.getType()).getComponentType().getSimpleName());
-		assertTrue(((CtArrayTypeReference<?>) x.getType()).getComponentType().getActualClass().equals(int.class));
+		CtArrayTypeReference<?> typeRef = (CtArrayTypeReference<?>) x.getType();
+		assertTrue(typeRef instanceof CtArrayTypeReference);
+		assertEquals("int[]", typeRef.getSimpleName());
+		assertEquals("int[]", typeRef.getQualifiedName());
+		assertEquals("int", typeRef.getComponentType().getSimpleName());
+		assertTrue(((CtArrayTypeReference<?>) typeRef).getComponentType().getActualClass().equals(int.class));
+
+		CtType<?> ctType = typeRef.getTypeDeclaration();
+		assertEquals("int[]", ctType.getQualifiedName());
+
+		// is there a way to check if a CtType is an array type?
+
+		// solution 1: instanceof CtArrayTypeReference
+		assertTrue(typeRef instanceof CtArrayTypeReference); // it works well for a type reference
+
+		// solution 2: string test :-(
+		assertTrue(typeRef.getSimpleName().contains("[]"));
+		assertTrue(ctType.getSimpleName().contains("[]"));
+
+		// solution 3:  use isSubtypeOf
+        	assertTrue(x.getType().isSubtypeOf(x.getFactory().Type().get(Array.class).getReference()));
+
+		// solution 4: you can ask for actual class and then the component type if any
+		assertTrue(typeRef.getActualClass().getComponentType() != null);
+		assertTrue(ctType.getActualClass().getComponentType() != null);
+		assertTrue(typeRef.getComponentType() != null);
+		assertEquals("int", typeRef.getComponentType().getSimpleName());
+
+		// solution 5: use getActualClass if you know it already
+		assertSame(int[].class, typeRef.getActualClass());
+		assertEquals(int[].class, ctType.getActualClass());
+		assertEquals(int.class, ctType.getActualClass().getComponentType());
+		assertEquals("int[]", ctType.getActualClass().getSimpleName());
+
+		//contract: the API provides the array information
+		assertTrue(typeRef.isArray());
+		assertTrue(ctType.isArray());
+		assertFalse(type.isArray());
+		assertFalse(type.getReference().isArray());
 	}
 
 	@Test

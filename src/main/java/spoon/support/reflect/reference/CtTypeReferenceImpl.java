@@ -42,10 +42,12 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.reflect.declaration.CtElementImpl;
+import spoon.support.util.RtHelper;
 import spoon.support.util.internal.MapUtils;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -157,6 +159,16 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	protected Class<T> findClass() {
 		String qualifiedName = getQualifiedName();
 		ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
+
+		// an array class should not crash
+		// see https://github.com/INRIA/spoon/pull/2882
+		if (getSimpleName().contains("[]")) {
+			// Class.forName does not work for primitive types and arrays :-(
+			// we have to work-around
+			// original idea from https://bugs.openjdk.java.net/browse/JDK-4031337
+			return (Class<T>) RtHelper.getAllFields((Launcher.parseClass("public class Foo { public " + getQualifiedName() + " field; }").newInstance().getClass()))[0].getType();
+		}
+
 		if (classLoader != lastClassLoader) {
 			//clear cache because class loader changed
 			classByQName.clear();
@@ -242,8 +254,13 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (isPrimitive() || type.isPrimitive()) {
 			return equals(type);
 		}
-		if (((this instanceof CtArrayTypeReference) && (type instanceof CtArrayTypeReference))) {
-			return ((CtArrayTypeReference<?>) this).getComponentType().isSubtypeOf(((CtArrayTypeReference<?>) type).getComponentType());
+		if (this instanceof CtArrayTypeReference) {
+			if (type instanceof CtArrayTypeReference) {
+				return ((CtArrayTypeReference<?>) this).getComponentType().isSubtypeOf(((CtArrayTypeReference<?>) type).getComponentType());
+			}
+			if (Array.class.getName().equals(type.getQualifiedName())) {
+				return true;
+			}
 		}
 		if (Object.class.getName().equals(type.getQualifiedName())) {
 			//everything is a sub type of Object
@@ -867,5 +884,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			declaringType.setImplicit(parentIsImplicit);
 		}
 		return this;
+	}
+
+	@Override
+	public boolean isArray() {
+		return getSimpleName().contains("[");
 	}
 }
