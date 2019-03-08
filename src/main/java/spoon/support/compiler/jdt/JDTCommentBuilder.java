@@ -448,7 +448,8 @@ public class JDTCommentBuilder {
 		if (!comment.isParentInitialized()) {
 			// that's a serious error, there is something to debug
 			LOGGER.error("\"" + comment + "\" cannot be added into the AST, with parent " + commentParent.getClass()
-					+ "please report the bug by posting on https://github.com/INRIA/spoon/issues/2482");
+					+ " at " + commentParent.getPosition().toString()
+					+ ", please report the bug by posting on https://github.com/INRIA/spoon/issues/2482");
 		}
 	}
 
