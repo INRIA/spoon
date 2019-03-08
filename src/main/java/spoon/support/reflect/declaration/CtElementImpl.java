@@ -609,4 +609,20 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			return ElementSourceFragment.NO_SOURCE_FRAGMENT;
 		}
 	}
+
+	@Override
+	public List<CtElement> getChildren() {
+		List<CtElement> directChildren = new ArrayList<>();
+		CtScanner scanner = new CtScanner() {
+			@Override
+			public void scan(CtElement element) {
+				if (element != null) {
+					directChildren.add(element);
+				}
+			}
+		};
+
+		this.accept(scanner);
+		return directChildren;
+	}
 }
