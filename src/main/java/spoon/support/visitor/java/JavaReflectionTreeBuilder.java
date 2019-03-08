@@ -16,6 +16,7 @@
  */
 package spoon.support.visitor.java;
 
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -41,6 +42,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.support.util.RtHelper;
 import spoon.support.visitor.java.internal.AnnotationRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.ExecutableRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.PackageRuntimeBuilderContext;
@@ -63,6 +65,7 @@ import java.lang.reflect.WildcardType;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.Set;
 
 /**
  * Builds Spoon model from class file using the reflection api. The Spoon model
@@ -291,6 +294,20 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		final CtField<Object> ctField = factory.Core().createField();
 		ctField.setSimpleName(field.getName());
 		setModifier(ctField, field.getModifiers(), field.getDeclaringClass());
+
+		// we set the value of the shadow field if it is a public and static primitive value
+		try {
+			Set<ModifierKind> modifiers = RtHelper.getModifiers(field.getModifiers());
+			if (modifiers.contains(ModifierKind.STATIC)
+				&& modifiers.contains(ModifierKind.PUBLIC)
+				&& field.getType().isPrimitive()
+				) {
+				CtLiteral<Object> defaultExpression = factory.createLiteral(field.get(null));
+				ctField.setDefaultExpression(defaultExpression);
+			}
+		} catch (IllegalAccessException e) {
+			// ignore
+		}
 
 		enter(new VariableRuntimeBuilderContext(ctField));
 		super.visitField(field);

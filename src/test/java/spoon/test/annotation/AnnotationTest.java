@@ -1548,16 +1548,16 @@ public class AnnotationTest {
 		assertEquals(annotationOne.getValue("role"), shadowAnnotationOne.getValue("role")); // should pass
 	}
 
-	@Test(expected = SpoonException.class)
+	@Test
 	public void testGetValueAsObject() {
-		// contract: when one cannt evaluate an expression, throw an exception
+		// contract: annot.getValueAsObject now handles static values in binary classes
 		CtClass<?> cl =
 				Launcher.parseClass(
-						"public class C { @SuppressWarnings(\"a+\"+Integer.SIZE) void m() {} }");
+						"public class C { @SuppressWarnings(\"a\"+Integer.SIZE) void m() {} }");
 		CtAnnotation<?> annot = cl.getMethodsByName("m").get(0).getAnnotations().get(0);
 
 		// this triggers an exception because "a"+Integer.SIZE is not known at runtime
-		Object value = annot.getValueAsObject("value");
+		assertEquals("[a32]", Arrays.toString((Object[]) annot.getValueAsObject("value")));
 	}
 
 }
