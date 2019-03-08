@@ -983,4 +983,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	public CtType<?> copyType() {
 		return Refactoring.copyType(this);
 	}
+
+	@Override
+	public boolean isArray() {
+		return getSimpleName().contains("[");
+	}
 }

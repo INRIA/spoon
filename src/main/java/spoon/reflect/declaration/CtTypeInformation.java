@@ -186,4 +186,10 @@ public interface CtTypeInformation {
 	 */
 	@DerivedProperty
 	CtTypeReference<?> getTypeErasure();
+
+
+	/**
+	 * @return true if this represents an array e.g. Object[] or int[]
+	 */
+	boolean isArray();
 }

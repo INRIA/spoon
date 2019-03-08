@@ -34,6 +34,7 @@ import java.lang.reflect.Array;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -85,6 +86,12 @@ public class ArraysTest {
 		assertEquals(int[].class, ctType.getActualClass());
 		assertEquals(int.class, ctType.getActualClass().getComponentType());
 		assertEquals("int[]", ctType.getActualClass().getSimpleName());
+
+		//contract: the API provides the array information
+		assertTrue(typeRef.isArray());
+		assertTrue(ctType.isArray());
+		assertFalse(type.isArray());
+		assertFalse(type.getReference().isArray());
 	}
 
 	@Test

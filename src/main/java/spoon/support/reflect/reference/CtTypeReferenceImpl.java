@@ -885,4 +885,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		}
 		return this;
 	}
+
+	@Override
+	public boolean isArray() {
+		return getSimpleName().contains("[");
+	}
 }
