@@ -78,14 +78,6 @@ mvn test
 
 The download information is at <http://spoon.gforge.inria.fr/>.
 
-### Eclipse IDE Setup
-
-In order to generate the Eclipse project files required for importing run the following commands from the root spoon directory (requires Maven):
-```
-mvn eclipse:clean
-mvn eclipse:eclipse
-```
-
 ### Ecosystem
 
 See <http://spoon.gforge.inria.fr/ecosystem.html>
