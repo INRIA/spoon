@@ -37,7 +37,7 @@ public class EvalHelper {
 
 	/**
 	 * Evaluates and converts CtExpression to their equivalent runtime objects
-	 * eg "CtLiteral(3) + CtLiteral(4)" -> 7
+	 * eg "CtLiteral(3) + CtLiteral(4)" -&gt; 7
 	 */
 	@SuppressWarnings("unchecked")
 	public static Object convertElementToRuntimeObject(CtElement value) {
@@ -50,7 +50,7 @@ public class EvalHelper {
 
 	/**
 	 * Returns the runtime object corresponding to the expression
-	 * eg CtLiteral(3) -> 3
+	 * eg CtLiteral(3) -&gt; 3
 	 */
 	public static Object getCorrespondingRuntimeObject(CtExpression<?> value) {
 		if (value instanceof CtNewArray) {
