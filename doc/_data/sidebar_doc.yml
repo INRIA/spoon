@@ -145,7 +145,7 @@ entries:
       version: all
 
       items:
-        - title: Filter
+        - title: AST Traversing
           url: /filter.html
           audience: writers, designers
           platform: all

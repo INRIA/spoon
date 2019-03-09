@@ -44,7 +44,7 @@ public class CtDequeScanner extends CtScanner {
 	protected void exit(CtElement e) {
 		CtElement ret = elementsDeque.pop();
 		if (ret != e) {
-			throw new RuntimeException("Unconsitant Stack");
+			throw new RuntimeException("Inconsistent Stack");
 		}
 		super.exit(e);
 	}
