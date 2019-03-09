@@ -142,12 +142,6 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.0-M1</version>
-            </plugin>
-
-            <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
                 <version>1.6.8</version>
@@ -269,11 +263,6 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.0.0-M1</version>
-                </plugin>
-                <plugin>
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
                     <configuration>
@@ -319,8 +308,6 @@
                 <version>3.0.1</version>
                 <configuration>
                     <quiet>true</quiet>
-                    <!-- doclin, since 3.0.1, see https://stackoverflow.com/a/53497998/1153476 -->
-                    <doclint>none</doclint>
                 </configuration>
                 <reportSets>
                     <reportSet>
@@ -330,11 +317,6 @@
                         </reports>
                     </reportSet>
                 </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-                <version>3.0.0</version>
             </plugin>
         </plugins>
     </reporting>
