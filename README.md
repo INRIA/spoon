@@ -91,28 +91,48 @@ See <http://spoon.gforge.inria.fr/ecosystem.html>
 
 Alphabetical order of last names
 
-* Olivier Barais
+    git log --pretty="%an" | sed -e 's/renaud/Renaud Pawlak/' -e 's/dwayneb/David Bernard/' -e 's/noguera/Carlos Noguera/' -e 's/bcornu/Benoit Cornu/' -e '/Spoon Bot/d' -e 's/é/e/g' -e 's/ń/n/g' | sort -u | awk 'NF>=2 {print "* " $0}' | sort -k3
+
 * David Bernard
-* Benjamin Danglot
+* Artur Bosch
+* Egor Bredikhin
+* Maxime CLEMENT
 * Benoit Cornu
-* Didier Donsez
-* Favio DeMarco
-* Christophe Dufour
+* Andre Cruz
+* Benjamin DANGLOT
+* Scott Dickerson
+* Yann Diorcet
 * Thomas Durieux
+* Sergey Fedorov
 * Alcides Fonseca
+* Clement Fournier
+* Jan Galinski
 * Nicolas Harrand
-* Sebastian Lamelas Marcote
-* Romain Leventov
-* Matias Martinez
+* Mickael Istria
+* Mehdi Kaytoue
+* Urs Keller
+* Filip Krakowski
+* Lukas Krejci
+* Ashutosh Kumar Verma
+* Roman Leventov
+* Fan Long
+* Kai Luo
+* Luke Merrick
 * Martin Monperrus
+* Vincenzo Musco
 * Carlos Noguera
-* Gérard Paligot
+* Gerard Paligot
 * Renaud Pawlak
-* Nicolas Pessemier
 * Nicolas Petitprez
 * Phillip Schichtel
 * Lionel Seinturier
+* Miguel Sozinho Ramalho
 * Marcel Steinbeck
+* Christopher Stokes
+* Eddie T
 * Simon Urli
 * Pavel Vojtechovsky
 * Stefan Wolf
+* Diorcet Yann
+* Gregor Zeitlinger
+* Tomasz Zielinski
