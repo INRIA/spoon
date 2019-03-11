@@ -611,7 +611,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public List<CtElement> getChildren() {
+	public List<CtElement> getDirectChildren() {
 		List<CtElement> directChildren = new ArrayList<>();
 		CtScanner scanner = new CtScanner() {
 			@Override

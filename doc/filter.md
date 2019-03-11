@@ -24,7 +24,7 @@ methods = ctClass.getValueByRole(CtRole.METHOD);
 While not recommended, it is also possible to get all direct children of an element
 
 ```java
-allDescendants = ctElement.getChildren();
+allDescendants = ctElement.getDirectChildren();
 ```
 
 

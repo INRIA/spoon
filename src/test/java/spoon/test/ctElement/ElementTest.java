@@ -59,10 +59,10 @@ public class ElementTest {
 
 		//contract: a freshly created element has no children
 		CtElement el = spoon.getFactory().createIf();
-		assertEquals(el.getChildren().size(),0);
+		assertEquals(el.getDirectChildren().size(),0);
 
 		//contract: children contains all direct descendants but nothing else
 		CtClass cl = Launcher.parseClass("class A {int f; int g; public void m(int k){}}");
-		assertEquals(cl.getChildren().size(),4);
+		assertEquals(cl.getDirectChildren().size(),4);
 	}
 }

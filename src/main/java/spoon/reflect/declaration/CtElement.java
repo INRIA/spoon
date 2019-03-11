@@ -400,6 +400,6 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * @return a list of CtElement containing the element's direct children.
 	 */
-	List<CtElement> getChildren();
+	List<CtElement> getDirectChildren();
 
 }
