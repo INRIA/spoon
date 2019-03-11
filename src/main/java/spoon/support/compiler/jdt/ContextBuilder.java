@@ -24,12 +24,14 @@ import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 
+import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -97,7 +99,12 @@ public class ContextBuilder {
 		stack.push(new ASTPair(e, node));
 		if (!(e instanceof CtPackage) || (compilationUnitSpoon.getFile() != null && compilationUnitSpoon.getFile().getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION))) {
 			if (compilationunitdeclaration != null && !e.isImplicit()) {
-				e.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPositionCtElement(e, node));
+				try {
+					e.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPositionCtElement(e, node));
+				} catch (Exception ex) {
+					e.setPosition(SourcePosition.NOPOSITION);
+					Launcher.LOGGER.warn("PositionBuilder failed for element " + e.toString(), ex);
+				}
 			}
 		}
 

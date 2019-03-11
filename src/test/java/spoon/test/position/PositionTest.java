@@ -1301,4 +1301,17 @@ public class PositionTest {
 		CtFieldReference<?> fieldRef2 = fieldRead.getVariable();
 		assertEquals("f", contentAtPosition(classContent, fieldRef2.getPosition()));
 	}
+
+	@Test
+	public void testPositionBuilderFailureIsCaugth() {
+		//contract: parsing incorrect java code should not lead to a crash because of the position builder,
+		//      but rather, incomplete position information.
+		try {
+			CtClass cl = Launcher.parseClass("class A { void foo() {");
+			assertTrue(cl.getSimpleName().equals("A"));
+			assertTrue(cl.getMethods().size() == 1);
+		} catch(Exception e) {
+			fail("Error while parsing incomplete class declaration");
+		}
+	}
 }
