@@ -308,7 +308,7 @@
                 <version>3.0.1</version>
                 <configuration>
                     <quiet>true</quiet>
-                     <additionalJOption>-Xdoclint:all -Xdoclint:-missing</additionalJOption>
+                     <additionalJOption>-Xdoclint:-missing</additionalJOption>
                 </configuration>
                 <reportSets>
                     <reportSet>
