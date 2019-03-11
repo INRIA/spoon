@@ -57,6 +57,47 @@ list3 = rootPackage.filterChildren(
 ).list();
 ```
 
+Scanners
+--------
+
+`CtScanner` provides a simple way to visit a node and its children.
+
+```java
+//Scanner counting the number of CtFieldWrite
+class CounterScanner extends CtScanner {
+	private int visited = 0;
+	@Override
+	public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
+		visited++;
+	}
+}
+
+CounterScanner scanner = new CounterScanner();
+
+//Run the scanner on an element, here the CtClass representing FieldAccessRes
+launcher.getFactory().Class().get("FieldAccessRes").accept(scanner);
+
+//scanner.visited now contains the number of children of type CtFieldWrite 
+assertEquals(1, scanner.visited);
+```
+
+`EarlyTerminatingScanner` is a specialized Class implementing `CtScanner` that stops once `terminate()` has been called.
+
+See also `CtVisitor`.
+
+Iterator
+--------
+
+`CtIterator` provides an iterator on all transitive children of a node in depth first order.
+```java
+CtIterator iterator = new CtIterator(root);
+while (iterator.hasNext()) {
+	CtElement el = iterator.next();
+	//do something on each child of root
+}
+```
+`CtBFSIterator` is similar to CtIterator but in Breadth first order.
+
 Queries
 -------
 
