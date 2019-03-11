@@ -21,6 +21,12 @@ In addition, there exists a generic getter based on the role played by an elemen
 methods = ctClass.getValueByRole(CtRole.METHOD);
 ```
 
+While not recommended, it is also possible to get all direct children of an element
+
+```java
+allDescendants = ctElement.getChildren();
+```
+
 
 Filters
 -------
@@ -89,6 +95,7 @@ Iterator
 --------
 
 `CtIterator` provides an iterator on all transitive children of a node in depth first order.
+
 ```java
 CtIterator iterator = new CtIterator(root);
 while (iterator.hasNext()) {
@@ -96,6 +103,7 @@ while (iterator.hasNext()) {
 	//do something on each child of root
 }
 ```
+
 `CtBFSIterator` is similar to CtIterator but in Breadth first order.
 
 Queries
