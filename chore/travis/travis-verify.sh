@@ -15,7 +15,7 @@ pip install --user CommonMark==0.7.5 requests pygithub
 
 jdk_switcher use oraclejdk9
 
-mvn -Djava.src.version=1.9 verify license:check site javadoc:jar install -DskipTests -DadditionalJOption=-Xdoclint:none
+mvn -Djava.src.version=1.9 verify license:check site javadoc:jar install -DskipTests
 
 # checkstyle in src/tests
 mvn  checkstyle:checkstyle -Pcheckstyle-test
