@@ -303,6 +303,8 @@
                 <version>2.9</version>
             </plugin>
             <plugin>
+                <!-- Warning the configuration here is used in "mvn site", not in "mvn javadoc:javadoc" -->
+                <!-- See also -DadditionalJOption=-Xdoclint:syntax,-missing in travis-verify.sh -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.0.1</version>
