@@ -116,7 +116,7 @@ import java.util.Stack;
 
 /**
  * Builds the control graph for a given snippet of code
- * <p/>
+ *
  * Created by marodrig on 13/10/2015.
  */
 public class ControlFlowBuilder implements CtVisitor {

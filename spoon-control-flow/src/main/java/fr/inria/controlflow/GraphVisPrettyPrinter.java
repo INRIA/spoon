@@ -24,7 +24,7 @@ package fr.inria.controlflow;
 import java.util.HashMap;
 /**
  * Prints the control flow in .Dot for GraphVis to visualize
- * <p/>
+ *
  * Created by marodrig on 14/10/2015.
  */
 public class GraphVisPrettyPrinter {
