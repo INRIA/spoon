@@ -25,7 +25,7 @@ import spoon.reflect.declaration.CtVariable;
 
 /**
  * Value traveling the data-flow
- * <p/>
+ *
  * Created by marodrig on 13/10/2015.
  */
 public class Value {

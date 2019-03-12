@@ -40,9 +40,9 @@ import java.util.Set;
 /**
  * Find useless assignments. A useless assignment is the one assigning to a dead variable.
  * (https://en.wikipedia.org/wiki/Live_variable_analysis)
- * <p/>
+ * <p>
  * Return the list of useless assignments
- * <p/>
+ * </p>
  * Created by marodrig on 03/02/2016.
  */
 public class UselessAssignmentAnalysis {

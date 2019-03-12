@@ -28,8 +28,7 @@ import java.util.List;
 
 /**
  * A node of the control flow
- * <p/>
- * <p/>
+ *
  * Created by marodrig on 13/10/2015.
  */
 public class ControlFlowNode {

@@ -38,10 +38,10 @@ import java.util.Set;
 
 /**
  * Find initialized variables in a control flow graph.
- * <p/>
+ * <p>
  * The algorithms trust that the code from which the graph was created was successfully compiled. That's why
  * not only assigned variables are considered initialized, but also used variables.
- * <p/>
+ * </p>
  * Created by marodrig on 13/11/2015.
  */
 public class InitializedVariables {
