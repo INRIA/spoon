@@ -66,7 +66,7 @@ public class ControlFlowGraph extends DefaultDirectedGraph<ControlFlowNode, Cont
 	/**
 	 * Find the node holding and element
 	 *
-	 * @param e
+	 * @param e node to find
 	 * @return
 	 */
 	public ControlFlowNode findNode(CtElement e) throws NotFoundException {
@@ -82,7 +82,7 @@ public class ControlFlowGraph extends DefaultDirectedGraph<ControlFlowNode, Cont
 
 	/**
 	 * Find nodes by a given id
-	 * @param id
+	 * @param id of the node to find
 	 * @return
 	 */
 	public ControlFlowNode findNodeById(int id) {
@@ -97,8 +97,8 @@ public class ControlFlowGraph extends DefaultDirectedGraph<ControlFlowNode, Cont
 	/**
 	 * Find all nodes of a given kind
 	 *
-	 * @param kind
-	 * @return
+	 * @param kind of node to find
+	 * @return list of nodes
 	 */
 	public List<ControlFlowNode> findNodesOfKind(BranchKind kind) {
 		ArrayList<ControlFlowNode> result = new ArrayList<ControlFlowNode>();

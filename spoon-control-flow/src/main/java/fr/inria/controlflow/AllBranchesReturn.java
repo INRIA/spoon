@@ -30,7 +30,7 @@ import java.util.Set;
 /**
  * An algorithm that takes a CtElement, builds a graph for it and checks that all branches return
  * something or that there is no branch returns anything
- * <p/>
+ *
  * Created by marodrig on 04/01/2016.
  */
 public class AllBranchesReturn {
@@ -38,7 +38,7 @@ public class AllBranchesReturn {
 	/**
 	 * Finds if all branches returns
 	 *
-	 * @param element
+	 * @param element   starting point
 	 * @return True if all branches return or none return
 	 */
 	public boolean execute(CtElement element) {

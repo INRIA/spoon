@@ -28,8 +28,7 @@ import java.util.List;
 
 /**
  * A node of the control flow
- * <p/>
- * <p/>
+ *
  * Created by marodrig on 13/10/2015.
  */
 public class ControlFlowNode {
@@ -88,8 +87,6 @@ public class ControlFlowNode {
 
 	/**
 	 * Performs the transfer using a given visitor
-	 *
-	 * @param visitor
 	 */
 	public void transfer(TransferFunctionVisitor visitor) {
 		this.visitor = visitor;
@@ -114,8 +111,6 @@ public class ControlFlowNode {
 
 	/**
 	 * Obtains the siblings of a control node. Siblings are the nodes in parallel branches
-	 *
-	 * @return
 	 */
 	public List<ControlFlowNode> siblings() {
 		ArrayList<ControlFlowNode> result = new ArrayList<ControlFlowNode>();
@@ -131,8 +126,6 @@ public class ControlFlowNode {
 
 	/**
 	 * List of nodes that can be executed just after this one
-	 *
-	 * @return
 	 */
 	public List<ControlFlowNode> next() {
 		ArrayList<ControlFlowNode> result = new ArrayList<ControlFlowNode>();
@@ -144,8 +137,6 @@ public class ControlFlowNode {
 
 	/**
 	 * List of nodes that could be executed just before this one
-	 *
-	 * @return
 	 */
 	public List<ControlFlowNode> prev() {
 		ArrayList<ControlFlowNode> result = new ArrayList<ControlFlowNode>();

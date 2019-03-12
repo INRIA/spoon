@@ -40,9 +40,9 @@ import java.util.Set;
 /**
  * Find useless assignments. A useless assignment is the one assigning to a dead variable.
  * (https://en.wikipedia.org/wiki/Live_variable_analysis)
- * <p/>
+ * <p>
  * Return the list of useless assignments
- * <p/>
+ * </p>
  * Created by marodrig on 03/02/2016.
  */
 public class UselessAssignmentAnalysis {
@@ -52,7 +52,7 @@ public class UselessAssignmentAnalysis {
 	/**
 	 * The method calculates the control flow for 'container' and then returns the useless assignments
 	 *
-	 * @param container
+	 * @param container to run
 	 * @throws NotFoundException if element 'begin' does not belong to 'container'
 	 */
 	public void run(CtElement container) throws NotFoundException {
@@ -63,7 +63,7 @@ public class UselessAssignmentAnalysis {
 	/**
 	 * The method calculates the control flow for 'container' and then returns the useless assignments
 	 *
-	 * @param graph
+	 * @param graph to be processed
 	 */
 	public void run(ControlFlowGraph graph) {
 		//This is a backward analysis. So start from the end
