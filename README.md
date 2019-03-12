@@ -91,7 +91,7 @@ See <http://spoon.gforge.inria.fr/ecosystem.html>
 
 Alphabetical order of last names
 
-    git log --pretty="%an" | sed -e 's/renaud/Renaud Pawlak/' -e 's/dwayneb/David Bernard/' -e 's/noguera/Carlos Noguera/' -e 's/bcornu/Benoit Cornu/' -e '/Spoon Bot/d' -e 's/é/e/g' -e 's/ń/n/g' | sort -u | awk 'NF>=2 {print "* " $0}' | sort -k3
+    git log --pretty="%an" | sed -e 's/renaud/Renaud Pawlak/' -e 's/martinezmatias/Matias Martinez/' -e 's/dwayneb/David Bernard/' -e 's/noguera/Carlos Noguera/' -e 's/bcornu/Benoit Cornu/' -e '/Spoon Bot/d' -e 's/é/e/g' -e 's/ń/n/g' | sort -u | awk 'NF>=2 {print "* " $0}' | sort -k3
 
 * David Bernard
 * Artur Bosch
@@ -117,6 +117,7 @@ Alphabetical order of last names
 * Roman Leventov
 * Fan Long
 * Kai Luo
+* Matias Martinez
 * Luke Merrick
 * Martin Monperrus
 * Vincenzo Musco
