@@ -18,10 +18,12 @@ package spoon.test.ctElement;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.support.reflect.declaration.CtAnnotationImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
@@ -49,5 +51,18 @@ public class ElementTest {
 
 		// contract: a singleton is used for the default factory
 		assertSame(otherElement.getFactory(), yetAnotherOne.getFactory());
+	}
+
+	@Test
+	public void testGetChildren() {
+		Launcher spoon = new Launcher();
+
+		//contract: a freshly created element has no children
+		CtElement el = spoon.getFactory().createIf();
+		assertEquals(el.getDirectChildren().size(),0);
+
+		//contract: children contains all direct descendants but nothing else
+		CtClass cl = Launcher.parseClass("class A {int f; int g; public void m(int k){}}");
+		assertEquals(cl.getDirectChildren().size(),4);
 	}
 }
