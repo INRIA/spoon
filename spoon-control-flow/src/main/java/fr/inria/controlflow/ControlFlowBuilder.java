@@ -143,8 +143,8 @@ public class ControlFlowBuilder implements CtVisitor {
 	/**
 	 * Build the control graph
 	 *
-	 * @param s
-	 * @return
+	 * @param s starting point
+	 * @return control flow graph
 	 */
 	public ControlFlowGraph build(CtElement s) {
 		s.accept(this);
@@ -179,13 +179,14 @@ public class ControlFlowBuilder implements CtVisitor {
 
 	/**
 	 * Returns the first graph node representing the statement s construction.
-	 * <p/>
+	 *
 	 * Usually an statement is represented by many blocks and branches.
 	 * This method returns the first of those blocks/branches.
 	 *
 	 * @param g         Graph in which the bloc is to be found
 	 * @param statement Statement for which the first block is needed
-	 * @return
+	 * @return first graph node
+	 * @throws NotFoundException when the initial node cannot be found
 	 */
 	public static ControlFlowNode firstNode(ControlFlowGraph g, CtElement statement) throws NotFoundException {
 
@@ -238,7 +239,6 @@ public class ControlFlowBuilder implements CtVisitor {
 	/**
 	 * Register the label of the statement
 	 *
-	 * @param st
 	 */
 	private void registerStatementLabel(CtStatement st) {
 		if (st.getLabel() == null || st.getLabel().isEmpty()) {

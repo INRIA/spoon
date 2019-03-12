@@ -58,8 +58,6 @@ public abstract class TransferFunctionVisitor implements CtVisitor {
 
 	/**
 	 * Output of the last node that called the transfer function
-	 *
-	 * @return
 	 */
 	public List<Value> getOutput() {
 		if (output == null) {
