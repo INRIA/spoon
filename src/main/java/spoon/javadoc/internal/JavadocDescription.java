@@ -13,7 +13,6 @@ package spoon.javadoc.internal;
 
 	/**
 	* A javadoc text, potentially containing inline tags.
-	* </code>
 	*/
 	public class JavadocDescription implements Serializable {
 
