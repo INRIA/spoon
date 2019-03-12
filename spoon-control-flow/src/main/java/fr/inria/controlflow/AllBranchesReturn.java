@@ -38,7 +38,7 @@ public class AllBranchesReturn {
 	/**
 	 * Finds if all branches returns
 	 *
-	 * @param element
+	 * @param element   starting point
 	 * @return True if all branches return or none return
 	 */
 	public boolean execute(CtElement element) {

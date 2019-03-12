@@ -52,7 +52,7 @@ public class UselessAssignmentAnalysis {
 	/**
 	 * The method calculates the control flow for 'container' and then returns the useless assignments
 	 *
-	 * @param container
+	 * @param container to run
 	 * @throws NotFoundException if element 'begin' does not belong to 'container'
 	 */
 	public void run(CtElement container) throws NotFoundException {
@@ -63,7 +63,7 @@ public class UselessAssignmentAnalysis {
 	/**
 	 * The method calculates the control flow for 'container' and then returns the useless assignments
 	 *
-	 * @param graph
+	 * @param graph to be processed
 	 */
 	public void run(ControlFlowGraph graph) {
 		//This is a backward analysis. So start from the end

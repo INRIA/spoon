@@ -397,4 +397,9 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 */
 	Iterable<CtElement> asIterable();
 
+	/**
+	 * @return a list of CtElement containing the element's direct children.
+	 */
+	List<CtElement> getDirectChildren();
+
 }
