@@ -616,7 +616,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		CtScanner scanner = new CtScanner() {
 			@Override
 			public void scan(CtElement element) {
-				// since we don't call super.scan, this does not further descend in the tree 
+				// since we don't call super.scan, this does not further descend in the tree
 				if (element != null) {
 					directChildren.add(element);
 				}
