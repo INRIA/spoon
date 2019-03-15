@@ -432,4 +432,9 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 	public <E extends CtElement> E setParent(E parent) {
 		return (E) this;
 	}
+
+	@Override
+	public String toString() {
+		return this.file.getName();
+	}
 }
