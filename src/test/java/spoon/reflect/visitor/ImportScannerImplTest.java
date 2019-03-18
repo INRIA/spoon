@@ -5,6 +5,7 @@ import spoon.Launcher;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtType;
+import spoon.support.reflect.cu.CompilationUnitImpl;
 
 import java.util.List;
 
@@ -29,6 +30,9 @@ public class ImportScannerImplTest {
 
 		//contract: CompilationUnitImpl#toString() does not throw a NPE
 		assertNotNull(cu.toString());
+
+		//contract: CompilationUnitImpl#toString() returns the file's name.
+		assertEquals(cu.toString(), "TestClass.java");
 	}
 
 }
