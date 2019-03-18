@@ -87,32 +87,67 @@ See <http://spoon.gforge.inria.fr/ecosystem.html>
   - [Spoon: Getting Started - Simon Urli @ OW2Con'18 (Paris)](https://www.youtube.com/watch?v=ZZzdVTIu-OY)
   - [Generate Test Assertion with Spoon - Benjamin Danglot @ OW2Con'17 (Paris)](https://www.youtube.com/watch?v=JcCIbjnkfD4)
 
-## Contributors
+## Github Contributors
 
 Alphabetical order of last names
 
-* Olivier Barais
+    git log --pretty="%an" | sed -e '/Spoon Bot/d' | sort -u | awk 'NF>=2 {print "* " $0}' | sort -k3
+
 * David Bernard
-* Benjamin Danglot
+* Artur Bosch
+* Egor Bredikhin
+* Maxime CLEMENT
 * Benoit Cornu
-* Didier Donsez
-* Favio DeMarco
-* Christophe Dufour
+* Andre Cruz
+* Benjamin DANGLOT
+* Scott Dickerson
+* Yann Diorcet
 * Thomas Durieux
+* Sergey Fedorov
 * Alcides Fonseca
+* Clement Fournier
+* Jan Galinski
 * Nicolas Harrand
-* Sebastian Lamelas Marcote
-* Romain Leventov
+* Mickael Istria
+* Mehdi Kaytoue
+* Urs Keller
+* Filip Krakowski
+* Lukas Krejci
+* Ashutosh Kumar Verma
+* Roman Leventov
+* Fan Long
+* Kai Luo
 * Matias Martinez
+* Luke Merrick
 * Martin Monperrus
+* Vincenzo Musco
 * Carlos Noguera
-* Gérard Paligot
+* Gerard Paligot
 * Renaud Pawlak
-* Nicolas Pessemier
 * Nicolas Petitprez
 * Phillip Schichtel
 * Lionel Seinturier
+* Miguel Sozinho Ramalho
 * Marcel Steinbeck
+* Christopher Stokes
+* Eddie T
 * Simon Urli
 * Pavel Vojtechovsky
 * Stefan Wolf
+* Diorcet Yann
+* Gregor Zeitlinger
+* Tomasz Zielinski
+
+Early contributors:
+
+* Olivier Barais
+* David Bernard
+* Benoit Cornu
+* Favio DeMarco
+* Didier Donsez
+* Christophe Dufour
+* Sebastian Lamelas Marcote
+* Matias Martinez
+* Carlos Noguera
+* Renaud Pawlak
+* Nicolas Pessemier
