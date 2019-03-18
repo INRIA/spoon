@@ -48,6 +48,8 @@ public interface CtAssert<T> extends CtStatement {
 
 	/**
 	 * Sets the expression of the assertion.
+	 *
+	 * For instance assert.setExpression(factory.createCodeSnippetExpression("param != null"))
 	 */
 	@PropertySetter(role = EXPRESSION)
 	<A extends CtAssert<T>> A setExpression(CtExpression<T> expression);
