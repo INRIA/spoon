@@ -321,7 +321,7 @@ public class TestCompilationUnit {
 		CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(t);
 		List<CtImport> imports = cu.getImports();
 
-		//contract: import are accessible from CompilationUnit
+		//contract: imports are accessible from CompilationUnit
 		assertEquals(2, imports.size());
 
 		//contract: CompilationUnitImpl#toString() does not throw a NPE
