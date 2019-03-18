@@ -25,7 +25,7 @@ public class ImportScannerImplTest {
 		CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(t);
 		List<CtImport> imports = cu.getImports();
 
-		//contract: import are accessible from CompilationUnit
+		//contract: imports are accessible from CompilationUnit
 		assertEquals(imports.size(), 2);
 
 		//contract: CompilationUnitImpl#toString() does not throw a NPE
