@@ -87,11 +87,11 @@ See <http://spoon.gforge.inria.fr/ecosystem.html>
   - [Spoon: Getting Started - Simon Urli @ OW2Con'18 (Paris)](https://www.youtube.com/watch?v=ZZzdVTIu-OY)
   - [Generate Test Assertion with Spoon - Benjamin Danglot @ OW2Con'17 (Paris)](https://www.youtube.com/watch?v=JcCIbjnkfD4)
 
-## Contributors
+## Github Contributors
 
 Alphabetical order of last names
 
-    git log --pretty="%an" | sed -e 's/renaud/Renaud Pawlak/' -e 's/martinezmatias/Matias Martinez/' -e 's/dwayneb/David Bernard/' -e 's/noguera/Carlos Noguera/' -e 's/bcornu/Benoit Cornu/' -e '/Spoon Bot/d' -e 's/é/e/g' -e 's/ń/n/g' | sort -u | awk 'NF>=2 {print "* " $0}' | sort -k3
+    git log --pretty="%an" | sed -e '/Spoon Bot/d' | sort -u | awk 'NF>=2 {print "* " $0}' | sort -k3
 
 * David Bernard
 * Artur Bosch
@@ -137,3 +137,17 @@ Alphabetical order of last names
 * Diorcet Yann
 * Gregor Zeitlinger
 * Tomasz Zielinski
+
+Early contributors:
+
+* Olivier Barais
+* David Bernard
+* Benoit Cornu
+* Favio DeMarco
+* Didier Donsez
+* Christophe Dufour
+* Sebastian Lamelas Marcote
+* Matias Martinez
+* Carlos Noguera
+* Renaud Pawlak
+* Nicolas Pessemier
