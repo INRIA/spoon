@@ -308,4 +308,26 @@ public class TestCompilationUnit {
 		assertEquals(utf8Type.getField("s1"), cp1251Type.getField("s1"));
 		assertNotEquals(utf8Type.getField("s2"), cp1251Type.getField("s2"));
 	}
+
+	@Test
+	public void testPrintImport() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/simple-import/TestClass.java");
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.buildModel();
+
+		CtType t = launcher.getModel().getRootPackage().getPackage("matchers").getType("TestClass");
+
+		CompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(t);
+		List<CtImport> imports = cu.getImports();
+
+		//contract: imports are accessible from CompilationUnit
+		assertEquals(2, imports.size());
+
+		//contract: CompilationUnitImpl#toString() does not throw a NPE
+		assertNotNull(cu.toString());
+
+		//contract: CompilationUnitImpl#toString() returns the file's name.
+		assertEquals("TestClass.java", cu.toString());
+	}
 }
