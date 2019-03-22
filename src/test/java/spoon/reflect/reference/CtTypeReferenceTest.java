@@ -37,10 +37,18 @@ public class CtTypeReferenceTest {
         when(environment.getInputClassLoader()).thenReturn(classLoader);
     }
 
+    /**
+     * If this represents a wrapped type, returns a {@link CtTypeReference} for the unwrapped type,
+     * or return this in other cases.
+     */
     @Test public void unbox() throws ClassNotFoundException {
         testBoxingFunction(CtTypeReferenceImpl::new, false);
     }
 
+    /**
+     * If this represents an unwrapped type, returns a {@link CtTypeReference} for the wrapped type,
+     * or return this in other cases.
+     */
     @Test public void box() throws ClassNotFoundException {
         testBoxingFunction(CtTypeReferenceImpl::new, true);
     }
