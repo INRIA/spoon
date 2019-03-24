@@ -105,8 +105,10 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
+import spoon.reflect.visitor.CtScanner;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -768,6 +770,8 @@ public class ParentExiter extends CtInheritanceScanner {
 		return parent.type != null && parent.type.equals(childJDT);
 	}
 
+	private static final String KEYWORD_NEW = "new";
+
 	@Override
 	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
 		if (child instanceof CtClass) {
@@ -775,13 +779,28 @@ public class ParentExiter extends CtInheritanceScanner {
 			final QualifiedAllocationExpression node = (QualifiedAllocationExpression) jdtTreeBuilder.getContextBuilder().stack.peek().node;
 			final ReferenceBinding[] referenceBindings = node.resolvedType == null ? null : node.resolvedType.superInterfaces();
 			if (referenceBindings != null && referenceBindings.length > 0) {
-				((CtClass<?>) child).addSuperInterface(newClass.getType().clone());
+				//the interface of anonymous class is not printed so it must have no position
+				//note: the interface is sometimes already assigned so call setSuperInterfaces to replace it
+				((CtClass<?>) child).setSuperInterfaces(Collections.singleton(cloneAsImplicit(newClass.getType())));
 			} else if (newClass.getType() != null) {
-				((CtClass<?>) child).setSuperclass(newClass.getType().clone());
+				//the super class of anonymous class is not printed so it must have no position
+				((CtClass<?>) child).setSuperclass(cloneAsImplicit(newClass.getType()));
 			}
 			return;
 		}
 		super.visitCtNewClass(newClass);
+	}
+
+	private <T extends CtElement> T cloneAsImplicit(T ele) {
+		ele = (T) ele.clone();
+		ele.accept(new CtScanner() {
+			@Override
+			protected void enter(CtElement e) {
+				e.setPosition(SourcePosition.NOPOSITION);
+			}
+		});
+		ele.setImplicit(true);
+		return ele;
 	}
 
 	@Override

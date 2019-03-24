@@ -270,26 +270,44 @@ public class PositionBuilder {
 			int bodyStart = typeDeclaration.bodyStart;
 			int bodyEnd = typeDeclaration.bodyEnd;
 
-			if (modifiersSourceStart <= 0) {
-				modifiersSourceStart = declarationSourceStart;
-			}
-			//look for start of first keyword before the type keyword e.g. "class". `sourceStart` points at first char of type name
-			int modifiersSourceEnd = findPrevNonWhitespace(contents, modifiersSourceStart - 1,
-										findPrevWhitespace(contents, modifiersSourceStart - 1,
-											findPrevNonWhitespace(contents, modifiersSourceStart - 1, sourceStart - 1)));
-			if (e instanceof CtModifiable) {
-				setModifiersPosition((CtModifiable) e, modifiersSourceStart, modifiersSourceEnd);
-			}
-			if (modifiersSourceEnd < modifiersSourceStart) {
-				//there is no modifier
-				modifiersSourceEnd = modifiersSourceStart - 1;
-			}
+			int modifiersSourceEnd;
 			if (typeDeclaration.name.length == 0) {
-				//it is anonymous type, there is no name start/end
-				sourceEnd = sourceStart - 1;
-				if (contents[sourceStart] == '{') {
+				//it is anonymous type
+				if (contents[bodyStart] != '{') {
+					//adjust bodyStart of annonymous type in definition of enum value
+					if (bodyStart < 1 || contents[bodyStart - 1] != '{') {
+						throw new SpoonException("Cannot found body start at offset " + bodyStart + " of annonymous class with sources:\n" + new String(contents));
+					}
+					bodyStart--;
+				}
+				declarationSourceStart = modifiersSourceStart = sourceStart = bodyStart;
+				if (contents[bodyEnd] != '}') {
 					//adjust bodyEnd of annonymous type in definition of enum value
+					if (contents[bodyEnd + 1] != '}') {
+						throw new SpoonException("Cannot found body end at offset " + bodyEnd + " of annonymous class with sources:\n" + new String(contents));
+					}
 					bodyEnd++;
+				}
+				declarationSourceEnd = bodyEnd;
+				//there is no name of annonymous class
+				sourceEnd = sourceStart - 1;
+				//there are no modifiers of annonymous class
+				modifiersSourceEnd = modifiersSourceStart - 1;
+				bodyStart++;
+			} else {
+				if (modifiersSourceStart <= 0) {
+					modifiersSourceStart = declarationSourceStart;
+				}
+				//look for start of first keyword before the type keyword e.g. "class". `sourceStart` points at first char of type name
+				modifiersSourceEnd = findPrevNonWhitespace(contents, modifiersSourceStart - 1,
+											findPrevWhitespace(contents, modifiersSourceStart - 1,
+												findPrevNonWhitespace(contents, modifiersSourceStart - 1, sourceStart - 1)));
+				if (e instanceof CtModifiable) {
+					setModifiersPosition((CtModifiable) e, modifiersSourceStart, modifiersSourceEnd);
+				}
+				if (modifiersSourceEnd < modifiersSourceStart) {
+					//there is no modifier
+					modifiersSourceEnd = modifiersSourceStart - 1;
 				}
 			}
 
@@ -537,6 +555,9 @@ public class PositionBuilder {
 				modifier.setPosition(cf.createSourcePosition(cu, o1, o2 - 1, jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions()));
 			}
 			start = o2;
+		}
+		if (explicitModifiersByName.size() > 0) {
+			throw new SpoonException("Position of CtExtendedModifiers: [" + String.join(", ", explicitModifiersByName.keySet()) + "] not found in " + String.valueOf(contents, start, end - start));
 		}
 	}
 

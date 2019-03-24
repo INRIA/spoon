@@ -743,7 +743,7 @@ public class PositionTest {
 		BodyHolderSourcePosition bhsp = (BodyHolderSourcePosition) annonClass.getPosition();
 		int start = annonClass.getPosition().getSourceStart();
 		int end = annonClass.getPosition().getSourceEnd();
-		assertEquals("Consumer<Set<?>>() {\r\n" + 
+		assertEquals("{\r\n" + 
 				"			@Override\r\n" + 
 				"			public void accept(Set<?> t) {\r\n" + 
 				"			}\r\n" + 
