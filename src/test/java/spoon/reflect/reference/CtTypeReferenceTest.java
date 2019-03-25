@@ -58,11 +58,14 @@ public class CtTypeReferenceTest {
             CtTypeReference::box :
             CtTypeReference::unbox;
         for (Class<?> primitiveType : allPrimitiveTypes()) {
+            //contract: box(Primitive) -> Boxed, unbox(Primitive) -> Primitive
             testBoxingFunction(supplier, primitiveType, box ? wrap(primitiveType) : primitiveType, false,
                                boxingFunction);
+            //contract: box(Boxed) -> Boxed, unbox(Boxed) -> Primitive
             testBoxingFunction(supplier, wrap(primitiveType), box ? wrap(primitiveType) : primitiveType, true,
                                boxingFunction);
         }
+        //contract: box(Object) -> Object, unbox(Object) -> object
         testBoxingFunction(supplier, String.class, String.class, false, boxingFunction);
     }
 
@@ -80,7 +83,10 @@ public class CtTypeReferenceTest {
 
         CtTypeReference<?> result = boxingFunction.apply(reference);
 
+        //contract: boxing/unboxing do not yield null
         assertNotNull(result);
+
+        //contract: box/unbox returns a reference toward the expected type
         assertEquals(expectedClass.getName(), result.getQualifiedName());
     }
 }
