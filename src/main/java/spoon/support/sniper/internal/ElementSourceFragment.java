@@ -142,7 +142,11 @@ public class ElementSourceFragment implements SourceFragment {
 	public void addTreeOfSourceFragmentsOfElement(CtElement element) {
 		Deque<ElementSourceFragment> parents = new ArrayDeque<>();
 		parents.push(this);
-		//scan all children of `element` and build tree of SourceFragments
+		/*
+		 * scan all children of `element` and build tree of SourceFragments
+		 * Note: we cannot skip implicit elements,
+		 * because CtBlock can be implicit but contains non implicit elements, which has to be processed.
+		 */
 		new EarlyTerminatingScanner<Void>() {
 			@Override
 			protected void enter(CtElement e) {
@@ -303,6 +307,12 @@ public class ElementSourceFragment implements SourceFragment {
 			firstChild = fragment;
 		} else {
 			firstChild = firstChild.add(fragment);
+		}
+		if (fragment.getElement() instanceof CtElement) {
+			CtElement fragmentEleParent = ((CtElement) fragment.getElement()).getParent();
+			if (element != fragmentEleParent && !(element instanceof CtCompilationUnit) && fragmentEleParent.getPosition().isValidPosition()) {
+				throw new SpoonException("Inconsistent child fragment " + fragment.getElement().getClass() + " has unexpected parent " + element.getClass());
+			}
 		}
 	}
 
