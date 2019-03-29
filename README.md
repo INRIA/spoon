@@ -1,9 +1,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/fr.inria.gforge.spoon/spoon-core.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22fr.inria.gforge.spoon%22%20AND%20a%3A%22spoon-core%22)
 [![Travis Build Status](https://travis-ci.org/INRIA/spoon.svg?branch=master)](https://travis-ci.org/INRIA/spoon)
 [![Coverage Status](https://coveralls.io/repos/INRIA/spoon/badge.png)](https://coveralls.io/r/INRIA/spoon)
-[![Jenkins Build Status](https://ci.inria.fr/sos/job/Spoon%20Install%20Commit%20Hook/badge/icon)](https://ci.inria.fr/sos/job/Spoon%20Install%20Commit%20Hook/)
-
-[SonarQube Dashboard](https://sonarqube.ow2.org/dashboard?id=fr.inria.gforge.spoon%3Aspoon-core)
+[![Jenkins Build](https://raw.githubusercontent.com/INRIA/spoon/master/doc/images/jenkins-badge.jpg)](https://ci.inria.fr/sos/job/Spoon%20Install%20Commit%20Hook/) [SonarQube](https://sonarqube.ow2.org/dashboard?id=fr.inria.gforge.spoon%3Aspoon-core)
 
 # Spoon
 
