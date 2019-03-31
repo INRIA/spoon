@@ -3,6 +3,8 @@ title: Examples of Spoon usages
 keywords: examples
 ---
 
+We provide examples for learning and teaching Spoon in <https://github.com/SpoonLabs/spoon-examples/>. Don't hesitate to propose new examples as pull-request!
+
 The ['HelloWorldProcessor'](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/HelloWorldProcessor.java) prints hello world with compile-time reflection.
 
 ## Program Analysis
