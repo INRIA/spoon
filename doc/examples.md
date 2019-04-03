@@ -1,29 +1,35 @@
 ---
-title: Examples
+title: Examples of Spoon usages
 keywords: examples
 ---
+
+We provide examples for learning and teaching Spoon in <https://github.com/SpoonLabs/spoon-examples/>. Don't hesitate to propose new examples as pull-request!
+
+The ['HelloWorldProcessor'](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/HelloWorldProcessor.java) prints hello world with compile-time reflection.
 
 ## Program Analysis
 
 The [`CatchProcessor`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/analysis/CatchProcessor.java) detects empty catch blocks.
 
-The [`ReferenceProcessor`](https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src/main/java/spoon/examples/analysis/processing/ReferenceProcessor.java?view=markup&root=spoon) detects circular references between packages.
+The [`ReferenceProcessor`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/analysis/ReferenceProcessor.java) detects circular references between packages.
 
-This [`Factory`](https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src/main/java/spoon/examples/factory/processing/FactoryProcessor.java?view=markup&root=spoon) example detects wrong uses of the factory pattern.
+This [`Factory`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/analysis/FactoryProcessor.java) example detects wrong uses of the factory pattern.
 
 ## Program Transformation
 
-The [`NotNullProcessor`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/transformation/NotNullCheckAdderProcessor.java) adds a not-null check for all method parameters.
+The [`NotNullProcessor`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/transformation/notnullcheck/NotNullCheckAdderProcessor.java) adds a not-null check for all method parameters.
 
-The [`LogProcessor`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/transformation/LogProcessor.java) adds a log information when entering a method.
+The [`LogProcessor`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/transformation/autologging/LogProcessor.java) adds a log information when entering a method.
 
-The [`MutationProcessor`](https://github.com/SpoonLabs/spoon-examples/tree/master/src/main/java/fr/inria/gforge/spoon/mutation) randomly mutates some parts of the abstract syntax tree for [mutation testing](http://en.wikipedia.org/wiki/Mutation_testing).
+The [`MutationProcessor`](https://github.com/SpoonLabs/spoon-examples/tree/master/src/main/java/fr/inria/gforge/spoon/transformation/mutation) randomly mutates some parts of the abstract syntax tree for [mutation testing](http://en.wikipedia.org/wiki/Mutation_testing).
 
-## Templates
+### Transformation with Templates
 
 The [`RetryTemplate`](https://github.com/SpoonLabs/spoon-examples/tree/master/src/main/java/fr/inria/gforge/spoon/transformation/retry) creates retriable methods in case of exceptions if annotated by `@RetryOnFailure`.
 
-## Annotation Processing
+### Transformation with Annotations 
+
+The [Bound example](https://github.com/SpoonLabs/spoon-examples/tree/master/src/main/java/fr/inria/gforge/spoon/transformation/mutation) adds runtime checks based on annotations
 
 The [Nton example](https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src/main/java/spoon/examples/nton/?root=spoon) introduces a Nton design pattern (extension of singleton but for N instances) into a target class. It inserts static fields, methods, and initializer code into constructors.
 
