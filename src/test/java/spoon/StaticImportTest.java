@@ -15,7 +15,7 @@ public class StaticImportTest {
             spoon.getEnvironment().setNoClasspath(true);
             spoon.getEnvironment().setSourceClasspath(new String[]{path});
             spoon.addInputResource( path );
-            spoon.getEnvironment().setAutoImports(false);
+            spoon.getEnvironment().setAutoImports(true);
             //spoon.setSourceOutputDirectory("./src/test/java/spoon/StaticImportTest.java");
             spoon.setBinaryOutputDirectory("./target/spoon/static-imports/bin");
             spoon.setSourceOutputDirectory("./target/spoon/static_imports/src");
