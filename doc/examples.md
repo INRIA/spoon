@@ -29,11 +29,11 @@ The [`RetryTemplate`](https://github.com/SpoonLabs/spoon-examples/tree/master/sr
 
 ### Transformation with Annotations 
 
-The [Bound example](https://github.com/SpoonLabs/spoon-examples/tree/master/src/main/java/fr/inria/gforge/spoon/transformation/mutation) adds runtime checks based on annotations
+The [Bound example](https://github.com/SpoonLabs/spoon-examples/tree/master/src/main/java/fr/inria/gforge/spoon/transformation/bound) adds runtime checks based on annotations
 
 The [Nton example](https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src/main/java/spoon/examples/nton/?root=spoon) introduces a Nton design pattern (extension of singleton but for N instances) into a target class. It inserts static fields, methods, and initializer code into constructors.
 
-The [Database access example](https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src/main/java/spoon/examples/dbaccess/processing/DBAccessProcessor.java?view=markup&root=spoon) shows how to use annotation processing to add persistence into a POJO.
+The [Database access example](https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src/main/java/spoon/examples/dbaccess/?root=spoon) shows how to use annotation processing to add persistence into a POJO.
 
 The [Visitor example](https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src/main/java/spoon/examples/visitor/?root=spoon) implements a visitor pattern by automatically introducing an accept method in a visited type hierarchy.
 
