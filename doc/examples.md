@@ -1,5 +1,5 @@
 ---
-title: Examples of Spoon usages
+title: Examples of Spoon Usages
 keywords: examples
 ---
 
