@@ -21,5 +21,6 @@ public enum CtImportKind {
 	ALL_TYPES,
 	ALL_STATIC_MEMBERS,
 	FIELD,
-	METHOD
+	METHOD,
+	UNRESOLVED
 }

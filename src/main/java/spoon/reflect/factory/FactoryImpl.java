@@ -1212,6 +1212,11 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
+	public CtImport createUnresolvedImport(String reference, boolean isStatic) {
+		return Type().createUnresolvedImport(reference, isStatic);
+	}
+
+	@Override
 	public CtTypeMemberWildcardImportReference createTypeMemberWildcardImportReference(CtTypeReference typeReference) {
 		return Type().createTypeMemberWildcardImportReference(typeReference);
 	}

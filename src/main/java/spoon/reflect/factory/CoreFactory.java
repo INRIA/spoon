@@ -541,6 +541,11 @@ public interface CoreFactory {
 	CtImport createImport();
 
 	/**
+	 * Creates an unresolved import.
+	 */
+	CtImport createUnresolvedImport();
+
+	/**
 	 * Creates a package declaration.
 	 */
 	CtPackageDeclaration createPackageDeclaration();

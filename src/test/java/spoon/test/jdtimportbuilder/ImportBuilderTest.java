@@ -20,6 +20,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtPackageReference;
@@ -33,6 +34,7 @@ import spoon.test.jdtimportbuilder.testclasses.StaticImportWithInheritance;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -94,7 +96,7 @@ public class ImportBuilderTest {
 
 	@Test
 	public void testInternalImportWhenNoClasspath() {
-		// contract: in no-classpath anything which is not loaded cannot be imported, even if original source code has imports
+		// contract: in no-classpath anything which is not loaded becomes CtUnresolvedImport, even if original source code has imports
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/resources/noclasspath/Attachment.java");
 		spoon.getEnvironment().setAutoImports(true);
@@ -103,7 +105,8 @@ public class ImportBuilderTest {
 
 		CtClass classA = spoon.getFactory().Class().get("it.feio.android.omninotes.models.Attachment");
 		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
-		assertTrue(unitA.getImports().isEmpty());
+		assertTrue(unitA.getImports().stream().filter(i -> !(i instanceof CtUnresolvedImport)).collect(Collectors.toList()).isEmpty());
+		assertEquals(1, unitA.getImports().size());
 	}
 
 	@Test
