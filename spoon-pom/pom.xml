@@ -342,6 +342,12 @@
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
                         <version>0.8.1</version>
+                        <configuration>
+                            <excludes>
+                                <!-- we exclude the GUI class, because we don't want Swing GUI tests in Travis --> 
+                                <exclude>**/SpoonModelTree.class</exclude>
+                            </excludes>
+                        </configuration>
                         <executions>
                             <execution>
                                 <goals>
