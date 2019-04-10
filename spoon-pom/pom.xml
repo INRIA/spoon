@@ -339,7 +339,7 @@
                         <configuration>
                             <excludes>
                                 <!-- we exclude the GUI --> 
-                                <exclude>**/SpoonModelTree.java</exclude>
+                                <exclude>**/SpoonModelTree.class</exclude>
                             </excludes>
                         </configuration>
                         <executions>
