@@ -39,11 +39,17 @@
         
         <!-- we all depend on Junit with scope=test -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>5.4.2</version>
             <scope>test</scope>
         </dependency>
+	<dependency>
+ 		<groupId>org.junit.jupiter</groupId>
+ 		<artifactId>junit-jupiter-engine</artifactId>
+ 		<version>5.4.2</version>
+ 		<scope>test</scope>
+	</dependency>
     </dependencies>
         
     <organization>
