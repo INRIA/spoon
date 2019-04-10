@@ -132,9 +132,13 @@ public class AnnotationTest {
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/Bound.java");
 		launcher.buildModel();
 		Factory factory = launcher.getFactory();
-		CtType<?> type = factory.Type().get("spoon.test.annotation.testclasses.Bound");
+		CtType<spoon.test.annotation.testclasses.Bound> type = factory.Type().get("spoon.test.annotation.testclasses.Bound");
 		assertEquals("Bound", type.getSimpleName());
 		assertEquals(1, type.getAnnotations().size());
+
+		// contract one can build an annotation from the annotation type
+		CtAnnotation<?> annot = launcher.getFactory().createAnnotation(type.getReference());
+		assertEquals("@spoon.test.annotation.testclasses.Bound", annot.toString());
 	}
 
 	@Test

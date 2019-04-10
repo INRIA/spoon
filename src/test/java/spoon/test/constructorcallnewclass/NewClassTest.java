@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.factory.Factory;
@@ -65,6 +66,10 @@ public class NewClassTest {
 		assertHasParameters(0, newClass.getArguments());
 		assertIsAnonymous(newClass.getAnonymousClass());
 		assertSuperClass(Object.class, newClass.getAnonymousClass());
+
+		// contract: createNewClass() returns a default anonymous class
+		CtNewClass<?> klass =newClass.getFactory().createNewClass();
+		assertEquals("new java.lang.Object() {}", newClass.toString());
 	}
 
 	@Test
