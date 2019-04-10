@@ -527,8 +527,8 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
-	public <T> CtNewClass<T> createNewClass(CtTypeReference<T> type, CtClass<?> anonymousClass, CtExpression<?>... parameters) {
-		return Code().createNewClass(type, anonymousClass, parameters);
+	public CtNewClass<?> createNewClass(CtType<?> superClass, CtExpression<?>... parameters)  {
+		return Code().createNewClass(superClass, parameters);
 	}
 
 	@Override
