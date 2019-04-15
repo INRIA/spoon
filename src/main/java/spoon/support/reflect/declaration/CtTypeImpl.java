@@ -18,6 +18,7 @@ package spoon.support.reflect.declaration;
 
 import spoon.SpoonException;
 import spoon.refactoring.Refactoring;
+import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnnotation;
@@ -41,6 +42,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtConsumer;
@@ -66,8 +68,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import spoon.reflect.ModelElementContainerDefaultCapacities;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtType}.
@@ -987,5 +987,14 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public boolean isArray() {
 		return getSimpleName().contains("[");
+	}
+
+	@Override
+	public String toStringWithImports() {
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
+		printer.getImportsContext().computeImports(this);
+		printer.writeHeader(Arrays.asList(new CtType[] {this}), printer.getImportsContext().getAllImports());
+		this.accept(printer);
+		return printer.toString();
 	}
 }
