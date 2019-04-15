@@ -54,7 +54,9 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.ctClass.testclasses.AnonymousClass;
 import spoon.test.ctClass.testclasses.Foo;
 import spoon.test.ctClass.testclasses.Pozole;
 
@@ -216,6 +218,53 @@ public class CtClassTest {
 		assertThat(field.getType().getQualifiedName(), is("android.widget.RadioGroup"));
 
 		assertThat(type2, is("com.cristal.ircica.applicationcolis.userinterface.fragments.CompletableFragment"));
+	}
+
+	@Test
+	public void toStringWithImports() {
+		final Launcher launcher2 = new Launcher();
+		launcher2.addInputResource("./src/test/java/spoon/test/ctClass/");
+		launcher2.getEnvironment().setNoClasspath(true);
+		launcher2.buildModel();
+		final CtClass<Object> aClass2 = launcher2.getFactory().Class().get(AnonymousClass.class);
+		DefaultJavaPrettyPrinter djpp = new DefaultJavaPrettyPrinter(launcher2.getEnvironment());
+		aClass2.accept(djpp);
+
+		// contract: a class can be printed with full context
+		assertEquals("package spoon.test.ctClass.testclasses;\n" +
+				"\n" +
+				"\n" +
+				"/**\n" +
+				" * Created by urli on 11/10/2017.\n" +
+				" */\n" +
+				"public class AnonymousClass {\n" +
+				"    final int machin = new java.util.Comparator<java.lang.Integer>() {\n" +
+				"        @java.lang.Override\n" +
+				"        public int compare(java.lang.Integer o1, java.lang.Integer o2) {\n" +
+				"            return 0;\n" +
+				"        }\n" +
+				"    }.compare(1, 2);\n" +
+				"}", aClass2.toStringWithImports());
+
+		// contract: a class can be printed with full context in autoimports
+		aClass2.getFactory().getEnvironment().setAutoImports(true);
+		assertEquals("package spoon.test.ctClass.testclasses;\n" +
+				"\n" +
+				"\n" +
+				"import java.util.Comparator;\n" +
+				"\n" +
+				"\n" +
+				"/**\n" +
+				" * Created by urli on 11/10/2017.\n" +
+				" */\n" +
+				"public class AnonymousClass {\n" +
+				"    final int machin = new Comparator<Integer>() {\n" +
+				"        @Override\n" +
+				"        public int compare(Integer o1, Integer o2) {\n" +
+				"            return 0;\n" +
+				"        }\n" +
+				"    }.compare(1, 2);\n" +
+				"}", aClass2.toStringWithImports());
 	}
 
 	@Test

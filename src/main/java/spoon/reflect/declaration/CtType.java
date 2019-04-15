@@ -116,6 +116,12 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	CtPackage getPackage();
 
 	/**
+	 * Gets the entire class code with package and imports.
+	 */
+	@DerivedProperty
+	String toStringWithImports();
+
+	/**
 	 * Returns the corresponding type reference.
 	 *
 	 * Overrides the return type.
