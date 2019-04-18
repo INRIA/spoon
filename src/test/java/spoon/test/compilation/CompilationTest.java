@@ -494,4 +494,29 @@ public class CompilationTest {
 
 		assertThat(tempDirPath.toFile().listFiles().length, not(0));
 	}
+
+	@Test
+	public void testBuildAstWithSyntheticMethods() {
+		File testFile = new File(
+				"src/test/resources/syntheticMethods/ClassWithSyntheticEnumParsable.java");
+		String absoluteTestPath = testFile.getAbsolutePath();
+
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(absoluteTestPath);
+
+		launcher.buildModel();
+	}
+
+	// it fails with IllegalArgumentException, but behavior should be the same
+	@Test
+	public void testBuildAstWithSyntheticMethodsSwapOrder() {
+		File testFile = new File(
+				"src/test/resources/syntheticMethods/ClassWithSyntheticEnumNotParsable.java");
+		String absoluteTestPath = testFile.getAbsolutePath();
+
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(absoluteTestPath);
+
+		launcher.buildModel();
+	}
 }
