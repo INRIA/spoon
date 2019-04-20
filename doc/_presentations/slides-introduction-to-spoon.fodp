@@ -4541,7 +4541,7 @@
       <text:p><text:span text:style-name="T36"><text:s text:c="10"/></text:span><text:span text:style-name="T36">+ </text:span><text:span text:style-name="T39">&quot;) throw new IllegalArgumentException(</text:span></text:p>
       <text:p><text:span text:style-name="T39"><text:s text:c="24"/></text:span><text:span text:style-name="T39">\&quot;[Spoon inserted check] null passed as parameter\&quot;);&quot;</text:span><text:span text:style-name="T36">);</text:span></text:p>
       <text:p><text:span text:style-name="T37"><text:s text:c="2"/></text:span></text:p>
-      <text:p><text:span text:style-name="T36"><text:s text:c="4"/></text:span><text:span text:style-name="T37">// we insert the snippet at the beginning of the method </text:span><text:span text:style-name="T40">boby</text:span></text:p>
+      <text:p><text:span text:style-name="T36"><text:s text:c="4"/></text:span><text:span text:style-name="T37">// we insert the snippet at the beginning of the method </text:span><text:span text:style-name="T40">body</text:span></text:p>
       <text:p><text:span text:style-name="T36"><text:s text:c="4"/></text:span><text:span text:style-name="T36">element.getParent(CtMethod.</text:span><text:span text:style-name="T35">class</text:span><text:span text:style-name="T36">).getBody().insertBegin(snippet);</text:span></text:p>
       <text:p><text:span text:style-name="T37"><text:s text:c="2"/></text:span><text:span text:style-name="T37">}</text:span></text:p>
       <text:p><text:span text:style-name="T37"><text:tab/></text:span></text:p>
@@ -4578,7 +4578,7 @@
       <text:p><text:span text:style-name="T45"><text:s text:c="4"/></text:span><text:span text:style-name="T45">+ element.getSimpleName() </text:span><text:span text:style-name="T11">+ </text:span><text:span text:style-name="T44">&quot; &lt; &quot; </text:span><text:span text:style-name="T45">+ annotation.min() </text:span><text:span text:style-name="T11">+ </text:span><text:span text:style-name="T44">&quot;)&quot;</text:span></text:p>
       <text:p><text:span text:style-name="T44"><text:s text:c="4"/></text:span><text:span text:style-name="T44">+&quot; throw new RuntimeException(\&quot;[Spoon check] Bound violation\&quot;);&quot;</text:span><text:span text:style-name="T11">);</text:span></text:p>
       <text:p/>
-      <text:p><text:span text:style-name="T43"><text:s text:c="2"/></text:span><text:span text:style-name="T43">// we insert the snippet at the beginning of the method </text:span><text:span text:style-name="T46">boby</text:span></text:p>
+      <text:p><text:span text:style-name="T43"><text:s text:c="2"/></text:span><text:span text:style-name="T43">// we insert the snippet at the beginning of the method </text:span><text:span text:style-name="T46">body</text:span></text:p>
       <text:p><text:span text:style-name="T11"><text:s text:c="2"/></text:span><text:span text:style-name="T11">element.getParent(CtMethod.</text:span><text:span text:style-name="T10">class</text:span><text:span text:style-name="T11">).getBody().insertBegin(snippet);</text:span></text:p>
       <text:p><text:span text:style-name="T11">} // end process</text:span></text:p>
       <text:p><text:span text:style-name="T11"/></text:p>
