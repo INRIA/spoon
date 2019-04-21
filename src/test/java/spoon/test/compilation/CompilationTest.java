@@ -505,18 +505,21 @@ public class CompilationTest {
 		launcher.addInputResource(absoluteTestPath);
 
 		launcher.buildModel();
+		CtType t=launcher.getFactory().Type().get("ClassWithSyntheticEnumParsable");
+		assertEquals(2, t.getMethods().size());
 	}
 
-	// it fails with IllegalArgumentException, but behavior should be the same
 	@Test
 	public void testBuildAstWithSyntheticMethodsSwapOrder() {
+    	// contract: we can workaround the bug of JDT
 		File testFile = new File(
 				"src/test/resources/syntheticMethods/ClassWithSyntheticEnumNotParsable.java");
 		String absoluteTestPath = testFile.getAbsolutePath();
 
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(absoluteTestPath);
-
 		launcher.buildModel();
+		CtType t=launcher.getFactory().Type().get("ClassWithSyntheticEnumNotParsable");
+		assertEquals(2, t.getMethods().size());
 	}
 }
