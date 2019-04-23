@@ -249,7 +249,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		} else if (child instanceof CtConstructor) {
 			return;
 		}
-		if (child instanceof CtMethod && ! (type instanceof CtAnnotationType)) {
+		if (child instanceof CtMethod && !(type instanceof CtAnnotationType)) {
 			type.addMethod((CtMethod<?>) child);
 			return;
 		}
