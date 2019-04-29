@@ -16,6 +16,7 @@
  */
 package spoon;
 
+import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import spoon.decompiler.CFRDecompiler;
 import spoon.decompiler.Decompiler;
@@ -96,7 +97,11 @@ public class JarLauncher extends Launcher {
 		if (decompiledRoot.exists() && !decompiledRoot.canWrite()) {
 			throw new SpoonException("Dir " + decompiledRoot.getPath() + " already exists and is not deletable.");
 		} else if (decompiledRoot.exists() && decompile) {
-			decompiledRoot.delete();
+			try {
+				FileUtils.deleteDirectory(decompiledRoot);
+			} catch (IOException e) {
+				throw new SpoonException("Dir " + decompiledRoot.getPath() + " already exists and is not deletable.");
+			}
 		}
 		if (!decompiledRoot.exists()) {
 			decompiledRoot.mkdirs();
