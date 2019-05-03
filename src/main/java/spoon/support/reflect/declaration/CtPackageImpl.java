@@ -240,6 +240,6 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public boolean isEmpty() {
-		return !hasPackageInfo() && getPackages().isEmpty() && getTypes().isEmpty();
+		return getPackages().isEmpty() && getTypes().isEmpty();
 	}
 }
