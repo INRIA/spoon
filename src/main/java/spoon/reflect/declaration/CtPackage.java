@@ -156,7 +156,7 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	boolean hasPackageInfo();
 
 	/**
-	 * @return true if the package contains a package-info.java and no types
+	 * @return true if the package contains no types nor any other packages
 	 */
 	boolean isEmpty();
 }
