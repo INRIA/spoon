@@ -511,7 +511,7 @@ public class CompilationTest {
 
 	@Test
 	public void testBuildAstWithSyntheticMethodsSwapOrder() {
-    	// contract: we can workaround the bug of JDT
+    	// contract: we can handle non annotation methods, no exception
 		File testFile = new File(
 				"src/test/resources/syntheticMethods/ClassWithSyntheticEnumNotParsable.java");
 		String absoluteTestPath = testFile.getAbsolutePath();
