@@ -83,6 +83,7 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
+import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -248,8 +249,18 @@ public class ParentExiter extends CtInheritanceScanner {
 		} else if (child instanceof CtConstructor) {
 			return;
 		}
-		if (child instanceof CtMethod) {
+		if (child instanceof CtMethod && !(type instanceof CtAnnotationType)) {
 			type.addMethod((CtMethod<?>) child);
+			return;
+		}
+		if (child instanceof CtMethod && (type instanceof CtAnnotationType)) {
+			// WORKAROUND
+			// because of JDT Bug which fails to see the annotation method declaration
+			// see https://github.com/INRIA/spoon/issues/2946
+			CtAnnotationMethod m = type.getFactory().createAnnotationMethod();
+			m.setSimpleName(((CtMethod) child).getSimpleName());
+			m.setType(((CtMethod) child).getType());
+			type.addMethod(m);
 			return;
 		}
 		super.scanCtType(type);
