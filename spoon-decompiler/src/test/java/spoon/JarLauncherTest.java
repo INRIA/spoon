@@ -28,6 +28,7 @@ import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class JarLauncherTest {
 
@@ -48,12 +49,37 @@ public class JarLauncherTest {
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.buildModel();
 		CtModel model = launcher.getModel();
+
+		//contract: all types are decompiled (Sources are produced for each type)
 		assertEquals(model.getAllTypes().size(), 5);
+
+
 		CtConstructor constructor = (CtConstructor) model.getRootPackage().getFactory().Type().get("se.kth.castor.UseJson").getTypeMembers().get(0);
 		CtTry tryStmt = (CtTry) constructor.getBody().getStatement(1);
 		CtLocalVariable var = (CtLocalVariable) tryStmt.getBody().getStatement(0);
+		//contract: UseJson is correctly decompiled (UseJSON.java contains a local variable declaration)
 		assertNotNull(var.getType().getTypeDeclaration());
 
+		if(pathToDecompiledRoot.exists()) {
+			pathToDecompiledRoot.delete();
+		}
+	}
+
+	public void testTmpDirDeletion() {
+		File baseDir = new File("src/test/resources/jarLauncher");
+		File jar = new File(baseDir, "helloworld-1.0-SNAPSHOT.jar");
+		File pathToDecompiledRoot = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + "spoon-tmp");
+
+		JarLauncher launcher = new JarLauncher(jar.getAbsolutePath());
+
+		//contract: temporary directory is created
+		assertTrue(pathToDecompiledRoot.exists());
+
+		//Throws a SpoonException if the directory is not deletable.
+		JarLauncher launcher2 = new JarLauncher(jar.getAbsolutePath());
+
+		//contract: temporary directory is deleted and recreated.
+		assertTrue(pathToDecompiledRoot.exists());
 
 		if(pathToDecompiledRoot.exists()) {
 			pathToDecompiledRoot.delete();
@@ -78,12 +104,17 @@ public class JarLauncherTest {
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.buildModel();
 		CtModel model = launcher.getModel();
+
+		//contract: all types are decompiled (Sources are produced for each type)
 		assertEquals(model.getAllTypes().size(), 5);
+
+
 		CtConstructor constructor = (CtConstructor) model.getRootPackage().getFactory().Type().get("se.kth.castor.UseJson").getTypeMembers().get(0);
 		CtTry tryStmt = (CtTry) constructor.getBody().getStatement(1);
 		CtLocalVariable var = (CtLocalVariable) tryStmt.getBody().getStatement(0);
-		assertNotNull(var.getType().getTypeDeclaration());
 
+		//contract: UseJson is correctly decompiled (UseJSON.java contains a local variable declaration)
+		assertNotNull(var.getType().getTypeDeclaration());
 
 		if(pathToDecompiledRoot.exists()) {
 			pathToDecompiledRoot.delete();
