@@ -248,9 +248,12 @@ public interface Factory {
 	<T> CtNewArray<T[]> createLiteralArray(T[] value);
 
 	/**
-	 *  @see CodeFactory#createNewClass(CtTypeReference, CtClass,CtExpression[])
+	 * Creates an anonymous class
+	 *
+	 * @param superClass Anonymous class in the new class.
+	 * @param parameters the arguments of the constructor call.
 	 */
-	<T> CtNewClass<T> createNewClass(CtTypeReference<T> type, CtClass<?> anonymousClass, CtExpression<?>... parameters);
+	CtNewClass<?> createNewClass(CtType<?> superClass, CtExpression<?>... parameters);
 
 	/**
 	 *  @see CodeFactory#createVariableAssignments(List,List)
