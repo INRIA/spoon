@@ -18,22 +18,17 @@ import java.util.Set;
  */
 public interface CtAnnotationType<T extends Annotation> extends CtType<T> {
 
-	/**
-	 * Gets the methods of this annotation type which are necessarily {@link CtAnnotationMethod}.
-	 */
 	@DerivedProperty
 	Set<CtAnnotationMethod<?>> getAnnotationMethods();
 
 	/**
 	 * {@inheritDoc}
-	 * The method passed as parameter must be a {@link CtAnnotationMethod}.
 	 */
 	@Override
 	<M, C extends CtType<T>> C addMethod(CtMethod<M> method);
 
 	/**
 	 * {@inheritDoc}
-	 * The methods passed as parameter must be typed by {@link CtAnnotationMethod}.
 	 */
 	@Override
 	<C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods);

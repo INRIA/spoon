@@ -90,16 +90,15 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 	public Set<CtAnnotationMethod<?>> getAnnotationMethods() {
 		Set<CtAnnotationMethod<?>> annotationsMethods = new HashSet<>();
 		for (CtMethod<?> method : getMethods()) {
-			annotationsMethods.add((CtAnnotationMethod<?>) method);
+			if (method instanceof  CtAnnotationMethod) {
+				annotationsMethods.add((CtAnnotationMethod<?>) method);
+			}
 		}
 		return annotationsMethods;
 	}
 
 	@Override
 	public <M, C extends CtType<T>> C addMethod(CtMethod<M> method) {
-		if (method != null && !(method instanceof CtAnnotationMethod)) {
-			throw new IllegalArgumentException("The method " + method.getSignature() + " should be a " + CtAnnotationMethod.class.getName());
-		}
 		return super.addMethod(method);
 	}
 }

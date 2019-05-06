@@ -494,4 +494,32 @@ public class CompilationTest {
 
 		assertThat(tempDirPath.toFile().listFiles().length, not(0));
 	}
+
+	@Test
+	public void testBuildAstWithSyntheticMethods() {
+		File testFile = new File(
+				"src/test/resources/syntheticMethods/ClassWithSyntheticEnumParsable.java");
+		String absoluteTestPath = testFile.getAbsolutePath();
+
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(absoluteTestPath);
+
+		launcher.buildModel();
+		CtType t=launcher.getFactory().Type().get("ClassWithSyntheticEnumParsable");
+		assertEquals(2, t.getMethods().size());
+	}
+
+	@Test
+	public void testBuildAstWithSyntheticMethodsSwapOrder() {
+    	// contract: we can handle non annotation methods, no exception
+		File testFile = new File(
+				"src/test/resources/syntheticMethods/ClassWithSyntheticEnumNotParsable.java");
+		String absoluteTestPath = testFile.getAbsolutePath();
+
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(absoluteTestPath);
+		launcher.buildModel();
+		CtType t=launcher.getFactory().Type().get("ClassWithSyntheticEnumNotParsable");
+		assertEquals(2, t.getMethods().size());
+	}
 }
