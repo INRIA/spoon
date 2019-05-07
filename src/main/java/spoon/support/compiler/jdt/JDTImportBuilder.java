@@ -78,7 +78,7 @@ class JDTImportBuilder {
 					if (ctPackage != null) {
 						this.imports.add(createImportWithPosition(ctPackage.getReference(), importRef));
 					} else {
-						if(factory.getEnvironment().getNoClasspath()) {
+						if (factory.getEnvironment().getNoClasspath()) {
 							this.imports.add(createUnresolvedImportWithPosition(importName, false, importRef));
 						}
 					}
@@ -88,7 +88,7 @@ class JDTImportBuilder {
 					if (klass != null) {
 						this.imports.add(createImportWithPosition(klass.getReference(), importRef));
 					} else {
-						if(factory.getEnvironment().getNoClasspath()) {
+						if (factory.getEnvironment().getNoClasspath()) {
 							this.imports.add(createUnresolvedImportWithPosition(importName, false, importRef));
 						}
 					}
@@ -111,7 +111,7 @@ class JDTImportBuilder {
 						}
 					}
 				} else {
-					if(factory.getEnvironment().getNoClasspath()) {
+					if (factory.getEnvironment().getNoClasspath()) {
 						this.imports.add(createUnresolvedImportWithPosition(importName, true, importRef));
 					}
 				}

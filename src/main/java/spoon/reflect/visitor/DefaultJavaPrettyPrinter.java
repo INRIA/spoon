@@ -1022,7 +1022,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					break;
 				case UNRESOLVED:
 					CtUnresolvedImport ctUnresolvedImport = (CtUnresolvedImport) ctImport;
-					if(ctUnresolvedImport.isStatic()) {
+					if (ctUnresolvedImport.isStatic()) {
 						printer.writeKeyword("static");
 						printer.writeSpace();
 					}
