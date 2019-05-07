@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.factory.Factory;
@@ -65,6 +66,10 @@ public class NewClassTest {
 		assertHasParameters(0, newClass.getArguments());
 		assertIsAnonymous(newClass.getAnonymousClass());
 		assertSuperClass(Object.class, newClass.getAnonymousClass());
+
+		// contract: createNewClass() returns a default anonymous class
+		CtNewClass<?> klass =newClass.getFactory().createNewClass();
+		assertEquals("new java.lang.Object() {}", newClass.toString());
 	}
 
 	@Test
@@ -75,6 +80,15 @@ public class NewClassTest {
 		assertHasParameters(0, newClass.getArguments());
 		assertIsAnonymous(newClass.getAnonymousClass());
 		assertSuperInterface(Foo.Bar.class, newClass.getAnonymousClass());
+
+		// contract: one can create an anonymous new class from an existing class
+		Factory factory = newClass.getFactory();
+		CtNewClass<?> klass = factory.createNewClass(factory.Type().get(Foo.class));
+		assertEquals("new spoon.test.constructorcallnewclass.testclasses.Foo() {}", klass.toString());
+
+		CtNewClass<?> klass2 = factory.createNewClass(factory.Type().get(Foo.class), factory.createLiteral(42));
+		assertEquals("new spoon.test.constructorcallnewclass.testclasses.Foo(42) {}", klass2.toString());
+
 	}
 
 	@Test

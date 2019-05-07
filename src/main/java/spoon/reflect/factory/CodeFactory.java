@@ -1,18 +1,7 @@
 /**
- * Copyright (C) 2006-2018 INRIA and contributors
- * Spoon - http://spoon.gforge.inria.fr/
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify
- * and/or redistribute the software under the terms of the CeCILL-C license as
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.factory;
 
@@ -44,8 +33,10 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -202,21 +193,21 @@ public class CodeFactory extends SubFactory {
 	}
 
 	/**
-	 * Creates a new class with an anonymous class.
-	 *
-	 * @param type the decelerating type of the constructor.
-	 * @param anonymousClass Anonymous class in the new class.
-	 * @param parameters the arguments of the constructor call.
-	 * @param <T> the actual type of the decelerating type of the constructor if available/
-	 * @return the new class.
+	 * see {@link #createNewClass(CtClass, CtExpression[])}
 	 */
-	public <T> CtNewClass<T> createNewClass(CtTypeReference<T> type, CtClass<?> anonymousClass, CtExpression<?>...parameters) {
+	public <T> CtNewClass<T> createNewClass(CtType<T> superClass, CtExpression<?>...parameters) {
 		CtNewClass<T> ctNewClass = factory.Core().createNewClass();
-		CtExecutableReference<T> executableReference = factory.Constructor().createReference(type, parameters);
+		CtConstructor<T> constructor = ((CtClass) superClass).getConstructor(Arrays.stream(parameters).map(x -> x.getType()).toArray(CtTypeReference[]::new));
+		if (constructor == null) {
+			throw new SpoonException("no appropriate constructor for these parameters " + parameters.toString());
+		}
+		CtExecutableReference<T> executableReference = constructor.getReference();
 		ctNewClass.setArguments(Arrays.asList(parameters));
 		ctNewClass.setExecutable(executableReference);
-		ctNewClass.setAnonymousClass(anonymousClass);
-		anonymousClass.setSimpleName("0");
+		CtClass c = superClass.getFactory().createClass();
+		c.setSuperclass(superClass.getReference());
+		c.setSimpleName("0");
+		ctNewClass.setAnonymousClass(c);
 		return ctNewClass;
 	}
 

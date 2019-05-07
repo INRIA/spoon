@@ -39,11 +39,17 @@
         
         <!-- we all depend on Junit with scope=test -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>5.4.2</version>
             <scope>test</scope>
         </dependency>
+	<dependency>
+ 		<groupId>org.junit.jupiter</groupId>
+ 		<artifactId>junit-jupiter-engine</artifactId>
+ 		<version>5.4.2</version>
+ 		<scope>test</scope>
+	</dependency>
     </dependencies>
         
     <organization>
@@ -266,8 +272,7 @@
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
                     <configuration>
-                        <header>../LICENSE-short.txt</header>
-                        <basedir>src</basedir>
+                        <header>LICENSE-short.txt</header>
                         <includes>
                             <include>main/java/**</include>
                             <!-- We also want to check the license in templates to generate files with the proper header -->
@@ -338,6 +343,12 @@
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
                         <version>0.8.1</version>
+                        <configuration>
+                            <excludes>
+                                <!-- we exclude the GUI class, because we don't want Swing GUI tests in Travis --> 
+                                <exclude>**/SpoonModelTree.class</exclude>
+                            </excludes>
+                        </configuration>
                         <executions>
                             <execution>
                                 <goals>

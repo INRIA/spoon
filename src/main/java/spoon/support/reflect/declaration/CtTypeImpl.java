@@ -1,23 +1,13 @@
 /**
- * Copyright (C) 2006-2018 INRIA and contributors
- * Spoon - http://spoon.gforge.inria.fr/
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify
- * and/or redistribute the software under the terms of the CeCILL-C license as
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.reflect.declaration;
 
 import spoon.SpoonException;
 import spoon.refactoring.Refactoring;
+import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnnotation;
@@ -41,6 +31,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtConsumer;
@@ -66,8 +57,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import spoon.reflect.ModelElementContainerDefaultCapacities;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtType}.
@@ -987,5 +976,14 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public boolean isArray() {
 		return getSimpleName().contains("[");
+	}
+
+	@Override
+	public String toStringWithImports() {
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
+		printer.getImportsContext().computeImports(this);
+		printer.writeHeader(Arrays.asList(new CtType[] {this}), printer.getImportsContext().getAllImports());
+		this.accept(printer);
+		return printer.toString();
 	}
 }
