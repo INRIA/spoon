@@ -193,7 +193,7 @@ public class CodeFactory extends SubFactory {
 	}
 
 	/**
-	 * see {@link #createNewClass(CtClass, CtExpression[])}
+	 * Creates a new anonymous class.
 	 */
 	public <T> CtNewClass<T> createNewClass(CtType<T> superClass, CtExpression<?>...parameters) {
 		CtNewClass<T> ctNewClass = factory.Core().createNewClass();
