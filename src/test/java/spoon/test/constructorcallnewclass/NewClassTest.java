@@ -80,6 +80,15 @@ public class NewClassTest {
 		assertHasParameters(0, newClass.getArguments());
 		assertIsAnonymous(newClass.getAnonymousClass());
 		assertSuperInterface(Foo.Bar.class, newClass.getAnonymousClass());
+
+		// contract: one can create an anonymous new class from an existing class
+		Factory factory = newClass.getFactory();
+		CtNewClass<?> klass = factory.createNewClass(factory.Type().get(Foo.class));
+		assertEquals("new spoon.test.constructorcallnewclass.testclasses.Foo() {}", klass.toString());
+
+		CtNewClass<?> klass2 = factory.createNewClass(factory.Type().get(Foo.class), factory.createLiteral(42));
+		assertEquals("new spoon.test.constructorcallnewclass.testclasses.Foo(42) {}", klass2.toString());
+
 	}
 
 	@Test

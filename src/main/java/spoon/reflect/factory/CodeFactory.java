@@ -33,8 +33,10 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -191,21 +193,21 @@ public class CodeFactory extends SubFactory {
 	}
 
 	/**
-	 * Creates a new class with an anonymous class.
-	 *
-	 * @param type the decelerating type of the constructor.
-	 * @param anonymousClass Anonymous class in the new class.
-	 * @param parameters the arguments of the constructor call.
-	 * @param <T> the actual type of the decelerating type of the constructor if available/
-	 * @return the new class.
+	 * Creates a new anonymous class.
 	 */
-	public <T> CtNewClass<T> createNewClass(CtTypeReference<T> type, CtClass<?> anonymousClass, CtExpression<?>...parameters) {
+	public <T> CtNewClass<T> createNewClass(CtType<T> superClass, CtExpression<?>...parameters) {
 		CtNewClass<T> ctNewClass = factory.Core().createNewClass();
-		CtExecutableReference<T> executableReference = factory.Constructor().createReference(type, parameters);
+		CtConstructor<T> constructor = ((CtClass) superClass).getConstructor(Arrays.stream(parameters).map(x -> x.getType()).toArray(CtTypeReference[]::new));
+		if (constructor == null) {
+			throw new SpoonException("no appropriate constructor for these parameters " + parameters.toString());
+		}
+		CtExecutableReference<T> executableReference = constructor.getReference();
 		ctNewClass.setArguments(Arrays.asList(parameters));
 		ctNewClass.setExecutable(executableReference);
-		ctNewClass.setAnonymousClass(anonymousClass);
-		anonymousClass.setSimpleName("0");
+		CtClass c = superClass.getFactory().createClass();
+		c.setSuperclass(superClass.getReference());
+		c.setSimpleName("0");
+		ctNewClass.setAnonymousClass(c);
 		return ctNewClass;
 	}
 

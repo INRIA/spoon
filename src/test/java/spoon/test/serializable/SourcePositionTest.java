@@ -48,7 +48,7 @@ public class SourcePositionTest {
 
 	@Test
 	public void testSourcePosition() throws IOException {
-		File modelFile = new File("./src/test/resources/serialization/model");
+		File modelFile = new File("./target/SourcePositionTest-model");
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/serialization/SomeClass.java");
 		launcher.buildModel();
