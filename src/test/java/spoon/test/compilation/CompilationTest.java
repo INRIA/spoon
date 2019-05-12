@@ -42,12 +42,14 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CodeFactory;
@@ -521,5 +523,21 @@ public class CompilationTest {
 		launcher.buildModel();
 		CtType t=launcher.getFactory().Type().get("ClassWithSyntheticEnumNotParsable");
 		assertEquals(2, t.getMethods().size());
+	}
+
+	@Test
+	public void buildAstWithDuplicateClass() {
+		File testFile = new File(
+				"src/test/resources/duplicateClass/DuplicateInnerClass.java");
+		String absoluteTestPath = testFile.getAbsolutePath();
+
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(absoluteTestPath);
+		final CtModel model = launcher.buildModel();
+		final List<String> pkgNames = model.getElements(new TypeFilter<>(CtPackage.class))
+				.stream()
+				.map(CtPackage::getQualifiedName)
+				.collect(Collectors.toList());
+		assertTrue(pkgNames.contains("P.F.G"));
 	}
 }
