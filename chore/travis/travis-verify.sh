@@ -43,3 +43,14 @@ mvn verify license:check javadoc:jar install -DskipTests
 
 # checkstyle in src/tests
 mvn  checkstyle:checkstyle -Pcheckstyle-test
+
+# Spoon-dataflow
+cd ../spoon-dataflow
+
+# download and install z3 lib
+wget https://github.com/Z3Prover/z3/releases/download/z3-4.8.4/z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
+unzip z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
+export LD_LIBRARY_PATH=./z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04/bin
+
+# build and run tests
+./gradlew build
