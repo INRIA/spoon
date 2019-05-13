@@ -17,6 +17,7 @@
 package spoon.reflect.visitor;
 
 import spoon.compiler.Environment;
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtFor;
@@ -309,6 +310,14 @@ public class ElementPrinterHelper {
 					importTypeStr = typeStarRef.getTypeReference().getQualifiedName();
 					if (!isJavaLangClasses(importTypeStr)) {
 						setStaticImports.add(this.removeInnerTypeSeparator(importTypeStr) + ".*");
+					}
+					break;
+
+				case UNRESOLVED:
+					CtUnresolvedImport unresolvedImport = (CtUnresolvedImport) ctImport;
+					importTypeStr = unresolvedImport.getUnresolvedReference();
+					if (!isJavaLangClasses(importTypeStr)) {
+						setStaticImports.add(importTypeStr);
 					}
 					break;
 			}
