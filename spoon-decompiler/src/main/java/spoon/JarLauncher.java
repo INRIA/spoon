@@ -16,6 +16,7 @@
  */
 package spoon;
 
+import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import spoon.decompiler.CFRDecompiler;
 import spoon.decompiler.Decompiler;
@@ -80,6 +81,9 @@ public class JarLauncher extends Launcher {
 
 	/**
 	 * JarLauncher constructor. Uses the default Decompiler (CFR)
+	 * If decompiledSrcPath is null a temporary directory will be created and filled with decompiled sources.
+	 * This directory is deleted every time this constructor is called.
+	 * If a decompiledSrcPath is provided, deletion of the content of the directory is up to the user.
 	 *
 	 * @param jarPath path to the jar to be analyzed
 	 * @param decompiledSrcPath path to directory where decompiled source will be output
@@ -96,7 +100,11 @@ public class JarLauncher extends Launcher {
 		if (decompiledRoot.exists() && !decompiledRoot.canWrite()) {
 			throw new SpoonException("Dir " + decompiledRoot.getPath() + " already exists and is not deletable.");
 		} else if (decompiledRoot.exists() && decompile) {
-			decompiledRoot.delete();
+			try {
+				FileUtils.deleteDirectory(decompiledRoot);
+			} catch (IOException e) {
+				throw new SpoonException("Dir " + decompiledRoot.getPath() + " already exists and is not deletable.");
+			}
 		}
 		if (!decompiledRoot.exists()) {
 			decompiledRoot.mkdirs();

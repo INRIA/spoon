@@ -7,21 +7,32 @@ import spoon.SpoonAPI;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class SpoonArchitectureEnforcerTest {
+public class DecompilerArchitectureTest {
 
-	// this test contains all the architectural rules that are valid for the whole src/main/java
+	// this test contains all the architectural rules that are valid for
+	// the whole src/main/java of spoon-decompiler
 	// we put them in the same test in order to only build the full model once
+	// Similar to ArchitectureTest of spoon-core
 	@Test
 	public void testSrcMainJava() {
 		Launcher spoon = new Launcher();

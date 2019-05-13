@@ -29,6 +29,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.eval.PartialEvaluator;
 import spoon.reflect.visitor.AccessibleVariablesFinder;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.eval.EvalHelper;
@@ -203,7 +204,7 @@ public class EvalTest {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/java/spoon/test/eval/testclasses/Foo.java");
 		launcher.buildModel();
-		VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
+		PartialEvaluator eval = launcher.getFactory().Eval().createPartialEvaluator();
 		CtType<?> foo = launcher.getFactory().Type().get((Class<?>) Foo.class);
 		foo.accept(new InlinePartialEvaluator(eval));
 		assertEquals("false", foo.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0).getDefaultExpression().toString());
