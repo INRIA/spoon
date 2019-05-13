@@ -322,7 +322,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public void initWithImports(Iterable<CtImport> importCollection) {
 		for (CtImport ctImport : importCollection) {
-			this.usedImport.put(ctImport, (ctImport instanceof CtUnresolvedImport) ? Boolean.TRUE :Boolean.FALSE);
+			this.usedImport.put(ctImport, (ctImport instanceof CtUnresolvedImport) ? Boolean.TRUE : Boolean.FALSE);
 		}
 	}
 
@@ -521,9 +521,11 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 					CtUnresolvedImport unresolvedImport = (CtUnresolvedImport) ctImport;
 					String importRef = unresolvedImport.getUnresolvedReference();
 					String importRefPrefix = null;
-					if(importRef.contains("*")) {
-						importRefPrefix = importRef.substring(0,importRef.length()-1);
+
+					if (importRef.contains("*")) {
+						importRefPrefix = importRef.substring(0, importRef.length() - 1);
 					}
+
 					if (isTypeRef && !unresolvedImport.isStatic()) {
 						return importRef.equals(refQualifiedName)
 								|| (importRefPrefix != null

@@ -306,7 +306,11 @@ public class ElementPrinterHelper {
 					CtUnresolvedImport unresolvedImport = (CtUnresolvedImport) ctImport;
 					importTypeStr = unresolvedImport.getUnresolvedReference();
 					if (!isJavaLangClasses(importTypeStr)) {
-						setStaticImports.add(importTypeStr);
+						if (unresolvedImport.isStatic()) {
+							setStaticImports.add(importTypeStr);
+						} else {
+							setImports.add(importTypeStr);
+						}
 					}
 					break;
 			}
