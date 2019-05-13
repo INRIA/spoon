@@ -131,6 +131,26 @@ public class PrinterTest {
 	}
 
 	@Test
+	public void testAutoimportModeDontImportUselessStaticNoClassPath() {
+		Launcher spoon = new Launcher();
+		spoon.getEnvironment().setAutoImports(true);
+		spoon.getEnvironment().setNoClasspath(true);
+		PrettyPrinter printer = spoon.createPrettyPrinter();
+		spoon.addInputResource("./src/test/resources/unresolved/UnresolvedExtend.java");
+		spoon.buildModel();
+
+		CtType element = spoon.getFactory().Class().getAll().get(0);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String result = printer.getResult();
+
+		assertTrue("The result should contain import java.util.ArrayList: ", result.contains("import java.util.ArrayList;"));
+		assertTrue("The result should contain import java.util.List: ", result.contains("import java.util.List;"));
+		assertTrue("The result should contain import static org.Bar.m: ", result.contains("import static org.Bar.m;"));
+	}
+
+	@Test
 	public void testRuleCanBeBuild() {
 		Launcher spoon = new Launcher();
 		PrettyPrinter printer = spoon.createPrettyPrinter();

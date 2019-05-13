@@ -16,6 +16,7 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtFieldAccess;
@@ -332,7 +333,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public void initWithImports(Iterable<CtImport> importCollection) {
 		for (CtImport ctImport : importCollection) {
-			this.usedImport.put(ctImport, Boolean.FALSE);
+			this.usedImport.put(ctImport, (ctImport instanceof CtUnresolvedImport) ? Boolean.TRUE :Boolean.FALSE);
 		}
 	}
 

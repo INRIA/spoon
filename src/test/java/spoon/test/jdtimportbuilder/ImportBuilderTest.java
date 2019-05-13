@@ -107,6 +107,7 @@ public class ImportBuilderTest {
 		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 		assertTrue(unitA.getImports().stream().filter(i -> !(i instanceof CtUnresolvedImport)).collect(Collectors.toList()).isEmpty());
 		assertEquals(1, unitA.getImports().size());
+		assertEquals("android.net.Uri",((CtUnresolvedImport) unitA.getImports().get(0)).getUnresolvedReference());
 	}
 
 	@Test
