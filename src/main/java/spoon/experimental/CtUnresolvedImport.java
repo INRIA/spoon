@@ -67,4 +67,21 @@ public class CtUnresolvedImport extends CtElementImpl implements CtImport {
 	public CtUnresolvedImport clone() {
 		return (CtUnresolvedImport) super.clone();
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (!(o instanceof CtUnresolvedImport)) {
+			return false;
+		}
+		CtUnresolvedImport other = (CtUnresolvedImport) o;
+		return other.isStatic() == isStatic && other.getUnresolvedReference().equals(unresolvedReference);
+	}
+
+	@Override
+	public int hashCode() {
+		return unresolvedReference.hashCode() + (isStatic ? 1 : 0);
+	}
 }

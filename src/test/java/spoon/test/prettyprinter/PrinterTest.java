@@ -171,6 +171,25 @@ public class PrinterTest {
 	}
 
 	@Test
+	public void testUnresolvedNoClassPath() {
+		Launcher spoon = new Launcher();
+		spoon.getEnvironment().setAutoImports(true);
+		spoon.getEnvironment().setNoClasspath(true);
+		PrettyPrinter printer = spoon.createPrettyPrinter();
+		spoon.addInputResource("./src/test/resources/unresolved/Unresolved.java");
+		spoon.buildModel();
+
+		CtType element = spoon.getFactory().Class().getAll().get(0);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String result = printer.getResult();
+
+		assertTrue("The result should contain import org.Bar: ", result.contains("import org.Bar;"));
+		assertTrue("The result should contain import org.foo.*: ", result.contains("import org.foo.*;"));
+	}
+
+	@Test
 	public void testRuleCanBeBuild() {
 		Launcher spoon = new Launcher();
 		PrettyPrinter printer = spoon.createPrettyPrinter();

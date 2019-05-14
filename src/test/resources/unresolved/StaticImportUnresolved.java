@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import static org.Bar.*;
 
-public class UnresolvedExtend extends org.Foo {
+public class StaticImportUnresolved extends org.Foo {
 	int i = f;
 	public UnresolvedExtend() {
 		super();
