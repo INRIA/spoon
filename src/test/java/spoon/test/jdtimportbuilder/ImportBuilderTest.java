@@ -34,6 +34,7 @@ import spoon.test.jdtimportbuilder.testclasses.StaticImportWithInheritance;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -105,9 +106,14 @@ public class ImportBuilderTest {
 
 		CtClass classA = spoon.getFactory().Class().get("it.feio.android.omninotes.models.Attachment");
 		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+
 		assertTrue(unitA.getImports().stream().filter(i -> !(i instanceof CtUnresolvedImport)).collect(Collectors.toList()).isEmpty());
-		assertEquals(1, unitA.getImports().size());
-		assertEquals("android.net.Uri",((CtUnresolvedImport) unitA.getImports().get(0)).getUnresolvedReference());
+		assertEquals(3, unitA.getImports().size());
+
+		Set<String> importRefs = unitA.getImports().stream().map(i -> ((CtUnresolvedImport) i).getUnresolvedReference()).collect(Collectors.toSet());
+		assertTrue(importRefs.contains("android.net.Uri"));
+		assertTrue(importRefs.contains("android.os.Parcel"));
+		assertTrue(importRefs.contains("android.os.Parcelable"));
 	}
 
 	@Test
