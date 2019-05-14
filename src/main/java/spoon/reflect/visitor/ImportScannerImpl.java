@@ -435,8 +435,12 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			}
 		}
 
-		classImports.put(ref.getSimpleName(), ref);
-		return true;
+		if (!isAlreadyInUsedImport(ref)) {
+			classImports.put(ref.getSimpleName(), ref);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private boolean setImportUsed(CtImport ctImport) {
