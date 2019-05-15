@@ -67,7 +67,7 @@ public class CtUnresolvedImport extends CtElementImpl implements CtImport {
 	@Override
 	public CtUnresolvedImport clone() {
 		Factory factory = getFactory();
-		return (CtUnresolvedImport) factory.createUnresolvedImport(unresolvedReference,isStatic);
+		return (CtUnresolvedImport) factory.createUnresolvedImport(unresolvedReference, isStatic);
 	}
 
 	@Override
