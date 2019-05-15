@@ -29,6 +29,7 @@ public class CtUnresolvedImportTest {
 		CtReference ref = factory.createReference("spoon.A");
 		CtImport i7 = factory.createImport(ref);
 
+		//contract: CtUnresolvedImport#equals compare the contained reference and isStatic field
 		assertFalse(i1.equals(null));
 		assertFalse(i1.equals(i7));
 		assertFalse(i7.equals(i1));
@@ -37,8 +38,10 @@ public class CtUnresolvedImportTest {
 		assertFalse(i1.equals(i4));
 		assertTrue(i5.equals(i6));
 
+		//contract: CtUnresolvedImport#clone yield a equivalent CtImport
 		assertTrue(i5.equals(i5.clone()));
 
+		//contract: CtUnresolvedImport#hashCode compare the contained reference and isStatic field
 		assertEquals(i1.hashCode(), i2.hashCode());
 		assertNotEquals(i1, i3);
 
