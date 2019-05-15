@@ -8,6 +8,7 @@ package spoon.experimental;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtImportKind;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtImportVisitor;
 import spoon.reflect.visitor.CtVisitor;
@@ -65,7 +66,8 @@ public class CtUnresolvedImport extends CtElementImpl implements CtImport {
 
 	@Override
 	public CtUnresolvedImport clone() {
-		return (CtUnresolvedImport) super.clone();
+		Factory factory = getFactory();
+		return (CtUnresolvedImport) factory.createUnresolvedImport(unresolvedReference,isStatic);
 	}
 
 	@Override
