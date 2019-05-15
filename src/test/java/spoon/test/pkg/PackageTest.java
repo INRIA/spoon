@@ -76,6 +76,8 @@ public class PackageTest {
 		assertEquals("spoon.test.pkg.name", ctPackage.getQualifiedName());
 		assertEquals("", ctPackage.getDocComment());
 		assertTrue(CtPackage.class.isAssignableFrom(ctPackage.getParent().getClass()));
+		assertFalse(ctPackage.hasPackageInfo());
+		assertFalse(ctPackage.isEmpty());
 
 		ctPackage = (CtPackage) ctPackage.getParent();
 		assertEquals("spoon.test.pkg", ctPackage.getQualifiedName());
@@ -86,6 +88,7 @@ public class PackageTest {
 		assertEquals(71, ctPackage.getPosition().getSourceEnd());
 		assertEquals(1, ctPackage.getAnnotations().size());
 		assertEquals("This is test\nJavaDoc.", ctPackage.getComments().get(0).getContent());
+		assertTrue(ctPackage.hasPackageInfo());
 
 		CtAnnotation<?> annotation = ctPackage.getAnnotations().get(0);
 		assertSame(Deprecated.class, annotation.getAnnotationType().getActualClass());
@@ -97,6 +100,9 @@ public class PackageTest {
 		ctPackage = (CtPackage) ctPackage.getParent();
 		assertEquals("spoon.test", ctPackage.getQualifiedName());
 		assertEquals("", ctPackage.getDocComment());
+
+		//contract: a freshly created package is empty
+		assertTrue(factory.createPackage().isEmpty());
 	}
 
 	@Test
