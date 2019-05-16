@@ -16,6 +16,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.reference.CtActualTypeContainer;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.declaration.CtImport;
@@ -714,5 +715,12 @@ public class TypeFactory extends SubFactory {
 			}
 		}.scan(importRef);
 		return ctImport.setReference(importRef);
+	}
+
+	public CtImport createUnresolvedImport(String reference, boolean isStatic) {
+		CtUnresolvedImport ctUnresolvedImport = (CtUnresolvedImport) factory.Core().createUnresolvedImport();
+		ctUnresolvedImport.setUnresolvedReference(reference);
+		ctUnresolvedImport.setStatic(isStatic);
+		return ctUnresolvedImport;
 	}
 }

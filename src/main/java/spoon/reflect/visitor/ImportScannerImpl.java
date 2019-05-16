@@ -5,6 +5,7 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtFieldAccess;
@@ -321,7 +322,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	@Override
 	public void initWithImports(Iterable<CtImport> importCollection) {
 		for (CtImport ctImport : importCollection) {
-			this.usedImport.put(ctImport, Boolean.FALSE);
+			this.usedImport.put(ctImport, (ctImport instanceof CtUnresolvedImport) ? Boolean.TRUE : Boolean.FALSE);
 		}
 	}
 
@@ -434,8 +435,12 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			}
 		}
 
-		classImports.put(ref.getSimpleName(), ref);
-		return true;
+		if (!isAlreadyInUsedImport(ref)) {
+			classImports.put(ref.getSimpleName(), ref);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private boolean setImportUsed(CtImport ctImport) {
@@ -496,7 +501,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 					}
 					break;
 
-
 				case TYPE:
 					if (isTypeRef) {
 						CtTypeReference typeReference = (CtTypeReference) ctImport.getReference();
@@ -515,6 +519,36 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 							return this.setImportUsed(ctImport);
 						}
 					}
+					break;
+
+				case UNRESOLVED:
+					CtUnresolvedImport unresolvedImport = (CtUnresolvedImport) ctImport;
+					String importRef = unresolvedImport.getUnresolvedReference();
+					String importRefPrefix = null;
+
+					if (importRef.contains("*")) {
+						importRefPrefix = importRef.substring(0, importRef.length() - 1);
+					}
+
+					if (isTypeRef && !unresolvedImport.isStatic()) {
+						return importRef.equals(refQualifiedName)
+								|| (importRefPrefix != null
+								&& refQualifiedName.startsWith(importRefPrefix)
+								&& !refQualifiedName.substring(importRefPrefix.length()).contains(".")
+						);
+					}
+
+					if ((isExecRef || isFieldRef) && refDeclaringType != null && unresolvedImport.isStatic()) {
+						if (isExecRef) {
+							refQualifiedName = refDeclaringType + "." + ref.getSimpleName();
+						}
+						return importRef.equals(refQualifiedName)
+								|| (importRefPrefix != null
+								&& refQualifiedName.startsWith(importRefPrefix)
+								&& !refQualifiedName.substring(importRefPrefix.length()).contains(".")
+						);
+					}
+
 					break;
 			}
 		}

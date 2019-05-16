@@ -530,6 +530,13 @@ public interface CoreFactory {
 	CtImport createImport();
 
 	/**
+	 * Creates an unresolved import.
+	 * CtUnresolvedImport stores the original content of the imort as a String in order to be able
+	 * to restituate it when pretty printing.
+	 */
+	CtImport createUnresolvedImport();
+
+	/**
 	 * Creates a package declaration.
 	 */
 	CtPackageDeclaration createPackageDeclaration();

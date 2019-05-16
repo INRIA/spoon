@@ -958,6 +958,11 @@ public interface Factory {
 	CtImport createImport(CtReference reference);
 
 	/**
+	 * @see TypeFactory#createUnresolvedImport(String,boolean)
+	 */
+	CtImport createUnresolvedImport(String reference, boolean isStatic);
+
+	/**
 	 * @see TypeFactory#createTypeMemberWildcardImportReference(CtTypeReference)
 	 */
 	CtTypeMemberWildcardImportReference createTypeMemberWildcardImportReference(CtTypeReference<?> typeReference);

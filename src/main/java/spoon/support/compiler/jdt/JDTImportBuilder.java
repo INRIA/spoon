@@ -66,12 +66,20 @@ class JDTImportBuilder {
 
 					if (ctPackage != null) {
 						this.imports.add(createImportWithPosition(ctPackage.getReference(), importRef));
+					} else {
+						if (factory.getEnvironment().getNoClasspath()) {
+							this.imports.add(createUnresolvedImportWithPosition(importName, false, importRef));
+						}
 					}
 
 				} else {
 					CtType klass = this.getOrLoadClass(importName);
 					if (klass != null) {
 						this.imports.add(createImportWithPosition(klass.getReference(), importRef));
+					} else {
+						if (factory.getEnvironment().getNoClasspath()) {
+							this.imports.add(createUnresolvedImportWithPosition(importName, false, importRef));
+						}
 					}
 				}
 			} else {
@@ -91,6 +99,10 @@ class JDTImportBuilder {
 							this.imports.add(createImportWithPosition(methodOrField.getReference(), importRef));
 						}
 					}
+				} else {
+					if (factory.getEnvironment().getNoClasspath()) {
+						this.imports.add(createUnresolvedImportWithPosition(importName, true, importRef));
+					}
 				}
 			}
 		}
@@ -106,6 +118,16 @@ class JDTImportBuilder {
 		int commentStart = PositionBuilder.findNextNonWhitespace(false, content, declStart, PositionBuilder.findPrevNonWhitespace(content, 0, declStart - 1) + 1);
 		imprt.setPosition(factory.Core().createCompoundSourcePosition(spoonUnit, importRef.sourceStart(), importRef.sourceEnd(), commentStart, importRef.declarationEnd, spoonUnit.getLineSeparatorPositions()));
 		imprt.getReference().setPosition(factory.Core().createSourcePosition(spoonUnit, importRef.sourceStart(), importRef.sourceEnd(), spoonUnit.getLineSeparatorPositions()));
+		return imprt;
+	}
+
+	private CtImport createUnresolvedImportWithPosition(String ref, boolean isStatic, ImportReference importRef) {
+		char[] content = sourceUnit.getContents();
+		CtImport imprt = factory.Type().createUnresolvedImport(ref, isStatic);
+		//include comment before import
+		int declStart = importRef.declarationSourceStart;
+		int commentStart = PositionBuilder.findNextNonWhitespace(false, content, declStart, PositionBuilder.findPrevNonWhitespace(content, 0, declStart - 1) + 1);
+		imprt.setPosition(factory.Core().createCompoundSourcePosition(spoonUnit, importRef.sourceStart(), importRef.sourceEnd(), commentStart, importRef.declarationEnd, spoonUnit.getLineSeparatorPositions()));
 		return imprt;
 	}
 

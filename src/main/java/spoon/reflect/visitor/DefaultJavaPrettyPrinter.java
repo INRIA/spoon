@@ -88,6 +88,7 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
@@ -1008,6 +1009,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					printer.writeSeparator(".");
 					printer.writeIdentifier("*");
 					break;
+				case UNRESOLVED:
+					CtUnresolvedImport ctUnresolvedImport = (CtUnresolvedImport) ctImport;
+					if (ctUnresolvedImport.isStatic()) {
+						printer.writeKeyword("static");
+						printer.writeSpace();
+					}
+					printer.writeCodeSnippet(ctUnresolvedImport.getUnresolvedReference());
 			}
 			printer.writeSeparator(";");
 			printer.writeln();
