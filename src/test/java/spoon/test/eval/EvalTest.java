@@ -37,6 +37,7 @@ import spoon.support.reflect.eval.InlinePartialEvaluator;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.eval.testclasses.Foo;
 
+import java.io.File;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -232,6 +233,8 @@ public class EvalTest {
 		// also works for static runtime fields
 		assertEquals(Integer.MAX_VALUE, EvalHelper.convertElementToRuntimeObject(foo.getField("i1").getDefaultExpression()));
 		assertEquals(Integer.MAX_VALUE, EvalHelper.getCorrespondingRuntimeObject(foo.getField("i1").getDefaultExpression()));
+		assertEquals(File.pathSeparator, EvalHelper.convertElementToRuntimeObject(foo.getField("str1").getDefaultExpression()));
+		assertEquals(File.pathSeparator, EvalHelper.getCorrespondingRuntimeObject(foo.getField("str1").getDefaultExpression()));
 
 	}
 }

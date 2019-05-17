@@ -288,8 +288,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		try {
 			Set<ModifierKind> modifiers = RtHelper.getModifiers(field.getModifiers());
 			if (modifiers.contains(ModifierKind.STATIC)
-				&& modifiers.contains(ModifierKind.PUBLIC)
-				&& field.getType().isPrimitive()
+					&& modifiers.contains(ModifierKind.PUBLIC)
+					&& (field.getType().isPrimitive() || String.class.isAssignableFrom(field.getType()))
 				) {
 				CtLiteral<Object> defaultExpression = factory.createLiteral(field.get(null));
 				ctField.setDefaultExpression(defaultExpression);
