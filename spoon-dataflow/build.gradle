@@ -7,6 +7,10 @@ version '1.0'
 
 sourceCompatibility = 1.8
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.10.3'
+}
+
 repositories {
     mavenCentral()
     maven { url 'https://raw.github.com/SpoonLabs/spoon-dependencies/master' }
