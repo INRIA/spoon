@@ -46,13 +46,15 @@ Note: Visual C++ 2015 Redistributable may be required.
 1. Download z3-4.8.4 here https://github.com/Z3Prover/z3/releases
 2. Add bin directory to your LD_LIBRARY_PATH: `export LD_LIBRARY_PATH=/path/to/z3/bin`
 3. Run `gradle wrapper`
-4. Run `./gradlew build`
+4. Run chmod +x gradlew
+5. Run `./gradlew build`
 
 ### macOS:
 1. Download z3-4.8.4 here https://github.com/Z3Prover/z3/releases
 2. Add bin directory to your DYLD_LIBRARY_PATH: `export DYLD_LIBRARY_PATH=/path/to/z3/bin`
 3. Run `gradle wrapper`
-4. Run `./gradlew build`
+4. Run chmod +x gradlew
+5. Run `./gradlew build`
 
 Note that you may still need to set up environment variables or java.lang.path in your IDE.
 
