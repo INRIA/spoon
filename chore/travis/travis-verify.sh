@@ -52,9 +52,5 @@ wget https://github.com/Z3Prover/z3/releases/download/z3-4.8.4/z3-4.8.4.d6df5195
 unzip z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
 export LD_LIBRARY_PATH=./z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04/bin
 
-# create wrapper
-gradle wrapper
-
 # build and run tests
-chmod +x gradlew
 ./gradlew build
