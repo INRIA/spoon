@@ -149,4 +149,14 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	 * See JLS §7.4.2. Unnamed Packages.
 	 */
 	boolean isUnnamedPackage();
+
+	/**
+	* @return true if the package contains a package-info.java file
+	*/
+	boolean hasPackageInfo();
+
+	/**
+	 * @return true if the package contains no types nor any other packages
+	 */
+	boolean isEmpty();
 }

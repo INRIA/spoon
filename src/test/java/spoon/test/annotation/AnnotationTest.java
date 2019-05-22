@@ -1556,12 +1556,15 @@ public class AnnotationTest {
 	public void testGetValueAsObject() {
 		// contract: annot.getValueAsObject now handles static values in binary classes
 		CtClass<?> cl =
-				Launcher.parseClass(
-						"public class C { @SuppressWarnings(\"a\"+Integer.SIZE) void m() {} }");
-		CtAnnotation<?> annot = cl.getMethodsByName("m").get(0).getAnnotations().get(0);
+				Launcher.parseClass("public class C { " +
+						"	@SuppressWarnings(\"int\"+Integer.SIZE) void i() {} " +
+						"	@SuppressWarnings(\"str\"+java.io.File.pathSeparator) void s() {} " +
+						"}");
+		CtAnnotation<?> annot_i = cl.getMethodsByName("i").get(0).getAnnotations().get(0);
+		CtAnnotation<?> annot_s = cl.getMethodsByName("s").get(0).getAnnotations().get(0);
 
-		// this triggers an exception because "a"+Integer.SIZE is not known at runtime
-		assertEquals("[a32]", Arrays.toString((Object[]) annot.getValueAsObject("value")));
+		assertEquals("[int" + Integer.SIZE + "]", Arrays.toString((Object[]) annot_i.getValueAsObject("value")));
+		assertEquals("[str" + File.pathSeparator + "]", Arrays.toString((Object[]) annot_s.getValueAsObject("value")));
 	}
 
 }

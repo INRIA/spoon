@@ -6,6 +6,7 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
@@ -230,5 +231,15 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	@Override
 	public boolean isUnnamedPackage() {
 		return TOP_LEVEL_PACKAGE_NAME.equals(getSimpleName());
+	}
+
+	@Override
+	public boolean hasPackageInfo() {
+		return !(getPosition() instanceof NoSourcePosition);
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return getPackages().isEmpty() && getTypes().isEmpty();
 	}
 }
