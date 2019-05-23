@@ -465,7 +465,7 @@ public class ParentExiter extends CtInheritanceScanner {
 			catchBlock.setParameter((CtCatchVariable<? extends Throwable>) child);
 			// Catch annotations are processed before actual CtCatchVariable is created and because of that they attach to CtCatch.
 			// Since annotations cannot be attached to CtCatch itself, we can simply transfer them to CtCatchVariable.
-			catchBlock.getAnnotations().forEach(a -> { a.setParent(child); child.addAnnotation(a); } );
+			catchBlock.getAnnotations().forEach(a -> { a.setParent(child); child.addAnnotation(a); });
 			catchBlock.setAnnotations(Collections.unmodifiableList(Collections.emptyList()));
 			return;
 		}
