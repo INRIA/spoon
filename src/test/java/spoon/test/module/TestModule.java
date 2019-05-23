@@ -22,6 +22,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtClass;
@@ -339,5 +340,19 @@ public class TestModule {
 		CtPackage packBar = (CtPackage) barclass.getParent();
 
 		assertTrue(packBar.getParent() instanceof CtModule);
+	}
+
+	@Test (expected = SpoonException.class)
+	public void testModuleComplianceLevelException() {
+		// contract: provide clear exception in case if module exists but the compliance level is < 9
+		try {
+			final Launcher launcher = new Launcher();
+			launcher.getEnvironment().setComplianceLevel(8);
+			launcher.addInputResource(MODULE_RESOURCES_PATH + "/simple_module");
+			launcher.run();
+		} catch (SpoonException e) {
+			assertEquals("Modules are only available since Java 9. Please set appropriate compliance level.", e.getMessage());
+			throw e;
+		}
 	}
 }
