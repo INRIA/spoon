@@ -34,6 +34,8 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
@@ -1565,6 +1567,22 @@ public class AnnotationTest {
 
 		assertEquals("[int" + Integer.SIZE + "]", Arrays.toString((Object[]) annot_i.getValueAsObject("value")));
 		assertEquals("[str" + File.pathSeparator + "]", Arrays.toString((Object[]) annot_s.getValueAsObject("value")));
+	}
+
+	@Test
+	public void testCatchAnnotation() {
+		// contract: annotations should be attached to CtCatchVariable and not to CtCatch itself.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationCatch.java"); //TODO: rename
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/CustomAnnotation.java");
+		CtModel model = launcher.buildModel();
+		CtClass<?> clazz = model.getElements(new NamedElementFilter<>(CtClass.class, "AnnotationCatch")).get(0);
+		CtMethod<?> m1 = clazz.getMethodsByName("m1").get(0);
+		CtCatch ctCatch = m1.getElements(new TypeFilter<>(CtCatch.class)).get(0);
+		CtCatchVariable<?> ctCatchVariable = ctCatch.getParameter();
+		assertTrue(ctCatch.getAnnotations().isEmpty());
+		assertEquals(1, ctCatchVariable.getAnnotations().size());
+		assertEquals("@spoon.test.annotation.testclasses.CustomAnnotation(something = \"annotation string\")", ctCatchVariable.getAnnotations().get(0).toString());
 	}
 
 }
