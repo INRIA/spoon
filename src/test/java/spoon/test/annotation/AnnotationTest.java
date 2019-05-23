@@ -1573,7 +1573,7 @@ public class AnnotationTest {
 	public void testCatchAnnotation() {
 		// contract: annotations should be attached to CtCatchVariable and not to CtCatch itself.
 		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationCatch.java"); //TODO: rename
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationCatch.java");
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/CustomAnnotation.java");
 		CtModel model = launcher.buildModel();
 		CtClass<?> clazz = model.getElements(new NamedElementFilter<>(CtClass.class, "AnnotationCatch")).get(0);
