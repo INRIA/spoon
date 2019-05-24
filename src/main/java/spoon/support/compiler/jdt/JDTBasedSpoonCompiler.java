@@ -440,6 +440,9 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		}
 		int i = 0;
 		for (CompilationUnitDeclaration unit : unitList) {
+			if (unit.isModuleInfo() && factory.getEnvironment().getComplianceLevel() < 9) {
+				throw new SpoonException("Modules are only available since Java 9. Please set appropriate compliance level.");
+			}
 			if (unit.isModuleInfo() || !unit.isEmpty()) {
 				final String unitPath = new String(unit.getFileName());
 				if (canProcessCompilationUnit(unitPath)) {
