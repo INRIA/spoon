@@ -99,7 +99,9 @@ public interface CtTypeInformation {
 	boolean isAnnotationType();
 
 	/**
-	 * Returns true if it refers to a type parameter (ie not a concrete class, eg "T foo"). It can refer to it directly (eg T), or indirectly (eg List&lt;T&gt;, or Set&lt;List&lt;T&gt;&gt;).
+	 * Returns true if it is not a concrete, resolvable class, it if refers to a type parameter directly or indirectly.
+	 * Direct: "T foo" isGenerics returns true.
+	 * Indirect: List&lt;T&gt;, or Set&lt;List&lt;T&gt;&gt; isGenerics returns true
 	 */
 	@DerivedProperty
 	boolean isGenerics();
