@@ -1506,8 +1506,11 @@ public class GenericsTest {
 	public void testTopLevelIsGenerics() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/Banana.java");
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/Mole.java");
 		CtModel model = launcher.buildModel();
-		CtType<?> banana = model.getAllTypes().stream().findFirst().get();
+		CtType<?> banana = model.getAllTypes().stream().filter(t -> t.getSimpleName().equals("Banana")).findFirst().get();
+		CtType<?> mole = model.getAllTypes().stream().filter(t -> t.getSimpleName().equals("Mole")).findFirst().get();
 		assertTrue(banana.isGenerics());
+		assertFalse(mole.isGenerics());
 	}
 }
