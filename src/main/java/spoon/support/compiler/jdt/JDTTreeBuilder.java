@@ -1067,7 +1067,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtConstructor<Object> c = factory.Core().createConstructor();
 		// if the source start of the class is equals to the source start of the constructor
 		// it means that the constructor is implicit.
-		c.setImplicit(scope.referenceContext.sourceStart() == constructorDeclaration.sourceStart());
+		if (scope != null && scope.referenceContext != null) {
+			c.setImplicit(scope.referenceContext.sourceStart() == constructorDeclaration.sourceStart());
+		}
 		if (constructorDeclaration.binding != null) {
 			c.setExtendedModifiers(getModifiers(constructorDeclaration.binding.modifiers, true, true));
 		}

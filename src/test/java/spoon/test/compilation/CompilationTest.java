@@ -527,6 +527,7 @@ public class CompilationTest {
 
 	@Test
 	public void buildAstWithDuplicateClass() {
+		// contract: one can have inner classes with the same name
 		File testFile = new File(
 				"src/test/resources/duplicateClass/DuplicateInnerClass.java");
 		String absoluteTestPath = testFile.getAbsolutePath();
@@ -539,5 +540,12 @@ public class CompilationTest {
 				.map(CtPackage::getQualifiedName)
 				.collect(Collectors.toList());
 		assertTrue(pkgNames.contains("P.F.G"));
+		final List<String> classNames = model.getElements(new TypeFilter<>(CtType.class))
+				.stream()
+				.map(CtType::getQualifiedName)
+				.collect(Collectors.toList());
+		assertTrue(classNames.contains("P.F.G.DuplicateInnerClass"));
+		assertTrue(classNames.contains("P.F.G.DuplicateInnerClass$B"));
+		assertTrue(classNames.contains("P.F.G.DuplicateInnerClass$B$B"));
 	}
 }

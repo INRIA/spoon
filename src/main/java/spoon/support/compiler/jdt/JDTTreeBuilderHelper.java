@@ -620,7 +620,7 @@ public class JDTTreeBuilderHelper {
 			if (typeDeclaration.superclass != null) {
 				((CtClass) type).setSuperclass(jdtTreeBuilder.references.buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
 			}
-			if (typeDeclaration.binding.isAnonymousType() || (typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null)) {
+			if (typeDeclaration.binding != null && (typeDeclaration.binding.isAnonymousType() || (typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null))) {
 				type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
 			} else {
 				type.setSimpleName(new String(typeDeclaration.name));
