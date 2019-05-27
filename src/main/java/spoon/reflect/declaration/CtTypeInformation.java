@@ -105,6 +105,12 @@ public interface CtTypeInformation {
 	boolean isGenerics();
 
 	/**
+	 * Returns true if it has any type parameter (generic or not).
+	 */
+	@DerivedProperty
+	boolean isParameterized();
+
+	/**
 	 * Returns true if the referenced type is a sub-type of the given type.
 	 * Returns true is type is self, it means: typeX.isSubtypeOf(typeX) is true too
 	 */

@@ -839,6 +839,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		return false;
 	}
 
+	@Override
+	public boolean isParameterized() {
+		return !getActualTypeArguments().isEmpty();
+	}
+
 	private CtTypeParameter findTypeParamDeclarationByPosition(CtFormalTypeDeclarer type, int position) {
 		return type.getFormalCtTypeParameters().get(position);
 	}

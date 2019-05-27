@@ -1501,4 +1501,38 @@ public class GenericsTest {
 			assertEquals("java.util.List<java.lang.String>", execRefParamType.toString());
 		}
 	}
+
+	@Test
+	public void testIsParameterized() {
+		// contract: isParameterized should work as expected
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses5/A.java");
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses5/B.java");
+		CtModel model = launcher.buildModel();
+
+		CtType<?> a = model.getElements(new NamedElementFilter<>(CtType.class, "A")).get(0);
+		CtType<?> b = model.getElements(new NamedElementFilter<>(CtType.class, "B")).get(0);
+		assertTrue(a.isParameterized());
+		assertFalse(b.isParameterized());
+
+		CtMethod<?> m1 = a.getMethodsByName("m1").get(0);
+		CtMethod<?> m2 = a.getMethodsByName("m2").get(0);
+		CtMethod<?> m3 = a.getMethodsByName("m3").get(0);
+
+		assertFalse(m2.getFormalCtTypeParameters().get(0).isParameterized());
+		assertFalse(m3.getFormalCtTypeParameters().get(0).isParameterized());
+
+		CtParameter<?> param1 = m1.getParameters().get(0);
+		CtParameter<?> param2 = m1.getParameters().get(1);
+		CtParameter<?> param3 = m1.getParameters().get(2);
+		CtParameter<?> param4 = m1.getParameters().get(3);
+		assertTrue(param1.getType().isParameterized());
+		assertTrue(param2.getType().isParameterized());
+		assertTrue(param3.getType().isParameterized());
+		assertFalse(param4.getType().isParameterized());
+
+		assertFalse(param1.getType().getActualTypeArguments().get(0).isParameterized());
+		assertFalse(param2.getType().getActualTypeArguments().get(0).isParameterized());
+		assertTrue(param3.getType().getActualTypeArguments().get(0).isParameterized());
+	}
 }
