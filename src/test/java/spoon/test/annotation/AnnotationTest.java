@@ -1585,4 +1585,31 @@ public class AnnotationTest {
 		assertEquals("@spoon.test.annotation.testclasses.CustomAnnotation(something = \"annotation string\")", ctCatchVariable.getAnnotations().get(0).toString());
 	}
 
+	@Test
+	public void testCatchExpressionAnnotation() {
+		// contract: annotations should be attached to CtCatchVariable and not to CtCatch itself.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotationCatchExpression.java");
+		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/CustomAnnotation.java");
+		CtModel model = launcher.buildModel();
+		CtClass<?> clazz = model.getElements(new NamedElementFilter<>(CtClass.class, "AnnotationCatchExpression")).get(0);
+
+		//Annotated CatchVariable with multiple type are properly attached
+		CtMethod<?> m1 = clazz.getMethodsByName("m1").get(0);
+		CtCatch ctCatch = m1.getElements(new TypeFilter<>(CtCatch.class)).get(0);
+		CtCatchVariable<?> ctCatchVariable = ctCatch.getParameter();
+		assertTrue(ctCatch.getAnnotations().isEmpty());
+		assertEquals(1, ctCatchVariable.getAnnotations().size());
+		assertEquals("@spoon.test.annotation.testclasses.CustomAnnotation(something = \"annotation string\")", ctCatchVariable.getAnnotations().get(0).toString());
+
+		//Multiple Catch clauses are properly handled too
+		CtMethod<?> m2 = clazz.getMethodsByName("m2").get(0);
+		CtCatch ctCatch2 = m2.getElements(new TypeFilter<>(CtCatch.class)).get(1);
+		CtCatchVariable<?> ctCatchVariable2 = ctCatch2.getParameter();
+		assertTrue(ctCatch2.getAnnotations().isEmpty());
+		assertEquals(1, ctCatchVariable2.getAnnotations().size());
+		assertEquals("@spoon.test.annotation.testclasses.CustomAnnotation(something = \"annotation string\")", ctCatchVariable2.getAnnotations().get(0).toString());
+
+	}
+
 }
