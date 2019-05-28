@@ -544,6 +544,11 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
+	public boolean isParameterized() {
+		return !formalCtTypeParameters.isEmpty();
+	}
+
+	@Override
 	public List<CtFieldReference<?>> getAllFields() {
 		final List<CtFieldReference<?>> fields = new ArrayList<>();
 		map(new AllTypeMembersFunction(CtField.class)).forEach(new CtConsumer<CtField<?>>() {

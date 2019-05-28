@@ -130,6 +130,11 @@ public class Launcher implements SpoonAPI {
 	}
 
 	static {
+		// Initialize log output path with the default value
+		if (System.getProperty("spoon.log.path") == null) {
+			System.setProperty("spoon.log.path", "${java.io.tmpdir}/spoon-log.log");
+		}
+
 		jsapSpec = defineArgs();
 	}
 
