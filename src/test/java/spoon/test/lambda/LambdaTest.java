@@ -432,6 +432,16 @@ public class LambdaTest {
 		assertEquals("test", method.getSimpleName());
 	}
 
+	@Test
+	public void testLambdaWithGenericExtendingMultipleInterfaces() {
+		final CtLambda<?> lambda1 = foo.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(9);
+		assertEquals(1, lambda1.getParameters().size());
+		final CtParameter<?> ctParameterFirstLambda = lambda1.getParameters().get(0);
+		assertEquals("elt", ctParameterFirstLambda.getSimpleName());
+		assertTrue(ctParameterFirstLambda.getType().isImplicit());
+		assertEquals("", ctParameterFirstLambda.getType().toString());
+	}
+
 	private void assertHasStrings(List<String> methodNames, String... strs) {
 		for (String str : strs) {
 			assertTrue("List should contain "+str+" but it is missing.", methodNames.remove(str));
