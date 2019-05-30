@@ -535,6 +535,11 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public boolean isGenerics() {
+		for (CtTypeParameter ref : formalCtTypeParameters) {
+			if (ref.isGenerics()) {
+				return true;
+			}
+		}
 		return false;
 	}
 

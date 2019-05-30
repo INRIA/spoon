@@ -642,7 +642,7 @@ public class GenericsTest {
 		assertTrue(typeParameter.getReference().isGenerics());
 
 		CtTypeReference ctTypeReference = aTacos.getSuperInterfaces().toArray(new CtTypeReference[aTacos.getSuperInterfaces().size()])[0];
-		assertFalse(aTacos.isGenerics());
+		assertTrue(aTacos.isGenerics());
 
 		// this is a generic type reference spoon.test.generics.testclasses.ITacos<V>
 		assertEquals("spoon.test.generics.testclasses.ITacos<V>", ctTypeReference.toString());
@@ -1500,6 +1500,18 @@ public class GenericsTest {
 			assertEquals(CtTypeReferenceImpl.class, execRefParamType.getClass());
 			assertEquals("java.util.List<java.lang.String>", execRefParamType.toString());
 		}
+	}
+
+	@Test
+	public void testTopLevelIsGenerics() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/Banana.java");
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/Mole.java");
+		CtModel model = launcher.buildModel();
+		CtType<?> banana = model.getAllTypes().stream().filter(t -> t.getSimpleName().equals("Banana")).findFirst().get();
+		CtType<?> mole = model.getAllTypes().stream().filter(t -> t.getSimpleName().equals("Mole")).findFirst().get();
+		assertTrue(banana.isGenerics());
+		assertFalse(mole.isGenerics());
 	}
 
 	@Test
