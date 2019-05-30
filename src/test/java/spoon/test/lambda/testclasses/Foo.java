@@ -1,6 +1,7 @@
 package spoon.test.lambda.testclasses;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -53,6 +54,14 @@ public class Foo {
 		Consumer<Integer> c = (field)->{
 			field=1;
 		};
+	}
+
+	public void m10(){
+		multiInheritedGenericsList().stream().filter(elt ->  elt.test());
+	}
+
+	public static <T extends CheckPerson & Check> List<T> multiInheritedGenericsList() {
+		return Collections.emptyList();
 	}
 
 	public static void printPersonsWithPredicate(List<Person> roster, Predicate<Person> tester) {
