@@ -209,6 +209,27 @@ public class PrinterTest {
 		canBeBuilt(output, 7);
 	}
 
+
+	@Test
+	public void testLambdaCanBeBuild() {
+		Launcher spoon = new Launcher();
+		PrettyPrinter printer = spoon.createPrettyPrinter();
+		spoon.getEnvironment().setAutoImports(true);
+		String output = "./target/spoon-lambda/";
+		spoon.addInputResource("./src/test/java/spoon/test/lambda/testclasses/Foo.java");
+		spoon.setSourceOutputDirectory(output);
+		spoon.run();
+
+		CtType element = spoon.getFactory().Class().getAll().get(0);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String result = printer.getResult();
+
+		//assertTrue("The result should contain direct this accessor for field: "+result, !result.contains("Rule.Phoneme.this.phonemeText"));
+		canBeBuilt(output, 8);
+	}
+
 	@Test
 	public void testJDTBatchCompilerCanBeBuild() {
 		Launcher spoon = new Launcher();
