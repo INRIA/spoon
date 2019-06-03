@@ -56,14 +56,6 @@ public class Foo {
 		};
 	}
 
-	public void m10(){
-		multiInheritedGenericsList().stream().filter(elt ->  elt.test());
-	}
-
-	public static <T extends CheckPerson & Check> List<T> multiInheritedGenericsList() {
-		return Collections.emptyList();
-	}
-
 	public static void printPersonsWithPredicate(List<Person> roster, Predicate<Person> tester) {
 		for (Person p : roster) {
 			if (tester.test(p)) {
