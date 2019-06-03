@@ -25,10 +25,7 @@ Spoon is an open-source library that enables you to transform (see [example](/fi
 
 ## Support
 
-You have different options:
-
-* Open an issue on [Github](https://github.com/INRIA/spoon/issues) (preferred).
-* Post a question to [StackOverflow with tag inria-spoon](http://stackoverflow.com/tags/inria-spoon).
+To report a bug or ask a question, open an issue on [Github](https://github.com/INRIA/spoon/issues).
 
 ## News
 
