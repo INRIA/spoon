@@ -125,7 +125,7 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 			if (c.isAssignableFrom(t.getActualClass())) {
 				CtElement argument = factory.Core().create(t.getActualClass());
 				// an empty package is merged with the existing one
-				// we have to CtExpressiongive it a name
+				// we have to give it a name
 				if (argument instanceof CtPackage) {
 					((CtPackage) argument).setSimpleName(argument.getShortRepresentation());
 				}
