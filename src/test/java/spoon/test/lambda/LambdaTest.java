@@ -32,6 +32,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -43,6 +44,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.lambda.testclasses.Bar;
 import spoon.test.lambda.testclasses.Foo;
+import spoon.test.lambda.testclasses.Intersection;
 import spoon.test.lambda.testclasses.Kuu;
 import spoon.test.lambda.testclasses.LambdaRxJava;
 import spoon.test.lambda.testclasses.Panini;
@@ -71,6 +73,7 @@ public class LambdaTest {
 	private CtType<Object> panini;
 	private CtType<Object> tacos;
 	private CtType<LambdaRxJava> lambdaRxJava;
+	private CtType<Intersection> intersection;
 	private SpoonModelBuilder compiler;
 
 	@Before
@@ -89,6 +92,7 @@ public class LambdaTest {
 		panini = factory.Type().get(Panini.class);
 		tacos = factory.Type().get(Tacos.class);
 		lambdaRxJava = factory.Type().get(LambdaRxJava.class);
+		intersection = factory.Type().get(Intersection.class);
 	}
 
 	@Test
@@ -430,6 +434,22 @@ public class LambdaTest {
 		CtMethod<?> method = lambda.getOverriddenMethod();
 		assertTrue(checkPersons.getMethods().contains(method));
 		assertEquals("test", method.getSimpleName());
+	}
+
+	@Test
+	public void testLambdaWithGenericExtendingMultipleInterfaces() {
+		final CtLambda<?> lambda = intersection.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(0);
+		assertEquals(1, lambda.getParameters().size());
+		final CtParameter<?> parameter = lambda.getParameters().get(0);
+		assertEquals("elt", parameter.getSimpleName());
+		assertTrue(parameter.getType().isImplicit());
+		assertEquals("", parameter.getType().toString());
+		CtIntersectionTypeReference typeReference = (CtIntersectionTypeReference) parameter.getType();
+
+		assertParameterIsNamedBy("elt", parameter);
+		assertTrue(typeReference.getBounds().size() == 2);
+		assertHasExpressionBody(lambda);
+		assertIsWellPrinted("( elt) -> elt.test()", lambda);
 	}
 
 	private void assertHasStrings(List<String> methodNames, String... strs) {

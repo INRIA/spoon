@@ -1800,6 +1800,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtIntersectionTypeReference(CtIntersectionTypeReference<T> reference) {
+		if (reference.isImplicit()) {
+			return;
+		}
 		elementPrinterHelper.printList(reference.getBounds(),
 			null, false, null, false, true, "&", true, false, null,
 			bound -> scan(bound));
