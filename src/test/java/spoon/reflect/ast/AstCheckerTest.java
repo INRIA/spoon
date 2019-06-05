@@ -18,6 +18,8 @@ package spoon.reflect.ast;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.support.modelobs.FineModelChangeListener;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldRead;
@@ -46,7 +48,28 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
+
 public class AstCheckerTest {
+
+	@Test
+	public void testExecutableReference() {
+
+		Launcher l = new Launcher();
+		l.getEnvironment().setNoClasspath(true);
+		l.addInputResource("./src/test/resources/noclasspath/A4.java");
+		l.buildModel();
+
+		CtClass<Object> klass = l.getFactory().Class().get("A4");
+		CtMethod<?> bMethod = klass.getMethodsByName("b").get(0);
+		CtMethod<?> cMethod = klass.getMethodsByName("c").get(0);
+		List<CtExecutableReference> elements = cMethod.getElements(new TypeFilter<>(CtExecutableReference.class));
+		CtExecutableReference methodRef = elements.stream().filter(e -> e.getSimpleName().equals("b")).findFirst().get();
+
+		//contract: Executable reference declaring type and return type match those of the actual executable
+		assertEquals(bMethod.getType().getTypeDeclaration(),methodRef.getType().getTypeDeclaration());
+		assertEquals(bMethod.getDeclaringType(),methodRef.getDeclaringType().getTypeDeclaration());
+	}
 
 	@Test
 	public void testAvoidSetCollectionSavedOnAST() {
