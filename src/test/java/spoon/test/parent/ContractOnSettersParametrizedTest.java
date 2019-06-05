@@ -117,7 +117,9 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 
 		// metamodel elements
 		if (parameterType.toString().equals("spoon.reflect.declaration.CtType<?>")) {
-			return f.createClass("FooBar"); // createNewClass implictly needs a CtClass
+			CtClass fooBar = f.createClass("FooBar");
+			fooBar.delete();
+			return fooBar; // createNewClass implictly needs a CtClass
 		}
 		for(CtType t : allInstantiableMetamodelInterfaces) {
 			if (c.isAssignableFrom(t.getActualClass())) {
@@ -127,6 +129,7 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 				if (argument instanceof CtPackage) {
 					((CtPackage) argument).setSimpleName(argument.getShortRepresentation());
 				}
+
 				return argument;
 
 			}

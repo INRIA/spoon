@@ -212,6 +212,10 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public void delete() {
+		if (!isParentInitialized()) {
+			// already not in a tree, nothing to be deleted
+			return;
+		}
 		//delete is implemented as replace by no element (empty list of elements)
 		replace(Collections.<CtElement>emptyList());
 	}
