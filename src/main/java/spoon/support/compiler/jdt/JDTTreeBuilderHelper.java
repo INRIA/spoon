@@ -581,8 +581,8 @@ public class JDTTreeBuilderHelper {
 			executableReference.setSimpleName(CharOperation.charToString(referenceExpression.selector));
 			executableReference.setDeclaringType(jdtTreeBuilder.getReferencesBuilder().getTypeReference(referenceExpression.lhs.resolvedType));
 		}
-		final CtTypeReference<T> declaringType = (CtTypeReference<T>) executableReference.getDeclaringType();
-		executableReference.setType(declaringType == null ? null : declaringType.clone());
+		final CtTypeReference<T> returnType = executableReference.getType();
+		executableReference.setType(returnType == null ? null : returnType.clone());
 		executableRef.setExecutable(executableReference);
 		return executableRef;
 	}
