@@ -118,7 +118,7 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 		// metamodel elements
 		if (parameterType.toString().equals("spoon.reflect.declaration.CtType<?>")) {
 			CtClass fooBar = f.createClass("FooBar");
-			fooBar.delete();
+			fooBar.delete();// removing from default package
 			return fooBar; // createNewClass implictly needs a CtClass
 		}
 		for(CtType t : allInstantiableMetamodelInterfaces) {
