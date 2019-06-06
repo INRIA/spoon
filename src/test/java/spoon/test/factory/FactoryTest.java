@@ -19,6 +19,7 @@ package spoon.test.factory;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
+import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
@@ -32,6 +33,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
@@ -39,11 +41,15 @@ import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.test.SpoonTestHelpers;
 import spoon.test.factory.testclasses.Foo;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.test.parent.ContractOnSettersParametrizedTest.createCompatibleObject;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
@@ -223,4 +229,46 @@ public class FactoryTest {
 			assertTrue(itf.getActualClass().isInstance(o));
 		}
 	}
+
+	@Test
+	public void factoryTest() throws Exception {
+		// contract: all methods of Factory can be called without exception, returning a correct object
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("src/main/java/spoon/reflect/factory/Factory.java");
+		spoon.buildModel();
+		for (CtMethod<?> m : spoon.getFactory().Type().get("spoon.reflect.factory.Factory").getMethods()) {
+			if (!m.getSimpleName().startsWith("create")
+				|| "createSourcePosition".equals(m.getSimpleName()) // method with implicit contracts on int parameters
+				|| "createBodyHolderSourcePosition".equals(m.getSimpleName()) // method with implicit contracts on int parameters
+				|| "createDeclarationSourcePosition".equals(m.getSimpleName()) // method with implicit contracts on int parameters
+				|| "createNewClass".equals(m.getSimpleName()) // method with implicit contract between the two parameters
+			) {
+				continue;
+			}
+
+
+			// collecting arguments and creating parameters
+			Object[] args = new Object[m.getParameters().size()];
+			Class[] argsClass = new Class[m.getParameters().size()];
+			for (int i =0; i<args.length; i++) {
+				CtTypeReference<?> type = m.getParameters().get(i).getType();
+				args[i] = createCompatibleObject(type);
+				argsClass[i] = type.getActualClass();
+				if (!type.isPrimitive()) {
+					// post-condition to be sure that createCompatibleObject works well
+					assertTrue(args[i].getClass().toString() + " != " + argsClass[i].toString(), argsClass[i].isAssignableFrom(args[i].getClass()));
+				}
+			}
+
+			// calling the method
+			Method rm;
+			rm = m.getReference().getActualMethod();
+			//rm = spoon.getFactory().getClass().getDeclaredMethod(m.getSimpleName(), argsClass); // works also
+			//System.out.println(rm);
+			Object res = rm.invoke(spoon.getFactory(), args);
+			assertNotNull(res);
+
+		}
+	}
+
 }
