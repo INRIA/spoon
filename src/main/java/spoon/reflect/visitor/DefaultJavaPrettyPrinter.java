@@ -7,6 +7,7 @@ package spoon.reflect.visitor;
 
 import spoon.SpoonException;
 import spoon.compiler.Environment;
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -58,7 +59,6 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
@@ -75,20 +75,20 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleDirective;
-import spoon.reflect.declaration.CtPackageExport;
-import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
+import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
@@ -97,18 +97,16 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
-import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
 import spoon.reflect.visitor.printer.CommentOffset;
@@ -349,45 +347,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					getPrinterHelper().adjustStartPosition(e);
 				}
 			}
-			try {
-				e.accept(this);
-			} catch (SpoonException ex) {
-				throw ex;
-			} catch (Exception ex) {
-				String elementInfo = e.getClass().getName();
-				elementInfo += " on path " + getPath(e) + "\n";
-				if (e.getPosition().isValidPosition()) {
-					elementInfo += "at position " + e.getPosition().toString() + " ";
-				}
-				throw new SpoonException("Printing of " + elementInfo + "failed", ex);
-			}
+			e.accept(this);
 			context.elementStack.pop();
 			exit(e);
 		}
 		return this;
-	}
-
-	private static String getPath(CtElement ele) {
-		StringBuilder sb = new StringBuilder();
-		addParentPath(sb, ele);
-		if (ele instanceof CtVariableAccess) {
-			sb.append(':').append(((CtVariableAccess) ele).getVariable().getSimpleName());
-		}
-		return sb.toString();
-	}
-	private static void addParentPath(StringBuilder sb, CtElement ele) {
-		if (ele == null || (ele instanceof CtPackage && ((CtPackage) ele).isUnnamedPackage())) {
-			return;
-		}
-		if (ele.isParentInitialized()) {
-			addParentPath(sb, ele.getParent());
-		}
-		sb.append("\n\t").append(ele.getClass().getSimpleName());
-		if (ele instanceof CtNamedElement) {
-			sb.append(":").append(((CtNamedElement) ele).getSimpleName());
-		} else if (ele instanceof CtReference) {
-			sb.append(":").append(((CtReference) ele).getSimpleName());
-		}
 	}
 
 	private boolean shouldSetBracket(CtExpression<?> e) {
