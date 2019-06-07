@@ -47,6 +47,7 @@ import spoon.testing.utils.ModelUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -385,5 +386,26 @@ public class DefaultPrettyPrinterTest {
 			assertTrue(m.find());
 			assertEquals("this(v, true)", m.group(1));
 		}
+	}
+
+	@Test
+	public void testElseIf() {
+		//contract: else if statements should be printed without break else and if
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/A5.java");
+		launcher.getEnvironment().setAutoImports(true);
+		CtModel model = launcher.buildModel();
+		CtType a5 = model.getRootPackage().getType("A5");
+		String result = a5.toStringWithImports();
+		String expected = "\n\npublic class A5 {\n" +
+				"    public static void main(String[] args) {\n" +
+				"        int a = 1;\n" +
+				"        if (a == 1) {\n" +
+				"        } else if (a == 2) {\n" +
+				"        } else if (a == 3) {\n" +
+				"        }\n" +
+				"    }\n" +
+				"}";
+		assertEquals(expected, result);
 	}
 }
