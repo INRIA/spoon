@@ -61,6 +61,7 @@ import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
 import org.eclipse.jdt.internal.compiler.ast.NullLiteral;
+import org.eclipse.jdt.internal.compiler.ast.NumberLiteral;
 import org.eclipse.jdt.internal.compiler.ast.OR_OR_Expression;
 import org.eclipse.jdt.internal.compiler.ast.OperatorIds;
 import org.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference;
@@ -126,6 +127,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.LiteralBase;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
@@ -232,6 +234,27 @@ public class JDTTreeBuilder extends ASTVisitor {
 		public ReferenceBinding enclosingType() {
 			return enclosingType;
 		}
+	}
+
+	private LiteralBase getBase(NumberLiteral numberLiteral) {
+		String sourceString = new String(numberLiteral.source());
+
+		if (sourceString.startsWith("0x") || sourceString.startsWith("0X")) {
+			return LiteralBase.HEXADECIMAL;
+		}
+
+		if (sourceString.startsWith("0b") || sourceString.startsWith("0B")) {
+			return LiteralBase.BINARY;
+		}
+
+		if (sourceString.startsWith("0")) {
+			if ((numberLiteral instanceof IntLiteral && sourceString.length() > 1)
+				|| (numberLiteral instanceof LongLiteral && sourceString.length() > 2)) {
+				return LiteralBase.OCTAL;
+			}
+		}
+
+		return LiteralBase.DECIMAL;
 	}
 
 	@Override
@@ -1124,7 +1147,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(DoubleLiteral doubleLiteral, BlockScope scope) {
 		doubleLiteral.computeConstant();
-		context.enter(factory.Code().createLiteral(doubleLiteral.constant.doubleValue()), doubleLiteral);
+		CtLiteral<Double> l = factory.Code().createLiteral(doubleLiteral.constant.doubleValue());
+		l.setBase(getBase(doubleLiteral));
+		context.enter(l, doubleLiteral);
 		return true;
 	}
 
@@ -1199,7 +1224,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(FloatLiteral floatLiteral, BlockScope scope) {
 		floatLiteral.computeConstant();
-		context.enter(factory.Code().createLiteral(floatLiteral.constant.floatValue()), floatLiteral);
+		CtLiteral<Float> l = factory.Code().createLiteral(floatLiteral.constant.floatValue());
+		l.setBase(getBase(floatLiteral));
+		context.enter(l, floatLiteral);
 		return true;
 	}
 
@@ -1243,6 +1270,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(IntLiteral intLiteral, BlockScope scope) {
 		intLiteral.computeConstant();
 		CtLiteral<Integer> l = factory.Code().createLiteral(intLiteral.constant.intValue());
+		l.setBase(getBase(intLiteral));
 		context.enter(l, intLiteral);
 		return true;
 	}
@@ -1284,7 +1312,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(LongLiteral longLiteral, BlockScope scope) {
 		longLiteral.computeConstant();
-		context.enter(factory.Code().createLiteral(longLiteral.constant.longValue()), longLiteral);
+		CtLiteral<Long> l = factory.Code().createLiteral(longLiteral.constant.longValue());
+		l.setBase(getBase(longLiteral));
+		context.enter(l, longLiteral);
 		return true;
 	}
 

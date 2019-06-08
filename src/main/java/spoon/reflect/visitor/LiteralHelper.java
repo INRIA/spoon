@@ -6,6 +6,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.LiteralBase;
 import spoon.reflect.cu.SourcePosition;
 
 /**
@@ -16,6 +17,42 @@ abstract class LiteralHelper {
 	private LiteralHelper() {
 	}
 
+	private static String getBasedString(Integer value, LiteralBase base) {
+		if (base == LiteralBase.BINARY) {
+			return "0b" + Integer.toBinaryString(value);
+		} else if (base == LiteralBase.OCTAL) {
+			return "0" + Integer.toOctalString(value);
+		} else if (base == LiteralBase.HEXADECIMAL) {
+			return "0x" + Integer.toHexString(value);
+		}
+		return Integer.toString(value);
+	}
+
+	private static String getBasedString(Long value, LiteralBase base) {
+		if (base == LiteralBase.BINARY) {
+			return "0b" + Long.toBinaryString(value) + "L";
+		} else if (base == LiteralBase.OCTAL) {
+			return "0" + Long.toOctalString(value) + "L";
+		} else if (base == LiteralBase.HEXADECIMAL) {
+			return "0x" + Long.toHexString(value) + "L";
+		}
+		return Long.toString(value) + "L";
+	}
+
+	private static String getBasedString(Float value, LiteralBase base) {
+		if (base == LiteralBase.HEXADECIMAL) {
+			return Float.toHexString(value) + "F";
+		}
+		return Float.toString(value) + "F";
+	}
+
+	private static String getBasedString(Double value, LiteralBase base) {
+		if (base == LiteralBase.HEXADECIMAL) {
+			return Double.toHexString(value);
+		}
+		return Double.toString(value);
+	}
+
 	/**
 	 * @param literal to be converted literal
 	 * @return source code representation of the literal
@@ -23,10 +60,14 @@ abstract class LiteralHelper {
 	public static <T> String getLiteralToken(CtLiteral<T> literal) {
 		if (literal.getValue() == null) {
 			return "null";
+		} else if (literal.getValue() instanceof Integer) {
+			return getBasedString((Integer) literal.getValue(), literal.getBase());
 		} else if (literal.getValue() instanceof Long) {
-			return literal.getValue() + "L";
+			return getBasedString((Long) literal.getValue(), literal.getBase());
 		} else if (literal.getValue() instanceof Float) {
-			return literal.getValue() + "F";
+			return getBasedString((Float) literal.getValue(), literal.getBase());
+		} else if (literal.getValue() instanceof Double) {
+			return getBasedString((Double) literal.getValue(), literal.getBase());
 		} else if (literal.getValue() instanceof Character) {
 
 			boolean mayContainsSpecialCharacter = true;

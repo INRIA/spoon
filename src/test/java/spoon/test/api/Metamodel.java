@@ -1087,6 +1087,7 @@ public class Metamodel {
 			types.add(new Type("CtLiteral", spoon.reflect.code.CtLiteral.class, spoon.support.reflect.code.CtLiteralImpl.class, fm -> fm
 				.field(CtRole.IS_IMPLICIT, false, false)
 				.field(CtRole.VALUE, false, false)
+				.field(CtRole.LITERAL_BASE, false, false)
 				.field(CtRole.POSITION, false, false)
 				.field(CtRole.ANNOTATION, false, false)
 				.field(CtRole.TYPE, false, false)
