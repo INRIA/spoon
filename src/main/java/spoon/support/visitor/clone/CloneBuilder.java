@@ -161,6 +161,7 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtLiteral(spoon.reflect.code.CtLiteral<T> e) {
 		((spoon.reflect.code.CtLiteral<T>) (other)).setValue(e.getValue());
+		((spoon.reflect.code.CtLiteral<T>) (other)).setBase(e.getBase());
 		super.visitCtLiteral(e);
 	}
 

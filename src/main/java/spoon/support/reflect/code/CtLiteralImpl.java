@@ -7,17 +7,22 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.LiteralBase;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
 import static spoon.reflect.path.CtRole.EXPRESSION;
+import static spoon.reflect.path.CtRole.LITERAL_BASE;
 
 public class CtLiteralImpl<T> extends CtExpressionImpl<T> implements CtLiteral<T> {
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = CtRole.VALUE)
 	T value;
+
+	@MetamodelPropertyField(role = CtRole.LITERAL_BASE)
+	LiteralBase base;
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -36,6 +41,18 @@ public class CtLiteralImpl<T> extends CtExpressionImpl<T> implements CtLiteral<T
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, EXPRESSION, value, this.value);
 		this.value = value;
+		return (C) this;
+	}
+
+	@Override
+	public LiteralBase getBase() {
+		return base;
+	}
+
+	@Override
+	public <C extends CtLiteral<T>> C setBase(LiteralBase base) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, LITERAL_BASE, base, this.base);
+		this.base = base;
 		return (C) this;
 	}
 

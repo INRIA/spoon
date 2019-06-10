@@ -8,6 +8,7 @@ package spoon.reflect.code;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
+import static spoon.reflect.path.CtRole.LITERAL_BASE;
 import static spoon.reflect.path.CtRole.VALUE;
 
 /**
@@ -34,6 +35,18 @@ public interface CtLiteral<T> extends CtExpression<T> {
 	 */
 	@PropertySetter(role = VALUE)
 	<C extends CtLiteral<T>> C setValue(T value);
+
+	/**
+	 * Gets the base ot the numeric literal (2, 8, 10 or 16).
+	 */
+	@PropertyGetter(role = LITERAL_BASE)
+	LiteralBase getBase();
+
+	/**
+	 * Sets the base ot the numeric literal.
+	 */
+	@PropertySetter(role = LITERAL_BASE)
+	<C extends CtLiteral<T>> C setBase(LiteralBase base);
 
 	/** Overriding return type, a clone of a CtLiteral returns a CtLiteral */
 	@Override
