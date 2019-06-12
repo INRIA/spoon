@@ -71,6 +71,7 @@ import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.ParentFunction;
 import spoon.reflect.visitor.filter.RegexFilter;
 import spoon.reflect.visitor.filter.ReturnOrThrowFilter;
+import spoon.reflect.visitor.filter.SubtypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.DeepRepresentationComparator;
 import spoon.support.reflect.declaration.CtMethodImpl;
@@ -1351,4 +1352,22 @@ public class FilterTest {
 		assertEquals(1, ctFields.size());
 		assertTrue(ctFields.get(0) instanceof CtField);
 	}
+
+	@Test
+	public void testSubTypeFilter() {
+		// contract: SubtypeFilter correctly filters subtypes
+
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		spoon.buildModel();
+
+		CtType type = spoon.getFactory().Type().get(AbstractTostada.class);
+		List<CtType<?>> types = spoon.getModel().getRootPackage().getElements(new SubtypeFilter(type.getReference()));
+		assertEquals(6, types.size());
+
+		List<CtType<?>> types2 = spoon.getModel().getRootPackage().getElements(new SubtypeFilter(type.getReference()).includingSelf(false));
+		assertEquals(5, types2.size());
+	}
+
+
 }
