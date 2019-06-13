@@ -454,6 +454,7 @@ public class ReferenceBuilder {
 		ref.setType(this.<T>getTypeReference(messageSend.expectedType(), true));
 		if (messageSend.receiver.resolvedType == null) {
 			// It is crisis dude! static context, we don't have much more information.
+			ref.setStatic(true);
 			if (messageSend.receiver instanceof SingleNameReference) {
 				ref.setDeclaringType(jdtTreeBuilder.getHelper().createTypeAccessNoClasspath((SingleNameReference) messageSend.receiver).getAccessedType());
 			} else if (messageSend.receiver instanceof QualifiedNameReference) {
