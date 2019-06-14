@@ -32,6 +32,7 @@ import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtImport;
@@ -1534,6 +1535,7 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 				"    }" + nl +
 				"}", launcher.getFactory().Type().get("spoon.test.imports.testclasses.JavaLongUse").toString());
 	}
+
 	@Test
 	public void testImportReferenceIsFullyQualifiedAndNoGeneric() {
 		//contract: the reference of CtImport is always fully qualified and contains no actual type arguments
@@ -1555,5 +1557,27 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		assertEquals(1, typeRef.getActualTypeArguments().size());
 		assertTrue(typeRef.isImplicit());
 		assertTrue(typeRef.getPackage().isImplicit());
+	}
+
+	@Test
+	public void testMethodChainAutoImports() {
+		// contract: A chain of unknown methods in noclasspath mode with enabled auto-imports should not corrupt argument
+		// https://github.com/INRIA/spoon/issues/2996
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setShouldCompile(false);
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.addInputResource("./src/test/resources/import-resources/fr/inria/PageButtonNoClassPath.java");
+		launcher.buildModel();
+
+		CtClass<?> clazz = (CtClass<?>) launcher.getFactory().Type().get("fr.inria.PageButtonNoClassPath");
+		CtConstructor<?> ctor = clazz.getConstructors().stream().findFirst().get();
+		List<CtStatement> statements = ctor.getBody().getStatements();
+
+		assertEquals("super(context, attributeSet)", statements.get(0).toString());
+		assertEquals("mButton = ((Button) (findViewById(R.id.page_button_button)))", statements.get(1).toString());
+		assertEquals("mCurrentActiveColor = getColor(R.color.c4_active_button_color)", statements.get(2).toString());
+		assertEquals("mCurrentActiveColor = getResources().getColor(R.color.c4_active_button_color)", statements.get(3).toString());
+		assertEquals("mCurrentActiveColor = getData().getResources().getColor(R.color.c4_active_button_color)", statements.get(4).toString());
 	}
 }
