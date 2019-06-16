@@ -452,4 +452,10 @@ public class FieldAccessTest {
 		//now the field access must use explicit "this."
  		assertEquals("this.age", ageFR.getParent().toString());
 	}
+
+	@Test
+	public void testFieldAccessWithParenthesis() {
+		CtClass<?> c = Launcher.parseClass("class C { int count ; void m() { for(int i=0;i<(count);i++){}}}");
+		assertEquals("count", c.getElements(new TypeFilter<>(CtFieldAccess.class)).get(0).toString());
+	}
 }
