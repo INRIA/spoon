@@ -42,6 +42,8 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.declaration.CtAnnotationMethod;
+import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -1116,7 +1118,7 @@ public class CommentTest {
 				" */", type.getComments().get(0).getRawContent());
 	}
   
-  @Test
+	@Test
 	public void testEmptyStatementComments() {
 		//contract: model building should not produce NPE, comments should exist
 		Launcher launcher = new Launcher();
@@ -1127,5 +1129,24 @@ public class CommentTest {
 		List<CtIf> conditions = model.getElements(new TypeFilter<>(CtIf.class));
 		assertEquals("comment", conditions.get(0).getComments().get(0).getContent());
 		assertEquals("comment", conditions.get(1).getComments().get(0).getContent());
+	}
+
+	@Test
+	public void testAnnotationTypeComment() {
+		//contract: comments in annotations should be properly added to the AST
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/AnnotationTypeComments.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		CtModel model = launcher.buildModel();
+
+		List<CtAnnotationType> annotations = model.getElements(new TypeFilter<>(CtAnnotationType.class));
+		assertEquals("comment1", annotations.get(0).getComments().get(0).getContent());
+		assertTrue(annotations.get(1).getComments().isEmpty());
+
+		Object[] annotationMethods = annotations.get(1).getAnnotationMethods().toArray();
+		assertEquals("comment1", ((CtAnnotationMethod) annotationMethods[0]).getComments().get(0).getContent());
+		assertEquals("comment2", ((CtAnnotationMethod) annotationMethods[0]).getComments().get(1).getContent());
+		assertEquals("comment3", ((CtAnnotationMethod) annotationMethods[1]).getComments().get(0).getContent());
+		assertEquals("comment4", ((CtAnnotationMethod) annotationMethods[3]).getComments().get(0).getContent());
 	}
 }
