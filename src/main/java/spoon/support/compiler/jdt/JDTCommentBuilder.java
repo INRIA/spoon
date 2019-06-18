@@ -416,6 +416,8 @@ public class JDTCommentBuilder {
 			public void visitCtCatch(CtCatch e) {
 				if (comment.getPosition().getLine() <= e.getPosition().getLine()) {
 					e.addComment(comment);
+				} else {
+					e.getBody().addComment(comment);
 				}
 			}
 
