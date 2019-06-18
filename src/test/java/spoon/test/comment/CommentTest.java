@@ -367,7 +367,7 @@ public class CommentTest {
 		assertEquals("// comment if" + newLine
 				+ "if ((1 % 2) == 0) {" + newLine
 				+ "    // comment unary operator" + newLine
-				+ "    (field)++;" + newLine
+				+ "    field++;" + newLine
 				+ "}", ctIf.toString());
 
 		CtConstructorCall ctConstructorCall = m1.getBody().getStatement(3);
@@ -563,7 +563,7 @@ public class CommentTest {
 		assertEquals("/* comment if */" + newLine
 				+ "if ((1 % 2) == 0) {" + newLine
 				+ "    /* comment unary operator */" + newLine
-				+ "    (field)++;" + newLine
+				+ "    field++;" + newLine
 				+ "}", ctIf.toString());
 
 		CtConstructorCall ctConstructorCall = m1.getBody().getStatement(3);
