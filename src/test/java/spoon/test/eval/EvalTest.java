@@ -81,7 +81,7 @@ public class EvalTest {
 		CtBlock<?> b = type.getMethodsByName("testDoNotSimplify").get(0).getBody();
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();
-		assertEquals("java.lang.System.out.println((((\"enter: \" + className) + \" - \") + methodName))", b.getStatements().get(0).toString());
+		assertEquals("java.lang.System.out.println(((\"enter: \" + className) + \" - \") + methodName)", b.getStatements().get(0).toString());
 	}
 
 	@Test

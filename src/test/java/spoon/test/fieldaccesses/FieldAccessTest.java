@@ -256,7 +256,7 @@ public class FieldAccessTest {
 
 		CtFieldAccess ctFieldAccess = ctType
 				.getElements(new TypeFilter<>(CtFieldAccess.class)).get(0);
-		assertEquals("(game.board.width)", ctFieldAccess.toString());
+		assertEquals("game.board.width", ctFieldAccess.toString());
 
 		CtFieldReference ctFieldReferenceWith = ctFieldAccess.getVariable();
 		assertEquals("width", ctFieldReferenceWith.getSimpleName());
@@ -290,12 +290,12 @@ public class FieldAccessTest {
 		final CtUnaryOperator<?> first = unaryOperators.get(0);
 		assertEquals(UnaryOperatorKind.POSTINC, first.getKind());
 		assertEquals(fieldRead, first.getOperand());
-		assertEquals("(i)++", first.toString());
+		assertEquals("i++", first.toString());
 
 		final CtUnaryOperator<?> second = unaryOperators.get(1);
 		assertEquals(UnaryOperatorKind.PREINC, second.getKind());
 		assertEquals(fieldRead, second.getOperand());
-		assertEquals("++(i)", second.toString());
+		assertEquals("++i", second.toString());
 	}
 
 	@Test
@@ -451,5 +451,16 @@ public class FieldAccessTest {
  		method.getBody().insertBegin((CtStatement) mouse.getFactory().createCodeSnippetStatement("int age = 1").compile());
 		//now the field access must use explicit "this."
  		assertEquals("this.age", ageFR.getParent().toString());
+	}
+
+	@Test
+	public void testFieldAccessWithParenthesis() {
+		// contract: there should not be any redundant parentheses around fields
+		// https://github.com/INRIA/spoon/pull/3021
+		CtClass<?> c1 = Launcher.parseClass("class C1 { int count ; void m() { for(int i=0;i<count;i++){}}}");
+		assertEquals("count", c1.getElements(new TypeFilter<>(CtFieldAccess.class)).get(0).toString());
+
+		CtClass c2 = Launcher.parseClass("class C1 { int count ; void m() { for(int i=0;i<(long)count;i++){}}}");
+		assertEquals("((long) (count))", c2.getElements(new TypeFilter<>(CtFieldAccess.class)).get(0).toString());
 	}
 }
