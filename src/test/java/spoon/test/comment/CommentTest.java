@@ -44,6 +44,8 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.declaration.CtAnnotationMethod;
+import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -1117,7 +1119,6 @@ public class CommentTest {
 				" * @version 1.0\r" + 
 				" */", type.getComments().get(0).getRawContent());
 	}
-
 	@Test
 	public void testEmptyStatementComments() {
 		//contract: model building should not produce NPE, comments should exist
@@ -1132,7 +1133,25 @@ public class CommentTest {
 	}
 
 	@Test
-	public void testLambdaComments() {
+	public void testAnnotationTypeComment() {
+		//contract: comments in annotations should be properly added to the AST
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/AnnotationTypeComments.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		CtModel model = launcher.buildModel();
+
+		List<CtAnnotationType> annotations = model.getElements(new TypeFilter<>(CtAnnotationType.class));
+		assertEquals("comment1", annotations.get(0).getComments().get(0).getContent());
+		assertTrue(annotations.get(1).getComments().isEmpty());
+
+		Object[] annotationMethods = annotations.get(1).getAnnotationMethods().toArray();
+		assertEquals("comment1", ((CtAnnotationMethod) annotationMethods[0]).getComments().get(0).getContent());
+		assertEquals("comment2", ((CtAnnotationMethod) annotationMethods[0]).getComments().get(1).getContent());
+		assertEquals("comment3", ((CtAnnotationMethod) annotationMethods[1]).getComments().get(0).getContent());
+		assertEquals("comment4", ((CtAnnotationMethod) annotationMethods[3]).getComments().get(0).getContent());
+	}
+
+  public void testLambdaComments() {
 		//contract: comments in lambdas should be properly added to the AST
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/LambdaComments.java");

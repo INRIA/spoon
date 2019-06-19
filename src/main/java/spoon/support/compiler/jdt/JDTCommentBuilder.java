@@ -28,6 +28,7 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -289,8 +290,7 @@ public class JDTCommentBuilder {
 				}
 			}
 
-			@Override
-			public <T> void visitCtInterface(CtInterface<T> e) {
+			private <T> void visitInterfaceType(CtType<T> e) {
 				final List<CtElement> elements = new ArrayList<>();
 				for (CtTypeMember typeMember : e.getTypeMembers()) {
 					if (typeMember instanceof CtField || typeMember instanceof CtMethod) {
@@ -304,6 +304,16 @@ public class JDTCommentBuilder {
 				} catch (ParentNotInitializedException ex) {
 					e.addComment(comment);
 				}
+			}
+
+			@Override
+			public <T> void visitCtInterface(CtInterface<T> e) {
+				visitInterfaceType(e);
+			}
+
+			@Override
+			public <A extends Annotation> void visitCtAnnotationType(CtAnnotationType<A> e) {
+				visitInterfaceType(e);
 			}
 
 			@Override
