@@ -37,7 +37,7 @@ public class StringTest {
 		CtBinaryOperator<?> op = type.getElements(
 				new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class))
 				.get(0);
-		assertEquals("(\"a\" + \"b\")", op.toString());
+		assertEquals("\"a\" + \"b\"", op.toString());
 		assertEquals(BinaryOperatorKind.PLUS, op.getKind());
 		assertTrue(op.getLeftHandOperand() instanceof CtLiteral);
 		assertTrue(op.getRightHandOperand() instanceof CtLiteral);

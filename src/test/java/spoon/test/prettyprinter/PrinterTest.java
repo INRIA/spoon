@@ -25,7 +25,10 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -34,6 +37,7 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.TokenWriter;
 import spoon.reflect.visitor.DefaultTokenWriter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.prettyprinter.testclasses.MissingVariableDeclaration;
 import spoon.testing.utils.ModelUtils;
 
@@ -554,4 +558,18 @@ public class PrinterTest {
 		String expectedResult = " start un next deux next trois end";
 		assertEquals(expectedResult, pp.toString());
 	}
+
+		@Test
+		public void testMethodParentheses() {
+			//contract: there should not be any redundant parentheses
+			//https://github.com/INRIA/spoon/issues/2330
+			CtClass c1 = Launcher.parseClass("class C1 { int count ; void m() { logger.info(\"Value declared in if:\" + c); }");
+			assertEquals("\"Value declared in if:\" + c", c1.getElements(new TypeFilter<>(CtBinaryOperator.class)).get(0).toString());
+
+			CtClass c2 = Launcher.parseClass("class C2 { int count ; void m() { (i++).toString(); (a+b).toString(); }");
+			List<CtInvocation> invocations = c2.getElements(new TypeFilter<>(CtInvocation.class));
+			assertEquals("super()", invocations.get(0).toString());
+			assertEquals("(i++).toString()", invocations.get(1).toString());
+			assertEquals("(a + b).toString()", invocations.get(2).toString());
+		}
 }

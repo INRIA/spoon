@@ -678,7 +678,7 @@ public class TemplateTest {
 		assertTrue(aTry.getBody().getStatement(0) instanceof CtInvocation);
 		assertEquals("spoon.test.template.testclasses.logger.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
 		assertTrue(aTry.getBody().getStatements().size() > 1);
-		assertEquals("java.lang.System.out.println((((\"enter: \" + className) + \" - \") + methodName))", aTry.getBody().getStatement(1).toString());
+		assertEquals("java.lang.System.out.println(((\"enter: \" + className) + \" - \") + methodName)", aTry.getBody().getStatement(1).toString());
 	}
 
 	@Test
@@ -1142,7 +1142,7 @@ public class TemplateTest {
 			assertEquals("int x;", result.getField("x").toString());
 			assertEquals("int m_x;", result.getField("m_x").toString());
 
-			assertEquals("java.lang.System.out.println((x + m_x))", result.getAnonymousExecutables().get(0).getBody().getStatement(0).toString());
+			assertEquals("java.lang.System.out.println(x + m_x)", result.getAnonymousExecutables().get(0).getBody().getStatement(0).toString());
 		}
 	}
 
