@@ -459,5 +459,8 @@ public class FieldAccessTest {
 		// https://github.com/INRIA/spoon/pull/3021
 		CtClass<?> c1 = Launcher.parseClass("class C1 { int count ; void m() { for(int i=0;i<count;i++){}}}");
 		assertEquals("count", c1.getElements(new TypeFilter<>(CtFieldAccess.class)).get(0).toString());
+
+		CtClass c2 = Launcher.parseClass("class C1 { int count ; void m() { for(int i=0;i<(long)count;i++){}}}");
+		assertEquals("((long) (count))", c2.getElements(new TypeFilter<>(CtFieldAccess.class)).get(0).toString());
 	}
 }
