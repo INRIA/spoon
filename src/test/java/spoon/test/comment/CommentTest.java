@@ -24,6 +24,7 @@ import spoon.SpoonException;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
@@ -1116,7 +1117,7 @@ public class CommentTest {
 				" * @version 1.0\r" + 
 				" */", type.getComments().get(0).getRawContent());
 	}
-  
+
 	@Test
 	public void testEmptyStatementComments() {
 		//contract: model building should not produce NPE, comments should exist
@@ -1170,5 +1171,20 @@ public class CommentTest {
 		assertEquals("param1", ((CtParameter) lambdas.get(12).getParameters().get(0)).getComments().get(1).getContent());
 		assertEquals("param2", ((CtParameter) lambdas.get(12).getParameters().get(1)).getComments().get(0).getContent());
 		assertEquals("param2", ((CtParameter) lambdas.get(12).getParameters().get(1)).getComments().get(1).getContent());
+	}
+
+	@Test
+	public void testCatchComments() {
+		//contract: comments in catch should be properly added to the AST
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/CatchComments.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		CtModel model = launcher.buildModel();
+
+		List<CtCatch> catches = model.getElements(new TypeFilter<>(CtCatch.class));
+		assertEquals(1, catches.get(0).getComments().size());
+		assertEquals("first comment", catches.get(0).getComments().get(0).getContent());
+		assertEquals(1, catches.get(0).getBody().getComments().size());
+		assertEquals("second comment", catches.get(0).getBody().getComments().get(0).getContent());
 	}
 }
