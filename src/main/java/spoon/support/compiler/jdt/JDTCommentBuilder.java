@@ -18,6 +18,7 @@ import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -408,6 +409,20 @@ public class JDTCommentBuilder {
 			}
 
 			@Override
+			public <T> void visitCtLambda(CtLambda<T> e) {
+				if (e.getExpression() != null) {
+					CtParameter<?> lastParameter = e.getParameters().get(e.getParameters().size() - 1);
+					if (comment.getPosition().getSourceStart() > lastParameter.getPosition().getSourceEnd()) {
+						e.getExpression().addComment(comment);
+					} else {
+						e.addComment(comment);
+					}
+				} else if (e.getBody() != null) {
+					e.addComment(comment);
+				}
+			}
+
+			@Override
 			public <T> void visitCtNewArray(CtNewArray<T> e) {
 				addCommentToNear(comment, new ArrayList<>(e.getElements()));
 				try {
@@ -426,6 +441,8 @@ public class JDTCommentBuilder {
 			public void visitCtCatch(CtCatch e) {
 				if (comment.getPosition().getLine() <= e.getPosition().getLine()) {
 					e.addComment(comment);
+				} else {
+					e.getBody().addComment(comment);
 				}
 			}
 

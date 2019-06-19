@@ -24,6 +24,7 @@ import spoon.SpoonException;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
@@ -34,6 +35,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -1117,7 +1119,6 @@ public class CommentTest {
 				" * @version 1.0\r" + 
 				" */", type.getComments().get(0).getRawContent());
 	}
-  
 	@Test
 	public void testEmptyStatementComments() {
 		//contract: model building should not produce NPE, comments should exist
@@ -1148,5 +1149,61 @@ public class CommentTest {
 		assertEquals("comment2", ((CtAnnotationMethod) annotationMethods[0]).getComments().get(1).getContent());
 		assertEquals("comment3", ((CtAnnotationMethod) annotationMethods[1]).getComments().get(0).getContent());
 		assertEquals("comment4", ((CtAnnotationMethod) annotationMethods[3]).getComments().get(0).getContent());
+	}
+
+  public void testLambdaComments() {
+		//contract: comments in lambdas should be properly added to the AST
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/LambdaComments.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		CtModel model = launcher.buildModel();
+
+		List<CtLambda> lambdas = model.getElements(new TypeFilter<>(CtLambda.class));
+		assertEquals("comment", lambdas.get(0).getExpression().getComments().get(0).getContent());
+		assertEquals("comment", lambdas.get(1).getExpression().getComments().get(0).getContent());
+		assertEquals("comment", lambdas.get(2).getExpression().getComments().get(0).getContent());
+		assertEquals("comment", lambdas.get(3).getParent().getComments().get(0).getContent());
+		assertEquals("", lambdas.get(4).getExpression().getComments().get(0).getContent());
+
+		assertEquals("comment", lambdas.get(5).getBody().getStatement(0).getComments().get(0).getContent());
+		assertEquals("comment", lambdas.get(6).getComments().get(0).getContent());
+		assertEquals("comment", lambdas.get(7).getBody().getStatement(0).getComments().get(0).getContent());
+
+		assertTrue(lambdas.get(8).getParent().getComments().isEmpty());
+		assertTrue(lambdas.get(8).getComments().isEmpty());
+		assertTrue(lambdas.get(8).getExpression().getComments().isEmpty());
+		assertEquals(1, ((CtParameter) lambdas.get(8).getParameters().get(0)).getComments().size());
+		assertEquals(1, ((CtParameter) lambdas.get(8).getParameters().get(1)).getComments().size());
+		assertEquals("param1", ((CtParameter) lambdas.get(8).getParameters().get(0)).getComments().get(0).getContent());
+		assertEquals("param2", ((CtParameter) lambdas.get(8).getParameters().get(1)).getComments().get(0).getContent());
+
+		assertEquals("param1", ((CtParameter) lambdas.get(9).getParameters().get(0)).getComments().get(0).getContent());
+		assertEquals("param2", ((CtParameter) lambdas.get(9).getParameters().get(1)).getComments().get(0).getContent());
+
+		assertEquals("param1", ((CtParameter) lambdas.get(10).getParameters().get(0)).getComments().get(0).getContent());
+		assertEquals("param2", ((CtParameter) lambdas.get(10).getParameters().get(1)).getComments().get(0).getContent());
+
+		assertTrue(((CtParameter) lambdas.get(11).getParameters().get(0)).getComments().isEmpty());
+		assertEquals("param2", ((CtParameter) lambdas.get(11).getParameters().get(1)).getComments().get(0).getContent());
+
+		assertEquals("param1", ((CtParameter) lambdas.get(12).getParameters().get(0)).getComments().get(0).getContent());
+		assertEquals("param1", ((CtParameter) lambdas.get(12).getParameters().get(0)).getComments().get(1).getContent());
+		assertEquals("param2", ((CtParameter) lambdas.get(12).getParameters().get(1)).getComments().get(0).getContent());
+		assertEquals("param2", ((CtParameter) lambdas.get(12).getParameters().get(1)).getComments().get(1).getContent());
+	}
+
+	@Test
+	public void testCatchComments() {
+		//contract: comments in catch should be properly added to the AST
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/CatchComments.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		CtModel model = launcher.buildModel();
+
+		List<CtCatch> catches = model.getElements(new TypeFilter<>(CtCatch.class));
+		assertEquals(1, catches.get(0).getComments().size());
+		assertEquals("first comment", catches.get(0).getComments().get(0).getContent());
+		assertEquals(1, catches.get(0).getBody().getComments().size());
+		assertEquals("second comment", catches.get(0).getBody().getComments().get(0).getContent());
 	}
 }
