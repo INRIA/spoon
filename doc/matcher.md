@@ -20,7 +20,7 @@ if (c.size() > 10)
   throw new IndexOutOfBoundsException();
 ---
 //foo() returns a collection
-if (foo() > 10)
+if (foo().size() > 10)
   throw new IndexOutOfBoundsException();
 
 ```
@@ -42,7 +42,6 @@ public class CheckBoundMatcher {
   public void matcher1() {
     if (_col_.S().size() > 10)
       throw new IndexOutOfBoundsException();
-    }
   }
 }
 
