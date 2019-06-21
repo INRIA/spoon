@@ -142,6 +142,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
@@ -918,7 +919,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(factory.Core().createCatch(), argument);
 			return true;
 		}
-		context.enter(helper.createParameter(argument), argument);
+		boolean isVar = argument.type != null && argument.type.isTypeNameVar(scope);
+		CtParameter<Object> p = helper.createParameter(argument);
+		if (isVar) {
+			p.setInferred(true);
+		}
+		context.enter(p, argument);
 		return true;
 	}
 

@@ -282,6 +282,7 @@ public class Metamodel {
 				.field(CtRole.ANNOTATION, false, false)
 				.field(CtRole.TYPE, false, false)
 				.field(CtRole.COMMENT, false, false)
+				.field(CtRole.IS_INFERRED, false, false)
 
 			));
 
