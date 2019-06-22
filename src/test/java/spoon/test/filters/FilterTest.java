@@ -1369,5 +1369,9 @@ public class FilterTest {
 		assertEquals(5, types2.size());
 	}
 
-
+	@Test
+	public void testStaticFalseForTargetedThisAccess() {
+		CtClass<?> c = Launcher.parseClass("class C { Object r = new Runnable() { public void run() {} }}");
+		assertEquals(1,c.getElements(new TypeFilter<>(CtMethod.class)).size());
+	}
 }
