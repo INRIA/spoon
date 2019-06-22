@@ -12,6 +12,7 @@ import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.support.UnsettableProperty;
 
+import static spoon.reflect.path.CtRole.IS_INFERRED;
 import static spoon.reflect.path.CtRole.IS_VARARGS;
 
 /**
@@ -56,4 +57,18 @@ public interface CtParameter<T> extends CtVariable<T>, CtShadowable {
 	@Override
 	@UnsettableProperty
 	<C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
+
+	/**
+	 * Returns true if this parameter is a lambda parameter with type defined using the `var` keyword (since Java 11).
+	 */
+	@PropertyGetter(role = IS_INFERRED)
+	boolean isInferred();
+
+	/**
+	 * Set to true if this parameter is a lambda parameter with type defined using the `var` keyword.
+	 * Warning: this method should only be used if compliance level is set to 11 or more.
+	 */
+	@PropertySetter(role = IS_INFERRED)
+	<U extends CtParameter<T>> U setInferred(boolean inferred);
+
 }

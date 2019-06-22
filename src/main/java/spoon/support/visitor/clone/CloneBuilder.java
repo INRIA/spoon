@@ -218,6 +218,7 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	public <T> void visitCtParameter(spoon.reflect.declaration.CtParameter<T> e) {
 		((spoon.reflect.declaration.CtParameter<T>) (other)).setVarArgs(e.isVarArgs());
 		((spoon.reflect.declaration.CtParameter<T>) (other)).setModifiers(e.getModifiers());
+		((spoon.reflect.declaration.CtParameter<T>) (other)).setInferred(e.isInferred());
 		((spoon.reflect.declaration.CtParameter<T>) (other)).setShadow(e.isShadow());
 		super.visitCtParameter(e);
 	}

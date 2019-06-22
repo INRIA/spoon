@@ -1588,6 +1588,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (parameter.isVarArgs()) {
 			scan(((CtArrayTypeReference<T>) parameter.getType()).getComponentType());
 			printer.writeSeparator("...");
+		} else if (parameter.isInferred() && this.env.getComplianceLevel() >= 11) {
+			getPrinterTokenWriter().writeKeyword("var");
 		} else {
 			scan(parameter.getType());
 		}

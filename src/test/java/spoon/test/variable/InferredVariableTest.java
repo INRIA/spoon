@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -95,5 +96,22 @@ public class InferredVariableTest {
         assertTrue(fileContent.contains("var myFile = new java.io.FileReader(new java.io.File(\"/tmp/myfile\")"));
         assertTrue(fileContent.contains("var myboolean = true;"));
         assertTrue(fileContent.contains("for (var i = 0;"));
+    }
+
+    @Test
+    public void testVarInLambda() {
+        // contract: we should handle local variable syntax for lambda parameters properly (since Java 11)
+        // example: (var x, var y) -> x + y;
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setComplianceLevel(11);
+        launcher.addInputResource("./src/test/resources/spoon/test/var/VarInLambda.java");
+        CtModel model = launcher.buildModel();
+
+        CtLambda<?> lambda = model.getElements(new TypeFilter<>(CtLambda.class)).get(0);
+        assertTrue(lambda.getParameters().get(0).isInferred());
+        assertTrue(lambda.getParameters().get(1).isInferred());
+        assertEquals("java.lang.Integer", lambda.getParameters().get(0).getType().getQualifiedName());
+        assertEquals("java.lang.Long", lambda.getParameters().get(1).getType().getQualifiedName());
+        assertEquals("(var x,var y) -> x + y", lambda.toString()); // we should print var, if it was in the original code
     }
 }
