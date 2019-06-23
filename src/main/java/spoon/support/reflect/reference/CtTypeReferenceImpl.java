@@ -574,6 +574,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public boolean canAccess(CtTypeReference<?> type) {
 		try {
+			if (type == null) {
+				//noclasspath mode
+				return true;
+			}
 			if (type.getTypeDeclaration() == null) {
 				return true;
 			}
@@ -664,7 +668,12 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	private boolean isInSamePackage(CtTypeReference<?> type) {
-		return type.getTopLevelType().getPackage().getSimpleName().equals(this.getTopLevelType().getPackage().getSimpleName());
+		CtPackageReference thisPackage = this.getTopLevelType().getPackage();
+		CtPackageReference otherPackage = type.getTopLevelType().getPackage();
+		if (thisPackage == null || otherPackage == null) {
+			return true;
+		}
+		return thisPackage.getQualifiedName().equals(otherPackage.getQualifiedName());
 	}
 
 	@Override
