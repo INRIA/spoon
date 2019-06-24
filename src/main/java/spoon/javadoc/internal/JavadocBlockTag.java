@@ -50,7 +50,7 @@ public class JavadocBlockTag implements Serializable {
 		private String keyword;
 
 		boolean hasName() {
-			return this == PARAM || this == THROWS;
+			return this == PARAM || this == THROWS || this == EXCEPTION;
 		}
 
 		static Type fromName(String tagName) {
