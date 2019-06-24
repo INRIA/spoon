@@ -51,7 +51,7 @@ public interface CtJavaDocTag extends CtElement {
 		 * @return true if the tag can have a parameter
 		 */
 		public boolean hasParam() {
-			return this == PARAM || this == THROWS;
+			return this == PARAM || this == THROWS || this == EXCEPTION;
 		}
 
 		/**

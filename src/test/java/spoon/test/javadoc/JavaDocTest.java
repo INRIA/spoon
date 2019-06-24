@@ -20,17 +20,20 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
-import spoon.javadoc.internal.JavadocDescriptionElement;
 import spoon.javadoc.internal.JavadocInlineTag;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
-import spoon.support.reflect.code.CtJavaDocImpl;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.javadoc.testclasses.Bar;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -132,4 +135,22 @@ public class JavaDocTest {
 		assertEquals("foo", j.getTags().get(0).getContent());
 	}
 
+	@Test
+	public void testTagsParameters() {
+		// contract: @throws and @exception should have proper params
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/javadoc/testclasses/A.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+
+		List<CtJavaDoc> javadocs = model.getElements(new TypeFilter<>(CtJavaDoc.class));
+
+		CtJavaDocTag throwsTag = javadocs.get(0).getTags().get(0);
+		CtJavaDocTag exceptionTag = javadocs.get(1).getTags().get(0);
+
+		assertEquals("IllegalArgumentException", throwsTag.getParam());
+		assertEquals("FileNotFoundException", exceptionTag.getParam());
 	}
+
+}
