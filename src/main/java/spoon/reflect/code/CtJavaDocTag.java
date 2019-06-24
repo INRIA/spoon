@@ -5,6 +5,7 @@
  */
 package spoon.reflect.code;
 
+import spoon.javadoc.JavadocTagType;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
@@ -29,57 +30,11 @@ public interface CtJavaDocTag extends CtElement {
 	String JAVADOC_TAG_PREFIX = "@";
 
 	/**
-	 * Define the possible type for a tag
-	 */
-	enum TagType {
-		AUTHOR,
-		DEPRECATED,
-		EXCEPTION,
-		PARAM,
-		RETURN,
-		SEE,
-		SERIAL,
-		SERIAL_DATA,
-		SERIAL_FIELD,
-		SINCE,
-		THROWS,
-		VERSION,
-		UNKNOWN;
-
-		/**
-		 * Return true if the tag can have a parameter
-		 * @return true if the tag can have a parameter
-		 */
-		public boolean hasParam() {
-			return this == PARAM || this == THROWS || this == EXCEPTION;
-		}
-
-		/**
-		 * Get the tag type associated to a name
-		 * @param tagName the tag name
-		 * @return the tag type
-		 */
-		public static TagType tagFromName(String tagName) {
-			for (TagType t : TagType.values()) {
-				if (t.name().toLowerCase().equals(tagName.toLowerCase())) {
-					return t;
-				}
-			}
-			return UNKNOWN;
-		}
-
-		@Override
-		public String toString() {
-			return JAVADOC_TAG_PREFIX + name().toLowerCase();
-		}
-	}
-
-	/**
 	 * The type of the tag
 	 * @return the type of the tag
 	 */
 	@PropertyGetter(role = DOCUMENTATION_TYPE)
-	TagType getType();
+	JavadocTagType getType();
 
 	/**
 	 * Define the type of the tag
@@ -93,7 +48,7 @@ public interface CtJavaDocTag extends CtElement {
 	 * @param type the new type
 	 */
 	@PropertySetter(role = DOCUMENTATION_TYPE)
-	<E extends CtJavaDocTag> E setType(TagType type);
+	<E extends CtJavaDocTag> E setType(JavadocTagType type);
 
 	/**
 	 * Get the content of the atg

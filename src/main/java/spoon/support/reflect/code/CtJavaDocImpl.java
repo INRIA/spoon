@@ -5,6 +5,7 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.javadoc.JavadocTagType;
 import spoon.javadoc.internal.Javadoc;
 import spoon.javadoc.internal.JavadocBlockTag;
 import spoon.javadoc.internal.JavadocDescriptionElement;
@@ -108,11 +109,11 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 
 		String longDescription = "";
 		String currentTagContent = "";
-		CtJavaDocTag.TagType currentTag = null;
+		JavadocTagType currentTag = null;
 
 		javadoc = Javadoc.parse(cleanComment(content));
 		for (JavadocBlockTag tag: javadoc.getBlockTags()) {
-			addTag(getFactory().createJavaDocTag(tag.getContent().toText(), CtJavaDocTag.TagType.tagFromName(tag.getTagName())));
+			addTag(getFactory().createJavaDocTag(tag.getContent().toText(), JavadocTagType.fromName(tag.getTagName())));
 		}
 
 		// we cannot call super.setContent because it calls cleanComment (which has already been done above)

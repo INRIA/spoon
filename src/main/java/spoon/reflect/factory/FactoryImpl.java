@@ -6,6 +6,7 @@
 package spoon.reflect.factory;
 
 import spoon.compiler.Environment;
+import spoon.javadoc.JavadocTagType;
 import spoon.reflect.CtModel;
 import spoon.reflect.CtModelImpl;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -606,7 +607,7 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
-	public CtJavaDocTag createJavaDocTag(String content, CtJavaDocTag.TagType type) {
+	public CtJavaDocTag createJavaDocTag(String content, JavadocTagType type) {
 		return Code().createJavaDocTag(content, type);
 	}
 

@@ -6,6 +6,7 @@
 package spoon.reflect.factory;
 
 import spoon.SpoonException;
+import spoon.javadoc.JavadocTagType;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
@@ -691,7 +692,7 @@ public class CodeFactory extends SubFactory {
 	 * @param type The tag type
 	 * @return a new CtJavaDocTag
 	 */
-	public CtJavaDocTag createJavaDocTag(String content, CtJavaDocTag.TagType type) {
+	public CtJavaDocTag createJavaDocTag(String content, JavadocTagType type) {
 		if (content == null) {
 			content = "";
 		}

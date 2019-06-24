@@ -7,6 +7,8 @@ package spoon.reflect.meta.impl;
 
 
 import java.lang.annotation.Annotation;
+
+import spoon.javadoc.JavadocTagType;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtArrayAccess;
@@ -709,9 +711,9 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler extends SingleHandler<CtJavaDocTag, CtJavaDocTag.TagType> {
+	static class CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler extends SingleHandler<CtJavaDocTag, JavadocTagType> {
 		private CtJavaDocTag_DOCUMENTATION_TYPE_RoleHandler() {
-			super(CtRole.DOCUMENTATION_TYPE, CtJavaDocTag.class, CtJavaDocTag.TagType.class);
+			super(CtRole.DOCUMENTATION_TYPE, CtJavaDocTag.class, JavadocTagType.class);
 		}
 
 		@SuppressWarnings("unchecked")

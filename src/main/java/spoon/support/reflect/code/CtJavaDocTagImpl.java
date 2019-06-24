@@ -5,6 +5,7 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.javadoc.JavadocTagType;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.visitor.CtVisitor;
@@ -17,25 +18,25 @@ import static spoon.reflect.path.CtRole.DOCUMENTATION_TYPE;
 public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
 	@MetamodelPropertyField(role = DOCUMENTATION_TYPE)
-	private CtJavaDocTag.TagType type;
+	private JavadocTagType type;
 	@MetamodelPropertyField(role = COMMENT_CONTENT)
 	private String content;
 	@MetamodelPropertyField(role = JAVADOC_TAG_VALUE)
 	private String param;
 
 	@Override
-	public TagType getType() {
+	public JavadocTagType getType() {
 		return type;
 	}
 
 	@Override
 	public <E extends CtJavaDocTag> E setType(String type) {
-		this.setType(CtJavaDocTag.TagType.tagFromName(type));
+		this.setType(JavadocTagType.fromName(type));
 		return (E) this;
 	}
 
 	@Override
-	public <E extends CtJavaDocTag> E setType(TagType type) {
+	public <E extends CtJavaDocTag> E setType(JavadocTagType type) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DOCUMENTATION_TYPE, type, this.type);
 		this.type = type;
 		return (E) this;

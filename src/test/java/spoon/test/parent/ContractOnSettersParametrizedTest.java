@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.SpoonException;
+import spoon.javadoc.JavadocTagType;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtComment;
@@ -145,8 +146,8 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 		if (CtComment.CommentType.class.isAssignableFrom(c)) {
 			return CtComment.CommentType.INLINE;
 		}
-		if (CtJavaDocTag.TagType.class.isAssignableFrom(c)) {
-			return CtJavaDocTag.TagType.SEE;
+		if (JavadocTagType.class.isAssignableFrom(c)) {
+			return JavadocTagType.SEE;
 		}
 
 		// misc
