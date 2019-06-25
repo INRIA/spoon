@@ -21,7 +21,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
-import spoon.javadoc.JavadocTagType;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
@@ -138,7 +137,7 @@ public class CommentTest {
 				+ "package spoon.test.comment.testclasses;" + EOL, l_content);
 	}
 
-	private List<CtJavaDocTag> getTagByType(List<CtJavaDocTag> elements, JavadocTagType type) {
+	private List<CtJavaDocTag> getTagByType(List<CtJavaDocTag> elements, CtJavaDocTag.TagType type) {
 		List<CtJavaDocTag> output = new ArrayList<>();
 		for (CtJavaDocTag element : elements) {
 			if (element.getType() == type) {
@@ -212,21 +211,21 @@ public class CommentTest {
 		assertEquals(8, elements.size());
 
 
-		List<CtJavaDocTag> authorTags = getTagByType(elements, JavadocTagType.AUTHOR);
+		List<CtJavaDocTag> authorTags = getTagByType(elements, CtJavaDocTag.TagType.AUTHOR);
 		assertEquals(1, authorTags.size());
 		assertEquals("Thomas Durieux", authorTags.get(0).getContent());
 
-		List<CtJavaDocTag> deprecatedTags = getTagByType(elements, JavadocTagType.DEPRECATED);
+		List<CtJavaDocTag> deprecatedTags = getTagByType(elements, CtJavaDocTag.TagType.DEPRECATED);
 		assertEquals(1, deprecatedTags.size());
 		assertEquals("", deprecatedTags.get(0).getContent());
 
 
-		List<CtJavaDocTag> sinceTags = getTagByType(elements, JavadocTagType.SINCE);
+		List<CtJavaDocTag> sinceTags = getTagByType(elements, CtJavaDocTag.TagType.SINCE);
 		assertEquals(2, sinceTags.size());
 		assertEquals("1.3", sinceTags.get(0).getContent());
 		assertEquals("1.3", sinceTags.get(1).getContent());
 
-		List<CtJavaDocTag> paramTags = getTagByType(elements, JavadocTagType.PARAM);
+		List<CtJavaDocTag> paramTags = getTagByType(elements, CtJavaDocTag.TagType.PARAM);
 		assertEquals(1, paramTags.size());
 		assertEquals("the parameters", paramTags.get(0).getContent());
 		assertEquals("i", paramTags.get(0).getParam());
@@ -235,7 +234,7 @@ public class CommentTest {
 		assertEquals("the parameters", tagClone.getContent());
 		assertEquals("i", tagClone.getParam());
 
-		List<CtJavaDocTag> throwsTags = getTagByType(elements, JavadocTagType.THROWS);
+		List<CtJavaDocTag> throwsTags = getTagByType(elements, CtJavaDocTag.TagType.THROWS);
 		assertEquals(1, throwsTags.size());
 		assertEquals("an exception", throwsTags.get(0).getContent());
 		assertEquals("RuntimeException", throwsTags.get(0).getParam());

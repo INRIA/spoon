@@ -12,7 +12,7 @@
  */
 package spoon.javadoc.internal;
 
-import spoon.javadoc.JavadocTagType;
+import spoon.reflect.code.CtJavaDocTag;
 
 import java.io.Serializable;
 
@@ -26,29 +26,29 @@ import java.io.Serializable;
 */
 public class JavadocBlockTag implements Serializable {
 
-	private JavadocTagType type;
+	private CtJavaDocTag.TagType type;
 	private JavadocDescription content;
 	private String name = "";
 	private String tagName;
 
-	public JavadocBlockTag(JavadocTagType type, String content) {
+	public JavadocBlockTag(CtJavaDocTag.TagType type, String content) {
 		this.type = type;
 		this.tagName = type.getName();
 		this.content = Javadoc.parseText(content);
 	}
 
 	public JavadocBlockTag(String tagName, String content) {
-		this(JavadocTagType.fromName(tagName), content);
+		this(CtJavaDocTag.TagType.tagFromName(tagName), content);
 		this.tagName = tagName;
 	}
 
 	public JavadocBlockTag(String tagName, String paramName, String content) {
-		this(JavadocTagType.fromName(tagName), content);
+		this(CtJavaDocTag.TagType.tagFromName(tagName), content);
 		this.tagName = tagName;
 		this.name = paramName;
 	}
 
-	public JavadocTagType getType() {
+	public CtJavaDocTag.TagType getType() {
 		return type;
 	}
 

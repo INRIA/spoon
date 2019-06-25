@@ -20,12 +20,12 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
-import spoon.javadoc.JavadocTagType;
 import spoon.javadoc.internal.JavadocInlineTag;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.code.CtJavaDocTag.TagType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
@@ -166,19 +166,19 @@ public class JavaDocTest {
 		CtModel model = launcher.buildModel();
 
 		CtType<?> type = model.getAllTypes().stream().findFirst().get();
-		assertEquals(JavadocTagType.VERSION, type.getElements(new TypeFilter<>(CtEnum.class)).get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
-		assertEquals(JavadocTagType.AUTHOR, type.getMethodsByName("m1").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
-		assertEquals(JavadocTagType.DEPRECATED, type.getMethodsByName("m2").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
-		assertEquals(JavadocTagType.EXCEPTION, type.getMethodsByName("m3").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
-		assertEquals(JavadocTagType.PARAM, type.getMethodsByName("m4").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
-		assertEquals(JavadocTagType.RETURN, type.getMethodsByName("m5").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
-		assertEquals(JavadocTagType.SEE, type.getMethodsByName("m6").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
-		assertEquals(JavadocTagType.SERIAL, type.getField("m7").getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
-		assertEquals(JavadocTagType.SERIAL_DATA, type.getMethodsByName("m8").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
-		assertEquals(JavadocTagType.SERIAL_FIELD, type.getField("m9").getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
-		assertEquals(JavadocTagType.SINCE, type.getMethodsByName("m10").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
-		assertEquals(JavadocTagType.THROWS, type.getMethodsByName("m11").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
-		assertEquals(JavadocTagType.UNKNOWN, type.getMethodsByName("m12").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.VERSION, type.getElements(new TypeFilter<>(CtEnum.class)).get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.AUTHOR, type.getMethodsByName("m1").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.DEPRECATED, type.getMethodsByName("m2").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.EXCEPTION, type.getMethodsByName("m3").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.PARAM, type.getMethodsByName("m4").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.RETURN, type.getMethodsByName("m5").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.SEE, type.getMethodsByName("m6").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.SERIAL, type.getField("m7").getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.SERIAL_DATA, type.getMethodsByName("m8").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.SERIAL_FIELD, type.getField("m9").getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.SINCE, type.getMethodsByName("m10").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.THROWS, type.getMethodsByName("m11").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.UNKNOWN, type.getMethodsByName("m12").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
 	}
 
 }

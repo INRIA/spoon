@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.SpoonException;
-import spoon.javadoc.JavadocTagType;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtComment;
@@ -28,8 +27,6 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtCodeSnippet;
-import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.support.modelobs.ActionBasedChangeListenerImpl;
 import spoon.support.modelobs.action.Action;
@@ -146,8 +143,8 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 		if (CtComment.CommentType.class.isAssignableFrom(c)) {
 			return CtComment.CommentType.INLINE;
 		}
-		if (JavadocTagType.class.isAssignableFrom(c)) {
-			return JavadocTagType.SEE;
+		if (CtJavaDocTag.TagType.class.isAssignableFrom(c)) {
+			return CtJavaDocTag.TagType.SEE;
 		}
 
 		// misc

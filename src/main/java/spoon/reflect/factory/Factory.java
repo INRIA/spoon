@@ -6,7 +6,6 @@
 package spoon.reflect.factory;
 
 import spoon.compiler.Environment;
-import spoon.javadoc.JavadocTagType;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
@@ -338,9 +337,9 @@ public interface Factory {
 
 
 	/**
-	 *  @see CodeFactory#createJavaDocTag(String,JavadocTagType)
+	 *  @see CodeFactory#createJavaDocTag(String,CtJavaDocTag.TagType)
 	 */
-	CtJavaDocTag createJavaDocTag(String content, JavadocTagType type);
+	CtJavaDocTag createJavaDocTag(String content, CtJavaDocTag.TagType type);
 
 	/**
 	 *  @see CodeFactory#createInlineComment(String)
