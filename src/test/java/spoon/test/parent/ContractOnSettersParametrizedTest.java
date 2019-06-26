@@ -27,8 +27,6 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtCodeSnippet;
-import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.support.modelobs.ActionBasedChangeListenerImpl;
 import spoon.support.modelobs.action.Action;

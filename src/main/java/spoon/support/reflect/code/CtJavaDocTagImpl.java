@@ -17,7 +17,7 @@ import static spoon.reflect.path.CtRole.DOCUMENTATION_TYPE;
 public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
 	@MetamodelPropertyField(role = DOCUMENTATION_TYPE)
-	private CtJavaDocTag.TagType type;
+	private TagType type;
 	@MetamodelPropertyField(role = COMMENT_CONTENT)
 	private String content;
 	@MetamodelPropertyField(role = JAVADOC_TAG_VALUE)
@@ -30,7 +30,7 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
 	@Override
 	public <E extends CtJavaDocTag> E setType(String type) {
-		this.setType(CtJavaDocTag.TagType.tagFromName(type));
+		this.setType(TagType.tagFromName(type));
 		return (E) this;
 	}
 

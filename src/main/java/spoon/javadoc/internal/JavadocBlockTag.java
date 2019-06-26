@@ -12,6 +12,8 @@
  */
 package spoon.javadoc.internal;
 
+import spoon.reflect.code.CtJavaDocTag;
+
 import java.io.Serializable;
 
 /**
@@ -24,68 +26,29 @@ import java.io.Serializable;
 */
 public class JavadocBlockTag implements Serializable {
 
-	/**
-		* The type of tag: it could either correspond to a known tag (param, return, etc.) or represent
-		* an unknown tag.
-		*/
-	public enum Type {
-		AUTHOR,
-		DEPRECATED,
-		EXCEPTION,
-		PARAM,
-		RETURN,
-		SEE,
-		SERIAL,
-		SERIAL_DATA,
-		SERIAL_FIELD,
-		SINCE,
-		THROWS,
-		VERSION,
-		UNKNOWN;
-
-		Type() {
-			this.keyword = name();
-		}
-
-		private String keyword;
-
-		boolean hasName() {
-			return this == PARAM || this == THROWS;
-		}
-
-		static Type fromName(String tagName) {
-			for (Type t : Type.values()) {
-				if (t.keyword.toUpperCase().equals(tagName.toUpperCase())) {
-					return t;
-				}
-			}
-			return UNKNOWN;
-		}
-	}
-
-	private Type type;
+	private CtJavaDocTag.TagType type;
 	private JavadocDescription content;
 	private String name = "";
 	private String tagName;
 
-	public JavadocBlockTag(Type type, String content) {
+	public JavadocBlockTag(CtJavaDocTag.TagType type, String content) {
 		this.type = type;
-		this.tagName = type.keyword;
+		this.tagName = type.getName();
 		this.content = Javadoc.parseText(content);
 	}
 
 	public JavadocBlockTag(String tagName, String content) {
-		this(Type.fromName(tagName), content);
+		this(CtJavaDocTag.TagType.tagFromName(tagName), content);
 		this.tagName = tagName;
 	}
 
 	public JavadocBlockTag(String tagName, String paramName, String content) {
-		this(Type.fromName(tagName), content);
+		this(CtJavaDocTag.TagType.tagFromName(tagName), content);
 		this.tagName = tagName;
 		this.name = paramName;
 	}
 
-	public Type getType() {
+	public CtJavaDocTag.TagType getType() {
 		return type;
 	}
 
@@ -154,4 +117,4 @@ public class JavadocBlockTag implements Serializable {
 			+ name
 			+ '}';
 	}
-	}
+}

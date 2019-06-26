@@ -7,6 +7,7 @@ package spoon.reflect.meta.impl;
 
 
 import java.lang.annotation.Annotation;
+
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtArrayAccess;
