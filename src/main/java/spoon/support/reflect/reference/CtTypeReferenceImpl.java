@@ -808,7 +808,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (parent instanceof CtExecutableReference) {
 			CtExecutable<?> exec = ((CtExecutableReference<?>) parent).getExecutableDeclaration();
 			if (exec instanceof CtMethod || exec instanceof CtConstructor) {
-				return findTypeParamDeclarationByPosition((CtFormalTypeDeclarer) exec, ((CtTypeReference) parent).getActualTypeArguments().indexOf(this));
+				int idx = ((CtExecutableReference) parent).getActualTypeArguments().indexOf(this);
+				return idx >= 0 ? findTypeParamDeclarationByPosition((CtFormalTypeDeclarer) exec, idx) : null;
 			}
 		}
 

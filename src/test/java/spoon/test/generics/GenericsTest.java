@@ -1547,4 +1547,17 @@ public class GenericsTest {
 		assertFalse(param2.getType().getActualTypeArguments().get(0).isParameterized());
 		assertTrue(param3.getType().getActualTypeArguments().get(0).isParameterized());
 	}
+
+	@Test
+	public void testExecutableTypeParameter() {
+		// contract: getTypeParameterDeclaration() should not produce class cast exception
+		// https://github.com/INRIA/spoon/issues/3040
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses6/A.java");
+		CtModel model = launcher.buildModel();
+		CtInvocation m1 = model.getElements(new TypeFilter<>(CtInvocation.class)).get(1);
+		CtTypeParameter formalType = ((CtMethod) m1.getExecutable().getDeclaration()).getFormalCtTypeParameters().get(0);
+		assertEquals(formalType, ((CtTypeReference) m1.getActualTypeArguments().get(0)).getTypeParameterDeclaration());
+		assertNull(m1.getType().getTypeParameterDeclaration());
+	}
 }
