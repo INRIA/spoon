@@ -402,7 +402,7 @@ public class TypeFactory extends SubFactory {
 	}
 
 	/**
-	 * Gets a created type from its qualified name if source in the source classpath. 
+	 * Gets a created type from its qualified name if source in the source classpath.
 	 *
 	 * `TypeFactory#get(String)` returns null if the class is not in the source classpath (even if it is in the binary classpath).
 	 * `TypeFactory#get(Class)` returns null if the class is neither in the source classpath nor in the binary classpath, 
