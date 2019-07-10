@@ -405,7 +405,7 @@ public class TypeFactory extends SubFactory {
 	 * Gets a created type from its qualified name if source in the source classpath. 
 	 *
 	 * `TypeFactory#get(String)` returns null if the class is not in the source classpath (even if it is in the binary classpath).
-         * `TypeFactory#get(Class)` returns null if the class is neither in the source classpath nor in the binary classpath, 
+	 * `TypeFactory#get(Class)` returns null if the class is neither in the source classpath nor in the binary classpath, 
 	 * and returns a [shadow class](http://spoon.gforge.inria.fr/reflection.html) if it is only in the binary classpath. 
 	 * Note that a shadow class has an empty method body, if you need a shadow class with method body, see [spoon-decompiler](https://github.com/INRIA/spoon/tree/master/spoon-decompiler))
 	 * @return a type if source in the source classpath or null if does not exist
