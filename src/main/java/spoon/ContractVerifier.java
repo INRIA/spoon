@@ -36,6 +36,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtBiScannerDefault;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.JavaIdentifiers;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.Experimental;
@@ -89,6 +90,7 @@ public class ContractVerifier {
 		checkElementIsContainedInAttributeOfItsParent();
 		checkElementToPathToElementEquivalence();
 		checkRoleInParent();
+		();
 	}
 
 	/** verifies that the explicit modifier should be present in the original source code */
@@ -584,5 +586,18 @@ public class ContractVerifier {
 
 		// type parameter reference.
 		checkBoundAndUnboundTypeReference();
+	}
+
+	public void checkJavaIdentifiers() {
+		// checking method JavaIdentifiers.isLegalJavaPackageIdentifier
+		_rootPackage.getPackage("spoon").getElements(new TypeFilter<>(CtPackage.class)).parallelStream().forEach(element -> {
+			JavaIdentifiers.isLegalJavaPackageIdentifier(element.getSimpleName());
+		});
+
+		// checking method JavaIdentifiers.isLegalJavaExecutableIdentifier
+		_rootPackage.getPackage("spoon").getElements(new TypeFilter<>(CtExecutable.class)).parallelStream().forEach(element -> {
+			JavaIdentifiers.isLegalJavaExecutableIdentifier(element.getSimpleName());
+		});
+
 	}
 }
