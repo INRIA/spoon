@@ -597,9 +597,11 @@ public class ContractVerifier {
 		});
 		// checking method JavaIdentifiers.isLegalJavaExecutableIdentifier
 		_rootPackage.getPackage("spoon").getElements(new TypeFilter<>(CtExecutable.class)).parallelStream().forEach(element -> {
-			
+
 			// static methods have an empty string as identifier
-			if (element instanceof CtAnonymousExecutable) { return; }
+			if (element instanceof CtAnonymousExecutable) {
+				return;
+			}
 
 			assertTrue("isLegalJavaExecutableIdentifier is broken" + element.getPosition(), JavaIdentifiers.isLegalJavaExecutableIdentifier(element.getSimpleName()));
 		});
