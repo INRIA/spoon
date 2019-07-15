@@ -592,11 +592,11 @@ public class ContractVerifier {
 	/** checks that the identifiers are valid */
 	public void checkJavaIdentifiers() {
 		// checking method JavaIdentifiers.isLegalJavaPackageIdentifier
-		_rootPackage.getPackage("spoon").getElements(new TypeFilter<>(CtPackage.class)).parallelStream().forEach(element -> {
+		_rootPackage.getElements(new TypeFilter<>(CtPackage.class)).parallelStream().forEach(element -> {
 			assertTrue("isLegalJavaPackageIdentifier is broken for" + element.getPosition(), JavaIdentifiers.isLegalJavaPackageIdentifier(element.getSimpleName()));
 		});
 		// checking method JavaIdentifiers.isLegalJavaExecutableIdentifier
-		_rootPackage.getPackage("spoon").getElements(new TypeFilter<>(CtExecutable.class)).parallelStream().forEach(element -> {
+		_rootPackage.getElements(new TypeFilter<>(CtExecutable.class)).parallelStream().forEach(element -> {
 
 			// static methods have an empty string as identifier
 			if (element instanceof CtAnonymousExecutable) {
