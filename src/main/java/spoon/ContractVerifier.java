@@ -591,12 +591,12 @@ public class ContractVerifier {
 	public void checkJavaIdentifiers() {
 		// checking method JavaIdentifiers.isLegalJavaPackageIdentifier
 		_rootPackage.getPackage("spoon").getElements(new TypeFilter<>(CtPackage.class)).parallelStream().forEach(element -> {
-			JavaIdentifiers.isLegalJavaPackageIdentifier(element.getSimpleName());
+			assertTrue("isLegalJavaPackageIdentifier is broken", JavaIdentifiers.isLegalJavaPackageIdentifier(element.getSimpleName()));
 		});
 
 		// checking method JavaIdentifiers.isLegalJavaExecutableIdentifier
 		_rootPackage.getPackage("spoon").getElements(new TypeFilter<>(CtExecutable.class)).parallelStream().forEach(element -> {
-			JavaIdentifiers.isLegalJavaExecutableIdentifier(element.getSimpleName());
+			assertTrue("isLegalJavaExecutableIdentifier is broken", JavaIdentifiers.isLegalJavaExecutableIdentifier(element.getSimpleName()));
 		});
 
 	}
