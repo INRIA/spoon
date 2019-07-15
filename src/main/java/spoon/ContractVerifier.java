@@ -14,6 +14,7 @@ import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
@@ -90,7 +91,7 @@ public class ContractVerifier {
 		checkElementIsContainedInAttributeOfItsParent();
 		checkElementToPathToElementEquivalence();
 		checkRoleInParent();
-		();
+		checkJavaIdentifiers();
 	}
 
 	/** verifies that the explicit modifier should be present in the original source code */
@@ -588,15 +589,19 @@ public class ContractVerifier {
 		checkBoundAndUnboundTypeReference();
 	}
 
+	/** checks that the identifiers are valid */
 	public void checkJavaIdentifiers() {
 		// checking method JavaIdentifiers.isLegalJavaPackageIdentifier
 		_rootPackage.getPackage("spoon").getElements(new TypeFilter<>(CtPackage.class)).parallelStream().forEach(element -> {
-			assertTrue("isLegalJavaPackageIdentifier is broken", JavaIdentifiers.isLegalJavaPackageIdentifier(element.getSimpleName()));
+			assertTrue("isLegalJavaPackageIdentifier is broken for" + element.getPosition(), JavaIdentifiers.isLegalJavaPackageIdentifier(element.getSimpleName()));
 		});
-
 		// checking method JavaIdentifiers.isLegalJavaExecutableIdentifier
 		_rootPackage.getPackage("spoon").getElements(new TypeFilter<>(CtExecutable.class)).parallelStream().forEach(element -> {
-			assertTrue("isLegalJavaExecutableIdentifier is broken", JavaIdentifiers.isLegalJavaExecutableIdentifier(element.getSimpleName()));
+			
+			// static methods have an empty string as identifier
+			if (element instanceof CtAnonymousExecutable) { return; }
+
+			assertTrue("isLegalJavaExecutableIdentifier is broken" + element.getPosition(), JavaIdentifiers.isLegalJavaExecutableIdentifier(element.getSimpleName()));
 		});
 
 	}
