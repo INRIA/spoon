@@ -521,7 +521,7 @@ public class ContractVerifier {
 
 	/** checks that for all elements, the path can be obtained, parsed, and give the same element when evaluated */
 	public void checkElementToPathToElementEquivalence() {
-		_rootPackage.getPackage("spoon").getElements(e -> true).parallelStream().forEach(element -> {
+		_rootPackage.getElements(e -> true).parallelStream().forEach(element -> {
 			CtPath path = element.getPath();
 			String pathStr = path.toString();
 			try {
