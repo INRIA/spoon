@@ -6,6 +6,7 @@
 package spoon;
 
 
+import spoon.reflect.CtModelImpl;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtExpression;
@@ -593,7 +594,13 @@ public class ContractVerifier {
 	public void checkJavaIdentifiers() {
 		// checking method JavaIdentifiers.isLegalJavaPackageIdentifier
 		_rootPackage.getElements(new TypeFilter<>(CtPackage.class)).parallelStream().forEach(element -> {
-			assertTrue("isLegalJavaPackageIdentifier is broken for" + element.getPosition(), JavaIdentifiers.isLegalJavaPackageIdentifier(element.getSimpleName()));
+			// the default package is excluded (called "unnamed package")
+			if (element instanceof CtModelImpl.CtRootPackage) {
+				return;
+			}
+
+
+			assertTrue("isLegalJavaPackageIdentifier is broken for " + element.getSimpleName() + " " + element.getPosition(), JavaIdentifiers.isLegalJavaPackageIdentifier(element.getSimpleName()));
 		});
 		// checking method JavaIdentifiers.isLegalJavaExecutableIdentifier
 		_rootPackage.getElements(new TypeFilter<>(CtExecutable.class)).parallelStream().forEach(element -> {
@@ -603,7 +610,7 @@ public class ContractVerifier {
 				return;
 			}
 
-			assertTrue("isLegalJavaExecutableIdentifier is broken" + element.getPosition(), JavaIdentifiers.isLegalJavaExecutableIdentifier(element.getSimpleName()));
+			assertTrue("isLegalJavaExecutableIdentifier is broken " + element.getSimpleName() + " " + element.getPosition(), JavaIdentifiers.isLegalJavaExecutableIdentifier(element.getSimpleName()));
 		});
 
 	}
