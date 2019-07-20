@@ -65,6 +65,26 @@ import static spoon.testing.utils.ModelUtils.build;
 public class ProcessingTest {
 
 	@Test
+	public void testUnknownSourceWithLambdaInsideInnerClass() throws Exception {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/lambdas/UnknownSourceLambdaInnerClass.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+
+		launcher.addProcessor(new CtClassProcessor(){
+			@Override
+			public void process(CtClass element) {
+				super.process(element);
+				assertNotNull(element.getPosition());
+				// This assertion will only fail for the inner class 'Failing'
+				assertNotNull(element.getPosition().getFile());
+			}
+		});
+
+		launcher.process();
+	}
+
+	@Test
 	public void testInsertBegin() throws Exception {
 		CtClass<?> type = build("spoon.test.processing.testclasses", "SampleForInsertBefore");
 		for (CtMethod<?> meth : type.getMethods()) {
