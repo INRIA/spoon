@@ -19,6 +19,7 @@ package spoon.test.position;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
@@ -31,6 +32,7 @@ import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtReturn;
@@ -49,6 +51,7 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
@@ -94,7 +97,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -1313,5 +1315,65 @@ public class PositionTest {
 		} catch(Exception e) {
 			fail("Error while parsing incomplete class declaration");
 		}
+	}
+
+	@Test
+	public void testNoClasspathVariableAccessInInnerClass1() {
+		// contract: creating variable access in no classpath should not break source position
+		// https://github.com/INRIA/spoon/issues/3052
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/lambdas/InheritedClassesWithLambda1.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+		List<CtClass> allClasses = model.getElements(new TypeFilter<>(CtClass.class));
+		assertEquals(3, allClasses.size());
+		CtClass failing = allClasses.stream().filter(t -> t.getSimpleName().equals("Failing")).findFirst().get();
+		assertEquals("InheritedClassesWithLambda1.java", failing.getPosition().getFile().getName());
+		assertEquals(11, failing.getPosition().getLine());
+
+		// in addition check that the variable reference is correct
+		CtLambda lambda = model.getElements(new TypeFilter<>(CtLambda.class)).get(0);
+		CtFieldRead field = (CtFieldRead) (((CtInvocation) lambda.getExpression()).getTarget());
+		assertEquals("com.pkg.InheritedClassesWithLambda1.Failing", field.getVariable().getDeclaringType().toString());
+	}
+
+	@Test
+	public void testNoClasspathVariableAccessInInnerClass2() {
+		// contract: same as for testNoClasspathVariableAccessInInnerClass1,
+		// but here we have inner class inside another inner class
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/lambdas/InheritedClassesWithLambda2.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+		List<CtClass> allClasses = model.getElements(new TypeFilter<>(CtClass.class));
+		assertEquals(4, allClasses.size());
+		CtClass failing = allClasses.stream().filter(t -> t.getSimpleName().equals("Failing")).findFirst().get();
+		assertEquals("InheritedClassesWithLambda2.java", failing.getPosition().getFile().getName());
+		assertEquals(11, failing.getPosition().getLine());
+
+		// in addition check that the variable reference is correct
+		CtLambda lambda = model.getElements(new TypeFilter<>(CtLambda.class)).get(0);
+		CtFieldRead field = (CtFieldRead) (((CtInvocation) lambda.getExpression()).getTarget());
+		assertEquals("InheritedClassesWithLambda2.OneMoreClass.Failing", field.getVariable().getDeclaringType().toString());
+	}
+
+	@Test
+	public void testNoClasspathVariableAccessInInnerInterface() {
+		// contract: same as for testNoClasspathVariableAccessInInnerClass1,
+		// but here we have interface instead of class
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/lambdas/InheritedInterfacesWithLambda.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+		List<CtInterface> allInterfaces = model.getElements(new TypeFilter<>(CtInterface.class));
+		assertEquals(1, allInterfaces.size());
+		CtInterface failing = allInterfaces.stream().filter(t -> t.getSimpleName().equals("Failing")).findFirst().get();
+		assertEquals("InheritedInterfacesWithLambda.java", failing.getPosition().getFile().getName());
+		assertEquals(3, failing.getPosition().getLine());
+
+		// in addition check that the variable reference is correct
+		CtLambda lambda = model.getElements(new TypeFilter<>(CtLambda.class)).get(0);
+		CtFieldRead field = (CtFieldRead) (((CtInvocation) lambda.getExpression()).getTarget());
+		assertEquals("InheritedInterfacesWithLambda.Failing", field.getVariable().getDeclaringType().toString());
 	}
 }
