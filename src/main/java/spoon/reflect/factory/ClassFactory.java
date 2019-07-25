@@ -59,8 +59,7 @@ public class ClassFactory extends TypeFactory {
 	 * @param <T>
 	 *            type of created class
 	 * @param qualifiedName
-	 *            full name of class to create. Name can contain . or $ for
-	 *            inner types
+	 *            full name of class to create. Name can contain $ for inner types
 	 */
 	public <T> CtClass<T> create(String qualifiedName) {
 		if (hasInnerType(qualifiedName) > 0) {
