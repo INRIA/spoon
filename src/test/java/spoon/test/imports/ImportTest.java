@@ -1353,9 +1353,9 @@ public class ImportTest {
 	public void testImportWithGenerics() {
 		// contract: in noclasspath autoimport, we should be able to use generic type
 		final Launcher launcher = new Launcher();
+		// this class is not compilable 'spoon.test.imports.testclasses.withgenerics.Target' does not exist
 		launcher.addInputResource("./src/test/resources/import-with-generics/TestWithGenerics.java");
 		launcher.getEnvironment().setAutoImports(true);
-		launcher.getEnvironment().setShouldCompile(true);
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.setSourceOutputDirectory("./target/import-with-generics");
 		launcher.run();
