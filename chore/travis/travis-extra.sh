@@ -24,9 +24,16 @@ mvn  checkstyle:checkstyle -Pcheckstyle-test
 
 python ./chore/check-links-in-doc.py
 
+
+##################################################################
 # Spoon-decompiler
+##################################################################
 cd spoon-decompiler
 
+# always depends on the latest snapshot, just installed with "mvn install" above
+mvn versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
+git diff
+
 mvn test
 
 mvn verify license:check javadoc:jar install -DskipTests
@@ -34,9 +41,15 @@ mvn verify license:check javadoc:jar install -DskipTests
 # checkstyle in src/tests
 mvn  checkstyle:checkstyle -Pcheckstyle-test
 
+##################################################################
 # Spoon-control-flow
+##################################################################
 cd ../spoon-control-flow
 
+# always depends on the latest snapshot, just installed with "mvn install" above
+mvn versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
+git diff
+
 mvn test
 
 mvn verify license:check javadoc:jar install -DskipTests
@@ -44,7 +57,9 @@ mvn verify license:check javadoc:jar install -DskipTests
 # checkstyle in src/tests
 mvn  checkstyle:checkstyle -Pcheckstyle-test
 
+##################################################################
 # Spoon-dataflow
+##################################################################
 cd ../spoon-dataflow
 
 # download and install z3 lib
