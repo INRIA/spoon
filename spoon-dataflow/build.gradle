@@ -1,8 +1,13 @@
 plugins {
     id 'java'
+
+    // always depends on the latest snapshot of Spoon
+    // https://github.com/patrikerdes/gradle-use-latest-versions-plugin
+    id 'se.patrikerdes.use-latest-versions' version '0.2.12'
+    id 'com.github.ben-manes.versions' version '0.21.0'
 }
 
-group 'fr.inria.spoon'
+group 'fr.inria.gforge.spoon'
 version '1.0'
 
 sourceCompatibility = 1.8
