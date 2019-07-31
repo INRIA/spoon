@@ -100,13 +100,10 @@ import spoon.test.position.testclasses.TypeParameter;
 import spoon.test.query_function.testclasses.VariableReferencesModelTest;
 import spoon.testing.utils.ModelUtils;
 
-import static org.hamcrest.core.AllOf.allOf;
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -1389,15 +1386,14 @@ public class PositionTest {
 		launcher.addInputResource(new VirtualFile("public class A { public Object b() { return a < b; }}", "chunk.java"));
 		launcher.buildModel();
 
-		final List<Integer> listOfBadPositionElements = launcher.getModel()
+		final List<CtElement> listOfBadPositionElements = launcher.getModel()
 			.getElements(new TypeFilter<>(CtElement.class))
 			.stream()
 			// filtering out elements that do not have a line position
 			.filter(elt -> elt.getPosition().isValidPosition())
-			// and getting their starting position
-			.map(elt -> elt.getPosition().getLine())
 			.collect(Collectors.toList());
 
-		assertThat(listOfBadPositionElements, allOf(equalTo(1)));
+		assertTrue("Some Spoon elements have an invalid line position",
+			listOfBadPositionElements.stream().allMatch(elt -> elt.getPosition().getLine() == 1));
 	}
 }
