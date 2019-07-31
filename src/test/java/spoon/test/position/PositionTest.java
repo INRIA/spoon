@@ -16,6 +16,11 @@
  */
 package spoon.test.position;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import spoon.Launcher;
@@ -48,6 +53,7 @@ import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtImport;
@@ -61,6 +67,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.comment.testclasses.BlockComment;
 import spoon.test.comment.testclasses.Comment1;
@@ -93,15 +100,13 @@ import spoon.test.position.testclasses.TypeParameter;
 import spoon.test.query_function.testclasses.VariableReferencesModelTest;
 import spoon.testing.utils.ModelUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
+import static org.hamcrest.core.AllOf.allOf;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
@@ -1375,5 +1380,24 @@ public class PositionTest {
 		CtLambda lambda = model.getElements(new TypeFilter<>(CtLambda.class)).get(0);
 		CtFieldRead field = (CtFieldRead) (((CtInvocation) lambda.getExpression()).getTarget());
 		assertEquals("InheritedInterfacesWithLambda.Failing", field.getVariable().getDeclaringType().toString());
+	}
+
+	@Test
+	public void testLinePositionOkWithOneLineClassCode() {
+		final Launcher launcher = new Launcher();
+
+		launcher.addInputResource(new VirtualFile("public class A { public Object b() { return a < b; }}", "chunk.java"));
+		launcher.buildModel();
+
+		final List<Integer> listOfBadPositionElements = launcher.getModel()
+			.getElements(new TypeFilter<>(CtElement.class))
+			.stream()
+			// filtering out elements that do not have a line position
+			.filter(elt -> elt.getPosition().isValidPosition())
+			// and getting their starting position
+			.map(elt -> elt.getPosition().getLine())
+			.collect(Collectors.toList());
+
+		assertThat(listOfBadPositionElements, allOf(equalTo(1)));
 	}
 }
