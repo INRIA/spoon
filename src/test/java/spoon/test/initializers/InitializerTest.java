@@ -17,6 +17,8 @@
 package spoon.test.initializers;
 
 import org.junit.Test;
+import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -74,5 +76,22 @@ public class InitializerTest {
 		// static initializer
 		CtAnonymousExecutable ex = type.getElements(new TypeFilter<>(CtAnonymousExecutable.class)).get(0);
 		assertEquals("x = 3", ex.getBody().getStatements().get(0).toString());
+	}
+
+	@Test
+	public void testModelBuildingInitializerNoclasspath() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/initializer/Utf8HttpResponse.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setAutoImports(true);
+		CtModel model = launcher.buildModel();
+		CtClass<?> ctClass = model.getElements(new NamedElementFilter<>(CtClass.class, "Utf8HttpResponse")).get(0);
+
+		CtAnonymousExecutable ex = ctClass.getElements(new TypeFilter<>(CtAnonymousExecutable.class)).get(0);
+		assertEquals("UnicodeUtil.UTF8Result temp = new UnicodeUtil.UTF8Result()",
+				ex.getBody().getStatements().get(0).toString());
+		assertEquals("temp.result = new byte[0]",
+				ex.getBody().getStatements().get(1).toString());
+		assertTrue(ctClass.toString().contains("UnicodeUtil.UTF8Result temp = new UnicodeUtil.UTF8Result()"));
 	}
 }
