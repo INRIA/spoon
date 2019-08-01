@@ -1,6 +1,7 @@
 language: java
 
-dist: trusty
+# moving to Ubuntu Bionic 18.04, see https://docs.travis-ci.com/user/reference/overview/
+dist: bionic
 
 group: edge
 
