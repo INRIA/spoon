@@ -84,4 +84,3 @@ mvn versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforg
 git diff
 
 mvn test
-
