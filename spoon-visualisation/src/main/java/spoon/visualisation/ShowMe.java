@@ -25,17 +25,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
-import spoon.visualisation.command.TreeLevel;
-import spoon.visualisation.command.UpdateSpoonTree;
 
 /**
  * The main JavaFX class of the app.
@@ -55,13 +51,10 @@ public class ShowMe extends Application {
 		// Can have an argument: a java file to load
 		final Parameters params = getParameters();
 		if(!params.getUnnamed().isEmpty()) {
-			final List<String> code = Files.readAllLines(Paths.get(new File(params.getUnnamed().get(0)).toURI()));
 			final Node area = root.lookup("#spoonCode");
-			final Node tree = root.lookup("#spoonAST");
-			if(area instanceof TextArea && tree instanceof TreeView) {
-				final TextArea spoonCode = (TextArea) area;
-				spoonCode.setText(String.join(System.getProperty("line.separator"), code));
-				new UpdateSpoonTree((TreeView<String>) tree, true, spoonCode.getText(), TreeLevel.AUTO).doIt();
+			if(area instanceof TextArea) {
+				((TextArea) area).setText(String.join(System.getProperty("line.separator"),
+					Files.readAllLines(Paths.get(new File(params.getUnnamed().get(0)).toURI()))));
 			}
 		}
 	}

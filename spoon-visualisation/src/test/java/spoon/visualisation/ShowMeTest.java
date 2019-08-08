@@ -1,6 +1,6 @@
 package spoon.visualisation;
 
-import io.interacto.fsm.TimeoutTransition;
+import io.github.interacto.fsm.TimeoutTransition;
 import java.io.IOException;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;

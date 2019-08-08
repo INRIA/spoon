@@ -21,15 +21,15 @@
  */
 package spoon.visualisation.command;
 
-import io.interacto.command.CommandImpl;
+import io.github.interacto.command.CommandImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import spoon.visualisation.spoon.SpoonElementVisitor;
-import spoon.visualisation.spoon.SpoonTreeScanner;
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
 import spoon.support.compiler.VirtualFile;
+import spoon.visualisation.spoon.SpoonElementVisitor;
+import spoon.visualisation.spoon.SpoonTreeScanner;
 
 /**
  * Base class for commands that analyses Java code to extract its Spoon tree.

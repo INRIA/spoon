@@ -21,7 +21,7 @@
  */
 package spoon.visualisation.command;
 
-import io.interacto.command.CommandImpl;
+import io.github.interacto.command.CommandImpl;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;

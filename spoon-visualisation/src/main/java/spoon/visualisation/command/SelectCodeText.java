@@ -21,7 +21,7 @@
  */
 package spoon.visualisation.command;
 
-import io.interacto.command.CommandImpl;
+import io.github.interacto.command.CommandImpl;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 import org.jetbrains.annotations.NotNull;

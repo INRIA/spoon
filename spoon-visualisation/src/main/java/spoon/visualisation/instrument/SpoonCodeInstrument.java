@@ -21,8 +21,8 @@
  */
 package spoon.visualisation.instrument;
 
-import io.interacto.jfx.instrument.JfxInstrument;
-import io.interacto.jfx.interaction.library.Click;
+import io.github.interacto.jfx.instrument.JfxInstrument;
+import io.github.interacto.jfx.interaction.library.Click;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.Supplier;
