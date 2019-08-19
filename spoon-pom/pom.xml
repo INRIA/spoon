@@ -302,10 +302,14 @@
             </plugin>
             <plugin>
                 <!-- Warning the configuration here is used in "mvn site", not in "mvn javadoc:javadoc" -->
-                <!-- See also -DadditionalJOption=-Xdoclint:syntax,-missing in travis-extra.sh -->
+                <!-- There is another block maven-javadoc-plugin below -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.1.1</version>
+                <configuration>
+                    <!-- see https://stackoverflow.com/a/57430117 -->
+                    <doclint>none</doclint>
+                </configuration>
                 <reportSets>
                     <reportSet>
                         <id>html</id>
@@ -377,9 +381,13 @@
                     </plugin>
 
                     <plugin>
+                        <!-- Warning: there is another block maven-javadoc-plugin above -->
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.0.0-M1</version>
+                        <version>3.1.1</version>
+                        <configuration>
+                            <doclint>none</doclint>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
