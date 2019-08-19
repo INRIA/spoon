@@ -76,8 +76,11 @@ export LD_LIBRARY_PATH=./z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04/bin
 ##################################################################
 cd ../spoon-visualisation
 
+wget https://raw.githubusercontent.com/sormuras/bach/master/install-jdk.sh
+chmod +x install-jdk.sh
+
 export JAVA_HOME=$HOME/openjdk11
-$TRAVIS_BUILD_DIR/install-jdk.sh --install openjdk11 --target $JAVA_HOME
+./install-jdk.sh --install openjdk11 --target $JAVA_HOME
 
 # always depends on the latest snapshot, just installed with "mvn install" above
 mvn versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
