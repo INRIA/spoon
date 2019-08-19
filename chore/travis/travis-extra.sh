@@ -79,8 +79,8 @@ cd ../spoon-visualisation
 wget https://raw.githubusercontent.com/sormuras/bach/master/install-jdk.sh
 chmod +x install-jdk.sh
 
+source ./install-jdk.sh -f 11 -c
 export JAVA_HOME=$HOME/openjdk11
-./install-jdk.sh --install openjdk11 --target $JAVA_HOME
 
 # always depends on the latest snapshot, just installed with "mvn install" above
 mvn versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
