@@ -1,10 +1,7 @@
-# Spoon Visualisation
+# Visualization of Spoon ASTs with JavaFX
 
-A JavaFX app for visualising the Spoon tree of Java code (Java 11 supported).
-
-An alternative to the native GUI support of Spoon ASTs with Spoon:
-
-`$ java -cp spoon...-jar-with-dependencies.jar spoon.Launcher -i class.java --gui --noclasspath`
+A JavaFX app for visualising the Spoon abstract syntaxt tree of Java code (Java 11 supported).
+It is an alternative to the Swing-based GUI of Spoon ASTs (`$ java -cp spoon...-jar-with-dependencies.jar spoon.Launcher -i class.java --gui --noclasspath`)
 
 ## Contributors
 
@@ -53,14 +50,7 @@ The button `Save` exports the tree view of the current Java code in a text file.
 
 ## Feature: analysis level
 
-Users can set the analysis level: `auto`, `class element`, `statement`, `expression`.
-
-The `auto` level tries to detect the level automatically by starting parsing the code as a Java class (then class element, etc.):
-
-![auto](doc/appAuto.png)
-
-The `auto` level may fail, in particular with statements or expressions.
-So users can define a specific level manually.
+Users can set the analysis level: `class element`, `statement`, `expression`, `auto`.
 
 The `class element` level corresponds to fields, methods, etc., of a class:
 
@@ -74,8 +64,12 @@ The `expression` level corresponds to any Java expression:
 
 ![auto](doc/appExp.png)
 
+The `auto` level tries to detect the level automatically by starting parsing the code as a Java class (then class element, etc.):
+
+![auto](doc/appAuto.png)
+
+
 
 ## Feature: one argument to load a Java file
 
 The app can take one argument: the path of a Java file to load.
-  
