@@ -222,6 +222,8 @@ public class CtClassTest {
 
 	@Test
 	public void toStringWithImports() {
+		String newLine = System.getProperty("line.separator");
+
 		final Launcher launcher2 = new Launcher();
 		launcher2.addInputResource("./src/test/java/spoon/test/ctClass/");
 		launcher2.getEnvironment().setNoClasspath(true);
@@ -231,39 +233,33 @@ public class CtClassTest {
 		aClass2.accept(djpp);
 
 		// contract: a class can be printed with full context
-		assertEquals("package spoon.test.ctClass.testclasses;\n" +
-				"\n" +
-				"\n" +
-				"/**\n" +
-				" * Created by urli on 11/10/2017.\n" +
-				" */\n" +
-				"public class AnonymousClass {\n" +
-				"    final int machin = new java.util.Comparator<java.lang.Integer>() {\n" +
-				"        @java.lang.Override\n" +
-				"        public int compare(java.lang.Integer o1, java.lang.Integer o2) {\n" +
-				"            return 0;\n" +
-				"        }\n" +
-				"    }.compare(1, 2);\n" +
+		assertEquals("package spoon.test.ctClass.testclasses;" + newLine +
+				"/**" + newLine +
+				" * Created by urli on 11/10/2017." + newLine +
+				" */" + newLine +
+				"public class AnonymousClass {" + newLine +
+				"    final int machin = new java.util.Comparator<java.lang.Integer>() {" + newLine +
+				"        @java.lang.Override" + newLine +
+				"        public int compare(java.lang.Integer o1, java.lang.Integer o2) {" + newLine +
+				"            return 0;" + newLine +
+				"        }" + newLine +
+				"    }.compare(1, 2);" + newLine +
 				"}", aClass2.toStringWithImports());
 
 		// contract: a class can be printed with full context in autoimports
 		aClass2.getFactory().getEnvironment().setAutoImports(true);
-		assertEquals("package spoon.test.ctClass.testclasses;\n" +
-				"\n" +
-				"\n" +
-				"import java.util.Comparator;\n" +
-				"\n" +
-				"\n" +
-				"/**\n" +
-				" * Created by urli on 11/10/2017.\n" +
-				" */\n" +
-				"public class AnonymousClass {\n" +
-				"    final int machin = new Comparator<Integer>() {\n" +
-				"        @Override\n" +
-				"        public int compare(Integer o1, Integer o2) {\n" +
-				"            return 0;\n" +
-				"        }\n" +
-				"    }.compare(1, 2);\n" +
+		assertEquals("package spoon.test.ctClass.testclasses;" + newLine +
+				"import java.util.Comparator;" + newLine +
+				"/**" + newLine +
+				" * Created by urli on 11/10/2017." + newLine +
+				" */" + newLine +
+				"public class AnonymousClass {" + newLine +
+				"    final int machin = new Comparator<Integer>() {" + newLine +
+				"        @Override" + newLine +
+				"        public int compare(Integer o1, Integer o2) {" + newLine +
+				"            return 0;" + newLine +
+				"        }" + newLine +
+				"    }.compare(1, 2);" + newLine +
 				"}", aClass2.toStringWithImports());
 	}
 

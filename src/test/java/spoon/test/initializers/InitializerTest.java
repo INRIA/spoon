@@ -27,6 +27,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.imports.ImportTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -88,10 +89,10 @@ public class InitializerTest {
 		CtClass<?> ctClass = model.getElements(new NamedElementFilter<>(CtClass.class, "Utf8HttpResponse")).get(0);
 
 		CtAnonymousExecutable ex = ctClass.getElements(new TypeFilter<>(CtAnonymousExecutable.class)).get(0);
-		assertEquals("UnicodeUtil.UTF8Result temp = new UnicodeUtil.UTF8Result()",
+		assertEquals("org.apache.lucene.util.UnicodeUtil.UTF8Result temp = new org.apache.lucene.util.UnicodeUtil.UTF8Result()",
 				ex.getBody().getStatements().get(0).toString());
 		assertEquals("temp.result = new byte[0]",
 				ex.getBody().getStatements().get(1).toString());
-		assertTrue(ctClass.toString().contains("UnicodeUtil.UTF8Result temp = new UnicodeUtil.UTF8Result()"));
+		assertTrue(ImportTest.printByPrinter(ctClass).contains("UnicodeUtil.UTF8Result temp = new UnicodeUtil.UTF8Result()"));
 	}
 }
