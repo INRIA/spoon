@@ -56,7 +56,7 @@ public class CtUnresolvedImport extends CtElementImpl implements CtImport {
 
 	@Override
 	public void accept(CtImportVisitor visitor) {
-
+		visitor.visitUnresolvedImport(this);
 	}
 
 	@Override

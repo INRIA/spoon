@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtImport;
@@ -150,6 +151,10 @@ class TypeNameScope extends NameScopeImpl {
 							}
 						}
 					});
+				}
+				@Override
+				public <T> void visitUnresolvedImport(CtUnresolvedImport ctUnresolvedImport) {
+					//there is no usable type member under unresolved import
 				}
 			});
 		});
