@@ -538,7 +538,7 @@ public class JDTTreeBuilderHelper {
 						packageRef.setImplicit(true);
 						return;
 					}
-					if ((packageBinding.tagBits & TagBits.HasMissingType) != 0) {
+					if (packageBinding == null || (packageBinding.tagBits & TagBits.HasMissingType) != 0) {
 						/*
 						 * the packageBinding points to unresolved type like: import static daikon.PptRelation.PptRelationType;
 						 * where packageBinding is 'daikon.PptRelation'

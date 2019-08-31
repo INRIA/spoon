@@ -16,16 +16,6 @@
  */
 package spoon.reflect.visitor;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import spoon.SpoonException;
 import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.code.CtExpression;
@@ -50,6 +40,16 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.Experimental;
 import spoon.support.util.ModelList;
 import spoon.support.visitor.ClassTypingContext;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -113,7 +113,7 @@ public class ImportValidator extends AbstractCompilationUnitImportsProcessor<Imp
 			}
 			//else do nothing. E.g. in case of implicit type of lambda parameter
 			//`(e) -> {...}`
-		} else if (reference.isImplicitParent()) {
+		} else if (reference.isImplicitParent() && !(role.equals(CtRole.DECLARING_TYPE) && reference.getParent() instanceof CtTypeReference)) {
 			/*
 			 * the package is implicit. E.g. `Assert.assertTrue`
 			 * where package `org.junit` is implicit

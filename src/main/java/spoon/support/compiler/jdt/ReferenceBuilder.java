@@ -900,7 +900,17 @@ public class ReferenceBuilder {
 		} else if (binding instanceof ProblemReferenceBinding) {
 			// Spoon is able to analyze also without the classpath
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-			ref.setSimpleName(new String(binding.readableName()));
+			char[] readableName = binding.readableName();
+			StringBuilder sb = new StringBuilder();
+			for (int i = readableName.length - 1; i >= 0; i--) {
+				char c = readableName[i];
+				if (c == '.') {
+					break;
+				}
+				sb.append(c);
+			}
+			sb.reverse();
+			ref.setSimpleName(sb.toString());
 			final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
 			setPackageOrDeclaringType(ref, declaring);
 		} else if (binding instanceof JDTTreeBuilder.SpoonReferenceBinding) {

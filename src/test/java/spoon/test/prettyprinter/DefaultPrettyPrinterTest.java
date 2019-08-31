@@ -407,7 +407,7 @@ public class DefaultPrettyPrinterTest {
 		CtModel model = launcher.buildModel();
 		CtType a5 = model.getRootPackage().getType("A6");
 		String result = a5.toStringWithImports();
-		String expected = "\n\npublic class A6 {\n" +
+		String expected = "public class A6 {\n" +
 				"    public static void main(String[] args) {\n" +
 				"        int a = 1;\n" +
 				"        if (a == 1) {\n" +

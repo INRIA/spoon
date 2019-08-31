@@ -583,7 +583,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	public void reportProblemsWhenCompiling(Environment environment) {
 		for (CategorizedProblem problem : getProblems()) {
 			if (problem != null) {
-				String message = problem.getMessage() + " at " + problem.getOriginatingFileName() + ":" + problem.getSourceLineNumber();
+				String message = problem.getMessage() + " at " + new String(problem.getOriginatingFileName()) + ":" + problem.getSourceLineNumber();
 				if (problem.isError()) {
 					throw new SnippetCompilationError(message);
 				} else {
