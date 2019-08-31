@@ -23,6 +23,7 @@ import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
@@ -1479,6 +1480,12 @@ public class ImportTest {
 			public <T> void visitAllStaticMembersImport(CtTypeMemberWildcardImportReference typeReference) {
 				info.setKind(CtImportKind.ALL_STATIC_MEMBERS);
 				assertSame(imprt.getReference(), typeReference);
+			}
+			
+			@Override
+			public <T> void visitUnresolvedImport(CtUnresolvedImport ctUnresolvedImport) {
+				info.setKind(CtImportKind.UNRESOLVED);
+				assertSame(imprt.getReference(), ctUnresolvedImport);
 			}
 		});
 		assertSame(imprt.getImportKind(), info.kind);
