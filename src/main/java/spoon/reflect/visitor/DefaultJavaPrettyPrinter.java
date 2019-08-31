@@ -8,6 +8,7 @@ package spoon.reflect.visitor;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.experimental.CtUnresolvedImport;
+import spoon.processing.Processor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
@@ -919,7 +920,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					}
 					printer.writeCodeSnippet(ctUnresolvedImport.getUnresolvedReference());
 				}
-			}
+			});
 			printer.writeSeparator(";");
 		}
 	}

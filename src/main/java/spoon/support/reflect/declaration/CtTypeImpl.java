@@ -990,10 +990,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public String toStringWithImports() {
-		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
-		printer.getImportsContext().computeImports(this);
-		printer.writeHeader(Arrays.asList(new CtType[] {this}), printer.getImportsContext().getAllImports());
-		this.accept(printer);
-		return printer.toString();
+		DefaultJavaPrettyPrinter printer = (DefaultJavaPrettyPrinter) getFactory().getEnvironment().createPrettyPrinter();
+		//this call applies print validators, which modifies model before printing
+		//and then it prints everything including package and potentially imports
+		return printer.printCompilationUnit(this.getPosition().getCompilationUnit());
 	}
 }

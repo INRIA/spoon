@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import spoon.SpoonException;
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
@@ -198,7 +199,11 @@ public class ImportValidator extends AbstractCompilationUnitImportsProcessor<Imp
 					}
 					//the import doesn't exist in computed imports. Remove it
 					if (canRemoveImports) {
-						existingImports.remove(oldImport);
+						if (oldImport instanceof CtUnresolvedImport) {
+							//never remove unresolved imports
+						} else {
+							existingImports.remove(oldImport);
+						}
 					}
 				}
 			}
