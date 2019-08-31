@@ -56,6 +56,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	 */
 	public SniperJavaPrettyPrinter(Environment env) {
 		super(env);
+		inlineElseIf = false;
 		// required for sniper mode
 		env.useTabulations(true);
 		env.setCommentEnabled(true);

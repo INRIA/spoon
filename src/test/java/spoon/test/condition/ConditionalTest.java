@@ -70,12 +70,11 @@ public class ConditionalTest {
 
 		assertEquals("if (true) {" + newLine + 
 				"    java.lang.System.out.println();" + newLine + 
-				"} else" + newLine + 
-				"    if (true) {" + newLine + 
-				"        java.lang.System.out.println();" + newLine + 
-				"    } else {" + newLine + 
-				"        java.lang.System.out.println();" + newLine + 
-				"    }" + newLine,
+				"} else if (true) {" + newLine +
+				"    java.lang.System.out.println();" + newLine +
+				"} else {" + newLine +
+				"    java.lang.System.out.println();" + newLine +
+				"}",
 				method.getBody().getStatement(0).toString());
 	}
 

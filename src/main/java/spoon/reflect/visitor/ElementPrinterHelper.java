@@ -448,6 +448,20 @@ public class ElementPrinterHelper {
 		return commentsToPrint;
 	}
 
+	public boolean isElseIf(CtIf ifStmt) {
+		if (ifStmt.getElseStatement() == null) {
+			return false;
+		}
+		if (ifStmt.getElseStatement() instanceof CtIf)  {
+			return true;
+		}
+		if (ifStmt.getElseStatement() instanceof CtBlock) {
+			CtBlock block = (CtBlock) ifStmt.getElseStatement();
+			return ((block.getStatements().size() == 1) && (block.getStatement(0) instanceof CtIf));
+		}
+		return false;
+	}
+
 	/** write all non-implicit parts of a block, with special care for indentation */
 	public void writeIfOrLoopBlock(CtStatement block) {
 		if (block != null) {

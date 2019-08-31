@@ -386,4 +386,25 @@ public class DefaultPrettyPrinterTest {
 			assertEquals("this(v, true)", m.group(1));
 		}
 	}
+
+	@Test
+	public void testElseIf() {
+		//contract: else if statements should be printed without break else and if
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/A6.java");
+		launcher.getEnvironment().setAutoImports(true);
+		CtModel model = launcher.buildModel();
+		CtType a5 = model.getRootPackage().getType("A6");
+		String result = a5.toStringWithImports();
+		String expected = "\n\npublic class A6 {\n" +
+				"    public static void main(String[] args) {\n" +
+				"        int a = 1;\n" +
+				"        if (a == 1) {\n" +
+				"        } else if (a == 2) {\n" +
+				"        } else if (a == 3) {\n" +
+				"        }\n" +
+				"    }\n" +
+				"}";
+		assertEquals(expected, result);
+	}
 }
