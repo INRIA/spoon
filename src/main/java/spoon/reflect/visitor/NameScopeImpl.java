@@ -68,6 +68,9 @@ class NameScopeImpl implements LexicalScope {
 	@Override
 	public <T> T forEachElementByName(String name, Function<? super CtNamedElement, T> consumer) {
 		T r = forEachByName(elementsByName, name, consumer);
+		if (r != null) {
+			return r;
+		}
 		if (scopeElement instanceof CtNamedElement) {
 			CtNamedElement named = (CtNamedElement) scopeElement;
 			if (name.equals(named.getSimpleName())) {
