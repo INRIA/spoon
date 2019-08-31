@@ -496,6 +496,15 @@ public class CompilationTest {
 
 		assertThat(tempDirPath.toFile().listFiles().length, not(0));
 	}
+	
+	@Test
+	public void testCompileUnresolvedFullyQualifiedName() {
+		//contract: the unresolved fully qualified type reference must not cause model building problem
+		Launcher l = new Launcher();
+		l.getEnvironment().setNoClasspath(true);
+		l.addInputResource("src/test/resources/compilation2/UnresolvedFullQualifiedType.java");
+		l.buildModel();
+	}
 
 	@Test
 	public void testBuildAstWithSyntheticMethods() {
