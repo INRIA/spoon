@@ -31,6 +31,7 @@ import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import spoon.SpoonException;
@@ -535,6 +536,16 @@ public class JDTTreeBuilderHelper {
 					if (off == 0) {
 						//the package name is implicit
 						packageRef.setImplicit(true);
+						return;
+					}
+					if ((packageBinding.tagBits & TagBits.HasMissingType) != 0) {
+						/*
+						 * the packageBinding points to unresolved type like: import static daikon.PptRelation.PptRelationType;
+						 * where packageBinding is 'daikon.PptRelation'
+						 * but it is not clear whether `PptRelation` is type or package.
+						 * JDT compiler expects it is package, while Spoon model expects it is type
+						 */
+						//keep it explicit
 						return;
 					}
 					throw new SpoonException("Unexpected QualifiedNameReference tokens " + qualifiedNameReference + " for typeRef: " + originTypeRef);
