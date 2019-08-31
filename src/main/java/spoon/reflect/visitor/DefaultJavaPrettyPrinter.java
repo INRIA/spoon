@@ -211,6 +211,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	Set<CtImport> imports;
 
+	public boolean inlineElseIf = true;
+
 	/**
 	 * Creates a new code generator visitor.
 	 */
@@ -1214,7 +1216,19 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printer.writeSpace();
 			}
 			printer.writeKeyword("else");
-			elementPrinterHelper.writeIfOrLoopBlock(elseStmt);
+			//elementPrinterHelper.writeIfOrLoopBlock(elseStmt);
+			if (inlineElseIf && elementPrinterHelper.isElseIf(ifElement)) {
+				printer.writeSpace();
+				CtIf child;
+				if (elseStmt instanceof CtBlock) {
+					child = ((CtBlock) elseStmt).getStatement(0);
+				} else {
+					child = (CtIf) elseStmt;
+				}
+				scan(child);
+			} else {
+				elementPrinterHelper.writeIfOrLoopBlock(elseStmt);
+			}
 		}
 		exitCtStatement(ifElement);
 	}
