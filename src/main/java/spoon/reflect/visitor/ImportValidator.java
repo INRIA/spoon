@@ -102,7 +102,7 @@ public class ImportValidator extends AbstractCompilationUnitImportsProcessor<Imp
 			}
 			//else do nothing. E.g. in case of implicit type of lambda parameter
 			//`(e) -> {...}`
-		} else if (reference.isImplicitParent() && !(role.equals(CtRole.DECLARING_TYPE) && reference.getParent() instanceof CtTypeReference)) {
+		} else if (reference.isImplicitParent()) {
 			/*
 			 * the package is implicit. E.g. `Assert.assertTrue`
 			 * where package `org.junit` is implicit

@@ -76,6 +76,10 @@ abstract class AbstractCompilationUnitImportsProcessor<T extends CtScanner, U> e
 			CtRole.TYPE
 	));
 
+	/**
+	 * {@link CtScannerListener} implementation which stops scanning of children on elements,
+	 * which mustn't have influence to compilation unit imports.
+	 */
 	protected class ScannerListener implements CtScannerListener {
 		protected T scanner;
 		protected Set<CtRole> ignoredRoles = IGNORED_ROLES_WHEN_IMPLICIT;
@@ -109,7 +113,20 @@ abstract class AbstractCompilationUnitImportsProcessor<T extends CtScanner, U> e
 						 */
 						return ScanningMode.SKIP_ALL;
 					} else if (parent instanceof CtTypeReference) {
-						//continue. This is relevant for import
+						/*
+						 * It looks like this is not needed too.
+						 *
+						 * pvojtechovsky: I am sure it is not wanted in case of
+						 * spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected
+						 * which extends package protected (and for others invisible class)
+						 * spoon.test.imports.testclasses.internal.SuperClass
+						 * and in this case the import directive must import ...ChildClass and not ...SuperClass,
+						 * because import is using type "access path" and not qualified name of the type.
+						 *
+						 * ... but in other normal cases, I guess the declaring type is used and needed for import!
+						 * ... so I don't understand why SKIP_ALL works in all cases. May be there is missing test case?
+						 */
+						return ScanningMode.SKIP_ALL;
 					} else {
 						//May be this can never happen
 						throw new SpoonException("Check this case. Is it relvant or not?");
