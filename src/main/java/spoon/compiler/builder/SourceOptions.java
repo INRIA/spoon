@@ -50,7 +50,9 @@ public class SourceOptions<T extends SourceOptions<T>> extends Options<T> {
 				try {
 					File file = File.createTempFile(source.getName(), ".java");
 					file.deleteOnExit();
-					IOUtils.copy(source.getContent(), new FileOutputStream(file));
+					try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+						IOUtils.copy(source.getContent(), fileOutputStream);
+					}
 					args.add(file.toString());
 				} catch (IOException e) {
 					throw new RuntimeException(e.getMessage(), e);
