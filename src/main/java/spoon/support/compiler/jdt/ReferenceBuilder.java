@@ -148,6 +148,7 @@ public class ReferenceBuilder {
 				}
 			});
 			if (ref != null) {
+				ref.setPosition(accessedType.getPosition());
 				accessedType = ref;
 			}
 		}
@@ -255,31 +256,44 @@ public class ReferenceBuilder {
 	 */
 	<T> CtTypeReference<T> getQualifiedTypeReference(char[][] tokens, TypeBinding receiverType, ReferenceBinding enclosingType, JDTTreeBuilder.OnAccessListener listener) {
 		final List<CtExtendedModifier> listPublicProtected = Arrays.asList(new CtExtendedModifier(ModifierKind.PUBLIC), new CtExtendedModifier(ModifierKind.PROTECTED));
-		if (enclosingType != null && Collections.disjoint(listPublicProtected, JDTTreeBuilderQuery.getModifiers(enclosingType.modifiers, false, false))) {
-			String access = "";
-			int i = 0;
-			final CompilationUnitDeclaration[] units = ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor).unitsToProcess;
-			for (; i < tokens.length; i++) {
-				final char[][] qualified = Arrays.copyOfRange(tokens, 0, i + 1);
-				if (searchPackage(qualified, units) == null) {
-					access = CharOperation.toString(qualified);
-					break;
+		ReferenceBinding currentEnclosingType = enclosingType;
+		int indexProtected = 0;
+		while (currentEnclosingType != null) {
+			indexProtected++;
+			if (Collections.disjoint(listPublicProtected, JDTTreeBuilderQuery.getModifiers(currentEnclosingType.modifiers, false, false))) {
+				String access = "";
+				int i = 0;
+				final CompilationUnitDeclaration[] units = ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor).unitsToProcess;
+				for (; i < tokens.length; i++) {
+					final char[][] qualified = Arrays.copyOfRange(tokens, 0, i + 1);
+					if (searchPackage(qualified, units) == null) {
+						access = CharOperation.toString(qualified);
+						break;
+					}
 				}
-			}
-			if (!access.contains(CtPackage.PACKAGE_SEPARATOR)) {
-				access = searchType(access, this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.imports);
-			}
-			final TypeBinding accessBinding = searchTypeBinding(access, units);
-			if (accessBinding != null && listener.onAccess(tokens, i)) {
-				final TypeBinding superClassBinding = searchTypeBinding(accessBinding.superclass(), CharOperation.charToString(tokens[i + 1]));
-				if (superClassBinding != null) {
-					return this.getTypeReference(superClassBinding.clone(accessBinding));
+				if (!access.contains(CtPackage.PACKAGE_SEPARATOR)) {
+					access = searchType(access, this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.imports);
+				}
+				TypeBinding accessBinding = searchTypeBinding(access, units);
+				if (accessBinding != null && listener.onAccess(tokens, i)) {
+					ReferenceBinding superClassBinding = accessBinding.superclass();
+					for (int j = 1; j <= indexProtected && superClassBinding != null; j++) {
+						superClassBinding = (ReferenceBinding) searchTypeBinding(superClassBinding, CharOperation.charToString(tokens[i + j]));
+						if (superClassBinding != null) {
+							accessBinding = superClassBinding.clone(accessBinding);
+						}
+					}
+					if (accessBinding != null) {
+						CtTypeReference<T> typeReference = this.getTypeReference(accessBinding);
+						return typeReference;
+					} else {
+						return this.getTypeReference(receiverType);
+					}
 				} else {
 					return this.getTypeReference(receiverType);
 				}
-			} else {
-				return this.getTypeReference(receiverType);
 			}
+			currentEnclosingType = currentEnclosingType.enclosingType();
 		}
 		return null;
 	}

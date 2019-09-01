@@ -15,6 +15,7 @@ import org.eclipse.jdt.internal.compiler.ast.ModuleReference;
 import org.eclipse.jdt.internal.compiler.ast.OpensStatement;
 import org.eclipse.jdt.internal.compiler.ast.ProvidesStatement;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
+import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.RequiresStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
@@ -611,14 +612,25 @@ public class JDTTreeBuilderHelper {
 
 		if (typeDeclaration.superInterfaces != null) {
 			for (TypeReference ref : typeDeclaration.superInterfaces) {
-				final CtTypeReference superInterface = jdtTreeBuilder.references.buildTypeReference(ref, null);
+				CtTypeReference superInterface;
+				if (ref instanceof QualifiedTypeReference) {
+					superInterface = jdtTreeBuilder.references.buildTypeReference((QualifiedTypeReference) ref, typeDeclaration.scope);
+				} else {
+					superInterface = jdtTreeBuilder.references.buildTypeReference(ref, null);
+				}
 				type.addSuperInterface(superInterface);
 			}
 		}
 
 		if (type instanceof CtClass) {
 			if (typeDeclaration.superclass != null) {
-				((CtClass) type).setSuperclass(jdtTreeBuilder.references.buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
+				CtTypeReference superClass;
+				if (typeDeclaration.superclass instanceof QualifiedTypeReference) {
+					superClass = jdtTreeBuilder.references.buildTypeReference((QualifiedTypeReference) typeDeclaration.superclass, typeDeclaration.scope);
+				} else {
+					superClass = jdtTreeBuilder.references.buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope);
+				}
+				((CtClass) type).setSuperclass(superClass);
 			}
 			if (typeDeclaration.binding != null && (typeDeclaration.binding.isAnonymousType() || (typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null))) {
 				type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
