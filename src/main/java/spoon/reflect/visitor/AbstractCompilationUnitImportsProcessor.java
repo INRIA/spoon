@@ -5,10 +5,6 @@
  */
 package spoon.reflect.visitor;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
@@ -26,6 +22,10 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.support.Experimental;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Internal generic {@link Processor} of {@link CtCompilationUnit}, which scans CtCompilationUnit modules, packages and types
@@ -126,7 +126,9 @@ abstract class AbstractCompilationUnitImportsProcessor<T extends CtScanner, U> e
 						 * ... but in other normal cases, I guess the declaring type is used and needed for import!
 						 * ... so I don't understand why SKIP_ALL works in all cases. May be there is missing test case?
 						 */
-						return ScanningMode.SKIP_ALL;
+						if (!((CtTypeReference) parent).getAccessType().equals(element)) {
+							return ScanningMode.SKIP_ALL;
+						}
 					} else {
 						//May be this can never happen
 						throw new SpoonException("Check this case. Is it relvant or not?");
