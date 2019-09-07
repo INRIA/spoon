@@ -21,12 +21,16 @@ import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultImportComparator;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.ForceFullyQualifiedProcessor;
@@ -73,7 +77,18 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean processingStopped = false;
 
-	private boolean autoImports = false;
+	@Override
+	public TO_STRING_MODE getToStringMode() {
+		return toStringMode;
+	}
+
+	@Override
+	public void setToStringMode(TO_STRING_MODE toStringMode) {
+		this.toStringMode = toStringMode;
+	}
+
+	// the default value is set to maximize backward compatibility
+	private TO_STRING_MODE toStringMode = TO_STRING_MODE.BACKWARD_COMPATIBLE;
 
 	private int warningCount = 0;
 
@@ -117,8 +132,6 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private Supplier<PrettyPrinter> prettyPrinterCreator;
 
-	private List<Processor<CtCompilationUnit>> compilationUnitValidators;
-
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -133,13 +146,16 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public boolean isAutoImports() {
-		return autoImports;
+		return TO_STRING_MODE.AUTOIMPORT.equals(toStringMode);
 	}
 
 	@Override
 	public void setAutoImports(boolean autoImports) {
-		this.autoImports = autoImports;
-		// TODO: unexpected behaviour could occur, if we reset the autoimport AFTER the pretty printer is created...
+		if (autoImports == true) {
+			toStringMode = TO_STRING_MODE.AUTOIMPORT;
+		} else {
+			toStringMode = TO_STRING_MODE.BACKWARD_COMPATIBLE;
+		}
 	}
 
 	@Override
@@ -636,7 +652,35 @@ private transient  ClassLoader inputClassloader;
 			// DJPP is the default mode
 			// fully backward compatible
 			DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
-			printer.setPreprocessors(getCompilationUnitValidators());
+
+			if (TO_STRING_MODE.AUTOIMPORT.equals(toStringMode)) {
+				List<Processor<CtCompilationUnit>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
+						//try to import as much types as possible
+						new ForceImportProcessor(),
+						//remove unused imports first. Do not add new imports at time when conflicts are not resolved
+						new ImportValidator().setCanAddImports(false),
+						//solve conflicts, the current imports are relevant too
+						new NameConflictValidator(),
+						//compute final imports
+						new ImportValidator().setImportComparator(new DefaultImportComparator())
+				));
+				printer.setPreprocessors(preprocessors);
+			}
+
+			if (TO_STRING_MODE.BACKWARD_COMPATIBLE.equals(toStringMode)) {
+				List<Processor<CtCompilationUnit>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
+						//force fully qualified
+						new ForceFullyQualifiedProcessor(),
+						//remove unused imports first. Do not add new imports at time when conflicts are not resolved
+						new ImportValidator().setCanAddImports(false),
+						//solve conflicts, the current imports are relevant too
+						new NameConflictValidator(),
+						//compute final imports
+						new ImportValidator().setImportComparator(new DefaultImportComparator())
+				));
+				printer.setPreprocessors(preprocessors);
+			}
+
 			return printer;
 		}
 		return prettyPrinterCreator.get();
@@ -655,45 +699,5 @@ private transient  ClassLoader inputClassloader;
 	@Override
 	public void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations) {
 		this.ignoreDuplicateDeclarations = ignoreDuplicateDeclarations;
-	}
-
-	@Override
-	public List<Processor<CtCompilationUnit>> getCompilationUnitValidators() {
-		if (compilationUnitValidators == null) {
-			if (isAutoImports()) {
-				return Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
-					//try to import as much types as possible
-					new ForceImportProcessor(),
-					//remove unused imports first. Do not add new imports at time when conflicts are not resolved
-					new ImportValidator().setCanAddImports(false),
-					//solve conflicts, the current imports are relevant too
-					new NameConflictValidator(),
-					//compute final imports
-					new ImportValidator().setImportComparator(new DefaultImportComparator())
-				));
-			} else {
-				return Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
-						//force fully qualified
-						new ForceFullyQualifiedProcessor(),
-						//remove unused imports first. Do not add new imports at time when conflicts are not resolved
-						new ImportValidator().setCanAddImports(false),
-						//solve conflicts, the current imports are relevant too
-						new NameConflictValidator(),
-						//compute final imports
-						new ImportValidator().setImportComparator(new DefaultImportComparator())
-					));
-			}
-		}
-		return Collections.unmodifiableList(compilationUnitValidators);
-	}
-
-	@Override
-	public void setCompilationUnitValidators(List<Processor<CtCompilationUnit>> compilationUnitValidators) {
-		if (compilationUnitValidators != null) {
-			this.compilationUnitValidators = new ArrayList<>(compilationUnitValidators);
-		} else {
-			//use default validators again
-			this.compilationUnitValidators = null;
-		}
 	}
 }

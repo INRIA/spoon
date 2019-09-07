@@ -8,24 +8,22 @@ package spoon.compiler;
 import org.apache.log4j.Level;
 import spoon.OutputType;
 import spoon.compiler.builder.EncodingProvider;
-import spoon.support.modelobs.FineModelChangeListener;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
-import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.PrettyPrinter;
-import spoon.support.OutputDestinationHandler;
 import spoon.support.CompressionType;
+import spoon.support.OutputDestinationHandler;
 import spoon.support.compiler.SpoonProgress;
+import spoon.support.modelobs.FineModelChangeListener;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -44,6 +42,10 @@ public interface Environment {
 	 * Sets the Java version compliance level.
 	 */
 	void setComplianceLevel(int level);
+
+	TO_STRING_MODE getToStringMode();
+
+	void setToStringMode(TO_STRING_MODE toStringMode);
 
 	/**
 	 * This method should be called to print out a message with a source
@@ -433,17 +435,14 @@ public interface Environment {
 	 */
 	void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations);
 
-	/**
-	 * @return list of {@link Processor}, which are used to validate and fix model before it's printing
-	 *
-	 * Note: by default the validators depends on {@link #isAutoImports()}
-	 */
-	List<Processor<CtCompilationUnit>> getCompilationUnitValidators();
+	public enum TO_STRING_MODE {
+		/** no preprocessors of the model before pretty-printing */
+		VANILLA,
 
-	/**
-	 * @param compilationUnitValidators list of {@link Processor}, which have to be used to validate and fix model before it's printing
-	 *
-	 * Note: once this method is called, the calling of {@link #setAutoImports(boolean)} makes no sense
-	 */
-	void setCompilationUnitValidators(List<Processor<CtCompilationUnit>> compilationUnitValidators);
+		/** autoimport mode */
+		AUTOIMPORT,
+
+		/** super tailored import to minimize the impact on toString */
+		BACKWARD_COMPATIBLE
+	}
 }
