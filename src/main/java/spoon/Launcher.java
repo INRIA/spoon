@@ -446,8 +446,10 @@ public class Launcher implements SpoonAPI {
 		// environment initialization
 		environment.setComplianceLevel(jsapActualArgs.getInt("compliance"));
 		environment.setLevel(jsapActualArgs.getString("level"));
-		environment.setAutoImports(jsapActualArgs.getBoolean("imports"));
-
+		if (jsapActualArgs.getBoolean("imports")) {
+			environment.setToStringMode(Environment.TO_STRING_MODE.AUTOIMPORT);
+	    }
+		
 		if (jsapActualArgs.getBoolean("noclasspath")) {
 			Launcher.LOGGER.warn("The usage of --noclasspath argument is now deprecated: noclasspath is now the default behaviour.");
 		} else {
