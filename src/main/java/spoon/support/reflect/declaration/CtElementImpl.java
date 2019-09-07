@@ -27,12 +27,14 @@ import spoon.reflect.path.CtPath;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtAbstractVisitor;
 import spoon.reflect.visitor.CtIterator;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ModelConsistencyChecker;
+import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
@@ -276,20 +278,15 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public String toString() {
-		return print(true);
+	public String print() {
+		PrettyPrinter printer = getFactory().getEnvironment().createPrettyPrinter();
+		return printer.scan(this).getResult();
 	}
 
 	@Override
-	public String print() {
-		return print(false);
-	}
-
-	private String print(boolean forceFullyQualified) {
+	public String toString() {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
-		printer.setForceFullyQualified(forceFullyQualified);
-		//the printer is created here directly without any ImportValidator
-		//which would change the model content - it is not wanted!
+		printer.setForceFullyQualified(true);
 		String errorMessage = "";
 		try {
 			printer.scan(this);

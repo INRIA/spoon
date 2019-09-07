@@ -5,6 +5,7 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.compiler.Environment;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
@@ -392,12 +393,12 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	List<CtElement> getDirectChildren();
 
 	/**
-	 * @return pretty printed source code of this element.
+	 * @return print source code of this element.
 	 *
-	 * Note: `implicit` elements are not printed.
-	 * The model is not modified by printing.
-	 * It means it doesn't try to fix model inconsistencies (if any)
-	 * so invalid model causes printing of invalid sources.
+	 * {@link Environment#getToStringMode()} is not taken into account, it is only taken into account when writing to disk.
 	 */
+	String toString();
+
 	String print();
+
 }
