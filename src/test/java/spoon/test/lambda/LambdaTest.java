@@ -309,7 +309,7 @@ public class LambdaTest {
 		final CtParameter<?> ctParameterFirstLambda = lambda1.getParameters().get(0);
 		assertEquals("s", ctParameterFirstLambda.getSimpleName());
 		assertTrue(ctParameterFirstLambda.getType().isImplicit());
-		assertEquals("", ctParameterFirstLambda.getType().print());
+		assertEquals("", ctParameterFirstLambda.getType().prettyprint());
 		assertEquals("spoon.test.lambda.testclasses.Bar.SingleSubscriber<? super T>", ctParameterFirstLambda.getType().toString());
 		assertEquals("SingleSubscriber", ctParameterFirstLambda.getType().getSimpleName());
 	}
@@ -337,7 +337,7 @@ public class LambdaTest {
 
 		final CtArrayTypeReference typeParameter = (CtArrayTypeReference) ctParameter.getType();
 		assertTrue(typeParameter.getComponentType().isImplicit());
-		assertEquals("", typeParameter.getComponentType().print());
+		assertEquals("", typeParameter.getComponentType().prettyprint());
 		assertEquals("java.lang.Object", typeParameter.getComponentType().toString());
 		assertEquals("Object", typeParameter.getComponentType().getSimpleName());
 	}
@@ -350,14 +350,14 @@ public class LambdaTest {
 		final CtParameter<?> firstParam = lambda.getParameters().get(0);
 		assertEquals("rs", firstParam.getSimpleName());
 		assertTrue(firstParam.getType().isImplicit());
-		assertEquals("", firstParam.getType().print());
+		assertEquals("", firstParam.getType().prettyprint());
 		assertEquals("java.sql.ResultSet", firstParam.getType().toString());
 		assertEquals("ResultSet", firstParam.getType().getSimpleName());
 
 		final CtParameter<?> secondParam = lambda.getParameters().get(1);
 		assertEquals("i", secondParam.getSimpleName());
 		assertTrue(secondParam.getType().isImplicit());
-		assertEquals("", secondParam.getType().print());
+		assertEquals("", secondParam.getType().prettyprint());
 		assertEquals("int", secondParam.getType().toString());
 		assertEquals("int", secondParam.getType().getSimpleName());
 	}

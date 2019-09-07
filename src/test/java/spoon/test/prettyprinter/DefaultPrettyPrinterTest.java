@@ -128,7 +128,7 @@ public class DefaultPrettyPrinterTest {
 		//TODO remove that after implicit is set correctly for these cases
 		assertTrue(factory.getEnvironment().createPrettyPrinter().printTypes(aClass).contains(expected));
 		
-		assertEquals(expected, aClass.print());
+		assertEquals(expected, aClass.prettyprint());
 
 		final CtConstructorCall<?> constructorCall = aClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class)).get(0);
 
@@ -222,7 +222,7 @@ public class DefaultPrettyPrinterTest {
 			+ "    localField = ENUM.E1.ordinal();" + nl
 			+ "}";
 
-		computed = aClass.getMethodsByName("setFieldUsingLocallyDefinedEnum").get(0).print();
+		computed = aClass.getMethodsByName("setFieldUsingLocallyDefinedEnum").get(0).prettyprint();
 		assertEquals(expected, computed);
 
 		expected =
@@ -230,7 +230,7 @@ public class DefaultPrettyPrinterTest {
 			+ "    spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField = localField;" + nl
 			+ "}";
 
-		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).print();
+		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).prettyprint();
 		assertEquals("The static field of an external type with the same identifier as the compilation unit is printed with FQN", expected, computed);
 
 		expected =
@@ -241,7 +241,7 @@ public class DefaultPrettyPrinterTest {
 
 		//Ensure the ClassA of Class0 takes precedence over an import statement for ClassA in Class1, and its identifier can be the short version.
 
-		computed = aClass.getMethodsByName("referToTwoInnerClassesWithTheSameName").get(0).print();
+		computed = aClass.getMethodsByName("referToTwoInnerClassesWithTheSameName").get(0).prettyprint();
 		assertEquals("where inner types have the same identifier only one may be shortened and the other should be fully qualified", expected, computed);
 
 		expected =
@@ -255,7 +255,7 @@ public class DefaultPrettyPrinterTest {
 			+ "    }" + nl
 			+ "}";
 
-		computed = aClass.getNestedType("ENUM").print();
+		computed = aClass.getNestedType("ENUM").prettyprint();
 		assertEquals(expected, computed);
 	}
 

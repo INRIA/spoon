@@ -393,15 +393,17 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	List<CtElement> getDirectChildren();
 
 	/**
-	 * @return the source code of this element, with full-qualified types.
+	 * @return the source code of this element, with fully-qualified types.
 	 *
 	 * {@link Environment#getToStringMode()} is not taken into account
+	 *
+	 * Use {@link #prettyprint()} for a nice source code.
 	 */
 	String toString();
 
 	/**
 	 * @return the source code of this element accorfing to {@link Environment#getToStringMode()}.
 	 */
-	String print();
+	String prettyprint();
 
 }

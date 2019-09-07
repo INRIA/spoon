@@ -1576,7 +1576,7 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		//and then it prints everything
 		String printedCU = pp.printCompilationUnit(element.getPosition().getCompilationUnit());
 		//this code just prints required element (the validators already modified model in previous command)
-		String printedElement = element.print();
+		String printedElement = element.prettyprint();
 		//check that element is printed same like it would be done by printer
 		//but we have to ignore indentation first
 		assertTrue(removeIndentation(printedCU).indexOf(removeIndentation(printedElement)) >= 0);

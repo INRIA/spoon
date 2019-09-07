@@ -73,7 +73,6 @@ import spoon.test.generics.testclasses3.ClassThatBindsAGenericType;
 import spoon.test.generics.testclasses3.ClassThatDefinesANewTypeArgument;
 import spoon.test.generics.testclasses3.Foo;
 import spoon.test.generics.testclasses3.GenericConstructor;
-import spoon.test.main.MainTest;
 import spoon.test.generics.testclasses.EnumSetOf;
 import spoon.test.generics.testclasses.FakeTpl;
 import spoon.test.generics.testclasses.Lunch;
@@ -173,7 +172,7 @@ public class GenericsTest {
 
 		// the diamond is resolved to String but we don't print it, so we use the fully qualified name.
 		assertTrue(val.getType().getActualTypeArguments().get(0).isImplicit());
-		assertEquals("", val.getType().getActualTypeArguments().get(0).print());
+		assertEquals("", val.getType().getActualTypeArguments().get(0).prettyprint());
 		assertEquals("java.lang.String", val.getType().getActualTypeArguments().get(0).getQualifiedName());
 		assertEquals("new java.util.ArrayList<>()",val.toString());
 	}
@@ -300,7 +299,7 @@ public class GenericsTest {
 					.getActualClass());
 
 			//print prints model following implicit same like in origin source
-			assertEquals("Map.Entry", ref.print());
+			assertEquals("Map.Entry", ref.prettyprint());
 
 			CtField<?> y = type.getElements(new NamedElementFilter<>(CtField.class,"y"))
 					.get(0);

@@ -107,7 +107,7 @@ public class ConstructorCallTest {
 		assertEquals("", implicitArrayTyped.toString());
 		assertEquals("AtomicLong[]", implicitArrayTyped.getSimpleName());
 		assertTrue(implicitArrayTyped.getComponentType().isImplicit());
-		assertEquals("", implicitArrayTyped.getComponentType().print());
+		assertEquals("", implicitArrayTyped.getComponentType().prettyprint());
 		assertEquals("AtomicLong", implicitArrayTyped.getComponentType().getSimpleName());
 	}
 
