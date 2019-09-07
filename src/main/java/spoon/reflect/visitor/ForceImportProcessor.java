@@ -16,23 +16,23 @@ import spoon.support.Experimental;
 
 
 /**
- * Marks package references implicit so all type will get imported
+ * Marks all types references as implicit so all types will get imported.
  */
 @Experimental
-public class ForceImportProcessor extends AbstractCompilationUnitImportsProcessor<LexicalScopeScanner, LexicalScope> {
+public class ForceImportProcessor extends ImportAnalyzer<LexicalScopeScanner, LexicalScope> {
 
 	@Override
-	protected LexicalScopeScanner createRawScanner() {
+	protected LexicalScopeScanner createScanner() {
 		return new LexicalScopeScanner();
 	}
 
 	@Override
-	protected LexicalScope getContext(LexicalScopeScanner scanner) {
+	protected LexicalScope getScannerContextInformation(LexicalScopeScanner scanner) {
 		return scanner.getCurrentLexicalScope();
 	}
 
 	@Override
-	protected void handleTypeReference(LexicalScope nameScope, CtRole role, CtTypeReference<?> reference) {
+	protected void handleTypeReference(CtTypeReference<?> reference, LexicalScope nameScope, CtRole role) {
 		if (reference.getPackage() != null) {
 			//force import of package of top level types only
 			reference.setImplicitParent(true);
@@ -64,8 +64,9 @@ public class ForceImportProcessor extends AbstractCompilationUnitImportsProcesso
 		}
 	}
 
-
-	protected void handleTargetedExpression(LexicalScope nameScope, CtRole role, CtTargetedExpression<?, ?> targetedExpression, CtExpression<?> target) {
+	@Override
+	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, LexicalScope nameScope, CtRole role) {
+		CtExpression<?> target = targetedExpression.getTarget();
 		if (target.isImplicit()) {
 			return;
 		}

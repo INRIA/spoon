@@ -47,24 +47,25 @@ import java.util.stream.Collectors;
  * It doesn't fix wrong used implicit which causes conflicts. The fixing is task of {@link NameConflictValidator}
  */
 @Experimental
-public class ImportValidator extends AbstractCompilationUnitImportsProcessor<ImportValidator.MyScanner, ImportValidator.Context> {
+public class ImportValidator extends ImportAnalyzer<ImportValidator.MyScanner, ImportValidator.Context> {
 
 	private Comparator<CtImport> importComparator;
 	private boolean canAddImports = true;
 	private boolean canRemoveImports = true;
 
 	@Override
-	protected MyScanner createRawScanner() {
+	protected MyScanner createScanner() {
 		return new MyScanner();
 	}
 
 	@Override
-	protected Context getContext(MyScanner scanner) {
+	protected Context getScannerContextInformation(MyScanner scanner) {
 		return scanner.context;
 	}
 
 	@Override
-	protected void handleTargetedExpression(Context context, CtRole role, CtTargetedExpression<?, ?> targetedExpression, CtExpression<?> target) {
+	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, Context context, CtRole role) {
+		CtExpression<?> target = targetedExpression.getTarget();
 		if (target != null && target.isImplicit()) {
 			if (target instanceof CtTypeAccess) {
 				if (targetedExpression instanceof CtFieldAccess) {
@@ -82,7 +83,7 @@ public class ImportValidator extends AbstractCompilationUnitImportsProcessor<Imp
 	}
 
 	@Override
-	protected void handleTypeReference(Context context, CtRole role, CtTypeReference<?> reference) {
+	protected void handleTypeReference(CtTypeReference<?> reference, Context context, CtRole role) {
 		if (reference.isImplicit()) {
 			/*
 			 * the reference is implicit. E.g. `assertTrue();`

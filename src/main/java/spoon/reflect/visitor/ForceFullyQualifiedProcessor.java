@@ -22,20 +22,20 @@ import spoon.support.Experimental;
  * Removes all imports from compilation unit and forces fully qualified identifiers
  */
 @Experimental
-public class ForceFullyQualifiedProcessor extends AbstractCompilationUnitImportsProcessor<LexicalScopeScanner, LexicalScope> {
+public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScopeScanner, LexicalScope> {
 
 	@Override
-	protected LexicalScopeScanner createRawScanner() {
+	protected LexicalScopeScanner createScanner() {
 		return new LexicalScopeScanner();
 	}
 
 	@Override
-	protected LexicalScope getContext(LexicalScopeScanner scanner) {
+	protected LexicalScope getScannerContextInformation(LexicalScopeScanner scanner) {
 		return scanner.getCurrentLexicalScope();
 	}
 
 	@Override
-	protected void handleTypeReference(LexicalScope nameScope, CtRole role, CtTypeReference<?> reference) {
+	protected void handleTypeReference(CtTypeReference<?> reference, LexicalScope nameScope, CtRole role) {
 		if (reference.isImplicitParent() || reference.isImplicit()) {
 			if (isThisAccess(reference)) {
 				//do not force FQ names in this access
@@ -58,17 +58,6 @@ public class ForceFullyQualifiedProcessor extends AbstractCompilationUnitImports
 	}
 
 	protected boolean isTypeReferenceToEnclosingType(LexicalScope nameScope, CtTypeReference<?> reference) {
-//		String qName = reference.getQualifiedName();
-//		return Boolean.TRUE == nameScope.forEachElementByName(reference.getSimpleName(), named -> {
-//			if (named instanceof CtType) {
-//				CtType<?> type = (CtType<?>) named;
-//				if (qName.equals(type.getQualifiedName())) {
-//					return Boolean.TRUE;
-//				}
-//			}
-//			return null;
-//		});
-		//expected by LambdaTest
 		CtType<?> enclosingType = reference.getParent(CtType.class);
 		return enclosingType == null ? false : reference.getQualifiedName().equals(enclosingType.getQualifiedName());
 	}
@@ -85,7 +74,8 @@ public class ForceFullyQualifiedProcessor extends AbstractCompilationUnitImports
 	}
 
 	@Override
-	protected void handleTargetedExpression(LexicalScope nameScope, CtRole role, CtTargetedExpression<?, ?> targetedExpression, CtExpression<?> target) {
+	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, LexicalScope nameScope, CtRole role) {
+		CtExpression<?> target = targetedExpression.getTarget();
 		if (!target.isImplicit()) {
 			return;
 		}

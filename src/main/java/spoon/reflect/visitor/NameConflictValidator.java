@@ -50,20 +50,21 @@ import spoon.support.Experimental;
  * and fixes them by call of {@link CtElement#setImplicit(boolean)} and {@link CtTypeReference#setImplicitParent(boolean)}
  */
 @Experimental
-public class NameConflictValidator extends AbstractCompilationUnitImportsProcessor<LexicalScopeScanner, LexicalScope> {
+public class NameConflictValidator extends ImportAnalyzer<LexicalScopeScanner, LexicalScope> {
 
 	@Override
-	protected LexicalScopeScanner createRawScanner() {
+	protected LexicalScopeScanner createScanner() {
 		return new LexicalScopeScanner();
 	}
 
 	@Override
-	protected LexicalScope getContext(LexicalScopeScanner scanner) {
+	protected LexicalScope getScannerContextInformation(LexicalScopeScanner scanner) {
 		return scanner.getCurrentLexicalScope();
 	}
 
 	@Override
-	protected void handleTargetedExpression(LexicalScope nameScope, CtRole role, CtTargetedExpression<?, ?> targetedExpression, CtExpression<?> target) {
+	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, LexicalScope nameScope, CtRole role) {
+		CtExpression<?> target = targetedExpression.getTarget();
 		if (targetedExpression instanceof CtFieldAccess<?>) {
 			CtFieldAccess<?> fieldAccess = (CtFieldAccess<?>) targetedExpression;
 			if (target.isImplicit()) {
@@ -102,7 +103,7 @@ public class NameConflictValidator extends AbstractCompilationUnitImportsProcess
 	}
 
 	@Override
-	protected void handleTypeReference(LexicalScope nameScope, CtRole role, CtTypeReference<?> ref) {
+	protected void handleTypeReference(CtTypeReference<?> ref, LexicalScope nameScope, CtRole role) {
 		if (ref.isImplicit()) {
 			/*
 			 * the reference is implicit. E.g. `assertTrue();`
