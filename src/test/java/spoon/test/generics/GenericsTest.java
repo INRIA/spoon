@@ -298,9 +298,6 @@ public class GenericsTest {
 			assertSame(java.util.Map.class, ref.getDeclaringType()
 					.getActualClass());
 
-			//print prints model following implicit same like in origin source
-			assertEquals("Map.Entry", ref.prettyprint());
-
 			CtField<?> y = type.getElements(new NamedElementFilter<>(CtField.class,"y"))
 					.get(0);
 			assertEquals("java.util.Map.Entry<?, ?> y;", y.toString());
