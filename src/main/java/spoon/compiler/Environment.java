@@ -435,7 +435,7 @@ public interface Environment {
 	 */
 	void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations);
 
-	public enum TO_STRING_MODE {
+	enum TO_STRING_MODE {
 		/** no preprocessors of the model before pretty-printing */
 		VANILLA,
 

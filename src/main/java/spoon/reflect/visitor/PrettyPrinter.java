@@ -10,7 +10,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.List;
 import java.util.Map;

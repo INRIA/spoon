@@ -30,7 +30,7 @@ import java.util.Set;
 /**
  *{@link Processor} of {@link CtCompilationUnit}, which scans CtCompilationUnit modules, packages and types
  * with purpose to find type references and expressions which might influence import directives.
- * 
+ *
  * Subclasses create a scanner ({@link #createScanner()}) and analyzes the elements to be imported {@link #handleTypeReference} and {@link #handleTargetedExpression(CtTargetedExpression, Object, CtRole)}
  *
  */
