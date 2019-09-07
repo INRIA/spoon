@@ -314,6 +314,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	protected void exit(CtElement e) {
 	}
 
+	@Override
+	public DefaultJavaPrettyPrinter prettyprint(CtElement e) {
+		return scan(e);
+	}
+
 	/**
 	 * The generic scan method for an element.
 	 */
