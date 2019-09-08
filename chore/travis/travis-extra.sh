@@ -39,11 +39,6 @@ git diff
 
 mvn test
 
-mvn verify license:check javadoc:jar install -DskipTests
-
-# checkstyle in src/tests
-mvn  checkstyle:checkstyle -Pcheckstyle-test
-
 ##################################################################
 # Spoon-control-flow
 ##################################################################
@@ -54,11 +49,6 @@ mvn versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforg
 git diff
 
 mvn test
-
-mvn verify license:check javadoc:jar install -DskipTests
-
-# checkstyle in src/tests
-mvn  checkstyle:checkstyle -Pcheckstyle-test
 
 ##################################################################
 # Spoon-dataflow
