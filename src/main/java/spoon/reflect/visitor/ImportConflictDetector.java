@@ -26,7 +26,7 @@ import spoon.support.Experimental;
 
 
 /**
- * Detects conflict of
+ * Detects conflicts needed to be required be a fully-qualified name.
  *
  * 1) Example: conflict of field name with an variable name and fixes it by making field target explicit.
  * <code><pre>
@@ -50,7 +50,7 @@ import spoon.support.Experimental;
  * and fixes them by call of {@link CtElement#setImplicit(boolean)} and {@link CtTypeReference#setImplicitParent(boolean)}
  */
 @Experimental
-public class NameConflictValidator extends ImportAnalyzer<LexicalScopeScanner, LexicalScope> {
+public class ImportConflictDetector extends ImportAnalyzer<LexicalScopeScanner, LexicalScope> {
 
 	@Override
 	protected LexicalScopeScanner createScanner() {

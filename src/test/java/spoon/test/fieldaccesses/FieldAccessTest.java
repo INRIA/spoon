@@ -43,7 +43,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.NameConflictValidator;
+import spoon.reflect.visitor.ImportConflictDetector;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.fieldaccesses.testclasses.B;
@@ -451,7 +451,7 @@ public class FieldAccessTest {
  		//add local variable declaration which hides the field declaration 
  		method.getBody().insertBegin((CtStatement) mouse.getFactory().createCodeSnippetStatement("int age = 1").compile());
  		//run model validator to fix the problem
- 		new NameConflictValidator().process(mouse.getPosition().getCompilationUnit());
+ 		new ImportConflictDetector().process(mouse.getPosition().getCompilationUnit());
 		//now the field access must use explicit "this."
  		assertEquals("this.age", ageFR.getParent().toString());
 	}

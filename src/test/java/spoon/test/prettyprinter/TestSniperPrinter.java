@@ -28,8 +28,8 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.ImportValidator;
-import spoon.reflect.visitor.NameConflictValidator;
+import spoon.reflect.visitor.ImportCleaner;
+import spoon.reflect.visitor.ImportConflictDetector;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
@@ -183,11 +183,11 @@ public class TestSniperPrinter {
 			SniperJavaPrettyPrinter printer = new SniperJavaPrettyPrinter(launcher.getEnvironment());
 			printer.setPreprocessors(Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
 					//remove unused imports first. Do not add new imports at time when conflicts are not resolved
-					new ImportValidator().setCanAddImports(false),
+					new ImportCleaner().setCanAddImports(false),
 					//solve conflicts, the current imports are relevant too
-					new NameConflictValidator(),
+					new ImportConflictDetector(),
 					//compute final imports
-					new ImportValidator()
+					new ImportCleaner()
 				)));
 			return printer;
 		});

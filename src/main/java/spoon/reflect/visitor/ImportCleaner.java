@@ -43,23 +43,23 @@ import java.util.stream.Collectors;
 
 /**
  * Updates list of import statements of compilation unit following {@link CtElement#isImplicit()}.
- * It doesn't call {@link CtElement#setImplicit(boolean)}.
- * It doesn't fix wrong used implicit which causes conflicts. The fixing is task of {@link NameConflictValidator}
+ * Can be configured to add or remove imports using {@link #setCanAddImports(boolean)} and {@link #setCanRemoveImports(boolean)}.
+ * This does not force some references to be implicit, and doesn't fix the wrong implicit which causes conflicts: this fixing done by {@link ImportConflictDetector}
  */
 @Experimental
-public class ImportValidator extends ImportAnalyzer<ImportValidator.MyScanner, ImportValidator.Context> {
+public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerScanner, ImportCleaner.Context> {
 
 	private Comparator<CtImport> importComparator;
 	private boolean canAddImports = true;
 	private boolean canRemoveImports = true;
 
 	@Override
-	protected MyScanner createScanner() {
-		return new MyScanner();
+	protected ImportCleanerScanner createScanner() {
+		return new ImportCleanerScanner();
 	}
 
 	@Override
-	protected Context getScannerContextInformation(MyScanner scanner) {
+	protected Context getScannerContextInformation(ImportCleanerScanner scanner) {
 		return scanner.context;
 	}
 
@@ -170,7 +170,7 @@ public class ImportValidator extends ImportAnalyzer<ImportValidator.MyScanner, I
 			}
 		}
 
-		void onComilationUnitProcessed(CtCompilationUnit compilationUnit) {
+		void onCompilationUnitProcessed(CtCompilationUnit compilationUnit) {
 			ModelList<CtImport> existingImports = compilationUnit.getImports();
 			Set<CtImport> computedImports = new HashSet<>(this.computedImports.values());
 			for (CtImport oldImport : new ArrayList<>(existingImports)) {
@@ -289,7 +289,7 @@ public class ImportValidator extends ImportAnalyzer<ImportValidator.MyScanner, I
 		return visitor.found;
 	}
 
-	class MyScanner extends EarlyTerminatingScanner<Void> {
+	class ImportCleanerScanner extends EarlyTerminatingScanner<Void> {
 		Context context;
 		@Override
 		protected void enter(CtElement e) {
@@ -301,7 +301,7 @@ public class ImportValidator extends ImportAnalyzer<ImportValidator.MyScanner, I
 		@Override
 		protected void exit(CtElement e) {
 			if (e instanceof CtCompilationUnit) {
-				context.onComilationUnitProcessed((CtCompilationUnit) e);
+				context.onCompilationUnitProcessed((CtCompilationUnit) e);
 			}
 		}
 	}
@@ -316,7 +316,7 @@ public class ImportValidator extends ImportAnalyzer<ImportValidator.MyScanner, I
 	/**
 	 * @param canAddImports true if this processor is allowed to add new imports
 	 */
-	public ImportValidator setCanAddImports(boolean canAddImports) {
+	public ImportCleaner setCanAddImports(boolean canAddImports) {
 		this.canAddImports = canAddImports;
 		return this;
 	}
@@ -331,7 +331,7 @@ public class ImportValidator extends ImportAnalyzer<ImportValidator.MyScanner, I
 	/**
 	 * @param canRemoveImports true if this processor is allowed to remove imports
 	 */
-	public ImportValidator setCanRemoveImports(boolean canRemoveImports) {
+	public ImportCleaner setCanRemoveImports(boolean canRemoveImports) {
 		this.canRemoveImports = canRemoveImports;
 		return this;
 	}
@@ -340,7 +340,7 @@ public class ImportValidator extends ImportAnalyzer<ImportValidator.MyScanner, I
 		return importComparator;
 	}
 
-	public ImportValidator setImportComparator(Comparator<CtImport> importComparator) {
+	public ImportCleaner setImportComparator(Comparator<CtImport> importComparator) {
 		this.importComparator = importComparator;
 		return this;
 	}

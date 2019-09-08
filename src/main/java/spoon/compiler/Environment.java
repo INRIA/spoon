@@ -443,6 +443,6 @@ public interface Environment {
 		AUTOIMPORT,
 
 		/** super tailored import to minimize the impact on toString */
-		BACKWARD_COMPATIBLE
+		FULLYQUALIFIED
 	}
 }

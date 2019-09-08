@@ -31,8 +31,8 @@ import spoon.reflect.visitor.DefaultImportComparator;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.ForceFullyQualifiedProcessor;
 import spoon.reflect.visitor.ForceImportProcessor;
-import spoon.reflect.visitor.ImportValidator;
-import spoon.reflect.visitor.NameConflictValidator;
+import spoon.reflect.visitor.ImportCleaner;
+import spoon.reflect.visitor.ImportConflictDetector;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.compiler.FileSystemFolder;
 import spoon.support.compiler.SpoonProgress;
@@ -84,7 +84,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	// the default value is set to maximize backward compatibility
-	private TO_STRING_MODE toStringMode = TO_STRING_MODE.BACKWARD_COMPATIBLE;
+	private TO_STRING_MODE toStringMode = TO_STRING_MODE.FULLYQUALIFIED;
 
 	private int warningCount = 0;
 
@@ -150,7 +150,7 @@ public class StandardEnvironment implements Serializable, Environment {
 		if (autoImports == true) {
 			toStringMode = TO_STRING_MODE.AUTOIMPORT;
 		} else {
-			toStringMode = TO_STRING_MODE.BACKWARD_COMPATIBLE;
+			toStringMode = TO_STRING_MODE.FULLYQUALIFIED;
 		}
 	}
 
@@ -654,27 +654,27 @@ private transient  ClassLoader inputClassloader;
 						//try to import as much types as possible
 						new ForceImportProcessor(),
 						//remove unused imports first. Do not add new imports at time when conflicts are not resolved
-						new ImportValidator().setCanAddImports(false),
+						new ImportCleaner().setCanAddImports(false),
 						//solve conflicts, the current imports are relevant too
-						new NameConflictValidator(),
+						new ImportConflictDetector(),
 						//compute final imports
-						new ImportValidator().setImportComparator(new DefaultImportComparator())
+						new ImportCleaner().setImportComparator(new DefaultImportComparator())
 				));
 				printer.setPreprocessors(preprocessors);
 			}
 
-			if (TO_STRING_MODE.BACKWARD_COMPATIBLE.equals(toStringMode)) {
+			if (TO_STRING_MODE.FULLYQUALIFIED.equals(toStringMode)) {
 				List<Processor<CtCompilationUnit>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
 						//force fully qualified
 						new ForceFullyQualifiedProcessor(),
 						//remove unused imports first. Do not add new imports at time when conflicts are not resolved
-						new ImportValidator().setCanAddImports(false),
+						new ImportCleaner().setCanAddImports(false),
 						//solve conflicts, the current imports are relevant too
-						new NameConflictValidator(),
+						new ImportConflictDetector(),
 						//compute final imports
-						new ImportValidator().setImportComparator(new DefaultImportComparator())
+						new ImportCleaner().setImportComparator(new DefaultImportComparator())
 				));
-				printer.setPreprocessors(preprocessors);
+				//printer.setPreprocessors(preprocessors);
 			}
 
 			return printer;
