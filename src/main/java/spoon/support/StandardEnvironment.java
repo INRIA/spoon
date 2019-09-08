@@ -74,17 +74,17 @@ public class StandardEnvironment implements Serializable, Environment {
 	private boolean processingStopped = false;
 
 	@Override
-	public TO_STRING_MODE getToStringMode() {
-		return toStringMode;
+	public PRETTY_PRINTING_MODE getPrettyPrintingMode() {
+		return prettyPrintingMode;
 	}
 
 	@Override
-	public void setToStringMode(TO_STRING_MODE toStringMode) {
-		this.toStringMode = toStringMode;
+	public void setPrettyPrintingMode(PRETTY_PRINTING_MODE prettyPrintingMode) {
+		this.prettyPrintingMode = prettyPrintingMode;
 	}
 
 	// the default value is set to maximize backward compatibility
-	private TO_STRING_MODE toStringMode = TO_STRING_MODE.FULLYQUALIFIED;
+	private PRETTY_PRINTING_MODE prettyPrintingMode = PRETTY_PRINTING_MODE.FULLYQUALIFIED;
 
 	private int warningCount = 0;
 
@@ -142,15 +142,15 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public boolean isAutoImports() {
-		return TO_STRING_MODE.AUTOIMPORT.equals(toStringMode);
+		return PRETTY_PRINTING_MODE.AUTOIMPORT.equals(prettyPrintingMode);
 	}
 
 	@Override
 	public void setAutoImports(boolean autoImports) {
 		if (autoImports == true) {
-			toStringMode = TO_STRING_MODE.AUTOIMPORT;
+			prettyPrintingMode = PRETTY_PRINTING_MODE.AUTOIMPORT;
 		} else {
-			toStringMode = TO_STRING_MODE.FULLYQUALIFIED;
+			prettyPrintingMode = PRETTY_PRINTING_MODE.FULLYQUALIFIED;
 		}
 	}
 
@@ -649,7 +649,7 @@ private transient  ClassLoader inputClassloader;
 			// fully backward compatible
 			DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
 
-			if (TO_STRING_MODE.AUTOIMPORT.equals(toStringMode)) {
+			if (PRETTY_PRINTING_MODE.AUTOIMPORT.equals(prettyPrintingMode)) {
 				List<Processor<CtCompilationUnit>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
 						//try to import as much types as possible
 						new ForceImportProcessor(),
@@ -663,7 +663,7 @@ private transient  ClassLoader inputClassloader;
 				printer.setPreprocessors(preprocessors);
 			}
 
-			if (TO_STRING_MODE.FULLYQUALIFIED.equals(toStringMode)) {
+			if (PRETTY_PRINTING_MODE.FULLYQUALIFIED.equals(prettyPrintingMode)) {
 				List<Processor<CtCompilationUnit>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
 						//force fully qualified
 						new ForceFullyQualifiedProcessor(),

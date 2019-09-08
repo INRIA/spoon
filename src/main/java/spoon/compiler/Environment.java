@@ -43,9 +43,9 @@ public interface Environment {
 	 */
 	void setComplianceLevel(int level);
 
-	TO_STRING_MODE getToStringMode();
+	PRETTY_PRINTING_MODE getPrettyPrintingMode();
 
-	void setToStringMode(TO_STRING_MODE toStringMode);
+	void setPrettyPrintingMode(PRETTY_PRINTING_MODE prettyPrintingMode);
 
 	/**
 	 * This method should be called to print out a message with a source
@@ -435,7 +435,8 @@ public interface Environment {
 	 */
 	void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations);
 
-	enum TO_STRING_MODE {
+	/** Drives the model is pretty-printed to disk, or when {@link CtElement#prettyprint()} is called */
+	enum PRETTY_PRINTING_MODE {
 		/** no preprocessors are applied to the model before pretty-printing, this is the default behavior of @link {@link CtElement#toString()}. */
 		VANILLA,
 
