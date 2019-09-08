@@ -1,8 +1,9 @@
 #!/bin/bash
+# compiles and runs the test suite with JDK8
+# plus checks that it works with Maven 3.3.9
+
 set -e
 
-# This script intends to check if Spoon can be compiled
-# using Maven 3.3.9
 
 source /opt/jdk_switcher/jdk_switcher.sh
 
