@@ -9,8 +9,6 @@
 # fails if anything fails
 set -e
 
-source /opt/jdk_switcher/jdk_switcher.sh
-
 pip install --user CommonMark==0.7.5 requests pygithub
 
 jdk_switcher use oraclejdk9
