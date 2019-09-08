@@ -3,15 +3,20 @@ language: java
 # moving to Ubuntu Bionic 18.04, see https://docs.travis-ci.com/user/reference/overview/
 dist: bionic
 
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+
 env:
   global:
   - M2_HOME="/usr/local/maven"
   matrix:
+  - SCRIPT=travis-jdk8.sh
   - SCRIPT=travis-jdk10.sh
   - SCRIPT=travis-jdk11.sh
   - SCRIPT=travis-coverage.sh
   - SCRIPT=travis-extra.sh
-  - SCRIPT=travis-maven339-jdk8.sh
 
 # in langage:java, Travis executes by default "mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V"
 # This is not what we want because:
