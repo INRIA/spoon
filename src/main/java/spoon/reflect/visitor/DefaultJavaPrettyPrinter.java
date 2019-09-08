@@ -1976,10 +1976,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (types.isEmpty()) {
 			return;
 		}
+		CtType<?> type = types.get(0);
 		// reset the importsContext to avoid errors with multiple CU
 		if (sourceCompilationUnit == null) {
-			CtType<?> type = types.get(0);
 			sourceCompilationUnit = type.getFactory().CompilationUnit().getOrCreate(type);
+		}
+		if (type.getPackage() == null) {
+			type.setParent(type.getFactory().Package().getRootPackage());
 		}
 		if (!hasSameTypes(sourceCompilationUnit, types)) {
 			//the provided CU has different types, then these which has to be printed
@@ -1987,7 +1990,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			sourceCompilationUnit = sourceCompilationUnit.clone();
 			sourceCompilationUnit.setDeclaredTypes(types);
 		}
-		CtPackageReference packRef = types.get(0).getPackage().getReference();
+		CtPackageReference packRef = type.getPackage().getReference();
 		if (!packRef.equals(sourceCompilationUnit.getPackageDeclaration().getReference())) {
 			//the type was cloned and moved to different package. Adapt package reference of compilation unit too
 			sourceCompilationUnit.getPackageDeclaration().setReference(packRef);
