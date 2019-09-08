@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+<?import javafx.scene.control.Button?>
+<BorderPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="spoon.visualisation.instrument.SpoonCodeInstrument">
+    <top>
+        <ToolBar prefHeight="40.0" BorderPane.alignment="CENTER">
+            <Button text="Save" fx:id="save" />
+            <HBox minWidth="30"/>
+            <CheckBox fx:id="hideImplicit" text="Hide implicit elements" selected="true" />
+            <HBox minWidth="30"/>
+            <Label text="Level of the code:" />
+            <ComboBox fx:id="treeLevel" />
+        </ToolBar>
+    </top>
+    <center>
+        <SplitPane dividerPositions="0.3">
+            <TextArea fx:id="spoonCode" />
+            <TreeView fx:id="spoonAST" />
+        </SplitPane>
+    </center>
+</BorderPane>

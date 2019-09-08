@@ -69,3 +69,21 @@ export LD_LIBRARY_PATH=./z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04/bin
 
 # build and run tests
 ./gradlew build
+
+
+##################################################################
+# Spoon-visualisation
+##################################################################
+cd ../spoon-visualisation
+
+wget https://raw.githubusercontent.com/sormuras/bach/master/install-jdk.sh
+chmod +x install-jdk.sh
+
+export JAVA_HOME=$HOME/openjdk8
+source ./install-jdk.sh -f 11 -c
+
+# always depends on the latest snapshot, just installed with "mvn install" above
+mvn versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
+git diff
+
+mvn -Djava.src.version=11 test
