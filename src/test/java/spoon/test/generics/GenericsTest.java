@@ -170,11 +170,12 @@ public class GenericsTest {
 		CtField<?> f = clazz.getFields().get(0);
 		CtConstructorCall<?> val = (CtConstructorCall<?>) f.getDefaultExpression();
 
-		// the diamond is resolved to String but we don't print it, so we use the fully qualified name.
+		// the diamond is resolved to String but we don't prettyprint it in the diamond.
 		assertTrue(val.getType().getActualTypeArguments().get(0).isImplicit());
-		assertEquals("", val.getType().getActualTypeArguments().get(0).prettyprint());
+		assertEquals("java.lang.String", val.getType().getActualTypeArguments().get(0).toString());
 		assertEquals("java.lang.String", val.getType().getActualTypeArguments().get(0).getQualifiedName());
-		assertEquals("new java.util.ArrayList<>()",val.toString());
+		assertEquals("java.util.ArrayList<>", val.getType().prettyprint());
+		assertEquals("new java.util.ArrayList<>()",val.prettyprint());
 	}
 
 	@Test

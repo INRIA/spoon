@@ -437,8 +437,8 @@ public class FieldAccessTest {
 		final CtClass<B> aClass = launcher.getFactory().Class().get(B.class);
 
 		// now static fields are used with the name of the parent class
-		assertEquals("A.myField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(0).prettyprint());
-		assertEquals("finalField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(1).prettyprint());
+		assertEquals("spoon.test.fieldaccesses.testclasses.A.myField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(0).toString());
+		assertEquals("spoon.test.fieldaccesses.testclasses.B.finalField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(1).toString());
 	}
 	@Test
 	public void testFieldAccessAutoExplicit() throws Exception {

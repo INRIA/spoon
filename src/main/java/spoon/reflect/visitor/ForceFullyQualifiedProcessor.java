@@ -19,7 +19,7 @@ import spoon.support.Experimental;
 
 
 /**
- * Removes all imports from compilation unit and forces fully qualified identifiers
+ * Forces fully qualified identifiers by making many elements explicit (by calling setImplicit(false)).
  */
 @Experimental
 public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScopeScanner, LexicalScope> {
