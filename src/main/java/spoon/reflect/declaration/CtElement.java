@@ -20,6 +20,7 @@ import spoon.reflect.visitor.chain.CtQueryable;
 import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.support.Experimental;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -403,6 +404,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @return the source code of this element accorfing to {@link Environment#getToStringMode()}.
 	 * Warning: this is not side-effect free, this triggers some {@link spoon.reflect.visitor.ImportAnalyzer} which would change the model: add/remove imports, change the value `implicit` of some model elements, etc.
 	 */
+	@Experimental
 	String prettyprint();
 
 }
