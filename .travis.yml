@@ -18,11 +18,9 @@ env:
 #   - it executes checkstyle (we have a specific job for this)
 #   - it's useless ("mvn test" later does all the necessary tasks automatically)
 #   - it makes the build longer (we want a fast job)
-# Java8, see https://tecadmin.net/install-oracle-java-8-ubuntu-via-ppa/
+# Java8
 install:
-  - sudo add-apt-repository -y ppa:webupd8team/java
-  - sudo apt-get -y update
-  - sudo apt-get -y install oracle-java8-installer
+  - sudo apt-get -y install openjdk-8-jdk
 
 script: ./chore/travis/$SCRIPT
 
