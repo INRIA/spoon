@@ -3,8 +3,6 @@ language: java
 # moving to Ubuntu Bionic 18.04, see https://docs.travis-ci.com/user/reference/overview/
 dist: bionic
 
-jdk: openjdk8
-
 env:
   global:
   - M2_HOME="/usr/local/maven"
