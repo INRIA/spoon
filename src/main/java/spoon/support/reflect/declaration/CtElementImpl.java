@@ -285,7 +285,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public String toString() {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
-		printer.setForceFullyQualified(true);
+		printer.setIgnoreImplicit(true);
 		String errorMessage = "";
 		try {
 			printer.scan(this);
