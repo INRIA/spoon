@@ -11,6 +11,7 @@ set -e
 
 pip install --user CommonMark==0.7.5 requests pygithub
 
+# we need Java 8 for the javadoc below
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
 
 mvn -version
@@ -24,6 +25,8 @@ mvn  checkstyle:checkstyle -Pcheckstyle-test
 
 python ./chore/check-links-in-doc.py
 
+# for the module, we use Java11
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/
 
 ##################################################################
 # Spoon-decompiler
