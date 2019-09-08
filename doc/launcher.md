@@ -51,7 +51,7 @@ launcher.getEnvironment().setPrettyPrinterCreator(() -> {
   }
 );
 ```
-
+**Comments** In addition, depending on the value of `Environment#getCommentEnabled`, the comments are removed or kept from the Java files saved to disk (call `Environment#setCommentEnabled(true)` to keep comments).
 
 ## The MavenLauncher class
 

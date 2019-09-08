@@ -436,13 +436,13 @@ public interface Environment {
 	void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations);
 
 	enum TO_STRING_MODE {
-		/** no preprocessors of the model before pretty-printing */
+		/** no preprocessors are applied to the model before pretty-printing, this is the default behavior of @link {@link CtElement#toString()}. */
 		VANILLA,
 
-		/** autoimport mode */
+		/** autoimport mode, adds as many imports as possible */
 		AUTOIMPORT,
 
-		/** super tailored import to minimize the impact on toString */
+		/** force everything to be fully-qualified */
 		FULLYQUALIFIED
 	}
 }
