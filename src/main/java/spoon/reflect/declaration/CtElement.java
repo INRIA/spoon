@@ -393,16 +393,15 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	List<CtElement> getDirectChildren();
 
 	/**
-	 * @return the source code of this element, with fully-qualified types.
+	 * @return a debug version of the source code of this element, with fully-qualified types. Warning, some implicit elements are not shown in the string.
 	 *
-	 * {@link Environment#getToStringMode()} is not taken into account
-	 *
-	 * Use {@link #prettyprint()} for a nice source code.
+	 * {@link Environment#getToStringMode()} is not taken into account, use {@link #prettyprint()} for a nice version of the source code.
 	 */
 	String toString();
 
 	/**
 	 * @return the source code of this element accorfing to {@link Environment#getToStringMode()}.
+	 * Warning: this is not side-effect free, this triggers some {@link spoon.reflect.visitor.ImportAnalyzer} which would change the model: add/remove imports, change the value `implicit` of some model elements, etc.
 	 */
 	String prettyprint();
 
