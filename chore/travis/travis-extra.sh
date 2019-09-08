@@ -17,7 +17,7 @@ mvn -version
 
 # javadoc check is included in goal "site"
 # it's better to have the doclint here because the pom.xml config of javadoc is a nightmare
-mvn -Djava.src.version=1.9 verify license:check site install -DskipTests  -DadditionalJOption=-Xdoclint:syntax,-missing
+mvn -Djava.src.version=1.8 verify license:check site install -DskipTests  -DadditionalJOption=-Xdoclint:syntax,-missing
 
 # checkstyle in src/tests
 mvn  checkstyle:checkstyle -Pcheckstyle-test
