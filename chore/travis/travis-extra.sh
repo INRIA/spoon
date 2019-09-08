@@ -11,8 +11,6 @@ set -e
 
 pip install --user CommonMark==0.7.5 requests pygithub
 
-jdk_switcher use oraclejdk9
-
 # javadoc check is included in goal "site"
 # it's better to have the doclint here because the pom.xml config of javadoc is a nightmare
 mvn -Djava.src.version=1.9 verify license:check site install -DskipTests  -DadditionalJOption=-Xdoclint:syntax,-missing
