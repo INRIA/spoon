@@ -20,9 +20,9 @@ env:
 #   - it makes the build longer (we want a fast job)
 # Java8, see https://tecadmin.net/install-oracle-java-8-ubuntu-via-ppa/
 install:
-  - sudo add-apt-repository ppa:webupd8team/java
-  - sudo apt-get update
-  - sudo apt-get install oracle-java8-installer
+  - sudo add-apt-repository -y ppa:webupd8team/java
+  - sudo apt-get -y update
+  - sudo apt-get -y install oracle-java8-installer
 
 script: ./chore/travis/$SCRIPT
 
