@@ -338,7 +338,7 @@ public class ImportScannerTest {
 		//check that there is still javadoc comment which contains "List"
 		assertTrue(type.getMethodsByName("m").get(0).getComments().toString().contains("List"));
 		{
-			DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(type.getFactory().getEnvironment());
+			PrettyPrinter printer = type.getFactory().getEnvironment().createPrettyPrinter();
 			printer.calculate(type.getPosition().getCompilationUnit(), Arrays.asList(type));
 			assertFalse(printer.getResult().contains("import java.util.List;"));
 		}

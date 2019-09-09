@@ -14,7 +14,6 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
@@ -34,6 +33,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ModelConsistencyChecker;
+import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
@@ -277,15 +277,17 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
+	public String prettyprint() {
+		PrettyPrinter printer = getFactory().getEnvironment().createPrettyPrinter();
+		return printer.prettyprint(this).getResult();
+	}
+
+	@Override
 	public String toString() {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
+		printer.setIgnoreImplicit(true);
 		String errorMessage = "";
 		try {
-			// we do not want to compute imports of for CtImport and CtReference
-			// as it may change the print of a reference
-			if (!(this instanceof CtImport) && !(this instanceof CtReference)) {
-				printer.getImportsContext().computeImports(this);
-			}
 			printer.scan(this);
 		} catch (ParentNotInitializedException ignore) {
 			LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);

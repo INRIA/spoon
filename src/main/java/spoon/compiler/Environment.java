@@ -8,7 +8,6 @@ package spoon.compiler;
 import org.apache.log4j.Level;
 import spoon.OutputType;
 import spoon.compiler.builder.EncodingProvider;
-import spoon.support.modelobs.FineModelChangeListener;
 import spoon.processing.FileGenerator;
 import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
@@ -17,9 +16,10 @@ import spoon.processing.ProcessorProperties;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.PrettyPrinter;
-import spoon.support.OutputDestinationHandler;
 import spoon.support.CompressionType;
+import spoon.support.OutputDestinationHandler;
 import spoon.support.compiler.SpoonProgress;
+import spoon.support.modelobs.FineModelChangeListener;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 import java.io.File;
@@ -42,6 +42,10 @@ public interface Environment {
 	 * Sets the Java version compliance level.
 	 */
 	void setComplianceLevel(int level);
+
+	PRETTY_PRINTING_MODE getPrettyPrintingMode();
+
+	void setPrettyPrintingMode(PRETTY_PRINTING_MODE prettyPrintingMode);
 
 	/**
 	 * This method should be called to print out a message with a source
@@ -430,4 +434,16 @@ public interface Environment {
 	 *                                 contains multiple times the same class
 	 */
 	void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations);
+
+	/** Drives how the model is pretty-printed to disk, or when {@link CtElement#prettyprint()} is called */
+	enum PRETTY_PRINTING_MODE {
+		/** no preprocessors are applied to the model before pretty-printing, this is the default behavior of @link {@link CtElement#toString()}. */
+		VANILLA,
+
+		/** autoimport mode, adds as many imports as possible */
+		AUTOIMPORT,
+
+		/** force everything to be fully-qualified */
+		FULLYQUALIFIED
+	}
 }

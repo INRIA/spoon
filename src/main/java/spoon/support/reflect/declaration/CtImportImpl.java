@@ -6,6 +6,7 @@
 package spoon.support.reflect.declaration;
 
 import spoon.SpoonException;
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
@@ -89,6 +90,9 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 
 		case ALL_STATIC_MEMBERS:
 			visitor.visitAllStaticMembersImport((CtTypeMemberWildcardImportReference) localReference);
+			break;
+		case UNRESOLVED:
+			visitor.visitUnresolvedImport((CtUnresolvedImport) localReference);
 			break;
 		default:
 			throw new SpoonException("Unexpected import kind: " + getImportKind());

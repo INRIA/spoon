@@ -28,22 +28,22 @@ CtModel model = launcher.getModel();
 
 ### Pretty-printing modes
 
-**Autoimport** Spoon can pretty-print code where all classes and methods  are fully-qualified. This is not readable for humans but enables fast compilation and is useful when name collisions happen.
+Spoon has three pretty-printing modes:
+
+**Fully-qualified** Spoon can pretty-print code where all classes and methods  are fully-qualified. This is the default behavior on `toString()` on AST elements.
+This is not readable for humans but is useful when name collisions happen. If `launcher.getEnvironment().getToStringMode() == FULLYQUALIFIED`, the files written on disk are also fully qualified. 
+
+
+**Autoimport** Spoon can pretty-print code where all classes and methods  are imported as long as no conflict exists. 
 
 ```java
-launcher.getEnvironment().setAutoImports(false);
-```
-
-The autoimport mode computes the required imports, add the imports in the pretty-printed files, and writes class names unqualified (w/o package names):
-
-```java
-// if true, the pretty-printed code is readable without fully-qualified names
 launcher.getEnvironment().setAutoImports(true);
 ```
 
-**Sniper mode** By default, when pretty-printing, Spoon reformats the code according to its own formatting rules.
+The autoimport mode computes the required imports, add the imports in the pretty-printed files, and writes class names unqualified (w/o package names). This involves changing the field `implicit` of some elements of the model, through a set of `ImportAnalyzer`, most notable `ImportCleaner` and `ImportConflictDetector`.
+When pretty-printing, Spoon reformats the code according to its own formatting rules that can be configured by providing a custom `TokenWriter`.
 
-The sniper mode enables to rewrite only the transformed AST elements, so that the rest of the code is printed identically to the origin version. This is useful to get small diffs after automated refactoring. 
+**Sniper mode** The sniper mode enables to rewrite only the transformed AST elements, so that the rest of the code is printed identically to the origin version. This is useful to get small diffs after automated refactoring. 
 
 ```java
 launcher.getEnvironment().setPrettyPrinterCreator(() -> {
@@ -51,7 +51,7 @@ launcher.getEnvironment().setPrettyPrinterCreator(() -> {
   }
 );
 ```
-
+**Comments** In addition, depending on the value of `Environment#getCommentEnabled`, the comments are removed or kept from the Java files saved to disk (call `Environment#setCommentEnabled(true)` to keep comments).
 
 ## The MavenLauncher class
 

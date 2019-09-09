@@ -49,12 +49,10 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
@@ -75,7 +73,6 @@ import spoon.test.generics.testclasses3.ClassThatBindsAGenericType;
 import spoon.test.generics.testclasses3.ClassThatDefinesANewTypeArgument;
 import spoon.test.generics.testclasses3.Foo;
 import spoon.test.generics.testclasses3.GenericConstructor;
-import spoon.test.main.MainTest;
 import spoon.test.generics.testclasses.EnumSetOf;
 import spoon.test.generics.testclasses.FakeTpl;
 import spoon.test.generics.testclasses.Lunch;
@@ -173,11 +170,12 @@ public class GenericsTest {
 		CtField<?> f = clazz.getFields().get(0);
 		CtConstructorCall<?> val = (CtConstructorCall<?>) f.getDefaultExpression();
 
-		// the diamond is resolved to String but we don't print it, so we use the fully qualified name.
+		// the diamond is resolved to String but we don't prettyprint it in the diamond.
 		assertTrue(val.getType().getActualTypeArguments().get(0).isImplicit());
-		assertEquals("", val.getType().getActualTypeArguments().get(0).toString());
+		assertEquals("java.lang.String", val.getType().getActualTypeArguments().get(0).toString());
 		assertEquals("java.lang.String", val.getType().getActualTypeArguments().get(0).getQualifiedName());
-		assertEquals("new java.util.ArrayList<>()",val.toString());
+		assertEquals("java.util.ArrayList<>", val.getType().prettyprint());
+		assertEquals("new java.util.ArrayList<>()",val.prettyprint());
 	}
 
 	@Test
@@ -291,21 +289,15 @@ public class GenericsTest {
 			CtField<?> x = type.getElements(new NamedElementFilter<>(CtField.class,"x"))
 					.get(0);
 			CtTypeReference<?> ref = x.getType();
-			DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(
-					new StandardEnvironment());
 
 			// qualifed name
 			assertEquals("java.util.Map$Entry", ref.getQualifiedName());
 
-			// toString uses DefaultJavaPrettyPrinter
+			// toString uses DefaultJavaPrettyPrinter with forced fully qualified names
 			assertEquals("java.util.Map.Entry", ref.toString());
 
-			// now visitCtTypeReference
 			assertSame(java.util.Map.class, ref.getDeclaringType()
 					.getActualClass());
-			pp.visitCtTypeReference(ref);
-
-			assertEquals("java.util.Map.Entry", pp.getResult());
 
 			CtField<?> y = type.getElements(new NamedElementFilter<>(CtField.class,"y"))
 					.get(0);

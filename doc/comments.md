@@ -19,7 +19,7 @@ We also try to understand to which element they are attached.
 We use some simple heuristics that work well in nominal cases but cannot address all specific cases.
 You can retrieve the comments of each `CtElement` via the API `CtElement.getComments()` which returns a `List<CtComment>`.
 
-The parsing of the comments can be enabled in the Environment via the option `Environment.setCommentsEnable(boolean)` or the command line argument `--enable-comments` (or `-c`).  
+The parsing of the comments can be enabled in the Environment via the option `Environment.setCommentEnabled(boolean)` or the command line argument `--enable-comments` (or `-c`).  
 
 ## Javadoc Comments
 

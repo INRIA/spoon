@@ -69,36 +69,36 @@ import spoon.testing.utils.ModelUtils;
 
 public class CompilationTest {
 
-    @Test
-    public void compileTestWithImportStaticWildcard() {
+	@Test
+	public void compileTestWithImportStaticWildcard() {
 
 		/*
 			Test the compilation of a java file with an import static with wildcard
 		 */
 
-        Launcher launcher = new Launcher();
-        launcher.addInputResource("src/test/resources/compilation/");
-        launcher.getEnvironment().setShouldCompile(true);
-        launcher.getEnvironment().setAutoImports(true);
-        launcher.getEnvironment().setNoClasspath(true);
-        launcher.getEnvironment().setCommentEnabled(true);
-        launcher.getEnvironment().setBinaryOutputDirectory("target/spooned-classes/");
-        launcher.getEnvironment().setSourceOutputDirectory(new File("target/spooned/"));
-        launcher.run();
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/compilation/");
+		launcher.getEnvironment().setShouldCompile(true);
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.getEnvironment().setBinaryOutputDirectory("target/spooned-classes/");
+		launcher.getEnvironment().setSourceOutputDirectory(new File("target/spooned/"));
+		launcher.run();
 
-        SpoonModelBuilder compiler = launcher.createCompiler();
-        boolean compile = compiler.compile(SpoonModelBuilder.InputType.CTTYPES);
-        final String nl = System.getProperty("line.separator");
-        assertTrue(
-                nl + "the compilation should succeed: " + nl +
-                        ((JDTBasedSpoonCompiler) compiler).getProblems()
-                                .stream()
-                                .filter(IProblem::isError)
-                                .map(CategorizedProblem::toString)
-                                .collect(Collectors.joining(nl)),
-                compile
-        );
-    }
+		SpoonModelBuilder compiler = launcher.createCompiler();
+		boolean compile = compiler.compile(SpoonModelBuilder.InputType.CTTYPES);
+		final String nl = System.getProperty("line.separator");
+		assertTrue(
+				nl + "the compilation should succeed: " + nl +
+						((JDTBasedSpoonCompiler) compiler).getProblems()
+								.stream()
+								.filter(IProblem::isError)
+								.map(CategorizedProblem::toString)
+								.collect(Collectors.joining(nl)),
+				compile
+		);
+	}
 
 	@Test
 	public void compileCommandLineTest() {
@@ -300,7 +300,7 @@ public class CompilationTest {
 	public void testPrecompile() {
 		// without precompile
 		Launcher l = new Launcher();
-		l.setArgs(new String[] {"--noclasspath", "-i", "src/test/resources/compilation/"});
+		l.setArgs(new String[]{"--noclasspath", "-i", "src/test/resources/compilation/"});
 		l.buildModel();
 		CtClass klass = l.getFactory().Class().get("compilation.Bar");
 		// without precompile, actualClass does not exist (an exception is thrown)
@@ -311,7 +311,7 @@ public class CompilationTest {
 
 		// with precompile
 		Launcher l2 = new Launcher();
-		l2.setArgs(new String[] {"--precompile", "--noclasspath", "-i", "src/test/resources/compilation/"});
+		l2.setArgs(new String[]{"--precompile", "--noclasspath", "-i", "src/test/resources/compilation/"});
 		l2.buildModel();
 		CtClass klass2 = l2.getFactory().Class().get("compilation.Bar");
 		// with precompile, actualClass is not null
@@ -321,7 +321,7 @@ public class CompilationTest {
 
 		// precompile can be used to compile processors on the fly
 		Launcher l3 = new Launcher();
-		l3.setArgs(new String[] {"--precompile", "--noclasspath", "-i", "src/test/resources/compilation/", "-p", "compilation.SimpleProcessor"});
+		l3.setArgs(new String[]{"--precompile", "--noclasspath", "-i", "src/test/resources/compilation/", "-p", "compilation.SimpleProcessor"});
 		l3.run();
 	}
 
@@ -353,9 +353,9 @@ public class CompilationTest {
 	@Test
 	public void testSingleClassLoader() throws Exception {
 		/*
-		*  contract: the environment exposes a classloader configured by the spoonclass path,
-		*  there is one class loader, so the loaded classes are compatible
-		*/
+		 *  contract: the environment exposes a classloader configured by the spoonclass path,
+		 *  there is one class loader, so the loaded classes are compatible
+		 */
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(new FileSystemFolder("./src/test/resources/classloader-test"));
 		File outputBinDirectory = new File("./target/classloader-test");
@@ -431,9 +431,9 @@ public class CompilationTest {
 				} catch (SpoonClassNotFoundException ignore) { }
 			}
 		});
-		
+
 		//JDK 9 has implicit constructor, while JDK 8 has not
-		assertTrue(l.size()>=2);
+		assertTrue(l.size() >= 2);
 		assertTrue(l.contains("KJHKY"));
 		assertSame(MyClassLoader.class, launcher.getEnvironment().getInputClassLoader().getClass());
 	}
@@ -445,7 +445,7 @@ public class CompilationTest {
 		String expected = "target/classes/";
 
 		File f = new File(expected);
-		URL[] urls = { f.toURL() };
+		URL[] urls = {f.toURL()};
 		URLClassLoader urlClassLoader = new URLClassLoader(urls);
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setInputClassLoader(urlClassLoader);
@@ -465,7 +465,7 @@ public class CompilationTest {
 
 		File f = new File(file);
 		URL url = new URL(distantJar);
-		URL[] urls = { f.toURL(), url };
+		URL[] urls = {f.toURL(), url};
 		URLClassLoader urlClassLoader = new URLClassLoader(urls);
 		Launcher launcher = new Launcher();
 		try {
@@ -495,6 +495,15 @@ public class CompilationTest {
 		System.setProperty("user.dir", userDir);
 
 		assertThat(tempDirPath.toFile().listFiles().length, not(0));
+	}
+	
+	@Test
+	public void testCompileUnresolvedFullyQualifiedName() {
+		//contract: the unresolved fully qualified type reference must not cause model building problem
+		Launcher l = new Launcher();
+		l.getEnvironment().setNoClasspath(true);
+		l.addInputResource("src/test/resources/compilation2/UnresolvedFullQualifiedType.java");
+		l.buildModel();
 	}
 
 	@Test
