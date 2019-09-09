@@ -9,58 +9,56 @@
 # fails if anything fails
 set -e
 
-source /opt/jdk_switcher/jdk_switcher.sh
-
 pip install --user CommonMark==0.7.5 requests pygithub
 
-jdk_switcher use oraclejdk9
+# we need Java 8 for the javadoc below
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
+
+mvn -version
 
 # javadoc check is included in goal "site"
 # it's better to have the doclint here because the pom.xml config of javadoc is a nightmare
-mvn -Djava.src.version=1.9 verify license:check site install -DskipTests  -DadditionalJOption=-Xdoclint:syntax,-missing
+mvn -Djava.src.version=1.8 verify license:check site install -DskipTests  -DadditionalJOption=-Xdoclint:syntax,-missing
 
 # checkstyle in src/tests
 mvn  checkstyle:checkstyle -Pcheckstyle-test
 
 python ./chore/check-links-in-doc.py
 
-
 ##################################################################
 # Spoon-decompiler
 ##################################################################
 cd spoon-decompiler
+
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
 
 # always depends on the latest snapshot, just installed with "mvn install" above
 mvn versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
 git diff
 
 mvn test
-
-mvn verify license:check javadoc:jar install -DskipTests
-
-# checkstyle in src/tests
-mvn  checkstyle:checkstyle -Pcheckstyle-test
+mvn checkstyle:checkstyle license:check
 
 ##################################################################
 # Spoon-control-flow
 ##################################################################
 cd ../spoon-control-flow
 
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
+
 # always depends on the latest snapshot, just installed with "mvn install" above
 mvn versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
 git diff
 
 mvn test
-
-mvn verify license:check javadoc:jar install -DskipTests
-
-# checkstyle in src/tests
-mvn  checkstyle:checkstyle -Pcheckstyle-test
+mvn checkstyle:checkstyle license:check
 
 ##################################################################
 # Spoon-dataflow
 ##################################################################
 cd ../spoon-dataflow
+
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/
 
 # download and install z3 lib
 wget https://github.com/Z3Prover/z3/releases/download/z3-4.8.4/z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
@@ -75,6 +73,8 @@ export LD_LIBRARY_PATH=./z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04/bin
 # Spoon-visualisation
 ##################################################################
 cd ../spoon-visualisation
+
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/
 
 wget https://raw.githubusercontent.com/sormuras/bach/master/install-jdk.sh
 chmod +x install-jdk.sh
