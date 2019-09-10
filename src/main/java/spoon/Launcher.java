@@ -476,7 +476,7 @@ public class Launcher implements SpoonAPI {
 		if (jsapActualArgs.getBoolean("enable-comments")) {
 			Launcher.LOGGER.warn("The option --enable-comments (-c) is deprecated as it is now the default behaviour in Spoon.");
 		} else {
-			Launcher.LOGGER.warn("Spoon now parse by default the comments. Consider using the option --disable-comments if you want the old behaviour.");
+			Launcher.LOGGER.warn("Spoon now parses by default the comments. Consider using the option --disable-comments if you want the old behaviour.");
 		}
 
 		if (jsapActualArgs.getBoolean("disable-comments")) {

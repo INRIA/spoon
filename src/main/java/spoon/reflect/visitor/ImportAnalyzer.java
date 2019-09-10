@@ -139,7 +139,7 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 						}
 					} else {
 						//May be this can never happen
-						throw new SpoonException("Check this case. Is it relvant or not?");
+						throw new SpoonException("Check this case. Is it relevant or not?");
 					}
 				}
 				if (role == CtRole.TYPE && element instanceof CtTypeReference) {
