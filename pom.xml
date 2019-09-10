@@ -89,6 +89,11 @@
       <artifactId>commons-lang3</artifactId>
       <version>3.8.1</version>
     </dependency>
+    <dependency>
+      <groupId>com.cloudbees</groupId>
+      <artifactId>diff4j</artifactId>
+      <version>1.2</version>
+    </dependency>
   <!-- https://mvnrepository.com/artifact/org.tukaani/xz -->
 	<dependency>
     	<groupId>org.tukaani</groupId>
