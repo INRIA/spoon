@@ -18,10 +18,10 @@ mvn -version
 
 # javadoc check is included in goal "site"
 # it's better to have the doclint here because the pom.xml config of javadoc is a nightmare
-mvn -Djava.src.version=1.8 verify license:check site install -DskipTests  -DadditionalJOption=-Xdoclint:syntax,-missing
+mvn -q -Djava.src.version=1.8 verify license:check site install -DskipTests  -DadditionalJOption=-Xdoclint:syntax,-missing
 
 # checkstyle in src/tests
-mvn  checkstyle:checkstyle -Pcheckstyle-test
+mvn -q  checkstyle:checkstyle -Pcheckstyle-test
 
 python ./chore/check-links-in-doc.py
 
@@ -33,11 +33,11 @@ cd spoon-decompiler
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
 
 # always depends on the latest snapshot, just installed with "mvn install" above
-mvn versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
+mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
 git diff
 
-mvn test
-mvn checkstyle:checkstyle license:check
+mvn -q test
+mvn -q checkstyle:checkstyle license:check
 
 ##################################################################
 # Spoon-control-flow
@@ -47,11 +47,11 @@ cd ../spoon-control-flow
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
 
 # always depends on the latest snapshot, just installed with "mvn install" above
-mvn versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
+mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
 git diff
 
-mvn test
-mvn checkstyle:checkstyle license:check
+mvn -q test
+mvn -q checkstyle:checkstyle license:check
 
 ##################################################################
 # Spoon-dataflow
@@ -83,7 +83,7 @@ export JAVA_HOME=$HOME/openjdk8
 source ./install-jdk.sh -f 11 -c
 
 # always depends on the latest snapshot, just installed with "mvn install" above
-mvn versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
+mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
 git diff
 
-mvn -Djava.src.version=11 test
+mvn -q -Djava.src.version=11 test
