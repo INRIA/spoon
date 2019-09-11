@@ -1732,9 +1732,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	private boolean printQualified(CtTypeReference<?> ref) {
 		// in Java, package "java.lang" has a special status
-		// it's the only one that does not need to fully-qualifed
+		// it's the only one that does not need to fully-qualified
 		// even with no import at all
-		return !"java.lang".equals(ref.getPackage().getQualifiedName()) && (ignoreImplicit || !ref.isImplicitParent());
+		return !(ref.getPackage()!= null && "java.lang".equals(ref.getPackage().getQualifiedName())) && (ignoreImplicit || !ref.isImplicitParent());
 		}
 
 
