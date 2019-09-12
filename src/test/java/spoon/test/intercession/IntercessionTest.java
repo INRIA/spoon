@@ -152,7 +152,7 @@ public class IntercessionTest {
 		assertEquals(1, body.getStatements().size());
 
 		CtIf ifStmt = (CtIf) foo.getBody().getStatements().get(0);
-		String s = ifStmt.toString().replace("\r", "");
+		String s = ifStmt.prettyprint().replace("\r", "");
 		assertEquals(ifCode, s);
 		CtBlock<?> r1 = ifStmt.getThenStatement();
 		CtBlock<?> r2 = ifStmt.getElseStatement();
@@ -165,7 +165,7 @@ public class IntercessionTest {
 		ifStmt.setElseStatement(r1);
 		assertSame(r1, ifStmt.getElseStatement());
 
-		s = ifStmt.toString().replace("\r", "");
+		s = ifStmt.prettyprint().replace("\r", "");
 		String ifCodeNew = "if (1 == 0)\n" + "    return 0;\n" + "else\n"
 				+ "    return 1;\n" + "";
 		assertEquals(ifCodeNew, s);
