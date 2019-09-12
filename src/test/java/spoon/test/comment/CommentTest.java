@@ -653,14 +653,14 @@ public class CommentTest {
 		ctComment.setContent("  // foo");
 		assertEquals(CtComment.CommentType.BLOCK, ctComment.getCommentType());
 		// it's a limitation, you cannot start with ''
-		assertEquals("/* // foo */", ctComment.toString());
+		assertEquals("/* // foo */", ctComment.prettyprint());
 
 		// workaround #2: one can cast and call '_setRawContent'
 		// without setting the comment field through reflection
 		((CtCommentImpl) ctComment)._setRawContent("// foo");
 		assertEquals(CtComment.CommentType.BLOCK, ctComment.getCommentType());
 		// it's a limitation, you cannot start with ''
-		assertEquals("/* // foo */", ctComment.toString());
+		assertEquals("/* // foo */", ctComment.prettyprint());
 
 	}
 

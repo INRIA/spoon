@@ -643,27 +643,31 @@ private transient  ClassLoader inputClassloader;
 	}
 
 	@Override
+	public PrettyPrinter createAutoImportPrettyPrinter() {
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
+		List<Processor<CtCompilationUnit>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
+				//try to import as much types as possible
+				new ForceImportProcessor(),
+				//remove unused imports first. Do not add new imports at time when conflicts are not resolved
+				new ImportCleaner().setCanAddImports(false),
+				//solve conflicts, the current imports are relevant too
+				new ImportConflictDetector(),
+				//compute final imports
+				new ImportCleaner().setImportComparator(new DefaultImportComparator())
+		));
+		printer.setPreprocessors(preprocessors);
+		return printer;
+	}
+
+	@Override
 	public PrettyPrinter createPrettyPrinter() {
 		if (prettyPrinterCreator == null) {
-			// DJPP is the default mode
-			// fully backward compatible
-			DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
-
 			if (PRETTY_PRINTING_MODE.AUTOIMPORT.equals(prettyPrintingMode)) {
-				List<Processor<CtCompilationUnit>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
-						//try to import as much types as possible
-						new ForceImportProcessor(),
-						//remove unused imports first. Do not add new imports at time when conflicts are not resolved
-						new ImportCleaner().setCanAddImports(false),
-						//solve conflicts, the current imports are relevant too
-						new ImportConflictDetector(),
-						//compute final imports
-						new ImportCleaner().setImportComparator(new DefaultImportComparator())
-				));
-				printer.setPreprocessors(preprocessors);
+				return createAutoImportPrettyPrinter();
 			}
 
 			if (PRETTY_PRINTING_MODE.FULLYQUALIFIED.equals(prettyPrintingMode)) {
+				DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
 				List<Processor<CtCompilationUnit>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
 						//force fully qualified
 						new ForceFullyQualifiedProcessor(),
@@ -673,9 +677,11 @@ private transient  ClassLoader inputClassloader;
 						new ImportCleaner().setImportComparator(new DefaultImportComparator())
 				));
 				printer.setPreprocessors(preprocessors);
+				return printer;
 			}
 
-			return printer;
+			throw new UnsupportedOperationException();
+
 		}
 		return prettyPrinterCreator.get();
 	}

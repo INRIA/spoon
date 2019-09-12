@@ -417,6 +417,11 @@ public interface Environment {
 	PrettyPrinter createPrettyPrinter();
 
 	/**
+	 * @return new instance of {@link PrettyPrinter} which prints nice code
+	 */
+	PrettyPrinter createAutoImportPrettyPrinter();
+
+	/**
 	 * @param creator a {@link Supplier}, which creates new instance of pretty printer.
 	 * Can be used to create a {@link SniperJavaPrettyPrinter} for enabling the sniper mode.
 	 *

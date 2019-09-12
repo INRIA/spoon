@@ -279,7 +279,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public String prettyprint() {
-		PrettyPrinter printer = getFactory().getEnvironment().createPrettyPrinter();
+		PrettyPrinter printer = getFactory().getEnvironment().createAutoImportPrettyPrinter();
 		return printer.prettyprint(this).getResult();
 	}
 
