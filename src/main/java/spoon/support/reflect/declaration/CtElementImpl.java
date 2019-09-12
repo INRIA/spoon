@@ -291,7 +291,12 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		}
 		String errorMessage = "";
 		try {
-			printer.scan(this.clone());
+			CtElement clone = this.clone();
+
+			// required, in DJPP some decisions are taken based on the content of the parent
+			clone.setParent(this.getParent());
+
+			printer.scan(clone);
 		} catch (ParentNotInitializedException ignore) {
 			LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);
 			errorMessage = ERROR_MESSAGE_TO_STRING;
