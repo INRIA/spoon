@@ -524,15 +524,15 @@ public class TemplateTest {
 						checkParameters("foo", match,
 								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "10",
-								"_block_", "throw new java.lang.IndexOutOfBoundsException();")
+								"_block_", "{ throw new java.lang.IndexOutOfBoundsException();}")
 						||checkParameters("foo2", match, 
 								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "11",
-								"_block_", "throw new java.lang.IndexOutOfBoundsException();")
+								"_block_", "{ throw new java.lang.IndexOutOfBoundsException();}")
 						||checkParameters("fbar", match,
 								"_x_", "l.size()",
 								"_y_", "10",
-								"_block_", "throw new java.lang.IndexOutOfBoundsException();")
+								"_block_", "{ throw new java.lang.IndexOutOfBoundsException();}")
 						||checkParameters("baz", match,
 								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "10",
@@ -544,7 +544,7 @@ public class TemplateTest {
 						||checkParameters("bov", match,
 								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "10",
-								"_block_", "java.lang.System.out.println();")
+								"_block_", "{ java.lang.System.out.println();}")
 				);
 			});
 		}
@@ -597,7 +597,7 @@ public class TemplateTest {
 				assertTrue(
 						checkParameters("bos", match,
 								"_x_", "new java.util.ArrayList<>().size()",
-								"_block_", "java.lang.System.out.println();")
+								"_block_", "{ java.lang.System.out.println();}")
 				);
 			});
 		}

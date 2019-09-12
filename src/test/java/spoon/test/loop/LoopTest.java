@@ -56,9 +56,18 @@ public class LoopTest {
 		final CtConstructor<Join> joinCtConstructor = aType.getConstructors().stream().findFirst().get();
 		final CtLoop ctLoop = joinCtConstructor.getBody().getElements(new TypeFilter<>(CtLoop.class)).get(0);
 		assertTrue(ctLoop.getBody() instanceof CtBlock);
-		String expected = //
-				"for (spoon.test.loop.testclasses.Condition<? super T> condition : conditions)" + nl //
-						+ "    this.conditions.add(spoon.test.loop.testclasses.Join.notNull(condition));" + nl;
-		assertEquals(expected, ctLoop.toString());
+		// contract: the implicit block is not pretty printed
+		String expectedPrettyPrinted = //
+				"for (Condition<? super T> condition : conditions)" + nl //
+						+ "    this.conditions.add(notNull(condition));" + nl;
+		assertEquals(expectedPrettyPrinted, ctLoop.prettyprint());
+
+
+		// contract: the implicit block is viewable in debug mode
+		String expectedDebug = //
+				"for (spoon.test.loop.testclasses.Condition<? super T> condition : conditions) {" + nl //
+						+ "    this.conditions.add(spoon.test.loop.testclasses.Join.notNull(condition));" + nl + "}";
+
+		assertEquals(expectedDebug, ctLoop.toString());
 	}
 }
