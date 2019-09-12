@@ -111,15 +111,16 @@ public class MetamodelTest {
 			Map<CtRole, MetamodelProperty> expectedRoleToField = new HashMap<>(expectedType.getRoleToProperty());
 			for (spoon.test.api.Metamodel.Field field : type.getFields()) {
 				MetamodelProperty expectedField = expectedRoleToField.remove(field.getRole());
+				if (expectedField == null) {
+					problems.add("no method with role " + field.getRole() + " in interface " + type.getName());
+					continue;
+				}
 				if (expectedField.isDerived() != field.isDerived()) {
 					problems.add("Field " + expectedField + ".derived hardcoded value = " + field.isDerived() + " but computed value is " + expectedField.isDerived());
 				}
 				if (expectedField.isUnsettable() != field.isUnsettable()) {
 					problems.add("Field " + expectedField + ".unsettable hardcoded value = " + field.isUnsettable() + " but computed value is " + expectedField.isUnsettable());
 				}
-			}
-			if (expectedRoleToField.isEmpty() == false) {
-				problems.add("These Metamodel.Field instances are missing on Type " + type.getName() + ": " + expectedRoleToField.keySet());
 			}
 		}
 		if (expectedTypesByName.isEmpty() == false) {
