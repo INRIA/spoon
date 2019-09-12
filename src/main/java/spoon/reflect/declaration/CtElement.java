@@ -395,8 +395,14 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 
 	/**
 	 * @return the source code of this element accorfing to {@link Environment#getPrettyPrintingMode()}.
+	 *
 	 */
 	String toString();
+
+	/**
+	 * @return the most straightforward and explicit version of this element.
+	 */
+	String toStringDebug();
 
 	/**
 	 * @return the source code of this element with the pretty-printing rules of Spoon

@@ -442,8 +442,8 @@ public interface Environment {
 
 	/** Drives how the model is pretty-printed to disk, or when {@link CtElement#prettyprint()} is called */
 	enum PRETTY_PRINTING_MODE {
-		/** no preprocessors are applied to the model before pretty-printing, this is the default behavior of @link {@link CtElement#toString()}. */
-		VANILLA,
+		/** direct in {@link spoon.reflect.visitor.DefaultJavaPrettyPrinter}, no preprocessors are applied to the model before pretty-printing }. */
+		DEBUG,
 
 		/** autoimport mode, adds as many imports as possible */
 		AUTOIMPORT,

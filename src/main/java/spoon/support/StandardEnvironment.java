@@ -666,6 +666,12 @@ private transient  ClassLoader inputClassloader;
 				return createAutoImportPrettyPrinter();
 			}
 
+
+			if (PRETTY_PRINTING_MODE.DEBUG.equals(prettyPrintingMode)) {
+				DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
+				return printer;
+			}
+
 			if (PRETTY_PRINTING_MODE.FULLYQUALIFIED.equals(prettyPrintingMode)) {
 				DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
 				List<Processor<CtCompilationUnit>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
