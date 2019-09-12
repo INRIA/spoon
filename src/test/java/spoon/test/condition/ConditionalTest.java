@@ -130,7 +130,7 @@ public class ConditionalTest {
 
 		// and we have the correct else statement
 		assertNotNull(conditions.get(0).getElseStatement());
-		assertEquals("java.lang.System.out.println();", conditions.get(0).getElseStatement().toString().trim());
+		assertEquals("System.out.println();", conditions.get(0).getElseStatement().prettyprint().trim());
 	}
 
 	@Test

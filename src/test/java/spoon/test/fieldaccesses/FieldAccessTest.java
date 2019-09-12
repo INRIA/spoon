@@ -431,7 +431,6 @@ public class FieldAccessTest {
 		launcher.getEnvironment().setShouldCompile(true);
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
 		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/");
-		launcher.getEnvironment().setAutoImports(true);
 		launcher.run();
 
 		final CtClass<B> aClass = launcher.getFactory().Class().get(B.class);

@@ -445,7 +445,7 @@ public class APITest {
 		assertEquals("A", l.getSimpleName());
 		assertEquals(1, l.getMethods().size());
 		assertEquals("m", l.getMethodsByName("m").get(0).getSimpleName());
-		assertEquals("java.lang.System.out.println(\"yeah\")", l.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
+		assertEquals("System.out.println(\"yeah\")", l.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
 	}
 
 	@Test
