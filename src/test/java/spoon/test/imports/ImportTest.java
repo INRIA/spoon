@@ -110,7 +110,6 @@ public class ImportTest {
 	public void testImportOfAnInnerClassInASuperClassPackageAutoImport() {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setShouldCompile(true);
-		//spoon.getEnvironment().setAutoImports(true);
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/SuperClass.java");
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/ChildClass.java");
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/PublicInterface2.java");
@@ -141,7 +140,6 @@ public class ImportTest {
 	public void testImportOfAnInnerClassInASuperClassPackageFullQualified() {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setShouldCompile(true);
-		//spoon.getEnvironment().setAutoImports(false);
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/SuperClass.java");
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/ChildClass.java");
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/ClientClass.java");

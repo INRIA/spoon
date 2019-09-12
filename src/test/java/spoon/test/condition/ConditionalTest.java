@@ -153,10 +153,10 @@ public class ConditionalTest {
 		CtStatement thenStatement = cond.getThenStatement();
 		CtStatement elseStatement = cond.getElseStatement();
 
-		assertEquals("java.lang.System.out.println(\"valid\");", thenStatement.toString().trim());
+		assertEquals("System.out.println(\"valid\");", thenStatement.prettyprint().trim());
 		CtIf innerIf = ((CtBlock) elseStatement).getStatement(0);
 
 		assertNull(innerIf.getThenStatement());
-		assertEquals("java.lang.System.out.println(\"invalid\");", innerIf.getElseStatement().toString().trim());
+		assertEquals("System.out.println(\"invalid\");", innerIf.getElseStatement().prettyprint().trim());
 	}
 }

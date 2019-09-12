@@ -67,7 +67,7 @@ public class ExecutableTest {
 	}
 
 	@Test
-	public void testGetRefetestGetReferencerence() throws Exception {
+	public void testGetReference() throws Exception {
 		final CtType<A> aClass = ModelUtils.buildClass(A.class);
 
 		String methodName = "getInt1";
