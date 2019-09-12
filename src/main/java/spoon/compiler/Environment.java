@@ -43,6 +43,11 @@ public interface Environment {
 	 */
 	void setComplianceLevel(int level);
 
+	/**
+	 * @return the kind of pretty-printing expected.
+	 * most robust: {@link PRETTY_PRINTING_MODE#DEBUG}
+	 * most sophisticated: {@link PRETTY_PRINTING_MODE#AUTOIMPORT}
+	 */
 	PRETTY_PRINTING_MODE getPrettyPrintingMode();
 
 	void setPrettyPrintingMode(PRETTY_PRINTING_MODE prettyPrintingMode);

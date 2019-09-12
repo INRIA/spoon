@@ -394,7 +394,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	List<CtElement> getDirectChildren();
 
 	/**
-	 * @return the source code of this element accorfing to {@link Environment#getPrettyPrintingMode()}.
+	 * @return the source code of this element according to the setting of {@link Environment#getPrettyPrintingMode()}.
 	 *
 	 */
 	String toString();
