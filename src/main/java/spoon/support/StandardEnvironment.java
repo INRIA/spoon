@@ -84,7 +84,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	// the default value is set to maximize backward compatibility
-	private PRETTY_PRINTING_MODE prettyPrintingMode = PRETTY_PRINTING_MODE.FULLYQUALIFIED;
+	private PRETTY_PRINTING_MODE prettyPrintingMode = PRETTY_PRINTING_MODE.VANILLA;
 
 	private int warningCount = 0;
 

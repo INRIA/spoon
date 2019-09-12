@@ -448,6 +448,8 @@ public class Launcher implements SpoonAPI {
 		environment.setLevel(jsapActualArgs.getString("level"));
 		if (jsapActualArgs.getBoolean("imports")) {
 			environment.setPrettyPrintingMode(Environment.PRETTY_PRINTING_MODE.AUTOIMPORT);
+		} else {
+			environment.setPrettyPrintingMode(Environment.PRETTY_PRINTING_MODE.FULLYQUALIFIED);
 		}
 
 		if (jsapActualArgs.getBoolean("noclasspath")) {
