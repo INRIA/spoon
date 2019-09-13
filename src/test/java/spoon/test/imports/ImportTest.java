@@ -1566,7 +1566,7 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 	}
 	
 	public static String printByPrinter(CtElement element) {
-		DefaultJavaPrettyPrinter pp = (DefaultJavaPrettyPrinter) element.getFactory().getEnvironment().createAutoImportPrettyPrinter();
+		DefaultJavaPrettyPrinter pp = (DefaultJavaPrettyPrinter) element.getFactory().getEnvironment().createPrettyPrinterAutoImport();
 		//this call applies print validators, which modifies model before printing
 		//and then it prints everything
 		String printedCU = pp.printCompilationUnit(element.getPosition().getCompilationUnit());

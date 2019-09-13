@@ -424,7 +424,7 @@ public interface Environment {
 	/**
 	 * @return new instance of {@link PrettyPrinter} which prints nice code
 	 */
-	PrettyPrinter createAutoImportPrettyPrinter();
+	PrettyPrinter createPrettyPrinterAutoImport();
 
 	/**
 	 * @param creator a {@link Supplier}, which creates new instance of pretty printer.

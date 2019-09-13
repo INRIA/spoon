@@ -643,7 +643,7 @@ private transient  ClassLoader inputClassloader;
 	}
 
 	@Override
-	public PrettyPrinter createAutoImportPrettyPrinter() {
+	public PrettyPrinter createPrettyPrinterAutoImport() {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
 		List<Processor<CtCompilationUnit>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
 				//try to import as much types as possible
@@ -663,7 +663,7 @@ private transient  ClassLoader inputClassloader;
 	public PrettyPrinter createPrettyPrinter() {
 		if (prettyPrinterCreator == null) {
 			if (PRETTY_PRINTING_MODE.AUTOIMPORT.equals(prettyPrintingMode)) {
-				return createAutoImportPrettyPrinter();
+				return createPrettyPrinterAutoImport();
 			}
 
 
