@@ -43,6 +43,11 @@ public interface Environment {
 	 */
 	void setComplianceLevel(int level);
 
+	/**
+	 * @return the kind of pretty-printing expected.
+	 * most robust: {@link PRETTY_PRINTING_MODE#DEBUG}
+	 * most sophisticated: {@link PRETTY_PRINTING_MODE#AUTOIMPORT}
+	 */
 	PRETTY_PRINTING_MODE getPrettyPrintingMode();
 
 	void setPrettyPrintingMode(PRETTY_PRINTING_MODE prettyPrintingMode);
@@ -417,6 +422,11 @@ public interface Environment {
 	PrettyPrinter createPrettyPrinter();
 
 	/**
+	 * @return new instance of {@link PrettyPrinter} which prints nice code
+	 */
+	PrettyPrinter createPrettyPrinterAutoImport();
+
+	/**
 	 * @param creator a {@link Supplier}, which creates new instance of pretty printer.
 	 * Can be used to create a {@link SniperJavaPrettyPrinter} for enabling the sniper mode.
 	 *
@@ -437,8 +447,8 @@ public interface Environment {
 
 	/** Drives how the model is pretty-printed to disk, or when {@link CtElement#prettyprint()} is called */
 	enum PRETTY_PRINTING_MODE {
-		/** no preprocessors are applied to the model before pretty-printing, this is the default behavior of @link {@link CtElement#toString()}. */
-		VANILLA,
+		/** direct in {@link spoon.reflect.visitor.DefaultJavaPrettyPrinter}, no preprocessors are applied to the model before pretty-printing }. */
+		DEBUG,
 
 		/** autoimport mode, adds as many imports as possible */
 		AUTOIMPORT,

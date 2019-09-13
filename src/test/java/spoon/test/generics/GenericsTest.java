@@ -174,8 +174,8 @@ public class GenericsTest {
 		assertTrue(val.getType().getActualTypeArguments().get(0).isImplicit());
 		assertEquals("java.lang.String", val.getType().getActualTypeArguments().get(0).toString());
 		assertEquals("java.lang.String", val.getType().getActualTypeArguments().get(0).getQualifiedName());
-		assertEquals("java.util.ArrayList<>", val.getType().prettyprint());
-		assertEquals("new java.util.ArrayList<>()",val.prettyprint());
+		assertEquals("java.util.ArrayList<>", val.getType().toString());
+		assertEquals("new ArrayList<>()",val.prettyprint());
 	}
 
 	@Test

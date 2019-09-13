@@ -81,8 +81,7 @@ public class TestSniperPrinter {
 
 			// check that we have picked the right statement
 			ChangeCollector.runWithoutChangeListener(type.getFactory().getEnvironment(), () -> {
-				//TODO calling toString should not change the model...
-				assertEquals("bounds = false", toBeRemoved.toString());
+				assertEquals("bounds = false", toBeRemoved.toStringDebug());
 			});
 			//change the model
 			toBeRemoved.delete();
@@ -150,7 +149,7 @@ public class TestSniperPrinter {
 			type.addTypeMember(context.newField);
 		}, (type, printed) -> {
 			String lastMemberString = "new List<?>[7][];";
-			assertIsPrintedWithExpectedChanges(type, printed, "\\Q" + lastMemberString + "\\E", lastMemberString + "\n\n\t" + context.newField.toString());
+			assertIsPrintedWithExpectedChanges(type, printed, "\\Q" + lastMemberString + "\\E", lastMemberString + "\n\n\t" + context.newField.toStringDebug());
 		});
 	}
 

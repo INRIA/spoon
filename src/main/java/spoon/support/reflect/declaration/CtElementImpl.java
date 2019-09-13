@@ -7,6 +7,7 @@ package spoon.support.reflect.declaration;
 
 import org.apache.log4j.Logger;
 import spoon.Launcher;
+import spoon.compiler.Environment;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
@@ -278,17 +279,33 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public String prettyprint() {
-		PrettyPrinter printer = getFactory().getEnvironment().createPrettyPrinter();
+		PrettyPrinter printer = getFactory().getEnvironment().createPrettyPrinterAutoImport();
 		return printer.prettyprint(this).getResult();
 	}
 
 	@Override
-	public String toString() {
+	public String toStringDebug() {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
-		printer.setIgnoreImplicit(true);
+		return printer.scan(this).toString();
+	}
+
+	@Override
+	public String toString() {
+		DefaultJavaPrettyPrinter printer = (DefaultJavaPrettyPrinter) getFactory().getEnvironment().createPrettyPrinter();
+		if (!getFactory().getEnvironment().getPrettyPrintingMode().equals(Environment.PRETTY_PRINTING_MODE.AUTOIMPORT)) {
+			printer.setIgnoreImplicit(true);
+		}
 		String errorMessage = "";
 		try {
-			printer.scan(this);
+			// now that pretty-printing can change the model, we only do it on a clone
+			CtElement clone = this.clone();
+
+			// required: in DJPP some decisions are taken based on the content of the parent
+			if (this.isParentInitialized()) {
+				clone.setParent(this.getParent());
+			}
+
+			printer.scan(clone);
 		} catch (ParentNotInitializedException ignore) {
 			LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);
 			errorMessage = ERROR_MESSAGE_TO_STRING;

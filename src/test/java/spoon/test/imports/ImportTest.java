@@ -110,7 +110,6 @@ public class ImportTest {
 	public void testImportOfAnInnerClassInASuperClassPackageAutoImport() {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setShouldCompile(true);
-		spoon.getEnvironment().setAutoImports(true);
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/SuperClass.java");
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/ChildClass.java");
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/PublicInterface2.java");
@@ -141,7 +140,6 @@ public class ImportTest {
 	public void testImportOfAnInnerClassInASuperClassPackageFullQualified() {
 		Launcher spoon = new Launcher();
 		spoon.getEnvironment().setShouldCompile(true);
-		spoon.getEnvironment().setAutoImports(false);
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/SuperClass.java");
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/internal/ChildClass.java");
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/ClientClass.java");
@@ -484,7 +482,7 @@ public class ImportTest {
 	public void testAccessType() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
-				"-i", "./src/test/java/spoon/test/imports/testclasses", "--with-imports"
+				"-i", "./src/test/java/spoon/test/imports/testclasses"
 		});
 		launcher.buildModel();
 		final CtClass<ImportTest> aInnerClass = launcher.getFactory().Class().get(ClientClass.class.getName()+"$InnerClass");
@@ -676,7 +674,7 @@ public class ImportTest {
 	public void testNestedAccessPathWithTypedParameterWithImports() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
-				"-i", "./src/test/resources/spoon/test/imports/testclasses2/AbstractMapBasedMultimap.java", "--with-imports"
+				"-i", "./src/test/resources/spoon/test/imports/testclasses2/AbstractMapBasedMultimap.java"
 		});
 		launcher.buildModel();
 		launcher.prettyprint();
@@ -691,12 +689,11 @@ public class ImportTest {
 		//toString prints fully qualified names
 		assertEquals("private class WrappedListIterator extends spoon.test.imports.testclasses2.AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}",mmwli.toString());
 		//pretty printer prints optimized names
-		assertEquals("private class WrappedListIterator extends WrappedIterator {}",printByPrinter(mmwli));
+		assertEquals("private class WrappedListIterator extends WrappedCollection.WrappedIterator {}",printByPrinter(mmwli));
 		assertTrue(mm.toString().contains("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator"));
 
 		CtClass<?> mmwliother = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$OtherWrappedList$WrappedListIterator");
 		assertEquals("private class WrappedListIterator extends spoon.test.imports.testclasses2.AbstractMapBasedMultimap<K, V>.OtherWrappedList.WrappedIterator {}",mmwliother.toString());
-		assertEquals("private class WrappedListIterator extends WrappedIterator {}",printByPrinter(mmwliother));
 	}
 
 	@Test
@@ -720,7 +717,7 @@ public class ImportTest {
 	public void testNestedStaticPathWithTypedParameterWithImports() {
 		final Launcher launcher = new Launcher();
 		launcher.setArgs(new String[] {
-				"-i", "./src/test/resources/spoon/test/imports/testclasses2/Interners.java", "--with-imports"
+				"-i", "./src/test/resources/spoon/test/imports/testclasses2/Interners.java"
 		});
 		launcher.buildModel();
 		launcher.prettyprint();
@@ -730,8 +727,6 @@ public class ImportTest {
 			fail(e.getMessage());
 		}
 		CtClass<?> mm = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.Interners");
-		//printer does not add FQ for inner types
-		assertTrue(printByPrinter(mm).contains("List<Dummy> list;"));
 		//to string forces fully qualified
 		assertTrue(mm.toString().contains("java.util.List<spoon.test.imports.testclasses2.Interners.WeakInterner.Dummy> list;"));
 	}
@@ -1571,7 +1566,7 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 	}
 	
 	public static String printByPrinter(CtElement element) {
-		DefaultJavaPrettyPrinter pp = (DefaultJavaPrettyPrinter) element.getFactory().getEnvironment().createPrettyPrinter();
+		DefaultJavaPrettyPrinter pp = (DefaultJavaPrettyPrinter) element.getFactory().getEnvironment().createPrettyPrinterAutoImport();
 		//this call applies print validators, which modifies model before printing
 		//and then it prints everything
 		String printedCU = pp.printCompilationUnit(element.getPosition().getCompilationUnit());
@@ -1626,7 +1621,7 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		List<CtStatement> statements = ctor.getBody().getStatements();
 
 		assertEquals("super(context, attributeSet)", statements.get(0).toString());
-		assertEquals("mButton = ((android.widget.Button) (findViewById(R.id.page_button_button)))", statements.get(1).toString());
+		assertEquals("mButton = ((Button) (findViewById(R.id.page_button_button)))", statements.get(1).toString());
 		assertEquals("mCurrentActiveColor = getColor(R.color.c4_active_button_color)", statements.get(2).toString());
 		assertEquals("mCurrentActiveColor = getResources().getColor(R.color.c4_active_button_color)", statements.get(3).toString());
 		assertEquals("mCurrentActiveColor = getData().getResources().getColor(R.color.c4_active_button_color)", statements.get(4).toString());
