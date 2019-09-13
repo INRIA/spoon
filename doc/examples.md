@@ -19,7 +19,7 @@ This [`Factory`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/mai
 
 The [`NotNullProcessor`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/transformation/notnullcheck/NotNullCheckAdderProcessor.java) adds a not-null check for all method parameters.
 
-The [`LogProcessor`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/transformation/autologging/LogProcessor.java) adds a log information when entering a method.
+The [`LogProcessor`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/transformation/autologging/LogProcessor.java) is an example of Spoon for tracing, it adds a log statement when entering a method.
 
 The [`MutationProcessor`](https://github.com/SpoonLabs/spoon-examples/tree/master/src/main/java/fr/inria/gforge/spoon/transformation/mutation) randomly mutates some parts of the abstract syntax tree for [mutation testing](http://en.wikipedia.org/wiki/Mutation_testing).
 
