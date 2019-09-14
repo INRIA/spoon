@@ -22,6 +22,7 @@
 package spoon.visualisation.spoon;
 
 import java.util.List;
+import javafx.scene.text.TextFlow;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -35,5 +36,5 @@ public abstract class SpoonElementVisitor {
 		this.levelsToIgnore = levelsToIgnore;
 	}
 
-	public abstract void accept(final int level, final @NotNull String label, final @NotNull List<Integer> linesPosition);
+	public abstract void accept(final int level, final @NotNull TextFlow label, final @NotNull List<Integer> linesPosition);
 }

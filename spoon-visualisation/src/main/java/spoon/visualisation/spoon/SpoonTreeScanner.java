@@ -21,7 +21,14 @@
  */
 package spoon.visualisation.spoon;
 
+import io.github.interacto.command.library.OpenWebPage;
+import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Tooltip;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spoon.reflect.code.CtAbstractInvocation;
@@ -81,9 +88,32 @@ public class SpoonTreeScanner extends CtScanner {
 	protected void enter(final CtElement elt) {
 		level++;
 
-		// Removing the trail Impl. Make the assumption that any implementation class
-		// has its interface (same name without the trailing 'Impl'
-		String label = elt.getClass().getSimpleName().replaceAll("Impl$", "");
+		final String simpleName = elt.getClass().getSimpleName();
+		// We assume that the Spoon API follows this rule:
+		// the implementation class name is the interface name plus 'Impl'
+		// We want to display the main interface corresponding to the given class.
+		// So looking for this interface. If not found, the current class is used.
+		final Class<?> cl = Arrays
+			.stream(elt.getClass().getInterfaces())
+			.filter(interf -> simpleName.equals(interf.getSimpleName() + "Impl"))
+			.findFirst()
+			.orElse(elt.getClass());
+
+		// We want to be able to click on the interface name to open its JavaDoc
+		final Hyperlink label = new Hyperlink(cl.getSimpleName());
+		final TextFlow flow = new TextFlow(label);
+		final String url = "http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/" + cl.getName().replace('.', '/') + ".html";
+		Tooltip.install(label, new Tooltip(url));
+
+		// Clicking on the link opens the doc
+		// 'new Thread' because otherwise the app freezes (run in the UI thread)
+		label.setOnAction(evt -> new Thread(() -> {
+			final OpenWebPage cmd = new OpenWebPage();
+			cmd.setUri(URI.create(url));
+			if(cmd.canDo()) {
+				cmd.doIt();
+			}
+		}, "OPEN_SPOON_DOC_THREAD").start());
 
 		final SourcePosition pos = elt.getPosition();
 		final List<Integer> lines;
@@ -95,62 +125,70 @@ public class SpoonTreeScanner extends CtScanner {
 		}
 
 		if(elt.isImplicit()) {
-			label += " (implicit)";
+			flow.getChildren().add(new Text("(implicit)"));
 		}
 
 		if(currRole != null) {
-			label += " (role: " + currRole + ")";
+			flow.getChildren().add(new Text("(role: " + currRole + ")"));
 		}
 
 		if(elt instanceof CtType<?>) {
-			printer.accept(level, label + ": " + ((CtType<?>) elt).getSimpleName(), lines);
+			flow.getChildren().add(new Text(": " + ((CtType<?>) elt).getSimpleName()));
+			printer.accept(level, flow, lines);
 			return;
 		}
 
 		if(elt instanceof CtNamedElement) {
-			printer.accept(level, label + ": " + ((CtNamedElement) elt).getSimpleName(), lines);
+			flow.getChildren().add(new Text(": " + ((CtNamedElement) elt).getSimpleName()));
+			printer.accept(level, flow, lines);
 			return;
 		}
 
 		if(elt instanceof CtReference) {
-			printer.accept(level, label + ": " + ((CtReference) elt).getSimpleName(), lines);
+			flow.getChildren().add(new Text(": " + ((CtReference) elt).getSimpleName()));
+			printer.accept(level, flow, lines);
 			return;
 		}
 
 		if(elt instanceof CtVariableAccess<?>) {
 			final CtVariableAccess<?> varaccess = (CtVariableAccess<?>) elt;
 			final String txt = ": " + ((varaccess.getVariable() != null) ? varaccess.getVariable().getSimpleName() : "(null)");
-			printer.accept(level, label + txt, lines);
+			flow.getChildren().add(new Text(txt));
+			printer.accept(level, flow, lines);
 			return;
 		}
 
 		if(elt instanceof CtTypeAccess<?>) {
 			final CtTypeAccess<?> typeaccess = (CtTypeAccess<?>) elt;
 			final String txt = ": " + ((typeaccess.getAccessedType() != null) ? typeaccess.getAccessedType().getSimpleName() : "(null)");
-			printer.accept(level, label + txt, lines);
+			flow.getChildren().add(new Text(txt));
+			printer.accept(level, flow, lines);
 			return;
 		}
 
 		if(elt instanceof CtLiteral<?>) {
-			printer.accept(level, label + ": " + ((CtLiteral<?>) elt).getValue(), lines);
+			flow.getChildren().add(new Text(": " + ((CtLiteral<?>) elt).getValue()));
+			printer.accept(level, flow, lines);
 			return;
 		}
 
 		if(elt instanceof CtAbstractInvocation<?>) {
 			final CtAbstractInvocation<?> invoc = (CtAbstractInvocation<?>) elt;
 			final String txt = ": " + ((invoc.getExecutable() != null) ? invoc.getExecutable().getSimpleName() : "(null)");
-			printer.accept(level, label + txt, lines);
+			flow.getChildren().add(new Text(txt));
+			printer.accept(level, flow, lines);
 			return;
 		}
 
 		if(elt instanceof CtAnnotation<?>) {
 			final CtAnnotation<?> annot = (CtAnnotation<?>) elt;
 			final String txt = ": " + ((annot.getAnnotationType() != null) ? annot.getAnnotationType().getSimpleName() : "(null)");
-			printer.accept(level, label + txt, lines);
+			flow.getChildren().add(new Text(txt));
+			printer.accept(level, flow, lines);
 			return;
 		}
 
-		printer.accept(level, label, lines);
+		printer.accept(level, flow, lines);
 	}
 
 	@Override
