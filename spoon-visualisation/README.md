@@ -1,6 +1,6 @@
 # Visualization of Spoon ASTs with JavaFX
 
-A JavaFX app for visualising the Spoon abstract syntaxt tree of Java code (Java 11 supported).
+A JavaFX app for visualising the Spoon abstract syntax tree of Java code (Java 11 supported).
 It is an alternative to the Swing-based GUI of Spoon ASTs (`$ java -cp spoon...-jar-with-dependencies.jar spoon.Launcher -i class.java --gui --noclasspath`)
 
 ## Contributors
