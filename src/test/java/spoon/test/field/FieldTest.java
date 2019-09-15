@@ -174,4 +174,19 @@ public class FieldTest {
 		assertEquals("field", fieldReference.getSimpleName());
 		assertEquals("<unknown>#field", fieldReference.getQualifiedName());
 	}
+
+	@Test
+	public void reg() {
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setAutoImports(true);
+		Factory factory = launcher.getFactory();
+		final CtFieldRead<Double> fieldNegativeInfinity = factory.createFieldRead();
+		fieldNegativeInfinity.setType(factory.createCtTypeReference(Double.class));
+		final CtField<Double> negative_infinity = (CtField<Double>) factory.Class().get(Double.class).getField("NEGATIVE_INFINITY");
+		fieldNegativeInfinity.setVariable(negative_infinity.getReference());
+		fieldNegativeInfinity.setFactory(factory);
+		assertEquals("Double.NEGATIVE_INFINITY", fieldNegativeInfinity.toString());
+	}
+
+
 }
