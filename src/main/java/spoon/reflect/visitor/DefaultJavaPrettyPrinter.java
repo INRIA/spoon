@@ -110,6 +110,7 @@ import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.printer.CommentOffset;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -177,7 +178,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Handle imports of classes.
 	 */
-	protected List<Processor<CtElement>> preprocessors;
+	protected final List<Processor<CtElement>> preprocessors = new ArrayList<>();
 
 	/**
 	 * Environment which Spoon is executed.
@@ -2057,7 +2058,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * @param preprocessors list of {@link CompilationUnitValidator}, which have to be used to validate and fix model before it's printing
 	 */
 	public void setPreprocessors(List<Processor<CtElement>> preprocessors) {
-		this.preprocessors = preprocessors;
+		this.preprocessors.addAll(preprocessors);
 	}
 
 	/**
