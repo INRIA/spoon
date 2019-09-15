@@ -176,15 +176,18 @@ public class FieldTest {
 	}
 
 	@Test
-	public void reg() {
+	public void bugAfterRefactoringImports() {
 		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setAutoImports(true);
 		Factory factory = launcher.getFactory();
 		final CtFieldRead<Double> fieldNegativeInfinity = factory.createFieldRead();
 		fieldNegativeInfinity.setType(factory.createCtTypeReference(Double.class));
 		final CtField<Double> negative_infinity = (CtField<Double>) factory.Class().get(Double.class).getField("NEGATIVE_INFINITY");
 		fieldNegativeInfinity.setVariable(negative_infinity.getReference());
-		fieldNegativeInfinity.setFactory(factory);
+
+		launcher.getEnvironment().setAutoImports(false);
+		assertEquals("java.lang.Double.NEGATIVE_INFINITY", fieldNegativeInfinity.toString());
+
+		launcher.getEnvironment().setAutoImports(true);
 		assertEquals("Double.NEGATIVE_INFINITY", fieldNegativeInfinity.toString());
 	}
 

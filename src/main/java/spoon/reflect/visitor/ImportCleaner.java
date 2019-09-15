@@ -110,6 +110,11 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 			//else do nothing. E.g. in case of implicit type of lambda parameter
 			//`(e) -> {...}`
 		} else if (reference.isImplicitParent()) {
+			if (reference.getParent() instanceof CtFieldReference) {
+				// in ImportAnalyzer, we consider CtTypeReference inside CtFieldReference
+				// but we never import them, explicitly
+				return;
+			}
 			/*
 			 * the package is implicit. E.g. `Assert.assertTrue`
 			 * where package `org.junit` is implicit
