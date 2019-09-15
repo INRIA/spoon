@@ -1621,9 +1621,9 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		List<CtStatement> statements = ctor.getBody().getStatements();
 
 		assertEquals("super(context, attributeSet)", statements.get(0).toString());
-		assertEquals("mButton = ((Button) (findViewById(R.id.page_button_button)))", statements.get(1).toString());
-		assertEquals("mCurrentActiveColor = getColor(R.color.c4_active_button_color)", statements.get(2).toString());
-		assertEquals("mCurrentActiveColor = getResources().getColor(R.color.c4_active_button_color)", statements.get(3).toString());
-		assertEquals("mCurrentActiveColor = getData().getResources().getColor(R.color.c4_active_button_color)", statements.get(4).toString());
+		assertEquals("mButton = ((Button) (findViewById(page_button_button)))", statements.get(1).toString());
+		assertEquals("mCurrentActiveColor = getColor(c4_active_button_color)", statements.get(2).toString());
+		assertEquals("mCurrentActiveColor = getResources().getColor(c4_active_button_color)", statements.get(3).toString());
+		assertEquals("mCurrentActiveColor = getData().getResources().getColor(c4_active_button_color)", statements.get(4).toString());
 	}
 }

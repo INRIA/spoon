@@ -199,13 +199,10 @@ public class DefaultPrettyPrinterTest {
 	public void autoImportUsesFullyQualifiedNameWhenImportedNameAlreadyPresent() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
-		factory.getEnvironment().setAutoImports(true);
 		final SpoonModelBuilder compiler = launcher.createCompiler();
 		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/sub/TypeIdentifierCollision.java"));
 		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/TypeIdentifierCollision.java"));
 		compiler.build();
-		//apply auto import validators
-		launcher.prettyprint();
 
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(spoon.test.prettyprinter.testclasses.TypeIdentifierCollision.class);
 
@@ -230,7 +227,7 @@ public class DefaultPrettyPrinterTest {
 			+ "    spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField = localField;" + nl
 			+ "}";
 
-		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).prettyprint();
+		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).toString();
 		assertEquals("The static field of an external type with the same identifier as the compilation unit is printed with FQN", expected, computed);
 
 		expected =
@@ -248,14 +245,14 @@ public class DefaultPrettyPrinterTest {
 			"public enum ENUM {" + nl + nl
 			+ "    E1(spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField, spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1);" + nl
 			+ "    final int NUM;" + nl + nl
-			+ "    final Enum<?> e;" + nl + nl
-			+ "    private ENUM(int num, Enum<?> e) {" + nl
+			+ "    final java.lang.Enum<?> e;" + nl + nl
+			+ "    private ENUM(int num, java.lang.Enum<?> e) {" + nl
 			+ "        NUM = num;" + nl
 			+ "        this.e = e;" + nl
 			+ "    }" + nl
 			+ "}";
 
-		computed = aClass.getNestedType("ENUM").prettyprint();
+		computed = aClass.getNestedType("ENUM").toString();
 		assertEquals(expected, computed);
 	}
 
