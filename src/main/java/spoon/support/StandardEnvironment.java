@@ -22,7 +22,6 @@ import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
