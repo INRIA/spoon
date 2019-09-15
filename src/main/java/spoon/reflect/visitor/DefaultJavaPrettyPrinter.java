@@ -938,7 +938,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private void writeImportReference(CtTypeReference<?> ref) {
+		boolean prevIgnoreImplicit = ignoreImplicit;
+		// force fqn, import are never short
+		ignoreImplicit = true;
 		visitCtTypeReference(ref, false);
+		ignoreImplicit = prevIgnoreImplicit;
 	}
 
 
