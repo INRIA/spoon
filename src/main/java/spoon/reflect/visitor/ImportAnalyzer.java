@@ -153,7 +153,7 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 					}
 					if (parent instanceof CtExecutableReference) {
 						CtElement parent2 = null;
-						if (element.isParentInitialized()) {
+						if (parent.isParentInitialized()) {
 							parent2 = parent.getParent();
 						}
 						if (parent2 instanceof CtConstructorCall<?>) {
