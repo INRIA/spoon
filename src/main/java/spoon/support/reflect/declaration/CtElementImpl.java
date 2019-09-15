@@ -300,6 +300,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			// now that pretty-printing can change the model, we only do it on a clone
 			CtElement clone = this.clone();
 
+			printer.applyPreProcessors(clone);
+
 			// required: in DJPP some decisions are taken based on the content of the parent
 			if (this.isParentInitialized()) {
 				clone.setParent(this.getParent());

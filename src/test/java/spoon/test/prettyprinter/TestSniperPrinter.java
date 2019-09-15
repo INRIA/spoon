@@ -22,6 +22,7 @@ import spoon.processing.Processor;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -180,7 +181,7 @@ public class TestSniperPrinter {
 		launcher.addInputResource(getResourcePath(testClass));
 		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
 			SniperJavaPrettyPrinter printer = new SniperJavaPrettyPrinter(launcher.getEnvironment());
-			printer.setPreprocessors(Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
+			printer.setPreprocessors(Collections.unmodifiableList(Arrays.<Processor<CtElement>>asList(
 					//remove unused imports first. Do not add new imports at time when conflicts are not resolved
 					new ImportCleaner().setCanAddImports(false),
 					//solve conflicts, the current imports are relevant too

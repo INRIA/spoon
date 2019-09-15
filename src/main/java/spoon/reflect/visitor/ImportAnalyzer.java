@@ -35,10 +35,10 @@ import java.util.Set;
  *
  */
 @Experimental
-abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<CtCompilationUnit> {
+abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<CtElement> {
 
 	@Override
-	public void process(CtCompilationUnit cu) {
+	public void process(CtElement el) {
 		T scanner = createScanner();
 		if (scanner instanceof EarlyTerminatingScanner) {
 			CtScannerListener listener = createScannerListener(scanner);
@@ -46,7 +46,11 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 				((EarlyTerminatingScanner) scanner).setListener(listener);
 			}
 		}
-		process(scanner, cu);
+		if (el instanceof CtCompilationUnit) {
+			process(scanner, (CtCompilationUnit) el);
+		} else {
+			scanner.scan(el);
+		}
 	}
 
 	protected static void process(CtScanner scanner, CtCompilationUnit cu) {

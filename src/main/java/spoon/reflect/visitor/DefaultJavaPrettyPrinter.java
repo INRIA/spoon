@@ -177,7 +177,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Handle imports of classes.
 	 */
-	protected List<Processor<CtCompilationUnit>> preprocessors;
+	protected List<Processor<CtElement>> preprocessors;
 
 	/**
 	 * Environment which Spoon is executed.
@@ -1910,14 +1910,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public String printCompilationUnit(CtCompilationUnit compilationUnit) {
 		reset();
-		List<Processor<CtCompilationUnit>> preprocessors = getPreprocessors();
-		if (preprocessors != null) {
-			for (Processor<CtCompilationUnit> preprocessor : preprocessors) {
-				preprocessor.process(compilationUnit);
-			}
-		}
+		applyPreProcessors(compilationUnit);
 		scanCompilationUnit(compilationUnit);
 		return getResult();
+	}
+
+	/** Warning, this may change the state of the object */
+	public void applyPreProcessors(CtElement el) {
+		for (Processor<CtElement> preprocessor : preprocessors) {
+			preprocessor.process(el);
+		}
 	}
 
 	protected void scanCompilationUnit(CtCompilationUnit compilationUnit) {
@@ -2050,14 +2052,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * @param preprocessors list of {@link CompilationUnitValidator}, which have to be used to validate and fix model before it's printing
 	 */
-	public void setPreprocessors(List<Processor<CtCompilationUnit>> preprocessors) {
+	public void setPreprocessors(List<Processor<CtElement>> preprocessors) {
 		this.preprocessors = preprocessors;
 	}
 
 	/**
 	 * @return list of {@link CompilationUnitValidator}, which are used to validate and fix model before it's printing
 	 */
-	public List<Processor<CtCompilationUnit>> getPreprocessors() {
+	public List<Processor<CtElement>> getPreprocessors() {
 		return this.preprocessors;
 	}
 
