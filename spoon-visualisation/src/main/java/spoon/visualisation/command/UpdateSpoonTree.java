@@ -22,6 +22,7 @@
 package spoon.visualisation.command;
 
 import javafx.scene.control.TreeView;
+import javafx.scene.text.TextFlow;
 import org.jetbrains.annotations.NotNull;
 import spoon.visualisation.spoon.SpoonElementVisitor;
 import spoon.visualisation.spoon.TreePrinter;
@@ -31,7 +32,7 @@ import spoon.visualisation.spoon.TreePrinter;
  */
 public class UpdateSpoonTree extends SpoonTreeCmdBase {
 	/** The tree widget that shows the Spoon tree. */
-	private final @NotNull TreeView<String> spoonAST;
+	private final @NotNull TreeView<TextFlow> spoonAST;
 
 	/**
 	 * @param spoonAST The tree view of the Spoon AST
@@ -39,7 +40,7 @@ public class UpdateSpoonTree extends SpoonTreeCmdBase {
 	 * @param code The code to analyse
 	 * @param treeLevel The tree level analysis to use
 	 */
-	public UpdateSpoonTree(final @NotNull TreeView<String> spoonAST, final boolean hideImplicit, final @NotNull String code,
+	public UpdateSpoonTree(final @NotNull TreeView<TextFlow> spoonAST, final boolean hideImplicit, final @NotNull String code,
 		final @NotNull TreeLevel treeLevel) {
 		super(hideImplicit, code, treeLevel);
 		this.spoonAST = spoonAST;

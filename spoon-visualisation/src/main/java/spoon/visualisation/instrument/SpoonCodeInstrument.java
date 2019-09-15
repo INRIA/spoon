@@ -34,6 +34,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import spoon.visualisation.command.SaveTreeText;
 import spoon.visualisation.command.SelectCodeItem;
@@ -47,7 +48,7 @@ import spoon.visualisation.spoon.SpoonTreeItem;
  */
 public class SpoonCodeInstrument extends JfxInstrument implements Initializable {
 	@FXML private TextArea spoonCode;
-	@FXML private TreeView<String> spoonAST;
+	@FXML private TreeView<TextFlow> spoonAST;
 	@FXML private CheckBox hideImplicit;
 	@FXML private ComboBox<TreeLevel> treeLevel;
 	@FXML private Button save;

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Platform;
 import javafx.scene.control.TreeView;
+import javafx.scene.text.TextFlow;
 import org.jetbrains.annotations.NotNull;
 import spoon.visualisation.spoon.SpoonTreeItem;
 
@@ -34,13 +35,13 @@ import spoon.visualisation.spoon.SpoonTreeItem;
  */
 public class SelectCodeItem extends CommandImpl {
 	final int caretPosition;
-	final TreeView<String> spoonTree;
+	final TreeView<TextFlow> spoonTree;
 
 	/**
 	 * @param caretPosition The current caret position of the code view
 	 * @param spoonTree The tree view of the Spoon AST
 	 */
-	public SelectCodeItem(final int caretPosition, final @NotNull TreeView<String> spoonTree) {
+	public SelectCodeItem(final int caretPosition, final @NotNull TreeView<TextFlow> spoonTree) {
 		super();
 		this.caretPosition = caretPosition;
 		this.spoonTree = spoonTree;

@@ -21,6 +21,7 @@ Then go into the `target/modules` folder and launch: `java --module-path . --add
 - [implicit elements masking](#feature-implicit-elements-masking)
 - [export as text](#feature-export-as-text)
 - [analysis level](#feature-analysis-level)
+- [open JavaDoc](#feature-open-javadoc)
 - [one argument to load a Java file](#feature-one-argument-to-load-a-java-file)
 
 ## Feature: selection highlighting
@@ -68,6 +69,12 @@ The `auto` level tries to detect the level automatically by starting parsing the
 
 ![auto](doc/appAuto.png)
 
+
+## Feature: Open Javadoc
+
+A user can click on class names in the Spoon AST view to open the corresponding Spoon Javadoc. 
+
+![auto](doc/openDoc.png)
 
 
 ## Feature: one argument to load a Java file

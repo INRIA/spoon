@@ -24,6 +24,7 @@ package spoon.visualisation.spoon;
 import java.util.List;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.text.TextFlow;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,8 +32,8 @@ import org.jetbrains.annotations.Nullable;
  * The printer that prints the Spoon AST into a JavaFX tree view.
  */
 public class TreePrinter extends SpoonElementVisitor {
-	private final @NotNull TreeView<String> tree;
-	private @Nullable TreeItem<String> currItem;
+	private final @NotNull TreeView<TextFlow> tree;
+	private @Nullable TreeItem<TextFlow> currItem;
 	/** The current depth level in the tree view */
 	private int currLevel;
 
@@ -40,7 +41,7 @@ public class TreePrinter extends SpoonElementVisitor {
 	 * @param tree The tree view to use to print the Spoon AST
 	 * @param levelsToIgnore The number of tree levels to ignore before starting printing
 	 */
-	public TreePrinter(final @NotNull TreeView<String> tree, final int levelsToIgnore) {
+	public TreePrinter(final @NotNull TreeView<TextFlow> tree, final int levelsToIgnore) {
 		super(levelsToIgnore);
 		this.tree = tree;
 		this.tree.setRoot(null);
@@ -49,7 +50,7 @@ public class TreePrinter extends SpoonElementVisitor {
 	}
 
 	@Override
-	public void accept(final int level, final @NotNull String label, final @NotNull List<Integer> lines) {
+	public void accept(final int level, final @NotNull TextFlow label, final @NotNull List<Integer> lines) {
 		// level > 1 because the root element must be created to be then masked as several real tree roots may exist
 		// Example: three statements with the statement level.
 		// level <= levelsToIgnore: depending on the analysis level, some root elements must be hidden
@@ -68,7 +69,7 @@ public class TreePrinter extends SpoonElementVisitor {
 			if(currLevel < level) {
 				currItem.getChildren().add(item);
 			}else {
-				TreeItem<String> parent = currItem.getParent();
+				TreeItem<TextFlow> parent = currItem.getParent();
 
 				while(currLevel > level) {
 					currLevel--;
