@@ -58,9 +58,6 @@ public class LexicalScopeScanner extends EarlyTerminatingScanner<Object> {
 	 * @return new {@link NameScopeImpl} if `target` element declares new naming scope or null if there is no new scope
 	 */
 	private NameScopeImpl onElement(LexicalScope parent, CtElement target) {
-		if (parent == null) {
-			return null;
-		}
 		class Visitor extends CtAbstractVisitor {
 			NameScopeImpl finder = null;
 			@Override

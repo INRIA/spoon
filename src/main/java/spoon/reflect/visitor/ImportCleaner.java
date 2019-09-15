@@ -65,6 +65,9 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 
 	@Override
 	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, Context context, CtRole role) {
+		if (context == null) {
+			return;
+		}
 		CtExpression<?> target = targetedExpression.getTarget();
 		if (target != null && target.isImplicit()) {
 			if (target instanceof CtTypeAccess) {
