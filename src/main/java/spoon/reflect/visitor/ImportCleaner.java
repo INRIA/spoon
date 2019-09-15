@@ -84,6 +84,9 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 
 	@Override
 	protected void handleTypeReference(CtTypeReference<?> reference, Context context, CtRole role) {
+		if (context == null) {
+			return;
+		}
 		if (reference.isImplicit()) {
 			/*
 			 * the reference is implicit. E.g. `assertTrue();`
