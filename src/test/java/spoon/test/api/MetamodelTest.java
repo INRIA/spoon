@@ -80,6 +80,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.test.architecture.SpoonArchitectureEnforcerTest.assertSetEquals;
 
 public class MetamodelTest {
 	@Test
@@ -152,10 +153,13 @@ public class MetamodelTest {
 		Set<CtMethod<?>> isNotSetter = setters.stream().filter(m -> !(m.getSimpleName().startsWith("set") || m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert") || m.getSimpleName().startsWith("remove"))).collect(Collectors.toSet());
 
 		assertEquals(expectedRoles, getterRoles);
-		//these two derived roles has no setter
+		//derived roles with no setter:
 		expectedRoles.remove(CtRole.DECLARED_MODULE.name());
 		expectedRoles.remove(CtRole.DECLARED_TYPE.name());
-		assertEquals(expectedRoles, setterRoles);
+		expectedRoles.remove(CtRole.EMODIFIER.name());
+
+		assertSetEquals("", expectedRoles, setterRoles);
+
 		assertEquals(Collections.EMPTY_SET, isNotGetter);
 		assertEquals(Collections.EMPTY_SET, isNotSetter);
 	}

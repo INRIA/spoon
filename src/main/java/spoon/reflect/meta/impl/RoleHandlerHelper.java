@@ -51,6 +51,9 @@ public class RoleHandlerHelper {
 	 */
 	public static RoleHandler getRoleHandler(Class<? extends CtElement> targetClass, CtRole role) {
 		RoleHandler rh = getOptionalRoleHandler(targetClass, role);
+		if (rh == null) {
+			throw new SpoonException("The element of class " + targetClass + " does not have CtRole." + role.name());
+		}
 		return rh;
 	}
 

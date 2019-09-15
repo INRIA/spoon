@@ -429,7 +429,7 @@ public class SpoonArchitectureEnforcerTest {
 		assertSetEquals("you have created a new package or removed an existing one, please declare it explicitly in SpoonArchitectureEnforcerTest#testSpecPackage", officialPackages, currentPackages);
 	}
 
-	private static void assertSetEquals(String msg, Set<?> set1, Set<?> set2) {
+	public static void assertSetEquals(String msg, Set<?> set1, Set<?> set2) {
 		if (set1 == null || set2 == null) {
 			throw new IllegalArgumentException();
 		}
