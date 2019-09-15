@@ -316,14 +316,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	@Override
-	public DefaultJavaPrettyPrinter prettyprint(CtElement e) {
-		CtType<?> parent = e.getParent(CtType.class);
-		if (parent != null) {
-			// call the validators
-			calculate(e.getFactory().createCompilationUnit(), Arrays.asList(new CtType<?>[]{parent}));
-		}
+	public String prettyprint(CtElement e) {
 		reset();
-		return scan(e);
+		applyPreProcessors(e);
+		scan(e);
+		return this.getResult();
 	}
 
 
