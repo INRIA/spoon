@@ -199,6 +199,7 @@ public class DefaultPrettyPrinterTest {
 	public void autoImportUsesFullyQualifiedNameWhenImportedNameAlreadyPresent() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
+		factory.getEnvironment().setAutoImports(true);
 		final SpoonModelBuilder compiler = launcher.createCompiler();
 		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/sub/TypeIdentifierCollision.java"));
 		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/TypeIdentifierCollision.java"));
@@ -208,7 +209,7 @@ public class DefaultPrettyPrinterTest {
 
 		String expected =
 			"public void setFieldUsingExternallyDefinedEnumWithSameNameAsLocal() {" + nl
-			+ "    localField = spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1.ordinal();" + nl
+			+ "    localField = TypeIdentifierCollision.ENUM.E1.ordinal();" + nl
 			+ "}";
 
 		String computed = aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0).toString();
@@ -224,7 +225,7 @@ public class DefaultPrettyPrinterTest {
 
 		expected =
 			"public void setFieldOfClassWithSameNameAsTheCompilationUnitClass() {" + nl
-			+ "    spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField = localField;" + nl
+			+ "    TypeIdentifierCollision.globalField = localField;" + nl
 			+ "}";
 
 		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).toString();
@@ -243,10 +244,10 @@ public class DefaultPrettyPrinterTest {
 
 		expected =
 			"public enum ENUM {" + nl + nl
-			+ "    E1(spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField, spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1);" + nl
+			+ "    E1(TypeIdentifierCollision.globalField, TypeIdentifierCollision.ENUM.E1);" + nl
 			+ "    final int NUM;" + nl + nl
-			+ "    final java.lang.Enum<?> e;" + nl + nl
-			+ "    private ENUM(int num, java.lang.Enum<?> e) {" + nl
+			+ "    final Enum<?> e;" + nl + nl
+			+ "    private ENUM(int num, Enum<?> e) {" + nl
 			+ "        NUM = num;" + nl
 			+ "        this.e = e;" + nl
 			+ "    }" + nl
