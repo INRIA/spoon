@@ -89,7 +89,8 @@ public class InitializerTest {
 		CtClass<?> ctClass = model.getElements(new NamedElementFilter<>(CtClass.class, "Utf8HttpResponse")).get(0);
 
 		CtAnonymousExecutable ex = ctClass.getElements(new TypeFilter<>(CtAnonymousExecutable.class)).get(0);
-		assertEquals("org.apache.lucene.util.UnicodeUtil.UTF8Result temp = new org.apache.lucene.util.UnicodeUtil.UTF8Result()",
+		// we are indeed in autoimport
+		assertEquals("UnicodeUtil.UTF8Result temp = new UnicodeUtil.UTF8Result()",
 				ex.getBody().getStatements().get(0).toString());
 		assertEquals("temp.result = new byte[0]",
 				ex.getBody().getStatements().get(1).toString());

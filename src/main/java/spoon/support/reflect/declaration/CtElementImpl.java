@@ -280,7 +280,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public String prettyprint() {
 		PrettyPrinter printer = getFactory().getEnvironment().createPrettyPrinterAutoImport();
-		return printer.prettyprint(this).getResult();
+		return printer.prettyprint(this);
 	}
 
 	@Override
@@ -303,6 +303,10 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			// required: in DJPP some decisions are taken based on the content of the parent
 			if (this.isParentInitialized()) {
 				clone.setParent(this.getParent());
+			}
+
+			if (getFactory().getEnvironment().getPrettyPrintingMode().equals(Environment.PRETTY_PRINTING_MODE.AUTOIMPORT)) {
+				printer.applyPreProcessors(clone);
 			}
 
 			printer.scan(clone);

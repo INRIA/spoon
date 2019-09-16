@@ -65,6 +65,9 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 
 	@Override
 	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, Context context, CtRole role) {
+		if (context == null) {
+			return;
+		}
 		CtExpression<?> target = targetedExpression.getTarget();
 		if (target != null && target.isImplicit()) {
 			if (target instanceof CtTypeAccess) {
@@ -84,6 +87,9 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 
 	@Override
 	protected void handleTypeReference(CtTypeReference<?> reference, Context context, CtRole role) {
+		if (context == null) {
+			return;
+		}
 		if (reference.isImplicit()) {
 			/*
 			 * the reference is implicit. E.g. `assertTrue();`

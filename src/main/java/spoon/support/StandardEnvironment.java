@@ -22,7 +22,6 @@ import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
@@ -645,7 +644,7 @@ private transient  ClassLoader inputClassloader;
 	@Override
 	public PrettyPrinter createPrettyPrinterAutoImport() {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
-		List<Processor<CtCompilationUnit>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
+		List<Processor<CtElement>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtElement>>asList(
 				//try to import as much types as possible
 				new ForceImportProcessor(),
 				//remove unused imports first. Do not add new imports at time when conflicts are not resolved
@@ -674,7 +673,7 @@ private transient  ClassLoader inputClassloader;
 
 			if (PRETTY_PRINTING_MODE.FULLYQUALIFIED.equals(prettyPrintingMode)) {
 				DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
-				List<Processor<CtCompilationUnit>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtCompilationUnit>>asList(
+				List<Processor<CtElement>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtElement>>asList(
 						//force fully qualified
 						new ForceFullyQualifiedProcessor(),
 						//solve conflicts, the current imports are relevant too

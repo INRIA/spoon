@@ -63,6 +63,9 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScopeSca
 	}
 
 	private boolean isSupertypeOfNewClass(CtTypeReference<?> typeRef) {
+		if (!typeRef.isParentInitialized()) {
+			return false;
+		}
 		CtElement parent = typeRef.getParent();
 		if (parent instanceof CtClass && ((CtClass) parent).getSuperclass() == typeRef) {
 			CtElement parent2 = parent.getParent();

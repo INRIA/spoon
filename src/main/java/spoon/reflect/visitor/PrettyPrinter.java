@@ -61,5 +61,5 @@ public interface PrettyPrinter {
 	Map<Integer, Integer> getLineNumberMapping();
 
 	/** pretty-prints the element, call {@link #toString()} to get the result */
-	PrettyPrinter prettyprint(CtElement ctElement);
+	String prettyprint(CtElement ctElement);
 }

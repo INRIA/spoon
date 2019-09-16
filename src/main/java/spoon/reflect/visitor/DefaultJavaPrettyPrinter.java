@@ -110,6 +110,7 @@ import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.printer.CommentOffset;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -177,7 +178,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Handle imports of classes.
 	 */
-	protected List<Processor<CtCompilationUnit>> preprocessors;
+	protected final List<Processor<CtElement>> preprocessors = new ArrayList<>();
 
 	/**
 	 * Environment which Spoon is executed.
@@ -315,14 +316,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	@Override
-	public DefaultJavaPrettyPrinter prettyprint(CtElement e) {
-		CtType<?> parent = e.getParent(CtType.class);
-		if (parent != null) {
-			// call the validators
-			calculate(e.getFactory().createCompilationUnit(), Arrays.asList(new CtType<?>[]{parent}));
-		}
+	public String prettyprint(CtElement e) {
 		reset();
-		return scan(e);
+		applyPreProcessors(e);
+		scan(e);
+		return this.getResult();
 	}
 
 
@@ -938,7 +936,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private void writeImportReference(CtTypeReference<?> ref) {
+		boolean prevIgnoreImplicit = ignoreImplicit;
+		// force fqn, import are never short
+		ignoreImplicit = true;
 		visitCtTypeReference(ref, false);
+		ignoreImplicit = prevIgnoreImplicit;
 	}
 
 
@@ -1910,14 +1912,16 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public String printCompilationUnit(CtCompilationUnit compilationUnit) {
 		reset();
-		List<Processor<CtCompilationUnit>> preprocessors = getPreprocessors();
-		if (preprocessors != null) {
-			for (Processor<CtCompilationUnit> preprocessor : preprocessors) {
-				preprocessor.process(compilationUnit);
-			}
-		}
+		applyPreProcessors(compilationUnit);
 		scanCompilationUnit(compilationUnit);
 		return getResult();
+	}
+
+	/** Warning, this may change the state of the object */
+	public void applyPreProcessors(CtElement el) {
+		for (Processor<CtElement> preprocessor : preprocessors) {
+			preprocessor.process(el);
+		}
 	}
 
 	protected void scanCompilationUnit(CtCompilationUnit compilationUnit) {
@@ -2050,14 +2054,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * @param preprocessors list of {@link CompilationUnitValidator}, which have to be used to validate and fix model before it's printing
 	 */
-	public void setPreprocessors(List<Processor<CtCompilationUnit>> preprocessors) {
-		this.preprocessors = preprocessors;
+	public void setPreprocessors(List<Processor<CtElement>> preprocessors) {
+		this.preprocessors.clear();
+		this.preprocessors.addAll(preprocessors);
 	}
 
 	/**
 	 * @return list of {@link CompilationUnitValidator}, which are used to validate and fix model before it's printing
 	 */
-	public List<Processor<CtCompilationUnit>> getPreprocessors() {
+	public List<Processor<CtElement>> getPreprocessors() {
 		return this.preprocessors;
 	}
 
