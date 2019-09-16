@@ -24,6 +24,8 @@ package spoon.visualisation.spoon;
 import io.github.interacto.command.library.OpenWebPage;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -33,12 +35,15 @@ import java.util.stream.Stream;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spoon.reflect.code.CtAbstractInvocation;
@@ -176,7 +181,7 @@ public class SpoonTreeScanner extends CtScanner {
 	 * @param elt The Spoon element to analyse.
 	 * @return The created text flow that can be completed with other text elements.
 	 */
-	private TextFlow createStdTextFlow(final CtElement elt) {
+	TextFlow createStdTextFlow(final CtElement elt) {
 		final String simpleName = elt.getClass().getSimpleName();
 		// We assume that the Spoon API follows this rule:
 		// the implementation class name is the interface name plus 'Impl'
@@ -219,53 +224,135 @@ public class SpoonTreeScanner extends CtScanner {
 		return flow;
 	}
 
+	/**
+	 * Creates the properties table of an interface given its properties values.
+	 * @param props The properties values to used to create the table.
+	 * @return The JFX table view.
+	 */
+	TableView<Pair<String, String>> createTable(final Set<Pair<String, String>> props) {
+		final TableView<Pair<String, String>> table = new TableView<>();
+		final TableColumn<Pair<String, String>, String> colName = new TableColumn<>("Name");
+		final TableColumn<Pair<String, String>, String> colValue = new TableColumn<>("Value");
+
+		// To fill the cells using the input pair of values (property name, value)
+		colName.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().getKey()));
+		colValue.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().getValue()));
+		table.getColumns().addAll(List.of(colName, colValue));
+		// Balancing the width of each column
+		table.getColumns().forEach(col -> col.prefWidthProperty().bind(table.widthProperty().divide(table.getColumns().size())));
+		table.getItems().addAll(props);
+		// Workaround to resize the table view according to its content
+		table.setMinHeight(props.size() * 30 + 40);
+		table.setMaxHeight(table.getMinHeight());
+		table.setPrefHeight(table.getMinHeight());
+
+		return table;
+	}
 
 	/**
 	 * Creates a stage (a window) that shows the properties and their value of a given Spoon element.
 	 * @param elt The Spoon element to analyse.
 	 * @return The created stage.
 	 */
-	private Stage createPropertiesStage(final CtElement elt) {
-		final TableView<Tuple4> table = new TableView<>();
-		final TableColumn<Tuple4, String> colName = new TableColumn<>("Name");
-		final TableColumn<Tuple4, String> declType = new TableColumn<>("Declared Type");
-		final TableColumn<Tuple4, String> realType = new TableColumn<>("Real Type");
-		final TableColumn<Tuple4, String> colValue = new TableColumn<>("Value");
+	Stage createPropertiesStage(final CtElement elt) {
+		// Getting the properties and their value
+		final List<Pair<Class<?>, Set<Pair<String, String>>>> props = getSpoonProperties(elt);
+		// The idea is to have vertically a set of tables (and their title)
+		final VBox layout = new VBox();
+		final ScrollPane scroll = new ScrollPane(layout);
+		layout.prefWidthProperty().bind(scroll.prefWidthProperty());
 
-		colName.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().v1));
-		declType.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().v2));
-		realType.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().v3));
-		colValue.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().v4));
-		table.getColumns().addAll(List.of(colName, declType, realType, colValue));
-		table.getColumns().forEach(col -> col.prefWidthProperty().bind(table.widthProperty().divide(table.getColumns().size())));
-		table.getItems().addAll(getSpoonAttributes(elt));
+		// A gap between each table
+		layout.setSpacing(20);
+		layout.getChildren().addAll(
+			props
+				.stream()
+				.map(pair -> {
+					// Creating a title
+					final Text text = new Text(pair.getKey().getName());
+					text.setStyle("-fx-font-weight: bold");
+					// Creating the table
+					return new VBox(text, createTable(pair.getValue()));
+				})
+				.collect(Collectors.toList())
+		);
 
-		final Scene scene = new Scene(table);
+
 		final Stage stage = new Stage();
+		final Scene scene = new Scene(scroll, 800, 700);
+		scroll.prefWidthProperty().bind(scene.widthProperty());
 		stage.setScene(scene);
-		table.setPrefSize(1000, 800);
 		stage.setTitle("Properties values");
 		return stage;
 	}
 
 
-	private Set<Tuple4> getSpoonAttributes(final CtElement elt) {
+	/**
+	 * Gets the Spoon properties and their current value of the given element.
+	 * A Spoon properties is a getter (get..., is...).
+	 * Note that Spoon has a specific annotation (PropertyGetter, also DerivedProperty) for that we do not use here.
+	 * @param elt The Spoon element to analyse
+	 * @return A list of pairs: each pair refers to:
+	 * 1/ an interface that the Spoon element implements
+	 * 2/ a set of pairs where each pair refers to a property (its name) and its value
+	 */
+	List<Pair<Class<?>, Set<Pair<String, String>>>> getSpoonProperties(final CtElement elt) {
+		// Getting all the Spoon interfaces that 'elt' implements
 		return getAllSpoonInterfaces(elt.getClass())
-			.map(inter -> Arrays.stream(inter.getMethods()))
-			.flatMap(s -> s)
-			.filter(m -> !Modifier.isStatic(m.getModifiers()) && m.getParameterCount() == 0 &&
-				(m.getName().startsWith("get") || m.getName().startsWith("is")))
-			.map(m -> {
-				try {
-					final Object obj = m.invoke(elt);
-					final String objTypeName = obj == null ? "null" : obj.getClass().getSimpleName();
-					return new Tuple4(m.getName() + "()", m.getReturnType().getSimpleName(), objTypeName, String.valueOf(obj));
-				}catch(final IllegalAccessException | InvocationTargetException | NullPointerException ex) {
-					return null;
-				}
-			})
-			.filter(entry -> entry != null)
-			.collect(Collectors.toSet());
+			// Transforming each interface as a pair. The left element is the name of the interface
+			// The right element is a set of properties and their value.
+			.map(inter -> new Pair<Class<?>, Set<Pair<String, String>>>(inter, Arrays.stream(inter.getDeclaredMethods())
+				// Ignoring the methods that are static, with parameters, that are not getters
+				.filter(m ->
+					!Modifier.isStatic(m.getModifiers()) &&
+					m.getParameterCount() == 0 &&
+					(m.getName().startsWith("get") || m.getName().startsWith("is")))
+				// Transforming each method as a pair of: the method name (we call property), and its current value in 'elt'
+				.map(m -> {
+					try {
+						return new Pair<>(m.getName() + "(): " + prettyPrintType(m.getGenericReturnType()), String.valueOf(m.invoke(elt)));
+					}catch(final IllegalAccessException | InvocationTargetException | NullPointerException ex) {
+						return null;
+					}
+				})
+				.filter(entry -> entry != null)
+				.collect(Collectors.toSet()))
+			)
+			// Ignoring the interfaces with no property
+			.filter(pair -> !pair.getValue().isEmpty())
+			.collect(Collectors.toList());
+	}
+
+
+	/**
+	 * Gets a short pretty print of the given type by considering its generics
+	 * @param type The type to analyse
+	 * @return A string corresponding to the name of the type plus potential generics
+	 */
+	String prettyPrintType(final Type type) {
+		if(type instanceof Class) {
+			return ((Class<?>) type).getSimpleName();
+		}
+		if(type instanceof ParameterizedType) {
+			final ParameterizedType paramType = (ParameterizedType) type;
+			return getUnqualifiedClassName(paramType.getRawType().getTypeName()) +
+				Arrays
+				.stream(paramType.getActualTypeArguments())
+				.map(arg -> getUnqualifiedClassName(arg.getTypeName()))
+				.collect(Collectors.joining(", ", "<", ">"));
+		}
+		return type.getTypeName();
+	}
+
+
+	/**
+	 * Transforms a qualified name as an unqualified name.
+	 * @param qname The qualified name to transform
+	 * @return The computed unqualified name
+	 */
+	String getUnqualifiedClassName(final String qname) {
+		final String[] parts = qname.split("\\.");
+		return parts[parts.length - 1];
 	}
 
 
@@ -274,7 +361,7 @@ public class SpoonTreeScanner extends CtScanner {
 	 * @param cl The class to analyse.
 	 * @return A stream of all the retrieved interfaces
 	 */
-	private Stream<Class<?>> getAllSpoonInterfaces(final Class<?> cl) {
+	Stream<Class<?>> getAllSpoonInterfaces(final Class<?> cl) {
 		// Getting all the direct interfaces plus the undirect ones
 		return Stream.concat(
 			getDirectSpoonInterfaces(cl),
@@ -290,7 +377,7 @@ public class SpoonTreeScanner extends CtScanner {
 	 * @param cl The class to analyse.
 	 * @return A stream of all the retrieved interfaces
 	 */
-	private Stream<Class<?>> getDirectSpoonInterfaces(final Class<?> cl) {
+	Stream<Class<?>> getDirectSpoonInterfaces(final Class<?> cl) {
 		return Arrays
 			.stream(cl.getInterfaces())
 			.filter(inter -> inter.getPackageName().startsWith("spoon."));
