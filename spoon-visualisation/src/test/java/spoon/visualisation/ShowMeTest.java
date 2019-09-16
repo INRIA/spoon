@@ -168,7 +168,7 @@ public class ShowMeTest {
 		waitForTimeoutTransitions();
 		final Set<Node> hyperlinks = robot.lookup(CoreMatchers.instanceOf(Hyperlink.class)).queryAll();
 
-		assertThat(hyperlinks.size()).isEqualTo(2);
+		assertThat(hyperlinks.size()).isEqualTo(4);
 	}
 
 	@Disabled("Does not work on headless server")
