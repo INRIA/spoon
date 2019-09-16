@@ -29,17 +29,17 @@ public class SpoonifierTest {
 		int i = 0;
 		testSpoonifierWith("src/test/java/spoon/test/prettyprinter/testclasses/A.java", i++);
 		testSpoonifierWith("src/test/java/spoon/test/prettyprinter/testclasses/AClass.java", i++);
-		testSpoonifierWith("src/test/java/spoon/test/prettyprinter/testclasses/ArrayRealVector.java", i++);
+		testSpoonifierWith("src/test/java/spoon/test/spoonifier/testclasses/ArrayRealVector.java", i++);
 		testSpoonifierWith("src/test/java/spoon/test/prettyprinter/testclasses/FooCasper.java", i++);
 		testSpoonifierWith("src/test/java/spoon/test/prettyprinter/testclasses/Rule.java", i++);
 
 	}
 
-	/*
-	 * @pathToClass path to the class that will be Spoonified
-	 * @i an integer to avoid duplicated classes
+	/**
+	 * @param pathToClass path to the class that will be Spoonified
+	 * @param i an integer to avoid duplicated classes
 	 *
-	 * This method verify that SpoonifyVisitor can generate code that replicate a class
+	 * This method verifies that SpoonifyVisitor can generate code that replicates a class
 	 */
 	public void testSpoonifierWith(String pathToClass, int i)
 			throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -52,6 +52,8 @@ public class SpoonifierTest {
 
 		//Spoonify
 		String wrapper = generateSpoonifiyWrapper(targetType, i);
+
+		//System.out.println(wrapper);
 
 		//Output launcher containing a class wrapping the generated code
 		Launcher oLauncher = new Launcher();

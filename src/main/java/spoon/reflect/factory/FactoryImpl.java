@@ -36,6 +36,7 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
@@ -598,6 +599,11 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CtComment createComment(String content, CtComment.CommentType type) {
 		return Code().createComment(content, type);
+	}
+
+	@Override
+	public CtJavaDoc createJavaDoc() {
+		return Core().createJavaDoc();
 	}
 
 	@Override
