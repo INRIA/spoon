@@ -24,12 +24,16 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.modifiers.testclasses.AbstractClass;
 import spoon.test.modifiers.testclasses.MethodVarArgs;
 import spoon.test.modifiers.testclasses.StaticMethod;
 import spoon.testing.utils.ModelUtils;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -37,7 +41,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class TestModifiers {
+public class ModifiersTest {
 
     @Test
     public void testMethodWithVarargsDoesNotBecomeTransient() {
@@ -226,9 +230,14 @@ public class TestModifiers {
     	CtType<?> ctClass = ModelUtils.buildClass(StaticMethod.class);
     	assertTrue(ctClass.hasModifier(ModifierKind.PUBLIC));
     	assertEquals(1, ctClass.getModifiers().size());
-    	
-    	ctClass.setModifiers(null);
+
+    	// contract: one can get the modifiers through CtRole.EMODIFIER
+        Collection<CtExtendedModifier> valueByRole = ctClass.getValueByRole(CtRole.EMODIFIER);
+        assertEquals(1, valueByRole.size());
+
+        ctClass.setModifiers(null);
     	assertFalse(ctClass.hasModifier(ModifierKind.PUBLIC));
     	assertEquals(0, ctClass.getModifiers().size());
+
     }
 }

@@ -80,6 +80,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.test.architecture.SpoonArchitectureEnforcerTest.assertSetEquals;
 
 public class MetamodelTest {
 	@Test
@@ -111,15 +112,16 @@ public class MetamodelTest {
 			Map<CtRole, MetamodelProperty> expectedRoleToField = new HashMap<>(expectedType.getRoleToProperty());
 			for (spoon.test.api.Metamodel.Field field : type.getFields()) {
 				MetamodelProperty expectedField = expectedRoleToField.remove(field.getRole());
+				if (expectedField == null) {
+					problems.add("no method with role " + field.getRole() + " in interface " + type.getName());
+					continue;
+				}
 				if (expectedField.isDerived() != field.isDerived()) {
 					problems.add("Field " + expectedField + ".derived hardcoded value = " + field.isDerived() + " but computed value is " + expectedField.isDerived());
 				}
 				if (expectedField.isUnsettable() != field.isUnsettable()) {
 					problems.add("Field " + expectedField + ".unsettable hardcoded value = " + field.isUnsettable() + " but computed value is " + expectedField.isUnsettable());
 				}
-			}
-			if (expectedRoleToField.isEmpty() == false) {
-				problems.add("These Metamodel.Field instances are missing on Type " + type.getName() + ": " + expectedRoleToField.keySet());
 			}
 		}
 		if (expectedTypesByName.isEmpty() == false) {
@@ -151,10 +153,13 @@ public class MetamodelTest {
 		Set<CtMethod<?>> isNotSetter = setters.stream().filter(m -> !(m.getSimpleName().startsWith("set") || m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert") || m.getSimpleName().startsWith("remove"))).collect(Collectors.toSet());
 
 		assertEquals(expectedRoles, getterRoles);
-		//these two derived roles has no setter
+		//derived roles with no setter:
 		expectedRoles.remove(CtRole.DECLARED_MODULE.name());
 		expectedRoles.remove(CtRole.DECLARED_TYPE.name());
-		assertEquals(expectedRoles, setterRoles);
+		expectedRoles.remove(CtRole.EMODIFIER.name());
+
+		assertSetEquals("", expectedRoles, setterRoles);
+
 		assertEquals(Collections.EMPTY_SET, isNotGetter);
 		assertEquals(Collections.EMPTY_SET, isNotSetter);
 	}
