@@ -2055,6 +2055,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 * @param preprocessors list of {@link CompilationUnitValidator}, which have to be used to validate and fix model before it's printing
 	 */
 	public void setPreprocessors(List<Processor<CtElement>> preprocessors) {
+		this.preprocessors.clear();
 		this.preprocessors.addAll(preprocessors);
 	}
 
