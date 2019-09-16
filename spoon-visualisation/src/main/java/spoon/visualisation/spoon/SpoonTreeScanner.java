@@ -39,6 +39,11 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -245,6 +250,17 @@ public class SpoonTreeScanner extends CtScanner {
 		table.setMinHeight(props.size() * 30 + 40);
 		table.setMaxHeight(table.getMinHeight());
 		table.setPrefHeight(table.getMinHeight());
+
+		// Be able to copy the selected row
+		final KeyCodeCombination keyCodeCopy = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_ANY);
+		table.setOnKeyPressed(event -> {
+			if (keyCodeCopy.match(event) && table.getSelectionModel().getSelectedItem() != null) {
+				final Pair<String, String> item = table.getSelectionModel().getSelectedItem();
+				final ClipboardContent clipboardContent = new ClipboardContent();
+				clipboardContent.putString(item.getKey() + ": " + item.getValue());
+				Clipboard.getSystemClipboard().setContent(clipboardContent);
+			}
+		});
 
 		return table;
 	}
