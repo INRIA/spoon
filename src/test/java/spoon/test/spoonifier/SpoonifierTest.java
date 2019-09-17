@@ -167,7 +167,7 @@ public class SpoonifierTest {
 		assertEquals(targetElement, generatedElement);
 
 		//contract: The original element and the sponified element leads to the same code once pretty printed
-		//assertEquals(targetType.prettyprint(), generatedElement.prettyprint());
+		//assertEquals(targetElement.prettyprint(), generatedElement.prettyprint());
 	}
 
 	/*

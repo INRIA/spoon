@@ -168,7 +168,7 @@ public class SpoonifyVisitor extends CtScanner {
 			//In case where different keys point toward the same value,
 			//some useless variable will be created.
 			List<String> keys = new ArrayList<>();
-			Map m = ((Map) parent.getValueByRole(elementRoleInParent));
+			Map m = parent.getValueByRole(elementRoleInParent);
 			for (Object e : m.entrySet()) {
 				Map.Entry entry = (Map.Entry) e;
 				if (entry.getValue().equals(element)) {
