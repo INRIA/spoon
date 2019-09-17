@@ -64,6 +64,8 @@ public class SpoonifyVisitor extends CtScanner {
 		//result.append(" //" + element.prettyprint().replace("\n", ""));
 		result.append("\n");
 
+
+		//TODO: rewrite this list of special cases by checking for annotations of the meta-model
 		if (element instanceof CtNamedElement) {
 			result.append(printTabs() + variableName + ".setSimpleName(\"" + ((CtNamedElement) element).getSimpleName() + "\");\n");
 		}
@@ -188,7 +190,6 @@ public class SpoonifyVisitor extends CtScanner {
 			for (CtRole role: roleContainer.peek().keySet()) {
 				String variableName = roleContainer.peek().get(role);
 				result.append(printTabs() + parentName.peek() + ".setValueByRole(CtRole." + role.name() + ", " + variableName + ");\n");
-				//result.append(variableName + ".clear();\n");
 			}
 		}
 		parentName.pop();
