@@ -347,6 +347,12 @@ public interface Factory {
 	 */
 	CtJavaDoc createJavaDoc();
 
+
+	/**
+	 *  @see CodeFactory#createJavaDocTag(String,CtJavaDocTag.TagType)
+	 */
+	CtJavaDocTag createJavaDocTag();
+
 	/**
 	 *  @see CodeFactory#createInlineComment(String)
 	 */

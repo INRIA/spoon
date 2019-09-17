@@ -8,16 +8,22 @@ package spoon.experimental;
 import org.apache.commons.lang3.StringEscapeUtils;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtLabelledFlowBreak;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtScanner;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +61,7 @@ public class SpoonifyVisitor extends CtScanner {
 		String variableName = getVariableName(elementClass);
 
 		result.append(printTabs() + elementClass + " " + variableName + " = factory.create" + elementClass.replaceFirst("Ct", "") + "();");
-		result.append(" //" + element.prettyprint().replace("\n", ""));
+		//result.append(" //" + element.prettyprint().replace("\n", ""));
 		result.append("\n");
 
 		if (element instanceof CtNamedElement) {
@@ -74,7 +80,10 @@ public class SpoonifyVisitor extends CtScanner {
 		}
 		if (element instanceof CtLiteral) {
 			if (((CtLiteral) element).getType().isPrimitive()) {
-				result.append(printTabs() + variableName + ".setValue(" + ((CtLiteral) element).getValue() + ");\n");
+				result.append(printTabs() + variableName + ".setValue((" + ((CtLiteral) element).getType().getSimpleName() + ") " + ((CtLiteral) element).toString() + ");\n");
+				if (((CtLiteral) element).getBase() != null) {
+					result.append(printTabs() + variableName + ".setBase(LiteralBase." + ((CtLiteral) element).getBase().name() + ");\n");
+				}
 			} else if (((CtLiteral) element).getType().getQualifiedName().equals("java.lang.String")) {
 				result.append(printTabs() + variableName + ".setValue(\"" + StringEscapeUtils.escapeJava((String) ((CtLiteral) element).getValue()) + "\");\n");
 			}
@@ -85,9 +94,24 @@ public class SpoonifyVisitor extends CtScanner {
 		if (element instanceof CtUnaryOperator) {
 			result.append(printTabs() + variableName + ".setKind(UnaryOperatorKind." + ((CtUnaryOperator) element).getKind().name() + ");\n");
 		}
+		if (element instanceof CtOperatorAssignment) {
+			result.append(printTabs() + variableName + ".setKind(BinaryOperatorKind." + ((CtOperatorAssignment) element).getKind().name() + ");\n");
+		}
 		if (element instanceof CtComment) {
-			result.append(printTabs() + variableName + ".setContent(\"" + ((CtComment) element).getContent() + "\");\n");
-
+			result.append(printTabs() + variableName + ".setCommentType(CtComment.CommentType." + ((CtComment) element).getCommentType().name() + ");\n");
+			result.append(printTabs() + variableName + ".setContent(\"" + StringEscapeUtils.escapeJava(((CtComment) element).getContent()) + "\");\n");
+		}
+		if (element instanceof CtParameter && ((CtParameter) element).isVarArgs()) {
+			result.append(printTabs() + variableName + ".setVarArgs(true);\n");
+		}
+		if (element instanceof CtMethod && ((CtMethod) element).isDefaultMethod()) {
+			result.append(printTabs() + variableName + ".setDefaultMethod(true);\n");
+		}
+		if (element instanceof CtStatement && ((CtStatement) element).getLabel() != null) {
+			result.append(printTabs() + variableName + ".setLabel(\"" + ((CtStatement) element).getLabel() + "\");\n");
+		}
+		if (element instanceof CtLabelledFlowBreak && ((CtLabelledFlowBreak) element).getTargetLabel() != null) {
+			result.append(printTabs() + variableName + ".setTargetLabel(\"" + ((CtLabelledFlowBreak) element).getTargetLabel() + "\");\n");
 		}
 
 		if (element.isImplicit()) {
@@ -100,11 +124,11 @@ public class SpoonifyVisitor extends CtScanner {
 			CtElement parent = element.getParent();
 			Object o  = parent.getValueByRole(elementRoleInParent);
 			if (o instanceof Map) {
-				handleContainer(element, elementRoleInParent, variableName, "Map");
+				handleContainer(element, parent, elementRoleInParent, variableName, "Map");
 			} else if (o instanceof List) {
-				handleContainer(element, elementRoleInParent, variableName, "List");
+				handleContainer(element, parent, elementRoleInParent, variableName, "List");
 			} else if (o instanceof Set) {
-				handleContainer(element, elementRoleInParent, variableName, "Set");
+				handleContainer(element, parent, elementRoleInParent, variableName, "Set");
 			} else {
 				result.append(printTabs() + parentName.peek() + ".setValueByRole(CtRole." + elementRoleInParent.name() + ", " + variableName + ");\n");
 			}
@@ -113,7 +137,7 @@ public class SpoonifyVisitor extends CtScanner {
 		roleContainer.push(new HashMap<>());
 	}
 
-	private void handleContainer(CtElement element, CtRole elementRoleInParent, String variableName, String container) {
+	private void handleContainer(CtElement element, CtElement parent, CtRole elementRoleInParent, String variableName, String container) {
 		String concreteClass = null;
 
 		switch (container) {
@@ -138,7 +162,21 @@ public class SpoonifyVisitor extends CtScanner {
 		}
 
 		if (container.equals("Map")) {
-			result.append(printTabs() + containerName + ".put(" + ((CtNamedElement) element).getSimpleName() + "," + variableName + ");\n");
+			//This is going to be dirty.
+			//In case where different keys point toward the same value,
+			//some useless variable will be created.
+			List<String> keys = new ArrayList<>();
+			Map m = ((Map) parent.getValueByRole(elementRoleInParent));
+			for (Object e : m.entrySet()) {
+				Map.Entry entry = (Map.Entry) e;
+				if (entry.getValue().equals(element)) {
+					keys.add((String) entry.getKey());
+				}
+			}
+			for (String key: keys) {
+				result.append(printTabs() + containerName + ".put(\"" + key + "\", " + variableName + ");\n");
+			}
+
 		} else {
 			result.append(printTabs() + containerName + ".add(" + variableName + ");\n");
 		}
