@@ -30,24 +30,41 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+/**
+ * Visitor that generates factory calls to recreate the AST visited.
+ *
+ */
 public class SpoonifyVisitor extends CtScanner {
 	StringBuilder result = new StringBuilder();
 	Map<String, Integer> variableCount = new HashMap<>();
 	Stack<String> parentName = new Stack<>();
 	Stack<Map<CtRole, String>> roleContainer = new Stack<>();
 
-	public boolean printComments = true;
-	public boolean printWeirdTabs = true;
+	public boolean printTabs;
 	int tabs = 0;
 
-	private String getVariableName(String className) {
-		if (!variableCount.containsKey(className)) {
-			variableCount.put(className, 0);
-		}
-		int count = variableCount.get(className);
-		String variableName = className.substring(0, 1).toLowerCase() + className.substring(1) + count;
-		variableCount.put(className, count + 1);
-		return variableName;
+	/**
+	 * Default constructor for SpoonifyVisitor.
+	 * Print with tabulations.
+	 */
+	public SpoonifyVisitor() {
+		this(true);
+	}
+
+	/**
+	 * @param printTabs if set to true, tabulations will be printed to match the structure of the AST constructed.
+	 */
+	public SpoonifyVisitor(boolean printTabs) {
+		this.printTabs = printTabs;
+	}
+
+	/**
+	 * @return the generated code.
+	 *
+	 * Note that this code assume a variable Factory factory is already aessible in the scope.
+	 */
+	public String getResult() {
+		return result.toString();
 	}
 
 	@Override
@@ -61,7 +78,6 @@ public class SpoonifyVisitor extends CtScanner {
 		String variableName = getVariableName(elementClass);
 
 		result.append(printTabs() + elementClass + " " + variableName + " = factory.create" + elementClass.replaceFirst("Ct", "") + "();");
-		//result.append(" //" + element.prettyprint().replace("\n", ""));
 		result.append("\n");
 
 
@@ -139,6 +155,16 @@ public class SpoonifyVisitor extends CtScanner {
 		roleContainer.push(new HashMap<>());
 	}
 
+	private String getVariableName(String className) {
+		if (!variableCount.containsKey(className)) {
+			variableCount.put(className, 0);
+		}
+		int count = variableCount.get(className);
+		String variableName = className.substring(0, 1).toLowerCase() + className.substring(1) + count;
+		variableCount.put(className, count + 1);
+		return variableName;
+	}
+
 	private void handleContainer(CtElement element, CtElement parent, CtRole elementRoleInParent, String variableName, String container) {
 		String concreteClass = null;
 
@@ -197,13 +223,9 @@ public class SpoonifyVisitor extends CtScanner {
 		tabs--;
 	}
 
-	public String getResult() {
-		return result.toString();
-	}
-
-	public String printTabs() {
+	private String printTabs() {
 		String res = "";
-		if (printWeirdTabs) {
+		if (printTabs) {
 			for (int i = 0; i < tabs; i++) {
 				res += "\t";
 			}
