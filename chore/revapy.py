@@ -25,7 +25,7 @@ if (file_content == ""):
     print "Revapi report is empty"
     exit(1)
 
-if (len(re.findall("changes.*: [123456789]"))==0): exit(0)
+if (len(re.findall("changes.*: [123456789]", file_content))==0): exit(0)
 
 login = os.environ["GITHUB_AUTH_USER"]
 token = os.environ["GITHUB_AUTH_TOKEN"]
