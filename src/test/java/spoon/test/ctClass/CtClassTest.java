@@ -31,6 +31,7 @@ import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
+import java.io.File;
 import java.util.Set;
 
 import org.junit.Test;
@@ -261,6 +262,11 @@ public class CtClassTest {
 				"        }" + newLine +
 				"    }.compare(1, 2);" + newLine +
 				"}", aClass2.toStringWithImports());
+
+		// contract: toStringWithImports works with a new class with no position
+		assertEquals("package foo;" + newLine +
+				"import java.io.File;" + newLine +
+				"class Bar extends File {}", launcher2.getFactory().createClass("foo.Bar").setSuperclass(launcher2.getFactory().Type().get(File.class).getReference()).toStringWithImports());
 	}
 
 	@Test

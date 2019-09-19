@@ -12,6 +12,7 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -991,8 +992,8 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public String toStringWithImports() {
 		DefaultJavaPrettyPrinter printer = (DefaultJavaPrettyPrinter) getFactory().getEnvironment().createPrettyPrinter();
-		//this call applies print validators, which modifies model before printing
-		//and then it prints everything including package and potentially imports
-		return printer.printCompilationUnit(this.getPosition().getCompilationUnit());
+		CtCompilationUnit cu = getFactory().createCompilationUnit();
+		cu.addDeclaredType(this);
+		return printer.printCompilationUnit(cu);
 	}
 }
