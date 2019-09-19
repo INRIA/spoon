@@ -101,7 +101,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 		if (context == null) {
 			return;
 		}
-		if (reference.isImplicit()) {
+		if (reference.isImplicitParent()) {
 			/*
 			 * the package is implicit. E.g. `Assert.assertTrue`
 			 * where package `org.junit` is implicit
