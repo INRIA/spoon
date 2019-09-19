@@ -32,6 +32,7 @@ import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -39,6 +40,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.field.testclasses.A;
@@ -179,16 +181,29 @@ public class FieldTest {
 	public void bugAfterRefactoringImports() {
 		Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();
-		final CtFieldRead<Double> fieldNegativeInfinity = factory.createFieldRead();
-		fieldNegativeInfinity.setType(factory.createCtTypeReference(Double.class));
-		final CtField<Double> negative_infinity = (CtField<Double>) factory.Class().get(Double.class).getField("NEGATIVE_INFINITY");
-		fieldNegativeInfinity.setVariable(negative_infinity.getReference());
+		final CtClass<?> klass = factory.createClass("foo.A");
+
+		final CtFieldRead<Object> fieldRead = factory.createFieldRead();
+
+		final CtField<Object> negative_infinity = (CtField<Object>) factory.Class().get(Double.class).getField("NEGATIVE_INFINITY");
+		fieldRead.setVariable(negative_infinity.getReference());
 
 		launcher.getEnvironment().setAutoImports(false);
-		assertEquals("java.lang.Double.NEGATIVE_INFINITY", fieldNegativeInfinity.toString());
+		assertEquals("java.lang.Double.NEGATIVE_INFINITY", fieldRead.toString());
 
 		launcher.getEnvironment().setAutoImports(true);
-		assertEquals("Double.NEGATIVE_INFINITY", fieldNegativeInfinity.toString());
+		assertEquals("Double.NEGATIVE_INFINITY", fieldRead.toString());
+
+		final CtField<Object> field = (CtField<Object>) factory.Class().get(File.class).getField("separator");
+		fieldRead.setVariable(field.getReference());
+		klass.addField(field);
+
+		launcher.getEnvironment().setAutoImports(false);
+		assertEquals("java.io.File.separator", fieldRead.toString());
+
+		launcher.getEnvironment().setAutoImports(true);
+		assertEquals("File.separator", klass.toStringWithImports());
+
 	}
 
 
