@@ -196,13 +196,15 @@ public class FieldTest {
 
 		final CtField<Object> field = (CtField<Object>) factory.Class().get(File.class).getField("separator");
 		fieldRead.setVariable(field.getReference());
+		field.setDefaultExpression(fieldRead);
 		klass.addField(field);
 
-		launcher.getEnvironment().setAutoImports(false);
-		assertEquals("java.io.File.separator", fieldRead.toString());
-
 		launcher.getEnvironment().setAutoImports(true);
-		assertEquals("File.separator", klass.toStringWithImports());
+		assertEquals("package foo;\n" +
+				"import java.io.File;\n" +
+				"class A {\n" +
+				"    public static final String separator = File.separator;\n" +
+				"}", klass.toStringWithImports());
 
 	}
 
