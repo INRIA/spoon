@@ -145,6 +145,10 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 			} else {
 				throw new SpoonException("Unexpected reference type " + ref.getClass());
 			}
+			if (typeRef == null) {
+				// we would like to add an import, but we don't know to where
+				return;
+			}
 			CtTypeReference<?> topLevelTypeRef = typeRef.getTopLevelType();
 			if (typeRefQNames.contains(topLevelTypeRef.getQualifiedName())) {
 				//it is reference to a type of this CompilationUnit. Do not add it
