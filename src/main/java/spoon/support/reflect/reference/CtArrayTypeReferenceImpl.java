@@ -110,17 +110,17 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implemen
 	}
 
 	@Override
-	public boolean isImplicitParent() {
+	public boolean isSimplyQualified() {
 		if (componentType != null) {
-			return componentType.isImplicitParent();
+			return componentType.isSimplyQualified();
 		}
 		return false;
 	}
 
 	@Override
-	public CtArrayTypeReferenceImpl<T> setImplicitParent(boolean packageIsImplicit) {
+	public CtArrayTypeReferenceImpl<T> setSimplyQualified(boolean isSimplyQualified) {
 		if (componentType != null) {
-			componentType.setImplicitParent(packageIsImplicit);
+			componentType.setSimplyQualified(isSimplyQualified);
 		}
 		return this;
 	}

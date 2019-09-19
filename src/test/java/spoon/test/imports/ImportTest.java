@@ -1590,7 +1590,7 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		typeRef.addActualTypeArgument(f.Type().createTypeParameterReference("T"));
 		assertEquals("some.package.SomeType<T>", typeRef.toString());
 		typeRef.setImplicit(true);
-		typeRef.setImplicitParent(true);
+		typeRef.setSimplyQualified(true);
 		assertTrue(typeRef.isImplicit());
 		assertTrue(typeRef.getPackage().isImplicit());
 		CtImport imprt = f.Type().createImport(typeRef);
