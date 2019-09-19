@@ -27,6 +27,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.text.TextFlow;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * The printer that prints the Spoon AST into a JavaFX tree view.
@@ -50,7 +51,7 @@ public class TreePrinter extends SpoonElementVisitor {
 	}
 
 	@Override
-	public void accept(final int level, final @NotNull TextFlow label, final @NotNull List<Integer> lines) {
+	public void accept(final CtElement elt, final int level, final @NotNull TextFlow label, final @NotNull List<Integer> lines) {
 		// level > 1 because the root element must be created to be then masked as several real tree roots may exist
 		// Example: three statements with the statement level.
 		// level <= levelsToIgnore: depending on the analysis level, some root elements must be hidden
@@ -60,7 +61,7 @@ public class TreePrinter extends SpoonElementVisitor {
 
 		final int startPosition = lines.isEmpty() ? -1 : lines.get(0);
 		final int endPosition = lines.isEmpty() ? -1 : lines.get(1);
-		final SpoonTreeItem item = new SpoonTreeItem(label, startPosition, endPosition);
+		final SpoonTreeItem item = new SpoonTreeItem(label, startPosition, endPosition, elt);
 		item.setExpanded(true);
 
 		if(currItem == null) {
