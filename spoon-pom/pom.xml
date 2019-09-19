@@ -216,7 +216,7 @@
                     <alwaysCheckForReleaseVersion>false</alwaysCheckForReleaseVersion>
                     <oldVersion>LATEST</oldVersion>
                     <analysisConfigurationFiles>
-                        <file>../revapi.json</file>
+                        <file>revapi.json</file>
                     </analysisConfigurationFiles>
                 </configuration>
             </plugin>
