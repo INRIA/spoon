@@ -83,11 +83,15 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 			} else if (targetedExpression instanceof CtInvocation<?>) {
 				CtInvocation<?> invocation = (CtInvocation<?>) targetedExpression;
 				//import static method
-				context.addImport(invocation.getExecutable());
+				if (invocation.getExecutable().isStatic()) {
+					context.addImport(invocation.getExecutable());
+				}
 			} else if (targetedExpression instanceof CtFieldAccess<?>) {
 				//import static field
 				CtFieldAccess<?> fieldAccess = (CtFieldAccess<?>) targetedExpression;
-				context.addImport(fieldAccess.getVariable());
+				if (fieldAccess.getVariable().isStatic()) {
+					context.addImport(fieldAccess.getVariable());
+				}
 			} else {
 				throw new SpoonException("TODO");
 			}
