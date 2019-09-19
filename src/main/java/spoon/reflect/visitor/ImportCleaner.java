@@ -12,7 +12,6 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtImport;
