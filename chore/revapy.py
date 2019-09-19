@@ -25,24 +25,23 @@ if (file_content == ""):
     print "Revapi report is empty"
     exit(1)
 
+# no API changes found, we exit
 if (len(re.findall("changes.*: [123456789]", file_content))==0): exit(0)
-
-login = os.environ["GITHUB_AUTH_USER"]
-token = os.environ["GITHUB_AUTH_TOKEN"]
-
-try:
-    gh = Github(login,token)
-except GithubException as e:
-    print "Error while connecting to github, are you sure about your credentials?"
-    print e
-    exit(1)
-
 
 repo_name = os.environ["TRAVIS_REPO_SLUG"]
 pr_id = os.environ["TRAVIS_PULL_REQUEST"]
 action = os.environ["TRAVIS_EVENT_TYPE"]
 
 if (action in accepted_actions):
+    login = os.environ["GITHUB_AUTH_USER"]
+    token = os.environ["GITHUB_AUTH_TOKEN"]
+
+    try:
+        gh = Github(login,token)
+    except GithubException as e:
+        print "Error while connecting to github, are you sure about your credentials?"
+        print e
+        exit(1)
     try:
         repo = gh.get_repo(repo_name,True)
 
