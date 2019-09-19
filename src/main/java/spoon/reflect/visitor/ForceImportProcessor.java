@@ -35,7 +35,7 @@ public class ForceImportProcessor extends ImportAnalyzer<LexicalScopeScanner, Le
 	protected void handleTypeReference(CtTypeReference<?> reference, LexicalScope nameScope, CtRole role) {
 		if (reference.getPackage() != null) {
 			//force import of package of top level types only
-			reference.setImplicitParent(true);
+			reference.setSimplyQualified(true);
 		} else {
 			//it is a reference to an child type
 			//if it is a reference in scope of parent type declaration then make it implicit, else keep it as it is
@@ -45,7 +45,7 @@ public class ForceImportProcessor extends ImportAnalyzer<LexicalScopeScanner, Le
 				CtTypeReference<?> referenceDeclaringType = reference.getDeclaringType();
 				if (referenceDeclaringType != null && referenceDeclaringType.getQualifiedName().equals(topLevelType.getQualifiedName())) {
 					//the reference to direct child type has to be made implicit
-					reference.setImplicitParent(true);
+					reference.setSimplyQualified(true);
 					return;
 				} else {
 					//reference to deeper nested child type or to child type from different type has to be kept as it is
@@ -59,7 +59,7 @@ public class ForceImportProcessor extends ImportAnalyzer<LexicalScopeScanner, Le
 				topLevelTypeRef = topLevelTypeRef.getDeclaringType();
 			}
 			if (topLevelTypeRef != null) {
-				topLevelTypeRef.setImplicitParent(true);
+				topLevelTypeRef.setSimplyQualified(true);
 			}
 		}
 	}

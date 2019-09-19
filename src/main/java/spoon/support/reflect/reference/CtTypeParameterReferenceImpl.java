@@ -203,13 +203,13 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 	}
 
 	@Override
-	public boolean isImplicitParent() {
+	public boolean isSimplyQualified() {
 		return false;
 	}
 
 	@Override
 	@UnsettableProperty
-	public CtTypeParameterReferenceImpl setImplicitParent(boolean packageIsImplicit) {
+	public CtTypeParameterReferenceImpl setSimplyQualified(boolean isSimplyQualified) {
 		return this;
 	}
 }

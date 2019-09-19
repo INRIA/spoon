@@ -88,17 +88,17 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 	}
 
 	@Override
-	public boolean isImplicitParent() {
+	public boolean isSimplyQualified() {
 		if (bounds != null && bounds.size() > 0) {
-			return bounds.get(0).isImplicitParent();
+			return bounds.get(0).isSimplyQualified();
 		}
 		return false;
 	}
 
 	@Override
-	public CtIntersectionTypeReferenceImpl<T> setImplicitParent(boolean packageIsImplicit) {
+	public CtIntersectionTypeReferenceImpl<T> setSimplyQualified(boolean isSimplyQualified) {
 		if (bounds != null && bounds.size() > 0) {
-			bounds.get(0).setImplicitParent(packageIsImplicit);
+			bounds.get(0).setSimplyQualified(isSimplyQualified);
 		}
 		return this;
 	}
