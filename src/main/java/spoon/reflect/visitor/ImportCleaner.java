@@ -69,6 +69,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 			return;
 		}
 		CtExpression<?> target = targetedExpression.getTarget();
+
 		if (target != null && target.isImplicit()) {
 			if (target instanceof CtTypeAccess) {
 				if (targetedExpression instanceof CtFieldAccess) {
@@ -79,10 +80,21 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 						context.addImport(execRef);
 					}
 				}
-			} else if (target instanceof CtVariableAccess) {
+
+			} else if (targetedExpression instanceof CtInvocation<?>) {
+				CtInvocation<?> invocation = (CtInvocation<?>) targetedExpression;
+				//import static method
+				context.addImport(invocation.getExecutable());
+			} else if (targetedExpression instanceof CtFieldAccess<?>) {
+				//import static field
+				CtFieldAccess<?> fieldAccess = (CtFieldAccess<?>) targetedExpression;
+				context.addImport(fieldAccess.getVariable());
+			} else {
 				throw new SpoonException("TODO");
 			}
 		}
+
+
 	}
 
 	@Override
@@ -91,25 +103,6 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 			return;
 		}
 		if (reference.isImplicit()) {
-			/*
-			 * the reference is implicit. E.g. `assertTrue();`
-			 * where type `org.junit.Assert` is implicit
-			 */
-			CtTargetedExpression<?, ?> targetedExpr = getParentIfType(getParentIfType(reference, CtTypeAccess.class), CtTargetedExpression.class);
-			if (targetedExpr != null) {
-				if (targetedExpr instanceof CtInvocation<?>) {
-					CtInvocation<?> invocation = (CtInvocation<?>) targetedExpr;
-					//import static method
-					context.addImport(invocation.getExecutable());
-				} else if (targetedExpr instanceof CtFieldAccess<?>) {
-					//import static field
-					CtFieldAccess<?> fieldAccess = (CtFieldAccess<?>) targetedExpr;
-					context.addImport(fieldAccess.getVariable());
-				}
-			}
-			//else do nothing. E.g. in case of implicit type of lambda parameter
-			//`(e) -> {...}`
-		} else if (reference.isImplicitParent()) {
 			/*
 			 * the package is implicit. E.g. `Assert.assertTrue`
 			 * where package `org.junit` is implicit
