@@ -20,7 +20,13 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeParameterReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtScanner;
 
 import java.util.ArrayList;
@@ -67,73 +73,115 @@ public class SpoonifyVisitor extends CtScanner {
 		return result.toString();
 	}
 
+	private boolean isLeafTypeReference(CtElement element) {
+		if (!(element instanceof CtTypeReference)) {
+			return false;
+		}
+		if (element instanceof CtArrayTypeReference
+				|| element instanceof CtWildcardReference
+				|| element instanceof CtTypeParameterReference
+				|| element instanceof CtIntersectionTypeReference) {
+			return false;
+		}
+		CtTypeReference reference = (CtTypeReference) element;
+		return reference.getDeclaringType() == null
+				&& reference.getActualTypeArguments().isEmpty()
+				&& reference.getAnnotations().isEmpty()
+				&& reference.getComments().isEmpty();
+	}
+
 	@Override
 	public void enter(CtElement element) {
+		if (element instanceof CtPackageReference
+				&& isLeafTypeReference(element.getParent())) {
+			return;
+		}
 		tabs++;
 
 		String elementClass = element.getClass().getSimpleName();
 		if (elementClass.endsWith("Impl")) {
 			elementClass = elementClass.replace("Impl", "");
 		}
-		String variableName = getVariableName(elementClass);
 
-		result.append(printTabs() + elementClass + " " + variableName + " = factory.create" + elementClass.replaceFirst("Ct", "") + "();");
-		result.append("\n");
-
-
-		//TODO: rewrite this list of special cases by checking for annotations of the meta-model
-		if (element instanceof CtNamedElement) {
-			result.append(printTabs() + variableName + ".setSimpleName(\"" + ((CtNamedElement) element).getSimpleName() + "\");\n");
-		}
-
-		if (element instanceof CtReference) {
-			result.append(printTabs() + variableName + ".setSimpleName(\"" + ((CtReference) element).getSimpleName() + "\");\n");
-		}
-		if (element instanceof CtModifiable && !((CtModifiable) element).getModifiers().isEmpty()) {
-			result.append(printTabs() + "Set<ModifierKind> " + variableName + "Modifiers = new HashSet<>();\n");
-			for (ModifierKind mod : ((CtModifiable) element).getModifiers()) {
-				result.append(printTabs() + variableName + "Modifiers.add(ModifierKind." + mod.name() + ");\n");
-			}
-			result.append(printTabs() + variableName + ".setModifiers(" + variableName + "Modifiers);\n");
-		}
-		if (element instanceof CtLiteral) {
-			if (((CtLiteral) element).getType().isPrimitive()) {
-				result.append(printTabs() + variableName + ".setValue((" + ((CtLiteral) element).getType().getSimpleName() + ") " + ((CtLiteral) element).toString() + ");\n");
-				if (((CtLiteral) element).getBase() != null) {
-					result.append(printTabs() + variableName + ".setBase(LiteralBase." + ((CtLiteral) element).getBase().name() + ");\n");
+		String variableName = null;
+		if (isLeafTypeReference(element)) {
+			CtTypeReference typeRef = (CtTypeReference) element;
+			if (typeRef.isPrimitive()) {
+				switch (typeRef.getSimpleName()) {
+					case "int":
+						variableName = "factory.Type().INTEGER_PRIMITIVE";
+						break;
+					case "char":
+						variableName = "factory.Type().CHARACTER_PRIMITIVE";
+						break;
+					default:
+						variableName = "factory.Type()." + typeRef.getSimpleName().toUpperCase() + "_PRIMITIVE";
 				}
-			} else if (((CtLiteral) element).getType().getQualifiedName().equals("java.lang.String")) {
-				result.append(printTabs() + variableName + ".setValue(\"" + StringEscapeUtils.escapeJava((String) ((CtLiteral) element).getValue()) + "\");\n");
+			} else if (typeRef.getSimpleName().equals("<nulltype>")) {
+				variableName = "factory.Type().NULL_TYPE";
+			} else if (typeRef.getPackage().isImplicit()) {
+				variableName =  "factory.Type().createSimplyQualifiedReference(\"" + typeRef.getQualifiedName() + "\")";
+			} else {
+				variableName =  "factory.Type().createReference(\"" + typeRef.getQualifiedName() + "\")";
 			}
-		}
-		if (element instanceof CtBinaryOperator) {
-			result.append(printTabs() + variableName + ".setKind(BinaryOperatorKind." + ((CtBinaryOperator) element).getKind().name() + ");\n");
-		}
-		if (element instanceof CtUnaryOperator) {
-			result.append(printTabs() + variableName + ".setKind(UnaryOperatorKind." + ((CtUnaryOperator) element).getKind().name() + ");\n");
-		}
-		if (element instanceof CtOperatorAssignment) {
-			result.append(printTabs() + variableName + ".setKind(BinaryOperatorKind." + ((CtOperatorAssignment) element).getKind().name() + ");\n");
-		}
-		if (element instanceof CtComment) {
-			result.append(printTabs() + variableName + ".setCommentType(CtComment.CommentType." + ((CtComment) element).getCommentType().name() + ");\n");
-			result.append(printTabs() + variableName + ".setContent(\"" + StringEscapeUtils.escapeJava(((CtComment) element).getContent()) + "\");\n");
-		}
-		if (element instanceof CtParameter && ((CtParameter) element).isVarArgs()) {
-			result.append(printTabs() + variableName + ".setVarArgs(true);\n");
-		}
-		if (element instanceof CtMethod && ((CtMethod) element).isDefaultMethod()) {
-			result.append(printTabs() + variableName + ".setDefaultMethod(true);\n");
-		}
-		if (element instanceof CtStatement && ((CtStatement) element).getLabel() != null) {
-			result.append(printTabs() + variableName + ".setLabel(\"" + ((CtStatement) element).getLabel() + "\");\n");
-		}
-		if (element instanceof CtLabelledFlowBreak && ((CtLabelledFlowBreak) element).getTargetLabel() != null) {
-			result.append(printTabs() + variableName + ".setTargetLabel(\"" + ((CtLabelledFlowBreak) element).getTargetLabel() + "\");\n");
-		}
+		} else {
+			variableName = getVariableName(elementClass);
+			result.append(printTabs() + elementClass + " " + variableName + " = factory.create" + elementClass.replaceFirst("Ct", "") + "();");
+			result.append("\n");
 
-		if (element.isImplicit()) {
-			result.append(printTabs() + variableName + ".setImplicit(true);\n");
+			if (element instanceof CtReference) {
+				result.append(printTabs() + variableName + ".setSimpleName(\"" + ((CtReference) element).getSimpleName() + "\");\n");
+			}
+
+			if (element.isImplicit()) {
+				result.append(printTabs() + variableName + ".setImplicit(true);\n");
+			}
+			//TODO: rewrite this list of special cases by checking for annotations of the meta-model
+			if (element instanceof CtNamedElement) {
+				result.append(printTabs() + variableName + ".setSimpleName(\"" + ((CtNamedElement) element).getSimpleName() + "\");\n");
+			}
+			if (element instanceof CtModifiable && !((CtModifiable) element).getModifiers().isEmpty()) {
+				result.append(printTabs() + "Set<ModifierKind> " + variableName + "Modifiers = new HashSet<>();\n");
+				for (ModifierKind mod : ((CtModifiable) element).getModifiers()) {
+					result.append(printTabs() + variableName + "Modifiers.add(ModifierKind." + mod.name() + ");\n");
+				}
+				result.append(printTabs() + variableName + ".setModifiers(" + variableName + "Modifiers);\n");
+			}
+			if (element instanceof CtLiteral) {
+				if (((CtLiteral) element).getType().isPrimitive()) {
+					result.append(printTabs() + variableName + ".setValue((" + ((CtLiteral) element).getType().getSimpleName() + ") " + ((CtLiteral) element).toString() + ");\n");
+					if (((CtLiteral) element).getBase() != null) {
+						result.append(printTabs() + variableName + ".setBase(LiteralBase." + ((CtLiteral) element).getBase().name() + ");\n");
+					}
+				} else if (((CtLiteral) element).getType().getQualifiedName().equals("java.lang.String")) {
+					result.append(printTabs() + variableName + ".setValue(\"" + StringEscapeUtils.escapeJava((String) ((CtLiteral) element).getValue()) + "\");\n");
+				}
+			}
+			if (element instanceof CtBinaryOperator) {
+				result.append(printTabs() + variableName + ".setKind(BinaryOperatorKind." + ((CtBinaryOperator) element).getKind().name() + ");\n");
+			}
+			if (element instanceof CtUnaryOperator) {
+				result.append(printTabs() + variableName + ".setKind(UnaryOperatorKind." + ((CtUnaryOperator) element).getKind().name() + ");\n");
+			}
+			if (element instanceof CtOperatorAssignment) {
+				result.append(printTabs() + variableName + ".setKind(BinaryOperatorKind." + ((CtOperatorAssignment) element).getKind().name() + ");\n");
+			}
+			if (element instanceof CtComment) {
+				result.append(printTabs() + variableName + ".setCommentType(CtComment.CommentType." + ((CtComment) element).getCommentType().name() + ");\n");
+				result.append(printTabs() + variableName + ".setContent(\"" + StringEscapeUtils.escapeJava(((CtComment) element).getContent()) + "\");\n");
+			}
+			if (element instanceof CtParameter && ((CtParameter) element).isVarArgs()) {
+				result.append(printTabs() + variableName + ".setVarArgs(true);\n");
+			}
+			if (element instanceof CtMethod && ((CtMethod) element).isDefaultMethod()) {
+				result.append(printTabs() + variableName + ".setDefaultMethod(true);\n");
+			}
+			if (element instanceof CtStatement && ((CtStatement) element).getLabel() != null) {
+				result.append(printTabs() + variableName + ".setLabel(\"" + ((CtStatement) element).getLabel() + "\");\n");
+			}
+			if (element instanceof CtLabelledFlowBreak && ((CtLabelledFlowBreak) element).getTargetLabel() != null) {
+				result.append(printTabs() + variableName + ".setTargetLabel(\"" + ((CtLabelledFlowBreak) element).getTargetLabel() + "\");\n");
+			}
 		}
 
 		if (element.isParentInitialized() && !parentName.isEmpty()) {
@@ -151,8 +199,11 @@ public class SpoonifyVisitor extends CtScanner {
 				result.append(printTabs() + parentName.peek() + ".setValueByRole(CtRole." + elementRoleInParent.name() + ", " + variableName + ");\n");
 			}
 		}
-		parentName.push(variableName);
-		roleContainer.push(new HashMap<>());
+
+		//if(!isLeafTypeReference(element)) {
+			parentName.push(variableName);
+			roleContainer.push(new HashMap<>());
+		//}
 	}
 
 	private String getVariableName(String className) {
@@ -212,6 +263,10 @@ public class SpoonifyVisitor extends CtScanner {
 
 	@Override
 	public void exit(CtElement element) {
+		if (element instanceof CtPackageReference
+				&& isLeafTypeReference(element.getParent())) {
+			return;
+		}
 		if (!roleContainer.peek().isEmpty()) {
 			for (CtRole role: roleContainer.peek().keySet()) {
 				String variableName = roleContainer.peek().get(role);
