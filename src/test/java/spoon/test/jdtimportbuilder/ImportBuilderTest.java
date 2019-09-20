@@ -176,10 +176,9 @@ public class ImportBuilderTest {
 		CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitStatic.getImports();
 
-		assertEquals(1, imports.size());
+		assertEquals(6, imports.size());
 		CtImport ctImport = imports.iterator().next();
-		assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
-		assertEquals("import static spoon.test.jdtimportbuilder.testclasses.staticimport.DependencySubClass.*;", ctImport.toString());
+		assertEquals("import static spoon.test.jdtimportbuilder.testclasses.staticimport.Dependency;", ctImport.toString());
 	}
 
 	@Test
@@ -196,10 +195,9 @@ public class ImportBuilderTest {
 		CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitStatic.getImports();
 
-		assertEquals(1, imports.size());
+		assertEquals(imports.toString(), 3, imports.size());
 		CtImport ctImport = imports.iterator().next();
 
-		assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
-		assertEquals("import static jdtimportbuilder.itf.DumbItf.*;", ctImport.toString());
+		assertEquals("import static jdtimportbuilder.itf.DumbItf;", ctImport.toString());
 	}
 }

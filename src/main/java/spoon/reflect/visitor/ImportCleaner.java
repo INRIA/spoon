@@ -188,10 +188,8 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 						}
 					}
 					if (oldImport.getImportKind() == CtImportKind.ALL_STATIC_MEMBERS) {
-						if (removeAllStaticTypeMembersImportWithType(computedImports, ((CtTypeMemberWildcardImportReference) oldImport.getReference()).getTypeReference())) {
-							//this All types import still imports some type. Keep it
-							continue;
-						}
+						// so far, we always remove star imports
+						// as an IDE does
 					}
 					//the import doesn't exist in computed imports. Remove it
 					if (canRemoveImports) {
