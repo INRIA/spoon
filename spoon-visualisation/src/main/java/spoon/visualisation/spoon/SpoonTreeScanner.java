@@ -21,14 +21,9 @@
  */
 package spoon.visualisation.spoon;
 
-import io.github.interacto.command.library.OpenWebPage;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Tooltip;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spoon.reflect.code.CtAbstractInvocation;
@@ -90,67 +85,58 @@ public class SpoonTreeScanner extends CtScanner {
 	protected void enter(final CtElement elt) {
 		level++;
 
-		final TextFlow flow = createStdTextFlow(elt);
 		final SourcePosition pos = elt.getPosition();
 		final List<Integer> lines = pos.isValidPosition() ? List.of(pos.getSourceStart(), pos.getSourceEnd()) : List.of();
 
 		if(elt instanceof CtType<?>) {
-			flow.getChildren().add(new Text(": " + ((CtType<?>) elt).getSimpleName()));
-			printer.accept(elt, level, flow, lines);
+			printer.visitElement(elt, level, createNodeLabel(elt, Optional.of(": " + ((CtType<?>) elt).getSimpleName())), lines);
 			return;
 		}
 
 		if(elt instanceof CtNamedElement) {
-			flow.getChildren().add(new Text(": " + ((CtNamedElement) elt).getSimpleName()));
-			printer.accept(elt, level, flow, lines);
+			printer.visitElement(elt, level, createNodeLabel(elt, Optional.of(": " + ((CtNamedElement) elt).getSimpleName())), lines);
 			return;
 		}
 
 		if(elt instanceof CtReference) {
-			flow.getChildren().add(new Text(": " + ((CtReference) elt).getSimpleName()));
-			printer.accept(elt, level, flow, lines);
+			printer.visitElement(elt, level, createNodeLabel(elt, Optional.of(": " + ((CtReference) elt).getSimpleName())), lines);
 			return;
 		}
 
 		if(elt instanceof CtVariableAccess<?>) {
 			final CtVariableAccess<?> varaccess = (CtVariableAccess<?>) elt;
 			final String txt = ": " + ((varaccess.getVariable() != null) ? varaccess.getVariable().getSimpleName() : "(null)");
-			flow.getChildren().add(new Text(txt));
-			printer.accept(elt, level, flow, lines);
+			printer.visitElement(elt, level, createNodeLabel(elt, Optional.of(txt)), lines);
 			return;
 		}
 
 		if(elt instanceof CtTypeAccess<?>) {
 			final CtTypeAccess<?> typeaccess = (CtTypeAccess<?>) elt;
 			final String txt = ": " + ((typeaccess.getAccessedType() != null) ? typeaccess.getAccessedType().getSimpleName() : "(null)");
-			flow.getChildren().add(new Text(txt));
-			printer.accept(elt, level, flow, lines);
+			printer.visitElement(elt, level, createNodeLabel(elt, Optional.of(txt)), lines);
 			return;
 		}
 
 		if(elt instanceof CtLiteral<?>) {
-			flow.getChildren().add(new Text(": " + ((CtLiteral<?>) elt).getValue()));
-			printer.accept(elt, level, flow, lines);
+			printer.visitElement(elt, level, createNodeLabel(elt, Optional.of(": " + ((CtLiteral<?>) elt).getValue())), lines);
 			return;
 		}
 
 		if(elt instanceof CtAbstractInvocation<?>) {
 			final CtAbstractInvocation<?> invoc = (CtAbstractInvocation<?>) elt;
 			final String txt = ": " + ((invoc.getExecutable() != null) ? invoc.getExecutable().getSimpleName() : "(null)");
-			flow.getChildren().add(new Text(txt));
-			printer.accept(elt, level, flow, lines);
+			printer.visitElement(elt, level, createNodeLabel(elt, Optional.of(txt)), lines);
 			return;
 		}
 
 		if(elt instanceof CtAnnotation<?>) {
 			final CtAnnotation<?> annot = (CtAnnotation<?>) elt;
 			final String txt = ": " + ((annot.getAnnotationType() != null) ? annot.getAnnotationType().getSimpleName() : "(null)");
-			flow.getChildren().add(new Text(txt));
-			printer.accept(elt, level, flow, lines);
+			printer.visitElement(elt, level, createNodeLabel(elt, Optional.of(txt)), lines);
 			return;
 		}
 
-		printer.accept(elt, level, flow, lines);
+		printer.visitElement(elt, level, createNodeLabel(elt, Optional.empty()), lines);
 	}
 
 
@@ -166,7 +152,7 @@ public class SpoonTreeScanner extends CtScanner {
 	 * @param elt The Spoon element to analyse.
 	 * @return The created text flow that can be completed with other text elements.
 	 */
-	TextFlow createStdTextFlow(final CtElement elt) {
+	TreeNodeLabel createNodeLabel(final CtElement elt, final Optional<String> adds) {
 		final String simpleName = elt.getClass().getSimpleName();
 		// We assume that the Spoon API follows this rule:
 		// the implementation class name is the interface name plus 'Impl'
@@ -177,30 +163,10 @@ public class SpoonTreeScanner extends CtScanner {
 			.filter(interf -> simpleName.equals(interf.getSimpleName() + "Impl"))
 			.findFirst()
 			.orElse(elt.getClass());
-		// We want to be able to click on the interface name to open its JavaDoc
-		final Hyperlink classLink = new Hyperlink(cl.getSimpleName());
-		final TextFlow flow = new TextFlow(classLink);
-		final String url = "http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/" + cl.getName().replace('.', '/') + ".html";
-		Tooltip.install(classLink, new Tooltip(url));
 
-		// Clicking on the link opens the doc
-		// 'new Thread' because otherwise the app freezes (run in the UI thread)
-		classLink.setOnAction(evt -> new Thread(() -> {
-			final OpenWebPage cmd = new OpenWebPage();
-			cmd.setUri(URI.create(url));
-			if(cmd.canDo()) {
-				cmd.doIt();
-			}
-		}, "OPEN_SPOON_DOC_THREAD").start());
+		final Optional<String> implicit = elt.isImplicit() ? Optional.of("(implicit)") : Optional.empty();
+		final Optional<String> role = currRole == null ? Optional.empty() : Optional.of("(role: " + currRole + ")");
 
-		if(elt.isImplicit()) {
-			flow.getChildren().add(new Text("(implicit)"));
-		}
-
-		if(currRole != null) {
-			flow.getChildren().add(new Text("(role: " + currRole + ")"));
-		}
-
-		return flow;
+		return new TreeNodeLabel(cl.getSimpleName(), cl.getName(), implicit, role, adds);
 	}
 }

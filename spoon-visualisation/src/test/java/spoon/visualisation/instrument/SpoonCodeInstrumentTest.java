@@ -1,26 +1,48 @@
 package spoon.visualisation.instrument;
 
+import io.github.interacto.command.CmdHandler;
+import io.github.interacto.command.CommandsRegistry;
+import io.github.interacto.command.library.OpenWebPage;
+import io.github.interacto.fsm.TimeoutTransition;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.assertj.core.api.AssertionsForClassTypes;
+import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
@@ -38,6 +60,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.chain.CtQueryable;
+import spoon.visualisation.command.TreeLevel;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static spoon.reflect.path.CtRole.ANNOTATION;
@@ -45,6 +68,29 @@ import static spoon.reflect.path.CtRole.ANNOTATION;
 @ExtendWith(ApplicationExtension.class)
 class SpoonCodeInstrumentTest {
 	SpoonCodeInstrument spoonCodeInstrument;
+	TreeView<TextFlow> spoonAST;
+	TextArea spoonCode;
+	ComboBox<TreeLevel> treeLevel;
+	CheckBox hideImplicit;
+
+	static void waitForThread(final String threadName) {
+		Thread.getAllStackTraces().keySet()
+			.stream()
+			.filter(thread -> thread.getName().startsWith(threadName))
+			.forEach(thread -> {
+				try {
+					thread.join();
+				}catch(final InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
+			});
+		WaitForAsyncUtils.waitForFxEvents();
+	}
+
+	static void waitForTimeoutTransitions() {
+		waitForThread(TimeoutTransition.TIMEOUT_THREAD_NAME_BASE);
+	}
+
 
 	@Start
 	void start(final Stage stage) throws IOException {
@@ -54,6 +100,151 @@ class SpoonCodeInstrumentTest {
 		stage.setScene(new Scene(loader.getRoot()));
 		stage.show();
 	}
+
+	@BeforeEach
+	void setUp(final FxRobot robot) {
+		CommandsRegistry.INSTANCE.clear();
+		CommandsRegistry.INSTANCE.removeAllHandlers();
+		spoonAST = robot.lookup("#spoonAST").query();
+		spoonCode = robot.lookup("#spoonCode").query();
+		treeLevel = robot.lookup("#treeLevel").query();
+		hideImplicit = robot.lookup("#hideImplicit").query();
+	}
+
+	@Test
+	void testTypeCodeCreatesTheAST(final FxRobot robot) {
+		robot.clickOn(spoonCode).write("class Foo { }");
+		waitForTimeoutTransitions();
+		final ObservableList<TreeItem<TextFlow>> ast = spoonAST.getRoot().getChildren();
+
+		AssertionsForClassTypes.assertThat(ast.size()).isEqualTo(1);
+		AssertionsForClassTypes.assertThat(ast.get(0).getValue()
+			.getChildren()
+			.stream()
+			.anyMatch(ch -> ch instanceof Text && ((Text) ch).getText().contains("Foo"))
+		).isTrue();
+	}
+
+	@Test
+	void testClassElementLevel(final FxRobot robot) {
+		robot.clickOn(spoonCode).write("int i;");
+		waitForTimeoutTransitions();
+		robot.clickOn(treeLevel).type(KeyCode.DOWN).type(KeyCode.ENTER);
+		WaitForAsyncUtils.waitForFxEvents();
+		final ObservableList<TreeItem<TextFlow>> ast = spoonAST.getRoot().getChildren();
+
+		AssertionsForClassTypes.assertThat(ast.size()).isEqualTo(1);
+		AssertionsForClassTypes.assertThat(ast.get(0).getValue()
+			.getChildren()
+			.stream()
+			.anyMatch(ch -> ch instanceof Hyperlink && ((Hyperlink) ch).getText().equals("CtField"))
+		).isTrue();
+	}
+
+	@Test
+	void testStatementLevel(final FxRobot robot) {
+		robot.clickOn(spoonCode).write("int i;");
+		waitForTimeoutTransitions();
+		robot.clickOn(treeLevel).type(KeyCode.DOWN).type(KeyCode.DOWN).type(KeyCode.ENTER);
+		WaitForAsyncUtils.waitForFxEvents();
+		final ObservableList<TreeItem<TextFlow>> ast = spoonAST.getRoot().getChildren();
+
+		AssertionsForClassTypes.assertThat(ast.size()).isEqualTo(1);
+		AssertionsForClassTypes.assertThat(ast.get(0).getValue()
+			.getChildren()
+			.stream()
+			.anyMatch(ch -> ch instanceof Hyperlink && ((Hyperlink) ch).getText().equals("CtLocalVariable"))
+		).isTrue();
+	}
+
+	@Test
+	void testExpLevel(final FxRobot robot) {
+		robot.clickOn(spoonCode).write("1 < 2");
+		waitForTimeoutTransitions();
+		robot.clickOn(treeLevel).type(KeyCode.DOWN).type(KeyCode.DOWN).type(KeyCode.DOWN).type(KeyCode.ENTER);
+		WaitForAsyncUtils.waitForFxEvents();
+		final ObservableList<TreeItem<TextFlow>> ast = spoonAST.getRoot().getChildren();
+
+		AssertionsForClassTypes.assertThat(ast.size()).isEqualTo(1);
+		AssertionsForClassTypes.assertThat(ast.get(0).getValue()
+			.getChildren()
+			.stream()
+			.anyMatch(ch -> ch instanceof Hyperlink && ((Hyperlink) ch).getText().equals("CtBinaryOperator"))
+		).isTrue();
+	}
+
+	@Test
+	void testShowImplicit(final FxRobot robot) {
+		robot.clickOn(hideImplicit);
+		robot.clickOn(spoonCode).write("class Foo { }");
+		waitForTimeoutTransitions();
+		final TreeItem<TextFlow> item = spoonAST.getTreeItem(1);
+
+		AssertionsForClassTypes.assertThat(item.getValue()
+			.getChildren()
+			.stream()
+			.anyMatch(ch -> ch instanceof Text && ((Text) ch).getText().contains("(implicit)"))
+		).isTrue();
+	}
+
+	@Test
+	void testHideImplicit(final FxRobot robot) {
+		robot.clickOn(spoonCode).write("class Foo { }");
+		waitForTimeoutTransitions();
+		final TreeItem<TextFlow> item = spoonAST.getTreeItem(1);
+
+		AssertionsForClassTypes.assertThat(item).isNull();
+	}
+
+	@Test
+	void testNumberOfHyperlinks(final FxRobot robot) {
+		robot.clickOn(spoonCode).write("class Foo { } class Bar {}");
+		waitForTimeoutTransitions();
+		final Set<Node> hyperlinks = robot.lookup(CoreMatchers.instanceOf(Hyperlink.class)).queryAll();
+
+		AssertionsForClassTypes.assertThat(hyperlinks.size()).isEqualTo(2);
+	}
+
+	@Disabled("Does not work on headless server")
+	@Test
+	void testClickHyperlink(final FxRobot robot) {
+		robot.clickOn(spoonCode).write("class Foo { }");
+		waitForTimeoutTransitions();
+		final CmdHandler handler = Mockito.mock(CmdHandler.class);
+		CommandsRegistry.INSTANCE.addHandler(handler);
+		final Set<Node> hyperlinks = robot.lookup(CoreMatchers.instanceOf(Hyperlink.class)).queryAll();
+		robot.clickOn(hyperlinks.iterator().next());
+		WaitForAsyncUtils.waitForFxEvents();
+		waitForThread("OPEN_SPOON_DOC_THREAD");
+
+		Mockito.verify(handler, Mockito.times(1)).onCmdExecuted(Mockito.any(OpenWebPage.class));
+	}
+
+
+	@Disabled("Does not work on headless servers")
+	@Test
+	void testSaveText(final FxRobot robot, @TempDir final Path tempDir) throws IOException {
+		final Path path = tempDir.resolve("test.txt");
+		final File file = path.toFile();
+		final FileChooser mockChooser = Mockito.mock(FileChooser.class);
+
+		Mockito.when(mockChooser.showSaveDialog(null)).thenReturn(file);
+		spoonCodeInstrument.setFileChooser(mockChooser);
+
+		robot.clickOn(spoonCode).write("class Foo { int i; }");
+		waitForTimeoutTransitions();
+
+		final Button save = robot.lookup("#save").query();
+		robot.clickOn(save);
+		WaitForAsyncUtils.waitForFxEvents();
+
+		final List<String> lines = Files.readAllLines(path);
+
+		assertThat(lines.size()).isEqualTo(3);
+		assertThat(lines.get(0)).contains("CtClass");
+		assertThat(lines).noneMatch(l -> l.contains("TextFlow@"));
+	}
+
 
 	@Test
 	void getDirectSpoonInterfacesOfClass() {

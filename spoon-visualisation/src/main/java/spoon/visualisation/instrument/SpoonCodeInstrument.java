@@ -77,6 +77,7 @@ public class SpoonCodeInstrument extends JfxInstrument implements Initializable 
 	@FXML private Button save;
 	@FXML private VBox propPanel;
 	@FXML private ScrollPane scrollPaneProps;
+	private FileChooser fileChooser;
 
 
 	@Override
@@ -126,7 +127,7 @@ public class SpoonCodeInstrument extends JfxInstrument implements Initializable 
 			.bind();
 
 		// Clicking on the save button saves in a text file the text version of the Spoon tree
-		buttonBinder(i -> new SaveTreeText(new FileChooser().showSaveDialog(null), hideImplicit.isSelected(),
+		buttonBinder(i -> new SaveTreeText(getFileChooser().showSaveDialog(null), hideImplicit.isSelected(),
 				spoonCode.getText(), treeLevel.getValue()))
 			.on(save)
 			.bind();
@@ -141,11 +142,40 @@ public class SpoonCodeInstrument extends JfxInstrument implements Initializable 
 	}
 
 
+	/**
+	 * Lazy getter for a file chooser
+	 * @return The file chooser of the component
+	 */
+	FileChooser getFileChooser() {
+		if(fileChooser == null) {
+			fileChooser = new FileChooser();
+		}
+		return fileChooser;
+	}
+
+
+	/**
+	 * For testing purposes only.
+	 * Allows to set the file chooser (a mock for example)
+	 * @param fileChooser The file chooser to use.
+	 */
+	void setFileChooser(final FileChooser fileChooser) {
+		this.fileChooser = fileChooser;
+	}
+
+
+	/**
+	 * Removes the displayed properties
+	 */
 	void cleanPropertiesPanel() {
 		propPanel.getChildren().clear();
 	}
 
 
+	/**
+	 * Updates the properties panel by computing the properties of the given Spoon element.
+	 * @param elt The Spoon element to analyse. Cannot be null.
+	 */
 	void updatePropertiesPanel(final CtElement elt) {
 		// Getting the properties and their value
 		final List<Pair<Class<?>, Set<Pair<String, String>>>> props = getSpoonProperties(elt);
