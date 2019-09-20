@@ -26,7 +26,14 @@ mvn -q  checkstyle:checkstyle -Pcheckstyle-test
 python ./chore/check-links-in-doc.py
 
 # compute the revapi report
-python chore/revapy.py
+mvn -U revapi:report
+if grep -q "changes.*: [123456789]" ./target/revapi_report.md;
+then
+  # post the revapi report as PR comment
+  # the CI job has the spoon-bot password to be able to post the revapi report as comment on the pull request
+  # source of the CI job: https://github.com/SpoonLabs/spoon-ci-config/blob/master/jenkins/jobs/push-comment-github.xml
+  curl -F pull_request=$TRAVIS_PULL_REQUEST -F file=@./target/revapi_report.md -v "https://ci.inria.fr/sos/job/push-comment-github/buildWithParameters?token=hgzer87954"
+fi
 
 ##################################################################
 # Spoon-decompiler
