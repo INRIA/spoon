@@ -1733,7 +1733,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean printQualified(CtTypeReference<?> ref) {
-		return ignoreImplicit || !ref.isImplicitParent();
+		return ignoreImplicit || !ref.isSimplyQualified();
 		}
 
 

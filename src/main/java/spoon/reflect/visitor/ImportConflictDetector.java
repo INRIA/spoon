@@ -47,7 +47,7 @@ import spoon.support.Experimental;
  *  }
  * }
  *</pre></code>
- * and fixes them by call of {@link CtElement#setImplicit(boolean)} and {@link CtTypeReference#setImplicitParent(boolean)}
+ * and fixes them by call of {@link CtElement#setImplicit(boolean)} and {@link CtTypeReference#setSimplyQualified(boolean)}
  */
 @Experimental
 public class ImportConflictDetector extends ImportAnalyzer<LexicalScopeScanner, LexicalScope> {
@@ -131,7 +131,7 @@ public class ImportConflictDetector extends ImportAnalyzer<LexicalScopeScanner, 
 								return true;
 							}
 							ref.setImplicit(false);
-							ref.setImplicitParent(true);
+							ref.setSimplyQualified(true);
 							return false;
 						}
 						//no conflict with type or field name
@@ -160,14 +160,14 @@ public class ImportConflictDetector extends ImportAnalyzer<LexicalScopeScanner, 
 					}
 					//else there is a conflict. Make type explicit and package implicit
 					ref.setImplicit(false);
-					ref.setImplicitParent(true);
+					ref.setSimplyQualified(true);
 					return false;
 				});
 			}
 			//else do nothing like in case of implicit type of lambda parameter
 			//`(e) -> {...}`
 		}
-		if (!ref.isImplicit() && ref.isImplicitParent()) {
+		if (!ref.isImplicit() && ref.isSimplyQualified()) {
 			/*
 			 * the package is implicit. E.g. `Assert.assertTrue`
 			 * where package `org.junit` is implicit
@@ -188,7 +188,7 @@ public class ImportConflictDetector extends ImportAnalyzer<LexicalScopeScanner, 
 				}
 				//we have found a variable, field or type of different name
 				ref.setImplicit(false);
-				ref.setImplicitParent(false);
+				ref.setSimplyQualified(false);
 				return false;
 			});
 		} //else it is already fully qualified
@@ -203,12 +203,12 @@ public class ImportConflictDetector extends ImportAnalyzer<LexicalScopeScanner, 
 		if (typeRef == null) {
 			return;
 		}
-		if (!typeRef.isImplicitParent()) {
+		if (!typeRef.isSimplyQualified()) {
 			//we have to print fully qualified type name
 			//is the first part of package name in conflict with something else?
 			if (isPackageNameConflict(nameScope, typeRef)) {
 				//the package must be imported, then simple name might be used in this scope
-				typeRef.setImplicitParent(true);
+				typeRef.setSimplyQualified(true);
 				if (isSimpleNameConflict(nameScope, typeRef)) {
 					//there is conflict with simple name too
 					typeRef.setImplicit(true);
@@ -219,7 +219,7 @@ public class ImportConflictDetector extends ImportAnalyzer<LexicalScopeScanner, 
 				if (isSimpleNameConflict(nameScope, typeRef)) {
 					//there is conflict with simple name
 					//use qualified name
-					typeRef.setImplicitParent(false);
+					typeRef.setSimplyQualified(false);
 				}
 			}
 		}

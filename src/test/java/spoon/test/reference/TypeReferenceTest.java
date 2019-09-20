@@ -22,7 +22,6 @@ import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.CtModel;
-import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
@@ -663,21 +662,23 @@ public class TypeReferenceTest {
 	
 	@Test
 	public void testTypeReferenceImplicitParent() throws Exception {
-		// contract: CtTypeReference#isImplicitParent can be used read / write implicit value of the parent
+		// contract: CtTypeReference#isSimplyQualified can be used read / write implicit value of the parent
 		CtType<?> type = ModelUtils.buildClass(SuperAccess.class);
 		CtTypeReference<?> typeRef = type.getSuperclass();
-		assertTrue(typeRef.isImplicitParent());
+		assertTrue(typeRef.isSimplyQualified());
 		assertTrue(typeRef.getPackage().isImplicit());
 		
-		//calling of setImplicitParent influences implicitnes of parent
-		typeRef.setImplicitParent(false);
-		assertFalse(typeRef.isImplicitParent());
+		// a type reference can be printed fully qualified
+		typeRef.setSimplyQualified(false);
+		assertFalse(typeRef.isSimplyQualified());
 		assertFalse(typeRef.getPackage().isImplicit());
+		assertEquals("spoon.test.reference.testclasses.Parent", typeRef.toStringDebug());
 
-		//calling of setImplicit on parent influences return value of isImplicitParent
+		// a type reference can be printed simply qualified
 		typeRef.getPackage().setImplicit(true);
-		assertTrue(typeRef.isImplicitParent());
+		assertTrue(typeRef.isSimplyQualified());
 		assertTrue(typeRef.getPackage().isImplicit());
+		assertEquals("Parent", typeRef.toStringDebug());
 	}
 
 	@Test

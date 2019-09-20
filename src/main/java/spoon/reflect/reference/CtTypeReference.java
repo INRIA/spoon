@@ -209,16 +209,16 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	CtTypeParameter getTypeParameterDeclaration();
 
 	/**
-	 * @param parentIsImplicit false then fully qualified name is printed.
-	 * 		true then type simple name is printed.
+	 * @param isSimplyQualified false then the reference is printed fully qualified name.
+	 * 		true then only the type name is printed.
 	 */
 	@DerivedProperty
-	CtTypeReference<T> setImplicitParent(boolean parentIsImplicit);
+	CtTypeReference<T> setSimplyQualified(boolean isSimplyQualified);
 
 	/**
 	 * @return false then fully qualified name is printed.
 	 * 		true then type simple name is printed.
 	 */
 	@DerivedProperty
-	boolean isImplicitParent();
+	boolean isSimplyQualified();
 }
