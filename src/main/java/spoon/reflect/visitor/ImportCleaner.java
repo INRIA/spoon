@@ -59,7 +59,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 
 	@Override
 	protected Context getScannerContextInformation() {
-		return ((ImportCleanerScanner)scanner).context;
+		return ((ImportCleanerScanner) scanner).context;
 	}
 
 	@Override

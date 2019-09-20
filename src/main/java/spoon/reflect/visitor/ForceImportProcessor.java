@@ -28,7 +28,7 @@ public class ForceImportProcessor extends ImportAnalyzer<LexicalScope> {
 
 	@Override
 	protected LexicalScope getScannerContextInformation() {
-		return ((LexicalScopeScanner)scanner).getCurrentLexicalScope();
+		return ((LexicalScopeScanner) scanner).getCurrentLexicalScope();
 	}
 
 	@Override
