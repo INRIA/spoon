@@ -25,7 +25,7 @@ mvn -q  checkstyle:checkstyle -Pcheckstyle-test
 
 python ./chore/check-links-in-doc.py
 
-# compute the revapi report
+# compute the revapi API compatibility report
 mvn -U revapi:report
 cat ./target/revapi_report.md;
 if grep -q "changes.*: [123456789]" ./target/revapi_report.md;
