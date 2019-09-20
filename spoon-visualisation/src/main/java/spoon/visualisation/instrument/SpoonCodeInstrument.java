@@ -44,6 +44,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.Clipboard;
@@ -58,6 +59,7 @@ import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.path.CtPath;
 import spoon.support.DerivedProperty;
 import spoon.visualisation.command.SaveTreeText;
 import spoon.visualisation.command.SelectCodeItem;
@@ -181,21 +183,33 @@ public class SpoonCodeInstrument extends JfxInstrument implements Initializable 
 		final List<Pair<Class<?>, Set<Pair<String, String>>>> props = getSpoonProperties(elt);
 		// The idea is to have vertically a set of tables (and their title)
 		propPanel.getChildren().clear();
+
+		// Adding the CPath property
+		final CtPath path = elt.getPath();
+		if(path != null) {
+			final TextField tf = new TextField(path.toString());
+			tf.setEditable(false);
+			propPanel.getChildren().add(new VBox(createTitleText("Path"), tf));
+		}
+
 		// A gap between each table
 		propPanel.getChildren().addAll(
 			props
 				.stream()
 				.map(pair -> {
-					// Creating a title
-					final Text text = new Text(pair.getKey().getName());
-					text.setStyle("-fx-font-weight: bold");
-					// Creating the table
-					final VBox vBox = new VBox(text, createTable(pair.getValue()));
+					final VBox vBox = new VBox(createTitleText(pair.getKey().getName()), createTable(pair.getValue()));
 					vBox.prefWidthProperty().bind(scrollPaneProps.widthProperty());
 					return vBox;
 				})
 				.collect(Collectors.toList())
 		);
+	}
+
+
+	Text createTitleText(final String txt) {
+		final Text text = new Text(txt);
+		text.setStyle("-fx-font-weight: bold");
+		return text;
 	}
 
 

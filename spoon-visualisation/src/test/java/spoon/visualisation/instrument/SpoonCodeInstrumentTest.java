@@ -24,6 +24,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.Clipboard;
@@ -58,6 +59,7 @@ import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.path.CtPath;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.chain.CtQueryable;
 import spoon.visualisation.command.TreeLevel;
@@ -402,6 +404,24 @@ class SpoonCodeInstrumentTest {
 
 		AssertionsForClassTypes.assertThat(content.get()).isInstanceOf(String.class);
 		AssertionsForClassTypes.assertThat((String) content.get()).isNotEmpty();
+	}
+
+	@Test
+	void testCPath(final FxRobot robot) {
+		final VBox propsPanel = robot.lookup("#propPanel").query();
+		final CtElement stub = Mockito.mock(CtElement.class);
+		final CtPath path = Mockito.mock(CtPath.class);
+		Mockito.when(stub.getPath()).thenReturn(path);
+		Mockito.when(path.toString()).thenReturn("#thePath");
+
+		Platform.runLater(() -> spoonCodeInstrument.updatePropertiesPanel(stub));
+		WaitForAsyncUtils.waitForFxEvents();
+
+		final VBox box = (VBox) propsPanel.getChildren().get(0);
+		assertThat(box.getChildren().get(0)).isInstanceOf(Text.class);
+		assertThat(((Text) box.getChildren().get(0)).getText()).isEqualTo("Path");
+		assertThat(box.getChildren().get(1)).isInstanceOf(TextField.class);
+		assertThat(((TextField) box.getChildren().get(1)).getText()).isEqualTo("#thePath");
 	}
 }
 
