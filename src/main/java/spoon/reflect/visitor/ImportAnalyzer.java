@@ -35,17 +35,14 @@ import java.util.Set;
  *
  */
 @Experimental
-abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<CtElement> {
+abstract class ImportAnalyzer<U> extends AbstractProcessor<CtElement> {
 
+	protected EarlyTerminatingScanner scanner;
 	@Override
 	public void process(CtElement el) {
-		T scanner = createScanner();
-		if (scanner instanceof EarlyTerminatingScanner) {
-			CtScannerListener listener = createScannerListener(scanner);
-			if (listener != null) {
-				((EarlyTerminatingScanner) scanner).setListener(listener);
-			}
-		}
+		scanner = createScanner();
+		CtScannerListener listener = createScannerListener();
+		scanner.setListener(listener);
 		if (el instanceof CtCompilationUnit) {
 			process(scanner, (CtCompilationUnit) el);
 		} else {
@@ -74,8 +71,8 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 		scanner.exit(cu);
 	}
 
-	protected CtScannerListener createScannerListener(T scanner) {
-		return new ScannerListener(scanner);
+	protected CtScannerListener createScannerListener() {
+		return new ScannerListener();
 	}
 
 	//The set of roles whose values are always kept implicit
@@ -93,12 +90,10 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 	 * which mustn't have influence to compilation unit imports.
 	 */
 	protected class ScannerListener implements CtScannerListener {
-		protected T scanner;
 		protected Set<CtRole> ignoredRoles = IGNORED_ROLES_WHEN_IMPLICIT;
 
-		ScannerListener(T scanner) {
+		ScannerListener() {
 			super();
-			this.scanner = scanner;
 		}
 
 		@Override
@@ -186,7 +181,7 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 				//ignore implicit actual type arguments
 				return ScanningMode.SKIP_ALL;
 			}
-			onEnter(getScannerContextInformation(scanner), role, element);
+			onEnter(getScannerContextInformation(), role, element);
 			return ScanningMode.NORMAL;
 		}
 	}
@@ -213,10 +208,10 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 	}
 
 	/** extract the required information from the scanner to take a decision */
-	protected abstract U getScannerContextInformation(T scanner);
+	protected abstract U getScannerContextInformation();
 
 	/** creates the scanner that will be used to visit the model */
-	protected abstract T createScanner();
+	protected abstract EarlyTerminatingScanner createScanner();
 
 	/** what do we do a type reference? */
 	protected abstract void handleTypeReference(CtTypeReference<?> element, U context, CtRole role);

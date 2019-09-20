@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  * This does not force some references to be implicit, and doesn't fix the wrong implicit which causes conflicts: this fixing done by {@link ImportConflictDetector}
  */
 @Experimental
-public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerScanner, ImportCleaner.Context> {
+public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 
 	private Comparator<CtImport> importComparator;
 	private boolean canAddImports = true;
@@ -58,8 +58,8 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 	}
 
 	@Override
-	protected Context getScannerContextInformation(ImportCleanerScanner scanner) {
-		return scanner.context;
+	protected Context getScannerContextInformation() {
+		return ((ImportCleanerScanner)scanner).context;
 	}
 
 	@Override

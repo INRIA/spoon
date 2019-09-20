@@ -19,7 +19,7 @@ import spoon.support.Experimental;
  * Marks all types references as implicit so all types will get imported.
  */
 @Experimental
-public class ForceImportProcessor extends ImportAnalyzer<LexicalScopeScanner, LexicalScope> {
+public class ForceImportProcessor extends ImportAnalyzer<LexicalScope> {
 
 	@Override
 	protected LexicalScopeScanner createScanner() {
@@ -27,8 +27,8 @@ public class ForceImportProcessor extends ImportAnalyzer<LexicalScopeScanner, Le
 	}
 
 	@Override
-	protected LexicalScope getScannerContextInformation(LexicalScopeScanner scanner) {
-		return scanner.getCurrentLexicalScope();
+	protected LexicalScope getScannerContextInformation() {
+		return ((LexicalScopeScanner)scanner).getCurrentLexicalScope();
 	}
 
 	@Override

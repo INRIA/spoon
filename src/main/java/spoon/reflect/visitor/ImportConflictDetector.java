@@ -50,7 +50,7 @@ import spoon.support.Experimental;
  * and fixes them by call of {@link CtElement#setImplicit(boolean)} and {@link CtTypeReference#setSimplyQualified(boolean)}
  */
 @Experimental
-public class ImportConflictDetector extends ImportAnalyzer<LexicalScopeScanner, LexicalScope> {
+public class ImportConflictDetector extends ImportAnalyzer<LexicalScope> {
 
 	@Override
 	protected LexicalScopeScanner createScanner() {
@@ -58,8 +58,8 @@ public class ImportConflictDetector extends ImportAnalyzer<LexicalScopeScanner, 
 	}
 
 	@Override
-	protected LexicalScope getScannerContextInformation(LexicalScopeScanner scanner) {
-		return scanner.getCurrentLexicalScope();
+	protected LexicalScope getScannerContextInformation() {
+		return ((LexicalScopeScanner)scanner).getCurrentLexicalScope();
 	}
 
 	@Override
