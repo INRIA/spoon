@@ -870,7 +870,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	@DerivedProperty
-	public boolean isImplicitParent() {
+	public boolean isSimplyQualified() {
 		if (pack != null) {
 			return pack.isImplicit();
 		} else if (declaringType != null) {
@@ -881,11 +881,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	@DerivedProperty
-	public CtTypeReferenceImpl<T> setImplicitParent(boolean parentIsImplicit) {
+	public CtTypeReferenceImpl<T> setSimplyQualified(boolean isSimplyQualified) {
 		if (pack != null) {
-			pack.setImplicit(parentIsImplicit);
+			pack.setImplicit(isSimplyQualified);
 		} else if (declaringType != null) {
-			declaringType.setImplicit(parentIsImplicit);
+			declaringType.setImplicit(isSimplyQualified);
 		}
 		return this;
 	}

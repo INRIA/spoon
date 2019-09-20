@@ -221,7 +221,7 @@ public class ReferenceBuilder {
 		}
 		//detect whether something is implicit
 		if (type instanceof SingleTypeReference) {
-			typeReference.setImplicitParent(true);
+			typeReference.setSimplyQualified(true);
 		} else if (type instanceof QualifiedTypeReference) {
 			jdtTreeBuilder.getHelper().handleImplicit((QualifiedTypeReference) type, typeReference);
 		}
@@ -503,7 +503,7 @@ public class ReferenceBuilder {
 			ctRef = getTypeReference(ref);
 		}
 		if (ref instanceof SingleTypeReference) {
-			ctRef.setImplicitParent(true);
+			ctRef.setSimplyQualified(true);
 		} else if (ref instanceof QualifiedTypeReference) {
 			jdtTreeBuilder.getHelper().handleImplicit((QualifiedTypeReference) ref, ctRef);
 		}

@@ -17,6 +17,8 @@
 package spoon.test.loop;
 
 import org.junit.Test;
+import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
@@ -32,6 +34,7 @@ import spoon.test.loop.testclasses.Join;
 import java.io.File;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -69,5 +72,17 @@ public class LoopTest {
 						+ "    conditions.add(spoon.test.loop.testclasses.Join.notNull(condition));" + nl + "}";
 
 		assertEquals(expectedDebug, ctLoop.toString());
+	}
+
+	@Test
+	public void testEmptyForLoopExpression() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/loop/testclasses/EmptyLoops.java");
+		CtModel model = launcher.buildModel();
+		CtFor ctFor = model.getElements(new TypeFilter<>(CtFor.class)).get(0);
+		assertTrue(ctFor.getForInit().isEmpty());
+		assertNull(ctFor.getExpression());
+		assertTrue(ctFor.getForUpdate().isEmpty());
+		assertEquals("x = 5", ((CtBlock)ctFor.getBody()).getStatement(0).toString().trim());
 	}
 }

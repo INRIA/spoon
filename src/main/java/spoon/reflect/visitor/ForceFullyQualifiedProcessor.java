@@ -36,7 +36,7 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScopeSca
 
 	@Override
 	protected void handleTypeReference(CtTypeReference<?> reference, LexicalScope nameScope, CtRole role) {
-		if (reference.isImplicitParent() || reference.isImplicit()) {
+		if (reference.isSimplyQualified() || reference.isImplicit()) {
 			if (isThisAccess(reference)) {
 				//do not force FQ names in this access
 				return;
@@ -53,7 +53,7 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScopeSca
 			}
 			//force fully qualified name
 			reference.setImplicit(false);
-			reference.setImplicitParent(false);
+			reference.setSimplyQualified(false);
 		}
 	}
 
