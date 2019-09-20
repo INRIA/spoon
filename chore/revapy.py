@@ -38,11 +38,6 @@ if (action in accepted_actions):
 
     try:
         gh = Github(login,token)
-    except GithubException as e:
-        print "Error while connecting to github, are you sure about your credentials?"
-        print e
-        exit(1)
-    try:
         repo = gh.get_repo(repo_name,True)
 
         pr = repo.get_pull(pr_id)
@@ -53,6 +48,7 @@ if (action in accepted_actions):
                 print "deleted ",comment
                 comment.delete()
         pr.create_issue_comment(file_content)
+        print "posted \n"+file_content
     except GithubException as e:
         print "Error while creating the PR comment."
         print e
