@@ -1265,4 +1265,9 @@ public class FactoryImpl implements Factory, Serializable {
 	public <T> CtTypeReference<T> createReference(String qualifiedName) {
 		return Type().createReference(qualifiedName);
 	}
+
+	@Override
+	public <T> CtTypeReference<T> createSimplyQualifiedReference(String qualifiedName) {
+		return Type().createSimplyQualifiedReference(qualifiedName);
+	}
 }

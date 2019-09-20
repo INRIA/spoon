@@ -1023,4 +1023,9 @@ public interface Factory {
 	 * @see TypeFactory#createReference(String)
 	 */
 	<T> CtTypeReference<T> createReference(String qualifiedName);
+
+	/**
+	 * @see TypeFactory#createSimplyQualifiedReference(String)
+	 */
+	<T> CtTypeReference<T> createSimplyQualifiedReference(String qualifiedName);
 }
