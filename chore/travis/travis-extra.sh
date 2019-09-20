@@ -27,6 +27,7 @@ python ./chore/check-links-in-doc.py
 
 # compute the revapi report
 mvn -U revapi:report
+cat ./target/revapi_report.md;
 if grep -q "changes.*: [123456789]" ./target/revapi_report.md;
 then
   # post the revapi report as PR comment
