@@ -106,15 +106,19 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 			if (element == null) {
 				return ScanningMode.SKIP_ALL;
 			}
+			if (role == CtRole.VARIABLE && element instanceof CtFieldReference) {
+				//ignore variable reference of field access. The accessType is relevant here instead.
+				handleTypeReference(((CtFieldReference)element).getDeclaringType(), getScannerContextInformation(scanner), CtRole.DECLARING_TYPE);
+				return ScanningMode.SKIP_ALL;
+			}
 			if (element.isParentInitialized()) {
 				CtElement parent = element.getParent();
 				if (role == CtRole.DECLARING_TYPE && element instanceof CtTypeReference) {
 					if (parent instanceof CtFieldReference) {
-						// we continue at the end of the method to call onEnter
-						// which calls itself handleTypeReference by subclasses
-						// and make the reference potentially implicit
+						//ignore the declaring type of field reference. It is not relevant for Imports
+						return ScanningMode.SKIP_ALL;
 					}
-					else if (parent instanceof CtExecutableReference) {
+					if (parent instanceof CtExecutableReference) {
 						/*
 						 * ignore the declaring type of type executable like
 						 * anVariable.getSomeInstance().callMethod()
