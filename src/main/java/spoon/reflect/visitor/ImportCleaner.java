@@ -118,7 +118,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 		}
 	}
 
-	class Context {
+	public class Context {
 		private CtCompilationUnit compilationUnit;
 		private Map<String, CtImport> computedImports;
 		private String packageQName;
@@ -295,7 +295,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 		return visitor.found;
 	}
 
-	class ImportCleanerScanner extends EarlyTerminatingScanner<Void> {
+	public class ImportCleanerScanner extends EarlyTerminatingScanner<Void> {
 		Context context;
 		@Override
 		protected void enter(CtElement e) {
