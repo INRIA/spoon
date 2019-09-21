@@ -198,7 +198,7 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 					&& role == CtRole.VARIABLE
 					&& element.isParentInitialized()
 					&& element.getParent() instanceof CtFieldAccess
-					&& ((CtFieldRead) element.getParent()).getTarget() == null;
+					&& ((CtFieldAccess) element.getParent()).getTarget() == null;
 		}
 	}
 
