@@ -245,7 +245,7 @@ public class SpoonifyVisitor extends CtScanner {
 		public String variableName;
 
 		/**
-		 * 
+		 * visitLiteral
 		 * @param element
 		 */
 		@Override
