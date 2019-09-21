@@ -196,6 +196,7 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 		private boolean isFieldAccessWithNoTarget(CtRole role, CtElement element) {
 			return element instanceof CtFieldReference
 					&& role == CtRole.VARIABLE
+					&& ((CtFieldReference) element).getDeclaringType() != null
 					&& element.isParentInitialized()
 					&& element.getParent() instanceof CtFieldAccess
 					&& ((CtFieldAccess) element.getParent()).getTarget() == null;
