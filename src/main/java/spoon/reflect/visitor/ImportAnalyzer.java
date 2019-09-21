@@ -10,6 +10,8 @@ import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
@@ -106,7 +108,7 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 			if (element == null) {
 				return ScanningMode.SKIP_ALL;
 			}
-			if (role == CtRole.VARIABLE && element instanceof CtFieldReference) {
+			if (isFieldAccessWithNoTarget(role, element)) {
 				//ignore variable reference of field access. The accessType is relevant here instead.
 				handleTypeReference(((CtFieldReference)element).getDeclaringType(), getScannerContextInformation(scanner), CtRole.DECLARING_TYPE);
 				return ScanningMode.SKIP_ALL;
@@ -189,6 +191,14 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 			}
 			onEnter(getScannerContextInformation(scanner), role, element);
 			return ScanningMode.NORMAL;
+		}
+
+		private boolean isFieldAccessWithNoTarget(CtRole role, CtElement element) {
+			return element instanceof CtFieldReference
+					&& role == CtRole.VARIABLE
+					&& element.isParentInitialized()
+					&& element.getParent() instanceof CtFieldAccess
+					&& ((CtFieldRead) element.getParent()).getTarget() == null;
 		}
 	}
 
