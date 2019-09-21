@@ -63,7 +63,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 	}
 
 	@Override
-	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, Context context, CtRole role) {
+	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, Context context) {
 		if (context == null) {
 			return;
 		}

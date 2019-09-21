@@ -65,7 +65,7 @@ public class ForceImportProcessor extends ImportAnalyzer<LexicalScope> {
 	}
 
 	@Override
-	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, LexicalScope nameScope, CtRole role) {
+	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, LexicalScope nameScope) {
 		CtExpression<?> target = targetedExpression.getTarget();
 		if (target.isImplicit()) {
 			return;

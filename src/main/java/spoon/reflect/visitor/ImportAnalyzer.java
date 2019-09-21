@@ -31,7 +31,7 @@ import java.util.Set;
  *{@link Processor} of {@link CtCompilationUnit}, which scans CtCompilationUnit modules, packages and types
  * with purpose to find type references and expressions which might influence import directives.
  *
- * Subclasses create a scanner ({@link #createScanner()}) and analyzes the elements to be imported {@link #handleTypeReference} and {@link #handleTargetedExpression(CtTargetedExpression, Object, CtRole)}
+ * Subclasses create a scanner ({@link #createScanner()}) and analyzes the elements to be imported {@link #handleTypeReference} and {@link #handleTargetedExpression(CtTargetedExpression, Object)}
  *
  */
 @Experimental
@@ -195,7 +195,7 @@ abstract class ImportAnalyzer<U> extends AbstractProcessor<CtElement> {
 			if (target == null) {
 				return;
 			}
-			handleTargetedExpression(targetedExpression, context, role);
+			handleTargetedExpression(targetedExpression, context);
 		} else if (element instanceof CtTypeReference<?>) {
 			//we have to visit only PURE CtTypeReference. No CtArrayTypeReference, CtTypeParameterReference, ...
 			element.accept(new CtAbstractVisitor() {
@@ -217,7 +217,7 @@ abstract class ImportAnalyzer<U> extends AbstractProcessor<CtElement> {
 	protected abstract void handleTypeReference(CtTypeReference<?> element, U context, CtRole role);
 
 	/** what do we do a target expression (print target or not) ? */
-	protected abstract void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, U context, CtRole role);
+	protected abstract void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, U context);
 
 	/**
 	 * @return parent of `element`, but only if it's type is `type`
