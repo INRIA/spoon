@@ -5,13 +5,11 @@
  */
 package spoon.reflect.visitor;
 
-import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
-import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
@@ -20,7 +18,6 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.support.Experimental;
@@ -109,13 +106,13 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 				return ScanningMode.SKIP_ALL;
 			}
 
-			// very special and ugly case, but it handles a regression :)
+			// very special and ugly case (field read with target = null), but it handles a regression :)
 			if (isFieldAccessWithNoTarget(role, element)) {
 				//ignore variable reference of field access. The accessType is relevant here instead.
-				handleTypeReference(((CtFieldReference)element).getDeclaringType(), getScannerContextInformation(scanner), CtRole.DECLARING_TYPE);
+				handleTypeReference(((CtFieldReference) element).getDeclaringType(), getScannerContextInformation(scanner), CtRole.DECLARING_TYPE);
 				return ScanningMode.SKIP_ALL;
 			}
-			
+
 			if (element.isParentInitialized()) {
 				CtElement parent = element.getParent();
 				if (role == CtRole.DECLARING_TYPE && element instanceof CtTypeReference) {
