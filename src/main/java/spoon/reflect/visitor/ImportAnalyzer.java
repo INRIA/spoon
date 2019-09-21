@@ -108,11 +108,14 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 			if (element == null) {
 				return ScanningMode.SKIP_ALL;
 			}
+
+			// very special and ugly case, but it handles a regression :)
 			if (isFieldAccessWithNoTarget(role, element)) {
 				//ignore variable reference of field access. The accessType is relevant here instead.
 				handleTypeReference(((CtFieldReference)element).getDeclaringType(), getScannerContextInformation(scanner), CtRole.DECLARING_TYPE);
 				return ScanningMode.SKIP_ALL;
 			}
+			
 			if (element.isParentInitialized()) {
 				CtElement parent = element.getParent();
 				if (role == CtRole.DECLARING_TYPE && element instanceof CtTypeReference) {
@@ -127,10 +130,10 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 						 * The declaring type of `callMethod` method is not relevant for Imports
 						 */
 						return ScanningMode.SKIP_ALL;
-					} else if (parent instanceof CtTypeReference) {
+					}
+
+					if (parent instanceof CtTypeReference && !((CtTypeReference) parent).getAccessType().equals(element)) {
 						/*
-						 * It looks like this is not needed too.
-						 *
 						 * pvojtechovsky: I am sure it is not wanted in case of
 						 * spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected
 						 * which extends package protected (and for others invisible class)
@@ -141,12 +144,7 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 						 * ... but in other normal cases, I guess the declaring type is used and needed for import!
 						 * ... so I don't understand why SKIP_ALL works in all cases. May be there is missing test case?
 						 */
-						if (!((CtTypeReference) parent).getAccessType().equals(element)) {
 							return ScanningMode.SKIP_ALL;
-						}
-					} else {
-						//May be this can never happen
-						throw new SpoonException("Check this case. Is it relevant or not?");
 					}
 				}
 				if (role == CtRole.TYPE && element instanceof CtTypeReference) {
