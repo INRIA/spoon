@@ -156,10 +156,8 @@ public class SpoonifyVisitor extends CtScanner {
 			}
 		}
 
-		//if(!isLeafTypeReference(element)) {
 		parentName.push(variableName);
 		roleContainer.push(new HashMap<>());
-		//}
 	}
 
 	private String getVariableName(String className) {
@@ -246,6 +244,10 @@ public class SpoonifyVisitor extends CtScanner {
 	class PropertyScanner extends CtInheritanceScanner {
 		public String variableName;
 
+		/**
+		 * 
+		 * @param element
+		 */
 		@Override
 		public void visitCtLiteral(CtLiteral element) {
 			if (element.getType().isPrimitive()) {
