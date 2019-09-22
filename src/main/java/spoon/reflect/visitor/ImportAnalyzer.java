@@ -9,7 +9,6 @@ import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
