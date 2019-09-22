@@ -35,6 +35,7 @@ import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
@@ -340,6 +341,17 @@ public interface Factory {
 	 *  @see CodeFactory#createJavaDocTag(String,CtJavaDocTag.TagType)
 	 */
 	CtJavaDocTag createJavaDocTag(String content, CtJavaDocTag.TagType type);
+
+	/**
+	 * @see CoreFactory#createJavaDoc()
+	 */
+	CtJavaDoc createJavaDoc();
+
+
+	/**
+	 *  @see CodeFactory#createJavaDocTag(String,CtJavaDocTag.TagType)
+	 */
+	CtJavaDocTag createJavaDocTag();
 
 	/**
 	 *  @see CodeFactory#createInlineComment(String)
@@ -1011,4 +1023,9 @@ public interface Factory {
 	 * @see TypeFactory#createReference(String)
 	 */
 	<T> CtTypeReference<T> createReference(String qualifiedName);
+
+	/**
+	 * @see TypeFactory#createSimplyQualifiedReference(String)
+	 */
+	<T> CtTypeReference<T> createSimplyQualifiedReference(String qualifiedName);
 }
