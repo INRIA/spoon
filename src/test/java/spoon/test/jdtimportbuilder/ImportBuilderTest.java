@@ -196,7 +196,7 @@ public class ImportBuilderTest {
 		CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitStatic.getImports();
 
-		assertEquals(1, imports.size());
+		assertEquals(imports.toString(), 1, imports.size());
 		CtImport ctImport = imports.iterator().next();
 
 		assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
