@@ -69,7 +69,7 @@ public class ForceImportProcessor extends ImportAnalyzer<LexicalScopeScanner, Le
 	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, LexicalScope nameScope, CtRole role) {
 		CtExpression<?> target = targetedExpression.getTarget();
 		if (target == null) {
-			if (targetedExpression instanceof CtFieldAccess) {
+			if (targetedExpression instanceof CtFieldAccess && ((CtFieldAccess) targetedExpression).getVariable().getDeclaringType() != null) {
 				((CtFieldAccess) targetedExpression).getVariable().getDeclaringType().setSimplyQualified(true);
 			}
 			return;
