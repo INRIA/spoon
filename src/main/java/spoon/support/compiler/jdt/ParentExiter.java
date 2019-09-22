@@ -543,7 +543,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		} else if (isContainedInForUpdate() && child instanceof CtStatement) {
 			forLoop.addForUpdate((CtStatement) child);
 			return;
-		} else if (forLoop.getExpression() == null && child instanceof CtExpression) {
+		} else if (isContainedInForCondition() && child instanceof CtExpression) {
 			forLoop.setExpression((CtExpression<Boolean>) child);
 			return;
 		}
@@ -580,6 +580,14 @@ public class ParentExiter extends CtInheritanceScanner {
 			}
 		}
 		return false;
+	}
+
+	private boolean isContainedInForCondition() {
+		if (!(jdtTreeBuilder.getContextBuilder().stack.peek().node instanceof ForStatement)) {
+			return false;
+		}
+		final ForStatement parent = (ForStatement) jdtTreeBuilder.getContextBuilder().stack.peek().node;
+		return parent.condition != null && parent.condition.equals(childJDT);
 	}
 
 	@Override

@@ -21,12 +21,18 @@
  */
 package spoon.visualisation.spoon;
 
+import io.github.interacto.command.library.OpenWebPage;
+import java.net.URI;
 import java.util.List;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * The printer that prints the Spoon AST into a JavaFX tree view.
@@ -49,8 +55,39 @@ public class TreePrinter extends SpoonElementVisitor {
 		currItem = null;
 	}
 
+	/**
+	 * Create an initial text flow for naming the nodes of the Spoon AST.
+	 * @param label The Spoon element to analyse.
+	 * @return The created text flow that can be completed with other text elements.
+	 */
+	TextFlow createStdTextFlow(final TreeNodeLabel label) {
+		// We want to be able to click on the interface name to open its JavaDoc
+		final Hyperlink classLink = new Hyperlink(label.className);
+		final TextFlow flow = new TextFlow(classLink);
+		final String url = "http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/"
+			+ label.fullName.replace('.', '/') + ".html";
+
+		Tooltip.install(classLink, new Tooltip(url));
+
+		// Clicking on the link opens the doc
+		// 'new Thread' because otherwise the app freezes (run in the UI thread)
+		classLink.setOnAction(evt -> new Thread(() -> {
+			final OpenWebPage cmd = new OpenWebPage();
+			cmd.setUri(URI.create(url));
+			if(cmd.canDo()) {
+				cmd.doIt();
+			}
+		}, "OPEN_SPOON_DOC_THREAD").start());
+
+		label.implicit.ifPresent(txt -> flow.getChildren().add(new Text(txt)));
+		label.role.ifPresent(txt -> flow.getChildren().add(new Text(txt)));
+		label.additionals.ifPresent(txt -> flow.getChildren().add(new Text(txt)));
+
+		return flow;
+	}
+
 	@Override
-	public void accept(final int level, final @NotNull TextFlow label, final @NotNull List<Integer> lines) {
+	public void visitElement(final CtElement elt, final int level, final @NotNull TreeNodeLabel label, final @NotNull List<Integer> lines) {
 		// level > 1 because the root element must be created to be then masked as several real tree roots may exist
 		// Example: three statements with the statement level.
 		// level <= levelsToIgnore: depending on the analysis level, some root elements must be hidden
@@ -60,7 +97,7 @@ public class TreePrinter extends SpoonElementVisitor {
 
 		final int startPosition = lines.isEmpty() ? -1 : lines.get(0);
 		final int endPosition = lines.isEmpty() ? -1 : lines.get(1);
-		final SpoonTreeItem item = new SpoonTreeItem(label, startPosition, endPosition);
+		final SpoonTreeItem item = new SpoonTreeItem(createStdTextFlow(label), startPosition, endPosition, elt);
 		item.setExpanded(true);
 
 		if(currItem == null) {

@@ -12,7 +12,6 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtImport;
@@ -69,6 +68,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 			return;
 		}
 		CtExpression<?> target = targetedExpression.getTarget();
+
 		if (target != null && target.isImplicit()) {
 			if (target instanceof CtTypeAccess) {
 				if (targetedExpression instanceof CtFieldAccess) {
@@ -79,10 +79,25 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 						context.addImport(execRef);
 					}
 				}
-			} else if (target instanceof CtVariableAccess) {
+
+			} else if (targetedExpression instanceof CtInvocation<?>) {
+				CtInvocation<?> invocation = (CtInvocation<?>) targetedExpression;
+				//import static method
+				if (invocation.getExecutable().isStatic()) {
+					context.addImport(invocation.getExecutable());
+				}
+			} else if (targetedExpression instanceof CtFieldAccess<?>) {
+				//import static field
+				CtFieldAccess<?> fieldAccess = (CtFieldAccess<?>) targetedExpression;
+				if (fieldAccess.getVariable().isStatic()) {
+					context.addImport(fieldAccess.getVariable());
+				}
+			} else {
 				throw new SpoonException("TODO");
 			}
 		}
+
+
 	}
 
 	@Override
@@ -90,26 +105,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 		if (context == null) {
 			return;
 		}
-		if (reference.isImplicit()) {
-			/*
-			 * the reference is implicit. E.g. `assertTrue();`
-			 * where type `org.junit.Assert` is implicit
-			 */
-			CtTargetedExpression<?, ?> targetedExpr = getParentIfType(getParentIfType(reference, CtTypeAccess.class), CtTargetedExpression.class);
-			if (targetedExpr != null) {
-				if (targetedExpr instanceof CtInvocation<?>) {
-					CtInvocation<?> invocation = (CtInvocation<?>) targetedExpr;
-					//import static method
-					context.addImport(invocation.getExecutable());
-				} else if (targetedExpr instanceof CtFieldAccess<?>) {
-					//import static field
-					CtFieldAccess<?> fieldAccess = (CtFieldAccess<?>) targetedExpr;
-					context.addImport(fieldAccess.getVariable());
-				}
-			}
-			//else do nothing. E.g. in case of implicit type of lambda parameter
-			//`(e) -> {...}`
-		} else if (reference.isImplicitParent()) {
+		if (!reference.isImplicit() && reference.isSimplyQualified()) {
 			/*
 			 * the package is implicit. E.g. `Assert.assertTrue`
 			 * where package `org.junit` is implicit
@@ -153,6 +149,10 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 				typeRef = (CtTypeReference<?>) ref;
 			} else {
 				throw new SpoonException("Unexpected reference type " + ref.getClass());
+			}
+			if (typeRef == null) {
+				// we would like to add an import, but we don't know to where
+				return;
 			}
 			CtTypeReference<?> topLevelTypeRef = typeRef.getTopLevelType();
 			if (typeRefQNames.contains(topLevelTypeRef.getQualifiedName())) {

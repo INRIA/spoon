@@ -134,7 +134,7 @@ abstract class SpoonTreeCmdBase extends CommandImpl {
 
 	@Override
 	public boolean canDo() {
-		return code != null && !code.isEmpty();
+		return code != null;
 	}
 
 	public void setCode(final @NotNull String code) {
