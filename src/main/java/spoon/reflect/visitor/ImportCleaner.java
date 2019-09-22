@@ -68,6 +68,12 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 			return;
 		}
 		CtExpression<?> target = targetedExpression.getTarget();
+		if (target == null) {
+			if (targetedExpression instanceof CtFieldAccess && ((CtFieldAccess) targetedExpression).getVariable().getDeclaringType().isSimplyQualified()) {
+				context.addImport(((CtFieldAccess) targetedExpression).getVariable().getDeclaringType());
+			}
+			return;
+		}
 
 		if (target != null && target.isImplicit()) {
 			if (target instanceof CtTypeAccess) {

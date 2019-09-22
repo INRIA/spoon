@@ -6,10 +6,12 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
@@ -79,6 +81,9 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScopeSca
 	@Override
 	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, LexicalScope nameScope, CtRole role) {
 		CtExpression<?> target = targetedExpression.getTarget();
+		if (target == null) {
+			return;
+		}
 		if (!target.isImplicit()) {
 			return;
 		}

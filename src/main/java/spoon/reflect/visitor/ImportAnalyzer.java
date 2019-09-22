@@ -5,11 +5,11 @@
  */
 package spoon.reflect.visitor;
 
+import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
@@ -18,6 +18,7 @@ import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.support.Experimental;
@@ -105,14 +106,10 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 			if (element == null) {
 				return ScanningMode.SKIP_ALL;
 			}
-
-			// very special and ugly case (field read with target = null), but it handles a regression :)
-			if (isFieldAccessWithNoTarget(role, element)) {
+			if (role == CtRole.VARIABLE && element instanceof CtVariableReference) {
 				//ignore variable reference of field access. The accessType is relevant here instead.
-				handleTypeReference(((CtFieldReference) element).getDeclaringType(), getScannerContextInformation(scanner), CtRole.DECLARING_TYPE);
 				return ScanningMode.SKIP_ALL;
 			}
-
 			if (element.isParentInitialized()) {
 				CtElement parent = element.getParent();
 				if (role == CtRole.DECLARING_TYPE && element instanceof CtTypeReference) {
@@ -127,10 +124,10 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 						 * The declaring type of `callMethod` method is not relevant for Imports
 						 */
 						return ScanningMode.SKIP_ALL;
-					}
-
-					if (parent instanceof CtTypeReference && !((CtTypeReference) parent).getAccessType().equals(element)) {
+					} else if (parent instanceof CtTypeReference) {
 						/*
+						 * It looks like this is not needed too.
+						 *
 						 * pvojtechovsky: I am sure it is not wanted in case of
 						 * spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected
 						 * which extends package protected (and for others invisible class)
@@ -141,7 +138,12 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 						 * ... but in other normal cases, I guess the declaring type is used and needed for import!
 						 * ... so I don't understand why SKIP_ALL works in all cases. May be there is missing test case?
 						 */
+						if (!((CtTypeReference) parent).getAccessType().equals(element)) {
 							return ScanningMode.SKIP_ALL;
+						}
+					} else {
+						//May be this can never happen
+						throw new SpoonException("Check this case. Is it relevant or not?");
 					}
 				}
 				if (role == CtRole.TYPE && element instanceof CtTypeReference) {
@@ -187,15 +189,6 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 			onEnter(getScannerContextInformation(scanner), role, element);
 			return ScanningMode.NORMAL;
 		}
-
-		private boolean isFieldAccessWithNoTarget(CtRole role, CtElement element) {
-			return element instanceof CtFieldReference
-					&& role == CtRole.VARIABLE
-					&& ((CtFieldReference) element).getDeclaringType() != null
-					&& element.isParentInitialized()
-					&& element.getParent() instanceof CtFieldAccess
-					&& ((CtFieldAccess) element.getParent()).getTarget() == null;
-		}
 	}
 
 
@@ -203,10 +196,6 @@ abstract class ImportAnalyzer<T extends CtScanner, U> extends AbstractProcessor<
 
 		if (element instanceof CtTargetedExpression) {
 			CtTargetedExpression<?, ?> targetedExpression = (CtTargetedExpression<?, ?>) element;
-			CtExpression<?> target = targetedExpression.getTarget();
-			if (target == null) {
-				return;
-			}
 			handleTargetedExpression(targetedExpression, context, role);
 		} else if (element instanceof CtTypeReference<?>) {
 			//we have to visit only PURE CtTypeReference. No CtArrayTypeReference, CtTypeParameterReference, ...
