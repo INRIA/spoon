@@ -118,6 +118,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 		}
 	}
 
+	/** a set of imports for a given compilation unit */
 	public class Context {
 		private CtCompilationUnit compilationUnit;
 		private Map<String, CtImport> computedImports;
@@ -295,6 +296,9 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 		return visitor.found;
 	}
 
+	/**
+	 * A scanner that initializes context for a compilation unit.
+	 */
 	public class ImportCleanerScanner extends EarlyTerminatingScanner<Void> {
 		Context context;
 		@Override
