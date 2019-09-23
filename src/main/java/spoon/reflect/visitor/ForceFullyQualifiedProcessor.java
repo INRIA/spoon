@@ -22,7 +22,7 @@ import spoon.support.Experimental;
  * Forces fully qualified identifiers by making many elements explicit (by calling setImplicit(false)).
  */
 @Experimental
-public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScopeScanner, LexicalScope> {
+public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScope> {
 
 	@Override
 	protected LexicalScopeScanner createScanner() {
@@ -30,8 +30,8 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScopeSca
 	}
 
 	@Override
-	protected LexicalScope getScannerContextInformation(LexicalScopeScanner scanner) {
-		return scanner.getCurrentLexicalScope();
+	protected LexicalScope getScannerContextInformation() {
+		return ((LexicalScopeScanner) scanner).getCurrentLexicalScope();
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScopeSca
 	}
 
 	@Override
-	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, LexicalScope nameScope, CtRole role) {
+	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, LexicalScope nameScope) {
 		CtExpression<?> target = targetedExpression.getTarget();
 		if (target == null) {
 			return;

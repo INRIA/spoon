@@ -23,8 +23,8 @@ package spoon.visualisation.spoon;
 
 import java.io.PrintStream;
 import java.util.List;
-import javafx.scene.text.TextFlow;
 import org.jetbrains.annotations.NotNull;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * The printer that prints the Spoon AST into a given stream
@@ -42,7 +42,7 @@ public class StreamPrinter extends SpoonElementVisitor {
 	}
 
 	@Override
-	public void accept(final int level, final @NotNull TextFlow label, final @NotNull List<Integer> lines) {
+	public void visitElement(final CtElement elt, final int level, final @NotNull TreeNodeLabel label, final @NotNull List<Integer> lines) {
 		if(level <= levelsToIgnore) {
 			return;
 		}

@@ -21,6 +21,7 @@ Then go into the `target/modules` folder and launch: `java --module-path . --add
 - [implicit elements masking](#feature-implicit-elements-masking)
 - [export as text](#feature-export-as-text)
 - [analysis level](#feature-analysis-level)
+- [show properties](#feature-show-properties)
 - [open JavaDoc](#feature-open-javadoc)
 - [one argument to load a Java file](#feature-one-argument-to-load-a-java-file)
 
@@ -69,6 +70,14 @@ The `auto` level tries to detect the level automatically by starting parsing the
 
 ![auto](doc/appAuto.png)
 
+## Feature: Show Properties
+
+When clicking on a tree node, the properties of the corresponding Spoon element are 
+displayed in tables in a dedicated panel.
+The path expression (`CPath`) that permits the selection of the selected Spoon element is 
+displayed at the top of the panel.   
+
+![auto](doc/props.png)
 
 ## Feature: Open Javadoc
 

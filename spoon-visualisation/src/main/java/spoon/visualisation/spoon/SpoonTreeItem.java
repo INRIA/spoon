@@ -23,6 +23,7 @@ package spoon.visualisation.spoon;
 
 import javafx.scene.control.TreeItem;
 import javafx.scene.text.TextFlow;
+import spoon.reflect.declaration.CtElement;
 
 /**
  * As JavaFX tree item cannot embed data, this tree item class embeds the code position
@@ -31,15 +32,17 @@ import javafx.scene.text.TextFlow;
 public class SpoonTreeItem extends TreeItem<TextFlow> {
 	public final int startPosition;
 	public final int endPosition;
+	public final CtElement elt;
 
 	/**
 	 * @param text The label of the tree item
 	 * @param startPosition The starting position in the code of the corresponding code element
 	 * @param endPosition The ending position in the code of the corresponding code element
 	 */
-	public SpoonTreeItem(final TextFlow text, final int startPosition, final int endPosition) {
+	public SpoonTreeItem(final TextFlow text, final int startPosition, final int endPosition, final CtElement elt) {
 		super(text);
 		this.startPosition = startPosition;
 		this.endPosition = endPosition;
+		this.elt = elt;
 	}
 }

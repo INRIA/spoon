@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  * This does not force some references to be implicit, and doesn't fix the wrong implicit which causes conflicts: this fixing done by {@link ImportConflictDetector}
  */
 @Experimental
-public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerScanner, ImportCleaner.Context> {
+public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 
 	private Comparator<CtImport> importComparator;
 	private boolean canAddImports = true;
@@ -58,12 +58,12 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 	}
 
 	@Override
-	protected Context getScannerContextInformation(ImportCleanerScanner scanner) {
-		return scanner.context;
+	protected Context getScannerContextInformation() {
+		return ((ImportCleanerScanner) scanner).context;
 	}
 
 	@Override
-	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, Context context, CtRole role) {
+	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, Context context) {
 		if (context == null) {
 			return;
 		}
@@ -122,7 +122,8 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 		}
 	}
 
-	class Context {
+	/** a set of imports for a given compilation unit */
+	public class Context {
 		private CtCompilationUnit compilationUnit;
 		private Map<String, CtImport> computedImports;
 		private String packageQName;
@@ -303,7 +304,10 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.ImportCleanerSca
 		return visitor.found;
 	}
 
-	class ImportCleanerScanner extends EarlyTerminatingScanner<Void> {
+	/**
+	 * A scanner that initializes context for a compilation unit.
+	 */
+	public class ImportCleanerScanner extends EarlyTerminatingScanner<Void> {
 		Context context;
 		@Override
 		protected void enter(CtElement e) {
