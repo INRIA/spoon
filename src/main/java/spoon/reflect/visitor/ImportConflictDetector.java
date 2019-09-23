@@ -65,6 +65,9 @@ public class ImportConflictDetector extends ImportAnalyzer<LexicalScope> {
 	@Override
 	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, LexicalScope nameScope) {
 		CtExpression<?> target = targetedExpression.getTarget();
+		if (target == null) {
+			return;
+		}
 		if (targetedExpression instanceof CtFieldAccess<?>) {
 			CtFieldAccess<?> fieldAccess = (CtFieldAccess<?>) targetedExpression;
 			if (target.isImplicit()) {

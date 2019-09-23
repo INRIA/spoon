@@ -6,6 +6,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
@@ -67,6 +68,12 @@ public class ForceImportProcessor extends ImportAnalyzer<LexicalScope> {
 	@Override
 	protected void handleTargetedExpression(CtTargetedExpression<?, ?> targetedExpression, LexicalScope nameScope) {
 		CtExpression<?> target = targetedExpression.getTarget();
+		if (target == null) {
+			if (targetedExpression instanceof CtFieldAccess && ((CtFieldAccess) targetedExpression).getVariable().getDeclaringType() != null) {
+				((CtFieldAccess) targetedExpression).getVariable().getDeclaringType().setSimplyQualified(true);
+			}
+			return;
+		}
 		if (target.isImplicit()) {
 			return;
 		}

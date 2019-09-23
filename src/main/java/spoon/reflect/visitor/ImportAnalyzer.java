@@ -9,7 +9,6 @@ import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
@@ -191,10 +190,6 @@ abstract class ImportAnalyzer<U> extends AbstractProcessor<CtElement> {
 
 		if (element instanceof CtTargetedExpression) {
 			CtTargetedExpression<?, ?> targetedExpression = (CtTargetedExpression<?, ?>) element;
-			CtExpression<?> target = targetedExpression.getTarget();
-			if (target == null) {
-				return;
-			}
 			handleTargetedExpression(targetedExpression, context);
 		} else if (element instanceof CtTypeReference<?>) {
 			//we have to visit only PURE CtTypeReference. No CtArrayTypeReference, CtTypeParameterReference, ...
