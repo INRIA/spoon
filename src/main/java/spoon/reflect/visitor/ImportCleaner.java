@@ -114,7 +114,8 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 		}
 	}
 
-	class Context {
+	/** a set of imports for a given compilation unit */
+	public class Context {
 		private CtCompilationUnit compilationUnit;
 		private Map<String, CtImport> computedImports;
 		private String packageQName;
@@ -295,7 +296,10 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 		return visitor.found;
 	}
 
-	class ImportCleanerScanner extends EarlyTerminatingScanner<Void> {
+	/**
+	 * A scanner that initializes context for a compilation unit.
+	 */
+	public class ImportCleanerScanner extends EarlyTerminatingScanner<Void> {
 		Context context;
 		@Override
 		protected void enter(CtElement e) {

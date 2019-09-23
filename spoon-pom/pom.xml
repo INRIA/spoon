@@ -198,17 +198,17 @@
                 <groupId>org.revapi</groupId>
                 <artifactId>revapi-maven-plugin</artifactId>
                 <!-- Lock down plugin version for build reproducibility -->
-                <version>0.9.5</version>
+                <version>0.11.1</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.revapi</groupId>
                         <artifactId>revapi-java</artifactId>
-                        <version>0.14.4</version>
+                        <version>0.19.1</version>
                     </dependency>
                     <dependency>
                         <groupId>org.revapi</groupId>
                         <artifactId>revapi-reporter-text</artifactId>
-                        <version>0.8.1</version>
+                        <version>0.10.1</version>
                     </dependency>
                 </dependencies>
                 <configuration>
@@ -216,7 +216,7 @@
                     <alwaysCheckForReleaseVersion>false</alwaysCheckForReleaseVersion>
                     <oldVersion>LATEST</oldVersion>
                     <analysisConfigurationFiles>
-                        <file>../revapi.json</file>
+                        <file>revapi.json</file>
                     </analysisConfigurationFiles>
                 </configuration>
             </plugin>
