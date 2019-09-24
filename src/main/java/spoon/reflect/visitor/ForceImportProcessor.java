@@ -77,11 +77,6 @@ public class ForceImportProcessor extends ImportAnalyzer<LexicalScope> {
 		if (target.isImplicit()) {
 			return;
 		}
-		if (target instanceof CtThisAccess) {
-			//force implicit this access
-			target.setImplicit(true);
-			return;
-		}
 		if (target instanceof CtTypeAccess) {
 			CtTypeAccess<?> typeAccess = (CtTypeAccess<?>) target;
 			//we might force import of static fields and methods here ... but it is not wanted by default
