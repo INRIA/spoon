@@ -126,9 +126,9 @@ public class JarLauncher extends Launcher {
 		}
 
 		//We call the decompiler only if jar has changed since last decompilation.
-		if (jar.lastModified() > decompiledSrc.lastModified()) {
+		//if (jar.lastModified() > decompiledSrc.lastModified()) {
 			decompile = true;
-		}
+		//}
 		init(pom);
 	}
 
