@@ -45,7 +45,7 @@ public class JarLauncherTest {
 		File pathToDecompile = new File(pathToDecompiledRoot,"src/main/java");
 		pathToDecompile.mkdirs();
 
-		JarLauncher launcher = new JarLauncher(jar.getAbsolutePath(), pathToDecompiledRoot.getPath(), pom.getAbsolutePath(), new CFRDecompiler(pathToDecompile));
+		JarLauncher launcher = new JarLauncher(jar.getAbsolutePath(), pathToDecompiledRoot.getPath(), pom.getAbsolutePath(), new CFRDecompiler());
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.buildModel();
 		CtModel model = launcher.getModel();
@@ -100,7 +100,7 @@ public class JarLauncherTest {
 		File pathToDecompile = new File(pathToDecompiledRoot,"src/main/java");
 		pathToDecompile.mkdirs();
 
-		JarLauncher launcher = new JarLauncher(jar.getAbsolutePath(), pathToDecompiledRoot.getPath(), pom.getAbsolutePath(), new FernflowerDecompiler(pathToDecompile));
+		JarLauncher launcher = new JarLauncher(jar.getAbsolutePath(), pathToDecompiledRoot.getPath(), pom.getAbsolutePath(), new FernflowerDecompiler());
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.buildModel();
 		CtModel model = launcher.getModel();
