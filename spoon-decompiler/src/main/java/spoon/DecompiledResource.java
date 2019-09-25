@@ -1,9 +1,5 @@
 package spoon;
 
-import org.apache.commons.io.FileUtils;
-import spoon.compiler.SpoonFile;
-import spoon.compiler.SpoonFolder;
-import spoon.compiler.SpoonResource;
 import spoon.decompiler.CFRDecompiler;
 import spoon.decompiler.Decompiler;
 import spoon.support.compiler.FileSystemFolder;
@@ -13,10 +9,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Creates a FileSystemFolder containing the decompiled byte from another input directory
+ */
 public class DecompiledResource extends FileSystemFolder {
 
 	/**

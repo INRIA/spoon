@@ -89,7 +89,13 @@ CtModel model = launcher.getModel();
 ```
 To avoid invoking maven over and over to build a classpath that has not changed, it is stored in a file `spoon.classpath.tmp` (or depending on the scope `spoon.classpath-app.tmp` or `spoon.classpath-test.tmp`) in the same folder as the `pom.xml`. This classpath will be refreshed is the file is deleted or if it has not been modified since 1h.
 
-## The JarLauncher class
+## Analyzing bytecode
+
+There are two ways to analyze bytecode with spoon:
+ * Bytecode resources can be added in the classpath, (some information will be extracted through reflection)
+ * A decompiler may be used, and then, the analyzes will be performed on the decompiled sources.
+
+### The JarLauncher class
 
 The Spoon `JarLauncher` ([JavaDoc](https://github.com/INRIA/spoon/blob/master/spoon-decompiler/src/main/java/spoon/JarLauncher.java)) is used to create the AST model from a jar.
 It automatically decompiles class files contained in the jar and analyzes them.
@@ -116,6 +122,13 @@ JarLauncher launcher = new JarLauncher("<path_to_jar>", "<path_to_output_src_dir
 Spoon provides two out of the shelf decompilers, CFR by default, and Fernflower. You can use the later like this:
 ```java
 JarLauncher launcher = new JarLauncher("<path_to_jar>", "<path_to_output_src_dir>", "<path_to_pom>", new FernflowerDecompiler(new File("<path_to_output_src_dir>/src/main/java")));
+```
+
+Optionally, the classic launcher can be used with `DecompiledResource` like this:
+
+```java
+Launcher launcher = new Launcher();
+launcher.addInputResource(new DecompiledResource(baseDir.getAbsolutePath(), new String[]{}, new CFRDecompiler(), pathToDecompiledRoot.getPath()));
 ```
 
 :warning: The `JarLauncher` feature (and all features relying on decompilation) are not included in `spoon-core` but in `spoon-decompiler`. If you want to use them you should declare a dependency to `spoon-decompiler`.
