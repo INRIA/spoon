@@ -107,7 +107,7 @@ Note that the default decompiler [CFR](http://www.benf.org/other/cfr/) can be ch
 ```java
 JarLauncher launcher = new JarLauncher("<path_to_jar>", "<path_to_output_src_dir>", "<path_to_pom>", new Decompiler() {
     @Override
-    public void decompile(String jarPath) {
+    public void decompile(String inputPath, String outputPath, String[] classpath) {
         //Custom decompiler call
     }
 });

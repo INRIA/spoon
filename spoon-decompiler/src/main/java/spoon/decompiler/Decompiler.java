@@ -24,8 +24,9 @@ public interface Decompiler {
 	/**
 	 * Sets the output directory for source generated.
 	 *
-	 * @param jarPath
-	 * 		Path to jar to be analyzed.
+	 * @param inputPath path to the bytecode (.jar, or .class file) to be decompiled.
+	 * @param outputPath path to directory to put decompied sources
+	 * @param classpath classpath of the byte code to be decompiled(Can be empty)
 	 */
-	void decompile(String jarPath);
+	void decompile(String inputPath, String outputPath, String[] classpath);
 }
