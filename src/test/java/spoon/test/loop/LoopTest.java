@@ -62,14 +62,14 @@ public class LoopTest {
 		// contract: the implicit block is not pretty printed
 		String expectedPrettyPrinted = //
 				"for (Condition<? super T> condition : conditions)" + nl //
-						+ "    conditions.add(notNull(condition));" + nl;
+						+ "    this.conditions.add(notNull(condition));" + nl;
 		assertEquals(expectedPrettyPrinted, ctLoop.prettyprint());
 
 
 		// contract: the implicit block is viewable in debug mode
 		String expectedDebug = //
 				"for (spoon.test.loop.testclasses.Condition<? super T> condition : conditions) {" + nl //
-						+ "    conditions.add(spoon.test.loop.testclasses.Join.notNull(condition));" + nl + "}";
+						+ "    this.conditions.add(spoon.test.loop.testclasses.Join.notNull(condition));" + nl + "}";
 
 		assertEquals(expectedDebug, ctLoop.toString());
 	}
