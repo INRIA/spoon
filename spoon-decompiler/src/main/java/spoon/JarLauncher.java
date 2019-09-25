@@ -125,10 +125,8 @@ public class JarLauncher extends Launcher {
 			throw new SpoonException("Jar " + jar.getPath() + " not found.");
 		}
 
-		//We call the decompiler only if jar has changed since last decompilation.
-		//if (jar.lastModified() > decompiledSrc.lastModified()) {
-			decompile = true;
-		//}
+
+		decompile = true;
 		init(pom);
 	}
 

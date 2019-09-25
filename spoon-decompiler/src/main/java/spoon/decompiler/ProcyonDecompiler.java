@@ -46,7 +46,11 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import spoon.support.Experimental;
+
+@Experimental
 public class ProcyonDecompiler implements Decompiler {
+
 	@Override
 	public void decompile(String inputPath, String outputPath, String[] classpath) {
 		try {
