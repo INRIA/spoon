@@ -18,6 +18,7 @@ package spoon.decompiler;
 
 import org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler;
 
+@Deprecated
 public class FernflowerDecompiler implements Decompiler {
 
 	@Override
