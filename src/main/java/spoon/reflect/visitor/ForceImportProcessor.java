@@ -8,7 +8,6 @@ package spoon.reflect.visitor;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtTargetedExpression;
-import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
