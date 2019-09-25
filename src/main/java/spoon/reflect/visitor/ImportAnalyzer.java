@@ -135,9 +135,6 @@ abstract class ImportAnalyzer<U> extends AbstractProcessor<CtElement> {
 						if (!((CtTypeReference) parent).getAccessType().equals(element)) {
 							return ScanningMode.SKIP_ALL;
 						}
-					} else {
-						//May be this can never happen
-						throw new SpoonException("Check this case. Is it relevant or not?");
 					}
 				}
 				if (role == CtRole.TYPE && element instanceof CtTypeReference) {
