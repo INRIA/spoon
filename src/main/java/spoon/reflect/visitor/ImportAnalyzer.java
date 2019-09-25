@@ -5,7 +5,6 @@
  */
 package spoon.reflect.visitor;
 
-import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtConstructorCall;
