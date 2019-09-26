@@ -21,7 +21,7 @@
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-decompiler</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
     <name>Spoon Decompiler</name>
     <description>Extension of spoon for bytecode through decompilation</description>
     <url>http://spoon.gforge.inria.fr/</url>
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>7.2.0-SNAPSHOT</version>
+            <version>7.6.0-SNAPSHOT</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jboss.windup.decompiler.fernflower/fernflower -->
         <dependency>
