@@ -169,7 +169,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			}
 			CtPackageReference packageRef = topLevelTypeRef.getPackage();
 			if (packageRef == null) {
-				throw new SpoonException("Type reference has no package");
+				return;
 			}
 			if ("java.lang".equals(packageRef.getQualifiedName())) {
 				//java.lang is always imported implicitly. Ignore it
