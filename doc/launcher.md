@@ -67,11 +67,11 @@ CtModel model = launcher.getModel();
 
 // list all packages of the model
 for(CtPackage p : model.getAllPackages()) {
-  System.out.println("package: "+p.getQualifiedName());
+  System.out.println("package: " + p.getQualifiedName());
 }
 // list all classes of the model
 for(CtType<?> s : model.getAllTypes()) {
-  System.out.println("class: "+s.getQualifiedName());
+  System.out.println("class: " + s.getQualifiedName());
 }
 
 ```
@@ -92,6 +92,7 @@ To avoid invoking maven over and over to build a classpath that has not changed,
 ## Analyzing bytecode
 
 There are two ways to analyze bytecode with spoon:
+
  * Bytecode resources can be added in the classpath, (some information will be extracted through reflection)
  * A decompiler may be used, and then, the analyzes will be performed on the decompiled sources.
 
@@ -111,27 +112,37 @@ CtModel model = launcher.getModel();
 Note that the default decompiler [CFR](http://www.benf.org/other/cfr/) can be changed by providing an instance implementing `spoon.decompiler.Decompiler` as a parameter.
 
 ```java
-JarLauncher launcher = new JarLauncher("<path_to_jar>", "<path_to_output_src_dir>", "<path_to_pom>", new Decompiler() {
-    @Override
-    public void decompile(String inputPath, String outputPath, String[] classpath) {
-        //Custom decompiler call
+JarLauncher launcher = new JarLauncher("<path_to_jar>", "<path_to_output_src_dir>", "<path_to_pom>",
+    new Decompiler() {
+        @Override
+        public void decompile(String inputPath, String outputPath, String[] classpath) {
+            //Custom decompiler call
+        }
     }
-});
+);
 ```
 
 Spoon provides two out of the shelf decompilers, CFR by default, and Fernflower. You can use the later like this:
+
 ```java
-JarLauncher launcher = new JarLauncher("<path_to_jar>", "<path_to_output_src_dir>", "<path_to_pom>", new FernflowerDecompiler(new File("<path_to_output_src_dir>/src/main/java")));
+JarLauncher launcher = new JarLauncher(
+        "<path_to_jar>",
+        "<path_to_output_src_dir>",
+        "<path_to_pom>",
+        new FernflowerDecompiler(new File("<path_to_output_src_dir>/src/main/java"))
+);
 ```
 
 Optionally, the classic launcher can be used with `DecompiledResource` like this:
 
 ```java
 Launcher launcher = new Launcher();
-launcher.addInputResource(new DecompiledResource(baseDir.getAbsolutePath(), new String[]{}, new CFRDecompiler(), pathToDecompiledRoot.getPath()));
+launcher.addInputResource(
+    new DecompiledResource(baseDir.getAbsolutePath(), new String[]{}, new CFRDecompiler(), pathToDecompiledRoot.getPath())
+);
 ```
 
-:warning: The `JarLauncher` feature (and all features relying on decompilation) are not included in `spoon-core` but in `spoon-decompiler`. If you want to use them you should declare a dependency to `spoon-decompiler`.
+**Warning** The `JarLauncher` feature (and all features relying on decompilation) are not included in `spoon-core` but in `spoon-decompiler`. If you want to use them you should declare a dependency to `spoon-decompiler`.
 
 ## About the classpath
 
