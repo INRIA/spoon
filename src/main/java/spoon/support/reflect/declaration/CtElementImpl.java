@@ -7,7 +7,6 @@ package spoon.support.reflect.declaration;
 
 import org.apache.log4j.Logger;
 import spoon.Launcher;
-import spoon.compiler.Environment;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
@@ -303,9 +302,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 				clone.setParent(this.getParent());
 			}
 
-			if (getFactory().getEnvironment().getPrettyPrintingMode().equals(Environment.PRETTY_PRINTING_MODE.AUTOIMPORT)) {
-				printer.applyPreProcessors(clone);
-			}
+			printer.applyPreProcessors(clone);
 
 			printer.scan(clone);
 		} catch (ParentNotInitializedException ignore) {
