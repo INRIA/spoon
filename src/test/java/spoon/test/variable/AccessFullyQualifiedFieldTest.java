@@ -42,7 +42,7 @@ public class AccessFullyQualifiedFieldTest {
 
 	private String buildResourceAndReturnResult(String pathResource, String output) {
 		Launcher spoon = new Launcher();
-		//spoon.setArgs(new String[]{"--with-imports"});
+		spoon.setArgs(new String[]{"--with-imports"});
 		spoon.addInputResource(pathResource);
 		spoon.setSourceOutputDirectory(output);
 		spoon.run();
