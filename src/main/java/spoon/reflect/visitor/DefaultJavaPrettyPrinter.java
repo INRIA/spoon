@@ -201,9 +201,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	protected CtCompilationUnit sourceCompilationUnit;
 
 	/**
-	 * Ignores isImplicit attribute on model and always prints fully qualified names
+	 * always prints fully qualified names by ignoring  the isImplicit attribute on nodes
+	 * Default value is true for backward compatibility
 	 */
-	protected boolean ignoreImplicit = false;
+	protected boolean forceFullyQualified = true;
 
 	public boolean inlineElseIf = true;
 
@@ -774,7 +775,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return true;
 		}
 		//target is implicit, we should not print it
-		if (!ignoreImplicit) {
+		if (!forceFullyQualified) {
 			//fully qualified mode is not forced so we should not print implicit target
 			return false;
 		}
@@ -936,11 +937,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private void writeImportReference(CtTypeReference<?> ref) {
-		boolean prevIgnoreImplicit = ignoreImplicit;
+		boolean prevIgnoreImplicit = forceFullyQualified;
 		// force fqn, import are never short
-		ignoreImplicit = true;
+		forceFullyQualified = true;
 		visitCtTypeReference(ref, false);
-		ignoreImplicit = prevIgnoreImplicit;
+		forceFullyQualified = prevIgnoreImplicit;
 	}
 
 
@@ -1255,7 +1256,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		} else {
 			// It's a method invocation
-			if (invocation.getTarget() != null && (ignoreImplicit || !invocation.getTarget().isImplicit())) {
+			if (invocation.getTarget() != null && (forceFullyQualified || !invocation.getTarget().isImplicit())) {
 				try (Writable _context = context.modify()) {
 					if (invocation.getTarget() instanceof CtTypeAccess) {
 						_context.ignoreGenerics(true);
@@ -1733,7 +1734,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private boolean printQualified(CtTypeReference<?> ref) {
-		return ignoreImplicit || !ref.isSimplyQualified();
+		return forceFullyQualified || !ref.isSimplyQualified();
 		}
 
 
@@ -1754,7 +1755,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
-		if (!ignoreImplicit && typeAccess.isImplicit()) {
+		if (!forceFullyQualified && typeAccess.isImplicit()) {
 			return;
 		}
 		enterCtExpression(typeAccess);
@@ -1819,7 +1820,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			//always print explicit type refs
 			return true;
 		}
-		if (ignoreImplicit) {
+		if (forceFullyQualified) {
 			//print access type always if fully qualified mode is forced
 			return true;
 		}
@@ -2067,9 +2068,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
-	 * @param ignoreImplicit true to ignore `isImplicit` attribute on model and always print fully qualified names
+	 * @param forceFullyQualified true to ignore `isImplicit` attribute on model and always print fully qualified names
 	 */
-	public void setIgnoreImplicit(boolean ignoreImplicit) {
-		this.ignoreImplicit = ignoreImplicit;
+	public void setForceFullyQualified(boolean forceFullyQualified) {
+		this.forceFullyQualified = forceFullyQualified;
 }
 }

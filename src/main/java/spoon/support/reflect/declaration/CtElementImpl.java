@@ -292,8 +292,11 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public String toString() {
 		DefaultJavaPrettyPrinter printer = (DefaultJavaPrettyPrinter) getFactory().getEnvironment().createPrettyPrinter();
-		if (!getFactory().getEnvironment().getPrettyPrintingMode().equals(Environment.PRETTY_PRINTING_MODE.AUTOIMPORT)) {
-			printer.setIgnoreImplicit(true);
+		if (getFactory().getEnvironment().getPrettyPrintingMode().equals(Environment.PRETTY_PRINTING_MODE.AUTOIMPORT)) {
+			printer.setForceFullyQualified(false);
+		} else {
+			// in debug and FQDN mode
+			printer.setForceFullyQualified(true);
 		}
 		String errorMessage = "";
 		try {
