@@ -292,9 +292,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public String toString() {
 		DefaultJavaPrettyPrinter printer = (DefaultJavaPrettyPrinter) getFactory().getEnvironment().createPrettyPrinter();
-		if (getFactory().getEnvironment().getPrettyPrintingMode().equals(Environment.PRETTY_PRINTING_MODE.AUTOIMPORT)) {
-			printer.setForceFullyQualified(false);
-		}
 
 		String errorMessage = "";
 		try {
@@ -306,7 +303,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 				clone.setParent(this.getParent());
 			}
 
-			if (!getFactory().getEnvironment().getPrettyPrintingMode().equals(Environment.PRETTY_PRINTING_MODE.DEBUG)) {
+			if (getFactory().getEnvironment().getPrettyPrintingMode().equals(Environment.PRETTY_PRINTING_MODE.AUTOIMPORT)) {
 				printer.applyPreProcessors(clone);
 			}
 
