@@ -42,6 +42,7 @@ public class AccessFullyQualifiedFieldTest {
 
 	private String buildResourceAndReturnResult(String pathResource, String output) {
 		Launcher spoon = new Launcher();
+		//spoon.setArgs(new String[]{"--with-imports"});
 		spoon.addInputResource(pathResource);
 		spoon.setSourceOutputDirectory(output);
 		spoon.run();
@@ -63,7 +64,7 @@ public class AccessFullyQualifiedFieldTest {
 		String output = "target/spooned-" + this.getClass().getSimpleName() + "-Field/";
 		String result = this.buildResourceAndReturnResult(pathResource, output);
 
-		assertTrue("The java file should contain import for Launcher ", result.contains("import spoon.Launcher;"));
+		assertTrue("The java file should contain import for Launcher", result.contains("import spoon.Launcher;"));
 		assertTrue("The xx variable is attributed with Launcher.SPOONED_CLASSES", result.contains("xx = Launcher.SPOONED_CLASSES"));
 		canBeBuilt(output, 7);
 	}
@@ -123,6 +124,7 @@ public class AccessFullyQualifiedFieldTest {
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/MultiBurritos.java";
 
 		Launcher spoon = new Launcher();
+		spoon.setArgs(new String[]{"--with-imports"});
 		spoon.addInputResource(pathResource);
 		spoon.setSourceOutputDirectory(output);
 		spoon.run();

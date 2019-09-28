@@ -184,6 +184,7 @@ public class ImportTest {
 
 		expected = "org.yaml.snakeyaml.representer.Representer.RepresentMap";
 		assertEquals(expected, innerClass.getSuperclass().toStringDebug());
+		assertEquals("Representer.RepresentMap", innerClass.getSuperclass().toString());
 	}
 
 	@Test
