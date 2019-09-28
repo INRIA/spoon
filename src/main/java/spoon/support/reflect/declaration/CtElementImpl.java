@@ -294,10 +294,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		DefaultJavaPrettyPrinter printer = (DefaultJavaPrettyPrinter) getFactory().getEnvironment().createPrettyPrinter();
 		if (getFactory().getEnvironment().getPrettyPrintingMode().equals(Environment.PRETTY_PRINTING_MODE.AUTOIMPORT)) {
 			printer.setForceFullyQualified(false);
-		} else {
-			// in debug and FQDN mode
-			printer.setForceFullyQualified(true);
 		}
+
 		String errorMessage = "";
 		try {
 			// now that pretty-printing can change the model, we only do it on a clone
@@ -308,7 +306,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 				clone.setParent(this.getParent());
 			}
 
-			if (getFactory().getEnvironment().getPrettyPrintingMode().equals(Environment.PRETTY_PRINTING_MODE.AUTOIMPORT)) {
+			if (!getFactory().getEnvironment().getPrettyPrintingMode().equals(Environment.PRETTY_PRINTING_MODE.DEBUG)) {
 				printer.applyPreProcessors(clone);
 			}
 
