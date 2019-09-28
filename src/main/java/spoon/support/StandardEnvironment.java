@@ -654,7 +654,7 @@ private transient  ClassLoader inputClassloader;
 				//compute final imports
 				new ImportCleaner().setImportComparator(new DefaultImportComparator())
 		));
-		printer.setForceFullyQualified(false);
+		printer.setIgnoreImplicit(false);
 		printer.setPreprocessors(preprocessors);
 		return printer;
 	}
@@ -682,7 +682,7 @@ private transient  ClassLoader inputClassloader;
 						//compute final imports
 						new ImportCleaner().setImportComparator(new DefaultImportComparator())
 				));
-				printer.setForceFullyQualified(false);
+				printer.setIgnoreImplicit(false);
 				printer.setPreprocessors(preprocessors);
 				return printer;
 			}

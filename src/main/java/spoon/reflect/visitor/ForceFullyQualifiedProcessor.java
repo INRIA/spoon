@@ -41,11 +41,6 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScope> {
 				//do not force FQ names in this access
 				return;
 			}
-			if (isTypeReferenceToEnclosingType(nameScope, reference)) {
-				//it is the reference to the enclosing class
-				//do not use FQ names for that
-				// return;
-			}
 			if (isSupertypeOfNewClass(reference)) {
 				//it is a super type of new anonymous class
 				//do not use FQ names for that
