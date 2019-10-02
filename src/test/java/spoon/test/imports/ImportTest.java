@@ -183,7 +183,8 @@ public class ImportTest {
 		assertEquals(expected, innerClass.getReference().toString());
 
 		expected = "org.yaml.snakeyaml.representer.Representer.RepresentMap";
-		assertEquals(expected, innerClass.getSuperclass().toString());
+		assertEquals(expected, innerClass.getSuperclass().toStringDebug());
+		assertEquals("Representer.RepresentMap", innerClass.getSuperclass().toString());
 	}
 
 	@Test
@@ -499,7 +500,7 @@ public class ImportTest {
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass$InnerClassProtected", innerClassProtectedByQualifiedName.getQualifiedName()); 
 		assertEquals("spoon.test.imports.testclasses.internal.ChildClass", innerClassProtectedByGetSuperClass.getAccessType().getQualifiedName());
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass", innerClassProtectedByQualifiedName.getAccessType().getQualifiedName());
-		assertEquals("spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected", innerClassProtectedByGetSuperClass.toString());
+		assertEquals("ChildClass.InnerClassProtected", innerClassProtectedByGetSuperClass.toString());
 		assertEquals("spoon.test.imports.testclasses.internal.SuperClass.InnerClassProtected", innerClassProtectedByQualifiedName.toString());
 	}
 

@@ -678,7 +678,7 @@ public class TypeReferenceTest {
 		typeRef.getPackage().setImplicit(true);
 		assertTrue(typeRef.isSimplyQualified());
 		assertTrue(typeRef.getPackage().isImplicit());
-		assertEquals("Parent", typeRef.toStringDebug());
+		assertEquals("spoon.test.reference.testclasses.Parent", typeRef.toString());
 	}
 
 	@Test
