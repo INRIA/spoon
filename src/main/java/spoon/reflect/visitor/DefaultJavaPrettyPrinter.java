@@ -201,8 +201,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	protected CtCompilationUnit sourceCompilationUnit;
 
 	/**
-	 * always prints fully qualified names by ignoring  the isImplicit attribute on nodes
-	 * Default value is true for backward compatibility
+	 * If true: always prints fully qualified names by ignoring the isImplicit attribute of AST nodes
+	 * Default value is "true" for backward compatibility.
+	 * If false: obey "implicit" directive
 	 */
 	protected boolean ignoreImplicit = true;
 
