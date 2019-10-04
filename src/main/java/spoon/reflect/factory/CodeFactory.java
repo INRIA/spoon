@@ -199,7 +199,7 @@ public class CodeFactory extends SubFactory {
 		CtNewClass<T> ctNewClass = factory.Core().createNewClass();
 		CtConstructor<T> constructor = ((CtClass) superClass).getConstructor(Arrays.stream(parameters).map(x -> x.getType()).toArray(CtTypeReference[]::new));
 		if (constructor == null) {
-			throw new SpoonException("no appropriate constructor for these parameters " + parameters.toString());
+			throw new SpoonException("no appropriate constructor for these parameters " + Arrays.toString(parameters));
 		}
 		CtExecutableReference<T> executableReference = constructor.getReference();
 		ctNewClass.setArguments(Arrays.asList(parameters));
