@@ -18,9 +18,16 @@ package spoon.processing;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.compiler.Environment;
+import spoon.reflect.declaration.CtType;
+import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.processing.processors.MyProcessor;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -50,5 +57,32 @@ public class ProcessingTest {
 		launcher.addProcessor("spoon.processing.SpoonTagger");
 		launcher.run();
 		assertTrue(new File(launcher.getModelBuilder().getSourceOutputDirectory() + "/spoon/Spoon.java").exists());
+	}
+
+	private static class SimpleProcessor extends AbstractProcessor<CtType<?>> {
+		@Override
+		public void process(CtType<?> element) {
+			System.out.println(">> Hello: " + element.getSimpleName() + " <<");
+		}
+	}
+
+	@Test
+	public void testStaticImport() throws IOException {
+		final Launcher l = new Launcher();
+		Environment e = l.getEnvironment();
+
+		String[] sourcePath = new String[0];
+		e.setNoClasspath(false);
+		e.setSourceClasspath(sourcePath);
+		e.setAutoImports(true);
+		e.setPrettyPrinterCreator(() -> new SniperJavaPrettyPrinter(l.getEnvironment()));
+
+		Path path = Files.createTempDirectory("emptydir");
+		l.addInputResource("src/test/resources/compilation3/A.java");
+		l.addInputResource("src/test/resources/compilation3/subpackage/B.java");
+		l.setSourceOutputDirectory(path.toFile());
+		SimpleProcessor simpleProcessor = new SimpleProcessor();
+		l.addProcessor(simpleProcessor);
+		l.run();
 	}
 }
