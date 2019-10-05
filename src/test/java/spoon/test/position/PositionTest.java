@@ -88,6 +88,7 @@ import spoon.test.position.testclasses.FooForEach;
 import spoon.test.position.testclasses.FooGeneric;
 import spoon.test.position.testclasses.FooInterface;
 import spoon.test.position.testclasses.FooLabel;
+import spoon.test.position.testclasses.FooLambda;
 import spoon.test.position.testclasses.FooMethod;
 import spoon.test.position.testclasses.FooStatement;
 import spoon.test.position.testclasses.FooSwitch;
@@ -1395,5 +1396,19 @@ public class PositionTest {
 
 		assertTrue("Some Spoon elements have an invalid line position",
 			listOfBadPositionElements.stream().allMatch(elt -> elt.getPosition().getLine() == 1));
+	}
+
+	@Test
+	public void testLambdaParameterPosition() {
+		// contract: position of lambda parameter is correct
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/FooLambda.java"));
+		final CtType<?> foo = build.Type().get(FooLambda.class);
+		
+		String classContent = getClassContent(foo);
+		
+		CtReturn<?> retStmt = (CtReturn<?>) foo.getMethodsByName("m").get(0).getBody().getStatement(0);
+		CtLambda<?> lambdaExpr = (CtLambda<?>) retStmt.getReturnedExpression();
+		CtParameter<?> param = lambdaExpr.getParameters().get(0);
+		assertEquals("i", contentAtPosition(classContent, param.getPosition()));
 	}
 }
