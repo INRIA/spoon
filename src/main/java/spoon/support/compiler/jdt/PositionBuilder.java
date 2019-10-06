@@ -224,8 +224,10 @@ public class PositionBuilder {
 
 			// Handle lambda parameters without explicit type
 			if (variableDeclaration instanceof Argument && variableDeclaration.type == null) {
-				declarationSourceStart = findPrevNonWhitespace(contents, 0, declarationSourceStart - 1);
-				declarationSourceEnd = findNextNonWhitespace(contents, contents.length - 1, declarationSourceEnd + 1);
+				//declarationSourceStart = findPrevNonWhitespace(contents, 0, declarationSourceStart - 1);
+				//declarationSourceEnd = findNextNonWhitespace(contents, contents.length - 1, declarationSourceEnd + 1);
+				declarationSourceStart = findPrevNonWhitespace(contents, 0, declarationSourceStart);
+				declarationSourceEnd = findNextNonWhitespace(contents, contents.length - 1, declarationSourceEnd);
 			}
 
 			if (modifiersSourceStart <= 0) {
