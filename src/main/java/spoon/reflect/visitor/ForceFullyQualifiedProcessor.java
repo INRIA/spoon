@@ -41,7 +41,7 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScope> {
 				//do not force FQ names in this access
 				return;
 			}
-			if (role == CtRole.ACCESSED_TYPE) {
+			if (isTypeReferenceToEnclosingType(nameScope, reference) && role == CtRole.ACCESSED_TYPE) {
 				// this is handled in #handleTargetedExpression below
 				return;
 			}

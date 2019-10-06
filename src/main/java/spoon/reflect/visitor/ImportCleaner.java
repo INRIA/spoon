@@ -101,7 +101,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 					context.addImport(fieldAccess.getVariable());
 				}
 			} else {
-				throw new SpoonException("TODO");
+				throw new SpoonException(targetedExpression.toString());
 			}
 		}
 
