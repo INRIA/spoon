@@ -41,6 +41,11 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScope> {
 				//do not force FQ names in this access
 				return;
 			}
+			if (isTypeReferenceToEnclosingType(nameScope, reference)) {
+				//it is the reference to the enclosing class
+				//do not use FQ names for that
+				return;
+			}
 			if (isSupertypeOfNewClass(reference)) {
 				//it is a super type of new anonymous class
 				//do not use FQ names for that
@@ -54,7 +59,11 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScope> {
 
 	protected boolean isTypeReferenceToEnclosingType(LexicalScope nameScope, CtTypeReference<?> reference) {
 		CtType<?> enclosingType = reference.getParent(CtType.class);
-		return enclosingType == null ? false : reference.getQualifiedName().equals(enclosingType.getQualifiedName());
+		if (enclosingType == null) {
+			return false;
+		}
+
+		return reference.getParent() instanceof CtTypeAccess && reference.getQualifiedName().equals(enclosingType.getQualifiedName());
 	}
 
 	private boolean isSupertypeOfNewClass(CtTypeReference<?> typeRef) {
