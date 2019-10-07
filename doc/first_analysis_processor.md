@@ -62,11 +62,7 @@ any elements of the AST (all classes in the Spoon meta model which extends `CtEl
 
 ## Apply the processor
 
-First, compile your processor. You can use javac in command line to generate the `.class` file.
-
-    javac -cp spoon-core-{{site.spoon_release}}-jar-with-dependencies.jar processors/CatchProcessor.java
-
-Then we execute Spoon as follows to analyze all catch blocks in Java files that are in `/path/to/src/of/your/project`:
+First, compile your processor. You can use javac in command line to generate the `CatchProcessor.class` file. Then we execute Spoon as follows to analyze all catch blocks in Java files that are in `/path/to/src/of/your/project`:
 
 ```bash
 $ java -classpath /path/to/binary/of/your/processor.jar:spoon-core-{{site.spoon_release}}-jar-with-dependencies.jar spoon.Launcher -i /path/to/src/of/your/project -p processors.CatchProcessor
