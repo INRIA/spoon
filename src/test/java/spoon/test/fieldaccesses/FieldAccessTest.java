@@ -437,7 +437,10 @@ public class FieldAccessTest {
 
 		// now static fields are used with the name of the parent class
 		assertEquals("spoon.test.fieldaccesses.testclasses.A.myField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(0).toString());
-		assertEquals("spoon.test.fieldaccesses.testclasses.B.finalField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(1).toString());
+
+		// contract: accesses to final fields in static initializers are never fully-qualified
+		// this was initial correct, and the regression was introduced in 85a3ab11f6e5caacd09f8402d0b674310c9d8ce5 on Oct 9 2019
+		assertEquals("finalField", aClass.getElements(new TypeFilter<>(CtFieldWrite.class)).get(1).toString());
 	}
 	@Test
 	public void testFieldAccessAutoExplicit() throws Exception {
