@@ -103,6 +103,7 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScope> {
 				//do not use FQ names for that
 				return;
 			}
+			typeAccess.getAccessedType().setImplicit(false);
 		}
 		target.setImplicit(false);
 	}
