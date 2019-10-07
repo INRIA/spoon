@@ -10,6 +10,7 @@ import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
@@ -41,8 +42,8 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScope> {
 				//do not force FQ names in this access
 				return;
 			}
-			if (isTypeReferenceToEnclosingType(nameScope, reference) && role == CtRole.ACCESSED_TYPE) {
-				// this is handled in #handleTargetedExpression below
+
+			if (isTypeReferenceToEnclosingType(nameScope, reference) && reference.getParent(CtAnonymousExecutable.class) != null) {
 				return;
 			}
 			if (isSupertypeOfNewClass(reference)) {
@@ -103,7 +104,6 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScope> {
 				//do not use FQ names for that
 				return;
 			}
-			typeAccess.getAccessedType().setImplicit(false);
 		}
 		target.setImplicit(false);
 	}
