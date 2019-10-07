@@ -45,7 +45,6 @@ public class JDTBuilderImpl implements JDTBuilder {
 	public JDTBuilder sources(SourceOptions<?> options) {
 		hasSources = true;
 		args.addAll(Arrays.asList(options.build()));
-		System.out.println(args);
 		return this;
 	}
 

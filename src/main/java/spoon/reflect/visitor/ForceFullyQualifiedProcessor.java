@@ -44,6 +44,8 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScope> {
 			}
 
 			if (isTypeReferenceToEnclosingType(nameScope, reference) && reference.getParent(CtAnonymousExecutable.class) != null) {
+				// oer the java compiler, we must keep short version of field accesses
+				// in static blocks
 				return;
 			}
 			if (isSupertypeOfNewClass(reference)) {
