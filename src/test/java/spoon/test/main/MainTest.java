@@ -23,7 +23,6 @@ import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 import spoon.ContractVerifier;
 import spoon.Launcher;
-import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 
@@ -60,9 +59,9 @@ public class MainTest {
 
 		launcher = new Launcher();
 
-		launcher.setArgs(new String[]{
+		launcher.setArgs(new String[] {
 				"-o", "target/spooned",
-				"--destination", "target/spooned-build",
+				"--destination","target/spooned-build",
 				"--source-classpath", systemClassPath,
 				"--compile", // compiling Spoon code itself on the fly
 				"--compliance", "8",
@@ -104,8 +103,8 @@ public class MainTest {
 				.filter(path -> !filePathContains(path, "Tapas"))
 
 				.forEach(x -> {
-							launcher.addInputResource(x.toString());
-						}
+					launcher.addInputResource(x.toString());
+					}
 				);
 
 		launcher.buildModel();
@@ -115,7 +114,7 @@ public class MainTest {
 		// we verify all the contracts
 		new ContractVerifier(rootPackage).verify();
 	}
-
+	
 	private boolean filePathContains(Path path, String substring) {
 		//normalize path separators to linux, to simplify searching for substring
 		return path.toFile().getAbsolutePath().replace('\\', '/').contains(substring);
@@ -126,7 +125,7 @@ public class MainTest {
 	public void testTest() {
 		// the tests should be spoonable
 		Launcher launcher = new Launcher();
-		launcher.run(new String[]{
+		launcher.run(new String[] {
 				"-i", "src/test/java",
 				"-o", "target/spooned",
 				"--noclasspath",
@@ -162,11 +161,11 @@ public class MainTest {
 		}
 		String systemClassPath = classpath.substring(0, classpath.length() - 1);
 
-		spoon.Launcher.main(new String[]{
+		spoon.Launcher.main(new String[] {
 				"-i", "src/test/resources/no-copy-resources/",
 				"-o", "target/spooned-with-resources",
-				"--destination", "target/spooned-build",
-				"--source-classpath", systemClassPath, "--compile"});
+				"--destination","target/spooned-build",
+				"--source-classpath", systemClassPath, "--compile" });
 
 		assertTrue(new File("src/test/resources/no-copy-resources/package.html").exists());
 		assertTrue(new File("target/spooned-with-resources/package.html").exists());
@@ -187,12 +186,12 @@ public class MainTest {
 		}
 		String systemClassPath = classpath.substring(0, classpath.length() - 1);
 
-		spoon.Launcher.main(new String[]{
+		spoon.Launcher.main(new String[] {
 				"-i", "src/test/resources/no-copy-resources",
 				"-o", "target/spooned-without-resources",
-				"--destination", "target/spooned-build",
+				"--destination","target/spooned-build",
 				"--source-classpath", systemClassPath, "--compile",
-				"-r"});
+				"-r" });
 
 		assertTrue(new File("src/test/resources/no-copy-resources/package.html").exists());
 		assertFalse(new File("target/spooned-without-resources/package.html").exists());
@@ -220,17 +219,6 @@ public class MainTest {
 			}
 		});
 
-		new Launcher().run(new String[]{});
+		new Launcher().run(new String[] { });
 	}
-
-	@Test
-	public void testMoshi() {
-		Launcher spoon = new Launcher();
-		spoon.getEnvironment().setPrettyPrintingMode(Environment.PRETTY_PRINTING_MODE.FULLYQUALIFIED);
-		spoon.addInputResource("moshi/moshi/src/main/java");
-		spoon.getModelBuilder().setSourceClasspath("/home/martin/.m2/repository/com/squareup/okio/okio/1.11.0/okio-1.11.0.jar","/home/martin/.m2/repository/junit/junit/4.12/junit-4.12.jar","/home/martin/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar","/home/martin/.m2/repository/org/assertj/assertj-core/1.7.0/assertj-core-1.7.0.jar");
-		spoon.getEnvironment().setShouldCompile(true);
-		spoon.run();
-	}
-
 }
