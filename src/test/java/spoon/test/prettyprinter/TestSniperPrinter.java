@@ -168,6 +168,24 @@ public class TestSniperPrinter {
 		});
 	}
 
+	@Test
+	public void testBinaryOperatorElement() throws Exception {
+		final String[] args = {
+				"-i", "/Users/haris/Documents/Skola/Exjobb/programming/spoon_fork/src/test/java/spoon/test/processing/testclasses/ElementScan.java",
+				"-o", "target/spooned/",
+				"-p", "spoon.test.processing.processors.ElementScanProcessor",
+				"--compile"
+		};
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
+					return new SniperJavaPrettyPrinter(launcher.getEnvironment());
+				}
+		);
+		launcher.setArgs(args);
+		launcher.run();
+	}
+
 	/**
 	 * 1) Runs spoon using sniper mode,
 	 * 2) runs `typeChanger` to modify the code,
