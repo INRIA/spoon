@@ -70,8 +70,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.comment.testclasses.BlockComment;
-import spoon.test.comment.testclasses.Comment1;
-import spoon.test.position.testclasses.AnnonymousClassNewIface;
+import spoon.test.comment.testclasses.Comment1;import spoon.test.position.testclasses.AnnonymousClassNewIface;
 import spoon.test.position.testclasses.ArrayArgParameter;
 import spoon.test.position.testclasses.CatchPosition;
 import spoon.test.position.testclasses.CompilationUnitComments;
@@ -88,6 +87,7 @@ import spoon.test.position.testclasses.FooForEach;
 import spoon.test.position.testclasses.FooGeneric;
 import spoon.test.position.testclasses.FooInterface;
 import spoon.test.position.testclasses.FooLabel;
+import spoon.test.position.testclasses.FooLambda;
 import spoon.test.position.testclasses.FooMethod;
 import spoon.test.position.testclasses.FooStatement;
 import spoon.test.position.testclasses.FooSwitch;
@@ -97,6 +97,7 @@ import spoon.test.position.testclasses.PositionParameterTypeWithReference;
 import spoon.test.position.testclasses.PositionTry;
 import spoon.test.position.testclasses.SomeEnum;
 import spoon.test.position.testclasses.TypeParameter;
+import spoon.test.position.testclasses.MoreLambda;
 import spoon.test.query_function.testclasses.VariableReferencesModelTest;
 import spoon.testing.utils.ModelUtils;
 
@@ -1395,5 +1396,35 @@ public class PositionTest {
 
 		assertTrue("Some Spoon elements have an invalid line position",
 			listOfBadPositionElements.stream().allMatch(elt -> elt.getPosition().getLine() == 1));
+	}
+
+	@Test
+	public void testLambdaParameterPosition() {
+		// contract: position of lambda parameter is correct
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/FooLambda.java"));
+		final CtType<?> foo = build.Type().get(FooLambda.class);
+
+		String classContent = getClassContent(foo);
+
+		CtReturn<?> retStmt = (CtReturn<?>) foo.getMethodsByName("m").get(0).getBody().getStatement(0);
+		CtLambda<?> lambdaExpr = (CtLambda<?>) retStmt.getReturnedExpression();
+		CtParameter<?> param = lambdaExpr.getParameters().get(0);
+		assertEquals("i", contentAtPosition(classContent, param.getPosition()));
+	}
+
+	@Test
+	public void testLambdaParameterPosition1() {
+		// contract: position of lambda parameter is correct
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/MoreLambda.java"));
+		final CtType<?> foo = build.Type().get(MoreLambda.class);
+
+		String classContent = getClassContent(foo);
+
+		List<CtLambda>  lambdas = foo.getElements(new TypeFilter(CtLambda.class));
+		lambdas.stream().forEach(
+				l -> l.getParameters().stream().forEach(
+						p -> assertEquals(((CtParameter) p).getSimpleName(), contentAtPosition(classContent, ((CtParameter) p).getPosition()))
+				)
+		);
 	}
 }
