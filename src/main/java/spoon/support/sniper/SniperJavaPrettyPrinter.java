@@ -13,6 +13,7 @@ import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
@@ -173,6 +174,46 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 				}
 			}
 		});
+	}
+
+
+	/**
+	 * Ugly hack to start printing an arbitrary element of the ast, that is a clone.
+	 * @param element clone to print
+	 * @param original its original
+	 * @return this
+	 */
+	public SniperJavaPrettyPrinter scanClone(CtElement element, CtElement original) {
+		if (element != null) {
+			if (element.getPosition().getCompilationUnit() != null) {
+				CompilationUnit compilationUnit = element.getPosition().getCompilationUnit();
+
+				//use line separator of origin source file
+				setLineSeparator(detectLineSeparator(compilationUnit.getOriginalSourceCode()));
+
+				CtRole role = getRoleInCompilationUnit(original);
+
+				runInContext(new SourceFragmentContextList(mutableTokenWriter,
+								element,
+								Collections.singletonList(original.getOriginalSourceFragment()),
+								new ChangeResolver(getChangeCollector(), element)),
+						() -> {
+							onPrintEvent(new ElementPrinterEvent(role, element) {
+								@Override
+								public void print(Boolean muted) {
+									superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE, muted);
+								}
+								@Override
+								public void printSourceFragment(SourceFragment fragment, Boolean isModified) {
+									scanInternal(role, element, fragment, isModified);
+								}
+							});
+						});
+			} else {
+				super.scan(element);
+			}
+		}
+		return this;
 	}
 
 

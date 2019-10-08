@@ -19,6 +19,8 @@ package spoon.test.prettyprinter;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.processing.Processor;
+import spoon.reflect.CtModel;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
@@ -31,6 +33,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ImportCleaner;
 import spoon.reflect.visitor.ImportConflictDetector;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
@@ -42,6 +45,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -262,5 +266,20 @@ public class TestSniperPrinter {
 			lastImportEnd = m.end();
 		}
 		return source.substring(lastImportEnd).trim();
+	}
+
+	@Test
+	public void testBinaryOperatorElement() throws Exception {
+
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/java/spoon/test/prettyprinter/testclasses/ElementScan.java");
+		launcher.getEnvironment().setPrettyPrinterCreator(
+				() -> new SniperJavaPrettyPrinter(launcher.getEnvironment())
+		);
+
+		CtModel model = launcher.buildModel();
+		List<CtBinaryOperator> ops = model.getElements(new TypeFilter<>(CtBinaryOperator.class));
+
+		ops.stream().forEach(op -> System.out.println("el: " + op));
 	}
 }

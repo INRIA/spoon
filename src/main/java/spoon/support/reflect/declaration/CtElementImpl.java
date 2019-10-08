@@ -42,6 +42,7 @@ import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.DerivedProperty;
 import spoon.support.StandardEnvironment;
+import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.util.EmptyClearableList;
 import spoon.support.util.EmptyClearableSet;
@@ -304,7 +305,11 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 			printer.applyPreProcessors(clone);
 
-			printer.scan(clone);
+			if (printer instanceof SniperJavaPrettyPrinter) {
+				((SniperJavaPrettyPrinter) printer).scanClone(clone, this);
+			} else {
+				printer.scan(clone);
+			}
 		} catch (ParentNotInitializedException ignore) {
 			LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);
 			errorMessage = ERROR_MESSAGE_TO_STRING;
