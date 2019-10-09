@@ -211,15 +211,18 @@ public class APITest {
 
 	@Test
 	public void testDestinationOfSpoon() {
-		final File binaryOutput = new File("./target/spoon/test/binary/");
+		String pathname = "./target/spoon/test/binary/";
+		final File binaryOutput = new File(pathname);
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setShouldCompile(true);
 		launcher.addInputResource("./src/test/java/spoon/test/api/testclasses");
 		launcher.setSourceOutputDirectory("./target/spooned");
 		launcher.setBinaryOutputDirectory(binaryOutput);
+		CtClass aClass = launcher.getFactory().createClass("foo.Bar");
 		launcher.run();
 
 		assertTrue(binaryOutput.exists());
+		assertTrue(new File(pathname + "foo/Bar.class").exists());
 	}
 
 	@Test
