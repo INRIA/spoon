@@ -93,13 +93,13 @@ class JDTImportBuilder {
 					} else {
 						CtNamedElement methodOrField = null;
 
-						List<CtMethod> methods = klass.getMethodsByName(methodOrFieldName);
-						if (methods.size() > 0) {
-							methodOrField = methods.get(0);
-						}
+						methodOrField = klass.getField(methodOrFieldName);
 
 						if (methodOrField == null) {
-							methodOrField = klass.getField(methodOrFieldName);
+							List<CtMethod> methods = klass.getMethodsByName(methodOrFieldName);
+							if (methods.size() > 0) {
+								methodOrField = methods.get(0);
+							}
 						}
 
 						if (methodOrField != null) {
