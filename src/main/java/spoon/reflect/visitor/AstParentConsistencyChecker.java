@@ -6,13 +6,17 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.reference.CtReference;
 
 public class AstParentConsistencyChecker extends CtScanner {
 
 	private CtElement parent;
 	@Override
 	public void scan(CtElement element) {
-		if (element == null) {
+		// We allow to share references across the AST
+		// that is a leaf reference can be the same
+		// at different places
+		if (element == null || element instanceof CtReference) {
 			return;
 		}
 		if (parent != null

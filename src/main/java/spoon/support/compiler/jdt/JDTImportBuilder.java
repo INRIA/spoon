@@ -10,13 +10,14 @@ import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
-
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 
 import java.util.HashSet;
@@ -92,7 +93,7 @@ class JDTImportBuilder {
 					if ("*".equals(methodOrFieldName)) {
 						this.imports.add(createImportWithPosition(factory.Type().createTypeMemberWildcardImportReference(klass.getReference()), importRef));
 					} else {
-						List<CtNamedElement> methodOrFields = klass.getElements(new NamedElementFilter<>(CtNamedElement.class, methodOrFieldName));
+						List<CtNamedElement> methodOrFields = klass.filterChildren(new NamedElementFilter<>(CtNamedElement.class, methodOrFieldName)).select(x -> (x instanceof CtMethod) || (x instanceof CtField)).list();
 
 						if (!methodOrFields.isEmpty()) {
 							CtNamedElement methodOrField = methodOrFields.get(0);
