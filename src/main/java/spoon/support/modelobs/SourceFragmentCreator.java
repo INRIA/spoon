@@ -6,6 +6,7 @@
 package spoon.support.modelobs;
 
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.support.sniper.internal.ElementSourceFragment;
@@ -23,7 +24,7 @@ public class SourceFragmentCreator extends ChangeCollector {
 			return;
 		}
 		CompilationUnit cu = currentElement.getPosition().getCompilationUnit();
-		if (cu != null) {
+		if (!(cu instanceof NoSourcePosition.NullCompilationUnit)) {
 			//getOriginalSourceFragment is not only a getter, it actually
 			//builds a tree of SourceFragments of compilation unit of the modified element
 			cu.getOriginalSourceFragment();

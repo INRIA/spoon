@@ -11,6 +11,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.SourcePositionHolder;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModifiable;
@@ -176,7 +177,7 @@ public class ElementSourceFragment implements SourceFragment {
 	 */
 	private ElementSourceFragment addChild(ElementSourceFragment parentFragment, CtRole roleInParent, SourcePositionHolder otherElement) {
 		SourcePosition otherSourcePosition = otherElement.getPosition();
-		if (otherSourcePosition instanceof SourcePositionImpl && otherSourcePosition.getCompilationUnit() != null) {
+		if (otherSourcePosition instanceof SourcePositionImpl && !(otherSourcePosition.getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
 			if (parentFragment.isFromSameSource(otherSourcePosition)) {
 				ElementSourceFragment otherFragment = new ElementSourceFragment(otherElement, parentFragment.getRoleHandler(roleInParent, otherElement));
 				//parent and child are from the same file. So we can connect their positions into one tree
