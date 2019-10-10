@@ -25,7 +25,7 @@ public class NoSourcePosition implements SourcePosition, Serializable {
 	}
 
 	// avoid null pointer exceptions later
-	private static class NullCompilationUnit extends CompilationUnitImpl {
+	public static class NullCompilationUnit extends CompilationUnitImpl {
 		private NullCompilationUnit() { }
 	}
 	private static final CompilationUnit instanceNullCompilationUnit = new NullCompilationUnit();
