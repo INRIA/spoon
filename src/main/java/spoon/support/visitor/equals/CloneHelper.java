@@ -64,6 +64,11 @@ public class CloneHelper {
 		return others;
 	}
 
+	/**
+	 * clones a Set of elements
+	 * @param <T> the Set of elements to be cloned
+	 * @return others Set of cloned elements
+	 */
 	public <T extends CtElement> Set<T> clone(Set<T> elements) {
 		if (elements instanceof EmptyClearableSet) {
 			return elements;
