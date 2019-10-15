@@ -171,7 +171,7 @@ public class ElementPrinterHelper {
 
 	/**
 	 * Writes a list of elements to the printer by using `scan` from the internal pretty-printer.
-	 * @param elements List of elements to be written 
+	 * @param elements List of elements to be written
 	 */
 	public void writeElementList(List<CtTypeMember> elements) {
 		for (CtTypeMember element : elements) {
