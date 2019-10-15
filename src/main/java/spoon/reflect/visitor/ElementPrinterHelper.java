@@ -169,6 +169,10 @@ public class ElementPrinterHelper {
 		}
 	}
 
+	/**
+	 * Writes a list of elements
+	 * @param elements List of elements to be written 
+	 */
 	public void writeElementList(List<CtTypeMember> elements) {
 		for (CtTypeMember element : elements) {
 			if (element instanceof CtConstructor && element.isImplicit()) {
