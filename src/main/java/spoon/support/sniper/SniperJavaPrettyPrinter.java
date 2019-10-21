@@ -14,6 +14,7 @@ import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
@@ -199,8 +200,9 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	@Override
 	public String printElement(CtElement element) {
 		if (element != null && !hasImplicitAncestor(element)) {
-			if (element.getPosition().getCompilationUnit() != null) {
-				CompilationUnit compilationUnit = element.getPosition().getCompilationUnit();
+			CompilationUnit compilationUnit = element.getPosition().getCompilationUnit();
+			if (compilationUnit != null
+					&& !(compilationUnit instanceof NoSourcePosition.NullCompilationUnit)) {
 
 				//use line separator of origin source file
 				setLineSeparator(detectLineSeparator(compilationUnit.getOriginalSourceCode()));
