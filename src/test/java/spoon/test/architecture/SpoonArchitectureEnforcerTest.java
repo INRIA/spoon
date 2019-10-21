@@ -176,7 +176,7 @@ public class SpoonArchitectureEnforcerTest {
 							// 3) you document those methods
 							// 4) you run the test again to check that it passes
 							// 4) you commit your changes and create the corresponding pull requests
-							|| method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 35  // means that only large methods must be documented
+							|| method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 33  // means that only large methods must be documented
 			)) {
 
 				// OK it should be properly documented

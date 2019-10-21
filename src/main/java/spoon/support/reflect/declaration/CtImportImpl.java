@@ -30,22 +30,26 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 
 	@Override
 	public CtImportKind getImportKind() {
-		if (this.localReference == null) {
+		return getImportKindFor(this.localReference);
+	}
+
+	private CtImportKind getImportKindFor(CtReference ref) {
+		if (ref == null) {
 			return null;
 		}
 
-		if (this.localReference instanceof CtFieldReference) {
+		if (ref instanceof CtFieldReference) {
 			return CtImportKind.FIELD;
-		} else if (this.localReference instanceof CtExecutableReference) {
+		} else if (ref instanceof CtExecutableReference) {
 			return CtImportKind.METHOD;
-		} else if (this.localReference instanceof CtPackageReference) {
+		} else if (ref instanceof CtPackageReference) {
 			return CtImportKind.ALL_TYPES;
-		} else if (this.localReference instanceof CtTypeMemberWildcardImportReferenceImpl) {
+		} else if (ref instanceof CtTypeMemberWildcardImportReferenceImpl) {
 			return CtImportKind.ALL_STATIC_MEMBERS;
-		} else if (this.localReference instanceof CtTypeReference) {
+		} else if (ref instanceof CtTypeReference) {
 			return CtImportKind.TYPE;
 		} else {
-			throw new SpoonException("Only CtFieldReference, CtExecutableReference, CtPackageReference and CtTypeReference are accepted reference types.");
+			throw new SpoonException("Only CtFieldReference, CtExecutableReference, CtPackageReference and CtTypeReference are accepted reference types. Given " + ref.getClass());
 		}
 	}
 
@@ -54,6 +58,14 @@ public class CtImportImpl extends CtElementImpl implements CtImport {
 		if (reference != null) {
 			reference.setParent(this);
 		}
+
+		try {
+			// may throw an exception if invalid
+			getImportKindFor(reference);
+		} catch (SpoonException e) {
+			throw e;
+		}
+
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IMPORT_REFERENCE, reference, this.localReference);
 		this.localReference = reference;
 		return (T) this;
