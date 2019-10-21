@@ -7,6 +7,7 @@ package spoon.support.reflect.declaration;
 
 import org.apache.log4j.Logger;
 import spoon.Launcher;
+import spoon.compiler.Environment;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
@@ -42,6 +43,9 @@ import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.DerivedProperty;
 import spoon.support.StandardEnvironment;
+import spoon.support.modelobs.ChangeCollector;
+import spoon.support.modelobs.EmptyModelChangeListener;
+import spoon.support.modelobs.FineModelChangeListener;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.util.EmptyClearableList;
@@ -294,25 +298,47 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		DefaultJavaPrettyPrinter printer = (DefaultJavaPrettyPrinter) getFactory().getEnvironment().createPrettyPrinter();
 
 		String errorMessage = "";
-		try {
-			// now that pretty-printing can change the model, we only do it on a clone
-			CtElement clone = this.clone();
+		if (printer instanceof SniperJavaPrettyPrinter) {
+			try {
+				CtElement clone = (CtElement) ChangeCollector.callWithoutChangeListener(getFactory().getEnvironment(), () -> {
 
-			// required: in DJPP some decisions are taken based on the content of the parent
-			if (this.isParentInitialized()) {
-				clone.setParent(this.getParent());
-			}
+					// now that pretty-printing can change the model, we only do it on a clone
+					CtElement tmpClone = this.clone();
 
-			printer.applyPreProcessors(clone);
+					// required: in DJPP some decisions are taken based on the content of the parent
+					if (this.isParentInitialized()) {
+						tmpClone.setParent(this.getParent());
+					}
+					//this.replace(tmpClone);
+					return tmpClone;
+				});
 
-			if (printer instanceof SniperJavaPrettyPrinter) {
+				//printer.applyPreProcessors(clone);
 				((SniperJavaPrettyPrinter) printer).scanClone(clone, this);
-			} else {
-				printer.scan(clone);
+			} catch (Exception ignore) {
+				LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);
+				errorMessage = ERROR_MESSAGE_TO_STRING;
 			}
-		} catch (ParentNotInitializedException ignore) {
-			LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);
-			errorMessage = ERROR_MESSAGE_TO_STRING;
+		} else {
+			try {
+				// now that pretty-printing can change the model, we only do it on a clone
+				CtElement clone = this.clone();
+
+				// required: in DJPP some decisions are taken based on the content of the parent
+				if (this.isParentInitialized()) {
+					clone.setParent(this.getParent());
+				}
+				printer.applyPreProcessors(clone);
+
+				/*if (printer instanceof SniperJavaPrettyPrinter) {
+					((SniperJavaPrettyPrinter) printer).scanClone(clone, this);
+				} else {*/
+					printer.scan(clone);
+				//}
+			} catch (ParentNotInitializedException ignore) {
+				LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);
+				errorMessage = ERROR_MESSAGE_TO_STRING;
+			}
 		}
 		// in line-preservation mode, newlines are added at the beginning to matches the lines
 		// removing them from the toString() representation

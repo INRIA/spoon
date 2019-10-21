@@ -177,14 +177,22 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	}
 
 
+
+	private static boolean hasImplicitAncestor(CtElement el) {
+		if(el == null) return false;
+		if(el == el.getFactory().getModel().getRootPackage()) return false;
+		else if (el.isImplicit()) return true;
+		else return hasImplicitAncestor(el.getParent());
+	}
+
 	/**
-	 * Ugly hack to start printing an arbitrary element of the ast, that is a clone.
+	 * Start printing an arbitrary element of the ast, that is a clone.
 	 * @param element clone to print
 	 * @param original its original
 	 * @return this
 	 */
 	public SniperJavaPrettyPrinter scanClone(CtElement element, CtElement original) {
-		if (element != null) {
+		if (element != null && !hasImplicitAncestor(element)) {
 			if (element.getPosition().getCompilationUnit() != null) {
 				CompilationUnit compilationUnit = element.getPosition().getCompilationUnit();
 
@@ -192,25 +200,25 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 				setLineSeparator(detectLineSeparator(compilationUnit.getOriginalSourceCode()));
 
 				CtRole role = getRoleInCompilationUnit(original);
+				ElementSourceFragment esf = original.getOriginalSourceFragment();
 
-				runInContext(new SourceFragmentContextList(mutableTokenWriter,
+				runInContext(
+						new SourceFragmentContextList(mutableTokenWriter,
 								element,
-								Collections.singletonList(original.getOriginalSourceFragment()),
+								Collections.singletonList(esf),
 								new ChangeResolver(getChangeCollector(), element)),
-						() -> {
-							onPrintEvent(new ElementPrinterEvent(role, element) {
-								@Override
-								public void print(Boolean muted) {
-									superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE, muted);
-								}
-								@Override
-								public void printSourceFragment(SourceFragment fragment, Boolean isModified) {
-									scanInternal(role, element, fragment, isModified);
-								}
-							});
-						});
-			} else {
-				super.scan(element);
+						() -> onPrintEvent(new ElementPrinterEvent(role, element) {
+							@Override
+							public void print(Boolean muted) {
+								superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE, muted);
+							}
+
+							@Override
+							public void printSourceFragment(SourceFragment fragment, Boolean isModified) {
+								scanInternal(role, element, fragment, isModified);
+							}
+						})
+				);
 			}
 		}
 		return this;
@@ -219,6 +227,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 
 	/**
 	 * Called whenever {@link DefaultJavaPrettyPrinter} scans/prints an element
+	 * Warning: DO not call on a cloned element. Use scanClone instead.
 	 */
 	@Override
 	public SniperJavaPrettyPrinter scan(CtElement element) {

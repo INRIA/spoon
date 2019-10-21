@@ -90,7 +90,7 @@ public class CloneHelper {
 	}
 
 	/**
-	 * clones a element and adds it's clone as value into targetCollection
+	 * clones an element and adds it's clone as value into targetCollection
 	 * @param targetCollection - the collection which will receive a clone of element
 	 * @param element to be cloned element
 	 */
