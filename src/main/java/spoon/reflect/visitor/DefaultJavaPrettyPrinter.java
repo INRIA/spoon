@@ -5,6 +5,7 @@
  */
 package spoon.reflect.visitor;
 
+import org.apache.log4j.Logger;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.experimental.CtUnresolvedImport;
@@ -232,6 +233,37 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public DefaultJavaPrettyPrinter setLineSeparator(String lineSeparator) {
 		getPrinterHelper().setLineSeparator(lineSeparator);
 		return this;
+	}
+
+
+	protected static final Logger LOGGER = Logger.getLogger(DefaultJavaPrettyPrinter.class);
+	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
+	/**
+	 * Prints an element. This method shall be called by the toString() method of an element.
+	 * It is responsible for any initialization required to print an arbitrary element.
+	 * @param element
+	 * @return A string containing the pretty printed element (and descendants).
+	 */
+	public String printElement(CtElement element) {
+
+		String errorMessage = "";
+		try {
+			// now that pretty-printing can change the model, we only do it on a clone
+			CtElement clone = element.clone();
+
+			// required: in DJPP some decisions are taken based on the content of the parent
+			if (element.isParentInitialized()) {
+				clone.setParent(element.getParent());
+			}
+			applyPreProcessors(clone);
+			scan(clone);
+		} catch (ParentNotInitializedException ignore) {
+			LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);
+			errorMessage = ERROR_MESSAGE_TO_STRING;
+		}
+		// in line-preservation mode, newlines are added at the beginning to matches the lines
+		// removing them from the toString() representation
+		return toString().replaceFirst("^\\s+", "") + errorMessage;
 	}
 
 	/**
@@ -1956,7 +1988,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void reset() {
 		printer.reset();
 		context = new PrintingContext();
-		}
+	}
 
 
 	/**

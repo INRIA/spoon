@@ -314,10 +314,10 @@ public class TestSniperPrinter {
 				.filter(el -> !(el instanceof spoon.reflect.CtModelImpl.CtRootPackage) &&
 						!(el instanceof spoon.reflect.factory.ModuleFactory.CtUnnamedModule)
 				).forEach(el -> {
-			assertTrue("ToString() on element (" + el.getClass().getName() + ") =  \"" + el + "\" lead is not in original content", originalContent.contains(el.toString().replace("\t","")));
-			System.out.print("el (" + el.getClass().getName() + "): ");
 			try {
-				System.out.println(el);
+				//Contract, calling toString on unmodified AST elements should draw only from original.
+				assertTrue("ToString() on element (" + el.getClass().getName() + ") =  \"" + el + "\" is not in original content",
+						originalContent.contains(el.toString().replace("\t","")));
 			} catch (UnsupportedOperationException | SpoonException e) {
 				//Printer should not throw exception on printable element. (Unless there is a bug in the printer...)
 				fail("ToString() on Element (" + el.getClass().getName() + "): at " + el.getPath() + " lead to an exception: " + e);

@@ -179,19 +179,25 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 
 
 	private static boolean hasImplicitAncestor(CtElement el) {
-		if(el == null) return false;
-		if(el == el.getFactory().getModel().getRootPackage()) return false;
-		else if (el.isImplicit()) return true;
-		else return hasImplicitAncestor(el.getParent());
+		if (el == null) {
+			return false;
+		}
+		if (el == el.getFactory().getModel().getRootPackage()) {
+			return false;
+		} else if (el.isImplicit()) {
+			return true;
+		} else {
+			return hasImplicitAncestor(el.getParent());
+		}
 	}
 
 	/**
-	 * Start printing an arbitrary element of the ast, that is a clone.
-	 * @param element clone to print
-	 * @param original its original
-	 * @return this
+	 * SniperPrettyPrinter does not apply preprocessor to a CtElement when calling toString()
+	 * @param element
+	 * @return
 	 */
-	public SniperJavaPrettyPrinter scanClone(CtElement element, CtElement original) {
+	@Override
+	public String printElement(CtElement element) {
 		if (element != null && !hasImplicitAncestor(element)) {
 			if (element.getPosition().getCompilationUnit() != null) {
 				CompilationUnit compilationUnit = element.getPosition().getCompilationUnit();
@@ -199,29 +205,30 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 				//use line separator of origin source file
 				setLineSeparator(detectLineSeparator(compilationUnit.getOriginalSourceCode()));
 
-				CtRole role = getRoleInCompilationUnit(original);
-				ElementSourceFragment esf = original.getOriginalSourceFragment();
+				CtRole role = getRoleInCompilationUnit(element);
+				ElementSourceFragment esf = element.getOriginalSourceFragment();
 
 				runInContext(
-						new SourceFragmentContextList(mutableTokenWriter,
-								element,
-								Collections.singletonList(esf),
-								new ChangeResolver(getChangeCollector(), element)),
-						() -> onPrintEvent(new ElementPrinterEvent(role, element) {
-							@Override
-							public void print(Boolean muted) {
-								superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE, muted);
-							}
+					new SourceFragmentContextList(mutableTokenWriter,
+						element,
+						Collections.singletonList(esf),
+						new ChangeResolver(getChangeCollector(), element)),
+					() -> onPrintEvent(new ElementPrinterEvent(role, element) {
+						@Override
+						public void print(Boolean muted) {
+							superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE, muted);
+						}
 
-							@Override
-							public void printSourceFragment(SourceFragment fragment, Boolean isModified) {
-								scanInternal(role, element, fragment, isModified);
-							}
-						})
+						@Override
+						public void printSourceFragment(SourceFragment fragment, Boolean isModified) {
+							scanInternal(role, element, fragment, isModified);
+						}
+					})
 				);
 			}
 		}
-		return this;
+
+		return toString().replaceFirst("^\\s+", "");
 	}
 
 
