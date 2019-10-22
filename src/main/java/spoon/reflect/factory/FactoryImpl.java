@@ -592,11 +592,6 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
-	public List<CtExpression<?>> createVariableWrites(List<? extends CtVariable<?>> variables) {
-		return Code().createVariableWrites(variables);
-	}
-
-	@Override
 	public CtCatch createCtCatch(String nameCatch, Class<? extends Throwable> exception, CtBlock<?> ctBlock) {
 		return Code().createCtCatch(nameCatch, exception, ctBlock);
 	}
