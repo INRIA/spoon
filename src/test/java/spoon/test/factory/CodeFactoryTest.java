@@ -20,15 +20,12 @@ import org.junit.Test;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtVariableReference;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
