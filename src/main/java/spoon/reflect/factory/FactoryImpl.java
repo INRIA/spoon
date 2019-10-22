@@ -557,6 +557,11 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
+	public <T> CtVariableAccess<T> createVariableWrite(CtVariableReference<T> variable, boolean isStatic) {
+		return Code().createVariableWrite(variable, isStatic);
+	}
+
+	@Override
 	public <T> CtField<T> createCtField(String name, CtTypeReference<T> type, String exp, ModifierKind... visibilities) {
 		return Code().createCtField(name, type, exp, visibilities);
 	}
@@ -584,6 +589,11 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public List<CtExpression<?>> createVariableReads(List<? extends CtVariable<?>> variables) {
 		return Code().createVariableReads(variables);
+	}
+
+	@Override
+	public List<CtExpression<?>> createVariableWrites(List<? extends CtVariable<?>> variables) {
+		return Code().createVariableWrites(variables);
 	}
 
 	@Override

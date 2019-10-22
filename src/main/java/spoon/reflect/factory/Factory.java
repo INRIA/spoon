@@ -292,6 +292,11 @@ public interface Factory {
 	<T> CtVariableAccess<T> createVariableRead(CtVariableReference<T> variable, boolean isStatic);
 
 	/**
+	 *  @see CodeFactory#createVariableWrite(CtVariableReference,boolean)
+	 */
+	<T> CtVariableAccess<T> createVariableWrite(CtVariableReference<T> variable, boolean isStatic);
+
+	/**
 	 *  @see CodeFactory#createCtField(String,CtTypeReference,String,ModifierKind[])
 	 */
 	<T> CtField<T> createCtField(String name, CtTypeReference<T> type, String exp, ModifierKind... visibilities);
@@ -320,6 +325,11 @@ public interface Factory {
 	 *  @see CodeFactory#createVariableReads(List)
 	 */
 	List<CtExpression<?>> createVariableReads(List<? extends CtVariable<?>> variables);
+
+	/**
+	 *  @see CodeFactory#createVariableWrites(List)
+	 */
+	List<CtExpression<?>> createVariableWrites(List<? extends CtVariable<?>> variables);
 
 	/**
 	 *  @see CodeFactory#createCtCatch(String,Class,CtBlock)
