@@ -448,20 +448,6 @@ public class CodeFactory extends SubFactory {
 	}
 
 	/**
-	 * Creates a list of variable accesses for write.
-	 *
-	 * @param variables
-	 * 		the variables to be accessed
-	 */
-	public List<CtExpression<?>> createVariableWrites(List<? extends CtVariable<?>> variables) {
-		List<CtExpression<?>> result = new ArrayList<>(variables.size());
-		for (CtVariable<?> v : variables) {
-			result.add(createVariableWrite(v.getReference(), v.getModifiers().contains(ModifierKind.STATIC)));
-		}
-		return result;
-	}
-
-	/**
 	 * Creates a variable assignment (can be an expression or a statement).
 	 *
 	 * @param <T>

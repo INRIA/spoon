@@ -327,11 +327,6 @@ public interface Factory {
 	List<CtExpression<?>> createVariableReads(List<? extends CtVariable<?>> variables);
 
 	/**
-	 *  @see CodeFactory#createVariableWrites(List)
-	 */
-	List<CtExpression<?>> createVariableWrites(List<? extends CtVariable<?>> variables);
-
-	/**
 	 *  @see CodeFactory#createCtCatch(String,Class,CtBlock)
 	 */
 	CtCatch createCtCatch(String nameCatch, Class<? extends Throwable> exception, CtBlock<?> ctBlock);
