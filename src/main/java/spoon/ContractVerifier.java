@@ -204,7 +204,6 @@ public class ContractVerifier {
 				if (element != null && CtShadowable.class.isAssignableFrom(element.getClass())) {
 					assertFalse(((CtShadowable) element).isShadow());
 					return;
-                                    return;
 				}
 				super.scan(element);
 			}
