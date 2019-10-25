@@ -80,13 +80,7 @@ public class MainTest {
 				// by using testclasses, we find a lot of bugs
 				// I propose to put them under the carpet first (aka carpet debugging)
 				// in order to make progress on this important blocking first refactoring
-
-				// bug 1: those three classes together trigger a bug somewhere in inner class
-				.filter(path -> !filePathContains(path, "fieldaccesses/testclasses/Tacos")) // carpet debugging
-				.filter(path -> !filePathContains(path, "fieldaccesses/testclasses/internal/Bar"))
-				.filter(path -> !filePathContains(path, "fieldaccesses/testclasses/internal/Foo"))
-				.filter(path -> !filePathContains(path, "reference/testclasses/Stream"))
-
+				
 				// bug 2: remove the filter to trigger it
 				.filter(path -> !filePathContains(path, "AccessibleClassFromNonAccessibleInterf"))
 
