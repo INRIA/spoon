@@ -202,7 +202,8 @@ public class ContractVerifier {
 			@Override
 			public void scan(CtElement element) {
 				if (element != null && CtShadowable.class.isAssignableFrom(element.getClass())) {
-                                        assertFalse(((CtShadowable) element).isShadow());                                        
+					assertFalse(((CtShadowable) element).isShadow());
+					return;
                                     return;
 				}
 				super.scan(element);
