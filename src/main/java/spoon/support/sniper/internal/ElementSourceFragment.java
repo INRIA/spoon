@@ -19,6 +19,7 @@ import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.support.Experimental;
 import spoon.support.reflect.CtExtendedModifier;
@@ -138,6 +139,14 @@ public class ElementSourceFragment implements SourceFragment {
 		 * because CtBlock can be implicit but contains non implicit elements, which has to be processed.
 		 */
 		new EarlyTerminatingScanner<Void>() {
+			public <T> void visitCtFieldReference(final CtFieldReference<T> reference) {
+				// bug 3133: we must must not visit the type of a field reference
+				enter(reference);
+				scan(CtRole.DECLARING_TYPE, reference.getDeclaringType());
+				scan(CtRole.ANNOTATION, reference.getAnnotations());
+				exit(reference);
+			}
+
 			@Override
 			protected void enter(CtElement e) {
 				if (e instanceof CtCompilationUnit) {
