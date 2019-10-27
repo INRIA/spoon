@@ -7,9 +7,13 @@ package spoon.reflect.visitor;
 
 import spoon.SpoonException;
 import spoon.experimental.CtUnresolvedImport;
+import spoon.javadoc.internal.JavadocDescriptionElement;
+import spoon.javadoc.internal.JavadocInlineTag;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtCompilationUnit;
@@ -17,6 +21,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
@@ -25,6 +30,7 @@ import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.Experimental;
 import spoon.support.util.ModelList;
 import spoon.support.visitor.ClassTypingContext;
@@ -188,8 +194,31 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 		void onCompilationUnitProcessed(CtCompilationUnit compilationUnit) {
 			ModelList<CtImport> existingImports = compilationUnit.getImports();
 			Set<CtImport> computedImports = new HashSet<>(this.computedImports.values());
-			for (CtImport oldImport : new ArrayList<>(existingImports)) {
+			topfor: for (CtImport oldImport : new ArrayList<>(existingImports)) {
 				if (!computedImports.remove(oldImport)) {
+
+					// case: import is required in Javadoc
+					for (CtType type: compilationUnit.getDeclaredTypes()) {
+						for (CtJavaDoc element: type.getElements(new TypeFilter<>(CtJavaDoc.class))) {
+							for (CtJavaDocTag tag: element.getTags()) {
+								// case @throws
+								if (oldImport.getReference().getSimpleName().equals(tag.getParam())) {
+									continue topfor;
+
+								}
+							}
+							for (JavadocDescriptionElement part : ((CtJavaDoc) element).getJavadocElements()) {
+								// case {@link Foo}
+								if (part instanceof JavadocInlineTag) {
+									String content = ((JavadocInlineTag) part).getContent();
+									if (oldImport.getReference().getSimpleName().equals(content)) {
+										continue topfor;
+									}
+								}
+							}
+						}
+					}
+
 					if (oldImport.getImportKind() == CtImportKind.ALL_TYPES) {
 						if (removeAllTypeImportWithPackage(computedImports, ((CtPackageReference) oldImport.getReference()).getQualifiedName())) {
 							//this All types import still imports some type. Keep it

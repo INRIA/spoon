@@ -21,6 +21,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
+import spoon.compiler.Environment;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.experimental.CtUnresolvedImport;
@@ -65,6 +66,7 @@ import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
 import spoon.test.imports.testclasses.A;
+import spoon.test.imports.testclasses.B;
 import spoon.test.imports.testclasses.ClassWithInvocation;
 import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.Mole;
@@ -1627,4 +1629,43 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		assertEquals("mCurrentActiveColor = getResources().getColor(c4_active_button_color)", statements.get(3).toString());
 		assertEquals("mCurrentActiveColor = getData().getResources().getColor(c4_active_button_color)", statements.get(4).toString());
 	}
+
+	@Test
+	public void testFQNJavadoc() {
+		// contract: we keep imports for @link, @throws both in autoimport and fqn mode
+
+		{
+			// AUTOIMPORT
+			Launcher spoon = new Launcher();
+			spoon.getEnvironment().setPrettyPrintingMode(Environment.PRETTY_PRINTING_MODE.AUTOIMPORT);
+			spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/B.java");
+			spoon.buildModel();
+
+			PrettyPrinter prettyPrinter = spoon.createPrettyPrinter();
+			CtType element = spoon.getFactory().Class().getAll().get(0);
+			List<CtType<?>> toPrint = new ArrayList<>();
+			toPrint.add(element);
+			prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+			String output = prettyPrinter.getResult();
+			assertTrue(output.contains("import java.util.ArrayList;"));
+			assertTrue(output.contains("import spoon.SpoonException;"));
+		}
+		{
+			// FQN
+			Launcher spoon = new Launcher();
+			spoon.getEnvironment().setPrettyPrintingMode(Environment.PRETTY_PRINTING_MODE.FULLYQUALIFIED);
+			spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/B.java");
+			spoon.buildModel();
+
+			PrettyPrinter prettyPrinter = spoon.createPrettyPrinter();
+			CtType element = spoon.getFactory().Class().getAll().get(0);
+			List<CtType<?>> toPrint = new ArrayList<>();
+			toPrint.add(element);
+			prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
+			String output = prettyPrinter.getResult();
+			assertTrue(output.contains("import java.util.ArrayList;"));
+			assertTrue(output.contains("import spoon.SpoonException;"));
+		}
+	}
+
 }
