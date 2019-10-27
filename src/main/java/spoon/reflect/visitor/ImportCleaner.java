@@ -211,7 +211,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 								// case {@link Foo}
 								if (part instanceof JavadocInlineTag) {
 									String content = ((JavadocInlineTag) part).getContent();
-									if (oldImport.getReference().getSimpleName().equals(content)) {
+									if (oldImport.getReference() != null && oldImport.getReference().getSimpleName().equals(content)) {
 										continue topfor;
 									}
 								}
