@@ -202,7 +202,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 						for (CtJavaDoc element: type.getElements(new TypeFilter<>(CtJavaDoc.class))) {
 							for (CtJavaDocTag tag: element.getTags()) {
 								// case @throws
-								if (oldImport.getReference().getSimpleName().equals(tag.getParam())) {
+								if (oldImport.getReference() != null && oldImport.getReference().getSimpleName().equals(tag.getParam())) {
 									continue topfor;
 
 								}
