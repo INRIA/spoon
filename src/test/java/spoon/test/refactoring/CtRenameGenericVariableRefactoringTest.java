@@ -22,9 +22,7 @@ import spoon.refactoring.CtRenameGenericVariableRefactoring;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.*;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.fail;
 
 public class CtRenameGenericVariableRefactoringTest
 {

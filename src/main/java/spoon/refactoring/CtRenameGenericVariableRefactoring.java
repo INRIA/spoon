@@ -5,37 +5,14 @@
  */
 package spoon.refactoring;
 
-import java.util.Collection;
-import java.util.regex.Pattern;
-
-import spoon.SpoonException;
-import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.CtVariableReference;
-import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.chain.CtConsumer;
-import spoon.reflect.visitor.chain.CtQueryable;
-import spoon.reflect.visitor.chain.CtScannerListener;
-import spoon.reflect.visitor.chain.ScanningMode;
-import spoon.reflect.visitor.filter.LocalVariableReferenceFunction;
-import spoon.reflect.visitor.filter.LocalVariableScopeFunction;
-import spoon.reflect.visitor.filter.PotentialVariableDeclarationFunction;
-import spoon.reflect.visitor.filter.SiblingsFunction;
-import spoon.reflect.visitor.filter.SiblingsFunction.Mode;
 import spoon.reflect.visitor.filter.VariableReferenceFunction;
-import spoon.support.reflect.declaration.CtParameterImpl;
 
 /**
  * Spoon model that can refactor any type of variable (method parameters, local variables, field variables.
- * Also provides no variable rename checking, so renaming variables to a name that already exists is possible, be wary
+ * Provides no variable rename checking, so renaming variables to a name that already exists is possible, be wary
  * of creating incorrect code with this.
  * This class can be used as a tool for investigating code obfuscation. Useful for research purposes.
  * It has the same interface as the local variable rename:
