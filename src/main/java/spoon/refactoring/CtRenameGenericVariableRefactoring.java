@@ -35,8 +35,9 @@ import spoon.support.reflect.declaration.CtParameterImpl;
 
 /**
  * Spoon model that can refactor any type of variable (method parameters, local variables, field variables.
- * Also provides no variable rename checking, so renaming variables to a name that already exists is possible.
- * This class can be used as a tool for investigating code obfuscation.
+ * Also provides no variable rename checking, so renaming variables to a name that already exists is possible, be wary
+ * of creating incorrect code with this.
+ * This class can be used as a tool for investigating code obfuscation. Useful for research purposes.
  * It has the same interface as the local variable rename:
  * <pre>
  * new CtRenameGenericVariableRefactoring().setTarget(myVar).setNewName("myNewName").refactor();
