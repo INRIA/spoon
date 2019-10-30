@@ -55,6 +55,9 @@ public class CtBFSIterator extends CtScanner implements Iterator<CtElement> {
 	 */
 	@Override
 	public CtElement next() {
+		if (!hasNext()) {
+			throw new java.util.NoSuchElementException();
+		}
 		CtElement next = deque.poll(); // get the element to expand from the deque
 		next.accept(this); // call @scan for each direct child of the node
 		return next;
