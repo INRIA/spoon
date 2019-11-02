@@ -265,7 +265,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 			//push the context of this collection
 			sourceFragmentContextStack.push(listContext);
 			//and scan first element of that collection again in new context of that collection
-			if (isFragmentModified == Boolean.FALSE) {
+			if (Boolean.FALSE.equals(isFragmentModified)) {
 				mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
 				//and mute the token writer and let DJPP scan it and ignore everything
 				mutableTokenWriter.setMuted(true);

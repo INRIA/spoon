@@ -51,7 +51,7 @@ public class ChangeResolver {
 			}
 		};
 		scanner.scan(this.element);
-		return scanner.getResult() == Boolean.TRUE;
+		return Boolean.TRUE.equals(scanner.getResult());
 	}
 
 	/**
