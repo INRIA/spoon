@@ -115,13 +115,11 @@ public class ClassProcessor extends AbstractProcessor<CtClass<?>> {
 }
 ```
 
-## Renaming Variables
+## Refactoring transformations
 
-Spoon can be used tasks like renaming variables programmatically. This can be done using either the
-[Local Variable Refactoring](https://github.com/INRIA/spoon/blob/master/src/main/java/spoon/refactoring/CtRenameLocalVariableRefactoring.java)
-class, which can only rename local variables but includes extra checking to ensure program correctness after renaming,
-or the [Generic Variable Refactoring](https://github.com/INRIA/spoon/blob/master/src/main/java/spoon/refactoring/CtRenameGenericVariableRefactoring.java)
-class, which can rename any variable type (field, parameter, local), but does not do any extra checking to ensure program correctness.
-An example of using the generic version to randomly obfuscate all variables in a class can be found
-[here](https://github.com/INRIA/spoon/blob/master/src/test/java/spoon/test/refactoring/CtRenameGenericVariableRefactoringTest.java).
-In a research context, it has been used for refactoring massive datasets of Java files.
+Spoon can be used for automated refactoring such as renaming variables programmatically.
+
+* [Local Variable Refactoring](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/refactoring/CtRenameLocalVariableRefactoring.html)
+class, renames local variables and includes extra checking to ensure program correctness after renaming,
+* [Generic Variable Refactoring](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/refactoring/CtRenameGenericVariableRefactoring.html)
+class, renames any variable type (field, parameter, local), but does not do any extra checking to ensure program correctness.
