@@ -18,20 +18,31 @@ package spoon.test.prettyprinter;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.SpoonException;
+import spoon.compiler.Environment;
+import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
+import spoon.processing.ProcessorProperties;
+import spoon.processing.TraversalStrategy;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.ImportCleaner;
 import spoon.reflect.visitor.ImportConflictDetector;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.modelobs.ChangeCollector;
+import spoon.support.modelobs.SourceFragmentCreator;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
 
@@ -40,14 +51,23 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class TestSniperPrinter {
 
@@ -263,4 +283,51 @@ public class TestSniperPrinter {
 		}
 		return source.substring(lastImportEnd).trim();
 	}
+
+	private static String fileAsString(String path, Charset encoding)
+			throws IOException
+	{
+		byte[] encoded = Files.readAllBytes(Paths.get(path));
+		return new String(encoded, encoding);
+	}
+
+	public void testToStringWithSniperPrinter(String inputSourcePath) throws Exception {
+
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource(inputSourcePath);
+		String originalContent = fileAsString(inputSourcePath, StandardCharsets.UTF_8).replace("\t","");
+		CtModel model = launcher.buildModel();
+
+		new SourceFragmentCreator().attachTo(launcher.getFactory().getEnvironment());
+
+		launcher.getEnvironment().setPrettyPrinterCreator(
+				() -> {
+					SniperJavaPrettyPrinter sp = new SniperJavaPrettyPrinter(launcher.getEnvironment());
+					sp.setIgnoreImplicit(true);
+					return sp;
+				}
+		);
+		List<CtElement> ops = model.getElements(new TypeFilter<>(CtElement.class));
+
+
+		ops.stream()
+				.filter(el -> !(el instanceof spoon.reflect.CtModelImpl.CtRootPackage) &&
+						!(el instanceof spoon.reflect.factory.ModuleFactory.CtUnnamedModule)
+				).forEach(el -> {
+			try {
+				//Contract, calling toString on unmodified AST elements should draw only from original.
+				assertTrue("ToString() on element (" + el.getClass().getName() + ") =  \"" + el + "\" is not in original content",
+						originalContent.contains(el.toString().replace("\t","")));
+			} catch (UnsupportedOperationException | SpoonException e) {
+				//Printer should not throw exception on printable element. (Unless there is a bug in the printer...)
+				fail("ToString() on Element (" + el.getClass().getName() + "): at " + el.getPath() + " lead to an exception: " + e);
+			}
+		});
+	}
+
+	@Test
+	public void testToStringWithSniperOnElementScan() throws Exception {
+		testToStringWithSniperPrinter("src/test/java/spoon/test/prettyprinter/testclasses/ElementScan.java");
+	}
+
 }

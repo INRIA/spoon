@@ -13,6 +13,8 @@ import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
@@ -176,8 +178,65 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	}
 
 
+
+	private static boolean hasImplicitAncestor(CtElement el) {
+		if (el == null) {
+			return false;
+		}
+		if (el == el.getFactory().getModel().getRootPackage()) {
+			return false;
+		} else if (el.isImplicit()) {
+			return true;
+		} else {
+			return hasImplicitAncestor(el.getParent());
+		}
+	}
+
+	/**
+	 * SniperPrettyPrinter does not apply preprocessor to a CtElement when calling toString()
+	 * @param element
+	 * @return
+	 */
+	@Override
+	public String printElement(CtElement element) {
+		if (element != null && !hasImplicitAncestor(element)) {
+			CompilationUnit compilationUnit = element.getPosition().getCompilationUnit();
+			if (compilationUnit != null
+					&& !(compilationUnit instanceof NoSourcePosition.NullCompilationUnit)) {
+
+				//use line separator of origin source file
+				setLineSeparator(detectLineSeparator(compilationUnit.getOriginalSourceCode()));
+
+				CtRole role = getRoleInCompilationUnit(element);
+				ElementSourceFragment esf = element.getOriginalSourceFragment();
+
+				runInContext(
+					new SourceFragmentContextList(mutableTokenWriter,
+						element,
+						Collections.singletonList(esf),
+						new ChangeResolver(getChangeCollector(), element)),
+					() -> onPrintEvent(new ElementPrinterEvent(role, element) {
+						@Override
+						public void print(Boolean muted) {
+							superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE, muted);
+						}
+
+						@Override
+						public void printSourceFragment(SourceFragment fragment, Boolean isModified) {
+							scanInternal(role, element, fragment, isModified);
+						}
+					})
+				);
+			}
+		}
+
+		return toString().replaceFirst("^\\s+", "");
+	}
+
+
 	/**
 	 * Called whenever {@link DefaultJavaPrettyPrinter} scans/prints an element
+	 * Warning: DO not call on a cloned element. Use scanClone instead.
 	 */
 	@Override
 	public SniperJavaPrettyPrinter scan(CtElement element) {
