@@ -12,7 +12,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
@@ -60,28 +59,6 @@ public class ChangeCollector {
 				env.setModelChangeListener(mcl);
 			}
 		}
-	}
-
-	/**
-	 * Allows to run code using change collector switched off.
-	 * It means that any change of spoon model done by the `runnable` is ignored by the change collector.
-	 * Note: it is actually needed to wrap CtElement#toString() calls which sometime modifies spoon model.
-	 * See TestSniperPrinter#testPrintChangedReferenceBuilder()
-	 * @param env Spoon environment
-	 * @param callable the code to be called
-	 */
-	public static Object callWithoutChangeListener(Environment env, Callable callable) throws Exception {
-		Object result = null;
-		FineModelChangeListener mcl = env.getModelChangeListener();
-		if (mcl instanceof ChangeListener) {
-			env.setModelChangeListener(new EmptyModelChangeListener());
-			try {
-				result = callable.call();
-			} finally {
-				env.setModelChangeListener(mcl);
-			}
-		}
-		return result;
 	}
 
 	/**
