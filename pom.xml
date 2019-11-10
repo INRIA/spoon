@@ -41,6 +41,24 @@
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
       <version>3.16.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.resources</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.runtime</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.filesystem</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.text</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.github.stefanbirkner</groupId>
@@ -117,6 +135,10 @@
         <exclusion>
           <groupId>com.mysema.commons</groupId>
           <artifactId>mysema-commons-lang</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.infradna.tool</groupId>
+          <artifactId>bridge-method-annotation</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
