@@ -43,6 +43,14 @@ public interface PrettyPrinter {
 	String printTypes(CtType<?>... type);
 
 	/**
+	 * Prints an element. This method shall be called by the toString() method of an element.
+	 * It is responsible for any initialization required to print an arbitrary element.
+	 * @param element
+	 * @return A string containing the pretty printed element (and descendants).
+	 */
+	String printElement(CtElement element);
+
+	/**
 	 * Gets the contents of the compilation unit.
 	 */
 	String getResult();

@@ -73,6 +73,9 @@ public class CtIterator extends CtScanner implements Iterator<CtElement> {
 	 */
 	@Override
 	public CtElement next() {
+		if (!hasNext()) {
+			throw new java.util.NoSuchElementException();
+		}
 		CtElement next = deque.pollFirst(); // get the element to expand from the deque
 		current_children.clear(); // clear for this scan
 		next.accept(this); // call @scan for each direct child of the node

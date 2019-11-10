@@ -292,26 +292,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	public String toString() {
 		DefaultJavaPrettyPrinter printer = (DefaultJavaPrettyPrinter) getFactory().getEnvironment().createPrettyPrinter();
 
-		String errorMessage = "";
-		try {
-			// now that pretty-printing can change the model, we only do it on a clone
-			CtElement clone = this.clone();
-
-			// required: in DJPP some decisions are taken based on the content of the parent
-			if (this.isParentInitialized()) {
-				clone.setParent(this.getParent());
-			}
-
-			printer.applyPreProcessors(clone);
-
-			printer.scan(clone);
-		} catch (ParentNotInitializedException ignore) {
-			LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);
-			errorMessage = ERROR_MESSAGE_TO_STRING;
-		}
-		// in line-preservation mode, newlines are added at the beginning to matches the lines
-		// removing them from the toString() representation
-		return printer.toString().replaceFirst("^\\s+", "") + errorMessage;
+		return printer.printElement(this);
 	}
 
 	@Override

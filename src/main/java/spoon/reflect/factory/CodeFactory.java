@@ -400,7 +400,7 @@ public class CodeFactory extends SubFactory {
 	}
 
 	/**
-	 * Creates a variable access.
+	 * Creates a variable access for read.
 	 */
 	public <T> CtVariableAccess<T> createVariableRead(CtVariableReference<T> variable, boolean isStatic) {
 		CtVariableAccess<T> va;
@@ -417,7 +417,7 @@ public class CodeFactory extends SubFactory {
 	}
 
 	/**
-	 * Creates a list of variable accesses.
+	 * Creates a list of variable accesses for read.
 	 *
 	 * @param variables
 	 * 		the variables to be accessed
@@ -428,6 +428,23 @@ public class CodeFactory extends SubFactory {
 			result.add(createVariableRead(v.getReference(), v.getModifiers().contains(ModifierKind.STATIC)));
 		}
 		return result;
+	}
+
+	/**
+	 * Creates a variable access for write.
+	 */
+	public <T> CtVariableAccess<T> createVariableWrite(CtVariableReference<T> variable, boolean isStatic) {
+		CtVariableAccess<T> va;
+		if (variable instanceof CtFieldReference) {
+			va = factory.Core().createFieldWrite();
+			// creates a this target for non-static fields to avoid name conflicts...
+			if (!isStatic) {
+				((CtFieldAccess<T>) va).setTarget(createThisAccess(((CtFieldReference<T>) variable).getDeclaringType()));
+			}
+		} else {
+			va = factory.Core().createVariableWrite();
+		}
+		return va.setVariable(variable);
 	}
 
 	/**
@@ -444,7 +461,7 @@ public class CodeFactory extends SubFactory {
 	 * @return a variable assignment
 	 */
 	public <A, T extends A> CtAssignment<A, T> createVariableAssignment(CtVariableReference<A> variable, boolean isStatic, CtExpression<T> expression) {
-		CtVariableAccess<A> vaccess = createVariableRead(variable, isStatic);
+		CtVariableAccess<A> vaccess = createVariableWrite(variable, isStatic);
 		return factory.Core().<A, T>createAssignment().<CtAssignment<A, T>>setAssignment(expression).setAssigned(vaccess);
 	}
 

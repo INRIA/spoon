@@ -152,7 +152,7 @@ entries:
           product: all
           version: all
 
-        - title: Path
+        - title: AST Paths and Roles
           url: /path.html
           audience: writers, designers
           platform: all
@@ -208,22 +208,8 @@ entries:
             product: all
             version: all
 
-    - title: Testing
-      audience: writers, designers
-      platform: all
-      product: all
-      version: all
-
-      items:
-          - title: Quickstart
+          - title: Testing transformations
             url: /testing_quickstart.html
-            audience: writers, designers
-            platform: all
-            product: all
-            version: all
-
-          - title: Assertions
-            url: /testing_assertions.html
             audience: writers, designers
             platform: all
             product: all

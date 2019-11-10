@@ -191,8 +191,9 @@ public class TargetedExpressionTest {
 		final List<CtFieldAccess<?>> staticElements = staticInit.getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(1, staticElements.size());
 
-		// Changing behaviour when writing static field, it is now written using the class name
-		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldWrite.class).declaringType(expectedType).target(expectedTypeAccess).result("spoon.test.targeted.testclasses.Foo.p"), staticElements.get(0));
+		// contract: when accessing a static field from a block, it is written short (not fully qualified)
+		// otherwise this resulting code does not compile
+		assertEqualsFieldAccess(new ExpectedTargetedExpression().type(CtFieldWrite.class).declaringType(expectedType).target(expectedTypeAccess).result("p"), staticElements.get(0));
 	}
 
 	@Test

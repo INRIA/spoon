@@ -557,6 +557,11 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
+	public <T> CtVariableAccess<T> createVariableWrite(CtVariableReference<T> variable, boolean isStatic) {
+		return Code().createVariableWrite(variable, isStatic);
+	}
+
+	@Override
 	public <T> CtField<T> createCtField(String name, CtTypeReference<T> type, String exp, ModifierKind... visibilities) {
 		return Code().createCtField(name, type, exp, visibilities);
 	}
