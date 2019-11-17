@@ -321,7 +321,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 	@Override
 	public String getOriginalSourceCode() {
 
-		if (originalSourceCode == null && getFile() != null) {
+		if (originalSourceCode == null && getFile() != null && getFile().exists()) {
 			try (FileInputStream s = new FileInputStream(getFile())) {
 				byte[] elementBytes = new byte[s.available()];
 				s.read(elementBytes);

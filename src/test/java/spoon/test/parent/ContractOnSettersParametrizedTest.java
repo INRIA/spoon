@@ -20,6 +20,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.SpoonException;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtCodeSnippetExpression;
+import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.support.modelobs.ActionBasedChangeListenerImpl;
 import spoon.support.modelobs.action.Action;
 import spoon.reflect.declaration.CtElement;
@@ -89,6 +97,28 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 
 	public static Object createCompatibleObject(CtTypeReference<?> parameterType) {
 		Class<?> c = parameterType.getActualClass();
+		Factory f = parameterType.getFactory();
+
+		// all Class objects
+		if (Class.class.isAssignableFrom(c) && parameterType.getActualTypeArguments().size() == 0) {
+			return Object.class;
+		}
+		if (Class.class.isAssignableFrom(c)  && parameterType.getActualTypeArguments().get(0).toString().equals("?")) {
+			return Object.class;
+		}
+		if (Class.class.isAssignableFrom(c)  && parameterType.getActualTypeArguments().get(0).toString().equals("? extends java.lang.Throwable")) {
+			return Exception.class;
+		}
+		if (Class.class.isAssignableFrom(c)  && parameterType.getActualTypeArguments().get(0).toString().equals("? extends spoon.reflect.declaration.CtElement")) {
+			return CtCodeSnippetExpression.class;
+		}
+
+		// metamodel elements
+		if (parameterType.toString().equals("spoon.reflect.declaration.CtType<?>")) {
+			CtClass fooBar = f.createClass("FooBar");
+			fooBar.delete();// removing from default package
+			return fooBar; // createNewClass implictly needs a CtClass
+		}
 		for(CtType t : allInstantiableMetamodelInterfaces) {
 			if (c.isAssignableFrom(t.getActualClass())) {
 				CtElement argument = factory.Core().create(t.getActualClass());
@@ -97,10 +127,34 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 				if (argument instanceof CtPackage) {
 					((CtPackage) argument).setSimpleName(argument.getShortRepresentation());
 				}
+
 				return argument;
 
 			}
 		}
+
+		// enums
+		if (BinaryOperatorKind.class.isAssignableFrom(c)) {
+			return BinaryOperatorKind.AND;
+		}
+		if (ModifierKind.class.isAssignableFrom(c)) {
+			return ModifierKind.PUBLIC;
+		}
+		if (CtComment.CommentType.class.isAssignableFrom(c)) {
+			return CtComment.CommentType.INLINE;
+		}
+		if (CtJavaDocTag.TagType.class.isAssignableFrom(c)) {
+			return CtJavaDocTag.TagType.SEE;
+		}
+
+		// misc
+		if (ModifierKind[].class.isAssignableFrom(c)) {
+			return new ModifierKind[] {ModifierKind.PUBLIC};
+		}
+		if (CompilationUnit.class.isAssignableFrom(c)) {
+			return parameterType.getFactory().createCompilationUnit();
+		}
+
 		if (Set.class.isAssignableFrom(c)) {
 			// we create one set with one element
 			HashSet<Object> objects = new HashSet<>();
@@ -113,6 +167,32 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 			objects.add(createCompatibleObject(parameterType.getActualTypeArguments().get(0)));
 			return objects;
 		}
+		if (String.class.isAssignableFrom(c)) {
+			return "42";
+		}
+		if (int.class.isAssignableFrom(c)) {
+			return 42;
+		}
+		if (boolean.class.isAssignableFrom(c)) {
+			return true;
+		}
+
+		// arrays
+		if (int[].class.isAssignableFrom(c)) {
+			return new int[] {42};
+		}
+		if (CtExpression[].class.isAssignableFrom(c)) {
+			return new CtExpression[0];
+		}
+		if (Object[].class.isAssignableFrom(c)) {
+			return new Object[] {42};
+		}
+
+		// others
+		if (java.lang.Package.class.isAssignableFrom(c)) {
+			return Package.getPackages()[0];
+		}
+
 		throw new IllegalArgumentException("cannot instantiate "+parameterType);
 	}
 	static int nTotalSetterCalls= 0;

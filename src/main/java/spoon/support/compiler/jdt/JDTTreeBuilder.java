@@ -61,6 +61,7 @@ import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ModuleDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.NormalAnnotation;
 import org.eclipse.jdt.internal.compiler.ast.NullLiteral;
+import org.eclipse.jdt.internal.compiler.ast.NumberLiteral;
 import org.eclipse.jdt.internal.compiler.ast.OR_OR_Expression;
 import org.eclipse.jdt.internal.compiler.ast.OperatorIds;
 import org.eclipse.jdt.internal.compiler.ast.ParameterizedQualifiedTypeReference;
@@ -126,6 +127,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.LiteralBase;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
@@ -140,6 +142,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
@@ -232,6 +235,27 @@ public class JDTTreeBuilder extends ASTVisitor {
 		public ReferenceBinding enclosingType() {
 			return enclosingType;
 		}
+	}
+
+	private LiteralBase getBase(NumberLiteral numberLiteral) {
+		String sourceString = new String(numberLiteral.source());
+
+		if (sourceString.startsWith("0x") || sourceString.startsWith("0X")) {
+			return LiteralBase.HEXADECIMAL;
+		}
+
+		if (sourceString.startsWith("0b") || sourceString.startsWith("0B")) {
+			return LiteralBase.BINARY;
+		}
+
+		if (sourceString.startsWith("0")) {
+			if ((numberLiteral instanceof IntLiteral && sourceString.length() > 1)
+				|| (numberLiteral instanceof LongLiteral && sourceString.length() > 2)) {
+				return LiteralBase.OCTAL;
+			}
+		}
+
+		return LiteralBase.DECIMAL;
 	}
 
 	@Override
@@ -814,7 +838,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return true;
 	}
 
-
 	@Override
 	public boolean visit(ReferenceExpression referenceExpression, BlockScope blockScope) {
 		context.enter(helper.createExecutableReferenceExpression(referenceExpression), referenceExpression);
@@ -895,7 +918,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(factory.Core().createCatch(), argument);
 			return true;
 		}
-		context.enter(helper.createParameter(argument), argument);
+		boolean isVar = argument.type != null && argument.type.isTypeNameVar(scope);
+		CtParameter<Object> p = helper.createParameter(argument);
+		if (isVar) {
+			p.setInferred(true);
+		}
+		context.enter(p, argument);
 		return true;
 	}
 
@@ -928,7 +956,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtTypeReference<Object> objectCtTypeReference = references.buildTypeReference(arrayTypeReference, scope);
 		final CtTypeAccess<Object> typeAccess = factory.Code().createTypeAccess(objectCtTypeReference);
 		if (typeAccess.getAccessedType() instanceof CtArrayTypeReference) {
-			((CtArrayTypeReference) typeAccess.getAccessedType()).getArrayType().setAnnotations(this.references.buildTypeReference(arrayTypeReference, scope).getAnnotations());
+			CtTypeReference<?> arrayType = ((CtArrayTypeReference) typeAccess.getAccessedType()).getArrayType();
+			arrayType.setAnnotations(this.references.buildTypeReference(arrayTypeReference, scope).getAnnotations());
+			arrayType.setSimplyQualified(true);
 		}
 		context.enter(typeAccess, arrayTypeReference);
 		return true;
@@ -1067,7 +1097,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		CtConstructor<Object> c = factory.Core().createConstructor();
 		// if the source start of the class is equals to the source start of the constructor
 		// it means that the constructor is implicit.
-		c.setImplicit(scope.referenceContext.sourceStart() == constructorDeclaration.sourceStart());
+		if (scope != null && scope.referenceContext != null) {
+			c.setImplicit(scope.referenceContext.sourceStart() == constructorDeclaration.sourceStart());
+		}
 		if (constructorDeclaration.binding != null) {
 			c.setExtendedModifiers(getModifiers(constructorDeclaration.binding.modifiers, true, true));
 		}
@@ -1122,7 +1154,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(DoubleLiteral doubleLiteral, BlockScope scope) {
 		doubleLiteral.computeConstant();
-		context.enter(factory.Code().createLiteral(doubleLiteral.constant.doubleValue()), doubleLiteral);
+		CtLiteral<Double> l = factory.Code().createLiteral(doubleLiteral.constant.doubleValue());
+		l.setBase(getBase(doubleLiteral));
+		context.enter(l, doubleLiteral);
 		return true;
 	}
 
@@ -1197,7 +1231,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(FloatLiteral floatLiteral, BlockScope scope) {
 		floatLiteral.computeConstant();
-		context.enter(factory.Code().createLiteral(floatLiteral.constant.floatValue()), floatLiteral);
+		CtLiteral<Float> l = factory.Code().createLiteral(floatLiteral.constant.floatValue());
+		l.setBase(getBase(floatLiteral));
+		context.enter(l, floatLiteral);
 		return true;
 	}
 
@@ -1241,6 +1277,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(IntLiteral intLiteral, BlockScope scope) {
 		intLiteral.computeConstant();
 		CtLiteral<Integer> l = factory.Code().createLiteral(intLiteral.constant.intValue());
+		l.setBase(getBase(intLiteral));
 		context.enter(l, intLiteral);
 		return true;
 	}
@@ -1282,7 +1319,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(LongLiteral longLiteral, BlockScope scope) {
 		longLiteral.computeConstant();
-		context.enter(factory.Code().createLiteral(longLiteral.constant.longValue()), longLiteral);
+		CtLiteral<Long> l = factory.Code().createLiteral(longLiteral.constant.longValue());
+		l.setBase(getBase(longLiteral));
+		context.enter(l, longLiteral);
 		return true;
 	}
 
@@ -1430,7 +1469,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(helper.createVariableAccess(qualifiedNameRef), qualifiedNameRef);
 			return true;
 		} else if (qualifiedNameRef.binding instanceof TypeBinding) {
-			context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference((TypeBinding) qualifiedNameRef.binding)), qualifiedNameRef);
+			TypeBinding typeBinding = (TypeBinding) qualifiedNameRef.binding;
+			CtTypeReference<?> typeRef = references.getTypeReference(typeBinding);
+			helper.handleImplicit(typeBinding.getPackage(), qualifiedNameRef, null, typeRef);
+			context.enter(factory.Code().createTypeAccessWithoutCloningReference(typeRef), qualifiedNameRef);
 			return true;
 		} else if (qualifiedNameRef.binding instanceof ProblemBinding) {
 			if (context.stack.peek().element instanceof CtInvocation) {
@@ -1488,7 +1530,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		} else if (singleNameReference.binding instanceof VariableBinding) {
 			context.enter(helper.createVariableAccess(singleNameReference), singleNameReference);
 		} else if (singleNameReference.binding instanceof TypeBinding) {
-			context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference((TypeBinding) singleNameReference.binding)), singleNameReference);
+			context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.getTypeReference((TypeBinding) singleNameReference.binding).setSimplyQualified(true)), singleNameReference);
 		} else if (singleNameReference.binding instanceof ProblemBinding) {
 			if (context.stack.peek().element instanceof CtInvocation && Character.isUpperCase(CharOperation.charToString(singleNameReference.token).charAt(0))) {
 				context.enter(helper.createTypeAccessNoClasspath(singleNameReference), singleNameReference);
@@ -1576,7 +1618,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(helper.createCatchVariable(singleTypeReference), singleTypeReference);
 			return true;
 		}
-		context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.buildTypeReference(singleTypeReference, scope)), singleTypeReference);
+		CtTypeReference<?> typeRef = references.buildTypeReference(singleTypeReference, scope);
+		if (typeRef != null) {
+			typeRef.setSimplyQualified(true);
+		}
+		context.enter(factory.Code().createTypeAccessWithoutCloningReference(typeRef), singleTypeReference);
 		return true;
 	}
 

@@ -24,6 +24,7 @@ import spoon.SpoonException;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtConstructorCall;
@@ -34,6 +35,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewArray;
@@ -42,6 +44,8 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.declaration.CtAnnotationMethod;
+import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -272,9 +276,10 @@ public class CommentTest {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(InlineComment.class);
 		List<CtComment> comments = type.getComments();
-		assertEquals(6, comments.size());
+		List<CtComment> compilationUnitComments = type.getPosition().getCompilationUnit().getComments();
+		assertEquals(6, comments.size() + compilationUnitComments.size());
 		type.removeComment(comments.get(0));
-		assertEquals(5, type.getComments().size());
+		assertEquals(5, type.getComments().size() +  + compilationUnitComments.size());
 	}
 
 	@Test
@@ -282,25 +287,25 @@ public class CommentTest {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(InlineComment.class);
 		String strType = type.toString();
+		
+		List<CtComment> compilationUnitComments = type.getPosition().getCompilationUnit().getComments();
+		assertEquals(2, compilationUnitComments.size());
+		assertEquals(CtComment.CommentType.BLOCK, compilationUnitComments.get(0).getCommentType());
+		assertEquals("Top File\nLine 2", compilationUnitComments.get(0).getContent());
+		assertEquals("Bottom File", compilationUnitComments.get(1).getContent());
 
 		List<CtComment> comments = type.getElements(new TypeFilter<>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
-		assertEquals(69, comments.size());
+		assertEquals(67, comments.size());
 
 		// verify that all comments present in the AST are printed
 		for (CtComment comment : comments) {
-			if (comment.getCommentType() == CtComment.CommentType.FILE) {
-				// the header of the file is not printed with the toString
-				continue;
-			}
 			assertNotNull(comment.getParent());
 			assertTrue(comment.toString() + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
 		}
 
-		assertEquals(6, type.getComments().size());
-		assertEquals(CtComment.CommentType.FILE, type.getComments().get(0).getCommentType());
-		assertEquals(createFakeComment(f, "comment class"), type.getComments().get(1));
-		assertEquals("Bottom File", type.getComments().get(5).getContent());
+		assertEquals(4, type.getComments().size());
+		assertEquals(createFakeComment(f, "comment class"), type.getComments().get(0));
 
 		CtField<?> field = type.getField("field");
 		assertEquals(4, field.getComments().size());
@@ -367,7 +372,7 @@ public class CommentTest {
 		assertEquals("// comment if" + newLine
 				+ "if ((1 % 2) == 0) {" + newLine
 				+ "    // comment unary operator" + newLine
-				+ "    (field)++;" + newLine
+				+ "    field++;" + newLine
 				+ "}", ctIf.toString());
 
 		CtConstructorCall ctConstructorCall = m1.getBody().getStatement(3);
@@ -429,7 +434,7 @@ public class CommentTest {
 				+ ") ? // comment before then CtConditional" + newLine
 				+ "null// comment after then CtConditional" + newLine
 				+ " : // comment before else CtConditional" + newLine
-				+ "new java.lang.Double((j / ((double) (i - 1))))// comment after else CtConditional" + newLine, ctLocalVariable1.toString());
+				+ "new java.lang.Double(j / ((double) (i - 1)))// comment after else CtConditional" + newLine, ctLocalVariable1.toString());
 
 		CtNewArray ctNewArray = (CtNewArray) ((CtLocalVariable) m1.getBody().getStatement(11)).getDefaultExpression();
 		assertEquals(createFakeComment(f, "last comment at the end of array"), ctNewArray.getComments().get(0));
@@ -480,24 +485,23 @@ public class CommentTest {
 		Factory f = getSpoonFactory();
 		CtClass<?> type = (CtClass<?>) f.Type().get(BlockComment.class);
 		String strType = type.toString();
+		
+		List<CtComment> compilationUnitComments = type.getPosition().getCompilationUnit().getComments();
+		assertEquals(2, compilationUnitComments.size());
+		assertEquals("Bottom File", compilationUnitComments.get(1).getContent());
 
 		List<CtComment> comments = type.getElements(new TypeFilter<>(CtComment.class));
 		// verify that the number of comment present in the AST is correct
-		assertEquals(52, comments.size());
+		assertEquals(50, comments.size());
 
 		// verify that all comments present in the AST are printed
 		for (CtComment comment : comments) {
-			if (comment.getCommentType() == CtComment.CommentType.FILE) {
-				// the header of the file is not printed with the toString
-				continue;
-			}
 			assertNotNull(comment.getParent());
 			assertTrue(comment.toString() + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
 		}
 
-		assertEquals(5, type.getComments().size());
-		assertEquals(createFakeBlockComment(f, "comment class"), type.getComments().get(1));
-		assertEquals("Bottom File", type.getComments().get(4).getContent());
+		assertEquals(3, type.getComments().size());
+		assertEquals(createFakeBlockComment(f, "comment class"), type.getComments().get(0));
 
 		CtField<?> field = type.getField("field");
 		assertEquals(2, field.getComments().size());
@@ -563,7 +567,7 @@ public class CommentTest {
 		assertEquals("/* comment if */" + newLine
 				+ "if ((1 % 2) == 0) {" + newLine
 				+ "    /* comment unary operator */" + newLine
-				+ "    (field)++;" + newLine
+				+ "    field++;" + newLine
 				+ "}", ctIf.toString());
 
 		CtConstructorCall ctConstructorCall = m1.getBody().getStatement(3);
@@ -649,14 +653,14 @@ public class CommentTest {
 		ctComment.setContent("  // foo");
 		assertEquals(CtComment.CommentType.BLOCK, ctComment.getCommentType());
 		// it's a limitation, you cannot start with ''
-		assertEquals("/* // foo */", ctComment.toString());
+		assertEquals("/* // foo */", ctComment.prettyprint());
 
 		// workaround #2: one can cast and call '_setRawContent'
 		// without setting the comment field through reflection
 		((CtCommentImpl) ctComment)._setRawContent("// foo");
 		assertEquals(CtComment.CommentType.BLOCK, ctComment.getCommentType());
 		// it's a limitation, you cannot start with ''
-		assertEquals("/* // foo */", ctComment.toString());
+		assertEquals("/* // foo */", ctComment.prettyprint());
 
 	}
 
@@ -795,6 +799,7 @@ public class CommentTest {
 	@Test
 	public void testDocumentationContract() throws Exception {
 		// contract: all metamodel classes must be commented with an example.
+		
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
@@ -1115,8 +1120,7 @@ public class CommentTest {
 				" * @version 1.0\r" + 
 				" */", type.getComments().get(0).getRawContent());
 	}
-  
-  @Test
+	@Test
 	public void testEmptyStatementComments() {
 		//contract: model building should not produce NPE, comments should exist
 		Launcher launcher = new Launcher();
@@ -1127,5 +1131,80 @@ public class CommentTest {
 		List<CtIf> conditions = model.getElements(new TypeFilter<>(CtIf.class));
 		assertEquals("comment", conditions.get(0).getComments().get(0).getContent());
 		assertEquals("comment", conditions.get(1).getComments().get(0).getContent());
+	}
+
+	@Test
+	public void testAnnotationTypeComment() {
+		//contract: comments in annotations should be properly added to the AST
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/AnnotationTypeComments.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		CtModel model = launcher.buildModel();
+
+		List<CtAnnotationType> annotations = model.getElements(new TypeFilter<>(CtAnnotationType.class));
+		assertEquals("comment1", annotations.get(0).getComments().get(0).getContent());
+		assertTrue(annotations.get(1).getComments().isEmpty());
+
+		Object[] annotationMethods = annotations.get(1).getAnnotationMethods().toArray();
+		assertEquals("comment1", ((CtAnnotationMethod) annotationMethods[0]).getComments().get(0).getContent());
+		assertEquals("comment2", ((CtAnnotationMethod) annotationMethods[0]).getComments().get(1).getContent());
+		assertEquals("comment3", ((CtAnnotationMethod) annotationMethods[1]).getComments().get(0).getContent());
+		assertEquals("comment4", ((CtAnnotationMethod) annotationMethods[3]).getComments().get(0).getContent());
+	}
+
+  public void testLambdaComments() {
+		//contract: comments in lambdas should be properly added to the AST
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/LambdaComments.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		CtModel model = launcher.buildModel();
+
+		List<CtLambda> lambdas = model.getElements(new TypeFilter<>(CtLambda.class));
+		assertEquals("comment", lambdas.get(0).getExpression().getComments().get(0).getContent());
+		assertEquals("comment", lambdas.get(1).getExpression().getComments().get(0).getContent());
+		assertEquals("comment", lambdas.get(2).getExpression().getComments().get(0).getContent());
+		assertEquals("comment", lambdas.get(3).getParent().getComments().get(0).getContent());
+		assertEquals("", lambdas.get(4).getExpression().getComments().get(0).getContent());
+
+		assertEquals("comment", lambdas.get(5).getBody().getStatement(0).getComments().get(0).getContent());
+		assertEquals("comment", lambdas.get(6).getComments().get(0).getContent());
+		assertEquals("comment", lambdas.get(7).getBody().getStatement(0).getComments().get(0).getContent());
+
+		assertTrue(lambdas.get(8).getParent().getComments().isEmpty());
+		assertTrue(lambdas.get(8).getComments().isEmpty());
+		assertTrue(lambdas.get(8).getExpression().getComments().isEmpty());
+		assertEquals(1, ((CtParameter) lambdas.get(8).getParameters().get(0)).getComments().size());
+		assertEquals(1, ((CtParameter) lambdas.get(8).getParameters().get(1)).getComments().size());
+		assertEquals("param1", ((CtParameter) lambdas.get(8).getParameters().get(0)).getComments().get(0).getContent());
+		assertEquals("param2", ((CtParameter) lambdas.get(8).getParameters().get(1)).getComments().get(0).getContent());
+
+		assertEquals("param1", ((CtParameter) lambdas.get(9).getParameters().get(0)).getComments().get(0).getContent());
+		assertEquals("param2", ((CtParameter) lambdas.get(9).getParameters().get(1)).getComments().get(0).getContent());
+
+		assertEquals("param1", ((CtParameter) lambdas.get(10).getParameters().get(0)).getComments().get(0).getContent());
+		assertEquals("param2", ((CtParameter) lambdas.get(10).getParameters().get(1)).getComments().get(0).getContent());
+
+		assertTrue(((CtParameter) lambdas.get(11).getParameters().get(0)).getComments().isEmpty());
+		assertEquals("param2", ((CtParameter) lambdas.get(11).getParameters().get(1)).getComments().get(0).getContent());
+
+		assertEquals("param1", ((CtParameter) lambdas.get(12).getParameters().get(0)).getComments().get(0).getContent());
+		assertEquals("param1", ((CtParameter) lambdas.get(12).getParameters().get(0)).getComments().get(1).getContent());
+		assertEquals("param2", ((CtParameter) lambdas.get(12).getParameters().get(1)).getComments().get(0).getContent());
+		assertEquals("param2", ((CtParameter) lambdas.get(12).getParameters().get(1)).getComments().get(1).getContent());
+	}
+
+	@Test
+	public void testCatchComments() {
+		//contract: comments in catch should be properly added to the AST
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/CatchComments.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		CtModel model = launcher.buildModel();
+
+		List<CtCatch> catches = model.getElements(new TypeFilter<>(CtCatch.class));
+		assertEquals(1, catches.get(0).getComments().size());
+		assertEquals("first comment", catches.get(0).getComments().get(0).getContent());
+		assertEquals(1, catches.get(0).getBody().getComments().size());
+		assertEquals("second comment", catches.get(0).getBody().getComments().get(0).getContent());
 	}
 }

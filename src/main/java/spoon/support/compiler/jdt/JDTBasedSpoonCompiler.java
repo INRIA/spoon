@@ -38,6 +38,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
+import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.support.QueueProcessingManager;
 import spoon.support.comparator.FixedOrderBasedOnFileNameCompilationUnitComparator;
@@ -156,7 +157,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		System.setProperty("jdt.compiler.useSingleThread", "true");
 		batchCompiler.compile(args);
 
-		reportProblems(factory.getEnvironment());
+		reportProblemsWhenCompiling(factory.getEnvironment());
 		factory.getEnvironment().debugMessage("compiled in " + (System.currentTimeMillis() - t) + " ms");
 		return probs.isEmpty();
 	}
@@ -421,12 +422,10 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			// we need first to go through the whole model before getting the right reference for imports
 			unit.traverse(builder, unit.scope);
 		});
-		if (getFactory().getEnvironment().isAutoImports()) {
-			//we need first imports before we can place comments. Mainly comments on imports need that
-			forEachCompilationUnit(unitList, SpoonProgress.Process.IMPORT, unit -> {
-				new JDTImportBuilder(unit, factory).build();
-			});
-		}
+		//we need first imports before we can place comments. Mainly comments on imports need that
+		forEachCompilationUnit(unitList, SpoonProgress.Process.IMPORT, unit -> {
+			new JDTImportBuilder(unit, factory).build();
+		});
 		if (getFactory().getEnvironment().isCommentsEnabled()) {
 			forEachCompilationUnit(unitList, SpoonProgress.Process.COMMENT_LINKING, unit -> {
 				new JDTCommentBuilder(unit, factory).build();
@@ -440,6 +439,9 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		}
 		int i = 0;
 		for (CompilationUnitDeclaration unit : unitList) {
+			if (unit.isModuleInfo() && factory.getEnvironment().getComplianceLevel() < 9) {
+				throw new SpoonException("Modules are only available since Java 9. Please set appropriate compliance level.");
+			}
 			if (unit.isModuleInfo() || !unit.isEmpty()) {
 				final String unitPath = new String(unit.getFileName());
 				if (canProcessCompilationUnit(unitPath)) {
@@ -575,6 +577,26 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		}
 	}
 
+	/** Report problems as logs when compiling to binary.
+	 *  All "Error" problems trigger an exception
+	 */
+	public void reportProblemsWhenCompiling(Environment environment) {
+		for (CategorizedProblem problem : getProblems()) {
+			if (problem != null) {
+				String message = problem.getMessage() + " at " + new String(problem.getOriginatingFileName()) + ":" + problem.getSourceLineNumber();
+				if (problem.isError()) {
+					throw new SnippetCompilationError(message);
+				} else {
+					environment.report(null, Level.WARN, message);
+				}
+			}
+		}
+	}
+
+
+	/** Report problems as logs when building the AST model
+	 *  In in full classpath, a problem categorized as "Error" triggers an exception
+	 */
 	public void reportProblems(Environment environment) {
 		if (!getProblems().isEmpty()) {
 			for (CategorizedProblem problem : getProblems()) {
@@ -591,9 +613,8 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		}
 
 		File file = new File(new String(problem.getOriginatingFileName()));
-		String filename = file.getAbsolutePath();
 
-		String message = problem.getMessage() + " at " + filename + ":" + problem.getSourceLineNumber();
+		String message = problem.getMessage() + " at " + file.getAbsolutePath() + ":" + problem.getSourceLineNumber();
 
 		if (problem.isError()) {
 			if (!environment.getNoClasspath()) {

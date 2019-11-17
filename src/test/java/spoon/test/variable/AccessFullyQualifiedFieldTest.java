@@ -90,8 +90,9 @@ public class AccessFullyQualifiedFieldTest {
 		String output = "target/spooned-" + this.getClass().getSimpleName() + "-StaticMethod/";
 		String pathResource = "src/test/java/spoon/test/variable/testclasses/BurritosStaticMethod.java";
 		String result = this.buildResourceAndReturnResult(pathResource, output);
-
-		assertTrue("The inner class should contain call using import", result.contains(" toto();"));
+		//the package name `spoon.test.variable.testclasses` cannot be used in FQN mode because it is shadowed by local variable `spoon`
+		//so use at least Type name
+		assertTrue("The inner class should contain call using import", result.contains(" BurritosStaticMethod.toto();"));
 		canBeBuilt(output, 7);
 	}
 

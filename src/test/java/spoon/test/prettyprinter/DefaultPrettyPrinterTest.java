@@ -30,6 +30,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -41,6 +42,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
+import spoon.test.imports.ImportTest;
 import spoon.test.prettyprinter.testclasses.AClass;
 import spoon.testing.utils.ModelUtils;
 
@@ -123,7 +125,10 @@ public class DefaultPrettyPrinterTest {
 			+ "}";
 
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
-		assertEquals(expected, aClass.toString());
+		//TODO remove that after implicit is set correctly for these cases
+		assertTrue(factory.getEnvironment().createPrettyPrinter().printTypes(aClass).contains(expected));
+		
+		assertEquals(expected, aClass.prettyprint());
 
 		final CtConstructorCall<?> constructorCall = aClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class)).get(0);
 
@@ -149,7 +154,7 @@ public class DefaultPrettyPrinterTest {
 			+ "}";
 
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
-		assertEquals(expected, aClass.getMethodsByName("aMethod").get(0).toString());
+		assertEquals(expected, printByPrinter(aClass.getMethodsByName("aMethod").get(0)));
 
 		final CtConstructorCall<?> constructorCall =
 				aClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class))
@@ -174,7 +179,7 @@ public class DefaultPrettyPrinterTest {
 		final String expected = "public List<? extends ArrayList> aMethodWithGeneric() {" + System.lineSeparator()
 				+ "    return new ArrayList<>();" + System.lineSeparator()
 				+ "}";
-		assertEquals(expected, aClass.getMethodsByName("aMethodWithGeneric").get(0).toString());
+		assertEquals(expected, printByPrinter(aClass.getMethodsByName("aMethodWithGeneric").get(0)));
 
 		final CtConstructorCall<?> constructorCall =
 				aClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class))
@@ -184,6 +189,10 @@ public class DefaultPrettyPrinterTest {
 				.get(0);
 		assertTrue(ctTypeReference.isImplicit());
 		assertEquals("Object", ctTypeReference.getSimpleName());
+	}
+
+	private static String printByPrinter(CtElement element) {
+		return ImportTest.printByPrinter(element);
 	}
 
 	@Test
@@ -200,42 +209,42 @@ public class DefaultPrettyPrinterTest {
 
 		String expected =
 			"public void setFieldUsingExternallyDefinedEnumWithSameNameAsLocal() {" + nl
-			+ "    localField = spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1.ordinal();" + nl
+			+ "    localField = TypeIdentifierCollision.ENUM.E1.ordinal();" + nl
 			+ "}";
 
 		String computed = aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0).toString();
 		assertEquals("We use FQN for E1", expected, computed);
 
-		expected = //This is correct however it could be more concise.
+		expected = 
 			"public void setFieldUsingLocallyDefinedEnum() {" + nl
-			+ "    localField = TypeIdentifierCollision.ENUM.E1.ordinal();" + nl
+			+ "    localField = ENUM.E1.ordinal();" + nl
 			+ "}";
 
-		computed = aClass.getMethodsByName("setFieldUsingLocallyDefinedEnum").get(0).toString();
+		computed = aClass.getMethodsByName("setFieldUsingLocallyDefinedEnum").get(0).prettyprint();
 		assertEquals(expected, computed);
 
 		expected =
 			"public void setFieldOfClassWithSameNameAsTheCompilationUnitClass() {" + nl
-			+ "    spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField = localField;" + nl
+			+ "    TypeIdentifierCollision.globalField = localField;" + nl
 			+ "}";
 
 		computed = aClass.getMethodsByName("setFieldOfClassWithSameNameAsTheCompilationUnitClass").get(0).toString();
 		assertEquals("The static field of an external type with the same identifier as the compilation unit is printed with FQN", expected, computed);
 
-		expected = //This is correct however it could be more concise.
+		expected =
 			"public void referToTwoInnerClassesWithTheSameName() {" + nl
-			+ "    TypeIdentifierCollision.Class0.ClassA.VAR0 = TypeIdentifierCollision.Class0.ClassA.getNum();" + nl
-			+ "    TypeIdentifierCollision.Class1.ClassA.VAR1 = TypeIdentifierCollision.Class1.ClassA.getNum();" + nl
+			+ "    ClassA.VAR0 = ClassA.getNum();" + nl
+			+ "    Class1.ClassA.VAR1 = Class1.ClassA.getNum();" + nl
 			+ "}";
 
 		//Ensure the ClassA of Class0 takes precedence over an import statement for ClassA in Class1, and its identifier can be the short version.
 
-		computed = aClass.getMethodsByName("referToTwoInnerClassesWithTheSameName").get(0).toString();
+		computed = aClass.getMethodsByName("referToTwoInnerClassesWithTheSameName").get(0).prettyprint();
 		assertEquals("where inner types have the same identifier only one may be shortened and the other should be fully qualified", expected, computed);
 
 		expected =
 			"public enum ENUM {" + nl + nl
-			+ "    E1(spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.globalField, spoon.test.prettyprinter.testclasses.sub.TypeIdentifierCollision.ENUM.E1);" + nl
+			+ "    E1(TypeIdentifierCollision.globalField, TypeIdentifierCollision.ENUM.E1);" + nl
 			+ "    final int NUM;" + nl + nl
 			+ "    final Enum<?> e;" + nl + nl
 			+ "    private ENUM(int num, Enum<?> e) {" + nl
@@ -284,7 +293,7 @@ public class DefaultPrettyPrinterTest {
 		File javaFile = new File(pathname);
 		assertTrue(javaFile.exists());
 
-		assertEquals("package foo;" + nl + nl + nl + "class Bar {}" + nl + nl,
+		assertEquals("package foo;" + nl + "class Bar {}",
 				IOUtils.toString(new FileInputStream(javaFile), "UTF-8"));
 	}
 
@@ -385,5 +394,26 @@ public class DefaultPrettyPrinterTest {
 			assertTrue(m.find());
 			assertEquals("this(v, true)", m.group(1));
 		}
+	}
+
+	@Test
+	public void testElseIf() {
+		//contract: else if statements should be printed without break else and if
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/A6.java");
+		launcher.getEnvironment().setAutoImports(true);
+		CtModel model = launcher.buildModel();
+		CtType a5 = model.getRootPackage().getType("A6");
+		String result = a5.toStringWithImports();
+		String expected = "public class A6 {\n" +
+				"    public static void main(String[] args) {\n" +
+				"        int a = 1;\n" +
+				"        if (a == 1) {\n" +
+				"        } else if (a == 2) {\n" +
+				"        } else if (a == 3) {\n" +
+				"        }\n" +
+				"    }\n" +
+				"}";
+		assertEquals(expected, result);
 	}
 }

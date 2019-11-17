@@ -4,8 +4,8 @@ tags: [getting-started]
 ---
 
 In software, an architectural rule (aka architectural constraint) specifies a design decision on the application. Architectural rules cannot usually be expressed in the programming language itself.
-Architectural rules can be written as AST analysis (see [this post](https://saturnnetwork.wordpress.com/2012/11/26/ultimate-architecture-enforcement-prevent-code-violations-at-code-commit-time/)), which makes Spoon very appropriate to express and check them.
-Since architectural rules must be automatically checked as often as possible, it's good to have them part of continuous integration (hence, the meaningful yet limited [Sonar architecture rule engine](https://docs.sonarqube.org/display/SONARQUBE44/Architecture+Rule+Engine)).
+Architectural rules can be written as AST analysis, which makes Spoon very appropriate to express and check them.
+Since architectural rules must be automatically checked as often as possible, it's good to have them part of continuous integration.
 
 To write an architectural rule in Spoon that is checked in CI, the idea is to write a standard Junit test case that loads the application code, express the rule and check it. Doing this only requires to depend on Spoon at testing time, ie `<scope>test</scope>` in Maven.
 
@@ -86,3 +86,10 @@ public void testDocumentation() throws Exception {
     }
 }
 ```
+
+Related work in architecture enforcement
+----------------------------------------
+
+* [Architecture enforcement with Checkstyle](https://saturnnetwork.wordpress.com/2012/11/26/ultimate-architecture-enforcement-prevent-code-violations-at-code-commit-time/)
+* [Sonar architecture rule engine](https://docs.sonarqube.org/display/SONARQUBE44/Architecture+Rule+Engine)
+* [Archunit:  specify and assert architecture rules in plain Java](https://www.archunit.org/)

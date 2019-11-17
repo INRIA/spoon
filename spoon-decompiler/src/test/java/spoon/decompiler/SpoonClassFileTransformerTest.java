@@ -2,6 +2,8 @@ package spoon.decompiler;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtType;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,8 +60,52 @@ public class SpoonClassFileTransformerTest {
 		}
 	}
 
+
 	@Test
 	public void testClassFileTransform() throws ClassNotFoundException,
+			IllegalAccessException,
+			InvocationTargetException,
+			InstantiationException,
+			NoSuchMethodException,
+			IOException {
+		testClassFileTransform(null);
+	}
+
+
+	@Test
+	public void testClassFileTransformWithProcyon() throws ClassNotFoundException,
+			IllegalAccessException,
+			InvocationTargetException,
+			InstantiationException,
+			NoSuchMethodException,
+			IOException {
+		testClassFileTransform(new ProcyonDecompiler());
+	}
+
+
+	@Test
+	public void testClassFileTransformWithFernflower() throws ClassNotFoundException,
+			IllegalAccessException,
+			InvocationTargetException,
+			InstantiationException,
+			NoSuchMethodException,
+			IOException {
+		testClassFileTransform(new FernflowerDecompiler());
+	}
+
+	public void transform(CtType type) {
+		//Decompiler might create a default constructor with this.transformed=false... or not
+		//if it does, add a statement at the end of the constructor if not change the default expression
+		if(type instanceof CtClass) {
+			if(((CtClass) type).getConstructor().getBody().getStatements().size() <= 1) {
+				type.getField("transformed").setAssignment(type.getFactory().createCodeSnippetExpression("true"));
+			} else {
+				((CtClass) type).getConstructor().getBody().insertEnd(type.getFactory().createCodeSnippetStatement("this.transformed=true"));
+			}
+		}
+	}
+
+	public void testClassFileTransform(Decompiler decompiler) throws ClassNotFoundException,
 			IllegalAccessException,
 			InvocationTargetException,
 			InstantiationException,
@@ -71,15 +117,16 @@ public class SpoonClassFileTransformerTest {
 		DECOMPILED_DIR.mkdir();
 		CACHE_DIR.mkdir();
 		RECOMPILED_DIR.mkdir();
+		//type -> type.getField("transformed").setAssignment(type.getFactory().createCodeSnippetExpression("true")),
 
 		//Create a SpoonClassFileTransformer
 		SpoonClassFileTransformer transformer = new SpoonClassFileTransformer(
 				s -> s.startsWith("se/kth/castor"),
-				type -> type.getField("transformed").setAssignment(type.getFactory().createCodeSnippetExpression("true")),
+				type -> transform(type),
 				DECOMPILED_DIR.getPath(),
 				CACHE_DIR.getPath(),
 				RECOMPILED_DIR.getPath(),
-				null
+				decompiler
 		);
 
 		//Class loaded by cl should be transformed

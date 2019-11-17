@@ -5,6 +5,7 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.compiler.Environment;
 import spoon.processing.FactoryAccessor;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePosition;
@@ -19,6 +20,7 @@ import spoon.reflect.visitor.chain.CtQueryable;
 import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.support.Experimental;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -390,5 +392,23 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @return a list of CtElement containing the element's direct children.
 	 */
 	List<CtElement> getDirectChildren();
+
+	/**
+	 * @return the source code of this element according to the setting of {@link Environment#getPrettyPrintingMode()}.
+	 *
+	 */
+	String toString();
+
+	/**
+	 * @return the most straightforward and explicit version of this element.
+	 */
+	String toStringDebug();
+
+	/**
+	 * @return the source code of this element with the pretty-printing rules of Spoon
+	 * Warning: this is not side-effect free, this triggers some {@link spoon.reflect.visitor.ImportAnalyzer} which would change the model: add/remove imports, change the value `implicit` of some model elements, etc.
+	 */
+	@Experimental
+	String prettyprint();
 
 }

@@ -102,7 +102,7 @@ public class VisibilityTest {
 		CtType<?> nestedB = aClass.getNestedType("B");
 		List<CtFieldAccess> elements = nestedB.getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(1, elements.size());
-		assertEquals("(spoon.test.visibility.testclasses.A.B.i)", elements.get(0).toString());
+		assertEquals("spoon.test.visibility.testclasses.A.B.i", elements.get(0).toString());
 
 		CtMethod<?> instanceOf = aClass.getMethodsByName("instanceOf").get(0);
 		List<CtBinaryOperator> elements1 = instanceOf.getElements(new TypeFilter<>(CtBinaryOperator.class));
@@ -116,7 +116,7 @@ public class VisibilityTest {
 		nestedB = secondClass.getNestedType("B");
 		elements = nestedB.getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(1, elements.size());
-		assertEquals("(spoon.test.visibility.testclasses.A2.B.i)", elements.get(0).toString());
+		assertEquals("spoon.test.visibility.testclasses.A2.B.i", elements.get(0).toString());
 
 		instanceOf = secondClass.getMethodsByName("instanceOf").get(0);
 		elements1 = instanceOf.getElements(new TypeFilter<>(CtBinaryOperator.class));
@@ -172,6 +172,6 @@ public class VisibilityTest {
 		}).get(0);
 		assertNotNull(ctInvocation.getTarget());
 		assertTrue(ctInvocation.getTarget().isImplicit());
-		assertEquals("bound()", ctInvocation.toString());
+		assertEquals("bound()", ctInvocation.prettyprint());
 	}
 }

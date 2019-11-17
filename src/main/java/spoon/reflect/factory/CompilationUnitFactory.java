@@ -7,6 +7,7 @@ package spoon.reflect.factory;
 
 import spoon.SpoonException;
 import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -49,7 +50,7 @@ public class CompilationUnitFactory extends SubFactory {
 	}
 
 	public CompilationUnit getOrCreate(CtPackage ctPackage) {
-		if (ctPackage.getPosition().getCompilationUnit() != null) {
+		if (!(ctPackage.getPosition().getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
 			return ctPackage.getPosition().getCompilationUnit();
 		} else {
 
@@ -76,7 +77,7 @@ public class CompilationUnitFactory extends SubFactory {
 		if (type == null) {
 			return null;
 		}
-		if (type.getPosition().getCompilationUnit() != null) {
+		if (!(type.getPosition().getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
 			return type.getPosition().getCompilationUnit();
 		}
 
@@ -103,7 +104,7 @@ public class CompilationUnitFactory extends SubFactory {
 	}
 
 	public CompilationUnit getOrCreate(CtModule module) {
-		if (module.getPosition().getCompilationUnit() != null) {
+		if (!(module.getPosition().getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
 			return module.getPosition().getCompilationUnit();
 		} else {
 			File file = this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, null, null).toFile();

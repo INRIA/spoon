@@ -1,12 +1,10 @@
 #!/bin/bash
 set -e
 
-# This script intends to check if Spoon can be compiled
-# using Maven 3.3.9
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
 
-source /opt/jdk_switcher/jdk_switcher.sh
+mvn -version
 
-jdk_switcher use oraclejdk8
 wget archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip
 unzip -qq apache-maven-3.3.9-bin.zip
 export M2_HOME=$PWD/apache-maven-3.3.9

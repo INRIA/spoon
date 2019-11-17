@@ -71,6 +71,7 @@ import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.ParentFunction;
 import spoon.reflect.visitor.filter.RegexFilter;
 import spoon.reflect.visitor.filter.ReturnOrThrowFilter;
+import spoon.reflect.visitor.filter.SubtypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.comparator.DeepRepresentationComparator;
 import spoon.support.reflect.declaration.CtMethodImpl;
@@ -87,6 +88,7 @@ import spoon.test.filters.testclasses.Tostada;
 import spoon.test.imports.testclasses.internal4.Constants;
 import spoon.testing.utils.ModelUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1351,4 +1353,53 @@ public class FilterTest {
 		assertEquals(1, ctFields.size());
 		assertTrue(ctFields.get(0) instanceof CtField);
 	}
+
+	@Test
+	public void testSubTypeFilter() {
+		// contract: SubtypeFilter correctly filters subtypes
+
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		spoon.buildModel();
+
+		CtType type = spoon.getFactory().Type().get(AbstractTostada.class);
+		List<CtType<?>> types = spoon.getModel().getRootPackage().getElements(new SubtypeFilter(type.getReference()));
+		assertEquals(6, types.size());
+
+		List<CtType<?>> types2 = spoon.getModel().getRootPackage().getElements(new SubtypeFilter(type.getReference()).includingSelf(false));
+		assertEquals(5, types2.size());
+	}
+
+	@Test
+	public void testFilterContains() {
+		// ref: https://github.com/INRIA/spoon/issues/3058
+
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/filters/testclasses");
+		spoon.buildModel();
+
+		CtType<?> type = spoon.getFactory().Type().get(Foo.class);
+		CtStatement s = type.getMethodsByName("foo").get(0).getBody().getStatement(0);
+		assertEquals("int x = 3", s.toString());
+
+		class ContainFilter implements Filter {
+			private final CtElement el;
+			ContainFilter(CtElement orig) { this.el = orig; }
+			@Override
+			public boolean matches(CtElement element) {
+				return element.equals(el);
+			}
+		}
+
+		// we look for this AST in the new class
+		List<CtElement> l = spoon.getFactory().Type().get(FooLine.class).filterChildren(new ContainFilter(s)).list();
+
+		assertEquals(1, l.size());
+
+		// the found element is the right one, and we now where it is
+		assertEquals("int x = 3", l.get(0).toString());
+		assertTrue(l.get(0).getPosition().toString().endsWith("src/test/java/spoon/test/filters/testclasses/FooLine.java:5)"));
+
+	}
+
 }

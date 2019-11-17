@@ -9,6 +9,8 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
+import java.util.Arrays;
+
 import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
 import static spoon.reflect.path.CtRole.JAVADOC_TAG_VALUE;
 import static spoon.reflect.path.CtRole.DOCUMENTATION_TYPE;
@@ -32,26 +34,40 @@ public interface CtJavaDocTag extends CtElement {
 	 * Define the possible type for a tag
 	 */
 	enum TagType {
-		AUTHOR,
-		DEPRECATED,
-		EXCEPTION,
-		PARAM,
-		RETURN,
-		SEE,
-		SERIAL,
-		SERIAL_DATA,
-		SERIAL_FIELD,
-		SINCE,
-		THROWS,
-		VERSION,
-		UNKNOWN;
+		AUTHOR("author"),
+		DEPRECATED("deprecated"),
+		EXCEPTION("exception"),
+		PARAM("param"),
+		RETURN("return"),
+		SEE("see"),
+		SERIAL("serial"),
+		SERIAL_DATA("serialData"),
+		SERIAL_FIELD("serialField"),
+		SINCE("since"),
+		THROWS("throws"),
+		VERSION("version"),
+		UNKNOWN("unknown");
+
+		TagType(String name) {
+			this.name = name;
+		}
+
+		private String name;
+
+		/**
+		 * Get tag name
+		 * @return name
+		 */
+		public String getName() {
+			return name;
+		}
 
 		/**
 		 * Return true if the tag can have a parameter
 		 * @return true if the tag can have a parameter
 		 */
 		public boolean hasParam() {
-			return this == PARAM || this == THROWS;
+			return this == PARAM || this == THROWS || this == EXCEPTION;
 		}
 
 		/**
@@ -60,12 +76,9 @@ public interface CtJavaDocTag extends CtElement {
 		 * @return the tag type
 		 */
 		public static TagType tagFromName(String tagName) {
-			for (TagType t : TagType.values()) {
-				if (t.name().toLowerCase().equals(tagName.toLowerCase())) {
-					return t;
-				}
-			}
-			return UNKNOWN;
+			return Arrays.stream(TagType.values())
+					.filter(v -> v.name.equals(tagName))
+					.findFirst().orElse(UNKNOWN);
 		}
 
 		@Override

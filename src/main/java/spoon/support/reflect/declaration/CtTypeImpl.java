@@ -12,6 +12,7 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -535,7 +536,17 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public boolean isGenerics() {
+		for (CtTypeParameter ref : formalCtTypeParameters) {
+			if (ref.isGenerics()) {
+				return true;
+			}
+		}
 		return false;
+	}
+
+	@Override
+	public boolean isParameterized() {
+		return !formalCtTypeParameters.isEmpty();
 	}
 
 	@Override
@@ -980,10 +991,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public String toStringWithImports() {
-		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
-		printer.getImportsContext().computeImports(this);
-		printer.writeHeader(Arrays.asList(new CtType[] {this}), printer.getImportsContext().getAllImports());
-		this.accept(printer);
-		return printer.toString();
+		DefaultJavaPrettyPrinter printer = (DefaultJavaPrettyPrinter) getFactory().getEnvironment().createPrettyPrinter();
+		CtCompilationUnit cu = getFactory().createCompilationUnit();
+		cu.addDeclaredType(this);
+		return printer.printCompilationUnit(cu);
 	}
 }

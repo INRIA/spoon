@@ -359,7 +359,7 @@ public class VariableReferencesTest {
 		CtClass<?> clazz = factory.Class().get(VariableReferencesFromStaticMethod.class);
 		CtMethod staticMethod = clazz.getMethodsByName("staticMethod").get(0);
 		CtStatement stmt = staticMethod.getBody().getStatements().get(1);
-		assertEquals("org.junit.Assert.assertTrue((field == 2))", stmt.toString());
+		assertEquals("org.junit.Assert.assertTrue(field == 2)", stmt.toString());
 		CtLocalVariableReference varRef = stmt.filterChildren(new TypeFilter<>(CtLocalVariableReference.class)).first();
 		List<CtVariable> vars = varRef.map(new PotentialVariableDeclarationFunction()).list();
 		assertEquals("Found unexpected variable declaration.", 1, vars.size());

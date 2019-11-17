@@ -9,9 +9,9 @@ import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import spoon.reflect.declaration.CtElement;
 
 public class ASTPair {
-	public CtElement element;
+	public final CtElement element;
 
-	public ASTNode node;
+	public final ASTNode node;
 
 	public ASTPair(CtElement element, ASTNode node) {
 		this.element = element;

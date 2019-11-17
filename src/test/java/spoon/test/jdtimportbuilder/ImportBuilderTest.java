@@ -20,6 +20,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtPackageReference;
@@ -33,6 +34,8 @@ import spoon.test.jdtimportbuilder.testclasses.StaticImportWithInheritance;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -41,8 +44,6 @@ import static org.junit.Assert.assertTrue;
  * Created by urli on 09/08/2017.
  */
 public class ImportBuilderTest {
-
-	private static final String nl = System.getProperty("line.separator");
 
 	@Test
 	public void testWithNoImport() {
@@ -72,7 +73,7 @@ public class ImportBuilderTest {
 		assertEquals(1, imports.size());
 
 		CtImport ref = imports.iterator().next();
-		assertEquals("import spoon.test.annotation.testclasses.GlobalAnnotation;" + nl, ref.toString());
+		assertEquals("import spoon.test.annotation.testclasses.GlobalAnnotation;", ref.toString());
 		assertTrue(ref.getReference() instanceof CtTypeReference);
 
 		CtTypeReference refType = (CtTypeReference) ref.getReference();
@@ -85,7 +86,8 @@ public class ImportBuilderTest {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/java/spoon/test/imports/testclasses/ClassWithInvocation.java");
 		spoon.getEnvironment().setAutoImports(false);
-		spoon.buildModel();
+		//build and print model. During printing the autoImport==false validators are applied
+		spoon.run();
 
 		CtClass classA = spoon.getFactory().Class().get(ClassWithInvocation.class);
 		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
@@ -94,7 +96,7 @@ public class ImportBuilderTest {
 
 	@Test
 	public void testInternalImportWhenNoClasspath() {
-		// contract: in no-classpath anything which is not loaded cannot be imported, even if original source code has imports
+		// contract: in no-classpath anything which is not loaded becomes CtUnresolvedImport, even if original source code has imports
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/test/resources/noclasspath/Attachment.java");
 		spoon.getEnvironment().setAutoImports(true);
@@ -103,7 +105,14 @@ public class ImportBuilderTest {
 
 		CtClass classA = spoon.getFactory().Class().get("it.feio.android.omninotes.models.Attachment");
 		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
-		assertTrue(unitA.getImports().isEmpty());
+
+		assertTrue(unitA.getImports().stream().filter(i -> !(i instanceof CtUnresolvedImport)).collect(Collectors.toList()).isEmpty());
+		assertEquals(3, unitA.getImports().size());
+
+		Set<String> importRefs = unitA.getImports().stream().map(i -> ((CtUnresolvedImport) i).getUnresolvedReference()).collect(Collectors.toSet());
+		assertTrue(importRefs.contains("android.net.Uri"));
+		assertTrue(importRefs.contains("android.os.Parcel"));
+		assertTrue(importRefs.contains("android.os.Parcelable"));
 	}
 
 	@Test
@@ -170,7 +179,7 @@ public class ImportBuilderTest {
 		assertEquals(1, imports.size());
 		CtImport ctImport = imports.iterator().next();
 		assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
-		assertEquals("import static spoon.test.jdtimportbuilder.testclasses.staticimport.DependencySubClass.*;" + nl, ctImport.toString());
+		assertEquals("import static spoon.test.jdtimportbuilder.testclasses.staticimport.DependencySubClass.*;", ctImport.toString());
 	}
 
 	@Test
@@ -187,10 +196,10 @@ public class ImportBuilderTest {
 		CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitStatic.getImports();
 
-		assertEquals(1, imports.size());
+		assertEquals(imports.toString(), 1, imports.size());
 		CtImport ctImport = imports.iterator().next();
 
 		assertEquals(CtImportKind.ALL_STATIC_MEMBERS, ctImport.getImportKind());
-		assertEquals("import static jdtimportbuilder.itf.DumbItf.*;" + nl, ctImport.toString());
+		assertEquals("import static jdtimportbuilder.itf.DumbItf.*;", ctImport.toString());
 	}
 }

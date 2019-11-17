@@ -14,7 +14,6 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
@@ -34,6 +33,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.ModelConsistencyChecker;
+import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtConsumableFunction;
 import spoon.reflect.visitor.chain.CtFunction;
@@ -212,6 +212,10 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public void delete() {
+		if (!isParentInitialized()) {
+			// already not in a tree, nothing to be deleted
+			return;
+		}
 		//delete is implemented as replace by no element (empty list of elements)
 		replace(Collections.<CtElement>emptyList());
 	}
@@ -273,23 +277,22 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public String toString() {
+	public String prettyprint() {
+		PrettyPrinter printer = getFactory().getEnvironment().createPrettyPrinterAutoImport();
+		return printer.prettyprint(this);
+	}
+
+	@Override
+	public String toStringDebug() {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
-		String errorMessage = "";
-		try {
-			// we do not want to compute imports of for CtImport and CtReference
-			// as it may change the print of a reference
-			if (!(this instanceof CtImport) && !(this instanceof CtReference)) {
-				printer.getImportsContext().computeImports(this);
-			}
-			printer.scan(this);
-		} catch (ParentNotInitializedException ignore) {
-			LOGGER.error(ERROR_MESSAGE_TO_STRING, ignore);
-			errorMessage = ERROR_MESSAGE_TO_STRING;
-		}
-		// in line-preservation mode, newlines are added at the beginning to matches the lines
-		// removing them from the toString() representation
-		return printer.toString().replaceFirst("^\\s+", "") + errorMessage;
+		return printer.scan(this).toString();
+	}
+
+	@Override
+	public String toString() {
+		DefaultJavaPrettyPrinter printer = (DefaultJavaPrettyPrinter) getFactory().getEnvironment().createPrettyPrinter();
+
+		return printer.printElement(this);
 	}
 
 	@Override

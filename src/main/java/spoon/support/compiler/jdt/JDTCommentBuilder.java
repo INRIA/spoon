@@ -18,6 +18,7 @@ import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -27,14 +28,18 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
@@ -43,8 +48,8 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
-import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.EarlyTerminatingScanner;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -183,17 +188,25 @@ public class JDTCommentBuilder {
 	 */
 	private void insertCommentInAST(final CtComment comment) {
 		CtElement commentParent = findCommentParent(comment);
-		if (commentParent == null) {
+		if (commentParent instanceof CtPackageDeclaration || commentParent instanceof CtCompilationUnit) {
 			File file = spoonUnit.getFile();
-			if (file != null && file.getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION)) {
+			if (file == null) {
+				//it is a virtual compilation unit - e.g. Snipet compilation unit
+				//all such comments belongs to declared type
+				List<CtType<?>> types = spoonUnit.getDeclaredTypes();
+				if (types.size() > 0) {
+					types.get(0).addComment(comment);
+					return;
+				}
+			} else if (file.getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION)) {
+				//all compilation unit comments and package declaration comments are in package
+				//other comments can belong to imports or types declared in package-info.java file
 				spoonUnit.getDeclaredPackage().addComment(comment);
-			} else if (file != null && file.getName().equals(DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION)) {
+				return;
+			} else if (file.getName().equals(DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION)) {
 				spoonUnit.getDeclaredModule().addComment(comment);
-			} else {
-				comment.setCommentType(CtComment.CommentType.FILE);
-				addCommentToNear(comment, new ArrayList<>(spoonUnit.getDeclaredTypes()));
+				return;
 			}
-			return;
 		}
 		// visitor that inserts the comment in the element
 		CtInheritanceScanner insertionVisitor = new CtInheritanceScanner() {
@@ -288,8 +301,7 @@ public class JDTCommentBuilder {
 				}
 			}
 
-			@Override
-			public <T> void visitCtInterface(CtInterface<T> e) {
+			private <T> void visitInterfaceType(CtType<T> e) {
 				final List<CtElement> elements = new ArrayList<>();
 				for (CtTypeMember typeMember : e.getTypeMembers()) {
 					if (typeMember instanceof CtField || typeMember instanceof CtMethod) {
@@ -303,6 +315,31 @@ public class JDTCommentBuilder {
 				} catch (ParentNotInitializedException ex) {
 					e.addComment(comment);
 				}
+			}
+
+			@Override
+			public <T> void visitCtInterface(CtInterface<T> e) {
+				visitInterfaceType(e);
+			}
+
+			@Override
+			public <A extends Annotation> void visitCtAnnotationType(CtAnnotationType<A> e) {
+				visitInterfaceType(e);
+			}
+
+			@Override
+			public void visitCtCompilationUnit(CtCompilationUnit compilationUnit) {
+				compilationUnit.addComment(comment);
+			}
+
+			@Override
+			public void visitCtPackageDeclaration(CtPackageDeclaration packageDeclaration) {
+				packageDeclaration.addComment(comment);
+			}
+
+			@Override
+			public void visitCtImport(CtImport ctImport) {
+				ctImport.addComment(comment);
 			}
 
 			@Override
@@ -398,6 +435,20 @@ public class JDTCommentBuilder {
 			}
 
 			@Override
+			public <T> void visitCtLambda(CtLambda<T> e) {
+				if (e.getExpression() != null) {
+					CtParameter<?> lastParameter = e.getParameters().get(e.getParameters().size() - 1);
+					if (comment.getPosition().getSourceStart() > lastParameter.getPosition().getSourceEnd()) {
+						e.getExpression().addComment(comment);
+					} else {
+						e.addComment(comment);
+					}
+				} else if (e.getBody() != null) {
+					e.addComment(comment);
+				}
+			}
+
+			@Override
 			public <T> void visitCtNewArray(CtNewArray<T> e) {
 				addCommentToNear(comment, new ArrayList<>(e.getElements()));
 				try {
@@ -416,6 +467,8 @@ public class JDTCommentBuilder {
 			public void visitCtCatch(CtCatch e) {
 				if (comment.getPosition().getLine() <= e.getPosition().getLine()) {
 					e.addComment(comment);
+				} else {
+					e.getBody().addComment(comment);
 				}
 			}
 
@@ -448,7 +501,7 @@ public class JDTCommentBuilder {
 	 * @return the parent of the comment
 	 */
 	private CtElement findCommentParent(CtComment comment) {
-		class FindCommentParentScanner extends CtScanner {
+		class FindCommentParentScanner extends EarlyTerminatingScanner<Void> {
 			public CtElement commentParent;
 
 			private int start;
@@ -457,6 +510,7 @@ public class JDTCommentBuilder {
 			FindCommentParentScanner(int start, int end) {
 				this.start = start;
 				this.end = end;
+				setVisitCompilationUnitContent(true);
 			}
 
 			private boolean isCommentBetweenElementPosition(CtElement element) {
@@ -491,11 +545,7 @@ public class JDTCommentBuilder {
 				comment.getPosition().getSourceStart(),
 				comment.getPosition().getSourceEnd());
 
-		if (!spoonUnit.getDeclaredTypes().isEmpty()) {
-			findCommentParentScanner.scan(spoonUnit.getDeclaredTypes());
-		} else if (spoonUnit.getDeclaredModuleReference() != null) {
-			findCommentParentScanner.scan(spoonUnit.getDeclaredModuleReference().getDeclaration());
-		}
+		findCommentParentScanner.scan(spoonUnit);
 
 		return findCommentParentScanner.commentParent;
 	}

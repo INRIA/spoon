@@ -25,7 +25,10 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -34,6 +37,7 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.TokenWriter;
 import spoon.reflect.visitor.DefaultTokenWriter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.prettyprinter.testclasses.MissingVariableDeclaration;
 import spoon.testing.utils.ModelUtils;
 
@@ -131,6 +135,65 @@ public class PrinterTest {
 	}
 
 	@Test
+	public void testAutoimportModeDontImportUselessStaticNoClassPath() {
+		Launcher spoon = new Launcher();
+		spoon.getEnvironment().setAutoImports(true);
+		spoon.getEnvironment().setNoClasspath(true);
+		PrettyPrinter printer = spoon.createPrettyPrinter();
+		spoon.addInputResource("./src/test/resources/unresolved/UnresolvedExtend.java");
+		spoon.buildModel();
+
+		CtType element = spoon.getFactory().Class().getAll().get(0);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String result = printer.getResult();
+
+		assertTrue("The result should contain import java.util.ArrayList: ", result.contains("import java.util.ArrayList;"));
+		assertTrue("The result should contain import java.util.List: ", result.contains("import java.util.List;"));
+		assertTrue("The result should contain import static org.Bar.m: ", result.contains("import static org.Bar.m;"));
+	}
+
+	@Test
+	public void testUnresolvedImportStaticNoClassPath() {
+		Launcher spoon = new Launcher();
+		spoon.getEnvironment().setAutoImports(true);
+		spoon.getEnvironment().setNoClasspath(true);
+		PrettyPrinter printer = spoon.createPrettyPrinter();
+		spoon.addInputResource("./src/test/resources/unresolved/StaticImportUnresolved.java");
+		spoon.buildModel();
+
+		CtType element = spoon.getFactory().Class().getAll().get(0);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String result = printer.getResult();
+
+		assertTrue("The result should contain import java.util.ArrayList: ", result.contains("import java.util.ArrayList;"));
+		assertTrue("The result should contain import java.util.List: ", result.contains("import java.util.List;"));
+		assertTrue("The result should contain import static org.Bar.m: ", result.contains("import static org.Bar.*;"));
+	}
+
+	@Test
+	public void testUnresolvedNoClassPath() {
+		Launcher spoon = new Launcher();
+		spoon.getEnvironment().setAutoImports(true);
+		spoon.getEnvironment().setNoClasspath(true);
+		PrettyPrinter printer = spoon.createPrettyPrinter();
+		spoon.addInputResource("./src/test/resources/unresolved/Unresolved.java");
+		spoon.buildModel();
+
+		CtType element = spoon.getFactory().Class().getAll().get(0);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
+		String result = printer.getResult();
+
+		assertTrue("The result should contain import org.Bar: ", result.contains("import org.Bar;"));
+		assertTrue("The result should contain import org.foo.*: ", result.contains("import org.foo.*;"));
+	}
+
+	@Test
 	public void testRuleCanBeBuild() {
 		Launcher spoon = new Launcher();
 		PrettyPrinter printer = spoon.createPrettyPrinter();
@@ -148,6 +211,25 @@ public class PrinterTest {
 
 		assertTrue("The result should contain direct this accessor for field: "+result, !result.contains("Rule.Phoneme.this.phonemeText"));
 		canBeBuilt(output, 7);
+	}
+
+
+	@Test
+	public void testLambdaCanBeBuild() {
+		Launcher spoon = new Launcher();
+		PrettyPrinter printer = spoon.createPrettyPrinter();
+		spoon.getEnvironment().setAutoImports(true);
+		String output = "./target/spoon-lambda/";
+		spoon.addInputResource("./src/test/java/spoon/test/lambda/testclasses/Intersection.java");
+		spoon.setSourceOutputDirectory(output);
+		spoon.run();
+
+		CtType element = spoon.getFactory().Class().getAll().get(0);
+		List<CtType<?>> toPrint = new ArrayList<>();
+		toPrint.add(element);
+		printer.calculate(element.getPosition().getCompilationUnit(), toPrint);
+
+		canBeBuilt(output, 8);
 	}
 
 	@Test
@@ -176,8 +258,8 @@ public class PrinterTest {
 		//delete the field, so the model is broken.
 		//It may happen during substitution operations and then it is helpful to display descriptive error message
 		type.getField("testedField").delete();
-		//contract: printer fails with descriptive exception and not with NPE
-		assertEquals("/* ERROR: Missing field \"testedField\", please check your model. The code may not compile. */ testedField = 1", type.getMethodsByName("failingMethod").get(0).getBody().getStatement(0).toString());
+		//contract: printer doesn't fail, but prints the field reference even if there is no declaration visible
+		assertEquals("testedField = 1", type.getMethodsByName("failingMethod").get(0).getBody().getStatement(0).toString());
 	}
 
 	private final Set<String> separators = new HashSet<>(Arrays.asList("->","::","..."));
@@ -476,4 +558,18 @@ public class PrinterTest {
 		String expectedResult = " start un next deux next trois end";
 		assertEquals(expectedResult, pp.toString());
 	}
+
+		@Test
+		public void testMethodParentheses() {
+			//contract: there should not be any redundant parentheses
+			//https://github.com/INRIA/spoon/issues/2330
+			CtClass c1 = Launcher.parseClass("class C1 { int count ; void m() { logger.info(\"Value declared in if:\" + c); }");
+			assertEquals("\"Value declared in if:\" + c", c1.getElements(new TypeFilter<>(CtBinaryOperator.class)).get(0).toString());
+
+			CtClass c2 = Launcher.parseClass("class C2 { int count ; void m() { (i++).toString(); (a+b).toString(); }");
+			List<CtInvocation> invocations = c2.getElements(new TypeFilter<>(CtInvocation.class));
+			assertEquals("super()", invocations.get(0).toString());
+			assertEquals("(i++).toString()", invocations.get(1).toString());
+			assertEquals("(a + b).toString()", invocations.get(2).toString());
+		}
 }

@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+
+    // always depends on the latest snapshot of Spoon
+    // https://github.com/patrikerdes/gradle-use-latest-versions-plugin
+    id 'se.patrikerdes.use-latest-versions' version '0.2.12'
+    id 'com.github.ben-manes.versions' version '0.21.0'
+}
+
+group 'fr.inria.gforge.spoon'
+version '1.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url 'https://raw.github.com/SpoonLabs/spoon-dependencies/master' }
+}
+
+dependencies {
+    compile group: 'fr.inria.gforge.spoon', name: 'spoon-core', version: '7.2.0'
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
+    compile group: 'com.microsoft', name: 'z3', version: '4.8.4'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+task copyDependencies(type: Copy) {
+    from configurations.compile
+    into "${buildDir}/libs"
+}
+
+compileJava {
+    dependsOn copyDependencies
+}
+
+jar {
+    archiveName 'spoon-dataflow.jar'
+    destinationDir buildDir
+    manifest {
+        attributes 'Main-Class': 'fr.inria.spoon.dataflow.Main'
+        attributes 'Class-Path': configurations.compile.collect { "libs/" + it.getName() }.join(' ')
+    }
+}

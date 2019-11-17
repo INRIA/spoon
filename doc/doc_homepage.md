@@ -25,16 +25,15 @@ Spoon is an open-source library that enables you to transform (see [example](/fi
 
 ## Support
 
-You have different options:
-
-* Open an issue on [Github](https://github.com/INRIA/spoon/issues) (preferred).
-* Post a question to [StackOverflow with tag inria-spoon](http://stackoverflow.com/tags/inria-spoon).
+To report a bug or ask a question, open an issue on [Github](https://github.com/INRIA/spoon/issues).
 
 ## News
 
 Star Spoon on Github: [https://github.com/INRIA/spoon](https://github.com/INRIA/spoon). :-)
 
 <!-- .* Marker comment. -->
+- July 2019: Spoon 7.5.0 is released [(changelog)](https://github.com/INRIA/spoon/pull/3057)
+- May 2019: Spoon 7.4.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-7.4.0)
 - Februray 10, 2019: Spoon 7.3.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-7.3.0) 
 - December 4, 2018: Spoon 7.2.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-7.2.0) 
 - October 10, 2018: Spoon 7.1.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-7.1.0) 

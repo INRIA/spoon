@@ -130,6 +130,11 @@ public class Launcher implements SpoonAPI {
 	}
 
 	static {
+		// Initialize log output path with the default value
+		if (System.getProperty("spoon.log.path") == null) {
+			System.setProperty("spoon.log.path", "${java.io.tmpdir}/spoon-log.log");
+		}
+
 		jsapSpec = defineArgs();
 	}
 
@@ -441,7 +446,11 @@ public class Launcher implements SpoonAPI {
 		// environment initialization
 		environment.setComplianceLevel(jsapActualArgs.getInt("compliance"));
 		environment.setLevel(jsapActualArgs.getString("level"));
-		environment.setAutoImports(jsapActualArgs.getBoolean("imports"));
+		if (jsapActualArgs.getBoolean("imports")) {
+			environment.setPrettyPrintingMode(Environment.PRETTY_PRINTING_MODE.AUTOIMPORT);
+		} else {
+			environment.setPrettyPrintingMode(Environment.PRETTY_PRINTING_MODE.FULLYQUALIFIED);
+		}
 
 		if (jsapActualArgs.getBoolean("noclasspath")) {
 			Launcher.LOGGER.warn("The usage of --noclasspath argument is now deprecated: noclasspath is now the default behaviour.");
@@ -469,7 +478,7 @@ public class Launcher implements SpoonAPI {
 		if (jsapActualArgs.getBoolean("enable-comments")) {
 			Launcher.LOGGER.warn("The option --enable-comments (-c) is deprecated as it is now the default behaviour in Spoon.");
 		} else {
-			Launcher.LOGGER.warn("Spoon now parse by default the comments. Consider using the option --disable-comments if you want the old behaviour.");
+			Launcher.LOGGER.warn("Spoon now parses by default the comments. Consider using the option --disable-comments if you want the old behaviour.");
 		}
 
 		if (jsapActualArgs.getBoolean("disable-comments")) {

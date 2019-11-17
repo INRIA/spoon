@@ -6,9 +6,11 @@
 package spoon.reflect.declaration;
 
 public enum CtImportKind {
-	TYPE,
-	ALL_TYPES,
-	ALL_STATIC_MEMBERS,
-	FIELD,
-	METHOD
+	TYPE, // import my.package.Type;
+	ALL_TYPES, // import my.package.*;
+	ALL_STATIC_MEMBERS, // import static my.package.Type.*;
+	FIELD, // import static my.package.Type.f;
+	METHOD, // import static my.package.Type.m;
+	UNRESOLVED // Any of the above when in mode no classpath and the reference cannot be resolved.
+	// It is then stored as a pure String that will be printed as is when pretty printed.
 }

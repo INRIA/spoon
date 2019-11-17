@@ -16,7 +16,8 @@
  */
 package spoon.decompiler;
 
-import java.io.File;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.benf.cfr.reader.Main;
 import spoon.support.Experimental;
@@ -24,14 +25,12 @@ import spoon.support.Experimental;
 @Experimental
 public class CFRDecompiler implements Decompiler {
 
-	File outputDir;
-
-	public CFRDecompiler(File outputDir) {
-		this.outputDir = outputDir;
-	}
-
 	@Override
-	public void decompile(String jarPath) {
-		Main.main(new String[]{jarPath, "--outputdir", outputDir.getPath()});
+	public void decompile(String inputPath, String outputPath, String[] classpath) {
+		if (classpath != null && classpath.length > 0) {
+			Main.main(new String[]{inputPath, "--outputdir", outputPath, "--extraclasspath", Arrays.stream(classpath).collect(Collectors.joining(":"))});
+		} else {
+			Main.main(new String[]{inputPath, "--outputdir", outputPath});
+		}
 	}
 }

@@ -102,6 +102,9 @@ public class LexicalScopeScanner extends EarlyTerminatingScanner<Object> {
 			}
 			@Override
 			public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
+				if (parent == null) {
+					return;
+				}
 				parent.addNamedElement(localVariable);
 			}
 		};

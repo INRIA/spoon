@@ -12,6 +12,7 @@ import spoon.support.reflect.CtExtendedModifier;
 
 import java.util.Set;
 
+import static spoon.reflect.path.CtRole.EMODIFIER;
 import static spoon.reflect.path.CtRole.MODIFIER;
 
 /**
@@ -72,6 +73,10 @@ public interface CtModifiable extends CtElement {
 	@DerivedProperty
 	ModifierKind getVisibility();
 
+	/**
+	 * @return the set of extended modifiers (those incl. implicit).
+	 */
+	@PropertyGetter(role = EMODIFIER)
 	Set<CtExtendedModifier> getExtendedModifiers();
 	<T extends CtModifiable> T setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers);
 

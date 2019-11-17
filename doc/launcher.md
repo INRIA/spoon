@@ -28,22 +28,22 @@ CtModel model = launcher.getModel();
 
 ### Pretty-printing modes
 
-**Autoimport** Spoon can pretty-print code where all classes and methods  are fully-qualified. This is not readable for humans but enables fast compilation and is useful when name collisions happen.
+Spoon has three pretty-printing modes:
+
+**Fully-qualified** Spoon can pretty-print code where all classes and methods  are fully-qualified. This is the default behavior on `toString()` on AST elements.
+This is not readable for humans but is useful when name collisions happen. If `launcher.getEnvironment().getToStringMode() == FULLYQUALIFIED`, the files written on disk are also fully qualified. 
+
+
+**Autoimport** Spoon can pretty-print code where all classes and methods  are imported as long as no conflict exists. 
 
 ```java
-launcher.getEnvironment().setAutoImports(false);
-```
-
-The autoimport mode computes the required imports, add the imports in the pretty-printed files, and writes class names unqualified (w/o package names):
-
-```java
-// if true, the pretty-printed code is readable without fully-qualified names
 launcher.getEnvironment().setAutoImports(true);
 ```
 
-**Sniper mode** By default, when pretty-printing, Spoon reformats the code according to its own formatting rules.
+The autoimport mode computes the required imports, add the imports in the pretty-printed files, and writes class names unqualified (w/o package names). This involves changing the field `implicit` of some elements of the model, through a set of `ImportAnalyzer`, most notable `ImportCleaner` and `ImportConflictDetector`.
+When pretty-printing, Spoon reformats the code according to its own formatting rules that can be configured by providing a custom `TokenWriter`.
 
-The sniper mode enables to rewrite only the transformed AST elements, so that the rest of the code is printed identically to the origin version. This is useful to get small diffs after automated refactoring. 
+**Sniper mode** The sniper mode enables to rewrite only the transformed AST elements, so that the rest of the code is printed identically to the origin version. This is useful to get small diffs after automated refactoring. 
 
 ```java
 launcher.getEnvironment().setPrettyPrinterCreator(() -> {
@@ -51,7 +51,7 @@ launcher.getEnvironment().setPrettyPrinterCreator(() -> {
   }
 );
 ```
-
+**Comments** In addition, depending on the value of `Environment#getCommentEnabled`, the comments are removed or kept from the Java files saved to disk (call `Environment#setCommentEnabled(true)` to keep comments).
 
 ## The MavenLauncher class
 
@@ -67,11 +67,11 @@ CtModel model = launcher.getModel();
 
 // list all packages of the model
 for(CtPackage p : model.getAllPackages()) {
-  System.out.println("package: "+p.getQualifiedName());
+  System.out.println("package: " + p.getQualifiedName());
 }
 // list all classes of the model
 for(CtType<?> s : model.getAllTypes()) {
-  System.out.println("class: "+s.getQualifiedName());
+  System.out.println("class: " + s.getQualifiedName());
 }
 
 ```
@@ -89,7 +89,14 @@ CtModel model = launcher.getModel();
 ```
 To avoid invoking maven over and over to build a classpath that has not changed, it is stored in a file `spoon.classpath.tmp` (or depending on the scope `spoon.classpath-app.tmp` or `spoon.classpath-test.tmp`) in the same folder as the `pom.xml`. This classpath will be refreshed is the file is deleted or if it has not been modified since 1h.
 
-## The JarLauncher class
+## Analyzing bytecode
+
+There are two ways to analyze bytecode with spoon:
+
+ * Bytecode resources can be added in the classpath, (some information will be extracted through reflection)
+ * A decompiler may be used, and then, the analyzes will be performed on the decompiled sources.
+
+### The JarLauncher class
 
 The Spoon `JarLauncher` ([JavaDoc](https://github.com/INRIA/spoon/blob/master/spoon-decompiler/src/main/java/spoon/JarLauncher.java)) is used to create the AST model from a jar.
 It automatically decompiles class files contained in the jar and analyzes them.
@@ -105,20 +112,37 @@ CtModel model = launcher.getModel();
 Note that the default decompiler [CFR](http://www.benf.org/other/cfr/) can be changed by providing an instance implementing `spoon.decompiler.Decompiler` as a parameter.
 
 ```java
-JarLauncher launcher = new JarLauncher("<path_to_jar>", "<path_to_output_src_dir>", "<path_to_pom>", new Decompiler() {
-    @Override
-    public void decompile(String jarPath) {
-        //Custom decompiler call
+JarLauncher launcher = new JarLauncher("<path_to_jar>", "<path_to_output_src_dir>", "<path_to_pom>",
+    new Decompiler() {
+        @Override
+        public void decompile(String inputPath, String outputPath, String[] classpath) {
+            //Custom decompiler call
+        }
     }
-});
+);
 ```
 
 Spoon provides two out of the shelf decompilers, CFR by default, and Fernflower. You can use the later like this:
+
 ```java
-JarLauncher launcher = new JarLauncher("<path_to_jar>", "<path_to_output_src_dir>", "<path_to_pom>", new FernflowerDecompiler(new File("<path_to_output_src_dir>/src/main/java")));
+JarLauncher launcher = new JarLauncher(
+        "<path_to_jar>",
+        "<path_to_output_src_dir>",
+        "<path_to_pom>",
+        new FernflowerDecompiler(new File("<path_to_output_src_dir>/src/main/java"))
+);
 ```
 
-:warning: The `JarLauncher` feature (and all features relying on decompilation) are not included in `spoon-core` but in `spoon-decompiler`. If you want to use them you should declare a dependency to `spoon-decompiler`.
+Optionally, the classic launcher can be used with `DecompiledResource` like this:
+
+```java
+Launcher launcher = new Launcher();
+launcher.addInputResource(
+    new DecompiledResource(baseDir.getAbsolutePath(), new String[]{}, new CFRDecompiler(), pathToDecompiledRoot.getPath())
+);
+```
+
+**Warning** The `JarLauncher` feature (and all features relying on decompilation) are not included in `spoon-core` but in `spoon-decompiler`. If you want to use them you should declare a dependency to `spoon-decompiler`.
 
 ## About the classpath
 

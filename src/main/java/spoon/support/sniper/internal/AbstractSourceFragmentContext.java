@@ -131,7 +131,7 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentContext {
 			CollectionSourceFragment csf = (CollectionSourceFragment) fragment;
 			for (SourceFragment sourceFragment : csf.getItems()) {
 				Boolean modified = isFragmentModified(sourceFragment);
-				if (modified != Boolean.FALSE) {
+				if (!Boolean.FALSE.equals(modified)) {
 					return modified;
 				}
 			}

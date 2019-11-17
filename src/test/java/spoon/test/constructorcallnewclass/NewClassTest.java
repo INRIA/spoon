@@ -195,8 +195,7 @@ public class NewClassTest {
 		assertEquals("With", anonymousClass.getSuperclass().getSimpleName());
 		assertEquals("org.apache.lucene.store.Lock$With", anonymousClass.getSuperclass().getQualifiedName());
 		assertEquals("Lock", anonymousClass.getSuperclass().getDeclaringType().getSimpleName());
-		//superclass is implicit so toString is empty
-		assertEquals("", anonymousClass.getSuperclass().toString());
+		assertEquals("org.apache.lucene.store.Lock.With", anonymousClass.getSuperclass().toString());
 		assertEquals("1", anonymousClass.getSimpleName());
 		assertEquals("2", secondNewClass.getAnonymousClass().getSimpleName());
 		assertEquals(1, anonymousClass.getMethods().size());

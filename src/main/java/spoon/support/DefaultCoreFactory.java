@@ -81,6 +81,7 @@ import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
@@ -725,6 +726,13 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	@Override
 	public CtImport createImport() {
 		CtImport e = new CtImportImpl();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
+	public CtImport createUnresolvedImport() {
+		CtImport e = new CtUnresolvedImport();
 		e.setFactory(getMainFactory());
 		return e;
 	}

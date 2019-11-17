@@ -26,7 +26,12 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.visitor.DefaultImportComparator;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.ForceFullyQualifiedProcessor;
+import spoon.reflect.visitor.ForceImportProcessor;
+import spoon.reflect.visitor.ImportCleaner;
+import spoon.reflect.visitor.ImportConflictDetector;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.compiler.FileSystemFolder;
 import spoon.support.compiler.SpoonProgress;
@@ -42,6 +47,7 @@ import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -66,7 +72,18 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean processingStopped = false;
 
-	private boolean autoImports = false;
+	@Override
+	public PRETTY_PRINTING_MODE getPrettyPrintingMode() {
+		return prettyPrintingMode;
+	}
+
+	@Override
+	public void setPrettyPrintingMode(PRETTY_PRINTING_MODE prettyPrintingMode) {
+		this.prettyPrintingMode = prettyPrintingMode;
+	}
+
+	// the default value is set to maximize backward compatibility
+	private PRETTY_PRINTING_MODE prettyPrintingMode = PRETTY_PRINTING_MODE.FULLYQUALIFIED;
 
 	private int warningCount = 0;
 
@@ -124,13 +141,16 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public boolean isAutoImports() {
-		return autoImports;
+		return PRETTY_PRINTING_MODE.AUTOIMPORT.equals(prettyPrintingMode);
 	}
 
 	@Override
 	public void setAutoImports(boolean autoImports) {
-		this.autoImports = autoImports;
-		// TODO: unexpected behaviour could occur, if we reset the autoimport AFTER the pretty printer is created...
+		if (autoImports == true) {
+			prettyPrintingMode = PRETTY_PRINTING_MODE.AUTOIMPORT;
+		} else {
+			prettyPrintingMode = PRETTY_PRINTING_MODE.FULLYQUALIFIED;
+		}
 	}
 
 	@Override
@@ -622,11 +642,53 @@ private transient  ClassLoader inputClassloader;
 	}
 
 	@Override
+	public PrettyPrinter createPrettyPrinterAutoImport() {
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
+		List<Processor<CtElement>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtElement>>asList(
+				//try to import as much types as possible
+				new ForceImportProcessor(),
+				//remove unused imports first. Do not add new imports at time when conflicts are not resolved
+				new ImportCleaner().setCanAddImports(false),
+				//solve conflicts, the current imports are relevant too
+				new ImportConflictDetector(),
+				//compute final imports
+				new ImportCleaner().setImportComparator(new DefaultImportComparator())
+		));
+		printer.setIgnoreImplicit(false);
+		printer.setPreprocessors(preprocessors);
+		return printer;
+	}
+
+	@Override
 	public PrettyPrinter createPrettyPrinter() {
 		if (prettyPrinterCreator == null) {
-			// DJPP is the default mode
-			// fully backward compatible
-			return new DefaultJavaPrettyPrinter(this);
+			if (PRETTY_PRINTING_MODE.AUTOIMPORT.equals(prettyPrintingMode)) {
+				return createPrettyPrinterAutoImport();
+			}
+
+
+			if (PRETTY_PRINTING_MODE.DEBUG.equals(prettyPrintingMode)) {
+				DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
+				return printer;
+			}
+
+			if (PRETTY_PRINTING_MODE.FULLYQUALIFIED.equals(prettyPrintingMode)) {
+				DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
+				List<Processor<CtElement>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtElement>>asList(
+						//force fully qualified
+						new ForceFullyQualifiedProcessor(),
+						//solve conflicts, the current imports are relevant too
+						new ImportConflictDetector(),
+						//compute final imports
+						new ImportCleaner().setImportComparator(new DefaultImportComparator())
+				));
+				printer.setIgnoreImplicit(false);
+				printer.setPreprocessors(preprocessors);
+				return printer;
+			}
+
+			throw new UnsupportedOperationException();
+
 		}
 		return prettyPrinterCreator.get();
 	}

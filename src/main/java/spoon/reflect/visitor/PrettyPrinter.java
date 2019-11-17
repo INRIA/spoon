@@ -6,6 +6,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.declaration.CtCompilationUnit;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -19,6 +20,11 @@ import java.util.Map;
 public interface PrettyPrinter {
 
 	/**
+	 * Prints the compilation unit of module-info, package-info or types.
+	 */
+	String printCompilationUnit(CtCompilationUnit compilationUnit);
+
+	/**
 	 * Prints the package info.
 	 * It always resets the printing context at the beginning of this process.
 	 */
@@ -29,6 +35,20 @@ public interface PrettyPrinter {
 	 * It always resets the printing context at the beginning of this process.
 	 */
 	String printModuleInfo(CtModule module);
+
+	/**
+	 * Prints the types of one compilation unit
+	 * It always resets the printing context at the beginning of this process.
+	 */
+	String printTypes(CtType<?>... type);
+
+	/**
+	 * Prints an element. This method shall be called by the toString() method of an element.
+	 * It is responsible for any initialization required to print an arbitrary element.
+	 * @param element
+	 * @return A string containing the pretty printed element (and descendants).
+	 */
+	String printElement(CtElement element);
 
 	/**
 	 * Gets the contents of the compilation unit.
@@ -47,4 +67,7 @@ public interface PrettyPrinter {
 	 * code.
 	 */
 	Map<Integer, Integer> getLineNumberMapping();
+
+	/** pretty-prints the element, call {@link #toString()} to get the result */
+	String prettyprint(CtElement ctElement);
 }

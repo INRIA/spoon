@@ -6,6 +6,7 @@
 package spoon.reflect.visitor;
 
 import spoon.compiler.Environment;
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtFor;
@@ -168,6 +169,10 @@ public class ElementPrinterHelper {
 		}
 	}
 
+	/**
+	 * Writes a list of elements to the printer by using `scan` from the internal pretty-printer.
+	 * @param elements List of elements to be written
+	 */
 	public void writeElementList(List<CtTypeMember> elements) {
 		for (CtTypeMember element : elements) {
 			if (element instanceof CtConstructor && element.isImplicit()) {
@@ -300,6 +305,18 @@ public class ElementPrinterHelper {
 						setStaticImports.add(this.removeInnerTypeSeparator(importTypeStr) + ".*");
 					}
 					break;
+
+				case UNRESOLVED:
+					CtUnresolvedImport unresolvedImport = (CtUnresolvedImport) ctImport;
+					importTypeStr = unresolvedImport.getUnresolvedReference();
+					if (!isJavaLangClasses(importTypeStr)) {
+						if (unresolvedImport.isStatic()) {
+							setStaticImports.add(importTypeStr);
+						} else {
+							setImports.add(importTypeStr);
+						}
+					}
+					break;
 			}
 		}
 
@@ -332,6 +349,7 @@ public class ElementPrinterHelper {
 	/**
 	 * Write the compilation unit header.
 	 */
+	@Deprecated
 	public void writeHeader(List<CtType<?>> types, Collection<CtImport> imports) {
 		if (!types.isEmpty()) {
 			for (CtType<?> ctType : types) {
@@ -350,6 +368,7 @@ public class ElementPrinterHelper {
 	/**
 	 * Write the compilation unit footer.
 	 */
+	@Deprecated
 	public void writeFooter(List<CtType<?>> types) {
 		if (!types.isEmpty()) {
 			for (CtType<?> ctType : types) {
@@ -433,6 +452,20 @@ public class ElementPrinterHelper {
 			}
 		}
 		return commentsToPrint;
+	}
+
+	public boolean isElseIf(CtIf ifStmt) {
+		if (ifStmt.getElseStatement() == null) {
+			return false;
+		}
+		if (ifStmt.getElseStatement() instanceof CtIf)  {
+			return true;
+		}
+		if (ifStmt.getElseStatement() instanceof CtBlock) {
+			CtBlock block = (CtBlock) ifStmt.getElseStatement();
+			return ((block.getStatements().size() == 1) && (block.getStatement(0) instanceof CtIf));
+		}
+		return false;
 	}
 
 	/** write all non-implicit parts of a block, with special care for indentation */

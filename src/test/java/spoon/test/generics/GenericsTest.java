@@ -49,12 +49,10 @@ import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
@@ -75,7 +73,6 @@ import spoon.test.generics.testclasses3.ClassThatBindsAGenericType;
 import spoon.test.generics.testclasses3.ClassThatDefinesANewTypeArgument;
 import spoon.test.generics.testclasses3.Foo;
 import spoon.test.generics.testclasses3.GenericConstructor;
-import spoon.test.main.MainTest;
 import spoon.test.generics.testclasses.EnumSetOf;
 import spoon.test.generics.testclasses.FakeTpl;
 import spoon.test.generics.testclasses.Lunch;
@@ -173,11 +170,12 @@ public class GenericsTest {
 		CtField<?> f = clazz.getFields().get(0);
 		CtConstructorCall<?> val = (CtConstructorCall<?>) f.getDefaultExpression();
 
-		// the diamond is resolved to String but we don't print it, so we use the fully qualified name.
+		// the diamond is resolved to String but we don't prettyprint it in the diamond.
 		assertTrue(val.getType().getActualTypeArguments().get(0).isImplicit());
-		assertEquals("", val.getType().getActualTypeArguments().get(0).toString());
+		assertEquals("java.lang.String", val.getType().getActualTypeArguments().get(0).toString());
 		assertEquals("java.lang.String", val.getType().getActualTypeArguments().get(0).getQualifiedName());
-		assertEquals("new java.util.ArrayList<>()",val.toString());
+		assertEquals("java.util.ArrayList<>", val.getType().toString());
+		assertEquals("new ArrayList<>()",val.prettyprint());
 	}
 
 	@Test
@@ -291,21 +289,15 @@ public class GenericsTest {
 			CtField<?> x = type.getElements(new NamedElementFilter<>(CtField.class,"x"))
 					.get(0);
 			CtTypeReference<?> ref = x.getType();
-			DefaultJavaPrettyPrinter pp = new DefaultJavaPrettyPrinter(
-					new StandardEnvironment());
 
 			// qualifed name
 			assertEquals("java.util.Map$Entry", ref.getQualifiedName());
 
-			// toString uses DefaultJavaPrettyPrinter
+			// toString uses DefaultJavaPrettyPrinter with forced fully qualified names
 			assertEquals("java.util.Map.Entry", ref.toString());
 
-			// now visitCtTypeReference
 			assertSame(java.util.Map.class, ref.getDeclaringType()
 					.getActualClass());
-			pp.visitCtTypeReference(ref);
-
-			assertEquals("java.util.Map.Entry", pp.getResult());
 
 			CtField<?> y = type.getElements(new NamedElementFilter<>(CtField.class,"y"))
 					.get(0);
@@ -642,7 +634,7 @@ public class GenericsTest {
 		assertTrue(typeParameter.getReference().isGenerics());
 
 		CtTypeReference ctTypeReference = aTacos.getSuperInterfaces().toArray(new CtTypeReference[aTacos.getSuperInterfaces().size()])[0];
-		assertFalse(aTacos.isGenerics());
+		assertTrue(aTacos.isGenerics());
 
 		// this is a generic type reference spoon.test.generics.testclasses.ITacos<V>
 		assertEquals("spoon.test.generics.testclasses.ITacos<V>", ctTypeReference.toString());
@@ -1500,5 +1492,64 @@ public class GenericsTest {
 			assertEquals(CtTypeReferenceImpl.class, execRefParamType.getClass());
 			assertEquals("java.util.List<java.lang.String>", execRefParamType.toString());
 		}
+	}
+
+	@Test
+	public void testTopLevelIsGenerics() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/Banana.java");
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses/Mole.java");
+		CtModel model = launcher.buildModel();
+		CtType<?> banana = model.getAllTypes().stream().filter(t -> t.getSimpleName().equals("Banana")).findFirst().get();
+		CtType<?> mole = model.getAllTypes().stream().filter(t -> t.getSimpleName().equals("Mole")).findFirst().get();
+		assertTrue(banana.isGenerics());
+		assertFalse(mole.isGenerics());
+	}
+
+	@Test
+	public void testIsParameterized() {
+		// contract: isParameterized should work as expected
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses5/A.java");
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses5/B.java");
+		CtModel model = launcher.buildModel();
+
+		CtType<?> a = model.getElements(new NamedElementFilter<>(CtType.class, "A")).get(0);
+		CtType<?> b = model.getElements(new NamedElementFilter<>(CtType.class, "B")).get(0);
+		assertTrue(a.isParameterized());
+		assertFalse(b.isParameterized());
+
+		CtMethod<?> m1 = a.getMethodsByName("m1").get(0);
+		CtMethod<?> m2 = a.getMethodsByName("m2").get(0);
+		CtMethod<?> m3 = a.getMethodsByName("m3").get(0);
+
+		assertFalse(m2.getFormalCtTypeParameters().get(0).isParameterized());
+		assertFalse(m3.getFormalCtTypeParameters().get(0).isParameterized());
+
+		CtParameter<?> param1 = m1.getParameters().get(0);
+		CtParameter<?> param2 = m1.getParameters().get(1);
+		CtParameter<?> param3 = m1.getParameters().get(2);
+		CtParameter<?> param4 = m1.getParameters().get(3);
+		assertTrue(param1.getType().isParameterized());
+		assertTrue(param2.getType().isParameterized());
+		assertTrue(param3.getType().isParameterized());
+		assertFalse(param4.getType().isParameterized());
+
+		assertFalse(param1.getType().getActualTypeArguments().get(0).isParameterized());
+		assertFalse(param2.getType().getActualTypeArguments().get(0).isParameterized());
+		assertTrue(param3.getType().getActualTypeArguments().get(0).isParameterized());
+	}
+
+	@Test
+	public void testExecutableTypeParameter() {
+		// contract: getTypeParameterDeclaration() should not produce class cast exception
+		// https://github.com/INRIA/spoon/issues/3040
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/generics/testclasses6/A.java");
+		CtModel model = launcher.buildModel();
+		CtInvocation m1 = model.getElements(new TypeFilter<>(CtInvocation.class)).get(1);
+		CtTypeParameter formalType = ((CtMethod) m1.getExecutable().getDeclaration()).getFormalCtTypeParameters().get(0);
+		assertEquals(formalType, ((CtTypeReference) m1.getActualTypeArguments().get(0)).getTypeParameterDeclaration());
+		assertNull(m1.getType().getTypeParameterDeclaration());
 	}
 }

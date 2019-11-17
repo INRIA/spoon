@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtImport;
@@ -40,9 +41,11 @@ class TypeNameScope extends NameScopeImpl {
 
 	@Override
 	public <T> T forEachElementByName(String name, Function<? super CtNamedElement, T> consumer) {
-		super.forEachElementByName(name, consumer);
+		//1st check scope of type members
+		//2nd check scope of type name itself
+		T r;
 		assureCacheInitialized();
-		T r = forEachByName(fieldsByName, name, consumer);
+		r = forEachByName(fieldsByName, name, consumer);
 		if (r != null) {
 			return r;
 		}
@@ -51,6 +54,10 @@ class TypeNameScope extends NameScopeImpl {
 			return r;
 		}
 		r = forEachByName(methodsByName, name, consumer);
+		if (r != null) {
+			return r;
+		}
+		r = super.forEachElementByName(name, consumer);
 		if (r != null) {
 			return r;
 		}
@@ -150,6 +157,10 @@ class TypeNameScope extends NameScopeImpl {
 							}
 						}
 					});
+				}
+				@Override
+				public <T> void visitUnresolvedImport(CtUnresolvedImport ctUnresolvedImport) {
+					//there is no usable type member under unresolved import
 				}
 			});
 		});

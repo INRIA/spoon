@@ -25,6 +25,7 @@ import spoon.metamodel.MetamodelConcept;
 import spoon.metamodel.Metamodel;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -220,7 +221,7 @@ public class CtScannerTest {
 
 	@Test
 	public void testScan() {
-		// contract: all AST nodes are visisted through method "scan"
+		// contract: all AST nodes are visited through method "scan"
 		Launcher launcher;
 		launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
@@ -256,14 +257,22 @@ public class CtScannerTest {
 				super.exit(o);
 			}
 		});
+		
+		//top comment of file belongs to compilation unit which is not visited by standard scanning
+		//so count comments of these compilation units
+		int countOfCommentsInCompilationUnits = 0;
+		for (CompilationUnit cu : launcher.getFactory().CompilationUnit().getMap().values()) {
+			countOfCommentsInCompilationUnits += cu.getComments().size();
+		}
+
 		// interesting, this is never called because of covariance, only CtElement or Collection is called
 		assertEquals(0, counter.nObject);
 		// this is a coarse-grain check to see if the scanner changes
 		// no more exec ref in paramref
 		// also takes into account the comments
-		assertEquals(3655, counter.nElement);
-		assertEquals(2435, counter.nEnter);
-		assertEquals(2435, counter.nExit);
+		assertEquals(3655, counter.nElement + countOfCommentsInCompilationUnits);
+		assertEquals(2435, counter.nEnter + countOfCommentsInCompilationUnits);
+		assertEquals(2435, counter.nExit + countOfCommentsInCompilationUnits);
 
 		// contract: all AST nodes which are part of Collection or Map are visited first by method "scan(Collection|Map)" and then by method "scan(CtElement)"
 		Counter counter2 = new Counter();
