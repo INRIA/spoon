@@ -54,7 +54,9 @@ public class DiffGenerator {
 	public void setNumContextLines(int numContextLines) {
 		this.numContextLines = numContextLines;
 	}
-
+	/**
+	 * Generates the diff between the original source code and the modified model.
+	 */
 	public String diff(CtModel model) {
 		StringBuilder sb = new StringBuilder();
 		Set<CompilationUnit> compilationUnits = new HashSet<>();
