@@ -386,7 +386,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 		sourceFragmentContextStack.push(context);
 		try {
 			code.run();
-		} finally {
+		} catch (Exception e) {
 			//remove `context` and all it's child contexts
 			while (true) {
 				if (sourceFragmentContextStack.isEmpty()) {
@@ -414,7 +414,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 		try {
 			mutableTokenWriter.setMuted(muted);
 			code.run();
-		} finally {
+		} catch (Exception e) {
 			//assure that muted status did not changed in between
 			if (mutableTokenWriter.isMuted() != muted) {
 				if (mutableTokenWriter.isMuted()) {
