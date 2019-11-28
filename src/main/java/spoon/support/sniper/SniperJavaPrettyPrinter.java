@@ -384,19 +384,16 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	 */
 	private void runInContext(SourceFragmentContext context, Runnable code) {
 		sourceFragmentContextStack.push(context);
-		try {
-			code.run();
-		} catch (Exception e) {
-			//remove `context` and all it's child contexts
-			while (true) {
-				if (sourceFragmentContextStack.isEmpty()) {
-					throw new SpoonException("Inconsistent sourceFragmentContextStack");
-				}
-				SourceFragmentContext c = sourceFragmentContextStack.pop();
-				c.onFinished();
-				if (c == context) {
-					break;
-				}
+		code.run();
+		//remove `context` and all it's child contexts
+		while (true) {
+			if (sourceFragmentContextStack.isEmpty()) {
+				throw new SpoonException("Inconsistent sourceFragmentContextStack");
+			}
+			SourceFragmentContext c = sourceFragmentContextStack.pop();
+			c.onFinished();
+			if (c == context) {
+				break;
 			}
 		}
 	}
@@ -411,19 +408,16 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 		if (muted == null) {
 			muted = originMuted;
 		}
-		try {
-			mutableTokenWriter.setMuted(muted);
-			code.run();
-		} catch (Exception e) {
-			//assure that muted status did not changed in between
-			if (mutableTokenWriter.isMuted() != muted) {
-				if (mutableTokenWriter.isMuted()) {
-					throw new SpoonException("Unexpected state: Token writer is muted after scanning");
-				} else {
-					throw new SpoonException("Unexpected state: Token writer is not muted after scanning");
-				}
+		mutableTokenWriter.setMuted(muted);
+		code.run();
+		//assure that muted status did not changed in between
+		if (mutableTokenWriter.isMuted() != muted) {
+			if (mutableTokenWriter.isMuted()) {
+				throw new SpoonException("Unexpected state: Token writer is muted after scanning");
+			} else {
+				throw new SpoonException("Unexpected state: Token writer is not muted after scanning");
 			}
-			mutableTokenWriter.setMuted(originMuted);
 		}
+		mutableTokenWriter.setMuted(originMuted);
 	}
 }
