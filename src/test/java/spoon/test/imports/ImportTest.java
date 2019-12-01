@@ -48,12 +48,10 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtImportVisitor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.ImportScanner;
-import spoon.reflect.visitor.ImportScannerImpl;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.chain.CtScannerListener;
@@ -66,8 +64,6 @@ import spoon.support.StandardEnvironment;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.util.SortedList;
 import spoon.test.imports.testclasses.A;
-import spoon.test.imports.testclasses.B;
-import spoon.test.imports.testclasses.ClassWithInvocation;
 import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.Mole;
 import spoon.test.imports.testclasses.NotImportExecutableType;
@@ -76,7 +72,6 @@ import spoon.test.imports.testclasses.Reflection;
 import spoon.test.imports.testclasses.StaticNoOrdered;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
-import spoon.test.imports.testclasses.internal.ChildClass;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.BufferedReader;
@@ -281,35 +276,6 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testSpoonWithImports() {
-		final Launcher launcher = new Launcher();
-		launcher.run(new String[] {
-				"-i", "./src/test/java/spoon/test/imports/testclasses", "--output-type", "nooutput", "--with-imports"
-		});
-		final CtClass<ImportTest> aClass = launcher.getFactory().Class().get(ChildClass.class);
-		final CtClass<ImportTest> anotherClass = launcher.getFactory().Class().get(ClientClass.class);
-		final CtClass<ImportTest> classWithInvocation = launcher.getFactory().Class().get(ClassWithInvocation.class);
-
-		ImportScanner importScanner = new ImportScannerImpl();
-		importScanner.computeImports(aClass);
-		assertEquals(2, importScanner.getAllImports().size());
-
-		importScanner = new ImportScannerImpl();
-		importScanner.computeImports(anotherClass);
-		//ClientClass needs 2 imports: ChildClass, PublicInterface2
-		Collection<CtImport> allImports = importScanner.getAllImports();
-		assertEquals(2, allImports.size());
-
-		//check that printer did not used the package protected class like "SuperClass.InnerClassProtected"
-		assertTrue(printByPrinter(anotherClass).indexOf("InnerClass extends ChildClass.InnerClassProtected")>0);
-		importScanner = new ImportScannerImpl();
-		importScanner.computeImports(classWithInvocation);
-		// java.lang imports are also computed
-		allImports = importScanner.getAllImports();
-		assertEquals("Spoon ignores the arguments of CtInvocations", 1, allImports.size());
-	}
-
-	@Test
 	public void testStaticImportForInvocationInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
@@ -371,55 +337,6 @@ public class ImportTest {
 
 		// Invocation for a static method without the declaring class specified, a return type and an import *.
 		assertCorrectInvocationWithLimit(new Expected().name("staticE").typeIsNull(false), elements.get(15));
-	}
-
-	@Test
-	public void testImportOfInvocationOfPrivateClass() {
-		final Factory factory = getFactory(
-				"./src/test/java/spoon/test/imports/testclasses/internal2/Chimichanga.java",
-				"./src/test/java/spoon/test/imports/testclasses/Mole.java");
-
-		ImportScanner importContext = new ImportScannerImpl();
-		importContext.computeImports(factory.Class().get(Mole.class));
-
-		Collection<CtImport> imports = importContext.getAllImports();
-
-		assertEquals(1, imports.size());
-		assertEquals("import spoon.test.imports.testclasses.internal2.Chimichanga;", imports.toArray()[0].toString().trim());
-	}
-
-	@Test
-	public void testNotImportExecutableType() {
-		final Factory factory = getFactory(
-				"./src/test/java/spoon/test/imports/testclasses/internal3/Foo.java",
-				"./src/test/java/spoon/test/imports/testclasses/internal3/Bar.java",
-				"./src/test/java/spoon/test/imports/testclasses/NotImportExecutableType.java");
-
-		ImportScanner importContext = new ImportScannerImpl();
-		importContext.computeImports(factory.Class().get(NotImportExecutableType.class));
-
-		Collection<CtImport> imports = importContext.getAllImports();
-
-		assertEquals(2, imports.size());
-		Set<String> expectedImports = new HashSet<>(
-				Arrays.asList("spoon.test.imports.testclasses.internal3.Foo", "java.io.File"));
-		Set<String> actualImports = imports.stream().map(CtImport::getReference).map(CtReference::toString).collect(Collectors.toSet());
-		assertEquals(expectedImports, actualImports);
-	}
-
-	@Test
-	public void testImportOfInvocationOfStaticMethod() {
-		final Factory factory = getFactory(
-				"./src/test/java/spoon/test/imports/testclasses/internal2/Menudo.java",
-				"./src/test/java/spoon/test/imports/testclasses/Pozole.java");
-
-		ImportScanner importContext = new ImportScannerImpl();
-		importContext.computeImports(factory.Class().get(Pozole.class));
-
-		Collection<CtImport> imports = importContext.getAllImports();
-
-		assertEquals(1, imports.size());
-		assertEquals("import spoon.test.imports.testclasses.internal2.Menudo;", imports.toArray()[0].toString().trim());
 	}
 
 	@Test

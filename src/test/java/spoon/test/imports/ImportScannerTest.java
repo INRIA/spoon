@@ -26,9 +26,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.reflect.visitor.ImportScanner;
-import spoon.reflect.visitor.ImportScannerImpl;
-import spoon.reflect.visitor.MinimalImportScanner;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
@@ -229,94 +226,6 @@ public class ImportScannerTest {
 			}
 		}
 		return imports;
-	}
-
-	@Test
-	public void testComputeMinimalImportsInClass() throws Exception {
-		String packageName = "spoon.test.testclasses";
-		String className = "SampleImportClass";
-		String qualifiedName = packageName + "." + className;
-
-		Factory aFactory = build(packageName, className).getFactory();
-		CtType<?> theClass = aFactory.Type().get(qualifiedName);
-
-		ImportScanner importContext = new MinimalImportScanner();
-		importContext.computeImports(theClass);
-		Collection<CtImport> imports = importContext.getAllImports();
-
-		assertTrue(imports.isEmpty());
-	}
-
-	@Test
-	public void testComputeImportsInClass() throws Exception {
-		String packageName = "spoon.test.testclasses";
-		String className = "SampleImportClass";
-		String qualifiedName = packageName + "." + className;
-
-		Factory aFactory = build(packageName, className).getFactory();
-		CtType<?> theClass = aFactory.Type().get(qualifiedName);
-
-		ImportScanner importContext = new ImportScannerImpl();
-		importContext.computeImports(theClass);
-		Collection<CtImport> imports = importContext.getAllImports();
-
-		assertEquals(2, imports.size());
-	}
-
-	@Test
-	public void testComputeImportsInClassWithSameName() {
-		String packageName = "spoon.test.imports.testclasses2";
-		String className = "ImportSameName";
-		String qualifiedName = packageName + "." + className;
-
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("src/test/resources/spoon/test/imports/testclasses2/");
-		spoon.buildModel();
-		Factory aFactory = spoon.getFactory();
-		CtType<?> theClass = aFactory.Type().get(qualifiedName);
-
-		ImportScanner importContext = new ImportScannerImpl();
-		importContext.computeImports(theClass);
-		Collection<CtImport> imports = importContext.getAllImports();
-
-		assertEquals(0, imports.size());
-	}
-
-
-	@Test
-	public void testMultiCatchImport() throws Exception {
-		Launcher spoon = new Launcher();
-		Factory factory = spoon.createFactory();
-
-		SpoonModelBuilder compiler = spoon.createCompiler(
-				factory,
-				SpoonResourceHelper.resources(
-						"./src/test/java/spoon/test/imports/testclasses/MultiCatch.java"));
-
-		compiler.build();
-
-		final List<CtClass> classes = Query.getElements(factory, new NamedElementFilter<>(CtClass.class,"MultiCatch"));
-
-		ImportScanner importScanner = new ImportScannerImpl();
-		importScanner.computeImports(classes.get(0));
-		// as ArithmeticException come from java.lang it is not imported anymore
-		//assertTrue( importScanner.isImported( factory.Type().createReference( ArithmeticException.class ) ));
-		assertTrue( importScanner.isImported( factory.Type().createReference( AccessControlException.class ) ));
-	}
-
-	@Test
-	public void testTargetTypeNull() {
-		Launcher spoon = new Launcher();
-		Factory factory = spoon.createFactory();
-		CtFieldReference fieldRef = factory.createFieldReference();
-		fieldRef.setStatic(true);
-
-		ImportScanner importScanner = new MinimalImportScanner();
-		importScanner.computeImports(fieldRef);
-
-		Collection<CtImport> imports = importScanner.getAllImports();
-
-		assertEquals(0, imports.size());
 	}
 
 	@Test
