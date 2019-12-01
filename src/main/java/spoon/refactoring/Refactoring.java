@@ -222,6 +222,17 @@ public final class Refactoring {
 				}
 			}
 		});
+
+		// does not work, see https://github.com/INRIA/spoon/issues/3183
+//		spoon.addProcessor(new AbstractProcessor<CtType>() {
+//			@Override
+//			public void process(CtType type) {
+//				if (type.hasAnnotation(Deprecated.class)) {
+//					type.delete();
+//				}
+//			}
+//		});
+
 		spoon.getEnvironment().setPrettyPrinterCreator(() -> {
 					return new SniperJavaPrettyPrinter(spoon.getEnvironment());
 				}

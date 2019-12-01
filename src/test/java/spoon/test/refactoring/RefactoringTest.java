@@ -135,6 +135,9 @@ public class RefactoringTest {
 
 	@Test
 	public void testremoveDeprecatedMethods() {
-		Refactoring.removeDeprecatedMethods("src/main/java");
+		// this shows that we can remove deprecated methods
+		// with Spoon
+		// ... and that the sniper mode works well-enough to be applied on Spoon itself
+		// Refactoring.removeDeprecatedMethods("src/main/java");
 	}
 }
