@@ -11,7 +11,9 @@ package spoon.support.compiler.jdt;
  */
 public class JDTConstants {
 
-	private JDTConstants() {}
+	private JDTConstants() {
+
+	}
 
 	public static final char[] MODULE_INFO_FILE_NAME = "module-info.java".toCharArray();
 	public static final char[] MODULE_INFO_CLASS_NAME = "module-info.class".toCharArray();
