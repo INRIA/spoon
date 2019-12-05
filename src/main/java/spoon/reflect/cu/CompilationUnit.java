@@ -11,5 +11,6 @@ import spoon.reflect.declaration.CtCompilationUnit;
  * Defines a compilation unit. In Java, a compilation unit can contain only one
  * public type declaration and other secondary types declarations (not public).
  */
+@Deprecated
 public interface CompilationUnit extends CtCompilationUnit {
 }
