@@ -390,7 +390,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 			//remove `context` and all it's child contexts
 			while (true) {
 				if (sourceFragmentContextStack.isEmpty()) {
-					throw new SpoonException("Inconsistent sourceFragmentContextStack");
+					throw new SpoonException("Inconsistent sourceFragmentContextStack"); //NOSONAR
 				}
 				SourceFragmentContext c = sourceFragmentContextStack.pop();
 				c.onFinished();
@@ -418,9 +418,9 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 			//assure that muted status did not changed in between
 			if (mutableTokenWriter.isMuted() != muted) {
 				if (mutableTokenWriter.isMuted()) {
-					throw new SpoonException("Unexpected state: Token writer is muted after scanning");
+					throw new SpoonException("Unexpected state: Token writer is muted after scanning"); //NOSONAR
 				} else {
-					throw new SpoonException("Unexpected state: Token writer is not muted after scanning");
+					throw new SpoonException("Unexpected state: Token writer is not muted after scanning"); //NOSONAR
 				}
 			}
 			mutableTokenWriter.setMuted(originMuted);
