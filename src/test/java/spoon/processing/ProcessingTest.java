@@ -23,6 +23,10 @@ import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
+import spoon.reflect.visitor.DefaultImportComparator;
+import spoon.reflect.visitor.ForceImportProcessor;
+import spoon.reflect.visitor.ImportCleaner;
+import spoon.reflect.visitor.ImportConflictDetector;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.processing.processors.MyProcessor;
 
@@ -288,7 +292,10 @@ public class ProcessingTest {
 
 		e.setNoClasspath(true);
 		e.setAutoImports(false);
-		e.setPrettyPrinterCreator(() -> new SniperJavaPrettyPrinter(l.getEnvironment()));
+		e.setPrettyPrinterCreator(() -> {
+			SniperJavaPrettyPrinter sniperJavaPrettyPrinter = new SniperJavaPrettyPrinter(l.getEnvironment());
+			sniperJavaPrettyPrinter.setIgnoreImplicit(false);
+			return sniperJavaPrettyPrinter;});
 
 		Path path = Files.createTempDirectory("emptydir");
 		l.addInputResource("src/test/resources/refactoring1/A.java");
@@ -297,12 +304,8 @@ public class ProcessingTest {
 		l.addProcessor(simpleProcessor5);
 		l.run();
 		File directory = new File("src/test/resources/refactoring1");
-		System.out.println(directory.getAbsolutePath());
-		System.out.println(directory.exists());
 		String text = new String(Files.readAllBytes(Paths.get(path.toAbsolutePath() + "/refactoring/A.java")), StandardCharsets.UTF_8);
 		String expected = new String(Files.readAllBytes(Paths.get("src/test/resources/refactoring1/expected1.txt")), StandardCharsets.UTF_8);
-		System.out.println(text);
-
-		assertEquals(text, expected);
+		assertEquals(expected, text);
 	}
 }
