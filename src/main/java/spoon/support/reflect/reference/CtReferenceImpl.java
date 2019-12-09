@@ -17,14 +17,18 @@ import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import static spoon.reflect.path.CtRole.NAME;
 
 public abstract class CtReferenceImpl extends CtElementImpl implements CtReference, Serializable {
 
 	private static final long serialVersionUID = 1L;
+	private static Collection<String> keywords = fillWithKeywords();
 
 	@MetamodelPropertyField(role = NAME)
 	protected String simplename = "";
@@ -42,6 +46,12 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	@Override
 	public <T extends CtReference> T setSimpleName(String simplename) {
 		Factory factory = getFactory();
+		if (simplename.length() == 0) {
+			throw new IllegalArgumentException("empty identifier found. See JLS for correct identifier");
+		}
+		if (checkIdentifierChars(simplename) || isKeyword(simplename)) {
+			throw new IllegalArgumentException("Not allowed javaletter or keyword in identifier found. See JLS for correct identifier");
+		}
 		if (factory == null) {
 			this.simplename = simplename;
 			return (T) this;
@@ -53,6 +63,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		this.simplename = simplename;
 		return (T) this;
 	}
+
 
 	@UnsettableProperty
 	@Override
@@ -80,5 +91,19 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 			return super.equals(o);
 		}
 		return false;
+	}
+	private boolean isKeyword(String simplename) {
+		return keywords.contains(simplename);
+	}
+
+	private boolean checkIdentifierChars(String simplename) {
+		return (!Character.isJavaIdentifierStart(simplename.charAt(0))) || simplename.chars().anyMatch(letter -> !Character.isJavaIdentifierPart(letter));
+	}
+	private static Collection<String> fillWithKeywords() {
+	return Stream.of("abstract", "continue", "for", "new", "switch", "assert", "default", "if", "package", "synchronized", "boolean", "do", "goto", "private",
+	"this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws", "case", "enum", "instanceof", "return",
+	"transient", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile",
+	"const", "float", "native", "super", "while", "_", "true", "false", "null")
+	.collect(Collectors.toCollection(HashSet::new));
 	}
 }
