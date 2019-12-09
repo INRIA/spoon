@@ -15,58 +15,5 @@ import spoon.support.reflect.declaration.CtCompilationUnitImpl;
 public class CompilationUnitImpl extends CtCompilationUnitImpl implements CompilationUnit {
 	private static final long serialVersionUID = 2L;
 
-	@Deprecated
-	@Override
-	public int beginOfLineIndex(int index) {
-		int cur = index;
-		while (cur >= 0 && getOriginalSourceCode().charAt(cur) != '\n') {
-			cur--;
-		}
-		return cur + 1;
-	}
-
-	@Deprecated
-	@Override
-	public int nextLineIndex(int index) {
-		int cur = index;
-		while (cur < getOriginalSourceCode().length()
-				&& getOriginalSourceCode().charAt(cur) != '\n') {
-			cur++;
-		}
-		return cur + 1;
-	}
-
-	@Deprecated
-	@Override
-	public int getTabCount(int index) {
-		int cur = index;
-		int tabCount = 0;
-		int whiteSpaceCount = 0;
-		while (cur < getOriginalSourceCode().length()
-				&& (getOriginalSourceCode().charAt(cur) == ' ' || getOriginalSourceCode()
-				.charAt(cur) == '\t')) {
-			if (getOriginalSourceCode().charAt(cur) == '\t') {
-				tabCount++;
-			}
-			if (getOriginalSourceCode().charAt(cur) == ' ') {
-				whiteSpaceCount++;
-			}
-			cur++;
-		}
-		tabCount += whiteSpaceCount
-				/ getFactory().getEnvironment().getTabulationSize();
-		return tabCount;
-	}
-
 	private boolean autoImport = true;
-
-	@Deprecated
-	public boolean isAutoImport() {
-		return autoImport;
-	}
-
-	@Deprecated
-	public void setAutoImport(boolean autoImport) {
-		this.autoImport = autoImport;
-	}
 }
