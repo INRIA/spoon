@@ -112,8 +112,8 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	}
 	private boolean checkAllParts(String[] simplenameParts) {
 		for (String simpleName:simplenameParts) {
-			//because arrays use e.g. int[]
-			simpleName = simpleName.replaceAll("\\[\\]", "");
+			//because arrays use e.g. int[] and @Number is used for instances of an object e.g. foo@1 
+			simpleName = simpleName.replaceAll("\\[\\]|@", "");
 			if (isKeyword(simpleName) || checkIdentifierChars(simpleName)) {
 				return true;
 		}
@@ -124,11 +124,11 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		return (!Character.isJavaIdentifierStart(simplename.charAt(0))) || simplename.chars().anyMatch(letter -> !Character.isJavaIdentifierPart(letter));
 	}
 	private static Collection<String> fillWithKeywords() {
-	//removed types because needed as ref: "int","short", "char", "void", "byte","float", "true","false","boolean","double","long","class"
+	//removed types because needed as ref: "int","short", "char", "void", "byte","float", "true","false","boolean","double","long","class", "null"
 	return Stream.of("abstract", "continue", "for", "new", "switch", "assert", "default", "if", "package", "synchronized",  "do", "goto", "private",
 	"this", "break",  "implements", "protected", "throw", "else", "import", "public", "throws", "case", "enum", "instanceof", "return",
 	"transient", "catch", "extends", "try", "final", "interface", "static", "finally",  "strictfp", "volatile",
-	"const",  "native", "super", "while", "_", "null")
+	"const",  "native", "super", "while", "_")
 	.collect(Collectors.toCollection(HashSet::new));
 	}
 }
