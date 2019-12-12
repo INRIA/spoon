@@ -810,7 +810,8 @@ public class TemplateTest {
 		Factory factory = spoon.getFactory();
 
 		CtClass<?> testSimpleTpl = factory.Class().create("TestSimpleTpl");
-		new SimpleTemplate("Hello world").apply(testSimpleTpl);
+		//whitespace seems wrong here
+		new SimpleTemplate("HelloWorld").apply(testSimpleTpl);
 
 		Set<CtMethod<?>> listMethods = testSimpleTpl.getMethods();
 		assertEquals(0, testSimpleTpl.getMethodsByName("apply").size());
