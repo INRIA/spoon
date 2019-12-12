@@ -351,12 +351,6 @@ public class JDTCommentBuilder {
 			public <E> void visitCtSwitch(CtSwitch<E> e) {
 				List<CtCase<? super E>> cases = e.getCases();
 				CtCase previous = null;
-
-				if (cases.isEmpty()) {
-					e.addComment(comment);
-					return;
-				}
-
 				for (CtCase<? super E> ctCase : cases) {
 					if (previous == null) {
 						if (comment.getPosition().getSourceStart() < ctCase.getPosition().getSourceStart()
@@ -378,7 +372,7 @@ public class JDTCommentBuilder {
 					}
 					previous = ctCase;
 				}
-				if (previous.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()) {
+				if (previous != null && previous.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()) {
 					addCommentToNear(comment, new ArrayList<>(previous.getStatements()));
 					try {
 						comment.getParent();
