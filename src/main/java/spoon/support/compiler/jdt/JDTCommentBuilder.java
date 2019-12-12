@@ -351,6 +351,12 @@ public class JDTCommentBuilder {
 			public <E> void visitCtSwitch(CtSwitch<E> e) {
 				List<CtCase<? super E>> cases = e.getCases();
 				CtCase previous = null;
+
+				if (cases.isEmpty()) {
+					e.addComment(comment);
+					return;
+				}
+
 				for (CtCase<? super E> ctCase : cases) {
 					if (previous == null) {
 						if (comment.getPosition().getSourceStart() < ctCase.getPosition().getSourceStart()
