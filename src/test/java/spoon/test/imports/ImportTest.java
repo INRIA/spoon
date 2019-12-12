@@ -1507,9 +1507,9 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 	public void testImportReferenceIsFullyQualifiedAndNoGeneric() {
 		//contract: the reference of CtImport is always fully qualified and contains no actual type arguments
 		Factory f = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
-		CtTypeReference<?> typeRef = f.Type().createReference("some.package.SomeType");
+		CtTypeReference<?> typeRef = f.Type().createReference("some.foo.SomeType");
 		typeRef.addActualTypeArgument(f.Type().createTypeParameterReference("T"));
-		assertEquals("some.package.SomeType<T>", typeRef.toString());
+		assertEquals("some.foo.SomeType<T>", typeRef.toString());
 		typeRef.setImplicit(true);
 		typeRef.setSimplyQualified(true);
 		assertTrue(typeRef.isImplicit());
@@ -1517,7 +1517,7 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		CtImport imprt = f.Type().createImport(typeRef);
 		CtTypeReference<?> typeRef2 = (CtTypeReference<?>) imprt.getReference();
 		assertNotSame(typeRef2, typeRef);
-		assertEquals("some.package.SomeType", typeRef2.toString());
+		assertEquals("some.foo.SomeType", typeRef2.toString());
 		assertFalse(typeRef2.isImplicit());
 		assertFalse(typeRef2.getPackage().isImplicit());
 		//origin reference did not changed

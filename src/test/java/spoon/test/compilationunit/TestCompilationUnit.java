@@ -100,11 +100,11 @@ public class TestCompilationUnit {
 	@Test
 	public void testGetUnitTypeWorksWithCreatedObjects() {
 		final Launcher launcher = new Launcher();
-		CtPackage myPackage = launcher.getFactory().Package().getOrCreate("my.package");
+		CtPackage myFooPackage = launcher.getFactory().Package().getOrCreate("my.foo");
 		CompilationUnit cu = launcher.getFactory().createCompilationUnit();
 		assertEquals(CompilationUnit.UNIT_TYPE.UNKNOWN, cu.getUnitType());
 		
-		cu.setDeclaredPackage(myPackage);
+		cu.setDeclaredPackage(myFooPackage);
 		assertEquals(CompilationUnit.UNIT_TYPE.PACKAGE_DECLARATION, cu.getUnitType());
 
 		cu.setDeclaredTypes(Collections.singletonList(launcher.getFactory().createClass()));
