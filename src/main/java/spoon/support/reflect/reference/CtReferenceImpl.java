@@ -98,14 +98,12 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
   * it cannot be used directly in a program written in the Java programming language.
   */
 	//JDTTreeBuilderHelper.computeAnonymousName returns "$numbers$Name" so we have to skip them if they start with numbers
-		if (!simplename.matches("<.*>|\\d.*")) {
-			String[] splittedSimplename = simplename.split("\\.");
-			if (splittedSimplename.length == 0) {
-				throw new SpoonException("Empty identifier found. See JLS for correct identifier");
-			}
+	//allow empty identifier because they are sometimes used.
+		if (!simplename.matches("<.*>|\\d.*|^.{0}$")) {
+			//split at "<" and ">" because "Iterator<Cache.Entry<K,Store.ValueHolder<V>>>" submits setSimplename ("Cache.Entry<K")
+			String[] splittedSimplename = simplename.split("\\.|<|>");
 			if (checkAllParts(splittedSimplename)) {
-				System.err.println(simplename);
-				throw new SpoonException("Not allowed javaletter or keyword in identifier found. See JLS for correct identifier. Identifier: " + simplename);
+				throw new IllegalArgumentException("Not allowed javaletter or keyword in identifier found. See JLS for correct identifier. Identifier: " + simplename);
 			}
 	}
 }
@@ -114,6 +112,8 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	}
 	private boolean checkAllParts(String[] simplenameParts) {
 		for (String simpleName:simplenameParts) {
+			//because arrays use e.g. int[]
+			simpleName = simpleName.replaceAll("\\[\\]", "");
 			if (isKeyword(simpleName) || checkIdentifierChars(simpleName)) {
 				return true;
 		}
