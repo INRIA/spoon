@@ -116,10 +116,10 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 		// metamodel elements
 		if (parameterType.toString().equals("spoon.reflect.declaration.CtType<?>")) {
 			CtClass fooBar = f.createClass("FooBar");
-			fooBar.delete();// removing from default package
-			return fooBar; // createNewClass implictly needs a CtClass
+			fooBar.delete(); // removing from default package
+			return fooBar;   // createNewClass implictly needs a CtClass
 		}
-		for(CtType t : allInstantiableMetamodelInterfaces) {
+		for (CtType t : allInstantiableMetamodelInterfaces) {
 			if (c.isAssignableFrom(t.getActualClass())) {
 				CtElement argument = factory.Core().create(t.getActualClass());
 				// an empty package is merged with the existing one
@@ -195,13 +195,13 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 
 		throw new IllegalArgumentException("cannot instantiate "+parameterType);
 	}
-	static int nTotalSetterCalls= 0;
+	static int nTotalSetterCalls = 0;
 
 	@Test
 	public void testContract() throws Throwable {
 		factory.getEnvironment().setModelChangeListener(changeListener);
-		int nSetterCalls= 0;
-		int nAssertsOnParent = 0;
+		int nSetterCalls = 0;
+				int nAssertsOnParent = 0;
 		int nAssertsOnParentInList = 0;
 		// contract: all setters/adders must set the parent (not necessarily the direct parent, can be upper in the parent tree, for instance when injecting blocks
 		Object o = factory.Core().create((Class<? extends CtElement>) toTest.getActualClass());
@@ -218,7 +218,7 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 				Method actualMethod = setter.getReference().getActualMethod();
 
 				int nBefore = changeListener.nbCallsToOnAction;
-				changeListener.changedElements = new ArrayList();
+				changeListener.changedElements = new ArrayList<>();
 
 				// here we actually call the setter
 				actualMethod.invoke(receiver, new Object[] { argument });
@@ -235,8 +235,8 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 
 				// directly the element
 				if (argument instanceof CtElement
-				  && setter.getAnnotation(UnsettableProperty.class) == null
-				  && setter.getAnnotation(DerivedProperty.class) == null) {
+					&& setter.getAnnotation(UnsettableProperty.class) == null
+					&& setter.getAnnotation(DerivedProperty.class) == null) {
 					nAssertsOnParent++;
 					assertTrue(setter.getDeclaringType().getQualifiedName() + "#" + setter.getSignature() + " doesn't initializes parent", ((CtElement)argument).hasParent(receiver));
 				}
