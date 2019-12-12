@@ -112,7 +112,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	}
 	private boolean checkAllParts(String[] simplenameParts) {
 		for (String simpleName:simplenameParts) {
-			//because arrays use e.g. int[] and @Number is used for instances of an object e.g. foo@1 
+			//because arrays use e.g. int[] and @Number is used for instances of an object e.g. foo@1
 			simpleName = simpleName.replaceAll("\\[\\]|@", "");
 			if (isKeyword(simpleName) || checkIdentifierChars(simpleName)) {
 				return true;
