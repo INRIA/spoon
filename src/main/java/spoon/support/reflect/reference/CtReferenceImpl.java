@@ -103,7 +103,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 			//split at "<" and ">" because "Iterator<Cache.Entry<K,Store.ValueHolder<V>>>" submits setSimplename ("Cache.Entry<K")
 			String[] splittedSimplename = simplename.split("\\.|<|>");
 			if (checkAllParts(splittedSimplename)) {
-				throw new IllegalArgumentException("Not allowed javaletter or keyword in identifier found. See JLS for correct identifier. Identifier: " + simplename);
+				throw new SpoonException("Not allowed javaletter or keyword in identifier found. See JLS for correct identifier. Identifier: " + simplename);
 			}
 	}
 }

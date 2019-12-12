@@ -998,11 +998,11 @@ public class TemplateTest {
 		}
 		{
 			//contract: simple name of type reference is substituted in String literal 
-			final CtClass<?> result = (CtClass<?>) new SubstituteLiteralTemplate(factory.Type().createReference("some.ignored.package.TypeName")).apply(factory.createClass());
+			final CtClass<?> result = (CtClass<?>) new SubstituteLiteralTemplate(factory.Type().createReference("some.ignored.foo.TypeName")).apply(factory.createClass());
 			assertEquals("java.lang.String stringField1 = \"TypeName\";", result.getField("stringField1").toString());
 			assertEquals("java.lang.String stringField2 = \"Substring TypeName is substituted too - TypeName\";", result.getField("stringField2").toString());
 			//contract type reference is substituted in invocation as class access
-			assertEquals("java.lang.System.out.println(some.ignored.package.TypeName.class)", result.getMethodsByName("m1").get(0).getBody().getStatement(0).toString());
+			assertEquals("java.lang.System.out.println(some.ignored.foo.TypeName.class)", result.getMethodsByName("m1").get(0).getBody().getStatement(0).toString());
 		}
 		{
 			//contract: number literal is substituted in String literal as number converted to string
