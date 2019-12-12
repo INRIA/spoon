@@ -5,6 +5,7 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtElement;
@@ -46,12 +47,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	@Override
 	public <T extends CtReference> T setSimpleName(String simplename) {
 		Factory factory = getFactory();
-		if (simplename.length() == 0) {
-			throw new IllegalArgumentException("empty identifier found. See JLS for correct identifier");
-		}
-		if (checkIdentifierChars(simplename) || isKeyword(simplename)) {
-			throw new IllegalArgumentException("Not allowed javaletter or keyword in identifier found. See JLS for correct identifier");
-		}
+		checkIdentiferForJLSCorrectness(simplename);
 		if (factory == null) {
 			this.simplename = simplename;
 			return (T) this;
@@ -63,6 +59,8 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		this.simplename = simplename;
 		return (T) this;
 	}
+
+
 
 
 	@UnsettableProperty
@@ -92,18 +90,45 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		}
 		return false;
 	}
+	private void checkIdentiferForJLSCorrectness(String simplename) {
+	/*
+  * At the level of the Java Virtual Machine, every constructor written in the Java programming language (JLS §8.8)
+  * appears as an instance initialization method that has the special name <init>.
+  * This name is supplied by a compiler. Because the name is not a valid identifier,
+  * it cannot be used directly in a program written in the Java programming language.
+  */
+	//JDTTreeBuilderHelper.computeAnonymousName returns "$numbers$Name" so we have to skip them if they start with numbers
+		if (!simplename.matches("<.*>|\\d.*")) {
+			String[] splittedSimplename = simplename.split("\\.");
+			if (splittedSimplename.length == 0) {
+				throw new SpoonException("Empty identifier found. See JLS for correct identifier");
+			}
+			if (checkAllParts(splittedSimplename)) {
+				System.err.println(simplename);
+				throw new SpoonException("Not allowed javaletter or keyword in identifier found. See JLS for correct identifier. Identifier: " + simplename);
+			}
+	}
+}
 	private boolean isKeyword(String simplename) {
 		return keywords.contains(simplename);
 	}
-
+	private boolean checkAllParts(String[] simplenameParts) {
+		for (String simpleName:simplenameParts) {
+			if (isKeyword(simpleName) || checkIdentifierChars(simpleName)) {
+				return true;
+		}
+	}
+	return false;
+	}
 	private boolean checkIdentifierChars(String simplename) {
 		return (!Character.isJavaIdentifierStart(simplename.charAt(0))) || simplename.chars().anyMatch(letter -> !Character.isJavaIdentifierPart(letter));
 	}
 	private static Collection<String> fillWithKeywords() {
-	return Stream.of("abstract", "continue", "for", "new", "switch", "assert", "default", "if", "package", "synchronized", "boolean", "do", "goto", "private",
-	"this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws", "case", "enum", "instanceof", "return",
-	"transient", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile",
-	"const", "float", "native", "super", "while", "_", "true", "false", "null")
+	//removed types because needed as ref: "int","short", "char", "void", "byte","float", "true","false","boolean","double","long","class"
+	return Stream.of("abstract", "continue", "for", "new", "switch", "assert", "default", "if", "package", "synchronized",  "do", "goto", "private",
+	"this", "break",  "implements", "protected", "throw", "else", "import", "public", "throws", "case", "enum", "instanceof", "return",
+	"transient", "catch", "extends", "try", "final", "interface", "static", "finally",  "strictfp", "volatile",
+	"const",  "native", "super", "while", "_", "null")
 	.collect(Collectors.toCollection(HashSet::new));
 	}
 }
