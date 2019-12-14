@@ -524,6 +524,10 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 			case NOT:
 				res.setValue(!(Boolean) object);
 				break;
+			case NEG:
+				res.setValue(convert(operator.getType(),
+					-1 * ((Number) object).longValue()));
+				break;
 			default:
 				throw new RuntimeException("unsupported operator " + operator.getKind());
 			}
