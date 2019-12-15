@@ -188,6 +188,19 @@ public class EvalTest {
 	}
 
 	@Test
+	public void testVisitorPartialEvaluator_unary() {
+
+    	{ // NEG urnary operator
+      		Launcher launcher = new Launcher();
+      		CtCodeElement el =
+          		launcher.getFactory().Code().createCodeSnippetExpression("-(100+1)").compile();
+      		VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
+      		CtElement element = eval.evaluate(el);
+      		assertEquals("-101", element.toString());
+    	}
+	}
+
+	@Test
 	public void testVisitorPartialEvaluator_if() {
 		Launcher launcher = new Launcher();
 		{ // the untaken branch is removed
