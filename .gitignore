@@ -31,3 +31,5 @@ doc/_jekyll/_site/
 
 # Nodejs
 node_modules/
+
+leafactor-ci/.gradle
