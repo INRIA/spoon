@@ -372,7 +372,7 @@ public class JDTCommentBuilder {
 					}
 					previous = ctCase;
 				}
-				if (previous.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()) {
+				if (previous != null && previous.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()) {
 					addCommentToNear(comment, new ArrayList<>(previous.getStatements()));
 					try {
 						comment.getParent();
