@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Acrylic Paint</string>
+    <string name="about">О программе</string>
+    <string name="blur">Размытие</string>
+    <string name="brush_size">Размер кисти</string>
+    <string name="choose_width">Размер кисти</string>
+    <string name="clear_all">Стереть всё</string>
+    <string name="color">Цвет</string>
+    <string name="continue_fuck">Продолжить</string>
+    <string name="emboss">Жирный</string>
+    <string name="erase">Стереть</string>
+    <string name="here_is_your_canvas">Вот ваш холст. Начните рисовать!</string>
+    <string name="no_way_to_share">Не удаётся найти приложение, чтобы поделиться с…</string>
+    <string name="normal">Карандаш</string>
+    <string name="ok">Ок</string>
+    <string name="pick_color">Выбрать цвет</string>
+    <string name="press_back_again">Нажмите кнопку НАЗАД снова, чтобы выйти из программы!\n(Несохранённая работа будет потеряна)</string>
+    <string name="save">Сохранить</string>
+    <string name="saved_your_location_to">Ваша работа сохранена в %1$s</string>
+    <string name="select">Выбрать</string>
+    <string name="share">Поделиться</string>
+    <string name="share_text_template">Поделиться в виде текста</string>
+    <string name="share_title_template">Посмотрите на то, что я нарисовал с помощью Acrylic Paint! --- Acrylic Paint (Простое рисование пальцем) - https://f-droid.org/app/anupam.acrylic</string>
+    <string name="title_activity_about">О программе</string>
+    <string name="toolbox_share_title">Поделиться</string>
+    <string name="your_selected_size_is">Выбранный размер: %1$d</string>
+    <string name="app_description">Acrylic Paint - это Свободное Программное Обеспечение, которое позволяет вам свободно творить!\n\nНажмите на меню для отображения других опций.\n\nБлагодарю Anupam Shrivastava за идею, Valerio Bozzolan за возрождение проекта и физика Marco Gagino за потрясающую поддержку. Спасибо всем участникам!\n\nСчастливого рисования :)</string>
+    <string name="about_description">
+<![CDATA[
+<h1>Acrylic Paint</h1>
+<p>Спасибо за использование Acrylic Paint!<br /><b>Свободное Программное Обеспечение</b>, которое позволяет вам свободно творить!</p>
+
+<h2>Благодарности</h2>
+<p>Особая благодарность:<br>
+<b><a href="https://github.com/anupam1525>Anupam Shrivastava</a></b> за первую версию Acrylic Paint. Теперь он неактивен.<br>
+<b><a href="https://github.com/valerio-bozzolan">Valerio Bozzolan</a></b> за большую работу, проделанную над исходным кодом и его оптимизацией. В настоящее время он продолжает работу над этой версией Acrylic Paint.<br>
+<b><a href="https://github.com/marcogagino-22">Marco Gagino</a></b> за тщательный редизайн и за большое участие!
+</p>
+
+<h2>Лицензии</h2>
+<p>Эта версия Acrylic Paint и его исзодный код выпущен <a href="mailto:valerio.bozzolan@studenti.polito.it?subject=AcrylicPaint">Valerio Bozzolan</a> на условиях
+лицензии <i>GNU GPLv3+</i>.
+Дицензия даёт каждому право использовать, изучать, улучшать и делиться этим приложением <b>любыми средствами</b> и для <b>любой цели</b> до тех пор, пока предлагаете его на тех же условиях для остальных.</p>
+<p>Приложение распространяется <b>в надежде, что оно будет полезено для всех</b>, но без каких-либо гарантий; в том числе без подразумеваемых гарантий
+КОММЕРЧЕСКОЙ ВЫГОДЫ или ПРИГОДНОСТИ ДЛЯ КОНКРЕТНЫХ ЦЕЛЕЙ. Смотрите GNU General Public License для более подробной информации.</p>
+
+<h2>Примечание</h2>
+<p>Если вы заметили какие-либо проблемы или у вас есть некоторые идеи, не стесняйтесь использовать <a href="https://github.com/valerio-bozzolan/AcrylicPaint/issues">баг трекер</a>.</p>
+<p>Внести вклад в исходный код: <a href="https://github.com/valerio-bozzolan/AcrylicPaint">valerio-bozzolan/AcrylicPaint</a> @GitHub.</p>
+<p>Прочтите <a href="https://github.com/valerio-bozzolan/AcrylicPaint/blob/master/README.md">README</a> для получения дополнительной информации.</p>
+
+<p>Удачи!</p>
+    ]]>
+    </string>
+</resources>

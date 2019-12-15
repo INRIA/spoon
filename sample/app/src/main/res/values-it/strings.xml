@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_description">Acrylic Paint è un software libero che libera la tua creatività!\n\nPremi il tasto menù per più opzioni.\n\nUn ringraziamento all\'autore originale Anupam Shrivastava, a Valerio Bozzolan per la riesumazione del progetto ed a Marco Gagino per il sostegno spaventoso. Grazie a tutti i contributori!\n\n…Divertiti! :)</string>
+    <string name="here_is_your_canvas">Qui c\'è la tua tela. Inizia a colorare!</string>
+    <string name="color">Colore</string>
+    <string name="emboss">Grassetto</string>
+    <string name="blur">Sfocato</string>
+    <string name="brush_size">Dimensione</string>
+    <string name="erase">Gomma</string>
+    <string name="clear_all">Pulisci tutto</string>
+    <string name="save">Salva</string>
+    <string name="share">Condividi</string>
+    <string name="about">Informazioni</string>
+    <string name="open_image">Apri immagine come sfondo</string>
+    <string name="fill_background_with_color">Riempi sfondo</string>
+    <string name="your_selected_size_is">Dimensione scelta: %1$d</string>
+    <string name="choose_width">Scegli dimensione:</string>
+    <string name="saved_your_location_to">La tua creazione è stata salvata in %1$s</string>
+    <string name="select">Seleziona</string>
+    <string name="continue_fuck">Continua</string> <!-- Workaround to avoid "R.string.continue", that it's as a special class-word! D: -->
+
+    <string name="pick_color">Scegli un Colore</string>
+    <string name="toolbox_share_title">Condividi</string>
+    <string name="share_title_template">Guarda cosa ho dipinto con Acrylic Paint! --- Acrylic Paint (Simple finger painting) - https://f-droid.org/app/anupam.acrylic</string>
+    <string name="share_text_template">Condividi come testo</string>
+    <string name="no_way_to_share">Non risulta alcuna app con cui condividere la tua opera…</string>
+    <string name="normal">Matita</string>
+    <string name="title_activity_about">Informazioni</string>
+    <string name="press_back_again">Premi ancora per uscire!\n(Hai salvato?)</string>
+    <string name="about_description">
+<![CDATA[
+<h1>Acrylic Paint</h1>
+<p>Grazie per aver scelto Acrylic Paint!<br />Un <b>software libero</b> che libera la tua creatività!</p>
+
+<h2>Crediti</h2>
+<p>Ringraziamenti speciali a:<br>
+<b><a href="https://github.com/anupam1525>Anupam Shrivastava</a></b> per la prima versione dell'app. È ora inattivo.<br>
+<b><a href="https://github.com/valerio-bozzolan">Valerio Bozzolan</a></b> per l'intensa revisione al codice sorgente. È l'attuale manutentore di questa versione.<br>
+<b><a href="https://github.com/marcogagino-22">Marco Gagino</a></b> per il profondo restyling e grande spirito di collaborazione!
+</p>
+
+<h2>Licenze</h2>
+<p>Questa versione di Acrylic Paint e il relativo codice sorgente sono distribuiti da <a href="mailto:valerio.bozzolan@studenti.polito.it?subject=AcrylicPaint">Valerio Bozzolan</a> sotto i
+termini della licenza <i>GNU GPLv3+</i>.
+Ciò è per permettere a chiunque di usare, studiare, migliorare e ricondividere quest\'app con <b>qualunque mezzo</b> e per <b>qualsiasi scopo</b> a patto di mantenere sempre questi diritti.</p>
+<p>Quest\'applicazione è rilasciata <b>nella speranza che sia utile a tutti</b>, ma senza alcuna garanzia (nè garanzie di commerciabilità).</p>
+
+<h2>Note</h2>
+<p>Se ti accorgi di qualche difetto o se hai idee, usa il <a href="https://github.com/valerio-bozzolan/AcrylicPaint/issues">bug tracker</a>.</p>
+<p>Contribuisci al codice sorgente su <a href="https://github.com/valerio-bozzolan/AcrylicPaint">valerio-bozzolan/AcrylicPaint</a> @GitHub.</p>
+<p>Leggi il file <a href="https://github.com/valerio-bozzolan/AcrylicPaint/blob/master/README.md">README</a> per maggiori informazioni.</p>
+
+<p>Divertiti!</p>
+    ]]>
+    </string>
+    <string name="select_image_to_open">Seleziona l\'immagine da aprire</string>
+    <string name="extract_color">Preleva un colore</string>
+    <string name="color_extracted">Colore prelevato</string>
+    <string name="tap_to_extract_color">Premi ovunque per prelevare un colore</string>
+    <string name="ability_disabled_need_newer_api_level">Questa funzionalità è disabilitata poiché richiede una versione di Android più aggiornata (almeno API 17).</string>
+    <string name="smudge">Sfuma</string>
+</resources>

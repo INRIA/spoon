@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Acrylic Paint</string>
+    <string name="app_description">Acrylic Paint est un logiciel libre qui libère votre créativité !\n\nAppuie sur menu pour plus d\'options.\n\nMerci à Anupam Shrivastava pour l\'idée, à Valerio Bozzolan pour avoir ressuscité le projet et au physicien Marco Gagino pour le formidable soutien. Merci à tous les contributeurs !\n\nBonne peinture :)</string>
+    <string name="here_is_your_canvas">Voici ta toile. Commence à peindre !</string>
+    <string name="color">Couleur</string>
+    <string name="emboss">Gras</string>
+    <string name="blur">Flou</string>
+    <string name="brush_size">Taille de brosse</string>
+    <string name="erase">Effacer</string>
+    <string name="clear_all">Effacer tout</string>
+    <string name="save">Enregistrer</string>
+    <string name="share">Partager</string>
+    <string name="about">À propos</string>
+    <string name="your_selected_size_is">Taille sélectionnée : %1$d</string>
+    <string name="choose_width">Taille de brosse</string>
+    <string name="saved_your_location_to">Peinture sauvegardée sous %1$s</string>
+    <string name="select">Sélectionner</string>
+    <string name="continue_fuck">Continuer</string> <!-- Workaround to avoid "R.string.continue", that it's as a special class-word! D: -->
+    <string name="ok">OK</string>
+    <string name="pick_color">Choisir une couleur</string>
+    <string name="toolbox_share_title">Partager</string>
+    <string name="share_title_template">Regardez ce que j\'ai peint avec Acrylic Paint! --- Acrylic Paint (peinture simple avec le doigt) - https://f-droid.org/app/anupam.acrylic</string>
+    <string name="share_text_template">Partager comme du texte</string>
+    <string name="no_way_to_share">Impossible de trouver une application pour partager…</string>
+    <string name="normal">Crayon</string>
+    <string name="title_activity_about">À propos</string>
+    <string name="press_back_again">Appuie sur retour une nouvelle fois pour quitter !\n(en perdant tout le travail non enregistré)</string>
+    <string name="about_description">
+<![CDATA[
+<h1>Acrylic Paint</h1>
+<p>Merci d\'utiliser Acrylic Paint!<br />Un <b>logiciel libre</b> pour libérer votre créativité !</p>
+
+<h2>Crédits</h2>
+<p>Un grand merci à :<br>
+<b><a href="https://github.com/anupam1525>Anupam Shrivastava</a></b> pour la version originelle de Acrylic Paint. Il est maintenant inactif.<br>
+<b><a href="https://github.com/valerio-bozzolan">Valerio Bozzolan</a></b> pour le bon travail de relecture et d\'optimisation du code source. Il continue actuellement le travail pour cette version de AcrylicPaint.<br>
+<b><a href="https://github.com/marcogagino-22">Marco Gagino</a></b> for le restylage complet et sa grande participation !
+</p>
+
+<h2>Licences</h2>
+<p>Cette version de Acrylic Paint et son code source sont fournis par <a href="mailto:valerio.bozzolan@studenti.polito.it?subject=AcrylicPaint">Valerio Bozzolan</a> sous 
+les termes de la licence <i>GNU GPLv3+</i>.
+Cette licence permet à tout monde d\'utiliser, étudier, améliorer et partager cette application par <b>tous les moyens</b> et pour <b>tout usage</b> tant que vous offrez les mêmes droits à vos utilisateurs.</p>
+<p>Cette application est distribuée <b>dans l\'espoir qu\'elle sera utile à tous</b>, mais sans aucune garantie ; sans même la garantie implicite de 
+COMMERCIALISATION ou D\'ADAPTATION A UN USAGE PARTICULIER. Voir la Licence Publique Générale GNU pour plus de détails.</p>
+
+<h2>Note</h2>
+<p>Si vous rencontrez des problèmes ou avez des idées, n\'hésitez pas à utiliser le <a href="https://github.com/valerio-bozzolan/AcrylicPaint/issues">bug tracker</a>.</p>
+<p>Contribuer au code source : <a href="https://github.com/valerio-bozzolan/AcrylicPaint">valerio-bozzolan/AcrylicPaint</a> @GitHub.</p>
+<p>Lisez le fichier <a href="https://github.com/valerio-bozzolan/AcrylicPaint/blob/master/README.md">README</a> pour plus d\'informations.</p>
+
+<p>Amusez-vous bien !</p> 
+    ]]>
+    </string>
+
+</resources>

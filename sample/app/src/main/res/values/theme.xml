@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme" parent="@android:style/Theme.DeviceDefault.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <!-- ActionBar styles -->
+    <style name="MyActionBar" parent="@android:style/Widget.DeviceDefault.Light.ActionBar">
+        <item name="android:background">@drawable/actionbar_background</item>
+    </style>
+
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Acrylmalerei</string>
+    <string name="app_description">Acrylmalerei ist eine Freie und Quelloffene Software die Deine Kreativität freisetzt.\n\nÖffne das Menu für mehr Optionen.\n\nDank an Anupam Shrivastava für die Idee, an Valerio Bozzolan dafür, das Projekt wiederzubeleben, und Marco Gagino für die Unterstützung. Dank an alle Beitragenden!\n\nFrohes Malen :)</string>
+    <string name="here_is_your_canvas">Hier ist Deine Malfläche. Fang an zu malen!</string>
+    <string name="color">Farbe</string>
+    <string name="emboss">Dick auftragen</string>
+    <string name="blur">Unschärfe</string>
+    <string name="brush_size">Pinselgröße</string>
+    <string name="erase">Löschen</string>
+    <string name="clear_all">Vordergrund löschen</string>
+    <string name="save">Speichern</string>
+    <string name="share">Teilen</string>
+    <string name="about">Über</string>
+    <string name="open_image">Bild als Hintergrund öffnen</string>
+    <string name="fill_background_with_color">Hintergrund mit Farbe füllen</string>
+    <string name="your_selected_size_is">Gewählte Größe: %1$d</string>
+    <string name="choose_width">Pinselgröße</string>
+    <string name="saved_your_location_to">Kunstwerk unter %1$s gespeichert</string>
+    <string name="select">Auswählen</string>
+    <string name="continue_fuck">Weiter</string> <!-- Workaround to avoid "R.string.continue", that it's as a special class-word! D: -->
+    <string name="ok">OK</string>
+    <string name="pick_color">Wähle eine Farbe</string>
+    <string name="toolbox_share_title">Teilen</string>
+    <string name="share_title_template">Schau mal, was ich mit der Acrylmalerei gemalt habe! --- Acrylic Paint (Einfaches Fingermalen) - https://f-droid.org/app/anupam.acrylic</string>
+    <string name="share_text_template">Als Text teilen</string>
+    <string name="no_way_to_share">Ich kann keine App zum Teilen finden…</string>
+    <string name="normal">Pinsel</string>
+    <string name="title_activity_about">Über</string>
+    <string name="press_back_again">Nochmal Zurück drücken um zu schließen!\n(Alles ungespeicherte geht verloren)</string>
+    <string name="select_image_to_open">Bild zum Öffnen wählen</string>
+    <string name="extract_color">Farbe aus dem Bild holen</string>
+    <string name="color_extracted">Neue Farbe in Benutzung</string>
+    <string name="tap_to_extract_color">Klicke irgendwo hin, um die Farbe zu benutzen</string>
+    <string name="ability_disabled_need_newer_api_level">Das kann ich nicht, weil das Android zu alt ist und mindestens API-Version 17 dafür haben muss.</string>
+    <string name="smudge">Schmieren</string>
+</resources>

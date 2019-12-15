@@ -1,0 +1,36 @@
+buildscript {
+    repositories {
+        google()
+    }
+}
+
+plugins {
+    id 'com.android.application'
+    id "com.leafactorci" version "1.0.204"
+}
+
+launcherExtension {
+    sourceOutputDirectory = project.projectDir.path + '\\build'
+}
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion '29.0.0'
+
+    defaultConfig {
+        applicationId "anupam.acrylic"
+        minSdkVersion 14
+        targetSdkVersion 26
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
