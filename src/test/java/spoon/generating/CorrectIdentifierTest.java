@@ -15,41 +15,58 @@ public class CorrectIdentifierTest {
 
 	@Test
 	public void wrongIdentifer() {
-	CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
-	assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("tacos.EatIt()"));
+		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("tacos.EatIt()"));
 	}
+
 	@Test
 	public void wrongIdentifer2() {
-	CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
-	assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName(";tacos"));
+		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName(";tacos"));
 	}
+
 	@Ignore
 	@Test
 	public void keyWord() {
-	CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
-	assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("class"));
+		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("class"));
 	}
+
 	@Ignore
 	@Test
 	public void keyWord2() {
-	CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
-	assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("null"));
+		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("null"));
 	}
+
 	@Ignore
 	@Test
 	public void keyWord3() {
-	CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
-	assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("true"));
+		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("true"));
 	}
+
 	@Test
 	public void correctIdentifer() {
-	CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
-	assertDoesNotThrow(() -> localVariableRef.setSimpleName("EatIt"));
-
+		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		assertDoesNotThrow(() -> localVariableRef.setSimpleName("EatIt"));
 	}
+
 	@Test
 	public void correctIdentifer2() {
-	CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
-	assertDoesNotThrow(() -> localVariableRef.setSimpleName("ClassFoo"));
+		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		assertDoesNotThrow(() -> localVariableRef.setSimpleName("ClassFoo"));
+	}
+
+	@Test
+	public void correctIdentiferUtfFrench() {
+		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		assertDoesNotThrow(() -> localVariableRef.setSimpleName("UneClasseFrançaiseEtAccentuéeVoilà"));
+	}
+
+	@Test
+	public void correctIdentiferUtfChinese() {
+		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		assertDoesNotThrow(() -> localVariableRef.setSimpleName("処理"));
 	}
 }
