@@ -294,7 +294,6 @@ public class ProcessingTest {
 		e.setAutoImports(false);
 		e.setPrettyPrinterCreator(() -> {
 			SniperJavaPrettyPrinter sniperJavaPrettyPrinter = new SniperJavaPrettyPrinter(l.getEnvironment());
-			sniperJavaPrettyPrinter.setIgnoreImplicit(false);
 			return sniperJavaPrettyPrinter;});
 
 		Path path = Files.createTempDirectory("emptydir");

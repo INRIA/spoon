@@ -64,6 +64,9 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 		mutableTokenWriter = new MutableTokenWriter(env);
 		//wrap that TokenWriter to listen on all incoming events and set wrapped version to DJPP
 		setPrinterTokenWriter(createTokenWriterListener(mutableTokenWriter));
+
+		// newly added elements are not fully qualified
+		this.setIgnoreImplicit(false);
 	}
 
 	/**
