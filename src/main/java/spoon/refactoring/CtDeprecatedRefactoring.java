@@ -5,16 +5,21 @@
  */
 package spoon.refactoring;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
@@ -31,9 +36,10 @@ public class CtDeprecatedRefactoring {
 		spoon.setSourceOutputDirectory(path);
 		CalledMethodProcessor processor = new CalledMethodProcessor();
 		spoon.addProcessor(processor);
-		spoon.addProcessor(new AbstractProcessor<CtMethod<?>>() {
+		spoon.addProcessor(new AbstractProcessor<CtExecutable<?>>() {
 			@Override
-			public void process(CtMethod<?> method) {
+			public void process(CtExecutable<?> method) {
+
 				if (method.hasAnnotation(Deprecated.class) && !processor.matches(method)) {
 					method.delete();
 				}
@@ -57,20 +63,40 @@ public class CtDeprecatedRefactoring {
 	}
 
 	private class CalledMethodProcessor extends AbstractProcessor<CtExecutable<?>> implements Filter<CtExecutable<?>> {
-		private Collection<CtExecutable<?>> calledMethods = new HashSet<>();
+		private Map<CtExecutable<?>, Collection<CtExecutable<?>>> invocationsOfMethod = new HashMap<>();
 
 		@Override
 		public void process(CtExecutable<?> method) {
 			if (!method.hasAnnotation(Deprecated.class)) {
 				List<CtInvocation<?>> var = method.getElements(new TypeFilter<>(CtInvocation.class));
 				var.stream().filter(Objects::nonNull)
-						.forEach(v -> calledMethods.add(v.getExecutable().getExecutableDeclaration()));
+						.forEach(v -> invocationsOfMethod.merge(v.getExecutable().getExecutableDeclaration(), Arrays.asList(method),
+								(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toSet())));
 			}
 		}
 
 		@Override
 		public boolean matches(CtExecutable<?> element) {
-			return calledMethods.contains(element);
+			return invocationsOfMethod.keySet().contains(element);
+			// return calledMethods.contains(element);
+		}
+
+		@Override
+		public void processingDone() {
+			boolean changed = false;
+			do {
+				Iterator<Entry<CtExecutable<?>, Collection<CtExecutable<?>>>> mapIterator = invocationsOfMethod.entrySet()
+						.iterator();
+				while (mapIterator.hasNext()) {
+					Entry<CtExecutable<?>, Collection<CtExecutable<?>>> entry = mapIterator.next();
+					if (entry.getValue().isEmpty() && entry.getKey().hasAnnotation(Deprecated.class)) {
+						changed = true;
+						invocationsOfMethod.values().forEach(v -> v.remove(entry.getKey()));
+						mapIterator.remove();
+					}
+				}
+			} while (changed);
+			super.processingDone();
 		}
 	}
 }

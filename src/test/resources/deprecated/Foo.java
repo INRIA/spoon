@@ -3,7 +3,7 @@ package deprecated;
 public class Foo {
 	@Deprecated
 	public void test1() {
-		test2();
+		// test2();
 	}
 
 	@Deprecated
