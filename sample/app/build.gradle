@@ -26,7 +26,7 @@ plugins {
 apply plugin: LeafactorCIPlugin
 
 launcherExtension {
-    sourceOutputDirectory = project.projectDir.path + '\\build'
+    sourceOutputDirectory = project.projectDir.path + '/build'
 }
 
 android {
