@@ -1,13 +1,24 @@
+import com.leafactor.gradle.plugin.LeafactorCIPlugin
+
 buildscript {
     repositories {
         google()
+    }
+    dependencies {
+        classpath files('../../leafactor-ci/build/libs/leafactor-1.0.220.jar')
+        classpath 'fr.inria.gforge.spoon:spoon-core:8.1.0-beta-3'
+        classpath 'io.github.java-diff-utils:java-diff-utils:4.0'
+        classpath 'info.picocli:picocli:3.9.5'
+        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath group: 'net.lingala.zip4j', name: 'zip4j', version: '2.1.4'
     }
 }
 
 plugins {
     id 'com.android.application'
-    id "com.leafactorci" version "1.0.204"
 }
+
+apply plugin: LeafactorCIPlugin
 
 launcherExtension {
     sourceOutputDirectory = project.projectDir.path + '\\build'
