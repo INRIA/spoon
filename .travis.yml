@@ -54,3 +54,6 @@ jobs:
           - extra-google-google_play_services
 
       script: ./chore/travis/travis-leafactor.sh
+
+      before_install:
+        - yes | sdkmanager "platforms;android-28"
