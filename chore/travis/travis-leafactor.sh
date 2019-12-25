@@ -23,6 +23,7 @@ echo "leafactor.dir=../../leafactor-ci/build/libs/leafactor-${LEAFACTOR_VERSION}
 echo 'PRINTING local.properties'
 cat local.properties
 ./gradlew app:build
+ls -R
 ./gradlew app:refactor
 
 
