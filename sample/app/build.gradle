@@ -5,7 +5,10 @@ buildscript {
         google()
     }
     dependencies {
-        classpath files('../../leafactor-ci/build/libs/leafactor-1.0.220.jar')
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        def leafactorDir = properties.getProperty('leafactor.dir')
+        classpath files(leafactorDir)
         classpath 'fr.inria.gforge.spoon:spoon-core:8.1.0-beta-3'
         classpath 'io.github.java-diff-utils:java-diff-utils:4.0'
         classpath 'info.picocli:picocli:3.9.5'
