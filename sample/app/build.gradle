@@ -8,6 +8,8 @@ buildscript {
         Properties properties = new Properties()
         properties.load(project.rootProject.file('local.properties').newDataInputStream())
         def leafactorDir = properties.getProperty('leafactor.dir')
+        println 'Leafactor Directory: '
+        print leafactorDir
         classpath files(leafactorDir)
         classpath 'fr.inria.gforge.spoon:spoon-core:8.1.0-beta-3'
         classpath 'io.github.java-diff-utils:java-diff-utils:4.0'
