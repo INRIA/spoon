@@ -17,7 +17,7 @@ echo 'REFACTORING SAMPLE'
 cd ..
 cd sample
 
-ls ../../leafactor-ci/build/libs/
+ls ../leafactor-ci -R
 echo "sdk.dir=${ANDROID_SDK_DIR}" > local.properties
 echo "leafactor.dir=../../leafactor-ci/build/libs/leafactor-${LEAFACTOR_VERSION}.jar" >> local.properties
 echo 'PRINTING local.properties'
