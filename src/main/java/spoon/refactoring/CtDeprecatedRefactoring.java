@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtExecutable;
@@ -33,15 +34,22 @@ import spoon.support.reflect.code.CtLambdaImpl;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 public class CtDeprecatedRefactoring {
-	public CtDeprecatedRefactoring() {
-		super();
+
+	public void removeDeprecatedMethods(String inputPath, String resultPath) {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource(inputPath);
+		spoon.setSourceOutputDirectory(resultPath);
+		doRefactor(spoon);
 	}
 
 	public void removeDeprecatedMethods(String path) {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(path);
 		spoon.setSourceOutputDirectory(path);
+		doRefactor(spoon);
+	}
 
+	private void doRefactor(Launcher spoon) {
 		MethodInvocationSearch processor = new MethodInvocationSearch();
 		spoon.getEnvironment().setPrettyPrinterCreator(() -> {
 			return new SniperJavaPrettyPrinter(spoon.getEnvironment());
@@ -61,16 +69,6 @@ public class CtDeprecatedRefactoring {
 			}
 		});
 		spoon.prettyprint();
-		// does not work, see https://github.com/INRIA/spoon/issues/3183
-		// spoon.addProcessor(new AbstractProcessor<CtType>() {
-		// @Override
-		// public void process(CtType type) {
-		// if (type.hasAnnotation(Deprecated.class)) {
-		// type.delete();
-		// }
-		// }
-		// });
-
 	}
 
 	private boolean checkInvocationState(MethodInvocationSearch processor,
@@ -80,11 +78,16 @@ public class CtDeprecatedRefactoring {
 
 	private Set<CtExecutable<?>> getInvocationsFromFields(CtModel model) {
 		Set<CtExecutable<?>> result = new HashSet<>();
+		// search all method invocations from fields
 		model.getElements(new TypeFilter<>(CtField.class)).stream()
-				.map(v -> v.getElements(new TypeFilter<>(CtInvocation.class))).flatMap(List::stream)
-				.map(v -> v.getExecutable().getExecutableDeclaration()).forEach(result::add);
-		return result;
+				.map(field -> field.getElements(new TypeFilter<>(CtInvocation.class))).flatMap(List::stream)
+				.map(call -> call.getExecutable().getExecutableDeclaration()).forEach(result::add);
 
+		// search all constructor invocations from fields
+		model.getElements(new TypeFilter<>(CtField.class)).stream()
+				.map(field -> field.getElements(new TypeFilter<>(CtConstructorCall.class))).flatMap(List::stream)
+				.map(call -> call.getExecutable().getExecutableDeclaration()).forEach(result::add);
+		return result;
 	}
 
 	public void removeUncalledMethods(Map<CtExecutable<?>, Collection<CtExecutable<?>>> invocationsOfMethod) {
@@ -113,7 +116,7 @@ public class CtDeprecatedRefactoring {
 				if (entry.getValue().size() == 1 && entry.getValue().contains(entry.getKey())) {
 					// removes deprecated methods, that are only called by itself
 					changed = true;
-					invocationsOfMethod.values().forEach(v -> v.remove(entry.getKey()));
+					invocationsOfMethod.values().forEach(invocation -> invocation.remove(entry.getKey()));
 					mapIterator.remove();
 				}
 			}
@@ -128,19 +131,25 @@ public class CtDeprecatedRefactoring {
 			if (!method.getPosition().isValidPosition()) {
 				return;
 			}
+			// because lambdas ware difficult we transform them
 			final CtExecutable<?> transformedMethod;
-			List<CtInvocation<?>> var = method.getElements(new TypeFilter<>(CtInvocation.class));
 			if (method instanceof CtLambda) {
 				transformedMethod = method.getParent(CtExecutable.class);
 			} else {
 				transformedMethod = method;
 			}
+			List<CtInvocation<?>> invocations = method.getElements(new TypeFilter<>(CtInvocation.class));
+			List<CtConstructorCall<?>> constructors = method.getElements(new TypeFilter<>(CtConstructorCall.class));
 			if (!invocationsOfMethod.containsKey(method) && !method.isImplicit() && !(method instanceof CtLambdaImpl)) {
 				// now every method should be key
 				invocationsOfMethod.put(method, Collections.emptyList());
 			}
-			var.stream().filter(v -> !v.isImplicit()).map(v -> v.getExecutable().getExecutableDeclaration())
+			invocations.stream().filter(v -> !v.isImplicit()).map(v -> v.getExecutable().getExecutableDeclaration())
 					.filter(Objects::nonNull).filter(v -> v.getPosition().isValidPosition())
+					.forEach(v -> invocationsOfMethod.merge(v, new ArrayList<>(Arrays.asList(transformedMethod)),
+							(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
+			constructors.stream().filter(v -> !v.isImplicit()).map(v -> v.getExecutable().getExecutableDeclaration())
+					.filter(Objects::nonNull)
 					.forEach(v -> invocationsOfMethod.merge(v, new ArrayList<>(Arrays.asList(transformedMethod)),
 							(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
 		}
@@ -150,4 +159,5 @@ public class CtDeprecatedRefactoring {
 			return invocationsOfMethod.keySet().contains(element);
 		}
 	}
+
 }
