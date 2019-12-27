@@ -2,6 +2,10 @@ package deprecated;
 
 public class Foo {
 	@Deprecated
+	public Foo(String s) {
+	}
+
+	@Deprecated
 	public void test1() {
 		// test2();
 	}
@@ -17,17 +21,7 @@ public class Foo {
 	}
 
 	@Deprecated
-	public boolean test4() {
-		return test5();
-	}
+	public void test4() {
 
-	@Deprecated
-	public boolean test5() {
-		return test6();
 	}
-
-	public boolean test6() {
-		return test4();
-	}
-
 }

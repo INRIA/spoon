@@ -5,7 +5,6 @@
  */
 package spoon.refactoring;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,6 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,12 +25,12 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 public class CtDeprecatedRefactoring {
-
 	public CtDeprecatedRefactoring() {
 		super();
 	}
@@ -38,17 +39,22 @@ public class CtDeprecatedRefactoring {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(path);
 		spoon.setSourceOutputDirectory(path);
+
 		MethodInvocationSearch processor = new MethodInvocationSearch();
 		spoon.getEnvironment().setPrettyPrinterCreator(() -> {
 			return new SniperJavaPrettyPrinter(spoon.getEnvironment());
 		});
+
 		spoon.addProcessor(processor);
 		CtModel model = spoon.buildModel();
 		spoon.process();
+
+		Collection<CtExecutable<?>> invocationsFromFields = getInvocationsFromFields(model);
 		model.getElements(new TypeFilter<>(CtExecutable.class)).forEach(method -> processor.process(method));
 		removeUncalledMethods(processor.invocationsOfMethod);
+
 		model.getElements(new TypeFilter<>(CtExecutable.class)).forEach(method -> {
-			if (method.hasAnnotation(Deprecated.class) && !processor.matches(method)) {
+			if (method.hasAnnotation(Deprecated.class) && !checkInvocationState(processor, invocationsFromFields, method)) {
 				method.delete();
 			}
 		});
@@ -65,11 +71,23 @@ public class CtDeprecatedRefactoring {
 
 	}
 
+	private boolean checkInvocationState(MethodInvocationSearch processor,
+			Collection<CtExecutable<?>> invocationsFromFields, CtExecutable<?> method) {
+		return processor.matches(method) || invocationsFromFields.contains(method);
+	}
+
+	private Set<CtExecutable<?>> getInvocationsFromFields(CtModel model) {
+		return model.getElements(new TypeFilter<>(CtField.class)).stream()
+				.map(v -> v.getElements(new TypeFilter<>(CtInvocation.class))).flatMap(List::stream)
+				.map(v -> v.getExecutable().getExecutableDeclaration()).collect(Collectors.toSet());
+	}
+
 	public void removeUncalledMethods(Map<CtExecutable<?>, Collection<CtExecutable<?>>> invocationsOfMethod) {
 		boolean changed = false;
 		// Typefilter returns the method itself so we need to remove it.
 		invocationsOfMethod.entrySet().iterator().forEachRemaining(v -> v.getValue().remove(v.getKey()));
 		do {
+
 			changed = false;
 			Iterator<Entry<CtExecutable<?>, Collection<CtExecutable<?>>>> mapIterator = invocationsOfMethod.entrySet()
 					.iterator();
@@ -88,18 +106,12 @@ public class CtDeprecatedRefactoring {
 					mapIterator.remove();
 				}
 				if (entry.getValue().size() == 1 && entry.getValue().contains(entry.getKey())) {
-					// removes deprecated methods, that are only called by themself
+					// removes deprecated methods, that are only called by itself
 					changed = true;
 					invocationsOfMethod.values().forEach(v -> v.remove(entry.getKey()));
 					mapIterator.remove();
 				}
 			}
-			// now search Loops
-			LoopFinder finder = new LoopFinder();
-			Collection<Collection<CtExecutable<?>>> result = finder.tarjanStrongConnected(invocationsOfMethod);
-			changed |= result.stream().filter(v -> v.size() > 1)
-					.map(col -> invocationsOfMethod.keySet().removeIf(col::contains)).anyMatch(v -> v == Boolean.TRUE);
-
 		} while (changed);
 	}
 
@@ -109,139 +121,19 @@ public class CtDeprecatedRefactoring {
 		@Override
 		public void process(CtExecutable<?> method) {
 			List<CtInvocation<?>> var = method.getElements(new TypeFilter<>(CtInvocation.class));
+
 			if (!invocationsOfMethod.containsKey(method) && !method.isImplicit()) {
 				// now every method should be key
 				invocationsOfMethod.put(method, Collections.emptyList());
 			}
-			var.stream().filter(v -> !v.isImplicit())
-					.forEach(v -> invocationsOfMethod.merge(v.getExecutable().getExecutableDeclaration(),
-							new ArrayList<>(Arrays.asList(method)),
+			var.stream().filter(v -> !v.isImplicit()).map(v -> v.getExecutable().getExecutableDeclaration())
+					.filter(Objects::nonNull).forEach(v -> invocationsOfMethod.merge(v, new ArrayList<>(Arrays.asList(method)),
 							(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
 		}
 
 		@Override
 		public boolean matches(CtExecutable<?> element) {
 			return invocationsOfMethod.keySet().contains(element);
-			// return calledMethods.contains(element);
-		}
-
-	}
-
-	private class LoopFinder {
-		private ArrayDeque<Node> stack = new ArrayDeque<>();
-		private ArrayDeque<Node> visited = new ArrayDeque<>();
-		private Collection<Collection<CtExecutable<?>>> result = new HashSet<>();
-		private Collection<Node> graph;
-		private HashMap<CtExecutable<?>, Node> lookUp = new HashMap<>();
-
-		private Collection<Collection<CtExecutable<?>>> tarjanStrongConnected(
-				Map<CtExecutable<?>, Collection<CtExecutable<?>>> invocationsOfMethod) {
-
-			graph = invocationsOfMethod.entrySet().stream().filter(v -> v.getKey().hasAnnotation(Deprecated.class))
-					.map(v -> new Node(v.getKey(), v.getValue())).collect(Collectors.toSet());
-			for (Node node : graph) {
-				lookUp.put(node.getVertex(), node);
-			}
-			int index = 0;
-			for (Node node : graph) {
-				if (node.getIndex() == -1) {
-					strongConnect(node, index);
-				}
-			}
-			return result;
-		}
-
-		private void strongConnect(Node node, int index) {
-			node.setIndex(index);
-			node.setLowLink(index);
-			index++;
-			stack.push(node);
-			visited.push(node);
-			for (CtExecutable<?> edge : node.getEdges()) {
-				Node neighbor = lookUp.get(edge);
-				if (neighbor == null) {
-					continue;
-				}
-				if (neighbor.index == -1) {
-					strongConnect(neighbor, index);
-					node.setLowLink(Math.min(node.getLowLink(), neighbor.getLowLink()));
-				} else {
-					if (stack.contains(neighbor)) {
-						node.setLowLink(Math.min(node.getLowLink(), neighbor.getIndex()));
-					}
-				}
-			}
-			if (node.getIndex() == node.getLowLink()) {
-				Collection<CtExecutable<?>> cycle = new HashSet<>();
-				while (true) {
-					Node newNode = stack.pop();
-					cycle.add(newNode.getVertex());
-					if (newNode.equals(node)) {
-						break;
-					}
-				}
-				if (!cycle.isEmpty()) {
-					result.add(cycle);
-				}
-			}
-		}
-	}
-
-	private class Node {
-		private CtExecutable<?> vertex;
-		private Collection<CtExecutable<?>> edges;
-		private int index = -1;
-		private int lowLink = -1;
-
-		/**
-		 * @param vertex
-		 * @param edges
-		 */
-		Node(CtExecutable<?> vertex, Collection<CtExecutable<?>> edges) {
-			this.vertex = vertex;
-			this.edges = edges;
-		}
-
-		/**
-		 * @return the edges
-		 */
-		public Collection<CtExecutable<?>> getEdges() {
-			return edges;
-		}
-
-		/**
-		 * @return the vertex
-		 */
-		public CtExecutable<?> getVertex() {
-			return vertex;
-		}
-
-		/**
-		 * @return the index
-		 */
-		public int getIndex() {
-			return index;
-		}
-
-		/**
-		 * @param index the index to set
-		 */
-		public void setIndex(int index) {
-			this.index = index;
-		}
-
-		/**
-		 * @return the lowLink
-		 */
-		public int getLowLink() {
-			return lowLink;
-		}
-
-		/**
-		 * @param lowLink the lowLink to set
-		 */
-		public void setLowLink(int lowLink) {
-			this.lowLink = lowLink;
 		}
 	}
 }

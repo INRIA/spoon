@@ -11,7 +11,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import spoon.Launcher;
@@ -28,6 +27,7 @@ public class DeprecatedDeleteTest {
 		String path = "src\\test\\resources\\deprecated";
 		String output = "src\\test\\resources\\deprecated\\deprecated";
 		Launcher spoon = new Launcher();
+
 		spoon.addInputResource(path);
 		List<String> before = spoon.buildModel().getElements(new TypeFilter<>(CtMethod.class)).stream()
 				.map(v -> v.toStringDebug()).collect(Collectors.toList());
