@@ -24,10 +24,12 @@ import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.code.CtLambdaImpl;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 public class CtDeprecatedRefactoring {
@@ -77,9 +79,12 @@ public class CtDeprecatedRefactoring {
 	}
 
 	private Set<CtExecutable<?>> getInvocationsFromFields(CtModel model) {
-		return model.getElements(new TypeFilter<>(CtField.class)).stream()
+		Set<CtExecutable<?>> result = new HashSet<>();
+		model.getElements(new TypeFilter<>(CtField.class)).stream()
 				.map(v -> v.getElements(new TypeFilter<>(CtInvocation.class))).flatMap(List::stream)
-				.map(v -> v.getExecutable().getExecutableDeclaration()).collect(Collectors.toSet());
+				.map(v -> v.getExecutable().getExecutableDeclaration()).forEach(result::add);
+		return result;
+
 	}
 
 	public void removeUncalledMethods(Map<CtExecutable<?>, Collection<CtExecutable<?>>> invocationsOfMethod) {
@@ -120,14 +125,23 @@ public class CtDeprecatedRefactoring {
 
 		@Override
 		public void process(CtExecutable<?> method) {
+			if (!method.getPosition().isValidPosition()) {
+				return;
+			}
+			final CtExecutable<?> transformedMethod;
 			List<CtInvocation<?>> var = method.getElements(new TypeFilter<>(CtInvocation.class));
-
-			if (!invocationsOfMethod.containsKey(method) && !method.isImplicit()) {
+			if (method instanceof CtLambda) {
+				transformedMethod = method.getParent(CtExecutable.class);
+			} else {
+				transformedMethod = method;
+			}
+			if (!invocationsOfMethod.containsKey(method) && !method.isImplicit() && !(method instanceof CtLambdaImpl)) {
 				// now every method should be key
 				invocationsOfMethod.put(method, Collections.emptyList());
 			}
 			var.stream().filter(v -> !v.isImplicit()).map(v -> v.getExecutable().getExecutableDeclaration())
-					.filter(Objects::nonNull).forEach(v -> invocationsOfMethod.merge(v, new ArrayList<>(Arrays.asList(method)),
+					.filter(Objects::nonNull).filter(v -> v.getPosition().isValidPosition())
+					.forEach(v -> invocationsOfMethod.merge(v, new ArrayList<>(Arrays.asList(transformedMethod)),
 							(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
 		}
 
