@@ -41,6 +41,10 @@ cat local.properties
 ./gradlew app:build
 ls -R
 ./gradlew app:refactor
+cd ..
+
+
+diff ./sample/app/build/leafactor-ci/release/anupam/acrylic/EasyPaint.java ./chore/test/EasyPaintExpected.java
 
 
 
