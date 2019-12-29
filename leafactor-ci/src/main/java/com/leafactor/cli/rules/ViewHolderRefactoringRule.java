@@ -4,7 +4,6 @@ import com.leafactor.cli.engine.*;
 import com.leafactor.cli.engine.logging.IterationLogger;
 import com.leafactor.cli.rules.Cases.VariableDeclared;
 import com.leafactor.cli.rules.ViewHolderCases.*;
-import org.eclipse.jdt.core.dom.IfStatement;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
