@@ -169,5 +169,13 @@ public class RefactoringTest {
 		List<CtMethod<?>> calculation = spoon.buildModel().getElements(new TypeFilter<>(CtMethod.class));
 		assertTrue(correctResult.containsAll(calculation));
 		assertTrue(calculation.containsAll(calculation));
+		//clean again
+		try {
+			Files.walk(Paths.get("src\\test\\resources\\deprecated\\result")).sorted(Comparator.reverseOrder())
+					.map(Path::toFile).forEach(File::delete);
+		} catch (Exception e) {
+			// error is kinda okay
+		}
+
 	}
 }

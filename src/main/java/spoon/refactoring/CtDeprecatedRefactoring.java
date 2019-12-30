@@ -131,9 +131,11 @@ public class CtDeprecatedRefactoring {
 			if (!method.getPosition().isValidPosition()) {
 				return;
 			}
-			// because lambdas ware difficult we transform them
 			final CtExecutable<?> transformedMethod;
 			if (method instanceof CtLambda) {
+				// because lambdas are difficult we transform them
+				// in a method public void foo(){ List.of("a").stream().forEach($method)}
+				// we need the ref to foo() and not the ref to the lambda expression
 				transformedMethod = method.getParent(CtExecutable.class);
 			} else {
 				transformedMethod = method;
