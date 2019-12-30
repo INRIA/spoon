@@ -24,26 +24,26 @@ import java.util.List;
  * Contains all methods to refactor code elements in the AST.
  */
 public final class Refactoring {
-	private Refactoring() {
-	}
+	private Refactoring() { }
 
 	/**
 	 * Changes name of a type element.
 	 *
-	 * @param type Type in the AST.
-	 * @param name New name of the element.
+	 * @param type
+	 * 		Type in the AST.
+	 * @param name
+	 * 		New name of the element.
 	 */
 	public static void changeTypeName(final CtType<?> type, String name) {
 
 		final String typeQFN = type.getQualifiedName();
-		final List<CtTypeReference<?>> references = Query.getElements(type.getFactory(),
-				new TypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
-					@Override
-					public boolean matches(CtTypeReference<?> reference) {
-						String refFQN = reference.getQualifiedName();
-						return typeQFN.equals(refFQN);
-					}
-				});
+		final List<CtTypeReference<?>> references = Query.getElements(type.getFactory(), new TypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
+			@Override
+			public boolean matches(CtTypeReference<?> reference) {
+				String refFQN = reference.getQualifiedName();
+				return typeQFN.equals(refFQN);
+			}
+		});
 
 		type.setSimpleName(name);
 		for (CtTypeReference<?> reference : references) {
@@ -52,18 +52,16 @@ public final class Refactoring {
 	}
 
 	/**
-	 * Changes name of a method, propagates the change in the executable references
-	 * of the model.
+	 * Changes name of a method, propagates the change in the executable references of the model.
 	 */
 	public static void changeMethodName(final CtMethod<?> method, String newName) {
 
-		final List<CtExecutableReference<?>> references = Query.getElements(method.getFactory(),
-				new TypeFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
-					@Override
-					public boolean matches(CtExecutableReference<?> reference) {
-						return reference.getDeclaration() == method;
-					}
-				});
+		final List<CtExecutableReference<?>> references = Query.getElements(method.getFactory(), new TypeFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
+			@Override
+			public boolean matches(CtExecutableReference<?> reference) {
+				return reference.getDeclaration() == method;
+			}
+		});
 
 		method.setSimpleName(newName);
 
@@ -103,6 +101,7 @@ public final class Refactoring {
 		return clone;
 	}
 
+
 	/** See doc in {@link CtType#copyType()} */
 	public static CtType<?> copyType(final CtType<?> type) {
 		CtType<?> clone = type.clone();
@@ -113,7 +112,7 @@ public final class Refactoring {
 		final String cloneTypeName = tentativeTypeName.toString();
 		clone.setSimpleName(cloneTypeName);
 		type.getPackage().addType(clone);
-		// fix cloned type name
+		//fix cloned type name
 		new CtScanner() {
 			@Override
 			public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
@@ -152,7 +151,7 @@ public final class Refactoring {
 			}
 
 		}.scan(clone);
-		// check that everything is OK
+		//check that everything is OK
 		new CtScanner() {
 			@Override
 			public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
@@ -197,14 +196,13 @@ public final class Refactoring {
 	/**
 	 * Changes name of a {@link CtLocalVariable}.
 	 *
-	 * @param localVariable to be renamed {@link CtLocalVariable} in the AST.
-	 * @param newName       New name of the element.
-	 * @throws RefactoringException when rename to newName would cause model
-	 *                              inconsistency, like ambiguity, shadowing of
-	 *                              other variables, etc.
+	 * @param localVariable
+	 * 		to be renamed {@link CtLocalVariable} in the AST.
+	 * @param newName
+	 * 		New name of the element.
+	 * @throws RefactoringException when rename to newName would cause model inconsistency, like ambiguity, shadowing of other variables, etc.
 	 */
-	public static void changeLocalVariableName(CtLocalVariable<?> localVariable, String newName)
-			throws RefactoringException {
+	public static void changeLocalVariableName(CtLocalVariable<?> localVariable, String newName) throws RefactoringException {
 		new CtRenameLocalVariableRefactoring().setTarget(localVariable).setNewName(newName).refactor();
 	}
 
