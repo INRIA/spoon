@@ -64,6 +64,9 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 		mutableTokenWriter = new MutableTokenWriter(env);
 		//wrap that TokenWriter to listen on all incoming events and set wrapped version to DJPP
 		setPrinterTokenWriter(createTokenWriterListener(mutableTokenWriter));
+
+		// newly added elements are not fully qualified
+		this.setIgnoreImplicit(false);
 	}
 
 	/**
@@ -193,12 +196,11 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	}
 
 	/**
-	 * SniperPrettyPrinter does not apply preprocessor to a CtElement when calling toString()
-	 * @param element
-	 * @return
+	 * Prints an element in sniper mode
 	 */
 	@Override
 	public String printElement(CtElement element) {
+		applyPreProcessors(element);
 		if (element != null && !hasImplicitAncestor(element)) {
 			CompilationUnit compilationUnit = element.getPosition().getCompilationUnit();
 			if (compilationUnit != null
