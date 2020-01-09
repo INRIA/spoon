@@ -455,8 +455,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public void setFactory(Factory factory) {
 		this.factory = factory;
-		//Configurator.setLevel(CtElementImpl.class.getName(),factory.getEnvironment().getLevel());
-		//LOGGER.setLevel(factory.getEnvironment().getLevel());
 	}
 
 	@Override
