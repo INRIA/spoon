@@ -16,8 +16,7 @@
  */
 package spoon.test.logging;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Priority;
+import org.apache.logging.log4j.Level;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -71,9 +70,9 @@ public class LogTest {
 		Launcher.LOGGER.error("Log error");
 		Launcher.LOGGER.debug("Log debug");
 
-		assertEquals(isInfo, Launcher.LOGGER.isEnabledFor(Priority.INFO));
-		assertEquals(isWarn, Launcher.LOGGER.isEnabledFor(Priority.WARN));
-		assertEquals(isError, Launcher.LOGGER.isEnabledFor(Priority.ERROR));
-		assertEquals(isDebug, Launcher.LOGGER.isEnabledFor(Priority.DEBUG));
+		assertEquals(isInfo, Launcher.LOGGER.getLevel().isLessSpecificThan(Level.INFO));
+		assertEquals(isWarn, Launcher.LOGGER.getLevel().isLessSpecificThan(Level.WARN));
+		assertEquals(isError, Launcher.LOGGER.getLevel().isLessSpecificThan(Level.ERROR));
+		assertEquals(isDebug, Launcher.LOGGER.getLevel().isLessSpecificThan(Level.DEBUG));
 	}
 }

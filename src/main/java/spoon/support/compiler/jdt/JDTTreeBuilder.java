@@ -5,7 +5,8 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
@@ -182,7 +183,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return LOGGER;
 	}
 
-	private static final Logger LOGGER = Logger.getLogger(JDTTreeBuilder.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	public PositionBuilder getPositionBuilder() {
 		return position;
@@ -215,7 +216,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		this.exiter = new ParentExiter(this);
 		this.references = new ReferenceBuilder(this);
 		this.helper = new JDTTreeBuilderHelper(this);
-		LOGGER.setLevel(factory.getEnvironment().getLevel());
+		//LOGGER.setLevel(factory.getEnvironment().getLevel());
 	}
 
 	// an abstract class here is better because the method is actually package-protected, as the type, (and not public as in the case of interface methods in Java)
