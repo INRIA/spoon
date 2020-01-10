@@ -18,7 +18,7 @@ package spoon.test.processing.processors;
 
 import java.util.Date;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
