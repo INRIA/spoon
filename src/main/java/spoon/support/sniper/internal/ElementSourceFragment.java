@@ -480,7 +480,7 @@ public class ElementSourceFragment implements SourceFragment {
 	 * Note: the List of children contains one {@link CollectionSourceFragment} for each collection of fragments (parameters, type members, ...).
 	 * Note: the {@link CollectionSourceFragment} may contain a mix of fragments of different roles, when they overlap.
 	 * For example this code contains mix of annotations and modifiers
-	 * <code>public @Deprecated static @Ignored void method()</code>
+	 * <code>public @Test static @Ignored void method()</code>
 	 * @return list of child fragments of this {@link ElementSourceFragment} where fragments,
 	 * which belongs to the same collection are grouped into {@link CollectionSourceFragment}
 	 */

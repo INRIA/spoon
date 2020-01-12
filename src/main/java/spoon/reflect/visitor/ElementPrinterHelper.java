@@ -346,37 +346,6 @@ public class ElementPrinterHelper {
 		}
 	}
 
-	/**
-	 * Write the compilation unit header.
-	 */
-	@Deprecated
-	public void writeHeader(List<CtType<?>> types, Collection<CtImport> imports) {
-		if (!types.isEmpty()) {
-			for (CtType<?> ctType : types) {
-				writeComment(ctType, CommentOffset.TOP_FILE);
-			}
-			// writing the header package
-			if (!types.get(0).getPackage().isUnnamedPackage()) {
-				writePackageLine(types.get(0).getPackage().getQualifiedName());
-			}
-			this.writeImports(imports);
-			printer.writeln();
-			printer.writeln();
-		}
-	}
-
-	/**
-	 * Write the compilation unit footer.
-	 */
-	@Deprecated
-	public void writeFooter(List<CtType<?>> types) {
-		if (!types.isEmpty()) {
-			for (CtType<?> ctType : types) {
-				writeComment(ctType, CommentOffset.BOTTOM_FILE);
-			}
-		}
-	}
-
 	public void writePackageLine(String packageQualifiedName) {
 		printer.writeKeyword("package").writeSpace();
 		writeQualifiedName(packageQualifiedName).writeSeparator(";").writeln();

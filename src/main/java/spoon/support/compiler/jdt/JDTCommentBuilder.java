@@ -5,7 +5,8 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
@@ -67,7 +68,7 @@ import java.util.regex.Pattern;
  */
 public class JDTCommentBuilder {
 
-	private static final Logger LOGGER = Logger.getLogger(JDTCommentBuilder.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final CompilationUnitDeclaration declarationUnit;
 	private String filePath;
@@ -372,7 +373,7 @@ public class JDTCommentBuilder {
 					}
 					previous = ctCase;
 				}
-				if (previous.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()) {
+				if (previous != null && previous.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()) {
 					addCommentToNear(comment, new ArrayList<>(previous.getStatements()));
 					try {
 						comment.getParent();

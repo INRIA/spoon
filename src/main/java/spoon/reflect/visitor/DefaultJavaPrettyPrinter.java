@@ -5,7 +5,8 @@
  */
 package spoon.reflect.visitor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.experimental.CtUnresolvedImport;
@@ -113,7 +114,6 @@ import spoon.reflect.visitor.printer.CommentOffset;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -236,7 +236,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 
-	protected static final Logger LOGGER = Logger.getLogger(DefaultJavaPrettyPrinter.class);
+	protected static final Logger LOGGER = LogManager.getLogger();
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
 	/**
 	 * Prints an element. This method shall be called by the toString() method of an element.
@@ -1990,25 +1990,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		context = new PrintingContext();
 	}
 
-
-	/**
-	 * Write the compilation unit header.
-	 */
-	@Deprecated
-	public DefaultJavaPrettyPrinter writeHeader(List<CtType<?>> types, Collection<CtImport> imports) {
-		elementPrinterHelper.writeHeader(types, imports);
-		return this;
-	}
-
-	/**
-	 * Write the compilation unit footer.
-	 */
-	@Deprecated
-	public DefaultJavaPrettyPrinter writeFooter(List<CtType<?>> types) {
-		elementPrinterHelper.writeFooter(types);
-		return this;
-	}
-
 	@Override
 	public void calculate(CtCompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		if (types.isEmpty()) {
@@ -2044,20 +2025,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		Set<String> cuQnames = cuTypes.stream().map(CtTypeReference::getQualifiedName).collect(Collectors.toSet());
 		Set<String> qnames = types.stream().map(CtType::getQualifiedName).collect(Collectors.toSet());
 		return cuQnames.equals(qnames);
-	}
-
-	@Deprecated
-	protected void printTypes(List<CtType<?>> types) {
-		for (CtType<?> t : types) {
-			scan(t);
-			if (!env.isPreserveLineNumbers()) {
-				// saving lines and chars
-				printer.writeln().writeln();
-			} else {
-				getPrinterHelper().adjustEndPosition(t);
-			}
-		}
-		this.writeFooter(types);
 	}
 
 	@Override
