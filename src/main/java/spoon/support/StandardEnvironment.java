@@ -8,7 +8,6 @@ package spoon.support;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
@@ -167,7 +166,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setLevel(String level) {
 		this.level = toLevel(level);
-		Configurator.setRootLevel(this.level);
 	}
 
 	@Override
