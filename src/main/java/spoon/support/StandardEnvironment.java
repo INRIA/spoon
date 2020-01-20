@@ -502,7 +502,7 @@ private transient  ClassLoader inputClassloader;
 	@Override
 	public boolean getNoClasspath() {
 		if (this.noclasspath == null) {
-			print("Spoon is currently use with the default noClasspath option set as true. Read the documentation for more information: http://spoon.gforge.inria.fr/launcher.html#about-the-classpath", level.WARN);
+			print("Spoon is used with the default noClasspath option set as true. See: http://spoon.gforge.inria.fr/launcher.html#about-the-classpath", level.INFO);
 			this.noclasspath = true;
 		}
 		return noclasspath;
