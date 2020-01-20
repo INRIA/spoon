@@ -53,8 +53,7 @@ public interface Environment {
 	void setPrettyPrintingMode(PRETTY_PRINTING_MODE prettyPrintingMode);
 
 	/**
-	 * This method should be called to print out a message with a source
-	 * position link during the processing.
+	 * Logs a debug message
 	 */
 	void debugMessage(String message);
 
