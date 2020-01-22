@@ -103,7 +103,8 @@ public class LeafactorTest {
         Launcher launcher = new Launcher();
         Environment environment = launcher.getEnvironment();
         List<String> dependencies = new ArrayList<>();
-        dependencies.add(downloadAndroidPlatform());
+        // this is not required to reproduce the bug
+        //dependencies.add(downloadAndroidPlatform());
 
         // Preparing to Repository system for maven dependency resolution.
 //        RepositorySystem repositorySystem = newSystem();
@@ -127,7 +128,8 @@ public class LeafactorTest {
         File outputDirectory = Files.createTempDirectory("output").toFile();
         compilationUnitGroup.setSourceOutputDirectory(outputDirectory);
 
-        compilationUnitGroup.add(new File("src/test/resources/leafactor/testing/sample1/src"));
+        // always prefer one single test when you propose a failing test case
+        compilationUnitGroup.add(new File("src/test/resources/leafactor/testing/sample1/src/EasyPaint.java"));
 
         List<RefactoringRule> refactoringRules = new ArrayList<>();
         IterationLogger logger = new IterationLogger();
@@ -140,6 +142,7 @@ public class LeafactorTest {
         compilationUnitGroup.run(refactoringRules);
         System.out.println("OutputDirectory: " + outputDirectory);
         String producedEasyPaintJavaFileContent = new String(Files.readAllBytes(Paths.get(outputDirectory.getAbsolutePath() + "/anupam/acrylic/EasyPaint.java")), StandardCharsets.UTF_8);
+        // the expected value encoded in was incorrect EasyPaintExpected.java
         String expectedEasyPaintJavaFileContent = new String(Files.readAllBytes(Paths.get("src/test/resources/leafactor/testing/sample1/expected/EasyPaintExpected.java")), StandardCharsets.UTF_8);
         assertEquals(expectedEasyPaintJavaFileContent, producedEasyPaintJavaFileContent);
     }

@@ -304,11 +304,15 @@ public class RecycleRefactoringRule extends AbstractProcessor<CtClass> implement
 
     @Override
     public void processCase(RefactoringPhaseContext context) {
-        System.out.println("BEFORE: " + context.block.prettyprint());
+        // never call prettyprint in a transformation with sniper-mode
+        // because it can change the state of the AST (in particular the attributes implicit)
+        // call toStringDebug() instead
+        // prettyprint() -> toStringDebug()
+        System.out.println("BEFORE: " + context.block.toStringDebug());
         recycleVariableDeclared(context);
         recycleVariableReassigned(context);
         recycleVariableUsed(context);
-        System.out.println("AFTER: " + context.block.prettyprint());
+        System.out.println("AFTER: " + context.block.toStringDebug());
     }
 
     private void refactor(CtMethod method) {
