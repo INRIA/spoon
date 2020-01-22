@@ -51,6 +51,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.metamodel.ConceptKind.ABSTRACT;
 
+@org.junit.Ignore
 public class SpoonArchitectureEnforcerTest {
 
 	@Test
