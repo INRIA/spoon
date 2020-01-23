@@ -18,7 +18,6 @@ import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
@@ -103,7 +102,7 @@ public class ChangeCollector {
 			@Override
 			public ScanningMode enter(CtElement element) {
 				if (depth == 0) {
-		 			// we want the top-level role directly under currentElement
+					// we want the top-level role directly under currentElement
 					checkedRole = scanner.getScannedRole();
 				}
 
