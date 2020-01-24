@@ -50,7 +50,7 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentContext {
 				//but may be it is not good idea
 
 				//send all inc/dec tab to printer helper to have configured expected indentation
-				event.print(null);
+				event.print(false);
 				return;
 			}
 			if (tpe.getType().isWhiteSpace()) {

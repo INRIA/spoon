@@ -87,6 +87,5 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 				separatorActions.clear();
 			}
 		}
-		mutableTokenWriter.setMuted(false);
 	}
 }

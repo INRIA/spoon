@@ -149,10 +149,16 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	 * @param printAction the executor of the action, we are listening for. Call it send token to output
 	 */
 	void onTokenWriterWrite(TokenType tokenType, String token, CtComment comment, Runnable printAction) {
-		onPrintEvent(new TokenPrinterEvent(tokenType, token, comment) {
+		executePrintEvent(new TokenPrinterEvent(tokenType, token, comment) {
 			@Override
-			public void print(Boolean muted) {
-				runInMutedState(muted, printAction);
+			public void print(boolean muted) {
+				boolean originMuted = mutableTokenWriter.isMuted();
+				try {
+					mutableTokenWriter.setMuted(muted);
+					printAction.run();
+				} finally {
+					mutableTokenWriter.setMuted(originMuted);
+				}
 			}
 			@Override
 			public void printSourceFragment(SourceFragment fragment, Boolean isModified) {
@@ -217,9 +223,9 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 						element,
 						Collections.singletonList(esf),
 						new ChangeResolver(getChangeCollector(), element)),
-					() -> onPrintEvent(new ElementPrinterEvent(role, element) {
+					() -> executePrintEvent(new ElementPrinterEvent(role, element) {
 						@Override
-						public void print(Boolean muted) {
+						public void print(boolean muted) {
 							superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE, muted);
 						}
 
@@ -244,9 +250,9 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	public SniperJavaPrettyPrinter scan(CtElement element) {
 		if (element != null) {
 			CtRole role = getRoleInCompilationUnit(element);
-			onPrintEvent(new ElementPrinterEvent(role, element) {
+			executePrintEvent(new ElementPrinterEvent(role, element) {
 				@Override
-				public void print(Boolean muted) {
+				public void print(boolean muted) {
 					superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE, muted);
 				}
 				@Override
@@ -269,7 +275,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	/**
 	 * Called whenever {@link DefaultJavaPrettyPrinter} scans/prints an element or writes a token
 	 */
-	private void onPrintEvent(PrinterEvent event) {
+	private void executePrintEvent(PrinterEvent event) {
 		SourceFragmentContext sfc = detectCurrentContext(event);
 		if (sfc == null) {
 			throw new SpoonException("Missing SourceFragmentContext");
@@ -277,7 +283,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 		//there is an context let it handle scanning
 		if (mutableTokenWriter.isMuted()) {
 			//it is already muted by an parent. Simply scan and ignore all tokens,
-			event.print(null);
+			event.print(true);
 			return;
 		}
 		//let context handle the event
@@ -297,6 +303,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 			//leave it and return back to parent context
 			sourceFragmentContextStack.pop();
 			sfc.onFinished();
+			mutableTokenWriter.setMuted(false);
 		}
 		return sfc;
 	}
@@ -373,10 +380,15 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	 * 	false - not muted
 	 * 	null - same like before
 	 */
-	private void superScanInContext(CtElement element, SourceFragmentContext context, Boolean muted) {
-		runInContext(context,
-				() -> runInMutedState(muted,
-						() -> super.scan(element)));
+	private void superScanInContext(CtElement element, SourceFragmentContext context, boolean muted) {
+		boolean originMuted = mutableTokenWriter.isMuted();
+		try {
+			mutableTokenWriter.setMuted(muted);
+			runInContext(context,
+					() -> super.scan(element));
+		} finally {
+			mutableTokenWriter.setMuted(originMuted);
+		}
 	}
 
 	/**
@@ -400,32 +412,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 					break;
 				}
 			}
-		}
-	}
-	/**
-	 * Run code using {@link MutableTokenWriter} in defined state.
-	 * After this function leaves, the muted status is restored.
-	 * @param muted required muted status
-	 * @param code to be processed {@link Runnable}
-	 */
-	private void runInMutedState(Boolean muted, Runnable code) {
-		boolean originMuted = mutableTokenWriter.isMuted();
-		if (muted == null) {
-			muted = originMuted;
-		}
-		try {
-			mutableTokenWriter.setMuted(muted);
-			code.run();
-		} finally {
-			//assure that muted status did not changed in between
-			if (mutableTokenWriter.isMuted() != muted) {
-				if (mutableTokenWriter.isMuted()) {
-					throw new SpoonException("Unexpected state: Token writer is muted after scanning"); //NOSONAR
-				} else {
-					throw new SpoonException("Unexpected state: Token writer is not muted after scanning"); //NOSONAR
-				}
-			}
-			mutableTokenWriter.setMuted(originMuted);
 		}
 	}
 }
