@@ -142,7 +142,7 @@ public class RefactoringTest {
 	}
 
 	@Test
-	public void testremoveDeprecatedMethods() {
+	public void testRemoveDeprecatedMethods() {
 		// clean dir if exists
 		try {
 			Files.walk(Paths.get("src\\test\\resources\\deprecated\\result")).sorted(Comparator.reverseOrder())
