@@ -145,15 +145,15 @@ public class RefactoringTest {
 	public void testRemoveDeprecatedMethods() {
 		// clean dir if exists
 		try {
-			Files.walk(Paths.get("src\\test\\resources\\deprecated\\result")).sorted(Comparator.reverseOrder())
+			Files.walk(Paths.get("target/deprecated-refactoring")).sorted(Comparator.reverseOrder())
 					.map(Path::toFile).forEach(File::delete);
 		} catch (Exception e) {
 			// error is kinda okay
 		}
 		// create Spoon
-		String input = "src\\test\\resources\\deprecated\\input";
-		String resultPath = "src\\test\\resources\\deprecated\\result";
-		String correctResultPath = "src\\test\\resources\\deprecated\\correctResult";
+		String input = "src/test/resources/deprecated\\input";
+		String resultPath = "target/deprecated-refactoring";
+		String correctResultPath = "src/test/resources/deprecated/correctResult";
 		Launcher spoon = new Launcher();
 
 		spoon.addInputResource(correctResultPath);
@@ -171,7 +171,7 @@ public class RefactoringTest {
 		assertTrue(calculation.containsAll(calculation));
 		//clean again
 		try {
-			Files.walk(Paths.get("src\\test\\resources\\deprecated\\result")).sorted(Comparator.reverseOrder())
+			Files.walk(Paths.get("target/deprecated-refactoring")).sorted(Comparator.reverseOrder())
 					.map(Path::toFile).forEach(File::delete);
 		} catch (Exception e) {
 			// error is kinda okay

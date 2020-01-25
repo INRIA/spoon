@@ -8,8 +8,6 @@ package spoon.refactoring;
 import java.util.Collection;
 import java.util.Iterator;
 import spoon.Launcher;
-import spoon.refactoring.invocation.MethodCallState;
-import spoon.refactoring.invocation.MethodInvocationSearch;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
