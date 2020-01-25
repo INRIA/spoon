@@ -27,4 +27,9 @@ public interface SourceFragmentContext {
 	 * @return true if this context can handle `role`
 	 */
 	boolean matchesPrinterEvent(PrinterEvent event);
+
+	/**
+	 * called when pushed on the stack
+	 */
+	void onPush();
 }

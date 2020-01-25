@@ -285,4 +285,8 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentContext {
 		}
 		separatorActions.clear();
 	}
+
+	@Override
+	public void onPush() {
+	}
 }

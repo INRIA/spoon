@@ -123,6 +123,17 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	public void testSimple() {
+		//contract: sniper print after remove of last statement
+		testSniper(spoon.test.prettyprinter.testclasses.Simple.class.getName(), type -> {
+			//delete first parameter of method `andSomeOtherMethod`
+			type.getMethodsByName("andSomeOtherMethod").get(0).getBody().getStatements().get(1).delete();
+		}, (type, printed) -> {
+			assertIsPrintedWithExpectedChanges(type, printed, "\\s*System.out.println\\(\"bbb\"\\);", "");
+		});
+	}
+
+	@Test
 	public void testPrintAfterRemoveOfMiddleParameter() {
 		//contract: sniper print after remove of middle (not first and not last) parameter
 		testSniper(ToBeChanged.class.getName(), type -> {
