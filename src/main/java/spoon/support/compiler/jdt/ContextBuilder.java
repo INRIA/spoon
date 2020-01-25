@@ -92,7 +92,6 @@ public class ContextBuilder {
 					e.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPositionCtElement(e, node));
 				} catch (Exception ex) {
 					e.setPosition(SourcePosition.NOPOSITION);
-					Launcher.LOGGER.warn("PositionBuilder failed for element " + e.toString(), ex);
 				}
 			}
 		}
