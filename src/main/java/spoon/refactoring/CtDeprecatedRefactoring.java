@@ -18,18 +18,15 @@ import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 public class CtDeprecatedRefactoring {
 
-	public void removeDeprecatedMethods(String inputPath, String resultPath) {
+	protected void removeDeprecatedMethods(String inputPath, String resultPath) {
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(inputPath);
 		spoon.setSourceOutputDirectory(resultPath);
 		doRefactor(spoon);
 	}
 
-	public void removeDeprecatedMethods(String path) {
-		Launcher spoon = new Launcher();
-		spoon.addInputResource(path);
-		spoon.setSourceOutputDirectory(path);
-		doRefactor(spoon);
+	protected void removeDeprecatedMethods(String path) {
+		removeDeprecatedMethods(path, path);
 	}
 
 	private void doRefactor(Launcher spoon) {
@@ -53,7 +50,7 @@ public class CtDeprecatedRefactoring {
 		spoon.prettyprint();
 	}
 
-	public void removeUncalledMethods(Collection<MethodCallState> invocationsOfMethod) {
+	private void removeUncalledMethods(Collection<MethodCallState> invocationsOfMethod) {
 		boolean changed = false;
 		do {
 			changed = false;

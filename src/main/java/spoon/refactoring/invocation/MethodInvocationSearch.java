@@ -29,6 +29,10 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.code.CtLambdaImpl;
 
+/**
+ * Class for creating a mapping from CtExecutable to all known calls from fields
+ * and methods.
+ */
 public class MethodInvocationSearch extends CtScanner {
 	private Map<CtExecutable<?>, Collection<CtExecutable<?>>> invocationsOfMethod = new HashMap<>();
 	private Map<CtExecutable<?>, Collection<CtType<?>>> invocationsOfField = new HashMap<>();
@@ -79,7 +83,6 @@ public class MethodInvocationSearch extends CtScanner {
 
 	@Override
 	public <T> void visitCtField(CtField<T> field) {
-
 		field.getElements(new TypeFilter<>(CtInvocation.class)).stream()
 				.map(call -> call.getExecutable().getExecutableDeclaration())
 				.forEach(method -> invocationsOfField.merge(method, new ArrayList<>(Arrays.asList(field.getDeclaringType())),

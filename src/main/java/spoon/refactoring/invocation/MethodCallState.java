@@ -9,16 +9,23 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 
+/**
+ * This class is for the call state of a method. A method can be called by
+ * fields in a type e.g. class or by methods. Both cases are handled in this
+ * class. For checking calls by fields use methods using CtType, for fields use
+ * the methods using CtExecutable. A method is never called if both collections
+ * are empty.
+ */
 public class MethodCallState {
 	private CtExecutable<?> method;
 	private Collection<CtExecutable<?>> callerMethods;
 	private Collection<CtType<?>> callerFields;
 
 	/**
-	 * @param method
+	 *
+	 * @param method for saving it's call state.
 	 */
 	public MethodCallState(CtExecutable<?> method) {
 		this.method = method;
@@ -27,37 +34,56 @@ public class MethodCallState {
 	}
 
 	/**
-	 * @param Method invoking the method.
+	 * Adds a CtExecutable to the methods invoking this method. Adding the same
+	 * method again doesn't change the state.
+	 *
+	 * @param method invoking the method.
 	 * @see java.util.Collection#add(java.lang.Object)
 	 */
-	public void add(CtExecutable<?> e) {
-		callerMethods.add(e);
+	public void add(CtExecutable<?> method) {
+		callerMethods.add(method);
 	}
 
 	/**
-	 * @param Field invoking the method with an initializer.
+	 * Adds a CtType to the fields invoking this method. Adding the same CtType
+	 * again doesn't change the state.
+	 *
+	 * @param type invoking the method with an initializer.
 	 * @see java.util.Collection#add(java.lang.Object)
 	 */
-	public void add(CtType<?> e) {
-		callerFields.add(e);
+	public void add(CtType<?> type) {
+		callerFields.add(type);
 	}
 
 	/**
-	 * @return the method
+	 * Getter for the method, without saved call state. Returns the CtExecutable and
+	 * not a copy.
+	 *
+	 * @return method without saved call state.
 	 */
 	public CtExecutable<?> getMethod() {
 		return method;
 	}
 
 	/**
-	 * @return the callerFields
+	 * Returns a collection containing all types invoking the method with a field.
+	 * Even if a CtType invokes multiple times with different fields the method, the
+	 * type is only present once. Returns the collection and not a copy. Changes to
+	 * collection are directly backed in the state.
+	 *
+	 * @return Collection containing all types invoking the method with a field.
 	 */
 	public Collection<CtType<?>> getCallerFields() {
 		return callerFields;
 	}
 
 	/**
-	 * @return the callerMethods
+	 * Returns a collection containing all CtExecutable invoking the method. Even if
+	 * a CtExecutable invokes multiple times the method, the CtExecutable is only
+	 * present once. Returns the collection and not a copy. Changes to collection
+	 * are directly backed in the state.
+	 *
+	 * @return Collection containing all CtExecutable invoking the method.
 	 */
 	public Collection<CtExecutable<?>> getCallerMethods() {
 		return callerMethods;
@@ -73,28 +99,18 @@ public class MethodCallState {
 		return callerMethods.isEmpty() && callerFields.isEmpty();
 	}
 
-	/**
-	 * @param o
-	 * @return
-	 * @see java.util.Collection#contains(java.lang.Object)
-	 */
-
-	public boolean contains(Object o) {
+	public boolean contains(CtType<?> o) {
 		return callerFields.contains(o);
 	}
 
-	/**
-	 * @param o
-	 * @see java.util.Collection#remove(java.lang.Object)
-	 */
-	public void remove(CtField<?> o) {
+	public boolean contains(CtExecutable<?> o) {
+		return callerMethods.contains(o);
+	}
+
+	public void remove(CtType<?> o) {
 		callerFields.remove(o);
 	}
 
-	/**
-	 * @param o
-	 * @see java.util.Collection#remove(java.lang.Object)
-	 */
 	public void remove(CtExecutable<?> o) {
 		callerMethods.remove(o);
 	}
