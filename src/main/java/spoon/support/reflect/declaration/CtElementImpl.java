@@ -165,9 +165,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
 		if (this instanceof CtShadowable) {
 			CtShadowable shadowable = (CtShadowable) this;
-			if (shadowable.isShadow()) {
-				Launcher.LOGGER.debug("Some annotations might be unreachable from the shadow element: " + this.getShortRepresentation());
-			}
 		}
 		return unmodifiableList(annotations);
 	}
