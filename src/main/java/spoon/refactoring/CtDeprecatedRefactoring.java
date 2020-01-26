@@ -39,12 +39,12 @@ public class CtDeprecatedRefactoring {
 		Collection<MethodCallState> invocationsOfMethod = processor.getInvocationsOfMethod();
 		removeUncalledMethods(invocationsOfMethod);
 
-		model.getElements(new TypeFilter<>(CtExecutable.class)).forEach(method -> {
+		for (CtExecutable<?> method : model.getElements(new TypeFilter<>(CtExecutable.class))) {
 			if (method.hasAnnotation(Deprecated.class)
 					&& invocationsOfMethod.stream().noneMatch(v -> v.getMethod().equals(method))) {
 				method.delete();
 			}
-		});
+		}
 		spoon.prettyprint();
 	}
 

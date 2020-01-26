@@ -168,7 +168,7 @@ public class RefactoringTest {
 		spoon.addInputResource(resultPath);
 		List<CtMethod<?>> calculation = spoon.buildModel().getElements(new TypeFilter<>(CtMethod.class));
 		assertTrue(correctResult.containsAll(calculation));
-		assertTrue(calculation.containsAll(calculation));
+		assertTrue(calculation.containsAll(correctResult));
 		//clean again
 		try {
 			Files.walk(Paths.get("target/deprecated-refactoring")).sorted(Comparator.reverseOrder())
