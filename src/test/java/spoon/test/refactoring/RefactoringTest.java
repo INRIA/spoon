@@ -151,7 +151,7 @@ public class RefactoringTest {
 			// error is kinda okay
 		}
 		// create Spoon
-		String input = "src/test/resources/deprecated\\input";
+		String input = "src/test/resources/deprecated/input";
 		String resultPath = "target/deprecated-refactoring";
 		String correctResultPath = "src/test/resources/deprecated/correctResult";
 		Launcher spoon = new Launcher();
@@ -167,8 +167,8 @@ public class RefactoringTest {
 		spoon = new Launcher();
 		spoon.addInputResource(resultPath);
 		List<CtMethod<?>> calculation = spoon.buildModel().getElements(new TypeFilter<>(CtMethod.class));
-		assertTrue(correctResult.containsAll(calculation));
 		assertTrue(calculation.containsAll(correctResult));
+		assertEquals(calculation.size(), correctResult.size());
 		//clean again
 		try {
 			Files.walk(Paths.get("target/deprecated-refactoring")).sorted(Comparator.reverseOrder())
