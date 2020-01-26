@@ -162,7 +162,6 @@ public class RefactoringTest {
 
 		// now refactor code
 		Refactoring.removeDeprecatedMethods(input, resultPath);
-
 		// verify result
 		spoon = new Launcher();
 		spoon.addInputResource(resultPath);
