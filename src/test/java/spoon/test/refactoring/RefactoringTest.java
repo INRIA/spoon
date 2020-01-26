@@ -166,7 +166,7 @@ public class RefactoringTest {
 		spoon = new Launcher();
 		spoon.addInputResource(resultPath);
 		List<CtMethod<?>> calculation = spoon.buildModel().getElements(new TypeFilter<>(CtMethod.class));
-		assertTrue(calculation.containsAll(correctResult));
+		assertTrue(calculation.stream().allMatch(correctResult::contains));
 		assertEquals(calculation.size(), correctResult.size());
 		//clean again
 		try {
