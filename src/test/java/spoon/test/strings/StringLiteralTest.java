@@ -61,8 +61,8 @@ public class StringLiteralTest {
 		assertEquals("java.lang.String f0 = \"toto\";", f0.toString());
 		assertEquals("java.lang.String f1 = \"\\n\";", f1.toString());
 		assertEquals("char c1 = '\\n';", c1.toString());
-		assertEquals("java.lang.String f2 = \"\\u20ac\";", f2.toString());
-		assertEquals("char c2 = '\\u20ac';", c2.toString());
+		assertEquals("java.lang.String f2 = \"€\";", f2.toString());
+		assertEquals("char c2 = '€';", c2.toString());
 		assertEquals("java.lang.String f3 = \"€\";", f3.toString());
 		assertEquals("char c3 = '€';", c3.toString());
 		assertEquals("java.lang.String f4 = \"\\t\";", f4.toString());

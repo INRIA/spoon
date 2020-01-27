@@ -27,7 +27,7 @@ public interface PrinterEvent  {
 	 *  	false if {@link DefaultJavaPrettyPrinter} will really print into output.
 	 *  	null if `muted` status should be kept as it is
 	 */
-	void print(Boolean muted);
+	void print(boolean muted);
 
 	/**
 	 * We have a source fragment of to be printed element.

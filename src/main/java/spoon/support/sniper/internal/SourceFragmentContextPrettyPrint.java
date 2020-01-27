@@ -18,8 +18,12 @@ public class SourceFragmentContextPrettyPrint implements SourceFragmentContext {
 	}
 
 	@Override
+	public void onPush() {
+	}
+
+	@Override
 	public void onPrintEvent(PrinterEvent event) {
-		event.print(null);
+		event.print(false);
 	}
 
 	@Override
@@ -30,4 +34,5 @@ public class SourceFragmentContextPrettyPrint implements SourceFragmentContext {
 	public boolean matchesPrinterEvent(PrinterEvent event) {
 		return true;
 	}
+
 }
