@@ -7,7 +7,6 @@ package spoon.support.reflect.declaration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import spoon.Launcher;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
@@ -165,9 +164,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
 		if (this instanceof CtShadowable) {
 			CtShadowable shadowable = (CtShadowable) this;
-			if (shadowable.isShadow()) {
-				Launcher.LOGGER.debug("Some annotations might be unreachable from the shadow element: " + this.getShortRepresentation());
-			}
 		}
 		return unmodifiableList(annotations);
 	}
