@@ -44,7 +44,7 @@ public class SourceFragmentContextNormal extends AbstractSourceFragmentContext {
 	}
 
 	@Override
-	public boolean matchesPrinterEvent(PrinterEvent event) {
+	public boolean knowsHowToPrint(PrinterEvent event) {
 		return true;
 	}
 

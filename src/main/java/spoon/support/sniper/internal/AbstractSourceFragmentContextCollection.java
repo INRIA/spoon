@@ -29,7 +29,7 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 	}
 
 	@Override
-	public boolean matchesPrinterEvent(PrinterEvent event) {
+	public boolean knowsHowToPrint(PrinterEvent event) {
 		CtRole role = event.getRole();
 		if (!hasNextChildToken()) {
 			//there are no more tokens to process. Leave this context
