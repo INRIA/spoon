@@ -11,12 +11,17 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 /**
  * Knows how to handle actually printed {@link CtElement} or its part
  */
-public interface SourceFragmentContext {
+public interface SourceFragmentPrinter {
+	/**
+	 * called when pushed on the stack
+	 */
+	void onPush();
+
 	/**
 	 * Called when {@link DefaultJavaPrettyPrinter} starts an operation
 	 * @param event the {@link DefaultJavaPrettyPrinter} event
 	 */
-	void onPrintEvent(PrinterEvent event);
+	void print(PrinterEvent event);
 
 	/**
 	 * Called when printing using this context is going to finish
@@ -26,10 +31,6 @@ public interface SourceFragmentContext {
 	/**
 	 * @return true if this context can handle `role`
 	 */
-	boolean matchesPrinterEvent(PrinterEvent event);
+	boolean knowsHowToPrint(PrinterEvent event);
 
-	/**
-	 * called when pushed on the stack
-	 */
-	void onPush();
 }
