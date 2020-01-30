@@ -21,6 +21,8 @@ env:
 # Java8
 install:
   - sudo apt-get -y install openjdk-8-jdk
+  # we want silent logs in travis but verbose ones on the developer machine (ie the default logback config)
+  - mv chore/travis/logback.xml src/test/resources/
 
 script: ./chore/travis/$SCRIPT
 
