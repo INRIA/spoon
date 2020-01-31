@@ -95,7 +95,14 @@ public class ElementSourceFragment implements SourceFragment {
 
 	@Override
 	public String toString() {
-		return "|" + getStart() + ", " + getEnd() + "|" + getSourceCode() + "|";
+		String result = "|" + getStart() + ", " + getEnd() + "|" + getSourceCode() + "|";
+
+		if (element instanceof CtElement) {
+			// enrich the toString to facilitate debug
+			return ((CtElement) element).toStringDebug() + result;
+		}
+
+		return result;
 	}
 
 	/**
