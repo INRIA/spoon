@@ -6,9 +6,9 @@
 package spoon.support.sniper.internal;
 
 /**
- * A {@link SourceFragmentContext}, which prints the element using standard pretty printing
+ * A {@link SourceFragmentPrinter}, which prints the element using standard pretty printing
  */
-public class SourceFragmentContextPrettyPrint implements SourceFragmentContext {
+public class SourceFragmentContextPrettyPrint implements SourceFragmentPrinter {
 	/**
 	 * This context is used to force normal pretty printing of element
 	 */
@@ -22,7 +22,7 @@ public class SourceFragmentContextPrettyPrint implements SourceFragmentContext {
 	}
 
 	@Override
-	public void onPrintEvent(PrinterEvent event) {
+	public void print(PrinterEvent event) {
 		event.print(false);
 	}
 
@@ -31,7 +31,7 @@ public class SourceFragmentContextPrettyPrint implements SourceFragmentContext {
 	}
 
 	@Override
-	public boolean matchesPrinterEvent(PrinterEvent event) {
+	public boolean knowsHowToPrint(PrinterEvent event) {
 		return true;
 	}
 

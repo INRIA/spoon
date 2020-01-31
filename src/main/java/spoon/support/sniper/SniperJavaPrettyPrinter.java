@@ -30,7 +30,7 @@ import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.sniper.internal.MutableTokenWriter;
 import spoon.support.sniper.internal.PrinterEvent;
 import spoon.support.sniper.internal.SourceFragment;
-import spoon.support.sniper.internal.SourceFragmentContext;
+import spoon.support.sniper.internal.SourceFragmentPrinter;
 import spoon.support.sniper.internal.SourceFragmentContextList;
 import spoon.support.sniper.internal.SourceFragmentContextNormal;
 import spoon.support.sniper.internal.SourceFragmentContextPrettyPrint;
@@ -48,7 +48,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 
 	private final MutableTokenWriter mutableTokenWriter;
 	private ChangeResolver changeResolver;
-	private final Deque<SourceFragmentContext> sourceFragmentContextStack = new ArrayDeque<>();
+	private final Deque<SourceFragmentPrinter> sourceFragmentContextStack = new ArrayDeque<>();
 
 	/**
 	 * Creates a new {@link PrettyPrinter} which copies origin sources and prints only changes.
@@ -169,7 +169,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 				boolean isCollectionStarted = false;
 				if (fragment instanceof CollectionSourceFragment) {
 					//we started scanning of collection of elements
-					SourceFragmentContext listContext = getCollectionContext(null, (CollectionSourceFragment) fragment, isModified);
+					SourceFragmentPrinter listContext = getCollectionContext(null, (CollectionSourceFragment) fragment, isModified);
 					//push the context of this collection
 					pushContext(listContext);
 					isCollectionStarted = true;
@@ -186,7 +186,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 		});
 	}
 
-	private void pushContext(SourceFragmentContext listContext) {
+	private void pushContext(SourceFragmentPrinter listContext) {
 		listContext.onPush();
 		sourceFragmentContextStack.push(listContext);
 	}
@@ -280,7 +280,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	 * Called whenever {@link DefaultJavaPrettyPrinter} scans/prints an element or writes a token
 	 */
 	private void executePrintEvent(PrinterEvent event) {
-		SourceFragmentContext sfc = detectCurrentContext(event);
+		SourceFragmentPrinter sfc = detectCurrentContext(event);
 		if (sfc == null) {
 			throw new SpoonException("Missing SourceFragmentContext");
 		}
@@ -291,7 +291,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 			return;
 		}
 		//let context handle the event
-		sfc.onPrintEvent(event);
+		sfc.print(event);
 	}
 
 	/**
@@ -300,9 +300,9 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	 * @param event a to be processed {@link PrinterEvent}
 	 * @return context which can be used to process `event`
 	 */
-	private SourceFragmentContext detectCurrentContext(PrinterEvent event) {
-		SourceFragmentContext sfc;
-		while ((sfc = sourceFragmentContextStack.peek()) != null && sfc.matchesPrinterEvent(event) == false) {
+	private SourceFragmentPrinter detectCurrentContext(PrinterEvent event) {
+		SourceFragmentPrinter sfc;
+		while ((sfc = sourceFragmentContextStack.peek()) != null && sfc.knowsHowToPrint(event) == false) {
 			//this context handles only subset of roles, which just finished
 			//leave it and return back to parent context
 			sfc = popSourceFragmentContext();
@@ -330,7 +330,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 		//we have sources of fragment
 		if (fragment instanceof CollectionSourceFragment) {
 			//we started scanning of collection of elements
-			SourceFragmentContext listContext = getCollectionContext(element, (CollectionSourceFragment) fragment, isFragmentModified);
+			SourceFragmentPrinter listContext = getCollectionContext(element, (CollectionSourceFragment) fragment, isFragmentModified);
 			//push the context of this collection
 			pushContext(listContext);
 
@@ -371,7 +371,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 		}
 	}
 
-	private SourceFragmentContext getCollectionContext(CtElement element, CollectionSourceFragment csf, boolean isModified) {
+	private SourceFragmentPrinter getCollectionContext(CtElement element, CollectionSourceFragment csf, boolean isModified) {
 		return csf.isOrdered()
 				? new SourceFragmentContextList(mutableTokenWriter, element, csf.getItems(), getChangeResolver()) {
 			@Override
@@ -419,7 +419,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	 * 	false - not muted
 	 * 	null - same like before
 	 */
-	private void superScanInContext(CtElement element, SourceFragmentContext context, boolean muted) {
+	private void superScanInContext(CtElement element, SourceFragmentPrinter context, boolean muted) {
 		boolean originMuted = mutableTokenWriter.isMuted();
 		try {
 			if (originMuted != muted) {
@@ -439,7 +439,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	 * @param context a to be entered `context`
 	 * @param code a to be processed {@link Runnable}
 	 */
-	private void runInContext(SourceFragmentContext context, Runnable code) {
+	private void runInContext(SourceFragmentPrinter context, Runnable code) {
 		pushContext(context);
 		try {
 			code.run();
@@ -451,7 +451,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 				if (sourceFragmentContextStack.isEmpty()) {
 					throw new SpoonException("Inconsistent sourceFragmentContextStack"); //NOSONAR
 				}
-				SourceFragmentContext c = popSourceFragmentContext();
+				SourceFragmentPrinter c = popSourceFragmentContext();
 				if (c == context) {
 					break;
 				}
@@ -460,8 +460,8 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	}
 
 	/** makes the two atomic operations together pop+finish to maintain core contracts */
-	private SourceFragmentContext popSourceFragmentContext() {
-		SourceFragmentContext c = sourceFragmentContextStack.pop();
+	private SourceFragmentPrinter popSourceFragmentContext() {
+		SourceFragmentPrinter c = sourceFragmentContextStack.pop();
 		c.onFinished();
 		return c;
 	}
