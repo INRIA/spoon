@@ -95,7 +95,14 @@ public class ElementSourceFragment implements SourceFragment {
 
 	@Override
 	public String toString() {
-		return "|" + getStart() + ", " + getEnd() + "|" + getSourceCode() + "|";
+		String result = "|" + getStart() + ", " + getEnd() + "|" + getSourceCode() + "|";
+
+		if (element instanceof CtElement) {
+			// enrich the toString to facilitate debug
+			return ((CtElement) element).toStringDebug() + result;
+		}
+
+		return result;
 	}
 
 	/**
@@ -299,19 +306,13 @@ public class ElementSourceFragment implements SourceFragment {
 	/**
 	 * adds `fragment` as child fragment of this fragment. If child is located before or after this fragment,
 	 * then start/end of this fragment is moved
-	 * @param fragment to be add
+	 * @param fragment to be added
 	 */
 	public void addChild(ElementSourceFragment fragment) {
 		if (firstChild == null) {
 			firstChild = fragment;
 		} else {
 			firstChild = firstChild.add(fragment);
-		}
-		if (fragment.getElement() instanceof CtElement) {
-			CtElement fragmentEleParent = ((CtElement) fragment.getElement()).getParent();
-			if (element != fragmentEleParent && !(element instanceof CtCompilationUnit) && fragmentEleParent.getPosition().isValidPosition()) {
-				throw new SpoonException("Inconsistent child fragment " + fragment.getElement().getClass() + " has unexpected parent " + element.getClass());
-			}
 		}
 	}
 
