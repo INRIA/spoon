@@ -159,7 +159,6 @@ public class RefactoringTest {
 		spoon.addInputResource(correctResultPath);
 		List<CtMethod<?>> correctResult = spoon.buildModel().getElements(new TypeFilter<>(CtMethod.class));
 		// save Methods before cleaning
-
 		// now refactor code
 		Refactoring.removeDeprecatedMethods(input, resultPath);
 		// verify result
@@ -167,7 +166,7 @@ public class RefactoringTest {
 		spoon.addInputResource(resultPath);
 		List<CtMethod<?>> calculation = spoon.buildModel().getElements(new TypeFilter<>(CtMethod.class));
 		assertTrue(calculation.stream().allMatch(correctResult::contains));
-		assertEquals(calculation.size(), correctResult.size());
+		assertTrue(correctResult.stream().allMatch(calculation::contains));
 		//clean again
 		try {
 			Files.walk(Paths.get("target/deprecated-refactoring")).sorted(Comparator.reverseOrder())
