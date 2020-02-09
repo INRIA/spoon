@@ -60,11 +60,11 @@ public class MethodInvocationSearch extends CtScanner {
 		invocations.stream().filter(v -> !v.isImplicit()).map(v -> v.getExecutable().getExecutableDeclaration())
 				.filter(Objects::nonNull).filter(v -> v.getPosition().isValidPosition())
 				.forEach(v -> invocationsOfMethod.merge(v, new ArrayList<>(Arrays.asList(transformedMethod)),
-						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
+						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(ArrayList::new))));
 		constructors.stream().filter(v -> !v.isImplicit()).map(v -> v.getExecutable().getExecutableDeclaration())
 				.filter(Objects::nonNull)
 				.forEach(v -> invocationsOfMethod.merge(v, new ArrayList<>(Arrays.asList(transformedMethod)),
-						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
+						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(ArrayList::new))));
 		super.visitCtMethod(method);
 	}
 
@@ -86,11 +86,11 @@ public class MethodInvocationSearch extends CtScanner {
 		field.getElements(new TypeFilter<>(CtInvocation.class)).stream()
 				.map(call -> call.getExecutable().getExecutableDeclaration())
 				.forEach(method -> invocationsOfField.merge(method, new ArrayList<>(Arrays.asList(field.getDeclaringType())),
-						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
+						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(ArrayList::new))));
 		field.getElements(new TypeFilter<>(CtConstructorCall.class)).stream()
 				.map(call -> call.getExecutable().getExecutableDeclaration())
 				.forEach(method -> invocationsOfField.merge(method, new ArrayList<>(Arrays.asList(field.getDeclaringType())),
-						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
+						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(ArrayList::new))));
 		super.visitCtField(field);
 	}
 

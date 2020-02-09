@@ -5,8 +5,8 @@
  */
 package spoon.refactoring;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
@@ -29,8 +29,8 @@ public class MethodCallState {
 	 */
 	public MethodCallState(CtExecutable<?> method) {
 		this.method = method;
-		this.callerFields = new HashSet<>();
-		this.callerMethods = new HashSet<>();
+		this.callerFields = new ArrayList<>();
+		this.callerMethods = new ArrayList<>();
 	}
 
 	/**
