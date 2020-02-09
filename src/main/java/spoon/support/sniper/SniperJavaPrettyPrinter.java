@@ -227,17 +227,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 						element,
 						Collections.singletonList(esf),
 						new ChangeResolver(getChangeCollector(), element)),
-					() -> executePrintEvent(new ElementPrinterEvent(role, element) {
-						@Override
-						public void print(boolean muted) {
-							superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE, muted);
-						}
-
-						@Override
-						public void printSourceFragment(SourceFragment fragment, Boolean isModified) {
-							scanInternal(role, element, fragment, isModified);
-						}
-					})
+					() -> executePrintEvent(createPrinterEvent(element, role))
 				);
 			}
 		}
@@ -254,18 +244,23 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	public SniperJavaPrettyPrinter scan(CtElement element) {
 		if (element != null) {
 			CtRole role = getRoleInCompilationUnit(element);
-			executePrintEvent(new ElementPrinterEvent(role, element) {
-				@Override
-				public void print(boolean muted) {
-					superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE, muted);
-				}
-				@Override
-				public void printSourceFragment(SourceFragment fragment, Boolean isModified) {
-					scanInternal(role, element, fragment, isModified);
-				}
-			});
+			executePrintEvent(createPrinterEvent(element, role));
 		}
 		return this;
+	}
+
+	private PrinterEvent createPrinterEvent(CtElement element, CtRole role) {
+		return new ElementPrinterEvent(role, element) {
+			@Override
+			public void print(boolean muted) {
+				superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE, muted);
+			}
+
+			@Override
+			public void printSourceFragment(SourceFragment fragment, Boolean isModified) {
+				scanInternal(role, element, fragment, isModified);
+			}
+		};
 	}
 
 	private CtRole getRoleInCompilationUnit(CtElement element) {
