@@ -19,6 +19,7 @@ package spoon.processing;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.Environment;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtType;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.processing.processors.MyProcessor;
@@ -82,6 +83,30 @@ public class ProcessingTest {
 		l.addInputResource("src/test/resources/compilation3/subpackage/B.java");
 		l.setSourceOutputDirectory(path.toFile());
 		SimpleProcessor simpleProcessor = new SimpleProcessor();
+		l.addProcessor(simpleProcessor);
+		l.run();
+	}
+
+	private static class SimpleProcessor2 extends AbstractProcessor<CtBlock<?>> {
+		@Override
+		public void process(CtBlock<?> element) {
+			System.out.println(">> Hello: " + element.toStringDebug() + " <<");
+		}
+	}
+
+	@Test
+	public void testParentNotInitializedException() throws IOException {
+		final Launcher l = new Launcher();
+		Environment e = l.getEnvironment();
+
+		e.setNoClasspath(true);
+		e.setAutoImports(true);
+		e.setPrettyPrinterCreator(() -> new SniperJavaPrettyPrinter(l.getEnvironment()));
+
+		Path path = Files.createTempDirectory("emptydir");
+		l.addInputResource("src/test/resources/compilation4/A.java");
+		l.setSourceOutputDirectory(path.toFile());
+		SimpleProcessor2 simpleProcessor = new SimpleProcessor2();
 		l.addProcessor(simpleProcessor);
 		l.run();
 	}
