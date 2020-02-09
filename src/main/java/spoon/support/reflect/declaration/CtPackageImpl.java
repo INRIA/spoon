@@ -194,6 +194,11 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T addType(CtType<?> type) {
+		for (CtType t: types) {
+			if (t.getQualifiedName().equals(type.getQualifiedName())) {
+				throw new IllegalStateException("A type with qualified name " + type.getQualifiedName()+ " already exists");
+			}
+		}
 		types.add(type);
 		return (T) this;
 	}
