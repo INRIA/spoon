@@ -156,20 +156,16 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 			}
 			@Override
 			public void printSourceFragment(SourceFragment fragment, Boolean isModified) {
-				boolean isCollectionStarted = false;
-				if (fragment instanceof CollectionSourceFragment) {
-					//we started scanning of collection of elements
-					SourceFragmentPrinter listContext = getCollectionContext(null, (CollectionSourceFragment) fragment, isModified);
-					//push the context of this collection
-					pushContext(listContext);
-					isCollectionStarted = true;
-				}
-
 				if (isModified == null || isModified) {
-					//print origin token
 					printAction.run();
 					return;
 				} else {
+					if (fragment instanceof CollectionSourceFragment) {
+						//we started scanning of collection of elements
+						SourceFragmentPrinter listContext = getCollectionContext(null, (CollectionSourceFragment) fragment, isModified);
+						//push the context of this collection
+						pushContext(listContext);
+					}
 					mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
 				}
 			}
