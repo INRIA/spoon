@@ -44,7 +44,7 @@ import spoon.support.sniper.internal.TokenWriterProxy;
  * and tries to only print the changed elements.
  */
 @Experimental
-public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
+public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements TokenWriterProxy.Listener {
 
 	private final MutableTokenWriter mutableTokenWriter;
 	private ChangeResolver changeResolver;
@@ -98,7 +98,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	 * @return a proxy of {@link TokenWriter}
 	 */
 	private TokenWriter createTokenWriterListener(TokenWriter tokenWriter) {
-		return new TokenWriterProxy(this::onTokenWriterWrite, tokenWriter);
+		return new TokenWriterProxy(this, tokenWriter);
 	}
 
 	@Override
@@ -148,20 +148,12 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	 * @param comment the comment when `tokenType` == `COMMENT`
 	 * @param printAction the executor of the action, we are listening for. Call it send token to output
 	 */
-	void onTokenWriterWrite(TokenType tokenType, String token, CtComment comment, Runnable printAction) {
+	public void onTokenWriterWrite(TokenType tokenType, String token, CtComment comment, Runnable printAction) {
 		executePrintEvent(new TokenPrinterEvent(tokenType, token, comment) {
 			@Override
-			public void print(boolean muted) {
-				boolean originMuted = mutableTokenWriter.isMuted();
-				try {
-					if (originMuted != muted) {
-						mutableTokenWriter.setMuted(muted);
-					}
+			public void print() {
+				if (!mutableTokenWriter.isMuted()) {
 					printAction.run();
-				} finally {
-					if (originMuted != muted) {
-						mutableTokenWriter.setMuted(originMuted);
-					}
 				}
 			}
 			@Override
@@ -252,8 +244,8 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	private PrinterEvent createPrinterEvent(CtElement element, CtRole role) {
 		return new ElementPrinterEvent(role, element) {
 			@Override
-			public void print(boolean muted) {
-				superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE, muted);
+			public void print() {
+				superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE);
 			}
 
 			@Override
@@ -281,8 +273,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 		}
 		//there is an context let it handle scanning
 		if (mutableTokenWriter.isMuted()) {
-			//it is already muted by an parent. Simply scan and ignore all tokens,
-			event.print(true);
+			event.print();
 			return;
 		}
 		//let context handle the event
@@ -349,9 +340,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 			if (isFragmentModified == false) {
 				//nothing is changed, we can print origin sources of this element
 				mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
-				//and mute the token writer and let DJPP scan it and ignore everything
-				//TODO check if DJPP needs this call somewhere (because of some state)... may be we can skip this scan completely??
-				superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE, true);
 				return;
 			}
 			//check what roles of this element are changed
@@ -360,7 +348,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 			}
 			//changeResolver.hasChangedRole() is false when element is added
 			//something is changed in this element
-			superScanInContext(element, new SourceFragmentContextNormal(mutableTokenWriter, sourceFragment, changeResolver), false);
+			superScanInContext(element, new SourceFragmentContextNormal(mutableTokenWriter, sourceFragment, changeResolver));
 		} else {
 			throw new SpoonException("Unsupported fragment type: " + fragment.getClass());
 		}
@@ -414,19 +402,8 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	 * 	false - not muted
 	 * 	null - same like before
 	 */
-	private void superScanInContext(CtElement element, SourceFragmentPrinter context, boolean muted) {
-		boolean originMuted = mutableTokenWriter.isMuted();
-		try {
-			if (originMuted != muted) {
-				mutableTokenWriter.setMuted(muted);
-			}
-			runInContext(context,
-					() -> super.scan(element));
-		} finally {
-			if (originMuted != muted) {
-				mutableTokenWriter.setMuted(originMuted);
-			}
-		}
+	private void superScanInContext(CtElement element, SourceFragmentPrinter context) {
+			runInContext(context, () -> super.scan(element));
 	}
 
 	/**
