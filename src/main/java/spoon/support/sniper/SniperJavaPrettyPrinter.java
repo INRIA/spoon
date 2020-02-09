@@ -8,6 +8,7 @@ package spoon.support.sniper;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.List;
 
 import spoon.OutputType;
 import spoon.SpoonException;
@@ -17,6 +18,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
@@ -102,7 +104,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	}
 
 	@Override
-	protected void scanCompilationUnit(CtCompilationUnit compilationUnit) {
+	public void calculate(CtCompilationUnit compilationUnit, List<CtType<?>> types) {
 		//use line separator of origin source file
 		setLineSeparator(detectLineSeparator(compilationUnit.getOriginalSourceCode()));
 		runInContext(new SourceFragmentContextList(mutableTokenWriter,
@@ -110,7 +112,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 				Collections.singletonList(compilationUnit.getOriginalSourceFragment()),
 				new ChangeResolver(getChangeCollector(), compilationUnit)),
 		() -> {
-			super.scanCompilationUnit(compilationUnit);
+			super.calculate(sourceCompilationUnit, types);;
 		});
 	}
 
@@ -311,7 +313,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 	}
 
 	/**
-	 * scans the `element` which exist on `role` in it's parent
+	 * scans the `element` which exist on `role` in its parent
 	 * @param role {@link CtRole} of `element` in scope of it's parent
 	 * @param element a scanned element
 	 * @param fragment origin source fragment of element
@@ -444,7 +446,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 		try {
 			code.run();
 		} finally {
-			// we make sure to remve all contexts that have been pushed so far
+			// we make sure to remove all contexts that have been pushed so far
 			// and we also remove parameter `context`
 			// so that we can leave the sourceFragmentContextStack clean
 			while (true) {
