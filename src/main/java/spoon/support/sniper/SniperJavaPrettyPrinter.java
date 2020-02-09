@@ -149,12 +149,10 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	 * @param printAction the executor of the action, we are listening for. Call it send token to output
 	 */
 	public void onTokenWriterWrite(TokenType tokenType, String token, CtComment comment, Runnable printAction) {
-		executePrintEvent(new TokenPrinterEvent(tokenType, token, comment) {
+		executePrintEventinContext(new TokenPrinterEvent(tokenType, token, comment) {
 			@Override
 			public void print() {
-				if (!mutableTokenWriter.isMuted()) {
-					printAction.run();
-				}
+				printAction.run();
 			}
 			@Override
 			public void printSourceFragment(SourceFragment fragment, Boolean isModified) {
@@ -219,7 +217,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 						element,
 						Collections.singletonList(esf),
 						new ChangeResolver(getChangeCollector(), element)),
-					() -> executePrintEvent(createPrinterEvent(element, role))
+					() -> executePrintEventinContext(createPrinterEvent(element, role))
 				);
 			}
 		}
@@ -236,7 +234,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	public SniperJavaPrettyPrinter scan(CtElement element) {
 		if (element != null) {
 			CtRole role = getRoleInCompilationUnit(element);
-			executePrintEvent(createPrinterEvent(element, role));
+			executePrintEventinContext(createPrinterEvent(element, role));
 		}
 		return this;
 	}
@@ -266,17 +264,16 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	/**
 	 * Called whenever {@link DefaultJavaPrettyPrinter} scans/prints an element or writes a token
 	 */
-	private void executePrintEvent(PrinterEvent event) {
+	private void executePrintEventinContext(PrinterEvent event) {
 		SourceFragmentPrinter sfc = detectCurrentContext(event);
 		if (sfc == null) {
 			throw new SpoonException("Missing SourceFragmentContext");
 		}
-		//there is an context let it handle scanning
+		// we are muted we don't do anything
 		if (mutableTokenWriter.isMuted()) {
-			event.print();
 			return;
 		}
-		//let context handle the event
+		// the context-dependent printer handles the event
 		sfc.print(event);
 	}
 
