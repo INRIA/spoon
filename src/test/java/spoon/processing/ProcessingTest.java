@@ -85,4 +85,24 @@ public class ProcessingTest {
 		l.addProcessor(simpleProcessor);
 		l.run();
 	}
+
+	@Test
+	public void testStaticMethodImportAndInvoke() throws IOException {
+		final Launcher l = new Launcher();
+		Environment e = l.getEnvironment();
+
+		e.setNoClasspath(true);
+		e.setAutoImports(true);
+		e.setPrettyPrinterCreator(() -> new SniperJavaPrettyPrinter(l.getEnvironment()));
+
+		Path path = Files.createTempDirectory("emptydir");
+		l.addInputResource("src/test/resources/compilation4/A.java");
+		l.addInputResource("src/test/resources/compilation4/B.java");
+		l.setSourceOutputDirectory(path.toFile());
+		SimpleProcessor simpleProcessor = new SimpleProcessor();
+		l.addProcessor(simpleProcessor);
+		l.run();
+		// Test does not fail but it shows the error
+	}
+
 }
