@@ -440,7 +440,7 @@ public class ImportTest {
 				aClientClass = launcher.getFactory().Class().get(ClientClass.class).getReference();
 				anotherClass = launcher.getFactory().Class().get(Tacos.class).getReference();
 			}
-			void checkCanAccess(String aClassName, boolean isInterface, boolean canAccessClientClass, boolean canAccessAnotherClass, String clientAccessType, String anotherAccessType) {
+			void checkCanAccess(String aClassName, boolean isInterface, boolean canAccessClientClass, boolean canAccessTacos, String clientAccessType, String anotherAccessType) {
 				CtTypeReference<?> target;
 				if(isInterface) {
 					target = launcher.getFactory().Interface().create(aClassName).getReference();
@@ -449,8 +449,7 @@ public class ImportTest {
 				}
 				boolean isNested = target.getDeclaringType()!=null;
 				CtTypeReference<?> accessType;
-				
-				target.setParent(aClientClass.getTypeDeclaration());
+
 				if(canAccessClientClass) {
 					assertTrue("ClientClass should have access to "+aClassName+" but it has not", aClientClass.canAccess(target));
 				} else {
@@ -465,8 +464,7 @@ public class ImportTest {
 					}
 				}
 
-				target.setParent(anotherClass.getTypeDeclaration());
-				if(canAccessAnotherClass) {
+				if(canAccessTacos) {
 					assertTrue("Tacos class should have access to "+aClassName+" but it has not", anotherClass.canAccess(target));
 				} else {
 					assertFalse("Tacos class should have NO access to "+aClassName+" but it has", anotherClass.canAccess(target));
@@ -484,9 +482,6 @@ public class ImportTest {
 							}//else OK, it should throw exception
 							accessType = null;
 						}
-						if(accessType!=null){
-							fail("Tacos class should have NO accessType to "+aClassName+" but it has "+accessType.getQualifiedName());
-						}
 					}
 				}
 			}
@@ -496,15 +491,15 @@ public class ImportTest {
 		c.checkCanAccess("spoon.test.imports.testclasses.ClientClass", false, true, true, null, null);
 		c.checkCanAccess("spoon.test.imports.testclasses.ClientClass$InnerClass", false, true, false, "spoon.test.imports.testclasses.ClientClass", "spoon.test.imports.testclasses.ClientClass");
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.ChildClass", false, true, true, null, null);
-		c.checkCanAccess("spoon.test.imports.testclasses.internal.PublicInterface2", true, true, true, null, null);
+		c.checkCanAccess("spoon.test.imports.testclasses.PublicInterface2", true, true, true, null, null);
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.PublicInterface2$NestedInterface", true, true, true, "spoon.test.imports.testclasses.internal.PublicInterface2", "spoon.test.imports.testclasses.internal.PublicInterface2");
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.PublicInterface2$NestedClass", true, true, true, "spoon.test.imports.testclasses.internal.PublicInterface2", "spoon.test.imports.testclasses.internal.PublicInterface2");
-		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$PublicInterface", true, true, true, "spoon.test.imports.testclasses.internal.ChildClass", null);
-		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$PackageProtectedInterface", true, false, false, "spoon.test.imports.testclasses.internal.ChildClass", null);
-		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$ProtectedInterface", true, true, false, "spoon.test.imports.testclasses.internal.ChildClass", null);
+		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$PublicInterface", true, true, true, "spoon.test.imports.testclasses.internal.SuperClass", null);
+		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$PackageProtectedInterface", true, true, true, "spoon.test.imports.testclasses.internal.SuperClass", null);
+		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$ProtectedInterface", true, true, true, "spoon.test.imports.testclasses.internal.SuperClass", null);
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$ProtectedInterface$NestedOfProtectedInterface", true, true, true/*canAccess, but has no access to accessType*/, "spoon.test.imports.testclasses.internal.SuperClass$ProtectedInterface", null);
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$ProtectedInterface$NestedPublicInterface", true, true, true/*canAccess, but has no access to accessType*/, "spoon.test.imports.testclasses.internal.SuperClass$ProtectedInterface", null);
-		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$PublicInterface", true, true, true/*canAccess, but has no access to accessType*/, "spoon.test.imports.testclasses.internal.ChildClass", null);
+		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$PublicInterface", true, true, true/*canAccess, but has no access to accessType*/, "spoon.test.imports.testclasses.internal.SuperClass", null);
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$PublicInterface$NestedOfPublicInterface", true, true, true/*canAccess, has access to first accessType, but not to full accesspath*/, "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface", "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface");
 		c.checkCanAccess("spoon.test.imports.testclasses.internal.SuperClass$PublicInterface$NestedPublicInterface", true, true, true/*canAccess, has access to first accessType, but not to full accesspath*/, "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface", "spoon.test.imports.testclasses.internal.SuperClass$PublicInterface");
 	}

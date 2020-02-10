@@ -127,8 +127,8 @@ public class ParentTest {
 	}
 
 	@Test
-	public void testParentPackage() {
-		// addType should set Parent
+	public void testAddType() {
+		// contract: addType should set Parent
 		CtClass<?> clazz = factory.Core().createClass();
 		clazz.setSimpleName("Foo");
 		CtPackage pack = factory.Core().createPackage();
@@ -136,6 +136,14 @@ public class ParentTest {
 		pack.addType(clazz);
 		assertTrue(pack.getTypes().contains(clazz));
 		assertEquals(pack, clazz.getParent());
+
+		// contract: addType always retains the latest version of the type
+		CtClass<?> clone = clazz.clone();
+		clone.putMetadata("metadata", "bar");
+		// clone and clazz have the same qualified name
+		// so the latest version (clone) replaces the previous one
+		pack.addType(clone);
+		assertEquals("bar", pack.getType("Foo").getMetadata("metadata"));
 	}
 
 	@Test
