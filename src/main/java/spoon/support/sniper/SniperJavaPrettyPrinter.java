@@ -149,7 +149,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	 * @param printAction the executor of the action, we are listening for. Call it send token to output
 	 */
 	public void onTokenWriterWrite(TokenType tokenType, String token, CtComment comment, Runnable printAction) {
-		executePrintEventinContext(new TokenPrinterEvent(tokenType, token, comment) {
+		executePrintEventInContext(new TokenPrinterEvent(tokenType, token, comment) {
 			@Override
 			public void print() {
 				printAction.run();
@@ -213,7 +213,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 						element,
 						Collections.singletonList(esf),
 						new ChangeResolver(getChangeCollector(), element)),
-					() -> executePrintEventinContext(createPrinterEvent(element, role))
+					() -> executePrintEventInContext(createPrinterEvent(element, role))
 				);
 			}
 		}
@@ -230,7 +230,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	public SniperJavaPrettyPrinter scan(CtElement element) {
 		if (element != null) {
 			CtRole role = getRoleInCompilationUnit(element);
-			executePrintEventinContext(createPrinterEvent(element, role));
+			executePrintEventInContext(createPrinterEvent(element, role));
 		}
 		return this;
 	}
@@ -260,7 +260,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	/**
 	 * Called whenever {@link DefaultJavaPrettyPrinter} scans/prints an element or writes a token
 	 */
-	private void executePrintEventinContext(PrinterEvent event) {
+	private void executePrintEventInContext(PrinterEvent event) {
 		SourceFragmentPrinter sfc = detectCurrentContext(event);
 		if (sfc == null) {
 			throw new SpoonException("Missing SourceFragmentContext");
