@@ -9,7 +9,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
 /**
- * Knows how to handle actually printed {@link CtElement} or its part
+ * An object that knows how to print {@link PrinterEvent}
  */
 public interface SourceFragmentPrinter {
 	/**
@@ -29,7 +29,9 @@ public interface SourceFragmentPrinter {
 	void onFinished();
 
 	/**
-	 * @return true if this context can handle `role`
+	 * @return true if this printer is able to handle this event
+	 * That is that we can safely call {@link #print(PrinterEvent)} after
+	 * having called this one.
 	 */
 	boolean knowsHowToPrint(PrinterEvent event);
 

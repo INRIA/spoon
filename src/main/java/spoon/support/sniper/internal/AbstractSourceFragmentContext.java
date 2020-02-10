@@ -269,7 +269,7 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentPrinter {
 			if (tpe.getType() == TokenType.IDENTIFIER) {
 				return findIndexOfNextChildTokenByType(TokenType.IDENTIFIER);
 			}
-			return findIndexOfNextChildTokenByValue(event.getToken());
+			return findIndexOfNextChildTokenByValue(tpe.getToken());
 		} else {
 			throw new SpoonException("Unexpected PrintEvent: " + event.getClass());
 		}

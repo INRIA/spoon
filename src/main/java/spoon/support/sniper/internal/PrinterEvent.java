@@ -43,13 +43,4 @@ public interface PrinterEvent  {
 	 */
 	SourcePositionHolder getElement();
 
-	/**
-	 * @return printed token or null if printing complex element or comment
-	 */
-	String getToken();
-
-	/**
-	 * @return true if printing white space token. It means New line, space or TAB.
-	 */
-	boolean isWhitespace();
 }
