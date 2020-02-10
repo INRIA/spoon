@@ -17,7 +17,7 @@ public class CompilationUnitPrintTest {
     @Test
     public void test() {
 
-        /*
+        /* Testing scenario:
             Build a model with a class
             Clone this class
             Modify the clone by adding a method
