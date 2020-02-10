@@ -68,12 +68,19 @@ public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> imple
 
 	@Override
 	public boolean add(T e) {
-		if (e == null || set.contains(e)) {
+		if (e == null) {
 			return false;
 		}
 		CtElement owner = getOwner();
 		linkToParent(owner, e);
 		getModelChangeListener().onSetAdd(owner, getRole(), set, e);
+
+		// we make sure that the element is always the last put in the set
+		// for being least suprising for client code
+		if (set.contains(e)) {
+			set.remove(e);
+		}
+
 		set.add(e);
 		return true;
 	}
