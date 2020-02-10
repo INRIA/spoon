@@ -56,6 +56,6 @@ public class SniperDefaultMethodTest {
 
     assertThat(content, CoreMatchers.notNullValue());
     assertThat("Result class should not be empty", content.trim(), CoreMatchers.not(CoreMatchers.equalTo("")));
-    assertThat("Method should still have default modifier", content.trim(), CoreMatchers.containsString("default"));
+    assertThat("Method should still have default modifier", content.trim(), CoreMatchers.containsString(" default "));
   }
 }

@@ -22,6 +22,12 @@ public interface SourceFragmentPrinter {
 	 */
 	void print(PrinterEvent event);
 
+	/** Update the internal state of this printer for this event but does not print anything.
+	 *
+	 * Returns the index of the fragment corresponding to this event.
+	 */
+	int update(PrinterEvent event);
+
 	/**
 	 * Called when printing using this context is going to finish
 	 */
