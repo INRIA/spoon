@@ -26,17 +26,22 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.refactoring.Refactoring;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
@@ -140,7 +145,6 @@ public class RefactoringTest {
 		assertEquals("o", instanceofInvocation.getLeftHandOperand().toString());
 		assertEquals("spoon.test.refactoring.testclasses.AClassX", instanceofInvocation.getRightHandOperand().toString());
 	}
-
 	@Test
 	public void testRemoveDeprecatedMethods() {
 		// clean dir if exists
@@ -174,5 +178,51 @@ public class RefactoringTest {
 		} catch (Exception e) {
 			// error is kinda okay
 		}
+	}
+	@Test
+	public void showBug() {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("src/test/resources/deprecated/input");
+		CtModel model = spoon.buildModel();
+		Collection<CtExecutable<?>> list = new HashSet<>();
+
+		model.getElements(new TypeFilter<>(CtInvocation.class))
+		.forEach(v -> list.add(v.getExecutable().getExecutableDeclaration()));
+		list.removeIf(v -> Objects.isNull(v));
+		//Filter methods that are not in the code
+		list.removeIf(v -> !v.getPosition().isValidPosition());
+		//in jdk 8 size 3
+		//in jdk 11 size 4
+
+		/* jdk8 List
+		[// should be deleted because only ref in Foo.test3()
+		@java.lang.Deprecated
+		public void test3() {
+		  test3();
+		}, // ref in Foo.test1()
+		@java.lang.Deprecated
+		public boolean test2() {
+		  return true;
+		}, // ref in Bar.test
+		@java.lang.Deprecated
+		public void test5() {
+		}]
+		*/
+		/*jdk11 List
+		[// should be deleted because only ref in Foo.test3()
+		@java.lang.Deprecated
+		public void test3() {
+		    test3();
+		}, // ref in Bar.foo()
+		@java.lang.Deprecated
+		public void test4() {
+		}, // ref in Foo.test1()
+		@java.lang.Deprecated
+		public boolean test2() {
+		    return true;
+		}, // ref in Bar.test
+		@java.lang.Deprecated
+		 */
+		assertEquals(4, list.size());
 	}
 }
