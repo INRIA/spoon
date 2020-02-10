@@ -5,7 +5,6 @@
  */
 package spoon.support.sniper.internal;
 
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
 /**
