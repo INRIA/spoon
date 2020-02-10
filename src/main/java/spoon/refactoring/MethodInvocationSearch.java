@@ -5,16 +5,14 @@
  */
 package spoon.refactoring;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,6 +50,7 @@ public class MethodInvocationSearch extends CtScanner {
 			transformedMethod = method;
 		}
 		List<CtInvocation<?>> invocations = method.getElements(new TypeFilter<>(CtInvocation.class));
+
 		List<CtConstructorCall<?>> constructors = method.getElements(new TypeFilter<>(CtConstructorCall.class));
 		if (!invocationsOfMethod.containsKey(method) && !method.isImplicit() && !(method instanceof CtLambdaImpl)) {
 			// now every method should be key
@@ -59,17 +58,17 @@ public class MethodInvocationSearch extends CtScanner {
 		}
 		invocations.stream().filter(v -> !v.isImplicit()).map(v -> v.getExecutable().getExecutableDeclaration())
 				.filter(Objects::nonNull).filter(v -> v.getPosition().isValidPosition())
-				.forEach(v -> invocationsOfMethod.merge(v, new ArrayList<>(Arrays.asList(transformedMethod)),
-						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(ArrayList::new))));
+				.forEach(v -> invocationsOfMethod.merge(v, new HashSet<>(Arrays.asList(transformedMethod)),
+						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
 		constructors.stream().filter(v -> !v.isImplicit()).map(v -> v.getExecutable().getExecutableDeclaration())
 				.filter(Objects::nonNull)
-				.forEach(v -> invocationsOfMethod.merge(v, new ArrayList<>(Arrays.asList(transformedMethod)),
-						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(ArrayList::new))));
+				.forEach(v -> invocationsOfMethod.merge(v, new HashSet<>(Arrays.asList(transformedMethod)),
+						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
 		super.visitCtMethod(method);
 	}
 
 	public Collection<MethodCallState> getInvocationsOfMethod() {
-		Set<MethodCallState> transformedResult = new HashSet<>();
+		Collection<MethodCallState> transformedResult = new HashSet<>();
 		Stream.concat(invocationsOfMethod.keySet().stream(), invocationsOfField.keySet().stream()).map(MethodCallState::new)
 				.forEach(transformedResult::add);
 		for (MethodCallState methodCallState : transformedResult) {
@@ -85,12 +84,12 @@ public class MethodInvocationSearch extends CtScanner {
 	public <T> void visitCtField(CtField<T> field) {
 		field.getElements(new TypeFilter<>(CtInvocation.class)).stream()
 				.map(call -> call.getExecutable().getExecutableDeclaration())
-				.forEach(method -> invocationsOfField.merge(method, new ArrayList<>(Arrays.asList(field.getDeclaringType())),
-						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(ArrayList::new))));
+				.forEach(method -> invocationsOfField.merge(method, new HashSet<>(Arrays.asList(field.getDeclaringType())),
+						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
 		field.getElements(new TypeFilter<>(CtConstructorCall.class)).stream()
 				.map(call -> call.getExecutable().getExecutableDeclaration())
-				.forEach(method -> invocationsOfField.merge(method, new ArrayList<>(Arrays.asList(field.getDeclaringType())),
-						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(ArrayList::new))));
+				.forEach(method -> invocationsOfField.merge(method, new HashSet<>(Arrays.asList(field.getDeclaringType())),
+						(o1, o2) -> Stream.concat(o1.stream(), o2.stream()).collect(Collectors.toCollection(HashSet::new))));
 		super.visitCtField(field);
 	}
 
