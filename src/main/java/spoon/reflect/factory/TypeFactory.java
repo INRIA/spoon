@@ -7,6 +7,8 @@ package spoon.reflect.factory;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -700,6 +702,12 @@ public class TypeFactory extends SubFactory {
 		intersectionRef.setPackage(firstBound.getPackage());
 		intersectionRef.setActualTypeArguments(firstBound.getActualTypeArguments());
 		intersectionRef.setBounds(bounds);
+		CtTypeReference<?> lastBound = bounds.get(bounds.size() - 1);
+		if (!(firstBound.getPosition() instanceof NoSourcePosition) && !(lastBound.getPosition() instanceof NoSourcePosition))
+		{
+			SourcePosition pos = factory.createSourcePosition(firstBound.getPosition().getCompilationUnit(), firstBound.getPosition().getSourceStart(), lastBound.getPosition().getSourceEnd(), firstBound.getPosition().getCompilationUnit().getLineSeparatorPositions());
+			intersectionRef.setPosition(pos);
+		}
 		return intersectionRef;
 	}
 

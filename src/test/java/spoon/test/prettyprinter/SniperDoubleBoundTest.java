@@ -52,9 +52,6 @@ public class SniperDoubleBoundTest {
         CoreMatchers.equalTo(true));
 
     String content = new String(Files.readAllBytes(OUTPUT_PATH.resolve(path)), StandardCharsets.UTF_8);
-
-    assertThat(content, CoreMatchers.notNullValue());
-    assertThat("Result class should not be empty", content.trim(), CoreMatchers.not(CoreMatchers.equalTo("")));
-    assertThat("Should contain assert with semicolon", content.trim(), CoreMatchers.containsString("assert true;"));
+    assertThat(content.trim(), CoreMatchers.containsString("/* test */public class DoubleBound<T extends Writer & Readable>"));
   }
 }
