@@ -52,9 +52,7 @@ public class SourceFragmentContextNormal extends AbstractSourceFragmentContext {
 	@Override
 	public void onFinished() {
 		//we are at the end of this element. Printer just tries to print something out of this context.
-		if (mutableTokenWriter.isMuted() == false) {
-			//print fragment suffix
-			printSpaces(childFragments.size());
-		}
+		//print fragment suffix
+		printSpaces(childFragments.size());
 	}
 }

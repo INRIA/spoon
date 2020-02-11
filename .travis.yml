@@ -26,6 +26,9 @@ install:
 
 script: ./chore/travis/$SCRIPT
 
+# last step, see https://docs.travis-ci.com/user/job-lifecycle/
+after_script: ./chore/travis/travis-master.sh
+
 cache:
   directories:
   - $HOME/.m2

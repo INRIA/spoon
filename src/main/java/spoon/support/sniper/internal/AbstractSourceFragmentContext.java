@@ -42,6 +42,25 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentPrinter {
 
 	@Override
 	public void print(PrinterEvent event) {
+		int prevIndex = childFragmentIdx;
+		int index = update(event);
+		if (index != -1) { // means we have found a source code fragment corresponding to this event
+
+			// handling of spaces
+			// hacky but works for now
+			// TODO a refactoring of printSpaces would be better
+			// but there are other bugs of higher priority now
+			childFragmentIdx = prevIndex;
+			printSpaces(index);
+			childFragmentIdx = index;
+
+			SourceFragment fragment = childFragments.get(index);
+			event.printSourceFragment(fragment, isFragmentModified(fragment));
+		}
+	}
+
+	@Override
+	public int update(PrinterEvent event) {
 		if (event instanceof TokenPrinterEvent) {
 			TokenPrinterEvent tpe = (TokenPrinterEvent) event;
 			if (tpe.getType().isTab()) {
@@ -50,13 +69,13 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentPrinter {
 				//but may be it is not good idea
 
 				//send all inc/dec tab to printer helper to have configured expected indentation
-				event.print(false);
-				return;
+				event.print();
+				return -1;
 			}
 			if (tpe.getType().isWhiteSpace()) {
 				//collect all DJPP separators for future use or ignore
-				separatorActions.add(() -> event.print(false));
-				return;
+				separatorActions.add(() -> event.print());
+				return -1;
 			}
 		}
 		int fragmentIndex = findIndexOfNextChildTokenOfEvent(event);
@@ -66,29 +85,18 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentPrinter {
 			 * It can happen e.g. when type parameter like &lt;T&gt; was added. Then bracket tokens are not in origin sources
 			 */
 			printSpaces(-1);
-			event.print(false);
-			return;
+			event.print();
+			return -1;
 		}
 		//we have origin sources for this element
 		if (event.getRole() == CtRole.COMMENT) {
 			//note: DJPP sends comments in wrong order/wrong place.
 			//so skip printing of this comment
 			//comment will be printed at place where it belongs to - together with spaces
-			return;
+			return -1;
 		}
-		onPrintFoundFragment(event, fragmentIndex);
-	}
-
-	/**
-	 * prints not modified or partially modified origin source fragment
-	 * @param event a pretty printer event
-	 * @param fragmentIndex a index of {@link SourceFragment} in scope of {@link #childFragments} of this context
-	 */
-	private void onPrintFoundFragment(PrinterEvent event, int fragmentIndex) {
-		printSpaces(fragmentIndex);
 		setChildFragmentIdx(fragmentIndex);
-		SourceFragment fragment = childFragments.get(fragmentIndex);
-		event.printSourceFragment(fragment, isFragmentModified(fragment));
+		return fragmentIndex;
 	}
 
 	/**
@@ -269,7 +277,7 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentPrinter {
 			if (tpe.getType() == TokenType.IDENTIFIER) {
 				return findIndexOfNextChildTokenByType(TokenType.IDENTIFIER);
 			}
-			return findIndexOfNextChildTokenByValue(event.getToken());
+			return findIndexOfNextChildTokenByValue(tpe.getToken());
 		} else {
 			throw new SpoonException("Unexpected PrintEvent: " + event.getClass());
 		}

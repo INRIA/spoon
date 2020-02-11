@@ -27,7 +27,7 @@ public interface PrinterEvent  {
 	 *  	false if {@link DefaultJavaPrettyPrinter} will really print into output.
 	 *  	null if `muted` status should be kept as it is
 	 */
-	void print(boolean muted);
+	void print();
 
 	/**
 	 * We have a source fragment of to be printed element.
@@ -43,13 +43,4 @@ public interface PrinterEvent  {
 	 */
 	SourcePositionHolder getElement();
 
-	/**
-	 * @return printed token or null if printing complex element or comment
-	 */
-	String getToken();
-
-	/**
-	 * @return true if printing white space token. It means New line, space or TAB.
-	 */
-	boolean isWhitespace();
 }

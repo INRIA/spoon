@@ -194,6 +194,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T addType(CtType<?> type) {
+		// ModelSet of types will take care of setting the parent
 		types.add(type);
 		return (T) this;
 	}

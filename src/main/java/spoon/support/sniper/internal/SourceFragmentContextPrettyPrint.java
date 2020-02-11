@@ -23,7 +23,12 @@ public class SourceFragmentContextPrettyPrint implements SourceFragmentPrinter {
 
 	@Override
 	public void print(PrinterEvent event) {
-		event.print(false);
+		event.print();
+	}
+
+	@Override
+	public int update(PrinterEvent event) {
+		return -1;
 	}
 
 	@Override

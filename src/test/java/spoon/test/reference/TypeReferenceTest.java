@@ -228,7 +228,7 @@ public class TypeReferenceTest {
 	public void testToStringEqualityBetweenTwoGenericTypeDifferent() {
 		// contract: generic type references with different bounds should not be considered equals
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput", "--noclasspath"});
+		launcher.setArgs(new String[] {"--output-type", "nooutput"});
 		launcher.addInputResource("src/test/java/spoon/test/reference/TypeReferenceTest.java");
 		launcher.run();
 

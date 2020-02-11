@@ -72,6 +72,10 @@ Options :
         An optional destination directory for the generated class files.
         (default: spooned-classes)
 
+ --cpmode <cpmode>
+        Classpath mode to use in Spoon: NOCLASSPATH; FULLCLASSPATH (default:
+        NOCLASSPATH)
+
   [--output-type <output-type>]
         States how to print the processed source code:
         nooutput|classes|compilationunits (default: classes)
@@ -82,9 +86,6 @@ Options :
   [--lines]
         Set Spoon to try to preserve the original line numbers when generating
         the source code (may lead to human-unfriendly formatting).
-
-  [-x|--noclasspath]
-        Does not assume a full classpath
 
   [-g|--gui]
         Show spoon model after processing
