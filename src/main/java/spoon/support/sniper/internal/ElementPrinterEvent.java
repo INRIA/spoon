@@ -32,16 +32,11 @@ public abstract class ElementPrinterEvent implements PrinterEvent {
 	}
 
 	@Override
-	public String getToken() {
-		return null;
-	}
-	@Override
-	public boolean isWhitespace() {
-		return false;
-	}
-	@Override
 	public String toString() {
-		return role.name() + "->" + element.toStringDebug();
+		if (role != null && element != null) {
+			return role.name() + "->" + element.toStringDebug();
+		}
+		return "illformed ElementPrinterEvent";
 	}
 }
 

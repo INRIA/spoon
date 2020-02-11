@@ -165,6 +165,8 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 					if (fragment instanceof CollectionSourceFragment) {
 						//we started scanning of collection of elements
 						SourceFragmentPrinter listContext = getCollectionContext(null, (CollectionSourceFragment) fragment, isModified);
+						// we need to update the cursor (childFragmentIdx) with the current token
+						listContext.update(this);
 						//push the context of this collection
 						pushContext(listContext);
 					}
@@ -267,8 +269,9 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		if (sfc == null) {
 			throw new SpoonException("Missing SourceFragmentContext");
 		}
-		// we are muted we don't do anything
 		if (mutableTokenWriter.isMuted()) {
+			// the printer may require to update its state based on this event
+			sfc.update(event);
 			return;
 		}
 		// the context-dependent printer handles the event
