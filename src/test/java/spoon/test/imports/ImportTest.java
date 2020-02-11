@@ -280,7 +280,7 @@ public class ImportTest {
 	public void testStaticImportForInvocationInNoClasspath() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
-				"-i", "./src/test/resources/import-static", "--output-type", "nooutput", "--noclasspath"
+				"-i", "./src/test/resources/import-static", "--output-type", "nooutput"
 		});
 
 		final List<CtInvocation<?>> elements = new SortedList(new CtLineElementComparator());
