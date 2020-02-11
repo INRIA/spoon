@@ -47,7 +47,7 @@ public class SniperDoubleBoundTest {
 
     launcher.process();
     launcher.prettyprint();
-    // Verify result file exist and is not empty
+    // Verify result file exists and is not empty
     assertThat("Output file for " + path + " should exist", OUTPUT_PATH.resolve(path).toFile().exists(),
         CoreMatchers.equalTo(true));
 
