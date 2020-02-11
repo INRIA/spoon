@@ -703,8 +703,7 @@ public class TypeFactory extends SubFactory {
 		intersectionRef.setActualTypeArguments(firstBound.getActualTypeArguments());
 		intersectionRef.setBounds(bounds);
 		CtTypeReference<?> lastBound = bounds.get(bounds.size() - 1);
-		if (!(firstBound.getPosition() instanceof NoSourcePosition) && !(lastBound.getPosition() instanceof NoSourcePosition))
-		{
+		if (!(firstBound.getPosition() instanceof NoSourcePosition) && !(lastBound.getPosition() instanceof NoSourcePosition)) {
 			SourcePosition pos = factory.createSourcePosition(firstBound.getPosition().getCompilationUnit(), firstBound.getPosition().getSourceStart(), lastBound.getPosition().getSourceEnd(), firstBound.getPosition().getCompilationUnit().getLineSeparatorPositions());
 			intersectionRef.setPosition(pos);
 		}
