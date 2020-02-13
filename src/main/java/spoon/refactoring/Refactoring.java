@@ -5,9 +5,7 @@
  */
 package spoon.refactoring;
 
-import spoon.Launcher;
 import spoon.SpoonException;
-import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -19,7 +17,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 import java.util.List;
 
@@ -209,34 +206,35 @@ public final class Refactoring {
 		new CtRenameLocalVariableRefactoring().setTarget(localVariable).setNewName(newName).refactor();
 	}
 
-	/** Deletes all deprecated methods in the given path */
+	/**
+	 * Removes all deprecated methods for all java files in the given path.
+	 *
+	 * <b>Only use it if you have &gt; jdk8. Older jdk versions may result in wrong results.</b>
+	 * Only removes deprecated methods, that are no longer invoked by any method or
+	 * field. If a deprecated method is invoked by a deprecated method only, which
+	 * can be removed, the deprecated method is removed too.
+	 *
+	 * Result is written to /$Path/$Package. For different output folder see
+	 * {@link Refactoring#removeDeprecatedMethods(String, String)}.
+	 *
+	 * @param input Path to java files in folder.
+	 */
 	public static void removeDeprecatedMethods(String path) {
-		Launcher spoon = new Launcher();
-		spoon.addInputResource(path);
-		spoon.setSourceOutputDirectory(path);
-		spoon.addProcessor(new AbstractProcessor<CtMethod>() {
-			@Override
-			public void process(CtMethod method) {
-				if (method.hasAnnotation(Deprecated.class)) {
-					method.delete();
-				}
-			}
-		});
+		new CtDeprecatedRefactoring().removeDeprecatedMethods(path);
+	}
 
-		// does not work, see https://github.com/INRIA/spoon/issues/3183
-//		spoon.addProcessor(new AbstractProcessor<CtType>() {
-//			@Override
-//			public void process(CtType type) {
-//				if (type.hasAnnotation(Deprecated.class)) {
-//					type.delete();
-//				}
-//			}
-//		});
-
-		spoon.getEnvironment().setPrettyPrinterCreator(() -> {
-					return new SniperJavaPrettyPrinter(spoon.getEnvironment());
-				}
-		);
-		spoon.run();
+	/**
+	 * Removes all deprecated methods for all java files in the given path.
+	 *
+	 * <b>Only use it if you have &gt; jdk8. Older jdk versions may result in wrong results.</b>
+	 * Only removes deprecated methods, that are no longer invoked by any method or
+	 * field. If a deprecated method is invoked by a deprecated method only, which
+	 * can be removed, the deprecated method is removed too.
+	 *
+	 * @param input      Path to java files in folder.
+	 * @param resultPath Path for the refactored java files.
+	 */
+	public static void removeDeprecatedMethods(String input, String resultPath) {
+		new CtDeprecatedRefactoring().removeDeprecatedMethods(input, resultPath);
 	}
 }

@@ -1,0 +1,4 @@
+<!-- minimal configuration for Travis -->
+<configuration>
+  <root level="INFO"/>            
+</configuration>

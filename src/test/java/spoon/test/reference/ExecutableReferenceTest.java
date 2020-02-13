@@ -50,7 +50,7 @@ public class ExecutableReferenceTest {
 	public void testCallMethodOfClassNotPresent() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
-				"-i", "./src/test/resources/executable-reference", "--output-type", "nooutput", "--noclasspath"
+				"-i", "./src/test/resources/executable-reference", "--output-type", "nooutput"
 		});
 		final List<CtExecutableReference<?>> references = Query.getReferences(launcher.getFactory(), new ReferenceTypeFilter<CtExecutableReference<?>>(CtExecutableReference.class) {
 			@Override

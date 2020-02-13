@@ -105,16 +105,6 @@ abstract class LiteralHelper {
 	static void appendCharLiteral(StringBuilder sb, Character c, boolean mayContainsSpecialCharacter) {
 		if (!mayContainsSpecialCharacter) {
 			sb.append(c);
-		} else if (Character.UnicodeBlock.of(c) != Character.UnicodeBlock.BASIC_LATIN) {
-			if (c < 0x10) {
-				sb.append("\\u000" + Integer.toHexString(c));
-			} else if (c < 0x100) {
-				sb.append("\\u00" + Integer.toHexString(c));
-			} else if (c < 0x1000) {
-				sb.append("\\u0" + Integer.toHexString(c));
-			} else {
-				sb.append("\\u" + Integer.toHexString(c));
-			}
 		} else {
 			switch (c) {
 				case '\b':

@@ -74,7 +74,7 @@ public class ChangeCollector {
 
 	/**
 	 * @param currentElement the {@link CtElement} whose changes has to be checked
-	 * @return set of {@link CtRole}s whose attribute was directly changed on `currentElement` since this {@link ChangeCollector} was attached
+	 * @return set of {@link CtRole}s in direct children on of `currentElement` where something has changed since this {@link ChangeCollector} was attached
 	 * The 'directly' means that value of attribute of `currentElement` was changed.
 	 * Use {@link #getChanges(CtElement)} to detect changes in child elements too
 	 */
@@ -87,32 +87,37 @@ public class ChangeCollector {
 	}
 
 	/**
-	 * @param currentElement the {@link CtElement} whose changes has to be checked
-	 * @return set of {@link CtRole}s whose attribute was changed on `currentElement`
-	 * or any child of this attribute was changed
+	 * Return the set of {@link CtRole}s for which children have changed from `currentElement`
 	 * since this {@link ChangeCollector} was attached
+	 * Warning: change in IMPLICIT are ignored
+	 * @param currentElement the {@link CtElement} whose changes has to be checked
 	 */
 	public Set<CtRole> getChanges(CtElement currentElement) {
 		final Set<CtRole> changes = new HashSet<>(getDirectChanges(currentElement));
 		final Scanner scanner = new Scanner();
+		// collecting the changes deeped in currentElement
 		scanner.setListener(new CtScannerListener() {
 			int depth = 0;
 			CtRole checkedRole;
 			@Override
 			public ScanningMode enter(CtElement element) {
 				if (depth == 0) {
-					//we are checking children of role checkedRole
+					// we want the top-level role directly under currentElement
 					checkedRole = scanner.getScannedRole();
 				}
+
+				// Optimization, in theory could be removed
 				if (changes.contains(checkedRole)) {
-					//we already know that some child of `checkedRole` attribute is modified. Skip others
+					//we already know that some child with `checkedRole` is modified. Skip others
 					return ScanningMode.SKIP_ALL;
 				}
-				if (elementToChangeRole.containsKey(element)) {
-					//we have found a modified element in children of `checkedRole`
+
+				if (elementToChangeRole.containsKey(element) && !elementToChangeRole.get(element).contains(CtRole.IS_IMPLICIT)) {
+					//we have found a modified element in some sub children of `checkedRole`
 					changes.add(checkedRole);
 					return ScanningMode.SKIP_ALL;
 				}
+
 				depth++;
 				//continue searching for an modification
 				return ScanningMode.NORMAL;
@@ -164,6 +169,7 @@ public class ChangeCollector {
 
 		@Override
 		public void onObjectUpdate(CtElement currentElement, CtRole role, Object newValue, Object oldValue) {
+
 			onChange(currentElement, role);
 		}
 
