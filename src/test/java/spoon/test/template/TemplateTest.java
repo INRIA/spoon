@@ -433,7 +433,7 @@ public class TemplateTest {
 		CtIf ifStmt = (CtIf) injectedCode;
 
 		// contains the replaced code
-		assertEquals("(l.size()) > 10", ifStmt.getCondition().toString());
+		assertEquals("l.size() > 10", ifStmt.getCondition().toString());
 
 		// adds the bound check at the beginning of a method
 		method.getBody().insertBegin(injectedCode);
@@ -486,8 +486,8 @@ public class TemplateTest {
 			assertEquals(2, matcher.find(klass).size());
 			assertThat(asList("foo","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
 			matcher.forEachMatch(klass, (match) -> {
-				assertTrue(checkParameters("foo", match, "_x_", "(new java.util.ArrayList<>().size())")
-						||checkParameters("fbar", match, "_x_", "(l.size())")
+				assertTrue(checkParameters("foo", match, "_x_", "new java.util.ArrayList<>().size()")
+						||checkParameters("fbar", match, "_x_", "l.size()")
 				);
 			});
 		}
@@ -502,13 +502,13 @@ public class TemplateTest {
 			matcher.forEachMatch(klass, (match) -> {
 				assertTrue(
 						checkParameters("foo", match,
-								"_x_", "(new java.util.ArrayList<>().size())",
+								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "10")
 						||checkParameters("foo2", match, 
-								"_x_", "(new java.util.ArrayList<>().size())",
+								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "11")
 						||checkParameters("fbar", match,
-								"_x_", "(l.size())",
+								"_x_", "l.size()",
 								"_y_", "10")
 				);
 			});
@@ -524,29 +524,29 @@ public class TemplateTest {
 			matcher.forEachMatch(klass, (match) -> {
 				assertTrue(
 						checkParameters("foo", match,
-								"_x_", "(new java.util.ArrayList<>().size())",
+								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "10",
-								"_block_", "throw new java.lang.IndexOutOfBoundsException();")
+								"_block_", "{ throw new java.lang.IndexOutOfBoundsException();}")
 						||checkParameters("foo2", match, 
-								"_x_", "(new java.util.ArrayList<>().size())",
+								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "11",
-								"_block_", "throw new java.lang.IndexOutOfBoundsException();")
+								"_block_", "{ throw new java.lang.IndexOutOfBoundsException();}")
 						||checkParameters("fbar", match,
-								"_x_", "(l.size())",
+								"_x_", "l.size()",
 								"_y_", "10",
-								"_block_", "throw new java.lang.IndexOutOfBoundsException();")
+								"_block_", "{ throw new java.lang.IndexOutOfBoundsException();}")
 						||checkParameters("baz", match,
-								"_x_", "(new java.util.ArrayList<>().size())",
+								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "10",
 								"_block_", "{}")
 						||checkParameters("bou", match,
-								"_x_", "(new java.util.ArrayList<>().size())",
+								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "10",
 								"_block_", "{ java.lang.System.out.println();}")
 						||checkParameters("bov", match,
-								"_x_", "(new java.util.ArrayList<>().size())",
+								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "10",
-								"_block_", "java.lang.System.out.println();")
+								"_block_", "{ java.lang.System.out.println();}")
 				);
 			});
 		}
@@ -561,27 +561,27 @@ public class TemplateTest {
 			matcher.forEachMatch(klass, (match) -> {
 				assertTrue(
 						checkParameters("foo", match,
-								"_x_", "(new java.util.ArrayList<>().size())",
+								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "10",
 								"_stmt_", "throw new java.lang.IndexOutOfBoundsException()")
 						||checkParameters("foo2", match, 
-								"_x_", "(new java.util.ArrayList<>().size())",
+								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "11",
 								"_stmt_", "throw new java.lang.IndexOutOfBoundsException()")
 						||checkParameters("fbar", match,
-								"_x_", "(l.size())",
+								"_x_", "l.size()",
 								"_y_", "10",
 								"_stmt_", "throw new java.lang.IndexOutOfBoundsException()")
 						||checkParameters("baz", match,
-								"_x_", "(new java.util.ArrayList<>().size())",
+								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "10",
 								"_stmt_", "null")
 						||checkParameters("bou", match,
-								"_x_", "(new java.util.ArrayList<>().size())",
+								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "10",
 								"_stmt_", "java.lang.System.out.println()")
 						||checkParameters("bov", match,
-								"_x_", "(new java.util.ArrayList<>().size())",
+								"_x_", "new java.util.ArrayList<>().size()",
 								"_y_", "10",
 								"_stmt_", "java.lang.System.out.println()")
 				);
@@ -598,8 +598,8 @@ public class TemplateTest {
 			matcher.forEachMatch(klass, (match) -> {
 				assertTrue(
 						checkParameters("bos", match,
-								"_x_", "(new java.util.ArrayList<>().size())",
-								"_block_", "java.lang.System.out.println();")
+								"_x_", "new java.util.ArrayList<>().size()",
+								"_block_", "{ java.lang.System.out.println();}")
 				);
 			});
 		}
@@ -680,7 +680,7 @@ public class TemplateTest {
 		assertTrue(aTry.getBody().getStatement(0) instanceof CtInvocation);
 		assertEquals("spoon.test.template.testclasses.logger.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
 		assertTrue(aTry.getBody().getStatements().size() > 1);
-		assertEquals("java.lang.System.out.println((((\"enter: \" + className) + \" - \") + methodName))", aTry.getBody().getStatement(1).toString());
+		assertEquals("java.lang.System.out.println(((\"enter: \" + className) + \" - \") + methodName)", aTry.getBody().getStatement(1).toString());
 	}
 
 	@Test
@@ -812,7 +812,8 @@ public class TemplateTest {
 		Factory factory = spoon.getFactory();
 
 		CtClass<?> testSimpleTpl = factory.Class().create("TestSimpleTpl");
-		new SimpleTemplate("Hello world").apply(testSimpleTpl);
+		//whitespace seems wrong here
+		new SimpleTemplate("HelloWorld").apply(testSimpleTpl);
 
 		Set<CtMethod<?>> listMethods = testSimpleTpl.getMethods();
 		assertEquals(0, testSimpleTpl.getMethodsByName("apply").size());
@@ -999,11 +1000,11 @@ public class TemplateTest {
 		}
 		{
 			//contract: simple name of type reference is substituted in String literal 
-			final CtClass<?> result = (CtClass<?>) new SubstituteLiteralTemplate(factory.Type().createReference("some.ignored.package.TypeName")).apply(factory.createClass());
+			final CtClass<?> result = (CtClass<?>) new SubstituteLiteralTemplate(factory.Type().createReference("some.ignored.foo.TypeName")).apply(factory.createClass());
 			assertEquals("java.lang.String stringField1 = \"TypeName\";", result.getField("stringField1").toString());
 			assertEquals("java.lang.String stringField2 = \"Substring TypeName is substituted too - TypeName\";", result.getField("stringField2").toString());
 			//contract type reference is substituted in invocation as class access
-			assertEquals("java.lang.System.out.println(some.ignored.package.TypeName.class)", result.getMethodsByName("m1").get(0).getBody().getStatement(0).toString());
+			assertEquals("java.lang.System.out.println(some.ignored.foo.TypeName.class)", result.getMethodsByName("m1").get(0).getBody().getStatement(0).toString());
 		}
 		{
 			//contract: number literal is substituted in String literal as number converted to string
@@ -1144,7 +1145,7 @@ public class TemplateTest {
 			assertEquals("int x;", result.getField("x").toString());
 			assertEquals("int m_x;", result.getField("m_x").toString());
 
-			assertEquals("java.lang.System.out.println(((x) + (m_x)))", result.getAnonymousExecutables().get(0).getBody().getStatement(0).toString());
+			assertEquals("java.lang.System.out.println(x + m_x)", result.getAnonymousExecutables().get(0).getBody().getStatement(0).toString());
 		}
 	}
 
@@ -1173,7 +1174,7 @@ public class TemplateTest {
 		assertEquals("spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date> ret = new spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date>()", method.getBody().getStatement(1).toString());
 		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.currentTimeMillis()", method.getBody().getStatement(2).toString());
 		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.class", method.getBody().getStatement(3).toString());
-		assertEquals("o = (o) instanceof spoon.test.template.TypeReferenceClassAccess.Example<?>", method.getBody().getStatement(4).toString());
+		assertEquals("o = o instanceof spoon.test.template.TypeReferenceClassAccess.Example<?>", method.getBody().getStatement(4).toString());
 		assertEquals("java.util.function.Supplier<java.lang.Long> p = spoon.test.template.TypeReferenceClassAccess.Example::currentTimeMillis", method.getBody().getStatement(5).toString());
 	}
 

@@ -15,8 +15,9 @@ import com.martiansoftware.jsap.stringparsers.FileStringParser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResource;
@@ -446,7 +447,11 @@ public class Launcher implements SpoonAPI {
 		// environment initialization
 		environment.setComplianceLevel(jsapActualArgs.getInt("compliance"));
 		environment.setLevel(jsapActualArgs.getString("level"));
-		environment.setAutoImports(jsapActualArgs.getBoolean("imports"));
+		if (jsapActualArgs.getBoolean("imports")) {
+			environment.setPrettyPrintingMode(Environment.PRETTY_PRINTING_MODE.AUTOIMPORT);
+		} else {
+			environment.setPrettyPrintingMode(Environment.PRETTY_PRINTING_MODE.FULLYQUALIFIED);
+		}
 
 		if (jsapActualArgs.getBoolean("noclasspath")) {
 			Launcher.LOGGER.warn("The usage of --noclasspath argument is now deprecated: noclasspath is now the default behaviour.");
@@ -474,7 +479,7 @@ public class Launcher implements SpoonAPI {
 		if (jsapActualArgs.getBoolean("enable-comments")) {
 			Launcher.LOGGER.warn("The option --enable-comments (-c) is deprecated as it is now the default behaviour in Spoon.");
 		} else {
-			Launcher.LOGGER.warn("Spoon now parse by default the comments. Consider using the option --disable-comments if you want the old behaviour.");
+			Launcher.LOGGER.warn("Spoon now parses by default the comments. Consider using the option --disable-comments if you want the old behaviour.");
 		}
 
 		if (jsapActualArgs.getBoolean("disable-comments")) {
@@ -597,7 +602,7 @@ public class Launcher implements SpoonAPI {
 	/**
 	 * A default logger to be used by Spoon.
 	 */
-	public static final Logger LOGGER = Logger.getLogger(Launcher.class);
+	public static final Logger LOGGER = LogManager.getLogger();
 
 	/**
 	 * Creates a new Spoon Java compiler in order to process and compile Java

@@ -16,7 +16,6 @@
  */
 package spoon.decompiler;
 
-import org.benf.cfr.reader.Main;
 import spoon.IncrementalLauncher;
 import spoon.SpoonModelBuilder;
 import spoon.reflect.CtModel;
@@ -119,7 +118,7 @@ public class SpoonClassFileTransformer implements ClassFileTransformer {
 		this.transformer = typeTransformer;
 
 		if (decompiler == null) {
-			this.decompiler = s -> Main.main(new String[]{s, "--outputdir", pathToDecompiled});
+			this.decompiler = new CFRDecompiler();
 		} else {
 			this.decompiler = decompiler;
 		}
@@ -142,7 +141,7 @@ public class SpoonClassFileTransformer implements ClassFileTransformer {
 
 			//Decompile classfile
 			String pathToClassFile = loader.getResource(className + ".class").getPath();
-			decompiler.decompile(pathToClassFile);
+			decompiler.decompile(pathToClassFile, pathToDecompiled, classPath.toArray(new String[]{}));
 
 			IncrementalLauncher launcher = new IncrementalLauncher(inputSources, classPath, cache);
 			launcher.addInputResource(pathToDecompiled);

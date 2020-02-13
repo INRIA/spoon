@@ -15,6 +15,8 @@ public class StaticNoOrdered {
 
     public void testMachin() {
         assertEquals("bla","truc");
+        assertEquals(7,12);
+        assertEquals(new String[0],new String[0]);
         Test test = new Test() {
             @Override
             public Class<? extends Annotation> annotationType() {

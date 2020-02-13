@@ -8,4 +8,14 @@ public class EmptyStatementComments {
         if (true) /* comment */
             ;
     }
+
+    void m2(int value) {
+        switch (value) {
+            // commentInline
+        }
+
+        switch (value) {
+            /* commentBlock */
+        }
+    }
 }

@@ -6,7 +6,7 @@
 package spoon.testing.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.processing.Processor;

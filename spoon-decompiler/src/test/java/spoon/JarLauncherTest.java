@@ -16,15 +16,20 @@
  */
 package spoon;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import spoon.decompiler.CFRDecompiler;
+import spoon.decompiler.Decompiler;
 import spoon.decompiler.FernflowerDecompiler;
+import spoon.decompiler.ProcyonDecompiler;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtConstructor;
 
 import java.io.File;
+import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -33,38 +38,23 @@ import static org.junit.Assert.assertTrue;
 public class JarLauncherTest {
 
 	@Test
-	public void testJarLauncher() {
-		File baseDir = new File("src/test/resources/jarLauncher");
-		File pom = new File(baseDir, "pom.xml");
-		File jar = new File(baseDir, "helloworld-1.0-SNAPSHOT.jar");
-
-		File pathToDecompiledRoot = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + "spoon-tmp");
-		if(pathToDecompiledRoot.exists()) {
-			pathToDecompiledRoot.delete();
-		}
-		File pathToDecompile = new File(pathToDecompiledRoot,"src/main/java");
-		pathToDecompile.mkdirs();
-
-		JarLauncher launcher = new JarLauncher(jar.getAbsolutePath(), pathToDecompiledRoot.getPath(), pom.getAbsolutePath(), new CFRDecompiler(pathToDecompile));
-		launcher.getEnvironment().setAutoImports(true);
-		launcher.buildModel();
-		CtModel model = launcher.getModel();
-
-		//contract: all types are decompiled (Sources are produced for each type)
-		assertEquals(model.getAllTypes().size(), 5);
-
-
-		CtConstructor constructor = (CtConstructor) model.getRootPackage().getFactory().Type().get("se.kth.castor.UseJson").getTypeMembers().get(0);
-		CtTry tryStmt = (CtTry) constructor.getBody().getStatement(1);
-		CtLocalVariable var = (CtLocalVariable) tryStmt.getBody().getStatement(0);
-		//contract: UseJson is correctly decompiled (UseJSON.java contains a local variable declaration)
-		assertNotNull(var.getType().getTypeDeclaration());
-
-		if(pathToDecompiledRoot.exists()) {
-			pathToDecompiledRoot.delete();
-		}
+	public void testJarLauncherWithCFR() throws IOException {
+		testJarLauncher(new CFRDecompiler());
 	}
 
+	@Test
+	public void testJarLauncherWithProcyon() throws IOException {
+		testJarLauncher(new ProcyonDecompiler());
+	}
+
+	@Ignore
+	@Test
+	public void testJarLauncherWithFernflower() throws IOException {
+		testJarLauncher(new FernflowerDecompiler());
+	}
+
+	@Ignore
+	@Test
 	public void testTmpDirDeletion() {
 		File baseDir = new File("src/test/resources/jarLauncher");
 		File jar = new File(baseDir, "helloworld-1.0-SNAPSHOT.jar");
@@ -87,26 +77,26 @@ public class JarLauncherTest {
 	}
 
 
-	@Test
-	public void testJarLauncherFernflower() {
+	public void testJarLauncher(Decompiler decompiler) throws IOException {
 		File baseDir = new File("src/test/resources/jarLauncher");
 		File pom = new File(baseDir, "pom.xml");
 		File jar = new File(baseDir, "helloworld-1.0-SNAPSHOT.jar");
 
 		File pathToDecompiledRoot = new File(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + "spoon-tmp");
 		if(pathToDecompiledRoot.exists()) {
+			FileUtils.deleteDirectory(pathToDecompiledRoot);
 			pathToDecompiledRoot.delete();
 		}
 		File pathToDecompile = new File(pathToDecompiledRoot,"src/main/java");
 		pathToDecompile.mkdirs();
 
-		JarLauncher launcher = new JarLauncher(jar.getAbsolutePath(), pathToDecompiledRoot.getPath(), pom.getAbsolutePath(), new FernflowerDecompiler(pathToDecompile));
+		JarLauncher launcher = new JarLauncher(jar.getAbsolutePath(), pathToDecompiledRoot.getPath(), pom.getAbsolutePath(),decompiler);
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.buildModel();
 		CtModel model = launcher.getModel();
 
 		//contract: all types are decompiled (Sources are produced for each type)
-		assertEquals(model.getAllTypes().size(), 5);
+		assertEquals(5, model.getAllTypes().size());
 
 
 		CtConstructor constructor = (CtConstructor) model.getRootPackage().getFactory().Type().get("se.kth.castor.UseJson").getTypeMembers().get(0);
@@ -129,6 +119,18 @@ public class JarLauncherTest {
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.buildModel();
 		CtModel model = launcher.getModel();
-		assertEquals(model.getAllTypes().size(), 5);
+		assertEquals(5, model.getAllTypes().size());
+	}
+
+	@Ignore
+	@Test
+	public void testJarLauncherNoPomFernflower() {
+		File baseDir = new File("src/test/resources/jarLauncher");
+		File jar = new File(baseDir, "helloworld-1.0-SNAPSHOT.jar");
+		JarLauncher launcher = new JarLauncher(jar.getAbsolutePath(), null, new FernflowerDecompiler());
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.buildModel();
+		CtModel model = launcher.getModel();
+		assertEquals(5, model.getAllTypes().size());
 	}
 }

@@ -16,9 +16,15 @@
  */
 package spoon.test.position;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
@@ -31,6 +37,7 @@ import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtReturn;
@@ -46,9 +53,11 @@ import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
@@ -58,10 +67,10 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.comment.testclasses.BlockComment;
-import spoon.test.comment.testclasses.Comment1;
-import spoon.test.position.testclasses.AnnonymousClassNewIface;
+import spoon.test.comment.testclasses.Comment1;import spoon.test.position.testclasses.AnnonymousClassNewIface;
 import spoon.test.position.testclasses.ArrayArgParameter;
 import spoon.test.position.testclasses.CatchPosition;
 import spoon.test.position.testclasses.CompilationUnitComments;
@@ -78,6 +87,7 @@ import spoon.test.position.testclasses.FooForEach;
 import spoon.test.position.testclasses.FooGeneric;
 import spoon.test.position.testclasses.FooInterface;
 import spoon.test.position.testclasses.FooLabel;
+import spoon.test.position.testclasses.FooLambda;
 import spoon.test.position.testclasses.FooMethod;
 import spoon.test.position.testclasses.FooStatement;
 import spoon.test.position.testclasses.FooSwitch;
@@ -87,14 +97,9 @@ import spoon.test.position.testclasses.PositionParameterTypeWithReference;
 import spoon.test.position.testclasses.PositionTry;
 import spoon.test.position.testclasses.SomeEnum;
 import spoon.test.position.testclasses.TypeParameter;
+import spoon.test.position.testclasses.MoreLambda;
 import spoon.test.query_function.testclasses.VariableReferencesModelTest;
 import spoon.testing.utils.ModelUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -1313,5 +1318,113 @@ public class PositionTest {
 		} catch(Exception e) {
 			fail("Error while parsing incomplete class declaration");
 		}
+	}
+
+	@Test
+	public void testNoClasspathVariableAccessInInnerClass1() {
+		// contract: creating variable access in no classpath should not break source position
+		// https://github.com/INRIA/spoon/issues/3052
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/lambdas/InheritedClassesWithLambda1.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+		List<CtClass> allClasses = model.getElements(new TypeFilter<>(CtClass.class));
+		assertEquals(3, allClasses.size());
+		CtClass failing = allClasses.stream().filter(t -> t.getSimpleName().equals("Failing")).findFirst().get();
+		assertEquals("InheritedClassesWithLambda1.java", failing.getPosition().getFile().getName());
+		assertEquals(11, failing.getPosition().getLine());
+
+		// in addition check that the variable reference is correct
+		CtLambda lambda = model.getElements(new TypeFilter<>(CtLambda.class)).get(0);
+		CtFieldRead field = (CtFieldRead) (((CtInvocation) lambda.getExpression()).getTarget());
+		assertEquals("com.pkg.InheritedClassesWithLambda1.Failing", field.getVariable().getDeclaringType().toString());
+	}
+
+	@Test
+	public void testNoClasspathVariableAccessInInnerClass2() {
+		// contract: same as for testNoClasspathVariableAccessInInnerClass1,
+		// but here we have inner class inside another inner class
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/lambdas/InheritedClassesWithLambda2.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+		List<CtClass> allClasses = model.getElements(new TypeFilter<>(CtClass.class));
+		assertEquals(4, allClasses.size());
+		CtClass failing = allClasses.stream().filter(t -> t.getSimpleName().equals("Failing")).findFirst().get();
+		assertEquals("InheritedClassesWithLambda2.java", failing.getPosition().getFile().getName());
+		assertEquals(11, failing.getPosition().getLine());
+
+		// in addition check that the variable reference is correct
+		CtLambda lambda = model.getElements(new TypeFilter<>(CtLambda.class)).get(0);
+		CtFieldRead field = (CtFieldRead) (((CtInvocation) lambda.getExpression()).getTarget());
+		assertEquals("InheritedClassesWithLambda2.OneMoreClass.Failing", field.getVariable().getDeclaringType().toString());
+	}
+
+	@Test
+	public void testNoClasspathVariableAccessInInnerInterface() {
+		// contract: same as for testNoClasspathVariableAccessInInnerClass1,
+		// but here we have interface instead of class
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/lambdas/InheritedInterfacesWithLambda.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+		List<CtInterface> allInterfaces = model.getElements(new TypeFilter<>(CtInterface.class));
+		assertEquals(1, allInterfaces.size());
+		CtInterface failing = allInterfaces.stream().filter(t -> t.getSimpleName().equals("Failing")).findFirst().get();
+		assertEquals("InheritedInterfacesWithLambda.java", failing.getPosition().getFile().getName());
+		assertEquals(3, failing.getPosition().getLine());
+
+		// in addition check that the variable reference is correct
+		CtLambda lambda = model.getElements(new TypeFilter<>(CtLambda.class)).get(0);
+		CtFieldRead field = (CtFieldRead) (((CtInvocation) lambda.getExpression()).getTarget());
+		assertEquals("InheritedInterfacesWithLambda.Failing", field.getVariable().getDeclaringType().toString());
+	}
+
+	@Test
+	public void testLinePositionOkWithOneLineClassCode() {
+		final Launcher launcher = new Launcher();
+
+		launcher.addInputResource(new VirtualFile("public class A { public Object b() { return a < b; }}", "chunk.java"));
+		launcher.buildModel();
+
+		final List<CtElement> listOfBadPositionElements = launcher.getModel()
+			.getElements(new TypeFilter<>(CtElement.class))
+			.stream()
+			// filtering out elements that do not have a line position
+			.filter(elt -> elt.getPosition().isValidPosition())
+			.collect(Collectors.toList());
+
+		assertTrue("Some Spoon elements have an invalid line position",
+			listOfBadPositionElements.stream().allMatch(elt -> elt.getPosition().getLine() == 1));
+	}
+
+	@Test
+	public void testLambdaParameterPosition() {
+		// contract: position of lambda parameter is correct
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/FooLambda.java"));
+		final CtType<?> foo = build.Type().get(FooLambda.class);
+
+		String classContent = getClassContent(foo);
+
+		CtReturn<?> retStmt = (CtReturn<?>) foo.getMethodsByName("m").get(0).getBody().getStatement(0);
+		CtLambda<?> lambdaExpr = (CtLambda<?>) retStmt.getReturnedExpression();
+		CtParameter<?> param = lambdaExpr.getParameters().get(0);
+		assertEquals("i", contentAtPosition(classContent, param.getPosition()));
+	}
+
+	@Test
+	public void testLambdaParameterPosition1() {
+		// contract: position of lambda parameter is correct
+		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/MoreLambda.java"));
+		final CtType<?> foo = build.Type().get(MoreLambda.class);
+
+		String classContent = getClassContent(foo);
+
+		List<CtLambda>  lambdas = foo.getElements(new TypeFilter(CtLambda.class));
+		lambdas.stream().forEach(
+				l -> l.getParameters().stream().forEach(
+						p -> assertEquals(((CtParameter) p).getSimpleName(), contentAtPosition(classContent, ((CtParameter) p).getPosition()))
+				)
+		);
 	}
 }

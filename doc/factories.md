@@ -45,3 +45,50 @@ All these factories contribute to facilitate the creation of elements.
 When you have created an element from a factory, set it in an existing element 
 to build a new AST.
 
+## SpoonifierVisitor
+
+It is possible to visit an existing Spoon AST to generate calls to the factory that recreates the same AST.
+
+Example:
+
+```java
+    SpoonifierVisitor v = new SpoonifierVisitor(true);
+    Launcher.parseClass("class A { public String sayHello() { return \"Hello World!\";}}")
+            .getMethodsByName("sayHello")
+            .get(0)
+            .accept(v);
+    System.out.println(b.getResult());
+```
+
+will print:
+
+```java
+	CtMethod ctMethod0 = factory.createMethod();
+	ctMethod0.setSimpleName("sayHello");
+	Set<ModifierKind> ctMethod0Modifiers = new HashSet<>();
+	ctMethod0Modifiers.add(ModifierKind.PUBLIC);
+	ctMethod0.setModifiers(ctMethod0Modifiers);
+		CtTypeReference ctTypeReference0 = factory.createTypeReference();
+		ctTypeReference0.setSimpleName("String");
+		ctMethod0.setValueByRole(CtRole.TYPE, ctTypeReference0);
+			CtPackageReference ctPackageReference0 = factory.createPackageReference();
+			ctPackageReference0.setSimpleName("java.lang");
+			ctPackageReference0.setImplicit(true);
+			ctTypeReference0.setValueByRole(CtRole.PACKAGE_REF, ctPackageReference0);
+		CtBlock ctBlock0 = factory.createBlock();
+		ctMethod0.setValueByRole(CtRole.BODY, ctBlock0);
+			CtReturn ctReturn0 = factory.createReturn();
+			List ctBlock0Statements = new ArrayList();
+			ctBlock0Statements.add(ctReturn0);
+				CtLiteral ctLiteral0 = factory.createLiteral();
+				ctLiteral0.setValue("Hello World!");
+				ctReturn0.setValueByRole(CtRole.EXPRESSION, ctLiteral0);
+					CtTypeReference ctTypeReference1 = factory.createTypeReference();
+					ctTypeReference1.setSimpleName("String");
+					ctLiteral0.setValueByRole(CtRole.TYPE, ctTypeReference1);
+						CtPackageReference ctPackageReference1 = factory.createPackageReference();
+						ctPackageReference1.setSimpleName("java.lang");
+						ctTypeReference1.setValueByRole(CtRole.PACKAGE_REF, ctPackageReference1);
+		ctBlock0.setValueByRole(CtRole.STATEMENT, ctBlock0Statements);
+
+```

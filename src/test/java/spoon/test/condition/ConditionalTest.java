@@ -70,12 +70,11 @@ public class ConditionalTest {
 
 		assertEquals("if (true) {" + newLine + 
 				"    java.lang.System.out.println();" + newLine + 
-				"} else" + newLine + 
-				"    if (true) {" + newLine + 
-				"        java.lang.System.out.println();" + newLine + 
-				"    } else {" + newLine + 
-				"        java.lang.System.out.println();" + newLine + 
-				"    }" + newLine,
+				"} else if (true) {" + newLine +
+				"    java.lang.System.out.println();" + newLine +
+				"} else {" + newLine +
+				"    java.lang.System.out.println();" + newLine +
+				"}",
 				method.getBody().getStatement(0).toString());
 	}
 
@@ -131,7 +130,7 @@ public class ConditionalTest {
 
 		// and we have the correct else statement
 		assertNotNull(conditions.get(0).getElseStatement());
-		assertEquals("java.lang.System.out.println();", conditions.get(0).getElseStatement().toString().trim());
+		assertEquals("System.out.println();", conditions.get(0).getElseStatement().prettyprint().trim());
 	}
 
 	@Test
@@ -154,10 +153,10 @@ public class ConditionalTest {
 		CtStatement thenStatement = cond.getThenStatement();
 		CtStatement elseStatement = cond.getElseStatement();
 
-		assertEquals("java.lang.System.out.println(\"valid\");", thenStatement.toString().trim());
+		assertEquals("System.out.println(\"valid\");", thenStatement.prettyprint().trim());
 		CtIf innerIf = ((CtBlock) elseStatement).getStatement(0);
 
 		assertNull(innerIf.getThenStatement());
-		assertEquals("java.lang.System.out.println(\"invalid\");", innerIf.getElseStatement().toString().trim());
+		assertEquals("System.out.println(\"invalid\");", innerIf.getElseStatement().prettyprint().trim());
 	}
 }

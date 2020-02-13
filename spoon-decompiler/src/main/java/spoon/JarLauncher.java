@@ -125,21 +125,16 @@ public class JarLauncher extends Launcher {
 			throw new SpoonException("Jar " + jar.getPath() + " not found.");
 		}
 
-		//We call the decompiler only if jar has changed since last decompilation.
-		if (jar.lastModified() > decompiledSrc.lastModified()) {
-			decompile = true;
-		}
+
+		decompile = true;
 		init(pom);
 	}
 
 	private void init(String pomPath) {
-		//We call the decompiler only if jar has changed since last decompilation.
-		if (decompile) {
-			decompiler.decompile(jar.getAbsolutePath());
-		}
+		String[] classpath = null;
 
 		if (pomPath != null) {
-			File srcPom =  new File(pomPath);
+			File srcPom = new File(pomPath);
 			if (!srcPom.exists() || !srcPom.isFile()) {
 				throw new SpoonException("Pom " + srcPom.getPath() + " not found.");
 			}
@@ -152,19 +147,23 @@ public class JarLauncher extends Launcher {
 			try {
 				SpoonPom pomModel = new SpoonPom(pom.getPath(), null, MavenLauncher.SOURCE_TYPE.APP_SOURCE, getEnvironment());
 				getEnvironment().setComplianceLevel(pomModel.getSourceVersion());
-				String[] classpath = pomModel.buildClassPath(null, MavenLauncher.SOURCE_TYPE.APP_SOURCE, LOGGER, false);
+				classpath = pomModel.buildClassPath(null, MavenLauncher.SOURCE_TYPE.APP_SOURCE, LOGGER, false);
 				// dependencies
 				this.getModelBuilder().setSourceClasspath(classpath);
 			} catch (IOException | XmlPullParserException e) {
 				throw new SpoonException("Failed to read classpath file.");
 			}
-			addInputResource(decompiledSrc.getAbsolutePath());
-		} else {
-			addInputResource(decompiledSrc.getAbsolutePath());
 		}
+
+		//We call the decompiler only if jar has changed since last decompilation.
+		if (decompile) {
+			decompiler.decompile(jar.getAbsolutePath(), decompiledSrc.getAbsolutePath(), classpath);
+		}
+
+		addInputResource(decompiledSrc.getAbsolutePath());
 	}
 
 	protected Decompiler getDefaultDecompiler() {
-		return new CFRDecompiler(decompiledSrc);
+		return new CFRDecompiler();
 	}
 }

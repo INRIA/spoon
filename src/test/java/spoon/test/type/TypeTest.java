@@ -18,6 +18,7 @@ package spoon.test.type;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
@@ -428,5 +429,15 @@ public class TypeTest {
 			}
 			assertEquals(Arrays.asList("<init>", "method1", "field2", "TypeMembersOrder", "method4", "field5", "", "nestedType6", "field7", "method8", "method9"), typeMemberNames);
 		}
+	}
+
+	@Test
+	public void testBinaryOpStringsType() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/java/spoon/test/type/testclasses/Foo.java");
+		CtModel model = launcher.buildModel();
+		List<CtBinaryOperator> concats = model.getElements(new TypeFilter<>(CtBinaryOperator.class));
+		concats.forEach(c -> assertEquals("java.lang.String", c.getType().toString()));
 	}
 }

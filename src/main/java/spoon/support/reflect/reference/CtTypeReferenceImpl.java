@@ -574,6 +574,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 	public boolean canAccess(CtTypeReference<?> type) {
 		try {
+			if (type == null) {
+				//noclasspath mode
+				return true;
+			}
 			if (type.getTypeDeclaration() == null) {
 				return true;
 			}
@@ -664,7 +668,12 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	private boolean isInSamePackage(CtTypeReference<?> type) {
-		return type.getTopLevelType().getPackage().getSimpleName().equals(this.getTopLevelType().getPackage().getSimpleName());
+		CtPackageReference thisPackage = this.getTopLevelType().getPackage();
+		CtPackageReference otherPackage = type.getTopLevelType().getPackage();
+		if (thisPackage == null || otherPackage == null) {
+			return true;
+		}
+		return thisPackage.getQualifiedName().equals(otherPackage.getQualifiedName());
 	}
 
 	@Override
@@ -808,7 +817,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (parent instanceof CtExecutableReference) {
 			CtExecutable<?> exec = ((CtExecutableReference<?>) parent).getExecutableDeclaration();
 			if (exec instanceof CtMethod || exec instanceof CtConstructor) {
-				return findTypeParamDeclarationByPosition((CtFormalTypeDeclarer) exec, ((CtTypeReference) parent).getActualTypeArguments().indexOf(this));
+				int idx = ((CtExecutableReference) parent).getActualTypeArguments().indexOf(this);
+				return idx >= 0 ? findTypeParamDeclarationByPosition((CtFormalTypeDeclarer) exec, idx) : null;
 			}
 		}
 
@@ -860,7 +870,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	@DerivedProperty
-	public boolean isImplicitParent() {
+	public boolean isSimplyQualified() {
 		if (pack != null) {
 			return pack.isImplicit();
 		} else if (declaringType != null) {
@@ -871,11 +881,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	@DerivedProperty
-	public CtTypeReferenceImpl<T> setImplicitParent(boolean parentIsImplicit) {
+	public CtTypeReferenceImpl<T> setSimplyQualified(boolean isSimplyQualified) {
 		if (pack != null) {
-			pack.setImplicit(parentIsImplicit);
+			pack.setImplicit(isSimplyQualified);
 		} else if (declaringType != null) {
-			declaringType.setImplicit(parentIsImplicit);
+			declaringType.setImplicit(isSimplyQualified);
 		}
 		return this;
 	}

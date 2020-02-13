@@ -45,7 +45,13 @@ public class InterfaceFactory extends TypeFactory {
 	}
 
 	/**
-	 * Creates an interface.
+	 * Creates an interface from its qualified name.
+	 *
+	 * @param <T>
+	 * 		type of created interface
+	 *
+	 * @param qualifiedName
+	 * 		full name of interface to create. Name can contain $ for inner types
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CtInterface<T> create(String qualifiedName) {

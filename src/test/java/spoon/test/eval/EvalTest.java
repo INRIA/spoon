@@ -81,7 +81,7 @@ public class EvalTest {
 		CtBlock<?> b = type.getMethodsByName("testDoNotSimplify").get(0).getBody();
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();
-		assertEquals("java.lang.System.out.println((((\"enter: \" + className) + \" - \") + methodName))", b.getStatements().get(0).toString());
+		assertEquals("java.lang.System.out.println(((\"enter: \" + className) + \" - \") + methodName)", b.getStatements().get(0).toString());
 	}
 
 	@Test
@@ -185,6 +185,19 @@ public class EvalTest {
 			CtElement elnew = eval.evaluate(el);
 			assertEquals("false", elnew.toString());
 		}
+	}
+
+	@Test
+	public void testVisitorPartialEvaluator_unary() {
+
+    	{ // NEG urnary operator
+      		Launcher launcher = new Launcher();
+      		CtCodeElement el =
+          		launcher.getFactory().Code().createCodeSnippetExpression("-(100+1)").compile();
+      		VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
+      		CtElement element = eval.evaluate(el);
+      		assertEquals("-101", element.toString());
+    	}
 	}
 
 	@Test

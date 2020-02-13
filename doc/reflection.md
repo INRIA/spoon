@@ -22,3 +22,4 @@ for(CtType t : l) {
 }
 ```
 
+If you need to analyze the method bodies of binary code, have a look at [spoon-decompiler](https://github.com/INRIA/spoon/tree/master/spoon-decompiler).

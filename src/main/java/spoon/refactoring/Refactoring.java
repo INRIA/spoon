@@ -5,7 +5,9 @@
  */
 package spoon.refactoring;
 
+import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
@@ -17,6 +19,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 import java.util.List;
 
@@ -204,5 +207,36 @@ public final class Refactoring {
 	 */
 	public static void changeLocalVariableName(CtLocalVariable<?> localVariable, String newName) throws RefactoringException {
 		new CtRenameLocalVariableRefactoring().setTarget(localVariable).setNewName(newName).refactor();
+	}
+
+	/** Deletes all deprecated methods in the given path */
+	public static void removeDeprecatedMethods(String path) {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource(path);
+		spoon.setSourceOutputDirectory(path);
+		spoon.addProcessor(new AbstractProcessor<CtMethod>() {
+			@Override
+			public void process(CtMethod method) {
+				if (method.hasAnnotation(Deprecated.class)) {
+					method.delete();
+				}
+			}
+		});
+
+		// does not work, see https://github.com/INRIA/spoon/issues/3183
+//		spoon.addProcessor(new AbstractProcessor<CtType>() {
+//			@Override
+//			public void process(CtType type) {
+//				if (type.hasAnnotation(Deprecated.class)) {
+//					type.delete();
+//				}
+//			}
+//		});
+
+		spoon.getEnvironment().setPrettyPrinterCreator(() -> {
+					return new SniperJavaPrettyPrinter(spoon.getEnvironment());
+				}
+		);
+		spoon.run();
 	}
 }

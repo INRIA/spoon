@@ -5,7 +5,7 @@
  */
 package spoon.support;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import spoon.processing.ProcessInterruption;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;

@@ -5,7 +5,8 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
@@ -31,12 +32,15 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
@@ -45,8 +49,8 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
-import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.EarlyTerminatingScanner;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -64,7 +68,7 @@ import java.util.regex.Pattern;
  */
 public class JDTCommentBuilder {
 
-	private static final Logger LOGGER = Logger.getLogger(JDTCommentBuilder.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final CompilationUnitDeclaration declarationUnit;
 	private String filePath;
@@ -185,17 +189,25 @@ public class JDTCommentBuilder {
 	 */
 	private void insertCommentInAST(final CtComment comment) {
 		CtElement commentParent = findCommentParent(comment);
-		if (commentParent == null) {
+		if (commentParent instanceof CtPackageDeclaration || commentParent instanceof CtCompilationUnit) {
 			File file = spoonUnit.getFile();
-			if (file != null && file.getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION)) {
+			if (file == null) {
+				//it is a virtual compilation unit - e.g. Snipet compilation unit
+				//all such comments belongs to declared type
+				List<CtType<?>> types = spoonUnit.getDeclaredTypes();
+				if (types.size() > 0) {
+					types.get(0).addComment(comment);
+					return;
+				}
+			} else if (file.getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION)) {
+				//all compilation unit comments and package declaration comments are in package
+				//other comments can belong to imports or types declared in package-info.java file
 				spoonUnit.getDeclaredPackage().addComment(comment);
-			} else if (file != null && file.getName().equals(DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION)) {
+				return;
+			} else if (file.getName().equals(DefaultJavaPrettyPrinter.JAVA_MODULE_DECLARATION)) {
 				spoonUnit.getDeclaredModule().addComment(comment);
-			} else {
-				comment.setCommentType(CtComment.CommentType.FILE);
-				addCommentToNear(comment, new ArrayList<>(spoonUnit.getDeclaredTypes()));
+				return;
 			}
-			return;
 		}
 		// visitor that inserts the comment in the element
 		CtInheritanceScanner insertionVisitor = new CtInheritanceScanner() {
@@ -317,6 +329,21 @@ public class JDTCommentBuilder {
 			}
 
 			@Override
+			public void visitCtCompilationUnit(CtCompilationUnit compilationUnit) {
+				compilationUnit.addComment(comment);
+			}
+
+			@Override
+			public void visitCtPackageDeclaration(CtPackageDeclaration packageDeclaration) {
+				packageDeclaration.addComment(comment);
+			}
+
+			@Override
+			public void visitCtImport(CtImport ctImport) {
+				ctImport.addComment(comment);
+			}
+
+			@Override
 			public <T> void scanCtVariable(CtVariable<T> e) {
 				e.addComment(comment);
 			}
@@ -346,7 +373,7 @@ public class JDTCommentBuilder {
 					}
 					previous = ctCase;
 				}
-				if (previous.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()) {
+				if (previous != null && previous.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()) {
 					addCommentToNear(comment, new ArrayList<>(previous.getStatements()));
 					try {
 						comment.getParent();
@@ -475,7 +502,7 @@ public class JDTCommentBuilder {
 	 * @return the parent of the comment
 	 */
 	private CtElement findCommentParent(CtComment comment) {
-		class FindCommentParentScanner extends CtScanner {
+		class FindCommentParentScanner extends EarlyTerminatingScanner<Void> {
 			public CtElement commentParent;
 
 			private int start;
@@ -484,6 +511,7 @@ public class JDTCommentBuilder {
 			FindCommentParentScanner(int start, int end) {
 				this.start = start;
 				this.end = end;
+				setVisitCompilationUnitContent(true);
 			}
 
 			private boolean isCommentBetweenElementPosition(CtElement element) {
@@ -518,11 +546,7 @@ public class JDTCommentBuilder {
 				comment.getPosition().getSourceStart(),
 				comment.getPosition().getSourceEnd());
 
-		if (!spoonUnit.getDeclaredTypes().isEmpty()) {
-			findCommentParentScanner.scan(spoonUnit.getDeclaredTypes());
-		} else if (spoonUnit.getDeclaredModuleReference() != null) {
-			findCommentParentScanner.scan(spoonUnit.getDeclaredModuleReference().getDeclaration());
-		}
+		findCommentParentScanner.scan(spoonUnit);
 
 		return findCommentParentScanner.commentParent;
 	}

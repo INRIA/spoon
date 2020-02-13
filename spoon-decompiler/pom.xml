@@ -1,19 +1,9 @@
 <!--
 
-    Copyright (C) 2006-2017 INRIA and contributors
-    Spoon - http://spoon.gforge.inria.fr/
+    Copyright (C) 2006-2019 INRIA and contributors
 
-    This software is governed by the CeCILL-C License under French law and
-    abiding by the rules of distribution of free software. You can use, modify
-    and/or redistribute the software under the terms of the CeCILL-C license as
-    circulated by CEA, CNRS and INRIA at http://www.cecill.info.
-
-    This program is distributed in the hope that it will be useful, but WITHOUT
-    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-    FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
-
-    The fact that you are presently reading this means that you have had
-    knowledge of the CeCILL-C license and that you accept its terms.
+    Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt).
+    You as the user are entitled to choose the terms under which to adopt Spoon.
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -21,7 +11,7 @@
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-decompiler</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
     <name>Spoon Decompiler</name>
     <description>Extension of spoon for bytecode through decompilation</description>
     <url>http://spoon.gforge.inria.fr/</url>
@@ -38,7 +28,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>7.2.0-SNAPSHOT</version>
+            <version>7.6.0-SNAPSHOT</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jboss.windup.decompiler.fernflower/fernflower -->
         <dependency>
@@ -49,8 +39,15 @@
         <dependency>
             <groupId>org.benf</groupId>
             <artifactId>cfr</artifactId>
-            <version>0.135</version>
+            <version>0.146</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.bitbucket.mstrobel/procyon-compilertools -->
+        <dependency>
+            <groupId>org.bitbucket.mstrobel</groupId>
+            <artifactId>procyon-compilertools</artifactId>
+            <version>0.5.36</version>
+        </dependency>
+
     </dependencies>
 
     <build>

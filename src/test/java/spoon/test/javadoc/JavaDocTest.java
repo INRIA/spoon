@@ -20,17 +20,24 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
-import spoon.javadoc.internal.JavadocDescriptionElement;
 import spoon.javadoc.internal.JavadocInlineTag;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.code.CtJavaDocTag.TagType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtScanner;
-import spoon.support.reflect.code.CtJavaDocImpl;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.imports.ImportTest;
 import spoon.test.javadoc.testclasses.Bar;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -64,7 +71,7 @@ public class JavaDocTest {
 				+ "    public <T> CtAnnotationType<?> create(CtPackage owner, String simpleName) {" + System.lineSeparator()
 				+ "        return null;" + System.lineSeparator()
 				+ "    }" + System.lineSeparator()
-				+ "}", aClass.toString());
+				+ "}", ImportTest.printByPrinter(aClass));
 
 		// contract: getDocComment never returns null, it returns an empty string if no comment
 		assertEquals("", aClass.getDocComment());
@@ -132,4 +139,47 @@ public class JavaDocTest {
 		assertEquals("foo", j.getTags().get(0).getContent());
 	}
 
+	@Test
+	public void testTagsParameters() {
+		// contract: @throws and @exception should have proper params
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/javadoc/testclasses/A.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+
+		List<CtJavaDoc> javadocs = model.getElements(new TypeFilter<>(CtJavaDoc.class));
+
+		CtJavaDocTag throwsTag = javadocs.get(0).getTags().get(0);
+		CtJavaDocTag exceptionTag = javadocs.get(1).getTags().get(0);
+
+		assertEquals("IllegalArgumentException", throwsTag.getParam());
+		assertEquals("FileNotFoundException", exceptionTag.getParam());
 	}
+
+	@Test
+	public void testJavadocTagNames() {
+		//contract: we should handle all possible javadoc tags properly
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/javadoc/testclasses/B.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+
+		CtType<?> type = model.getAllTypes().stream().findFirst().get();
+		assertEquals(TagType.VERSION, type.getElements(new TypeFilter<>(CtEnum.class)).get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.AUTHOR, type.getMethodsByName("m1").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.DEPRECATED, type.getMethodsByName("m2").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.EXCEPTION, type.getMethodsByName("m3").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.PARAM, type.getMethodsByName("m4").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.RETURN, type.getMethodsByName("m5").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.SEE, type.getMethodsByName("m6").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.SERIAL, type.getField("m7").getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.SERIAL_DATA, type.getMethodsByName("m8").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.SERIAL_FIELD, type.getField("m9").getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.SINCE, type.getMethodsByName("m10").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.THROWS, type.getMethodsByName("m11").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+		assertEquals(TagType.UNKNOWN, type.getMethodsByName("m12").get(0).getElements(new TypeFilter<>(CtJavaDoc.class)).get(0).getTags().get(0).getType());
+	}
+
+}

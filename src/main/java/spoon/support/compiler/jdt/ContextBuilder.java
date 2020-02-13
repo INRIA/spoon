@@ -204,6 +204,15 @@ public class ContextBuilder {
 		return variable;
 	}
 
+	/**
+	 * Returns qualified name with appropriate package separator and inner type separator
+	 */
+	private static String getNormalQualifiedName(ReferenceBinding referenceBinding) {
+		String pkg = new String(referenceBinding.getPackage().readableName()).replaceAll("\\.", "\\" + CtPackage.PACKAGE_SEPARATOR);
+		String name = new String(referenceBinding.qualifiedSourceName()).replaceAll("\\.", "\\" + CtType.INNERTTYPE_SEPARATOR);
+		return pkg.equals("") ? name : pkg + "." + name;
+	}
+
 	@SuppressWarnings("unchecked")
 	private <T, U extends CtVariable<T>> U getVariableDeclaration(
 			final String name, final Class<U> clazz) {
@@ -250,11 +259,12 @@ public class ContextBuilder {
 					final ReferenceBinding referenceBinding = referenceBindings.pop();
 					for (final FieldBinding fieldBinding : referenceBinding.fields()) {
 						if (name.equals(new String(fieldBinding.readableName()))) {
-							final String qualifiedNameOfParent =
-									new String(referenceBinding.readableName());
+							final String qualifiedNameOfParent = getNormalQualifiedName(referenceBinding);
+
 							final CtType parentOfField = referenceBinding.isClass()
 									? classFactory.create(qualifiedNameOfParent)
 									: interfaceFactory.create(qualifiedNameOfParent);
+
 							U field = (U) fieldFactory.create(parentOfField,
 									EnumSet.noneOf(ModifierKind.class),
 									referenceBuilder.getTypeReference(fieldBinding.type),

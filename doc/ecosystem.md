@@ -13,6 +13,7 @@ Active projects using Spoon
 
 Here are some active projects already using Spoon:
 
+- [Spoon Visualisation](https://github.com/INRIA/spoon/tree/master/spoon-visualisation): A JavaFX app for visualising the Spoon abstract syntax tree of Java code.
 - [Spooet](https://github.com/SpoonLabs/spooet): A Spoon printer implemented with JavaPoet.
 - [Metamutator](https://github.com/SpoonLabs/metamutator): A muta-mutation tool for Java.
 - [Astor](https://github.com/SpoonLabs/astor): Evolutionary automatic software repair tool for Java. 

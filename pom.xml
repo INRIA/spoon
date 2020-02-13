@@ -1,19 +1,9 @@
 <!--
 
-    Copyright (C) 2006-2017 INRIA and contributors
-    Spoon - http://spoon.gforge.inria.fr/
+    Copyright (C) 2006-2019 INRIA and contributors
 
-    This software is governed by the CeCILL-C License under French law and
-    abiding by the rules of distribution of free software. You can use, modify
-    and/or redistribute the software under the terms of the CeCILL-C license as
-    circulated by CEA, CNRS and INRIA at http://www.cecill.info.
-
-    This program is distributed in the hope that it will be useful, but WITHOUT
-    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-    FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
-
-    The fact that you are presently reading this means that you have had
-    knowledge of the CeCILL-C license and that you accept its terms.
+    Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt).
+    You as the user are entitled to choose the terms under which to adopt Spoon.
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -28,7 +18,7 @@
 
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>7.5.0-SNAPSHOT</version>
+  <version>8.1.0-SNAPSHOT</version>
   <name>Spoon Core</name>
   <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
   <url>http://spoon.gforge.inria.fr/</url>
@@ -50,7 +40,25 @@
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.15.0</version>
+      <version>3.16.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.resources</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.runtime</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.core.filesystem</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.text</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.github.stefanbirkner</groupId>
@@ -70,9 +78,9 @@
       <version>2.1</version>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.13.0</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -98,13 +106,13 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.9.9</version>
+      <version>2.9.10.1</version>
     </dependency>
     <dependency>
       <!-- support for compressed serialized ASTs -->
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
-      <version>1.18</version>
+      <version>1.19</version>
 	</dependency>
     <dependency>
       <!-- to reproduce JTD error with nullable annotation -->
@@ -127,6 +135,10 @@
         <exclusion>
           <groupId>com.mysema.commons</groupId>
           <artifactId>mysema-commons-lang</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.infradna.tool</groupId>
+          <artifactId>bridge-method-annotation</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

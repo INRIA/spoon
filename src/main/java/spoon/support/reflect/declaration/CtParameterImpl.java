@@ -42,6 +42,9 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
+	@MetamodelPropertyField(role = CtRole.IS_INFERRED)
+	private boolean inferred;
+
 	public CtParameterImpl() {
 	}
 
@@ -71,6 +74,18 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	public <C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> defaultExpression) {
 		// unsettable property
 		return (C) this;
+	}
+
+	@Override
+	public boolean isInferred() {
+		return this.inferred;
+	}
+
+	@Override
+	public <U extends CtParameter<T>> U setInferred(boolean inferred) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IS_INFERRED, inferred, this.inferred);
+		this.inferred = inferred;
+		return (U) this;
 	}
 
 	@Override

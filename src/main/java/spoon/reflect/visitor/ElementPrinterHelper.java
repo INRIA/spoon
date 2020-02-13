@@ -169,6 +169,10 @@ public class ElementPrinterHelper {
 		}
 	}
 
+	/**
+	 * Writes a list of elements to the printer by using `scan` from the internal pretty-printer.
+	 * @param elements List of elements to be written
+	 */
 	public void writeElementList(List<CtTypeMember> elements) {
 		for (CtTypeMember element : elements) {
 			if (element instanceof CtConstructor && element.isImplicit()) {
@@ -342,35 +346,6 @@ public class ElementPrinterHelper {
 		}
 	}
 
-	/**
-	 * Write the compilation unit header.
-	 */
-	public void writeHeader(List<CtType<?>> types, Collection<CtImport> imports) {
-		if (!types.isEmpty()) {
-			for (CtType<?> ctType : types) {
-				writeComment(ctType, CommentOffset.TOP_FILE);
-			}
-			// writing the header package
-			if (!types.get(0).getPackage().isUnnamedPackage()) {
-				writePackageLine(types.get(0).getPackage().getQualifiedName());
-			}
-			this.writeImports(imports);
-			printer.writeln();
-			printer.writeln();
-		}
-	}
-
-	/**
-	 * Write the compilation unit footer.
-	 */
-	public void writeFooter(List<CtType<?>> types) {
-		if (!types.isEmpty()) {
-			for (CtType<?> ctType : types) {
-				writeComment(ctType, CommentOffset.BOTTOM_FILE);
-			}
-		}
-	}
-
 	public void writePackageLine(String packageQualifiedName) {
 		printer.writeKeyword("package").writeSpace();
 		writeQualifiedName(packageQualifiedName).writeSeparator(";").writeln();
@@ -446,6 +421,20 @@ public class ElementPrinterHelper {
 			}
 		}
 		return commentsToPrint;
+	}
+
+	public boolean isElseIf(CtIf ifStmt) {
+		if (ifStmt.getElseStatement() == null) {
+			return false;
+		}
+		if (ifStmt.getElseStatement() instanceof CtIf)  {
+			return true;
+		}
+		if (ifStmt.getElseStatement() instanceof CtBlock) {
+			CtBlock block = (CtBlock) ifStmt.getElseStatement();
+			return ((block.getStatements().size() == 1) && (block.getStatement(0) instanceof CtIf));
+		}
+		return false;
 	}
 
 	/** write all non-implicit parts of a block, with special care for indentation */

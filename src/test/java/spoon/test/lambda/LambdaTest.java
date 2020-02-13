@@ -26,6 +26,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -42,6 +43,7 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.LambdaFilter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.imports.ImportTest;
 import spoon.test.lambda.testclasses.Bar;
 import spoon.test.lambda.testclasses.Foo;
 import spoon.test.lambda.testclasses.Intersection;
@@ -103,7 +105,7 @@ public class LambdaTest {
 		assertParametersSizeIs(0, lambda.getParameters());
 		assertHasExpressionBody(lambda);
 
-		assertIsWellPrinted("((spoon.test.lambda.testclasses.Foo.Check) (() -> false))", lambda);
+		assertIsWellPrinted("((Check) (() -> false))", lambda);
 	}
 
 	@Test
@@ -175,7 +177,7 @@ public class LambdaTest {
 		assertHasExpressionBody(lambda);
 
 		assertIsWellPrinted(
-				"((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>) (( p) -> (p.age) > 10))",
+				"((Predicate<Person>) (( p) -> p.age > 10))",
 				lambda);
 	}
 
@@ -194,7 +196,7 @@ public class LambdaTest {
 		assertHasExpressionBody(lambda);
 
 		assertIsWellPrinted(
-				"((spoon.test.lambda.testclasses.Foo.CheckPersons) (( p1, p2) -> ((p1.age) - (p2.age)) > 0))",
+				"((CheckPersons) (( p1, p2) -> (p1.age - p2.age) > 0))",
 				lambda);
 	}
 
@@ -210,7 +212,7 @@ public class LambdaTest {
 		assertHasExpressionBody(lambda);
 
 		assertIsWellPrinted(
-				"((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>) ((spoon.test.lambda.testclasses.Foo.Person p) -> (p.age) > 10))",
+				"((Predicate<Person>) ((Person p) -> p.age > 10))",
 				lambda);
 	}
 
@@ -229,7 +231,7 @@ public class LambdaTest {
 		assertHasExpressionBody(lambda);
 
 		assertIsWellPrinted(
-				"((spoon.test.lambda.testclasses.Foo.CheckPersons) ((spoon.test.lambda.testclasses.Foo.Person p1,spoon.test.lambda.testclasses.Foo.Person p2) -> ((p1.age) - (p2.age)) > 0))",
+				"((CheckPersons) ((Person p1,Person p2) -> (p1.age - p2.age) > 0))",
 				lambda);
 	}
 
@@ -241,8 +243,8 @@ public class LambdaTest {
 		assertParametersSizeIs(0, lambda.getParameters());
 		assertStatementBody(lambda);
 
-		assertIsWellPrinted("((spoon.test.lambda.testclasses.Foo.Check) (() -> {" + System.lineSeparator()
-				+ "    java.lang.System.err.println(\"\");" + System.lineSeparator()
+		assertIsWellPrinted("((Check) (() -> {" + System.lineSeparator()
+				+ "    System.err.println(\"\");" + System.lineSeparator()
 				+ "    return false;" + System.lineSeparator()
 				+ "}))", lambda);
 	}
@@ -259,10 +261,10 @@ public class LambdaTest {
 		assertStatementBody(lambda);
 
 		assertIsWellPrinted(
-				"((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>) (( p) -> {"
+				"((Predicate<Person>) (( p) -> {"
 						+ System.lineSeparator()
 						+ "    p.doSomething();" + System.lineSeparator()
-						+ "    return (p.age) > 10;" + System.lineSeparator()
+						+ "    return p.age > 10;" + System.lineSeparator()
 						+ "}))", lambda);
 	}
 
@@ -285,12 +287,12 @@ public class LambdaTest {
 			}
 		}).get(0);
 		final String expected =
-				"if (((java.util.function.Predicate<spoon.test.lambda.testclasses.Foo.Person>) (( p) -> (p.age) > 18)).test(new spoon.test.lambda.testclasses.Foo.Person(10))) {"
+				"if (((Predicate<Person>) (( p) -> p.age > 18)).test(new Person(10))) {"
 						+ System.lineSeparator()
-						+ "    java.lang.System.err.println(\"Enjoy, you have more than 18.\");" + System
+						+ "    System.err.println(\"Enjoy, you have more than 18.\");" + System
 						.lineSeparator()
 						+ "}";
-		assertEquals("Condition must be well printed", expected, condition.toString());
+		assertEquals("Condition must be well printed", expected, printByPrinter(condition));
 	}
 
 	@Test
@@ -307,7 +309,8 @@ public class LambdaTest {
 		final CtParameter<?> ctParameterFirstLambda = lambda1.getParameters().get(0);
 		assertEquals("s", ctParameterFirstLambda.getSimpleName());
 		assertTrue(ctParameterFirstLambda.getType().isImplicit());
-		assertEquals("", ctParameterFirstLambda.getType().toString());
+		assertEquals("", ctParameterFirstLambda.getType().prettyprint());
+		assertEquals("spoon.test.lambda.testclasses.Bar.SingleSubscriber<? super T>", ctParameterFirstLambda.getType().toString());
 		assertEquals("SingleSubscriber", ctParameterFirstLambda.getType().getSimpleName());
 	}
 	@Test
@@ -334,7 +337,8 @@ public class LambdaTest {
 
 		final CtArrayTypeReference typeParameter = (CtArrayTypeReference) ctParameter.getType();
 		assertTrue(typeParameter.getComponentType().isImplicit());
-		assertEquals("", typeParameter.getComponentType().toString());
+		assertEquals("", typeParameter.getComponentType().prettyprint());
+		assertEquals("java.lang.Object", typeParameter.getComponentType().toString());
 		assertEquals("Object", typeParameter.getComponentType().getSimpleName());
 	}
 
@@ -346,13 +350,15 @@ public class LambdaTest {
 		final CtParameter<?> firstParam = lambda.getParameters().get(0);
 		assertEquals("rs", firstParam.getSimpleName());
 		assertTrue(firstParam.getType().isImplicit());
-		assertEquals("", firstParam.getType().toString());
+		assertEquals("", firstParam.getType().prettyprint());
+		assertEquals("java.sql.ResultSet", firstParam.getType().toString());
 		assertEquals("ResultSet", firstParam.getType().getSimpleName());
 
 		final CtParameter<?> secondParam = lambda.getParameters().get(1);
 		assertEquals("i", secondParam.getSimpleName());
 		assertTrue(secondParam.getType().isImplicit());
-		assertEquals("", secondParam.getType().toString());
+		assertEquals("", secondParam.getType().prettyprint());
+		assertEquals("int", secondParam.getType().toString());
 		assertEquals("int", secondParam.getType().getSimpleName());
 	}
 
@@ -493,7 +499,11 @@ public class LambdaTest {
 	}
 
 	private void assertIsWellPrinted(String expected, CtLambda<?> lambda) {
-		assertEquals("Lambda must be well printed", expected, lambda.toString());
+		assertEquals("Lambda must be well printed", expected, printByPrinter(lambda));
+	}
+	
+	private static String printByPrinter(CtElement element) {
+		return ImportTest.printByPrinter(element);
 	}
 
 	// note that the lambda number in simple name depends on the classloader

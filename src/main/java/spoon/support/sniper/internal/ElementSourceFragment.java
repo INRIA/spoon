@@ -11,6 +11,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.SourcePositionHolder;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModifiable;
@@ -18,6 +19,7 @@ import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.support.Experimental;
 import spoon.support.reflect.CtExtendedModifier;
@@ -137,6 +139,14 @@ public class ElementSourceFragment implements SourceFragment {
 		 * because CtBlock can be implicit but contains non implicit elements, which has to be processed.
 		 */
 		new EarlyTerminatingScanner<Void>() {
+			public <T> void visitCtFieldReference(final CtFieldReference<T> reference) {
+				// bug 3133: we must must not visit the type of a field reference
+				enter(reference);
+				scan(CtRole.DECLARING_TYPE, reference.getDeclaringType());
+				scan(CtRole.ANNOTATION, reference.getAnnotations());
+				exit(reference);
+			}
+
 			@Override
 			protected void enter(CtElement e) {
 				if (e instanceof CtCompilationUnit) {
@@ -176,7 +186,7 @@ public class ElementSourceFragment implements SourceFragment {
 	 */
 	private ElementSourceFragment addChild(ElementSourceFragment parentFragment, CtRole roleInParent, SourcePositionHolder otherElement) {
 		SourcePosition otherSourcePosition = otherElement.getPosition();
-		if (otherSourcePosition instanceof SourcePositionImpl && otherSourcePosition.getCompilationUnit() != null) {
+		if (otherSourcePosition instanceof SourcePositionImpl && !(otherSourcePosition.getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
 			if (parentFragment.isFromSameSource(otherSourcePosition)) {
 				ElementSourceFragment otherFragment = new ElementSourceFragment(otherElement, parentFragment.getRoleHandler(roleInParent, otherElement));
 				//parent and child are from the same file. So we can connect their positions into one tree
@@ -470,7 +480,7 @@ public class ElementSourceFragment implements SourceFragment {
 	 * Note: the List of children contains one {@link CollectionSourceFragment} for each collection of fragments (parameters, type members, ...).
 	 * Note: the {@link CollectionSourceFragment} may contain a mix of fragments of different roles, when they overlap.
 	 * For example this code contains mix of annotations and modifiers
-	 * <code>public @Deprecated static @Ignored void method()</code>
+	 * <code>public @Test static @Ignored void method()</code>
 	 * @return list of child fragments of this {@link ElementSourceFragment} where fragments,
 	 * which belongs to the same collection are grouped into {@link CollectionSourceFragment}
 	 */
