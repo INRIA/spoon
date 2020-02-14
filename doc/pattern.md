@@ -38,6 +38,14 @@ if (something) {
 }
 ```
 
+* casts are skipped. For example:
+
+```java
+f(x);
+//matches with
+(Object) f(x);
+```
+
 The main classes of Spoon patterns are those in package `spoon.pattern`:
 
 * classes: PatternBuilder, Pattern, Match, PatternBuilderHelper, PatternParameterConfigurator, InlinedStatementConfigurator 
