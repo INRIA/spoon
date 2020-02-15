@@ -43,6 +43,7 @@ import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtModule;
@@ -516,7 +517,6 @@ public class JDTTreeBuilderHelper {
 					 * (e.g. spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected)
 					 * In such rare case we cannot detect and set implicitness
 					 */
-					typeRef.getFactory().getEnvironment().debugMessage("Compiler's type path: " + qualifiedNameReference + " doesn't matches with Spoon qualified type name: " + originTypeRef);
 					return;
 					//throw new SpoonException("Unexpected type reference simple name: \"" + token + "\" expected: \"" + typeRef.getSimpleName() + "\"");
 				}
