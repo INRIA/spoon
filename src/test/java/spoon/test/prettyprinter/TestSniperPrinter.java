@@ -311,10 +311,10 @@ public class TestSniperPrinter {
 
 		new SourceFragmentCreator().attachTo(launcher.getFactory().getEnvironment());
 
+		final SniperJavaPrettyPrinter sp = new SniperJavaPrettyPrinter(launcher.getEnvironment());
+
 		launcher.getEnvironment().setPrettyPrinterCreator(
 				() -> {
-					SniperJavaPrettyPrinter sp = new SniperJavaPrettyPrinter(launcher.getEnvironment());
-					sp.setIgnoreImplicit(true);
 					return sp;
 				}
 		);
@@ -326,9 +326,11 @@ public class TestSniperPrinter {
 						!(el instanceof spoon.reflect.factory.ModuleFactory.CtUnnamedModule)
 				).forEach(el -> {
 			try {
+				sp.reset();
+				sp.printElementSniper(el);
 				//Contract, calling toString on unmodified AST elements should draw only from original.
 				assertTrue("ToString() on element (" + el.getClass().getName() + ") =  \"" + el + "\" is not in original content",
-						originalContent.contains(el.toString().replace("\t","")));
+						originalContent.contains(sp.getResult().replace("\t","")));
 			} catch (UnsupportedOperationException | SpoonException e) {
 				//Printer should not throw exception on printable element. (Unless there is a bug in the printer...)
 				fail("ToString() on Element (" + el.getClass().getName() + "): at " + el.getPath() + " lead to an exception: " + e);
