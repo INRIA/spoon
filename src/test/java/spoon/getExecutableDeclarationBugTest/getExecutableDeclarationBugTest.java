@@ -26,7 +26,7 @@ public class getExecutableDeclarationBugTest {
         final Launcher launcher = new Launcher();
         launcher.getEnvironment().setNoClasspath(true);
         // folder with both classes
-        launcher.addInputResource("./src/test/java/getExecutableReferenceBugTest/testClasses");
+        launcher.addInputResource("./src/test/resources/getExecutableDeclarationTestClasses");
         launcher.buildModel();
         Factory factory = launcher.getFactory();
 
