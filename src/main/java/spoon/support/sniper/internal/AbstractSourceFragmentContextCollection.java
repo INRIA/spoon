@@ -22,7 +22,7 @@ import static spoon.support.sniper.internal.ElementSourceFragment.isSpaceFragmen
  * `with separator` collections have items separated by a separator. For example by a comma `,`
  * `without separator` collections have items separated by a whitespace char(s) only.
  */
-abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFragmentContext {
+abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFragmentPrinter {
 
 	protected AbstractSourceFragmentContextCollection(MutableTokenWriter mutableTokenWriter, List<SourceFragment> fragments, ChangeResolver changeResolver) {
 		super(mutableTokenWriter, changeResolver, fragments);

@@ -12,7 +12,6 @@ import java.util.Objects;
 import spoon.SpoonException;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.cu.SourcePositionHolder;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 
 import static spoon.support.sniper.internal.ElementSourceFragment.findIndexOfNextFragment;
@@ -21,9 +20,13 @@ import static spoon.support.sniper.internal.ElementSourceFragment.checkCollectio
 import static spoon.support.sniper.internal.ElementSourceFragment.isSpaceFragment;
 
 /**
- * Knows how to handle actually printed {@link CtElement} or it's part
+ *
+ * The implementation of {@link SourceFragmentPrinter} that knows how to handle list of fragments.
+ *
+ * The method that concrete subclasses must implement is {@link #knowsHowToPrint(PrinterEvent)
+ * This method is key, it drives our the context of pushed out of the stask of printer in the sniper printer.
  */
-abstract class AbstractSourceFragmentContext implements SourceFragmentPrinter {
+abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 	protected final MutableTokenWriter mutableTokenWriter;
 	protected final List<SourceFragment> childFragments;
 	protected final ChangeResolver changeResolver;
@@ -34,7 +37,7 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentPrinter {
 	//If next element is new, then run collected separator actions to print DJPP separators
 	protected final List<Runnable> separatorActions = new ArrayList<>();
 
-	protected AbstractSourceFragmentContext(MutableTokenWriter mutableTokenWriter, ChangeResolver changeResolver, List<SourceFragment> childFragments) {
+	protected AbstractSourceFragmentPrinter(MutableTokenWriter mutableTokenWriter, ChangeResolver changeResolver, List<SourceFragment> childFragments) {
 		this.mutableTokenWriter = mutableTokenWriter;
 		this.changeResolver = changeResolver;
 		this.childFragments = childFragments;
@@ -61,6 +64,7 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentPrinter {
 
 	@Override
 	public int update(PrinterEvent event) {
+		// case 1: we print a token
 		if (event instanceof TokenPrinterEvent) {
 			TokenPrinterEvent tpe = (TokenPrinterEvent) event;
 			if (tpe.getType().isTab()) {
@@ -78,7 +82,7 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentPrinter {
 				return -1;
 			}
 		}
-		int fragmentIndex = findIndexOfNextChildTokenOfEvent(event);
+		int fragmentIndex = findIFragmentIndexCorrespondingToEvent(event);
 		if (fragmentIndex < 0) {
 			/*
 			 * the token did not exist in origin sources. Print spaces made by DJPP
@@ -88,6 +92,7 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentPrinter {
 			event.print();
 			return -1;
 		}
+		// case 2: it's an element printer
 		//we have origin sources for this element
 		if (event.getRole() == CtRole.COMMENT) {
 			//note: DJPP sends comments in wrong order/wrong place.
@@ -97,6 +102,11 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentPrinter {
 		}
 		setChildFragmentIdx(fragmentIndex);
 		return fragmentIndex;
+	}
+
+	@Override
+	public void onFinished() {
+
 	}
 
 	/**
@@ -260,11 +270,11 @@ abstract class AbstractSourceFragmentContext implements SourceFragmentPrinter {
 	}
 
 	/**
-	 * looks for next child token, which fits to {@link PrinterEvent} `event`
+	 * Looks for the child token which fits to {@link PrinterEvent} `event`
 	 * @param event {@link PrinterEvent} whose token it searches for
 	 * @return index of first token which fits to {@link PrinterEvent} or -1 if not found
 	 */
-	protected int findIndexOfNextChildTokenOfEvent(PrinterEvent event) {
+	protected int findIFragmentIndexCorrespondingToEvent(PrinterEvent event) {
 		CtRole role = event.getRole();
 		if (role != null) {
 			if (role == CtRole.COMMENT) {
