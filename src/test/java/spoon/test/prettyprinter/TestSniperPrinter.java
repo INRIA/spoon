@@ -36,6 +36,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.ImportCleaner;
@@ -329,8 +330,14 @@ public class TestSniperPrinter {
 				sp.reset();
 				sp.printElementSniper(el);
 				//Contract, calling toString on unmodified AST elements should draw only from original.
+				String result = sp.getResult();
+
+				if (!sp.hasImplicitAncestor(el) && !(el instanceof CtPackage) && !(el instanceof CtReference)) {
+					assertTrue(result.length()>0);
+				}
+
 				assertTrue("ToString() on element (" + el.getClass().getName() + ") =  \"" + el + "\" is not in original content",
-						originalContent.contains(sp.getResult().replace("\t","")));
+						originalContent.contains(result.replace("\t","")));
 			} catch (UnsupportedOperationException | SpoonException e) {
 				//Printer should not throw exception on printable element. (Unless there is a bug in the printer...)
 				fail("ToString() on Element (" + el.getClass().getName() + "): at " + el.getPath() + " lead to an exception: " + e);

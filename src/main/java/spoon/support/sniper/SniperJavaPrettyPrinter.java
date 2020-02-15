@@ -182,7 +182,8 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	}
 
 
-	private static boolean hasImplicitAncestor(CtElement el) {
+	/** Warning, not in the API, public for testing purposes */
+	public static boolean hasImplicitAncestor(CtElement el) {
 		if (el == null) {
 			return false;
 		}
@@ -203,10 +204,10 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		return element.toStringDebug();
 	}
 
-	/** Warning: debug method only, not part of the public API */
+	/** Warning: debug and test method only, not part of the public API */
 	public String printElementSniper(CtElement element) {
-		applyPreProcessors(element);
-		if (element != null && !hasImplicitAncestor(element)) {
+		reset();
+		if (!hasImplicitAncestor(element)) {
 			CompilationUnit compilationUnit = element.getPosition().getCompilationUnit();
 			if (compilationUnit != null
 					&& !(compilationUnit instanceof NoSourcePosition.NullCompilationUnit)) {
