@@ -23,7 +23,7 @@ import static spoon.support.sniper.internal.ElementSourceFragment.isSpaceFragmen
  *
  * The implementation of {@link SourceFragmentPrinter} that knows how to handle list of fragments.
  *
- * The method that concrete subclasses must implement is {@link #knowsHowToPrint(PrinterEvent)
+ * The method that concrete subclasses must implement is {@link #knowsHowToPrint(PrinterEvent)}
  * This method is key, it drives our the context of pushed out of the stask of printer in the sniper printer.
  */
 abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
