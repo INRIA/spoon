@@ -193,7 +193,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter {
 
 
 	private static boolean hasImplicitAncestor(CtElement el) {
-		if (el == null) {
+		if (el == null || !el.isParentInitialized()) {
 			return false;
 		}
 		if (el == el.getFactory().getModel().getRootPackage()) {
