@@ -196,10 +196,15 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	}
 
 	/**
-	 * Prints an element in sniper mode
+	 * The sniper mode only works from JavaOutputProcessor
 	 */
 	@Override
 	public String printElement(CtElement element) {
+		return element.toStringDebug();
+	}
+
+	/** Warning: debug method only, not part of the public API */
+	public String printElementSniper(CtElement element) {
 		applyPreProcessors(element);
 		if (element != null && !hasImplicitAncestor(element)) {
 			CompilationUnit compilationUnit = element.getPosition().getCompilationUnit();
