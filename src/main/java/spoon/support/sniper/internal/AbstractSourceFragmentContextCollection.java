@@ -22,7 +22,7 @@ import static spoon.support.sniper.internal.ElementSourceFragment.isSpaceFragmen
  * `with separator` collections have items separated by a separator. For example by a comma `,`
  * `without separator` collections have items separated by a whitespace char(s) only.
  */
-abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFragmentContext {
+abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFragmentPrinter {
 
 	protected AbstractSourceFragmentContextCollection(MutableTokenWriter mutableTokenWriter, List<SourceFragment> fragments, ChangeResolver changeResolver) {
 		super(mutableTokenWriter, changeResolver, fragments);
@@ -30,12 +30,31 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 
 	@Override
 	public boolean knowsHowToPrint(PrinterEvent event) {
-		CtRole role = event.getRole();
 		if (!hasNextChildToken()) {
 			//there are no more tokens to process. Leave this context
 			return false;
 		}
-		if (event.isWhitespace() || role == CtRole.COMMENT) {
+
+		if (event instanceof TokenPrinterEvent) {
+			TokenPrinterEvent tpe = (TokenPrinterEvent) event;
+			if (tpe.isWhitespace()) {
+				return true;
+			}
+			if (TokenType.KEYWORD.equals(tpe.getTokenType())) {
+// we must have its fragment
+				for (SourceFragment f : childFragments) {
+					if (f.getSourceCode().contains(tpe.getToken())) {
+						return true;
+					}
+				}
+				return false;
+			} else if (tpe.getType() == TokenType.IDENTIFIER) {
+				return findIndexOfNextChildTokenByType(TokenType.IDENTIFIER) >= 0;
+			}
+			return findIndexOfNextChildTokenByValue(tpe.getToken()) >= 0;
+		}
+		CtRole role = event.getRole();
+		if (role == CtRole.COMMENT) {
 			return true;
 		}
 		if (role != null) {
@@ -44,15 +63,7 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 		} else if (event.getElement() instanceof CtCompilationUnit) {
 			return findIndexOfNextChildTokenOfElement(event.getElement()) >= 0;
 		}
-		if (event instanceof TokenPrinterEvent) {
-			TokenPrinterEvent tpe = (TokenPrinterEvent) event;
-			if (tpe.getType() == TokenType.IDENTIFIER) {
-				return findIndexOfNextChildTokenByType(TokenType.IDENTIFIER) >= 0;
-			}
-			return findIndexOfNextChildTokenByValue(event.getToken()) >= 0;
-		} else {
-			throw new SpoonException("Unexpected PrintEvent: " + event.getClass());
-		}
+		throw new SpoonException("Unexpected PrintEvent: " + event.getClass());
 	}
 
 	@Override
@@ -77,14 +88,11 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 
 	@Override
 	public void onFinished() {
-		// we are at the end of the list of elements. Printer just tries to print something out of this context.
-		if (mutableTokenWriter.isMuted() == false) {
-			//print list suffix
-			String suffix = getSuffixSpace();
-			if (suffix != null) {
-				//we have origin source code for that list suffix
-				mutableTokenWriter.getPrinterHelper().directPrint(suffix);
-			}
+		//print list suffix
+		String suffix = getSuffixSpace();
+		if (suffix != null) {
+			//we have origin source code for that list suffix
+			mutableTokenWriter.writeCodeSnippet(suffix);
 		}
 	}
 }

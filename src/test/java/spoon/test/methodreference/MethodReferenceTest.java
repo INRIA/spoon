@@ -178,7 +178,7 @@ public class MethodReferenceTest {
 	public void testNoClasspathExecutableReferenceExpression() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {
-				"-i", "./src/test/resources/executable-reference-expression/Bar.java", "-o", "./target/spooned", "--noclasspath"
+				"-i", "./src/test/resources/executable-reference-expression/Bar.java", "-o", "./target/spooned"
 		});
 		final CtExecutableReferenceExpression<?, ?> element = Query
 				.getElements(launcher.getFactory(), new TypeFilter<CtExecutableReferenceExpression<?, ?>>(CtExecutableReferenceExpression.class)).get(0);

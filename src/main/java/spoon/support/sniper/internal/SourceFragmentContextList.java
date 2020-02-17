@@ -28,13 +28,13 @@ public class SourceFragmentContextList extends AbstractSourceFragmentContextColl
 	}
 
 	@Override
-	protected int findIndexOfNextChildTokenOfEvent(PrinterEvent event) {
+	protected int findIFragmentIndexCorrespondingToEvent(PrinterEvent event) {
 		if (event instanceof ElementPrinterEvent) {
 			// in case of collection search for exact item of the collection
 			ElementPrinterEvent elementEvent = (ElementPrinterEvent) event;
 			return findIndexOfNextChildTokenOfElement(elementEvent.getElement());
 		}
-		return super.findIndexOfNextChildTokenOfEvent(event);
+		return super.findIFragmentIndexCorrespondingToEvent(event);
 	}
 
 	@Override

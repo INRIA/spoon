@@ -516,7 +516,6 @@ public class JDTTreeBuilderHelper {
 					 * (e.g. spoon.test.imports.testclasses.internal.ChildClass.InnerClassProtected)
 					 * In such rare case we cannot detect and set implicitness
 					 */
-					typeRef.getFactory().getEnvironment().debugMessage("Compiler's type path: " + qualifiedNameReference + " doesn't matches with Spoon qualified type name: " + originTypeRef);
 					return;
 					//throw new SpoonException("Unexpected type reference simple name: \"" + token + "\" expected: \"" + typeRef.getSimpleName() + "\"");
 				}

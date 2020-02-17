@@ -43,7 +43,7 @@ public abstract class TokenPrinterEvent implements PrinterEvent {
 		return comment;
 	}
 
-	@Override
+	/** @return printed token or null if printing complex element or comment */
 	public String getToken() {
 		return token;
 	}
@@ -55,11 +55,12 @@ public abstract class TokenPrinterEvent implements PrinterEvent {
 		return tokenType == TokenType.KEYWORD && modifierKeywords.contains(token);
 	}
 
-	@Override
+	/** @return true if printing white space token. It means New line, space or TAB. */
 	public boolean isWhitespace() {
 		return type.isWhiteSpace();
 	}
 
+	/** Returns the token type */
 	public TokenType getType() {
 		return type;
 	}
@@ -67,6 +68,10 @@ public abstract class TokenPrinterEvent implements PrinterEvent {
 	@Override
 	public String toString() {
 		return type.name() + ": \'" + token + "\'";
+	}
+
+	public TokenType getTokenType() {
+		return type;
 	}
 }
 

@@ -300,7 +300,7 @@ public class CompilationTest {
 	public void testPrecompile() {
 		// without precompile
 		Launcher l = new Launcher();
-		l.setArgs(new String[]{"--noclasspath", "-i", "src/test/resources/compilation/"});
+		l.setArgs(new String[]{"-i", "src/test/resources/compilation/"});
 		l.buildModel();
 		CtClass klass = l.getFactory().Class().get("compilation.Bar");
 		// without precompile, actualClass does not exist (an exception is thrown)
@@ -311,7 +311,7 @@ public class CompilationTest {
 
 		// with precompile
 		Launcher l2 = new Launcher();
-		l2.setArgs(new String[]{"--precompile", "--noclasspath", "-i", "src/test/resources/compilation/"});
+		l2.setArgs(new String[]{"--precompile", "-i", "src/test/resources/compilation/"});
 		l2.buildModel();
 		CtClass klass2 = l2.getFactory().Class().get("compilation.Bar");
 		// with precompile, actualClass is not null
@@ -321,7 +321,7 @@ public class CompilationTest {
 
 		// precompile can be used to compile processors on the fly
 		Launcher l3 = new Launcher();
-		l3.setArgs(new String[]{"--precompile", "--noclasspath", "-i", "src/test/resources/compilation/", "-p", "compilation.SimpleProcessor"});
+		l3.setArgs(new String[]{"--precompile", "-i", "src/test/resources/compilation/", "-p", "compilation.SimpleProcessor"});
 		l3.run();
 	}
 

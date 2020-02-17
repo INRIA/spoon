@@ -189,7 +189,6 @@ public class AccessTest {
 		launcher.run(new String[] {
 				"-i", "./src/test/resources/spoon/test/variable/Tacos.java",
 				"-o", "target/spooned/variable",
-				"--noclasspath",
 				"--compliance", "8",
 				"--level", "OFF"
 		});

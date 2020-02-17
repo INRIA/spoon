@@ -273,8 +273,7 @@ public class APITest {
 		launcher.run(new String[] {
 				"-i", "./src/main/java", //
 				"-o", "./target/print-not-all/command", //
-				"-f", "spoon.Launcher:spoon.template.AbstractTemplate", //
-				"--noclasspath"
+				"-f", "spoon.Launcher:spoon.template.AbstractTemplate"
 		});
 
 		List<File> list = new ArrayList<>(FileUtils.listFiles(target, new String[] {"java"}, true));

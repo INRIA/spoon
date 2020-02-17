@@ -19,6 +19,7 @@ package spoon.processing;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.Environment;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtType;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.processing.processors.MyProcessor;
