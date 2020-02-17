@@ -23,6 +23,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtType;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.processing.processors.MyProcessor;
+import spoon.test.properties.SimpleProcessor;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,13 +61,6 @@ public class ProcessingTest {
 		assertTrue(new File(launcher.getModelBuilder().getSourceOutputDirectory() + "/spoon/Spoon.java").exists());
 	}
 
-	private static class SimpleProcessor extends AbstractProcessor<CtType<?>> {
-		@Override
-		public void process(CtType<?> element) {
-			System.out.println(">> Hello: " + element.getSimpleName() + " <<");
-		}
-	}
-
 	@Test
 	public void testStaticImport() throws IOException {
 		final Launcher l = new Launcher();
@@ -82,13 +76,12 @@ public class ProcessingTest {
 		l.addInputResource("src/test/resources/compilation3/A.java");
 		l.addInputResource("src/test/resources/compilation3/subpackage/B.java");
 		l.setSourceOutputDirectory(path.toFile());
-		SimpleProcessor simpleProcessor = new SimpleProcessor();
-		l.addProcessor(simpleProcessor);
 		l.run();
 	}
 
 	@Test
 	public void testNullPointerException() throws IOException {
+		// https://github.com/INRIA/spoon/pull/3254
 		final Launcher l = new Launcher();
 		Environment e = l.getEnvironment();
 
@@ -99,8 +92,6 @@ public class ProcessingTest {
 		Path path = Files.createTempDirectory("emptydir");
 		l.addInputResource("src/test/resources/compilation5/A.java");
 		l.setSourceOutputDirectory(path.toFile());
-		SimpleProcessor simpleProcessor = new SimpleProcessor();
-		l.addProcessor(simpleProcessor);
 		l.run();
 	}
 }

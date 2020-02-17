@@ -20,6 +20,7 @@ import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.support.Experimental;
 import spoon.support.reflect.CtExtendedModifier;
@@ -146,11 +147,19 @@ public class ElementSourceFragment implements SourceFragment {
 		 * because CtBlock can be implicit but contains non implicit elements, which has to be processed.
 		 */
 		new EarlyTerminatingScanner<Void>() {
+			@Override
 			public <T> void visitCtFieldReference(final CtFieldReference<T> reference) {
 				// bug 3133: we must must not visit the type of a field reference
 				enter(reference);
 				scan(CtRole.DECLARING_TYPE, reference.getDeclaringType());
 				scan(CtRole.ANNOTATION, reference.getAnnotations());
+				exit(reference);
+			}
+
+			@Override
+			public <T> void visitCtLocalVariableReference(final CtLocalVariableReference<T> reference) {
+				// bug 3154: we must must not visit the type of a local var reference
+				enter(reference);
 				exit(reference);
 			}
 
@@ -169,6 +178,10 @@ public class ElementSourceFragment implements SourceFragment {
 							addChild(newFragment, CtRole.MODIFIER, ctExtendedModifier);
 						}
 					}
+				} else {
+					// if this happens, this means that some fragments are wrong
+					// and we'll get intro trouble later
+					// see bugs 3133 and 3154, crashing in addChild
 				}
 			}
 			@Override
@@ -224,6 +237,8 @@ public class ElementSourceFragment implements SourceFragment {
 							parentFragment.addChild(otherFragment);
 							return otherFragment;
 						}
+						throw new SpoonException("otherFragment (" + otherElement.getPosition() + ") " + cmp.toString() + " of " + parentFragment.getSourcePosition());
+
 					}
 					//the source position of child element is not included in source position of parent element
 					//I (Pavel) am not sure how to handle it, so let's wait until it happens...
@@ -236,7 +251,7 @@ public class ElementSourceFragment implements SourceFragment {
 //							return null;
 //						}
 					//something is wrong ...
-					throw new SpoonException("The SourcePosition of elements are not consistent\nparentFragment: " + parentFragment + "\notherFragment: " + otherFragment);
+					throw new SpoonException("The SourcePosition of elements are not consistent\nparentFragment: " + parentFragment + "\notherFragment: " + otherElement.getPosition());
 				}
 			} else {
 				throw new SpoonException("SourcePosition from unexpected compilation unit: " + otherSourcePosition + " expected is: " + parentFragment.getSourcePosition());
@@ -409,7 +424,7 @@ public class ElementSourceFragment implements SourceFragment {
 					//we have found exact match
 					if (element != null && getElement() != element) {
 						if (firstChild == null) {
-							throw new SpoonException("There is no source fragment for element " + element.getClass() + ". There is one for class " + getElement().getClass());
+							throw new SpoonException("There is no source fragment for element " + element.toString() + ". There is one for class " + getElement().toString());
 						}
 						return firstChild.getSourceFragmentOf(element, start, end);
 					}
