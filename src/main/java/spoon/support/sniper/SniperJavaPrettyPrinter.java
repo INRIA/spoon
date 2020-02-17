@@ -181,9 +181,9 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		sourceFragmentContextStack.push(listContext);
 	}
 
-
-	private static boolean hasImplicitAncestor(CtElement el) {
-		if (el == null || !el.isParentInitialized()) {
+	/** Warning, not in the API, public for testing purposes */
+	public static boolean hasImplicitAncestor(CtElement el) {
+		if (el == null) {
 			return false;
 		}
 		if (el == el.getFactory().getModel().getRootPackage()) {
@@ -196,12 +196,17 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	}
 
 	/**
-	 * Prints an element in sniper mode
+	 * The sniper mode only works from JavaOutputProcessor
 	 */
 	@Override
 	public String printElement(CtElement element) {
-		applyPreProcessors(element);
-		if (element != null && !hasImplicitAncestor(element)) {
+		return element.toStringDebug();
+	}
+
+	/** Warning: debug and test method only, not part of the public API */
+	public String printElementSniper(CtElement element) {
+		reset();
+		if (!hasImplicitAncestor(element)) {
 			CompilationUnit compilationUnit = element.getPosition().getCompilationUnit();
 			if (compilationUnit != null
 					&& !(compilationUnit instanceof NoSourcePosition.NullCompilationUnit)) {
