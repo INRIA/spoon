@@ -549,7 +549,10 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 				}
 
 			} catch (Exception e) {
-				Launcher.LOGGER.error(e.getMessage(), e);
+				if (e instanceof RuntimeException) {
+					throw (RuntimeException) e;
+				}
+				throw new SpoonException(e);
 			}
 		}
 	}
