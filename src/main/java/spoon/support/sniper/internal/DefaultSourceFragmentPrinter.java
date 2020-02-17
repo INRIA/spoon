@@ -6,15 +6,12 @@
 package spoon.support.sniper.internal;
 
 /**
- * A {@link SourceFragmentPrinter}, which prints the element using standard pretty printing
+ * A default dumb implementation of {@link SourceFragmentPrinter}, which only prints the given PrinterEvent.
  */
-public class SourceFragmentContextPrettyPrint implements SourceFragmentPrinter {
-	/**
-	 * This context is used to force normal pretty printing of element
-	 */
-	public static final SourceFragmentContextPrettyPrint INSTANCE = new SourceFragmentContextPrettyPrint();
+public class DefaultSourceFragmentPrinter implements SourceFragmentPrinter {
+	public static final DefaultSourceFragmentPrinter INSTANCE = new DefaultSourceFragmentPrinter();
 
-	private SourceFragmentContextPrettyPrint() {
+	private DefaultSourceFragmentPrinter() {
 	}
 
 	@Override
