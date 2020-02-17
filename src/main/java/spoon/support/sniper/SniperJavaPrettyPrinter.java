@@ -35,7 +35,7 @@ import spoon.support.sniper.internal.SourceFragment;
 import spoon.support.sniper.internal.SourceFragmentPrinter;
 import spoon.support.sniper.internal.SourceFragmentContextList;
 import spoon.support.sniper.internal.SourceFragmentContextNormal;
-import spoon.support.sniper.internal.SourceFragmentContextPrettyPrint;
+import spoon.support.sniper.internal.DefaultSourceFragmentPrinter;
 import spoon.support.sniper.internal.SourceFragmentContextSet;
 import spoon.support.sniper.internal.TokenPrinterEvent;
 import spoon.support.sniper.internal.TokenType;
@@ -181,10 +181,9 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		sourceFragmentContextStack.push(listContext);
 	}
 
-
 	/** Warning, not in the API, public for testing purposes */
-	public static boolean hasImplicitAncestor(CtElement el) {
-		if (el == null) {
+	private static boolean hasImplicitAncestor(CtElement el) {
+		if (el == null || !el.isParentInitialized()) {
 			return false;
 		}
 		if (el == el.getFactory().getModel().getRootPackage()) {
@@ -249,7 +248,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		return new ElementPrinterEvent(role, element) {
 			@Override
 			public void print() {
-				superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE);
+				superScanInContext(element, DefaultSourceFragmentPrinter.INSTANCE);
 			}
 
 			@Override
