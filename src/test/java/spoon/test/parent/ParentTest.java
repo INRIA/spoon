@@ -20,7 +20,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.compiler.Environment;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.intercession.IntercessionScanner;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtAssignment;
@@ -57,6 +59,9 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.UnsettableProperty;
 import spoon.test.replace.testclasses.Tacos;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
@@ -408,6 +413,23 @@ public class ParentTest {
 				return !ctInvocations.isEmpty() ? ctInvocations.get(0) :  null;
 			}
 		}.scan(launcher.getModel().getRootPackage());
+	}
+
+
+	@Test
+	public void testParentNotInitializedException() throws IOException {
+		// contract: does not crash on hasImplicitParent
+		final Launcher l = new Launcher();
+		Environment e = l.getEnvironment();
+
+		e.setNoClasspath(true);
+		e.setAutoImports(true);
+		e.setPrettyPrinterCreator(() -> new SniperJavaPrettyPrinter(l.getEnvironment()));
+
+		Path path = Files.createTempDirectory("emptydir");
+		l.addInputResource("src/test/resources/compilation4/A.java");
+		l.setSourceOutputDirectory(path.toFile());
+		l.run();
 	}
 
 }
