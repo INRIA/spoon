@@ -11,31 +11,16 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.PrettyPrinter;
-import spoon.support.JavaOutputProcessor;
 
 /**
  * TODO: doc
  */
 public class FluentLauncher {
 
-	Launcher launcher;
+	private Launcher launcher;
 
 	public FluentLauncher() {
 		this.launcher = new Launcher();
-	}
-
-	/**
-	 * @param args
-	 * @see spoon.Launcher#run(java.lang.String[])
-	 */
-
-	public void run(String[] args) {
-		launcher.run(args);
-	}
-
-	public void printUsage() {
-		launcher.printUsage();
 	}
 
 	public FluentLauncher inputResource(String path) {
@@ -63,11 +48,6 @@ public class FluentLauncher {
 		return this;
 	}
 
-	// TODO: das sollte in Methoden zum setzen umgewandelt werden
-	public Environment getEnvironment() {
-		return launcher.getEnvironment();
-	}
-
 	public String toString() {
 		return launcher.toString();
 	}
@@ -89,26 +69,6 @@ public class FluentLauncher {
 	}
 
 	// needed?
-	public SpoonModelBuilder createCompiler() {
-		return launcher.createCompiler();
-	}
-
-	// needed?
-	public SpoonModelBuilder createCompiler(List<SpoonResource> inputSources) {
-		return launcher.createCompiler(inputSources);
-	}
-
-	// needed?
-	public Factory createFactory() {
-		return launcher.createFactory();
-	}
-
-	// needed???
-	public Factory getFactory() {
-		return launcher.getFactory();
-	}
-
-	// needed?
 	public Environment createEnvironment() {
 		return launcher.createEnvironment();
 	}
@@ -123,8 +83,9 @@ public class FluentLauncher {
 		return this;
 	}
 
-	public void setSourceOutputDirectory(File outputDirectory) {
+	public FluentLauncher setSourceOutputDirectory(File outputDirectory) {
 		launcher.setSourceOutputDirectory(outputDirectory);
+		return this;
 	}
 
 	public FluentLauncher outputFilter(Filter<CtType<?>> typeFilter) {
@@ -156,5 +117,55 @@ public class FluentLauncher {
 		launcher.getEnvironment().setLevel(level);
 		return this;
 	}
-	// TODO: finish
+
+	public FluentLauncher shouldCompile(boolean shouldCompile) {
+		launcher.getEnvironment().setShouldCompile(shouldCompile);
+		return this;
+	}
+
+	public FluentLauncher disableConsistencyChecks() {
+		launcher.getEnvironment().disableConsistencyChecks();
+		return this;
+	}
+
+	public FluentLauncher setComplianceLevel(int level) {
+		launcher.getEnvironment().setComplianceLevel(level);
+		return this;
+	}
+
+	public FluentLauncher useTabulations(boolean tabulation) {
+		launcher.getEnvironment().useTabulations(tabulation);
+		return this;
+	}
+
+	public FluentLauncher tabulationSize(int size) {
+		launcher.getEnvironment().setTabulationSize(size);
+		return this;
+	}
+
+	public FluentLauncher sourceClassPath(String[] sourceClasspath) {
+		launcher.getEnvironment().setSourceClasspath(sourceClasspath);
+		return this;
+	}
+
+	public FluentLauncher preserveLineNumbers(boolean preserveLineNumbers) {
+		launcher.getEnvironment().setPreserveLineNumbers(preserveLineNumbers);
+		return this;
+	}
+
+	public FluentLauncher noClasspath(boolean option) {
+		launcher.getEnvironment().setNoClasspath(option);
+		return this;
+	}
+
+	public FluentLauncher copyResources(boolean copyResources) {
+		launcher.getEnvironment().setCopyResources(copyResources);
+		return this;
+	}
+
+	public FluentLauncher enableComments(boolean commentEnable) {
+		launcher.getEnvironment().setCommentEnabled(commentEnable);
+		return this;
+	}
+
 }
