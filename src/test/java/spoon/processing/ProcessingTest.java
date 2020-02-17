@@ -86,4 +86,21 @@ public class ProcessingTest {
 		l.addProcessor(simpleProcessor);
 		l.run();
 	}
+
+	@Test
+	public void testNullPointerException() throws IOException {
+		final Launcher l = new Launcher();
+		Environment e = l.getEnvironment();
+
+		e.setNoClasspath(true);
+		e.setAutoImports(true);
+		e.setPrettyPrinterCreator(() -> new SniperJavaPrettyPrinter(l.getEnvironment()));
+
+		Path path = Files.createTempDirectory("emptydir");
+		l.addInputResource("src/test/resources/compilation5/A.java");
+		l.setSourceOutputDirectory(path.toFile());
+		SimpleProcessor simpleProcessor = new SimpleProcessor();
+		l.addProcessor(simpleProcessor);
+		l.run();
+	}
 }
