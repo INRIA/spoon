@@ -11,6 +11,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
+import spoon.support.OutputDestinationHandler;
 
 /**
  * TODO: doc
@@ -83,7 +84,7 @@ public class FluentLauncher {
 		return this;
 	}
 
-	public FluentLauncher setSourceOutputDirectory(File outputDirectory) {
+	public FluentLauncher outputDirectory(File outputDirectory) {
 		launcher.setSourceOutputDirectory(outputDirectory);
 		return this;
 	}
@@ -128,7 +129,7 @@ public class FluentLauncher {
 		return this;
 	}
 
-	public FluentLauncher setComplianceLevel(int level) {
+	public FluentLauncher complianceLevel(int level) {
 		launcher.getEnvironment().setComplianceLevel(level);
 		return this;
 	}
@@ -168,4 +169,13 @@ public class FluentLauncher {
 		return this;
 	}
 
+	public FluentLauncher outputType(OutputType type) {
+		launcher.getEnvironment().setOutputType(type);
+		return this;
+	}
+
+	public FluentLauncher outputDestinationHandler(OutputDestinationHandler handler) {
+		launcher.getEnvironment().setOutputDestinationHandler(handler);
+		return this;
+	}
 }
