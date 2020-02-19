@@ -160,27 +160,4 @@ public class FluentLauncher {
 		return this;
 	}
 
-	// Level: 1
-	public FluentLauncher copyResources(boolean copyResources) {
-		launcher.getEnvironment().setCopyResources(copyResources);
-		return this;
-	}
-
-	// Level: 1
-	public FluentLauncher enableComments(boolean commentEnable) {
-		launcher.getEnvironment().setCommentEnabled(commentEnable);
-		return this;
-	}
-
-	// Level: 1
-	public FluentLauncher outputType(OutputType type) {
-		launcher.getEnvironment().setOutputType(type);
-		return this;
-	}
-
-	// Level: 1
-	public FluentLauncher outputDestinationHandler(OutputDestinationHandler handler) {
-		launcher.getEnvironment().setOutputDestinationHandler(handler);
-		return this;
-	}
 }

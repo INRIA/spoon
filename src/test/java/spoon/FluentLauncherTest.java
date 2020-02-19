@@ -1,16 +1,15 @@
 package spoon;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.visitor.AstParentConsistencyChecker;
 
 /**
  * FluentLauncherTest
@@ -21,8 +20,7 @@ public class FluentLauncherTest {
 
 	// following testcases showcase usecases
 	public void useCase1() throws IOException {
-		CtModel model = new FluentLauncher().inputResource("src/test/resources/deprecated/input")
-				.inputResource(SpoonResourceHelper.createResource(new File("test"))).noClasspath(true)
+		CtModel model = new FluentLauncher().inputResource("src/test/resources/deprecated/input").noClasspath(true)
 				.outputDirectory(folderFactory.newFolder().getPath()).buildModel();
 	}
 
@@ -34,5 +32,12 @@ public class FluentLauncherTest {
 						System.out.println(element.toString());
 					}
 				}).noClasspath(true).buildModel();
+	}
+
+	@Test
+	public void useCase3() throws IOException {
+		new FluentLauncher().inputResource("src/test/resources/deprecated/input").noClasspath(true)
+				.outputDirectory(folderFactory.newFolder().getPath()).buildModel().getUnnamedModule()
+				.accept(new AstParentConsistencyChecker());
 	}
 }
