@@ -96,7 +96,7 @@ public class ProcessingTest {
 		e.setPrettyPrinterCreator(() -> new SniperJavaPrettyPrinter(l.getEnvironment()));
 
 		Path path = Files.createTempDirectory("emptydir");
-		l.addInputResource("src/test/resources/compilation4/A.java");
+		l.addInputResource("src/test/resources/compilation5/A.java");
 		l.setSourceOutputDirectory(path.toFile());
 		SimpleProcessor simpleProcessor = new SimpleProcessor();
 		l.addProcessor(simpleProcessor);
