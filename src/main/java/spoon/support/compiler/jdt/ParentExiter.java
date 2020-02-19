@@ -21,6 +21,7 @@ import org.eclipse.jdt.internal.compiler.ast.IfStatement;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
+import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.eclipse.jdt.internal.compiler.ast.StringLiteralConcatenation;
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
@@ -30,6 +31,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CaseKind;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -37,6 +39,7 @@ import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
@@ -446,8 +449,23 @@ public class ParentExiter extends CtInheritanceScanner {
 	}
 
 	@Override
+	public void visitCtBreak(CtBreak b) {
+		if (child instanceof CtExpression) {
+			if (!(childJDT instanceof SingleNameReference && ((SingleNameReference) childJDT).isLabel)) {
+				b.setExpression((CtExpression) child);
+				b.setImplicit(true);
+				return;
+			}
+		}
+		super.visitCtBreak(b);
+	}
+
+	@Override
 	public <E> void visitCtCase(CtCase<E> caseStatement) {
 		final ASTNode node = jdtTreeBuilder.getContextBuilder().stack.peek().node;
+		if (node instanceof CaseStatement) {
+			caseStatement.setCaseKind(((CaseStatement) node).isExpr ? CaseKind.ARROW : CaseKind.COLON);
+		}
 		if (node instanceof CaseStatement && ((CaseStatement) node).constantExpression != null && caseStatement.getCaseExpression() == null && child instanceof CtExpression) {
 			caseStatement.setCaseExpression((CtExpression<E>) child);
 			return;

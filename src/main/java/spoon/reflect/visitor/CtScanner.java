@@ -299,6 +299,7 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtBreak(final CtBreak breakStatement) {
 		enter(breakStatement);
 		scan(CtRole.ANNOTATION, breakStatement.getAnnotations());
+		scan(CtRole.EXPRESSION, breakStatement.getExpression());
 		scan(CtRole.COMMENT, breakStatement.getComments());
 		exit(breakStatement);
 	}

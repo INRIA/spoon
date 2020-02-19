@@ -1,11 +1,20 @@
 /**
- * Copyright (C) 2006-2019 INRIA and contributors
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
  */
 package spoon.reflect.visitor;
-
-
 /**
  * This visitor implements a deep-search scan on the model for 2 elements.
  *
@@ -43,7 +52,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 	}
 
 	protected void biScan(spoon.reflect.path.CtRole role, java.util.Collection<? extends spoon.reflect.declaration.CtElement> elements, java.util.Collection<? extends spoon.reflect.declaration.CtElement> others) {
-		for (java.util.Iterator<? extends spoon.reflect.declaration.CtElement> firstIt = elements.iterator(), secondIt = others.iterator(); (firstIt.hasNext()) && (secondIt.hasNext());) {
+		for (java.util.Iterator<? extends spoon.reflect.declaration.CtElement> firstIt = elements.iterator(), secondIt = others.iterator(); firstIt.hasNext() && secondIt.hasNext();) {
 			biScan(role, firstIt.next(), secondIt.next());
 		}
 	}
@@ -172,6 +181,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		spoon.reflect.code.CtBreak other = ((spoon.reflect.code.CtBreak) (this.stack.peek()));
 		enter(breakStatement);
 		biScan(spoon.reflect.path.CtRole.ANNOTATION, breakStatement.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, breakStatement.getExpression(), other.getExpression());
 		biScan(spoon.reflect.path.CtRole.COMMENT, breakStatement.getComments(), other.getComments());
 		exit(breakStatement);
 	}
@@ -1006,4 +1016,3 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		exit(wildcardReference);
 	}
 }
-

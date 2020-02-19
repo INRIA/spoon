@@ -160,6 +160,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.code.CtBreak aCtBreak = breakStatement.getFactory().Core().createBreak();
 		this.builder.copy(breakStatement, aCtBreak);
 		aCtBreak.setAnnotations(this.cloneHelper.clone(breakStatement.getAnnotations()));
+		aCtBreak.setExpression(this.cloneHelper.clone(breakStatement.getExpression()));
 		aCtBreak.setComments(this.cloneHelper.clone(breakStatement.getComments()));
 		this.cloneHelper.tailor(breakStatement, aCtBreak);
 		this.other = aCtBreak;

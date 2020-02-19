@@ -405,7 +405,11 @@ public class PositionBuilder {
 				return handlePositionProblem("Unexpected end of file in CtCase on: " + sourceStart);
 			}
 			if (contents[sourceEnd] != ':') {
-				return handlePositionProblem("Unexpected character " + contents[sourceEnd] + " instead of \':\' in CtCase on: " + sourceEnd);
+				if (contents[sourceEnd] == '-' && contents.length > sourceEnd + 1 && contents[sourceEnd + 1] == '>') {
+					sourceEnd++;
+				} else {
+					return handlePositionProblem("Unexpected character " + contents[sourceEnd] + " instead of \':\' or \'->\' in CtCase on: " + sourceEnd);
+				}
 			}
 		} else if ((node instanceof AssertStatement)) {
 			AssertStatement assert_ = (AssertStatement) node;

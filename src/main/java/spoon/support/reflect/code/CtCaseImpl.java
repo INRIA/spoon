@@ -7,6 +7,7 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.code.CaseKind;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
@@ -30,6 +31,9 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	@MetamodelPropertyField(role = CtRole.STATEMENT)
 	List<CtStatement> statements = emptyList();
 
+	@MetamodelPropertyField(role = CtRole.CASE_KIND)
+	CaseKind caseKind = CaseKind.COLON;
+
 	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtCase(this);
@@ -39,6 +43,8 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	public CtExpression<E> getCaseExpression() {
 		return caseExpression;
 	}
+
+	//TODO: getCaseExpressions (multiple since Java 12)
 
 	@Override
 	public List<CtStatement> getStatements() {
@@ -52,6 +58,18 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.CASE, caseExpression, this.caseExpression);
 		this.caseExpression = caseExpression;
+		return (T) this;
+	}
+
+	@Override
+	public CaseKind getCaseKind() {
+		return caseKind;
+	}
+
+	@Override
+	public <T extends CtCase<E>> T setCaseKind(CaseKind kind) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.CASE_KIND, kind, this.caseKind);
+		caseKind = kind;
 		return (T) this;
 	}
 

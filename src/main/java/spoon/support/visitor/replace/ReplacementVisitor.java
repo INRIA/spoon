@@ -305,6 +305,20 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtBreakExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtBreak element;
+
+		CtBreakExpressionReplaceListener(spoon.reflect.code.CtBreak element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	class CtCaseCaseExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtCase element;
 
@@ -1548,6 +1562,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	@java.lang.Override
 	public void visitCtBreak(final spoon.reflect.code.CtBreak breakStatement) {
 		replaceInListIfExist(breakStatement.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(breakStatement));
+		replaceElementIfExist(breakStatement.getExpression(), new spoon.support.visitor.replace.ReplacementVisitor.CtBreakExpressionReplaceListener(breakStatement));
 		replaceInListIfExist(breakStatement.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(breakStatement));
 	}
 

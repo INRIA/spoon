@@ -12,6 +12,7 @@ import spoon.compiler.Environment;
 import spoon.experimental.CtUnresolvedImport;
 import spoon.processing.Processor;
 import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CaseKind;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -539,9 +540,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void visitCtBreak(CtBreak breakStatement) {
 		enterCtStatement(breakStatement);
-		printer.writeKeyword("break");
-		if (breakStatement.getTargetLabel() != null) {
-			printer.writeSpace().writeKeyword(breakStatement.getTargetLabel());
+		if (!breakStatement.isImplicit()) {
+			printer.writeKeyword("break");
+			if (breakStatement.getTargetLabel() != null) {
+				printer.writeSpace().writeKeyword(breakStatement.getTargetLabel());
+			}
+		} else {
+			// Arrow (->) syntax from Java 12
+			scan(breakStatement.getExpression());
 		}
 		exitCtStatement(breakStatement);
 	}
@@ -569,7 +575,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			printer.writeKeyword("default");
 		}
-		printer.writeSpace().writeSeparator(":").incTab();
+		String separator = caseStatement.getCaseKind() == CaseKind.ARROW ? "->" : ":";
+		printer.writeSpace().writeSeparator(separator).incTab();
 
 		for (CtStatement statement : caseStatement.getStatements()) {
 			printer.writeln();

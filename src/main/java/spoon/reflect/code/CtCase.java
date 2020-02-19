@@ -8,6 +8,7 @@ package spoon.reflect.code;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
+import static spoon.reflect.path.CtRole.CASE_KIND;
 import static spoon.reflect.path.CtRole.EXPRESSION;
 
 /**
@@ -36,6 +37,20 @@ public interface CtCase<S> extends CtStatement, CtStatementList {
 	 */
 	@PropertySetter(role = EXPRESSION)
 	<T extends CtCase<S>> T setCaseExpression(CtExpression<S> caseExpression);
+
+	/**
+	 * Gets the kind of this case - colon (:) or arrow (->)
+	 * (Arrow syntax is available as a preview feature since Java 12)
+	 */
+	@PropertyGetter(role = CASE_KIND)
+	CaseKind getCaseKind();
+
+	/**
+	 * Sets the kind of this case - colon (:) or arrow (->)
+	 * (Arrow syntax is available as a preview feature since Java 12)
+	 */
+	@PropertySetter(role = CASE_KIND)
+	<T extends CtCase<S>> T setCaseKind(CaseKind kind);
 
 	@Override
 	CtCase<S> clone();

@@ -17,14 +17,20 @@
 package spoon.test.model;
 
 import org.junit.Test;
+import spoon.Launcher;
+import spoon.reflect.CtModel;
+import spoon.reflect.code.CaseKind;
+import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +38,67 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class SwitchCaseTest {
+
+	@Test
+	public void testJava12ArrowCase() {
+		String arrow = "class A { public void f(int i) { int x; switch(i) { case 1 -> x = 10; case 2 -> x = 20; default -> x = 30; }; } }";
+		String arrowWithBlock = "class B { public void f(int i) { int x; switch(i) { case 1 -> { x = 10; break; } case 2 -> x = 20; default -> x = 30; }; } }";
+		String colon = "class C { public void f(int i) { int x; switch(i) { case 1: x = 10; x = 1; break; case 2: x = 20; break; default: x = 30; break; }; } }";
+
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(12);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource(new VirtualFile(arrow));
+		launcher.addInputResource(new VirtualFile(arrowWithBlock));
+		launcher.addInputResource(new VirtualFile(colon));
+		CtModel model = launcher.buildModel();
+
+		CtType<?> classA = model.getAllTypes().stream().filter(c -> c.getSimpleName().equals("A")).findFirst().get();
+		CtCase caseA1 = classA.getElements(new TypeFilter<>(CtCase.class)).get(0);
+		CtCase caseA2 = classA.getElements(new TypeFilter<>(CtCase.class)).get(1);
+		CtCase caseA3 = classA.getElements(new TypeFilter<>(CtCase.class)).get(2);
+
+		// contract: we should print arrows like in the original source code
+		assertEquals("case 1 ->\n    x = 10;", caseA1.toString());
+		assertEquals("case 2 ->\n    x = 20;", caseA2.toString());
+		assertEquals("default ->\n    x = 30;", caseA3.toString());
+		assertEquals(caseA1.getCaseKind(), CaseKind.ARROW);
+		assertEquals(caseA2.getCaseKind(), CaseKind.ARROW);
+		assertEquals(caseA3.getCaseKind(), CaseKind.ARROW);
+
+		// contract: we should have implicit breaks (with expressions) for arrows
+		assertTrue(caseA1.getElements(new TypeFilter<>(CtBreak.class)).get(0).isImplicit());
+		assertEquals("x = 10", caseA1.getElements(new TypeFilter<>(CtBreak.class)).get(0).getExpression().toString());
+		assertTrue(caseA2.getElements(new TypeFilter<>(CtBreak.class)).get(0).isImplicit());
+		assertEquals("x = 20", caseA2.getElements(new TypeFilter<>(CtBreak.class)).get(0).getExpression().toString());
+		assertTrue(caseA3.getElements(new TypeFilter<>(CtBreak.class)).get(0).isImplicit());
+		assertEquals("x = 30", caseA3.getElements(new TypeFilter<>(CtBreak.class)).get(0).getExpression().toString());
+
+		CtType<?> classB = model.getAllTypes().stream().filter(c -> c.getSimpleName().equals("B")).findFirst().get();
+		CtCase caseB1 = classB.getElements(new TypeFilter<>(CtCase.class)).get(0);
+
+		// contract: explicit break (inside the block) should be printed
+		assertFalse(caseB1.getElements(new TypeFilter<>(CtBreak.class)).get(0).isImplicit());
+		assertEquals("break", caseB1.getElements(new TypeFilter<>(CtBreak.class)).get(0).toString());
+
+		CtType<?> classC = model.getAllTypes().stream().filter(c -> c.getSimpleName().equals("C")).findFirst().get();
+		CtCase caseC1 = classC.getElements(new TypeFilter<>(CtCase.class)).get(0);
+		CtCase caseC2 = classC.getElements(new TypeFilter<>(CtCase.class)).get(1);
+		CtCase caseC3 = classC.getElements(new TypeFilter<>(CtCase.class)).get(2);
+
+		// contract: old switch should work as usual
+		assertEquals("case 1 :\n    x = 10;\n    x = 1;\n    break;", caseC1.toString());
+		assertEquals("case 2 :\n    x = 20;\n    break;", caseC2.toString());
+		assertEquals("default :\n    x = 30;\n    break;", caseC3.toString());
+		assertEquals(caseC1.getCaseKind(), CaseKind.COLON);
+		assertEquals(caseC2.getCaseKind(), CaseKind.COLON);
+		assertEquals(caseC3.getCaseKind(), CaseKind.COLON);
+	}
 
 	@Test
 	public void testIterationStatements() {
