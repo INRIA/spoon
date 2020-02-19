@@ -57,3 +57,5 @@ aPackage.filterChildren(matcher).forEach((CtElement elem)->{ ... });
 
 For named elements, a wildcard can be specified: if the named element (eg a method) to be matched is called `f` and the template matcher class contains a template parameter called `f` (of type Object), all methods starting by `f` will be matched.
 
+Note, the matching process ignores some information in the AST nodes: comments; position; implicitness and casts. See `roleToSkippedClass` in class [ElementNode](https://github.com/INRIA/spoon/blob/master/src/main/java/spoon/pattern/internal/node/ElementNode.java)
+
