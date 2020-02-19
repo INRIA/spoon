@@ -121,9 +121,10 @@ public class SpoonPom implements SpoonResource {
 			sourcePath = build.getSourceDirectory();
 		}
 		if (sourcePath == null) {
-			sourcePath = Paths.get(directory.getAbsolutePath(), "src", "main", "java").toString();
+			sourcePath = "src\\main\\java";
 		}
-		File source = new File(sourcePath);
+		String absoluteSourcePath = Paths.get(directory.getAbsolutePath(), sourcePath).toString();
+		File source = new File(absoluteSourcePath);
 		if (source.exists()) {
 			output.add(source);
 		}
@@ -150,9 +151,10 @@ public class SpoonPom implements SpoonResource {
 			sourcePath = build.getTestSourceDirectory();
 		}
 		if (sourcePath == null) {
-			sourcePath = Paths.get(directory.getAbsolutePath(), "src", "test", "java").toString();
+			sourcePath = "src\\test\\java";
 		}
-		File source = new File(sourcePath);
+		String absoluteSourcePath = Paths.get(directory.getAbsolutePath(), sourcePath).toString();
+		File source = new File(absoluteSourcePath);
 		if (source.exists()) {
 			output.add(source);
 		}
