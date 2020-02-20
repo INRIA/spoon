@@ -6,6 +6,7 @@
 package spoon;
 
 import java.io.File;
+import java.nio.charset.Charset;
 
 import spoon.processing.Processor;
 import spoon.reflect.CtModel;
@@ -87,4 +88,8 @@ public class FluentLauncher {
 		return this;
 	}
 
+	public FluentLauncher encoding(Charset encoding) {
+		launcher.getEnvironment().setEncoding(encoding);
+		return this;
+	}
 }
