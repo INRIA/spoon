@@ -39,6 +39,13 @@ public class FluentLauncher {
 		return this;
 	}
 
+	public <T extends CtElement> FluentLauncher processor(Iterable<Processor<T>> processors) {
+		for (Processor<T> processor : processors) {
+			launcher.addProcessor(processor);
+		}
+		return this;
+	}
+
 	public CtModel buildModel() {
 		launcher.run();
 		return launcher.getModel();
