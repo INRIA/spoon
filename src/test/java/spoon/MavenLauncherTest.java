@@ -149,6 +149,12 @@ public class MavenLauncherTest {
 	}
 
 	@Test
+	public void testPomSourceDirectory() {
+		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/source-directory", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		assertEquals(2, launcher.getModelBuilder().getInputSources().size());
+	}
+
+	@Test
 	public void mavenLauncherTestMultiModulesAndVariables() {
 		// contract: variables coming from parent should be resolved
 		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/pac4j/pac4j-config", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
