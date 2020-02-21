@@ -74,7 +74,6 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 			return (T) this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.CASE, caseExpressions, this.caseExpressions);
-		//this.caseExpressions = caseExpressions;
 		this.caseExpressions.clear();
 		for (CtExpression expr : caseExpressions) {
 			addCaseExpression(expr);
