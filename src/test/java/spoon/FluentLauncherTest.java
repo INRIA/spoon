@@ -3,7 +3,6 @@ package spoon;
 import java.io.IOException;
 
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import spoon.processing.AbstractProcessor;
@@ -18,13 +17,12 @@ public class FluentLauncherTest {
 	@Rule
 	public TemporaryFolder folderFactory = new TemporaryFolder();
 
-	// following testcases showcase usecases
+	// following test cases showcase use cases
 	public void useCase1() throws IOException {
 		CtModel model = new FluentLauncher().inputResource("src/test/resources/deprecated/input").noClasspath(true)
 				.outputDirectory(folderFactory.newFolder().getPath()).buildModel();
 	}
 
-	@Test
 	public void useCase2() throws IOException {
 		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
 				.outputDirectory(folderFactory.newFolder().getPath()).processor(new AbstractProcessor<CtType<?>>() {
@@ -34,10 +32,28 @@ public class FluentLauncherTest {
 				}).noClasspath(true).buildModel();
 	}
 
-	@Test
 	public void useCase3() throws IOException {
 		new FluentLauncher().inputResource("src/test/resources/deprecated/input").noClasspath(true)
 				.outputDirectory(folderFactory.newFolder().getPath()).buildModel().getUnnamedModule()
 				.accept(new AstParentConsistencyChecker());
+	}
+
+	public void useCase4() throws IOException {
+		CtModel model = new FluentLauncher().inputResource("src/test/resources/deprecated/input").noClasspath(true)
+				.outputDirectory(folderFactory.newFolder().getPath()).buildModel();
+	}
+
+	/**
+	 * shows using the FluentLauncher with different launchers.
+	 *
+	 * @throws IOException
+	 */
+	public void useCase7() throws IOException {
+		new FluentLauncher(new MavenLauncher(null, null)).outputDirectory(folderFactory.newFolder().getPath()).buildModel();
+		IncrementalLauncher launcher = new IncrementalLauncher(null, null, null, false);
+		new FluentLauncher(launcher).inputResource("src/test/resources/deprecated/input").noClasspath(true)
+				.outputDirectory(folderFactory.newFolder().getPath()).buildModel();
+		// now you can still use method from the incrementalLauncher like
+		launcher.changesPresent();
 	}
 }

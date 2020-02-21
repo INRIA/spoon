@@ -25,12 +25,25 @@ public class FluentLauncher {
 	private Launcher launcher;
 
 	/**
-	 * Creates a new FluentLauncher. After setting options, call
-	 * {@link #buildModel()} for creating the CtModel with given settings.
+	 * Creates a new FluentLauncher, wrapping default {@link Launcher}. After
+	 * setting options, call {@link #buildModel()} for creating the CtModel with
+	 * given settings.
 	 *
 	 */
 	public FluentLauncher() {
 		this.launcher = new Launcher();
+	}
+
+	/**
+	 * Creates a new FluentLauncher, wrapping the given launcher. This constructor
+	 * allows using different launchers eg. {@link MavenLauncher} with fluent api.
+	 * After setting options, call {@link #buildModel()} for creating the CtModel
+	 * with given settings.
+	 *
+	 * @param launcher used for delegating methods.
+	 */
+	public FluentLauncher(Launcher launcher) {
+		this.launcher = launcher;
 	}
 
 	/**
@@ -103,7 +116,7 @@ public class FluentLauncher {
 	/**
 	 * Tell to the Java printer to automatically generate imports and use simple
 	 * names instead of fully-qualified name.
-	 * 
+	 *
 	 * @param autoImports toggles autoImports on or off.
 	 * @return the launcher after setting the option.
 	 */
@@ -115,7 +128,7 @@ public class FluentLauncher {
 	/**
 	 * Disable all consistency checks on the AST. Dangerous! The only valid usage of
 	 * this is to keep full backward-compatibility.
-	 * 
+	 *
 	 * @return the launcher after setting the option.
 	 */
 	public FluentLauncher disableConsistencyChecks() {
@@ -125,7 +138,7 @@ public class FluentLauncher {
 
 	/**
 	 * Sets the Java version compliance level.
-	 * 
+	 *
 	 * @param level of java version
 	 * @return the launcher after setting the option.
 	 */
@@ -169,7 +182,7 @@ public class FluentLauncher {
 	 * option enabled they are signaled as message only. The reason is that in most
 	 * cases, there are necessarily errors related to the missing classpath
 	 * elements.
-	 * 
+	 *
 	 * @return the launcher after setting the option.
 	 */
 	public FluentLauncher noClasspath(boolean option) {
@@ -179,7 +192,7 @@ public class FluentLauncher {
 
 	/**
 	 * Set the encoding to use for parsing source code
-	 * 
+	 *
 	 * @param encoding used for parsing.
 	 * @return the launcher after setting the option.
 	 */
