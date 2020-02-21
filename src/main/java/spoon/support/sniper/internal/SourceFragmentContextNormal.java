@@ -33,7 +33,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
  * then Spaces1 belongs to E1 and Spaces2 belongs to element E2.
  * </ul>
  */
-public class SourceFragmentContextNormal extends AbstractSourceFragmentContext {
+public class SourceFragmentContextNormal extends AbstractSourceFragmentPrinter {
 	/**
 	 * @param mutableTokenWriter {@link MutableTokenWriter}, which is used for printing
 	 * @param rootFragment the {@link ElementSourceFragment}, which represents whole elements. E.g. whole type or method
@@ -52,9 +52,7 @@ public class SourceFragmentContextNormal extends AbstractSourceFragmentContext {
 	@Override
 	public void onFinished() {
 		//we are at the end of this element. Printer just tries to print something out of this context.
-		if (mutableTokenWriter.isMuted() == false) {
-			//print fragment suffix
-			printSpaces(childFragments.size());
-		}
+		//print fragment suffix
+		printSpaces(childFragments.size());
 	}
 }

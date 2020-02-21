@@ -128,7 +128,6 @@ public class MainTest {
 		launcher.run(new String[] {
 				"-i", "src/test/java",
 				"-o", "target/spooned",
-				"--noclasspath",
 				"--disable-comments",
 				"--compliance", "8",
 				"--level", "OFF"
