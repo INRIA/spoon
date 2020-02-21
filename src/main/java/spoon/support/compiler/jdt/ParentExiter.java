@@ -466,8 +466,9 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (node instanceof CaseStatement) {
 			caseStatement.setCaseKind(((CaseStatement) node).isExpr ? CaseKind.ARROW : CaseKind.COLON);
 		}
-		if (node instanceof CaseStatement && ((CaseStatement) node).constantExpression != null && caseStatement.getCaseExpression() == null && child instanceof CtExpression) {
-			caseStatement.setCaseExpression((CtExpression<E>) child);
+		if (node instanceof CaseStatement && ((CaseStatement) node).constantExpression != null && child instanceof CtExpression
+				&& caseStatement.getCaseExpressions().size() < ((CaseStatement) node).constantExpressions.length) {
+			caseStatement.addCaseExpression((CtExpression<E>) child);
 			return;
 		} else if (child instanceof CtStatement) {
 			caseStatement.addStatement((CtStatement) child);

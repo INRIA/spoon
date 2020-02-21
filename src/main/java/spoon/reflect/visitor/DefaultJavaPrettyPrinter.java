@@ -558,19 +558,26 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		enterCtStatement(caseStatement);
 		if (caseStatement.getCaseExpression() != null) {
 			printer.writeKeyword("case").writeSpace();
-			// writing enum case expression
-			if (caseStatement.getCaseExpression() instanceof CtFieldAccess) {
-				final CtFieldReference variable = ((CtFieldAccess) caseStatement.getCaseExpression()).getVariable();
-				// In noclasspath mode, we don't have always the type of the declaring type.
-				if (variable.getType() != null
-						&& variable.getDeclaringType() != null
-						&& variable.getType().getQualifiedName().equals(variable.getDeclaringType().getQualifiedName())) {
-					printer.writeIdentifier(variable.getSimpleName());
+			List<CtExpression<E>> caseExpressions = caseStatement.getCaseExpressions();
+			for (int i = 0; i < caseExpressions.size(); i++) {
+				CtExpression<E> caseExpression = caseExpressions.get(i);
+				// writing enum case expression
+				if (caseExpression instanceof CtFieldAccess) {
+					final CtFieldReference variable = ((CtFieldAccess) caseExpression).getVariable();
+					// In noclasspath mode, we don't have always the type of the declaring type.
+					if (variable.getType() != null
+							&& variable.getDeclaringType() != null
+							&& variable.getType().getQualifiedName().equals(variable.getDeclaringType().getQualifiedName())) {
+						printer.writeIdentifier(variable.getSimpleName());
+					} else {
+						scan(caseExpression);
+					}
 				} else {
-					scan(caseStatement.getCaseExpression());
+					scan(caseExpression);
 				}
-			} else {
-				scan(caseStatement.getCaseExpression());
+				if (i != caseExpressions.size() - 1) {
+					printer.writeSeparator(",").writeSpace();
+				}
 			}
 		} else {
 			printer.writeKeyword("default");

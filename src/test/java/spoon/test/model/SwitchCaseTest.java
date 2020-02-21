@@ -26,6 +26,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -43,6 +44,10 @@ import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class SwitchCaseTest {
+
+	private static String toSingleLineString(CtElement e) {
+		return e.toString().replace("\n", "").replace("\r", "");
+	}
 
 	@Test
 	public void testJava12ArrowCase() {
@@ -64,9 +69,9 @@ public class SwitchCaseTest {
 		CtCase caseA3 = classA.getElements(new TypeFilter<>(CtCase.class)).get(2);
 
 		// contract: we should print arrows like in the original source code
-		assertEquals("case 1 ->\n    x = 10;", caseA1.toString());
-		assertEquals("case 2 ->\n    x = 20;", caseA2.toString());
-		assertEquals("default ->\n    x = 30;", caseA3.toString());
+		assertEquals("case 1 ->    x = 10;", toSingleLineString(caseA1));
+		assertEquals("case 2 ->    x = 20;", toSingleLineString(caseA2));
+		assertEquals("default ->    x = 30;", toSingleLineString(caseA3));
 		assertEquals(caseA1.getCaseKind(), CaseKind.ARROW);
 		assertEquals(caseA2.getCaseKind(), CaseKind.ARROW);
 		assertEquals(caseA3.getCaseKind(), CaseKind.ARROW);
@@ -92,12 +97,38 @@ public class SwitchCaseTest {
 		CtCase caseC3 = classC.getElements(new TypeFilter<>(CtCase.class)).get(2);
 
 		// contract: old switch should work as usual
-		assertEquals("case 1 :\n    x = 10;\n    x = 1;\n    break;", caseC1.toString());
-		assertEquals("case 2 :\n    x = 20;\n    break;", caseC2.toString());
-		assertEquals("default :\n    x = 30;\n    break;", caseC3.toString());
+		assertEquals("case 1 :    x = 10;    x = 1;    break;", toSingleLineString(caseC1));
+		assertEquals("case 2 :    x = 20;    break;", toSingleLineString(caseC2));
+		assertEquals("default :    x = 30;    break;", toSingleLineString(caseC3));
 		assertEquals(caseC1.getCaseKind(), CaseKind.COLON);
 		assertEquals(caseC2.getCaseKind(), CaseKind.COLON);
 		assertEquals(caseC3.getCaseKind(), CaseKind.COLON);
+	}
+
+	@Test
+	public void testJava12MultipleCaseExpressions() {
+		// contract: we should handle multiple case expressions correctly
+		String arrow = "class A { public void f(int i) { int x; switch(i) { case 1,2,3 -> x = 10; case 4 -> x = 20; default -> x = 30; }; } }";
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(12);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource(new VirtualFile(arrow));
+		CtModel model = launcher.buildModel();
+		CtType<?> classA = model.getAllTypes().stream().filter(c -> c.getSimpleName().equals("A")).findFirst().get();
+		CtCase caseA1 = classA.getElements(new TypeFilter<>(CtCase.class)).get(0);
+		CtCase caseA2 = classA.getElements(new TypeFilter<>(CtCase.class)).get(1);
+		CtCase caseA3 = classA.getElements(new TypeFilter<>(CtCase.class)).get(2);
+
+		assertEquals(3, caseA1.getCaseExpressions().size());
+		assertEquals("1", caseA1.getCaseExpressions().get(0).toString());
+		assertEquals("2", caseA1.getCaseExpressions().get(1).toString());
+		assertEquals("3", caseA1.getCaseExpressions().get(2).toString());
+
+		assertEquals(1, caseA2.getCaseExpressions().size());
+		assertEquals("4", caseA2.getCaseExpressions().get(0).toString());
+
+		assertEquals(0, caseA3.getCaseExpressions().size());
+		assertEquals("default ->    x = 30;", toSingleLineString(caseA3));
 	}
 
 	@Test

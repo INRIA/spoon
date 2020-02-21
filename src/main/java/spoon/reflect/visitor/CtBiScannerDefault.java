@@ -182,7 +182,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		spoon.reflect.code.CtCase other = ((spoon.reflect.code.CtCase) (this.stack.peek()));
 		enter(caseStatement);
 		biScan(spoon.reflect.path.CtRole.ANNOTATION, caseStatement.getAnnotations(), other.getAnnotations());
-		biScan(spoon.reflect.path.CtRole.EXPRESSION, caseStatement.getCaseExpression(), other.getCaseExpression());
+		biScan(spoon.reflect.path.CtRole.EXPRESSION, caseStatement.getCaseExpressions(), other.getCaseExpressions());
 		biScan(spoon.reflect.path.CtRole.STATEMENT, caseStatement.getStatements(), other.getStatements());
 		biScan(spoon.reflect.path.CtRole.COMMENT, caseStatement.getComments(), other.getComments());
 		exit(caseStatement);

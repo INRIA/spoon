@@ -92,6 +92,9 @@ public final class ModelElementContainerDefaultCapacities {
 	// > 1 very rarely
 	public static final int TYPE_BOUNDS_CONTAINER_DEFAULT_CAPACITY = 1;
 
+	// > 1 allowed only since Java 12
+	public static final int CASE_EXPRESSIONS_CONTAINER_DEFAULT_CAPACITY = 1;
+
 	private ModelElementContainerDefaultCapacities() {
 	}
 }

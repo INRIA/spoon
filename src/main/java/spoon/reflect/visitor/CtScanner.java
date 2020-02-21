@@ -307,7 +307,7 @@ public abstract class CtScanner implements CtVisitor {
 	public <S> void visitCtCase(final CtCase<S> caseStatement) {
 		enter(caseStatement);
 		scan(CtRole.ANNOTATION, caseStatement.getAnnotations());
-		scan(CtRole.EXPRESSION, caseStatement.getCaseExpression());
+		scan(CtRole.EXPRESSION, caseStatement.getCaseExpressions());
 		scan(CtRole.STATEMENT, caseStatement.getStatements());
 		scan(CtRole.COMMENT, caseStatement.getComments());
 		exit(caseStatement);

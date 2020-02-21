@@ -895,7 +895,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtCase_EXPRESSION_RoleHandler extends SingleHandler<CtCase, CtExpression<?>> {
+	static class CtCase_EXPRESSION_RoleHandler extends ListHandler<CtCase, CtExpression<?>> {
 		private CtCase_EXPRESSION_RoleHandler() {
 			super(CtRole.EXPRESSION, CtCase.class, CtExpression.class);
 		}
@@ -903,12 +903,12 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getCaseExpression())));
+			return ((U) ((Object) (castTarget(element).getCaseExpressions())));
 		}
 
 		@Override
 		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setCaseExpression(castValue(value));
+			castTarget(element).setCaseExpressions(castValue(value));
 		}
 	}
 

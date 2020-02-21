@@ -28,6 +28,9 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	CtExpression<E> caseExpression;
 
+	@MetamodelPropertyField(role = CtRole.EXPRESSION)
+	List<CtExpression<E>> caseExpressions = emptyList();
+
 	@MetamodelPropertyField(role = CtRole.STATEMENT)
 	List<CtStatement> statements = emptyList();
 
@@ -44,8 +47,6 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 		return caseExpression;
 	}
 
-	//TODO: getCaseExpressions (multiple since Java 12)
-
 	@Override
 	public List<CtStatement> getStatements() {
 		return statements;
@@ -58,6 +59,40 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.CASE, caseExpression, this.caseExpression);
 		this.caseExpression = caseExpression;
+		return (T) this;
+	}
+
+	@Override
+	public List<CtExpression<E>> getCaseExpressions() {
+		return caseExpressions;
+	}
+
+	@Override
+	public <T extends CtCase<E>> T setCaseExpressions(List<CtExpression<E>> caseExpressions) {
+		if (caseExpressions == null || caseExpressions.isEmpty()) {
+			this.caseExpressions = CtElementImpl.emptyList();
+			return (T) this;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.CASE, caseExpressions, this.caseExpressions);
+		//this.caseExpressions = caseExpressions;
+		this.caseExpressions.clear();
+		for (CtExpression expr : caseExpressions) {
+			addCaseExpression(expr);
+		}
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtCase<E>> T addCaseExpression(CtExpression<E> caseExpression) {
+		if (caseExpression == null) {
+			return (T) this;
+		}
+		this.ensureModifiableCaseExpressionsList();
+		if (getCaseExpression() == null) {
+			setCaseExpression(caseExpression);
+		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.CASE, caseExpressions, this.caseExpressions);
+		this.caseExpressions.add(caseExpression);
 		return (T) this;
 	}
 
@@ -95,6 +130,12 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	private void ensureModifiableStatementsList() {
 		if (this.statements == CtElementImpl.<CtStatement>emptyList()) {
 			this.statements = new ArrayList<>(ModelElementContainerDefaultCapacities.CASE_STATEMENTS_CONTAINER_DEFAULT_CAPACITY);
+		}
+	}
+
+	private void ensureModifiableCaseExpressionsList() {
+		if (this.caseExpressions == CtElementImpl.<CtExpression<E>>emptyList()) {
+			this.caseExpressions = new ArrayList<>(ModelElementContainerDefaultCapacities.CASE_EXPRESSIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
 	}
 

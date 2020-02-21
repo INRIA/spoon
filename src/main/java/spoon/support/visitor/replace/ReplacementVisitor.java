@@ -319,16 +319,16 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCaseCaseExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	class CtCaseCaseExpressionsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.code.CtCase element;
 
-		CtCaseCaseExpressionReplaceListener(spoon.reflect.code.CtCase element) {
+		CtCaseCaseExpressionsReplaceListener(spoon.reflect.code.CtCase element) {
 			this.element = element;
 		}
 
 		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setCaseExpression(replace);
+		public void set(java.util.List replace) {
+			this.element.setCaseExpressions(replace);
 		}
 	}
 
@@ -1342,7 +1342,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	public static void replace(spoon.reflect.declaration.CtElement original, spoon.reflect.declaration.CtElement replace) {
 		try {
-			new spoon.support.visitor.replace.ReplacementVisitor(original, (replace == null ? EMPTY : new spoon.reflect.declaration.CtElement[]{ replace })).scan(original.getParent());
+			new spoon.support.visitor.replace.ReplacementVisitor(original, replace == null ? spoon.support.visitor.replace.ReplacementVisitor.EMPTY : new spoon.reflect.declaration.CtElement[]{ replace }).scan(original.getParent());
 		} catch (spoon.support.visitor.replace.InvalidReplaceException e) {
 			throw e;
 		}
@@ -1364,7 +1364,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	private ReplacementVisitor(spoon.reflect.declaration.CtElement original, spoon.reflect.declaration.CtElement... replace) {
 		this.original = original;
-		this.replace = (replace == null) ? EMPTY : replace;
+		this.replace = (replace == null) ? spoon.support.visitor.replace.ReplacementVisitor.EMPTY : replace;
 	}
 
 	private <K, V extends spoon.reflect.declaration.CtElement> void replaceInMapIfExist(java.util.Map<K, V> mapProtected, spoon.support.visitor.replace.ReplaceMapListener listener) {
@@ -1372,16 +1372,16 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		V shouldBeDeleted = null;
 		K key = null;
 		for (java.util.Map.Entry<K, V> entry : map.entrySet()) {
-			if ((entry.getValue()) == (original)) {
+			if (entry.getValue() == original) {
 				shouldBeDeleted = entry.getValue();
 				key = entry.getKey();
 				break;
 			}
 		}
 		if (shouldBeDeleted != null) {
-			if ((replace.length) > 0) {
-				if ((replace.length) > 1) {
-					throw new spoon.support.visitor.replace.InvalidReplaceException(("Cannot replace single value by multiple values in " + (listener.getClass().getSimpleName())));
+			if (replace.length > 0) {
+				if (replace.length > 1) {
+					throw new spoon.support.visitor.replace.InvalidReplaceException("Cannot replace single value by multiple values in " + listener.getClass().getSimpleName());
 				}
 				V val = ((V) (replace[0]));
 				if (val != null) {
@@ -1401,7 +1401,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		java.util.Set<T> set = new java.util.HashSet<>(setProtected);
 		T shouldBeDeleted = null;
 		for (T element : set) {
-			if (element == (original)) {
+			if (element == original) {
 				shouldBeDeleted = element;
 				break;
 			}
@@ -1422,8 +1422,8 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		java.util.List<T> list = new java.util.ArrayList<>(listProtected);
 		T shouldBeDeleted = null;
 		int index = 0;
-		for (int i = 0; i < (list.size()); i++) {
-			if ((list.get(i)) == (original)) {
+		for (int i = 0; i < list.size(); i++) {
+			if (list.get(i) == original) {
 				index = i;
 				shouldBeDeleted = list.get(i);
 				break;
@@ -1431,7 +1431,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		}
 		if (shouldBeDeleted != null) {
 			list.remove(index);
-			if ((replace.length) > 0) {
+			if (replace.length > 0) {
 				for (spoon.reflect.declaration.CtElement aReplace : replace) {
 					T ele = ((T) (aReplace));
 					if (ele != null) {
@@ -1446,11 +1446,11 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	private void replaceElementIfExist(spoon.reflect.declaration.CtElement candidate, spoon.support.visitor.replace.ReplaceListener listener) {
-		if (candidate == (original)) {
+		if (candidate == original) {
 			spoon.reflect.declaration.CtElement val = null;
-			if ((replace.length) > 0) {
-				if ((replace.length) > 1) {
-					throw new spoon.support.visitor.replace.InvalidReplaceException(("Cannot replace single value by multiple values in " + (listener.getClass().getSimpleName())));
+			if (replace.length > 0) {
+				if (replace.length > 1) {
+					throw new spoon.support.visitor.replace.InvalidReplaceException("Cannot replace single value by multiple values in " + listener.getClass().getSimpleName());
 				}
 				val = replace[0];
 			}
@@ -1570,7 +1570,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	@java.lang.Override
 	public <S> void visitCtCase(final spoon.reflect.code.CtCase<S> caseStatement) {
 		replaceInListIfExist(caseStatement.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(caseStatement));
-		replaceElementIfExist(caseStatement.getCaseExpression(), new spoon.support.visitor.replace.ReplacementVisitor.CtCaseCaseExpressionReplaceListener(caseStatement));
+		replaceInListIfExist(caseStatement.getCaseExpressions(), new spoon.support.visitor.replace.ReplacementVisitor.CtCaseCaseExpressionsReplaceListener(caseStatement));
 		replaceInListIfExist(caseStatement.getStatements(), new spoon.support.visitor.replace.ReplacementVisitor.CtStatementListStatementsReplaceListener(caseStatement));
 		replaceInListIfExist(caseStatement.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(caseStatement));
 	}
