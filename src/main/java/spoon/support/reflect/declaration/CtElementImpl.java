@@ -5,8 +5,8 @@
  */
 package spoon.support.reflect.declaration;
 
-import org.apache.log4j.Logger;
-import spoon.Launcher;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
@@ -70,7 +70,7 @@ import static spoon.reflect.visitor.CommentHelper.printComment;
  */
 public abstract class CtElementImpl implements CtElement, Serializable {
 	private static final long serialVersionUID = 1L;
-	protected static final Logger LOGGER = Logger.getLogger(CtElementImpl.class);
+	protected static final Logger LOGGER = LogManager.getLogger();
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
 	private static final Factory DEFAULT_FACTORY = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
 
@@ -164,9 +164,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
 		if (this instanceof CtShadowable) {
 			CtShadowable shadowable = (CtShadowable) this;
-			if (shadowable.isShadow()) {
-				Launcher.LOGGER.debug("Some annotations might be unreachable from the shadow element: " + this.getShortRepresentation());
-			}
 		}
 		return unmodifiableList(annotations);
 	}
@@ -453,7 +450,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public void setFactory(Factory factory) {
 		this.factory = factory;
-		LOGGER.setLevel(factory.getEnvironment().getLevel());
 	}
 
 	@Override

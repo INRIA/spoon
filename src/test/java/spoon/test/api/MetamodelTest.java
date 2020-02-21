@@ -520,12 +520,12 @@ public class MetamodelTest {
 		//contract: single value roles supports multivalue interface too
 		Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();
-		CtTypeReference<?> typeRef = factory.Type().createReference("some.test.package.TestType");
+		CtTypeReference<?> typeRef = factory.Type().createReference("some.test.foo.TestType");
 		RoleHandler rh = RoleHandlerHelper.getRoleHandler(typeRef.getClass(), CtRole.PACKAGE_REF);
 
 		//contract: single value role provides a List
 		List<CtPackageReference> packages = rh.asList(typeRef);
-		assertListContracts(packages, typeRef, 1, "some.test.package");
+		assertListContracts(packages, typeRef, 1, "some.test.foo");
 
 		//contract: adding of existing value fails and changes nothing
 		try {
@@ -534,7 +534,7 @@ public class MetamodelTest {
 		} catch (Exception e) {
 			//OK
 		}
-		assertListContracts(packages, typeRef, 1, "some.test.package");
+		assertListContracts(packages, typeRef, 1, "some.test.foo");
 
 		//contract: adding of null fails and changes nothing
 		try {
@@ -543,7 +543,7 @@ public class MetamodelTest {
 		} catch (Exception e) {
 			//OK
 		}
-		assertListContracts(packages, typeRef, 1, "some.test.package");
+		assertListContracts(packages, typeRef, 1, "some.test.foo");
 
 		//contract: adding of different value fails, and changes nothing
 		try {
@@ -552,18 +552,18 @@ public class MetamodelTest {
 		} catch (SpoonException e) {
 			//OK
 		}
-		assertListContracts(packages, typeRef, 1, "some.test.package");
+		assertListContracts(packages, typeRef, 1, "some.test.foo");
 
 		//contract remove of different value changes nothing
 		assertFalse(packages.remove(factory.Package().createReference("some.test.another_package")));
-		assertListContracts(packages, typeRef, 1, "some.test.package");
+		assertListContracts(packages, typeRef, 1, "some.test.foo");
 
 		//contract remove of null value changes nothing
 		assertFalse(packages.remove(null));
-		assertListContracts(packages, typeRef, 1, "some.test.package");
+		assertListContracts(packages, typeRef, 1, "some.test.foo");
 
 		//contract remove of existing value sets value to null and size to 0
-		assertTrue(packages.remove(factory.Package().createReference("some.test.package")));
+		assertTrue(packages.remove(factory.Package().createReference("some.test.foo")));
 		assertListContracts(packages, typeRef, 0, null);
 
 		//contract add of null into empty collection changes size to 1, but value is still null
@@ -580,11 +580,11 @@ public class MetamodelTest {
 		assertListContracts(packages, typeRef, 1, null);
 
 		//contract: set of new value replaces existing value
-		assertNull(packages.set(0, factory.Package().createReference("some.test.package")));
-		assertListContracts(packages, typeRef, 1, "some.test.package");
+		assertNull(packages.set(0, factory.Package().createReference("some.test.foo")));
+		assertListContracts(packages, typeRef, 1, "some.test.foo");
 
 		//contract: set of null value keeps size==1 even if value is replaced by null
-		assertEquals("some.test.package", packages.set(0, null).getQualifiedName());
+		assertEquals("some.test.foo", packages.set(0, null).getQualifiedName());
 		assertListContracts(packages, typeRef, 1, null);
 
 		//contract: remove of null value by index sets size==0 the value is still null

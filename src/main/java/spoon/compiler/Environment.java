@@ -5,7 +5,7 @@
  */
 package spoon.compiler;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import spoon.OutputType;
 import spoon.compiler.builder.EncodingProvider;
 import spoon.processing.FileGenerator;
@@ -53,8 +53,7 @@ public interface Environment {
 	void setPrettyPrintingMode(PRETTY_PRINTING_MODE prettyPrintingMode);
 
 	/**
-	 * This method should be called to print out a message with a source
-	 * position link during the processing.
+	 * Logs a debug message
 	 */
 	void debugMessage(String message);
 

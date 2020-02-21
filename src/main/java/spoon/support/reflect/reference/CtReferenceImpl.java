@@ -5,6 +5,7 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtElement;
@@ -17,14 +18,18 @@ import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import static spoon.reflect.path.CtRole.NAME;
 
 public abstract class CtReferenceImpl extends CtElementImpl implements CtReference, Serializable {
 
 	private static final long serialVersionUID = 1L;
+	private static Collection<String> keywords = fillWithKeywords();
 
 	@MetamodelPropertyField(role = NAME)
 	protected String simplename = "";
@@ -42,6 +47,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	@Override
 	public <T extends CtReference> T setSimpleName(String simplename) {
 		Factory factory = getFactory();
+		checkIdentiferForJLSCorrectness(simplename);
 		if (factory == null) {
 			this.simplename = simplename;
 			return (T) this;
@@ -53,6 +59,9 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		this.simplename = simplename;
 		return (T) this;
 	}
+
+
+
 
 	@UnsettableProperty
 	@Override
@@ -80,5 +89,46 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 			return super.equals(o);
 		}
 		return false;
+	}
+	private void checkIdentiferForJLSCorrectness(String simplename) {
+	/*
+  * At the level of the Java Virtual Machine, every constructor written in the Java programming language (JLS §8.8)
+  * appears as an instance initialization method that has the special name <init>.
+  * This name is supplied by a compiler. Because the name is not a valid identifier,
+  * it cannot be used directly in a program written in the Java programming language.
+  */
+	//JDTTreeBuilderHelper.computeAnonymousName returns "$numbers$Name" so we have to skip them if they start with numbers
+	//allow empty identifier because they are sometimes used.
+		if (!simplename.matches("<.*>|\\d.*|^.{0}$")) {
+			//split at "<" and ">" because "Iterator<Cache.Entry<K,Store.ValueHolder<V>>>" submits setSimplename ("Cache.Entry<K")
+			String[] splittedSimplename = simplename.split("\\.|<|>");
+			if (checkAllParts(splittedSimplename)) {
+				throw new SpoonException("Not allowed javaletter or keyword in identifier found. See JLS for correct identifier. Identifier: " + simplename);
+			}
+	}
+}
+	private boolean isKeyword(String simplename) {
+		return keywords.contains(simplename);
+	}
+	private boolean checkAllParts(String[] simplenameParts) {
+		for (String simpleName:simplenameParts) {
+			//because arrays use e.g. int[] and @Number is used for instances of an object e.g. foo@1
+			simpleName = simpleName.replaceAll("\\[\\]|@", "");
+			if (isKeyword(simpleName) || checkIdentifierChars(simpleName)) {
+				return true;
+		}
+	}
+	return false;
+	}
+	private boolean checkIdentifierChars(String simplename) {
+		return (!Character.isJavaIdentifierStart(simplename.charAt(0))) || simplename.chars().anyMatch(letter -> !Character.isJavaIdentifierPart(letter));
+	}
+	private static Collection<String> fillWithKeywords() {
+	//removed types because needed as ref: "int","short", "char", "void", "byte","float", "true","false","boolean","double","long","class", "null"
+	return Stream.of("abstract", "continue", "for", "new", "switch", "assert", "default", "if", "package", "synchronized",  "do", "goto", "private",
+	"this", "break",  "implements", "protected", "throw", "else", "import", "public", "throws", "case", "enum", "instanceof", "return",
+	"transient", "catch", "extends", "try", "final", "interface", "static", "finally",  "strictfp", "volatile",
+	"const",  "native", "super", "while", "_")
+	.collect(Collectors.toCollection(HashSet::new));
 	}
 }

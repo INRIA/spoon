@@ -9,6 +9,8 @@ Spoon is an open-source library to analyze, rewrite, transform, transpile Java s
 Spoon is an official Inria open-source project, and member of the [OW2](https://www.ow2.org/) open-source consortium.
 The official website is available at <http://spoon.gforge.inria.fr/>.
 
+### Academic usage
+
 If you use Spoon for academic purposes, please cite: Renaud Pawlak, Martin Monperrus, Nicolas Petitprez, Carlos Noguera, Lionel Seinturier. “[Spoon: A Library for Implementing Analyses and Transformations of Java Source Code](https://hal.archives-ouvertes.fr/hal-01078532/document)”. In Software: Practice and Experience, Wiley-Blackwell, 2015. Doi: 10.1002/spe.2346.
 
 ```
@@ -23,9 +25,11 @@ If you use Spoon for academic purposes, please cite: Renaud Pawlak, Martin Monpe
   YEAR = {2015},
   doi = {10.1002/spe.2346},
 }
-
 ```
 
+### Professional support
+
+If you need professional support on Spoon (development, training, extension), you are welcome to post a comment on https://github.com/INRIA/spoon/issues/3251
 
 ## Getting started in 2 seconds
 

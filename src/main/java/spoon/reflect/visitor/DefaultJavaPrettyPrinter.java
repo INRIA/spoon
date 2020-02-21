@@ -5,7 +5,8 @@
  */
 package spoon.reflect.visitor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.experimental.CtUnresolvedImport;
@@ -235,7 +236,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 
-	protected static final Logger LOGGER = Logger.getLogger(DefaultJavaPrettyPrinter.class);
+	protected static final Logger LOGGER = LogManager.getLogger();
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
 	/**
 	 * Prints an element. This method shall be called by the toString() method of an element.
@@ -1944,9 +1945,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public String printCompilationUnit(CtCompilationUnit compilationUnit) {
-		reset();
-		applyPreProcessors(compilationUnit);
-		scanCompilationUnit(compilationUnit);
+		calculate(compilationUnit, compilationUnit.getDeclaredTypes());
 		return getResult();
 	}
 
@@ -1956,10 +1955,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			preprocessor.process(el);
 		}
 	}
-
-	protected void scanCompilationUnit(CtCompilationUnit compilationUnit) {
-		scan(compilationUnit);
-		}
 
 	@Override
 	public String printPackageInfo(CtPackage pack) {
@@ -1991,30 +1986,32 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void calculate(CtCompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
+		reset();
 		if (types.isEmpty()) {
-			return;
+			// is package-info.java, we cannot call types.get(0) in the then branch
+		} else {
+			CtType<?> type = types.get(0);
+			if (sourceCompilationUnit == null) {
+				sourceCompilationUnit = type.getFactory().CompilationUnit().getOrCreate(type);
+			}
+			if (type.getPackage() == null) {
+				type.setParent(type.getFactory().Package().getRootPackage());
+			}
+			CtPackageReference packRef = type.getPackage().getReference();
+			if (!packRef.equals(sourceCompilationUnit.getPackageDeclaration().getReference())) {
+				//the type was cloned and moved to different package. Adapt package reference of compilation unit too
+				sourceCompilationUnit.getPackageDeclaration().setReference(packRef);
+			}
+			if (!hasSameTypes(sourceCompilationUnit, types)) {
+				//the provided CU has different types, then these which has to be printed
+				//clone CU and assign it expected types
+				sourceCompilationUnit = sourceCompilationUnit.clone();
+				sourceCompilationUnit.setDeclaredTypes(types);
+			}
 		}
-		CtType<?> type = types.get(0);
-		// reset the importsContext to avoid errors with multiple CU
-		if (sourceCompilationUnit == null) {
-			sourceCompilationUnit = type.getFactory().CompilationUnit().getOrCreate(type);
-		}
-		if (type.getPackage() == null) {
-			type.setParent(type.getFactory().Package().getRootPackage());
-		}
-		if (!hasSameTypes(sourceCompilationUnit, types)) {
-			//the provided CU has different types, then these which has to be printed
-			//clone CU and assign it expected types
-			sourceCompilationUnit = sourceCompilationUnit.clone();
-			sourceCompilationUnit.setDeclaredTypes(types);
-		}
-		CtPackageReference packRef = type.getPackage().getReference();
-		if (!packRef.equals(sourceCompilationUnit.getPackageDeclaration().getReference())) {
-			//the type was cloned and moved to different package. Adapt package reference of compilation unit too
-			sourceCompilationUnit.getPackageDeclaration().setReference(packRef);
-		}
-		printCompilationUnit(sourceCompilationUnit);
-		}
+		applyPreProcessors(sourceCompilationUnit);
+		scan(sourceCompilationUnit);
+	}
 
 	private boolean hasSameTypes(CtCompilationUnit compilationUnit, List<CtType<?>> types) {
 		List<CtTypeReference<?>> cuTypes = compilationUnit.getDeclaredTypeReferences();

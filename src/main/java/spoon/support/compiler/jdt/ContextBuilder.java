@@ -12,8 +12,6 @@ import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
-
-import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConstructorCall;
@@ -47,8 +45,8 @@ import java.util.Deque;
 import java.util.EnumSet;
 import java.util.List;
 
-import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
 import static java.lang.String.format;
+import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
 
 @Internal
 public class ContextBuilder {
@@ -92,7 +90,6 @@ public class ContextBuilder {
 					e.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPositionCtElement(e, node));
 				} catch (Exception ex) {
 					e.setPosition(SourcePosition.NOPOSITION);
-					Launcher.LOGGER.warn("PositionBuilder failed for element " + e.toString(), ex);
 				}
 			}
 		}

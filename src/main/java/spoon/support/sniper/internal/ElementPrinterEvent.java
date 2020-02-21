@@ -6,6 +6,7 @@
 package spoon.support.sniper.internal;
 
 import spoon.reflect.cu.SourcePositionHolder;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 
 /**
@@ -13,9 +14,9 @@ import spoon.reflect.path.CtRole;
  */
 public abstract class ElementPrinterEvent implements PrinterEvent {
 	private final CtRole role;
-	private final SourcePositionHolder element;
+	private final CtElement element;
 
-	public ElementPrinterEvent(CtRole role, SourcePositionHolder element) {
+	public ElementPrinterEvent(CtRole role, CtElement element) {
 		this.role = role;
 		this.element = element;
 	}
@@ -31,16 +32,11 @@ public abstract class ElementPrinterEvent implements PrinterEvent {
 	}
 
 	@Override
-	public String getToken() {
-		return null;
-	}
-	@Override
-	public boolean isWhitespace() {
-		return false;
-	}
-	@Override
 	public String toString() {
-		return role.name() + "->" + element.toString();
+		if (role != null && element != null) {
+			return role.name() + "->" + element.toStringDebug();
+		}
+		return "illformed ElementPrinterEvent";
 	}
 }
 

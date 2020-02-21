@@ -1120,6 +1120,7 @@ public class CommentTest {
 				" * @version 1.0\r" + 
 				" */", type.getComments().get(0).getRawContent());
 	}
+
 	@Test
 	public void testEmptyStatementComments() {
 		//contract: model building should not produce NPE, comments should exist
@@ -1127,10 +1128,15 @@ public class CommentTest {
 		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/EmptyStatementComments.java");
 		launcher.getEnvironment().setCommentEnabled(true);
 
-		CtModel model = launcher.buildModel();
-		List<CtIf> conditions = model.getElements(new TypeFilter<>(CtIf.class));
+		List<CtMethod<?>> methods = launcher.buildModel().getElements(new TypeFilter<>(CtMethod.class));
+
+		List<CtIf> conditions = methods.get(0).getElements(new TypeFilter<>(CtIf.class));
 		assertEquals("comment", conditions.get(0).getComments().get(0).getContent());
 		assertEquals("comment", conditions.get(1).getComments().get(0).getContent());
+
+		List<CtSwitch<?>> switches = methods.get(1).getElements(new TypeFilter<>(CtSwitch.class));
+		assertEquals("commentInline", switches.get(0).getComments().get(0).getContent());
+		assertEquals("commentBlock", switches.get(1).getComments().get(0).getContent());
 	}
 
 	@Test

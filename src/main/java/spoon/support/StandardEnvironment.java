@@ -6,8 +6,8 @@
 package spoon.support;
 
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
@@ -136,7 +136,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public void debugMessage(String message) {
-		logger.debug(message);
+		print(message, Level.DEBUG);
 	}
 
 	@Override
@@ -166,7 +166,6 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setLevel(String level) {
 		this.level = toLevel(level);
-		logger.setLevel(this.level);
 	}
 
 	@Override
@@ -277,15 +276,9 @@ public class StandardEnvironment implements Serializable, Environment {
 		print(buffer.toString(), level);
 	}
 
-	private void print(String message, Level level) {
-		if (level.equals(Level.ERROR)) {
-			logger.error(message);
-		} else if (level.equals(Level.WARN)) {
-			logger.warn(message);
-		} else if (level.equals(Level.DEBUG)) {
-			logger.debug(message);
-		} else if (level.equals(Level.INFO)) {
-			logger.info(message);
+	private void print(String message, Level messageLevel) {
+		if (messageLevel.isMoreSpecificThan(this.level)) {
+			logger.log(messageLevel, message);
 		}
 	}
 
@@ -294,32 +287,32 @@ public class StandardEnvironment implements Serializable, Environment {
 	 */
 	@Override
 	public void reportEnd() {
-		logger.info("end of processing: ");
+		print("end of processing: ", Level.INFO);
 		if (warningCount > 0) {
-			logger.info(warningCount + " warning");
+			print(warningCount + " warning", Level.INFO);
 			if (warningCount > 1) {
-				logger.info("s");
+				print("s", Level.INFO);
 			}
 			if (errorCount > 0) {
-				logger.info(", ");
+				print(", ", Level.INFO);
 			}
 		}
 		if (errorCount > 0) {
-			logger.info(errorCount + " error");
+			print(errorCount + " error", Level.INFO);
 			if (errorCount > 1) {
-				logger.info("s");
+				print("s", Level.INFO);
 			}
 		}
 		if ((errorCount + warningCount) > 0) {
-			logger.info("\n");
+			print("\n", Level.INFO);
 		} else {
-			logger.info("no errors, no warnings");
+			print("no errors, no warnings", Level.INFO);
 		}
 	}
 
 	@Override
 	public void reportProgressMessage(String message) {
-		logger.info(message);
+		print(message, Level.INFO);
 	}
 
 	public void setDebug(boolean debug) {
@@ -472,9 +465,9 @@ private transient  ClassLoader inputClassloader;
 				SpoonFolder tmp = new FileSystemFolder(classOrJarFolder);
 				List<SpoonFile> javaFiles = tmp.getAllJavaFiles();
 				if (!javaFiles.isEmpty()) {
-					logger.warn("You're trying to give source code in the classpath, this should be given to " + "addInputSource " + javaFiles);
+					print("You're trying to give source code in the classpath, this should be given to " + "addInputSource " + javaFiles, Level.WARN);
 				}
-				logger.warn("You specified the directory " + classOrJarFolder.getPath() + " in source classpath, please note that only class files will be considered. Jars and subdirectories will be ignored.");
+				print("You specified the directory " + classOrJarFolder.getPath() + " in source classpath, please note that only class files will be considered. Jars and subdirectories will be ignored.", Level.WARN);
 			} else if (classOrJarFolder.getName().endsWith(".class")) {
 				throw new InvalidClassPathException(".class files are not accepted in source classpath.");
 			}
@@ -509,7 +502,7 @@ private transient  ClassLoader inputClassloader;
 	@Override
 	public boolean getNoClasspath() {
 		if (this.noclasspath == null) {
-			logger.warn("Spoon is currently use with the default noClasspath option set as true. Read the documentation for more information: http://spoon.gforge.inria.fr/launcher.html#about-the-classpath");
+			print("Spoon is used with the default noClasspath option set as true. See: http://spoon.gforge.inria.fr/launcher.html#about-the-classpath", level.INFO);
 			this.noclasspath = true;
 		}
 		return noclasspath;
@@ -561,7 +554,7 @@ private transient  ClassLoader inputClassloader;
 			this.outputDestinationHandler = new DefaultOutputDestinationHandler(directory.getCanonicalFile(),
 					this);
 		} catch (IOException e) {
-			Launcher.LOGGER.error(e.getMessage(), e);
+			print(e.getMessage(), Level.WARN);
 			throw new SpoonException(e);
 		}
 	}

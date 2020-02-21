@@ -5,7 +5,7 @@
  */
 package spoon.support.compiler;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.BuildBase;
 import org.apache.maven.model.Model;
@@ -121,9 +121,10 @@ public class SpoonPom implements SpoonResource {
 			sourcePath = build.getSourceDirectory();
 		}
 		if (sourcePath == null) {
-			sourcePath = Paths.get(directory.getAbsolutePath(), "src", "main", "java").toString();
+			sourcePath = Paths.get("src/main/java").toString();
 		}
-		File source = new File(sourcePath);
+		String absoluteSourcePath = Paths.get(directory.getAbsolutePath(), sourcePath).toString();
+		File source = new File(absoluteSourcePath);
 		if (source.exists()) {
 			output.add(source);
 		}
@@ -150,9 +151,10 @@ public class SpoonPom implements SpoonResource {
 			sourcePath = build.getTestSourceDirectory();
 		}
 		if (sourcePath == null) {
-			sourcePath = Paths.get(directory.getAbsolutePath(), "src", "test", "java").toString();
+			sourcePath = Paths.get("src/test/java").toString();
 		}
-		File source = new File(sourcePath);
+		String absoluteSourcePath = Paths.get(directory.getAbsolutePath(), sourcePath).toString();
+		File source = new File(absoluteSourcePath);
 		if (source.exists()) {
 			output.add(source);
 		}
