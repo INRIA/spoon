@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (C) 2006-2019 INRIA and contributors
+    Copyright (C) 2006-2020 INRIA and contributors
 
     Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt).
     You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>7.6.0-SNAPSHOT</version>
+            <version>8.1.0-SNAPSHOT</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jboss.windup.decompiler.fernflower/fernflower -->
         <dependency>
@@ -36,16 +36,16 @@
             <artifactId>fernflower</artifactId>
             <version>2.5.0.Final</version>
         </dependency>
-        <dependency>
-            <groupId>org.benf</groupId>
-            <artifactId>cfr</artifactId>
-            <version>0.146</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.bitbucket.mstrobel/procyon-compilertools -->
         <dependency>
             <groupId>org.bitbucket.mstrobel</groupId>
             <artifactId>procyon-compilertools</artifactId>
             <version>0.5.36</version>
+        </dependency>
+        <dependency>
+            <groupId>org.benf</groupId>
+            <artifactId>cfr</artifactId>
+            <version>0.148</version>
         </dependency>
 
     </dependencies>
