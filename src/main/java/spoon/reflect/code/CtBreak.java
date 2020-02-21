@@ -25,7 +25,7 @@ public interface CtBreak extends CtLabelledFlowBreak {
 
 	/**
 	 * Gets the expression of the implicit brake with arrow syntax.
-	 * Example: case 1 -> x = 10; (implicit brake with expression x = 10);
+	 * Example: case 1 -&gt x = 10; (implicit brake with expression x = 10);
 	 * (This syntax is available as a preview feature since Java 12)
 	 */
 	@PropertyGetter(role = EXPRESSION)
@@ -33,7 +33,7 @@ public interface CtBreak extends CtLabelledFlowBreak {
 
 	/**
 	 * Sets the expression of the implicit brake with arrow syntax.
-	 * Example: case 1 -> x = 10; (implicit brake with expression x = 10);
+	 * Example: case 1 -&gt x = 10; (implicit brake with expression x = 10);
 	 * (This syntax is available as a preview feature since Java 12)
 	 */
 	@PropertySetter(role = EXPRESSION)

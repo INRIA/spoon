@@ -64,14 +64,14 @@ public interface CtCase<S> extends CtStatement, CtStatementList {
 	<T extends CtCase<S>> T addCaseExpression(CtExpression<S> caseExpression);
 
 	/**
-	 * Gets the kind of this case - colon (:) or arrow (->)
+	 * Gets the kind of this case - colon (:) or arrow (-&gt)
 	 * (Arrow syntax is available as a preview feature since Java 12)
 	 */
 	@PropertyGetter(role = CASE_KIND)
 	CaseKind getCaseKind();
 
 	/**
-	 * Sets the kind of this case - colon (:) or arrow (->)
+	 * Sets the kind of this case - colon (:) or arrow (-&gt)
 	 * (Arrow syntax is available as a preview feature since Java 12)
 	 */
 	@PropertySetter(role = CASE_KIND)
