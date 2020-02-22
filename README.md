@@ -1,7 +1,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/fr.inria.gforge.spoon/spoon-core.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22fr.inria.gforge.spoon%22%20AND%20a%3A%22spoon-core%22)
 [![Travis Build Status](https://travis-ci.org/INRIA/spoon.svg?branch=master)](https://travis-ci.org/INRIA/spoon)
 [![Coverage Status](https://coveralls.io/repos/INRIA/spoon/badge.png)](https://coveralls.io/r/INRIA/spoon)
-[![Jenkins Build](https://ci.inria.fr/sos/job/Spoon-Snapshot-Deployer/badge/icon)](https://ci.inria.fr/sos/job/Spoon-Snapshot-Deployer) [![SonarQube](https://sonarqube.ow2.org//api/badges/gate?key=fr.inria.gforge.spoon%3Aspoon-core)](https://sonarqube.ow2.org/dashboard?id=fr.inria.gforge.spoon%3Aspoon-core)
+[![Maintainability Rating](https://sonarqube.ow2.org/api/project_badges/measure?project=fr.inria.gforge.spoon%3Aspoon-core&metric=sqale_rating)](https://sonarqube.ow2.org/dashboard?id=fr.inria.gforge.spoon%3Aspoon-core)
 
 # Spoon
 
@@ -93,6 +93,7 @@ Maven:
 ## Releases
 
 <!-- .* Marker comment. -->
+- November 2019, Spoon 8.0.0 [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-8.0.0)
 - July 2019: Spoon 7.5.0 is released [(changelog)](https://github.com/INRIA/spoon/pull/3057)
 - May 2019: Spoon 7.4.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-7.4.0)
 - Februray 10, 2019: Spoon 7.3.0 is released [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-7.3.0) 
