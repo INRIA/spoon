@@ -22,7 +22,7 @@ public class FluentLauncher {
 	/**
 	 * wrapped launcher object used for delegating calls.
 	 */
-	private Launcher launcher;
+	private final SpoonAPI launcher;
 
 	/**
 	 * Creates a new FluentLauncher, wrapping default {@link Launcher}. After
@@ -42,7 +42,7 @@ public class FluentLauncher {
 	 *
 	 * @param launcher used for delegating methods.
 	 */
-	public FluentLauncher(Launcher launcher) {
+	public FluentLauncher(SpoonAPI launcher) {
 		this.launcher = launcher;
 	}
 
