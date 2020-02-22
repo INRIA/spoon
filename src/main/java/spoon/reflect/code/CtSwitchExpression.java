@@ -11,9 +11,9 @@ package spoon.reflect.code;
  * Example: <pre>
  * int i = 0;
  * int x = switch(i) { // &lt;-- switch expression
- *     case 1 -> 10;
- *     case 2 -> 20;
- *     default -> 30;
+ *     case 1 -&gt; 10;
+ *     case 2 -&gt; 20;
+ *     default -&gt; 30;
  * };</pre>
 
  * @param <T>
