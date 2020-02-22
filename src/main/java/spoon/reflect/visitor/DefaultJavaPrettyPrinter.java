@@ -13,6 +13,7 @@ import spoon.experimental.CtUnresolvedImport;
 import spoon.processing.Processor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CaseKind;
+import spoon.reflect.code.CtAbstractSwitch;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -54,6 +55,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
@@ -544,6 +546,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeKeyword("break");
 			if (breakStatement.getTargetLabel() != null) {
 				printer.writeSpace().writeKeyword(breakStatement.getTargetLabel());
+			} else if (breakStatement.getExpression() != null) {
+				printer.writeSpace();
+				scan(breakStatement.getExpression());
 			}
 		} else {
 			// Arrow (->) syntax from Java 12
@@ -1672,13 +1677,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 	}
 
-	@Override
-	public <E> void visitCtSwitch(CtSwitch<E> switchStatement) {
-		enterCtStatement(switchStatement);
+	private <S> void writeSwitch(CtAbstractSwitch<S> abstractSwitch) {
 		printer.writeKeyword("switch").writeSpace().writeSeparator("(");
-		scan(switchStatement.getSelector());
+		scan(abstractSwitch.getSelector());
 		printer.writeSeparator(")").writeSpace().writeSeparator("{").incTab();
-		for (CtCase<?> c : switchStatement.getCases()) {
+		for (CtCase<?> c : abstractSwitch.getCases()) {
 			printer.writeln();
 			scan(c);
 		}
@@ -1687,7 +1690,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			printer.decTab().writeln().writeSeparator("}");
 		}
+	}
+
+	@Override
+	public <E> void visitCtSwitch(CtSwitch<E> switchStatement) {
+		enterCtStatement(switchStatement);
+		writeSwitch(switchStatement);
 		exitCtStatement(switchStatement);
+	}
+
+	@Override
+	public <T, S> void visitCtSwitchExpression(CtSwitchExpression<T, S> switchExpression) {
+		enterCtExpression(switchExpression);
+		writeSwitch(switchExpression);
+		exitCtExpression(switchExpression);
 	}
 
 	@Override

@@ -60,6 +60,7 @@ public class Metamodel {
 		factory.getEnvironment().setLevel("INFO");
 		result.add(factory.Type().get(spoon.reflect.code.BinaryOperatorKind.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtAbstractInvocation.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtAbstractSwitch.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtAnnotationFieldAccess.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtArrayAccess.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtArrayRead.class));
@@ -107,6 +108,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtStatementList.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtSuperAccess.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtSwitch.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtSwitchExpression.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtSynchronized.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtTargetedExpression.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtThisAccess.class));

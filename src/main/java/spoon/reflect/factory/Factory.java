@@ -48,6 +48,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
@@ -407,6 +408,11 @@ public interface Factory {
 	 *  @see CoreFactory#createSwitch()
 	 */
 	<S> CtSwitch<S> createSwitch();
+
+	/**
+	 * @see CoreFactory#createSwitchExpression()
+	 */
+	<T, S> CtSwitchExpression<T, S> createSwitchExpression();
 
 	/**
 	 *  @see CoreFactory#createEnum()

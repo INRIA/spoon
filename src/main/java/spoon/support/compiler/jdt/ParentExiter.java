@@ -12,6 +12,7 @@ import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
+import org.eclipse.jdt.internal.compiler.ast.BreakStatement;
 import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.CastExpression;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
@@ -61,6 +62,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
@@ -453,7 +455,10 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (child instanceof CtExpression) {
 			if (!(childJDT instanceof SingleNameReference && ((SingleNameReference) childJDT).isLabel)) {
 				b.setExpression((CtExpression) child);
-				b.setImplicit(true);
+				ASTNode node = jdtTreeBuilder.getContextBuilder().stack.peek().node;
+				if (node instanceof BreakStatement) {
+					b.setImplicit(((BreakStatement) node).isImplicit);
+				}
 				return;
 			}
 		}
@@ -886,6 +891,21 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtSwitch(switchStatement);
+	}
+
+	@Override
+	public <T, S> void visitCtSwitchExpression(CtSwitchExpression<T, S> switchExpression) {
+		if (switchExpression.getSelector() == null && child instanceof CtExpression) {
+			switchExpression.setSelector((CtExpression<S>) child);
+			return;
+		}
+		if (child instanceof CtCase) {
+			switchExpression.addCase((CtCase<S>) child);
+			//we have all statements of the case. Update source position now
+			child.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition((CtCase<S>) child));
+			return;
+		}
+		super.visitCtSwitchExpression(switchExpression);
 	}
 
 	@Override

@@ -673,6 +673,20 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	public <T, S> void visitCtSwitchExpression(final spoon.reflect.code.CtSwitchExpression<T, S> switchExpression) {
+		spoon.reflect.code.CtSwitchExpression<T, S> aCtSwitchExpression = switchExpression.getFactory().Core().createSwitchExpression();
+		this.builder.copy(switchExpression, aCtSwitchExpression);
+		aCtSwitchExpression.setAnnotations(this.cloneHelper.clone(switchExpression.getAnnotations()));
+		aCtSwitchExpression.setSelector(this.cloneHelper.clone(switchExpression.getSelector()));
+		aCtSwitchExpression.setCases(this.cloneHelper.clone(switchExpression.getCases()));
+		aCtSwitchExpression.setComments(this.cloneHelper.clone(switchExpression.getComments()));
+		aCtSwitchExpression.setType(this.cloneHelper.clone(switchExpression.getType()));
+		aCtSwitchExpression.setTypeCasts(this.cloneHelper.clone(switchExpression.getTypeCasts()));
+		this.cloneHelper.tailor(switchExpression, aCtSwitchExpression);
+		this.other = aCtSwitchExpression;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public void visitCtSynchronized(final spoon.reflect.code.CtSynchronized synchro) {
 		spoon.reflect.code.CtSynchronized aCtSynchronized = synchro.getFactory().Core().createSynchronized();
 		this.builder.copy(synchro, aCtSynchronized);
@@ -1067,4 +1081,3 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		this.other = aCtTypeMemberWildcardImportReference;
 	}
 }
-

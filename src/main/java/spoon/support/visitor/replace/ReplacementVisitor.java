@@ -893,10 +893,10 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtSwitchSelectorReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtSwitch element;
+	class CtAbstractSwitchSelectorReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtAbstractSwitch element;
 
-		CtSwitchSelectorReplaceListener(spoon.reflect.code.CtSwitch element) {
+		CtAbstractSwitchSelectorReplaceListener(spoon.reflect.code.CtAbstractSwitch element) {
 			this.element = element;
 		}
 
@@ -907,10 +907,10 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtSwitchCasesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.code.CtSwitch element;
+	class CtAbstractSwitchCasesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.code.CtAbstractSwitch element;
 
-		CtSwitchCasesReplaceListener(spoon.reflect.code.CtSwitch element) {
+		CtAbstractSwitchCasesReplaceListener(spoon.reflect.code.CtAbstractSwitch element) {
 			this.element = element;
 		}
 
@@ -1940,9 +1940,20 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	@java.lang.Override
 	public <S> void visitCtSwitch(final spoon.reflect.code.CtSwitch<S> switchStatement) {
 		replaceInListIfExist(switchStatement.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(switchStatement));
-		replaceElementIfExist(switchStatement.getSelector(), new spoon.support.visitor.replace.ReplacementVisitor.CtSwitchSelectorReplaceListener(switchStatement));
-		replaceInListIfExist(switchStatement.getCases(), new spoon.support.visitor.replace.ReplacementVisitor.CtSwitchCasesReplaceListener(switchStatement));
+		replaceElementIfExist(switchStatement.getSelector(), new spoon.support.visitor.replace.ReplacementVisitor.CtAbstractSwitchSelectorReplaceListener(switchStatement));
+		replaceInListIfExist(switchStatement.getCases(), new spoon.support.visitor.replace.ReplacementVisitor.CtAbstractSwitchCasesReplaceListener(switchStatement));
 		replaceInListIfExist(switchStatement.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(switchStatement));
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
+	public <T, S> void visitCtSwitchExpression(final spoon.reflect.code.CtSwitchExpression<T, S> switchExpression) {
+		replaceInListIfExist(switchExpression.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(switchExpression));
+		replaceElementIfExist(switchExpression.getSelector(), new spoon.support.visitor.replace.ReplacementVisitor.CtAbstractSwitchSelectorReplaceListener(switchExpression));
+		replaceInListIfExist(switchExpression.getCases(), new spoon.support.visitor.replace.ReplacementVisitor.CtAbstractSwitchCasesReplaceListener(switchExpression));
+		replaceInListIfExist(switchExpression.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(switchExpression));
+		replaceElementIfExist(switchExpression.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(switchExpression));
+		replaceInListIfExist(switchExpression.getTypeCasts(), new spoon.support.visitor.replace.ReplacementVisitor.CtExpressionTypeCastsReplaceListener(switchExpression));
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator

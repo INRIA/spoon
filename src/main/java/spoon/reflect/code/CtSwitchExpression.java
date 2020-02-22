@@ -1,0 +1,26 @@
+package spoon.reflect.code;
+
+/**
+ * This code element defines a switch expression.
+ *
+ * Example: <pre>
+ * int i = 0;
+ * int x = switch(i) { // &lt;-- switch expression
+ *     case 1 -> 10;
+ *     case 2 -> 20;
+ *     default -> 30;
+ * };</pre>
+
+ * @param <T>
+ * 		the type of the switch expression
+ * @param <S>
+ * 		the type of the selector expression (it would be better to be able
+ * 		to define an upper bound, but it is not possible because of Java's
+ * 		type hierarchy, especially since the enums that make things even
+ * 		worse!)
+ */
+public interface CtSwitchExpression<T, S>  extends CtExpression<T>, CtAbstractSwitch<S> {
+
+	@Override
+	CtSwitchExpression<T, S> clone();
+}
