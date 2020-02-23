@@ -125,7 +125,7 @@ public class MavenLauncher extends Launcher {
 		}
 
 		if (classpath == null) {
-			classpath = model.buildClassPath(mvnHome, sourceType, LOGGER, false);
+			classpath = model.buildClassPath(mvnHome, sourceType, LOGGER, forceRefresh);
 		}
 
 		// dependencies
@@ -133,5 +133,13 @@ public class MavenLauncher extends Launcher {
 
 		// compliance level
 		this.getEnvironment().setComplianceLevel(model.getSourceVersion());
+	}
+
+	/**
+	 * Triggers regeneration of the classpath
+	 */
+	public void rebuildClasspath() {
+		String[] classpath = model.buildClassPath(mvnHome, sourceType, LOGGER, true);
+		this.getModelBuilder().setSourceClasspath(classpath);
 	}
 }
