@@ -101,6 +101,14 @@ public class SpoonPom implements SpoonResource {
 	}
 
 	/**
+	 * Get the list of modules defined in this POM
+	 * @return the list of modules
+	 */
+	public List<SpoonPom> getModules() {
+		return Collections.unmodifiableList(modules);
+	}
+
+	/**
 	 * Get the Project Object Model
 	 * @return the Project Object Model
 	 */
