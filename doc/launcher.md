@@ -200,3 +200,26 @@ CtModel newModel = launcher.buildModel();
 launcher.saveCache();
 //Cache is now up to date
 ```
+## Fluent LauncherAPI
+
+`FluentLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/FluentLauncher.html)) allows simple, fluent launcher usage with setting most options directly.
+
+For the classic launcher it's simply:
+
+```java
+CtModel model = new FluentLauncher()
+                .inputResource("<path_to_sources>")
+                .noClasspath(true)
+                .outputDirectory("<path_to_outputdir>")
+                .processor(....)
+                .buildModel();
+```
+If you want to use other launchers like the MavenLauncher:
+
+```java
+MavenLauncher launcher = new MavenLauncher(....);
+CtModel model = new FluentLauncher(launcher)
+                .processor(....)
+                .encoding(...)
+                .buildModel();
+```
