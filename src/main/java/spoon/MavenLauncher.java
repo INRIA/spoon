@@ -136,7 +136,7 @@ public class MavenLauncher extends Launcher {
 	}
 
 	/**
-	 * Triggers regeneration of the classpath
+	 * Triggers regeneration of the classpath that is used for building the model, based on pom.xml
 	 */
 	public void rebuildClasspath() {
 		String[] classpath = model.buildClassPath(mvnHome, sourceType, LOGGER, true);
