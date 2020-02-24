@@ -4,8 +4,6 @@
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.clone;
-
-
 /**
  * Used to set all data in the cloned element.
  *
@@ -117,6 +115,12 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	public void visitCtBreak(spoon.reflect.code.CtBreak e) {
 		((spoon.reflect.code.CtBreak) (other)).setTargetLabel(e.getTargetLabel());
 		super.visitCtBreak(e);
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	public <E> void visitCtCase(spoon.reflect.code.CtCase<E> e) {
+		((spoon.reflect.code.CtCase<E>) (other)).setCaseKind(e.getCaseKind());
+		super.visitCtCase(e);
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
@@ -289,4 +293,3 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 		super.visitCtCompilationUnit(compilationUnit);
 	}
 }
-

@@ -49,6 +49,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
@@ -299,6 +300,7 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtBreak(final CtBreak breakStatement) {
 		enter(breakStatement);
 		scan(CtRole.ANNOTATION, breakStatement.getAnnotations());
+		scan(CtRole.EXPRESSION, breakStatement.getExpression());
 		scan(CtRole.COMMENT, breakStatement.getComments());
 		exit(breakStatement);
 	}
@@ -306,7 +308,7 @@ public abstract class CtScanner implements CtVisitor {
 	public <S> void visitCtCase(final CtCase<S> caseStatement) {
 		enter(caseStatement);
 		scan(CtRole.ANNOTATION, caseStatement.getAnnotations());
-		scan(CtRole.EXPRESSION, caseStatement.getCaseExpression());
+		scan(CtRole.EXPRESSION, caseStatement.getCaseExpressions());
 		scan(CtRole.STATEMENT, caseStatement.getStatements());
 		scan(CtRole.COMMENT, caseStatement.getComments());
 		exit(caseStatement);
@@ -687,6 +689,17 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.CASE, switchStatement.getCases());
 		scan(CtRole.COMMENT, switchStatement.getComments());
 		exit(switchStatement);
+	}
+
+	public <T, S> void visitCtSwitchExpression(final CtSwitchExpression<T, S> switchExpression) {
+		enter(switchExpression);
+		scan(CtRole.ANNOTATION, switchExpression.getAnnotations());
+		scan(CtRole.EXPRESSION, switchExpression.getSelector());
+		scan(CtRole.CASE, switchExpression.getCases());
+		scan(CtRole.COMMENT, switchExpression.getComments());
+		scan(CtRole.TYPE, switchExpression.getType());
+		scan(CtRole.CAST, switchExpression.getTypeCasts());
+		exit(switchExpression);
 	}
 
 	public void visitCtSynchronized(final CtSynchronized synchro) {

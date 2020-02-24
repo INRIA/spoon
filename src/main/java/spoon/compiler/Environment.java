@@ -44,6 +44,17 @@ public interface Environment {
 	void setComplianceLevel(int level);
 
 	/**
+	 * Returns true if preview language features are enabled.
+	 */
+	boolean isPreviewFeaturesEnabled();
+
+	/**
+	 * Set to true to enable latest preview language features.
+	 * Note: compliance level should be set to the latest.
+	 */
+	void setPreviewFeaturesEnabled(boolean enabled);
+
+	/**
 	 * @return the kind of pretty-printing expected.
 	 * most robust: {@link PRETTY_PRINTING_MODE#DEBUG}
 	 * most sophisticated: {@link PRETTY_PRINTING_MODE#AUTOIMPORT}

@@ -111,6 +111,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
 
+	private boolean previewFeaturesEnabled = false;
+
 	private transient OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
 
 	private OutputType outputType = OutputType.CLASSES;
@@ -346,6 +348,16 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setComplianceLevel(int level) {
 		complianceLevel = level;
+	}
+
+	@Override
+	public boolean isPreviewFeaturesEnabled() {
+		return previewFeaturesEnabled;
+	}
+
+	@Override
+	public void setPreviewFeaturesEnabled(boolean previewFeaturesEnabled) {
+		this.previewFeaturesEnabled = previewFeaturesEnabled;
 	}
 
 	@Override

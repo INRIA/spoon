@@ -12,6 +12,8 @@ import spoon.compiler.Environment;
 import spoon.experimental.CtUnresolvedImport;
 import spoon.processing.Processor;
 import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CaseKind;
+import spoon.reflect.code.CtAbstractSwitch;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -53,6 +55,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
@@ -539,9 +542,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void visitCtBreak(CtBreak breakStatement) {
 		enterCtStatement(breakStatement);
-		printer.writeKeyword("break");
-		if (breakStatement.getTargetLabel() != null) {
-			printer.writeSpace().writeKeyword(breakStatement.getTargetLabel());
+		if (!breakStatement.isImplicit()) {
+			printer.writeKeyword("break");
+			if (breakStatement.getTargetLabel() != null) {
+				printer.writeSpace().writeKeyword(breakStatement.getTargetLabel());
+			} else if (breakStatement.getExpression() != null) {
+				printer.writeSpace();
+				scan(breakStatement.getExpression());
+			}
+		} else {
+			// Arrow (->) syntax from Java 12
+			scan(breakStatement.getExpression());
 		}
 		exitCtStatement(breakStatement);
 	}
@@ -552,24 +563,32 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		enterCtStatement(caseStatement);
 		if (caseStatement.getCaseExpression() != null) {
 			printer.writeKeyword("case").writeSpace();
-			// writing enum case expression
-			if (caseStatement.getCaseExpression() instanceof CtFieldAccess) {
-				final CtFieldReference variable = ((CtFieldAccess) caseStatement.getCaseExpression()).getVariable();
-				// In noclasspath mode, we don't have always the type of the declaring type.
-				if (variable.getType() != null
-						&& variable.getDeclaringType() != null
-						&& variable.getType().getQualifiedName().equals(variable.getDeclaringType().getQualifiedName())) {
-					printer.writeIdentifier(variable.getSimpleName());
+			List<CtExpression<E>> caseExpressions = caseStatement.getCaseExpressions();
+			for (int i = 0; i < caseExpressions.size(); i++) {
+				CtExpression<E> caseExpression = caseExpressions.get(i);
+				// writing enum case expression
+				if (caseExpression instanceof CtFieldAccess) {
+					final CtFieldReference variable = ((CtFieldAccess) caseExpression).getVariable();
+					// In noclasspath mode, we don't have always the type of the declaring type.
+					if (variable.getType() != null
+							&& variable.getDeclaringType() != null
+							&& variable.getType().getQualifiedName().equals(variable.getDeclaringType().getQualifiedName())) {
+						printer.writeIdentifier(variable.getSimpleName());
+					} else {
+						scan(caseExpression);
+					}
 				} else {
-					scan(caseStatement.getCaseExpression());
+					scan(caseExpression);
 				}
-			} else {
-				scan(caseStatement.getCaseExpression());
+				if (i != caseExpressions.size() - 1) {
+					printer.writeSeparator(",").writeSpace();
+				}
 			}
 		} else {
 			printer.writeKeyword("default");
 		}
-		printer.writeSpace().writeSeparator(":").incTab();
+		String separator = caseStatement.getCaseKind() == CaseKind.ARROW ? "->" : ":";
+		printer.writeSpace().writeSeparator(separator).incTab();
 
 		for (CtStatement statement : caseStatement.getStatements()) {
 			printer.writeln();
@@ -1658,13 +1677,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 	}
 
-	@Override
-	public <E> void visitCtSwitch(CtSwitch<E> switchStatement) {
-		enterCtStatement(switchStatement);
+	private <S> void writeSwitch(CtAbstractSwitch<S> abstractSwitch) {
 		printer.writeKeyword("switch").writeSpace().writeSeparator("(");
-		scan(switchStatement.getSelector());
+		scan(abstractSwitch.getSelector());
 		printer.writeSeparator(")").writeSpace().writeSeparator("{").incTab();
-		for (CtCase<?> c : switchStatement.getCases()) {
+		for (CtCase<?> c : abstractSwitch.getCases()) {
 			printer.writeln();
 			scan(c);
 		}
@@ -1673,7 +1690,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			printer.decTab().writeln().writeSeparator("}");
 		}
+	}
+
+	@Override
+	public <E> void visitCtSwitch(CtSwitch<E> switchStatement) {
+		enterCtStatement(switchStatement);
+		writeSwitch(switchStatement);
 		exitCtStatement(switchStatement);
+	}
+
+	@Override
+	public <T, S> void visitCtSwitchExpression(CtSwitchExpression<T, S> switchExpression) {
+		enterCtExpression(switchExpression);
+		writeSwitch(switchExpression);
+		exitCtExpression(switchExpression);
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtAbstractSwitch;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
@@ -20,7 +20,7 @@ import static spoon.reflect.ModelElementContainerDefaultCapacities.SWITCH_CASES_
 import static spoon.reflect.path.CtRole.CASE;
 import static spoon.reflect.path.CtRole.EXPRESSION;
 
-public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
+public class CtSwitchExpressionImpl<T, S> extends CtExpressionImpl<T> implements CtSwitchExpression<T, S> {
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = CASE)
@@ -31,7 +31,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 
 	@Override
 	public void accept(CtVisitor visitor) {
-		visitor.visitCtSwitch(this);
+		visitor.visitCtSwitchExpression(this);
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	}
 
 	@Override
-	public CtSwitch<S> clone() {
-		return (CtSwitch<S>) super.clone();
+	public CtSwitchExpression<T, S> clone() {
+		return (CtSwitchExpression<T, S>) super.clone();
 	}
 }

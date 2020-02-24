@@ -12,6 +12,7 @@ import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ArrayAllocationExpression;
 import org.eclipse.jdt.internal.compiler.ast.ArrayInitializer;
+import org.eclipse.jdt.internal.compiler.ast.BreakStatement;
 import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.CastExpression;
 import org.eclipse.jdt.internal.compiler.ast.ExplicitConstructorCall;
@@ -21,6 +22,7 @@ import org.eclipse.jdt.internal.compiler.ast.IfStatement;
 import org.eclipse.jdt.internal.compiler.ast.MessageSend;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
+import org.eclipse.jdt.internal.compiler.ast.SingleNameReference;
 import org.eclipse.jdt.internal.compiler.ast.Statement;
 import org.eclipse.jdt.internal.compiler.ast.StringLiteralConcatenation;
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
@@ -30,6 +32,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CaseKind;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -37,6 +40,7 @@ import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
@@ -58,6 +62,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
@@ -446,10 +451,29 @@ public class ParentExiter extends CtInheritanceScanner {
 	}
 
 	@Override
+	public void visitCtBreak(CtBreak b) {
+		if (child instanceof CtExpression) {
+			if (!(childJDT instanceof SingleNameReference && ((SingleNameReference) childJDT).isLabel)) {
+				b.setExpression((CtExpression) child);
+				ASTNode node = jdtTreeBuilder.getContextBuilder().stack.peek().node;
+				if (node instanceof BreakStatement) {
+					b.setImplicit(((BreakStatement) node).isImplicit);
+				}
+				return;
+			}
+		}
+		super.visitCtBreak(b);
+	}
+
+	@Override
 	public <E> void visitCtCase(CtCase<E> caseStatement) {
 		final ASTNode node = jdtTreeBuilder.getContextBuilder().stack.peek().node;
-		if (node instanceof CaseStatement && ((CaseStatement) node).constantExpression != null && caseStatement.getCaseExpression() == null && child instanceof CtExpression) {
-			caseStatement.setCaseExpression((CtExpression<E>) child);
+		if (node instanceof CaseStatement) {
+			caseStatement.setCaseKind(((CaseStatement) node).isExpr ? CaseKind.ARROW : CaseKind.COLON);
+		}
+		if (node instanceof CaseStatement && ((CaseStatement) node).constantExpression != null && child instanceof CtExpression
+				&& caseStatement.getCaseExpressions().size() < ((CaseStatement) node).constantExpressions.length) {
+			caseStatement.addCaseExpression((CtExpression<E>) child);
 			return;
 		} else if (child instanceof CtStatement) {
 			caseStatement.addStatement((CtStatement) child);
@@ -867,6 +891,21 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		}
 		super.visitCtSwitch(switchStatement);
+	}
+
+	@Override
+	public <T, S> void visitCtSwitchExpression(CtSwitchExpression<T, S> switchExpression) {
+		if (switchExpression.getSelector() == null && child instanceof CtExpression) {
+			switchExpression.setSelector((CtExpression<S>) child);
+			return;
+		}
+		if (child instanceof CtCase) {
+			switchExpression.addCase((CtCase<S>) child);
+			//we have all statements of the case. Update source position now
+			child.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition((CtCase<S>) child));
+			return;
+		}
+		super.visitCtSwitchExpression(switchExpression);
 	}
 
 	@Override

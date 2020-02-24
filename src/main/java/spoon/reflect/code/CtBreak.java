@@ -5,6 +5,11 @@
  */
 package spoon.reflect.code;
 
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+
+import static spoon.reflect.path.CtRole.EXPRESSION;
+
 /**
  * This code element defines a break statement.
  * Example:
@@ -17,6 +22,22 @@ package spoon.reflect.code;
  * </pre>
  */
 public interface CtBreak extends CtLabelledFlowBreak {
+
+	/**
+	 * Gets the expression of the implicit brake with arrow syntax.
+	 * Example: case 1 -&gt; x = 10; (implicit brake with expression x = 10);
+	 * (This syntax is available as a preview feature since Java 12)
+	 */
+	@PropertyGetter(role = EXPRESSION)
+	CtExpression<?> getExpression();
+
+	/**
+	 * Sets the expression of the implicit brake with arrow syntax.
+	 * Example: case 1 -&gt; x = 10; (implicit brake with expression x = 10);
+	 * (This syntax is available as a preview feature since Java 12)
+	 */
+	@PropertySetter(role = EXPRESSION)
+	<T extends CtBreak> T setExpression(CtExpression<?> expression);
 
 	@Override
 	CtBreak clone();

@@ -83,6 +83,7 @@ import org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.StringLiteral;
 import org.eclipse.jdt.internal.compiler.ast.StringLiteralConcatenation;
 import org.eclipse.jdt.internal.compiler.ast.SuperReference;
+import org.eclipse.jdt.internal.compiler.ast.SwitchExpression;
 import org.eclipse.jdt.internal.compiler.ast.SwitchStatement;
 import org.eclipse.jdt.internal.compiler.ast.SynchronizedStatement;
 import org.eclipse.jdt.internal.compiler.ast.ThisReference;
@@ -711,6 +712,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.exit(context.stack.peek().node);
 		}
 		context.exit(switchStatement);
+	}
+
+	@Override
+	public void endVisit(SwitchExpression switchExpression, BlockScope scope) {
+		if (context.stack.peek().node instanceof CaseStatement) {
+			context.exit(context.stack.peek().node);
+		}
+		context.exit(switchExpression);
 	}
 
 	@Override
@@ -1660,6 +1669,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(SwitchStatement switchStatement, BlockScope scope) {
 		context.enter(factory.Core().createSwitch(), switchStatement);
+		return true;
+	}
+
+	@Override
+	public boolean visit(SwitchExpression switchExpression, BlockScope blockScope) {
+		context.enter(factory.Core().createSwitchExpression(), switchExpression);
 		return true;
 	}
 
