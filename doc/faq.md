@@ -5,7 +5,7 @@ keywords: frequently asked questions, FAQ, question and answer, collapsible sect
 
 ## Practical Information
 
-### Hare there snapshots versions deployed somewhere?
+### Are there snapshots versions deployed somewhere?
 
 ```xml
 <dependencies>
@@ -80,4 +80,3 @@ final String[] builder = new JDTBuilderImpl() //
 		.sources(new SourceOptions().sources(".")) //
 		.build();
 ```
-
