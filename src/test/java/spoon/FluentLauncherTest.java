@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Rule;
@@ -46,7 +47,7 @@ public class FluentLauncherTest {
 		List<String> output2 = new ArrayList<>();
 		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
 				.outputDirectory(folderFactory.newFolder().getPath())
-				.processor(List.of(new AbstractProcessor<CtType<?>>() {
+				.processor(Arrays.asList(new AbstractProcessor<CtType<?>>() {
 					public void process(CtType<?> element) {
 						output.add(element.toString());
 					}
