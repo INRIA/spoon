@@ -41,7 +41,12 @@ And start using it:
 CtClass l = Launcher.parseClass("class A { void m() { System.out.println(\"yeah\");} }");
 ```
 
-Some examples about the usage of Spoon can be found on [spoon-examples](https://github.com/SpoonLabs/spoon-examples).
+Documentation:
+
+- Reference documentation: <http://spoon.gforge.inria.fr/> (contains the content of the [doc folder](https://github.com/INRIA/spoon/tree/master/doc))
+- Code examples: <https://github.com/SpoonLabs/spoon-examples>
+- Videos: [Spoon: Getting Started - Simon Urli @ OW2Con'18 (Paris)](https://www.youtube.com/watch?v=ZZzdVTIu-OY), [Generate Test Assertion with Spoon - Benjamin Danglot @ OW2Con'17 (Paris)](https://www.youtube.com/watch?v=JcCIbjnkfD4)
+
 
 ## Contributing in 2 seconds
 
