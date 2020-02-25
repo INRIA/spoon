@@ -31,7 +31,6 @@ public class FluentLauncherTest {
 	@Rule
 	public TemporaryFolder folderFactory = new TemporaryFolder();
 
-	// following test cases showcase use cases
 	@Test
 	public void testSimpleUsage() throws IOException {
 		CtModel model = new FluentLauncher().inputResource("src/test/resources/deprecated/input")
