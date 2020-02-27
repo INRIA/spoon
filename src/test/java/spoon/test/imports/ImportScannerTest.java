@@ -28,7 +28,6 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.ImportScanner;
 import spoon.reflect.visitor.ImportScannerImpl;
-import spoon.reflect.visitor.MinimalImportScanner;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
@@ -232,22 +231,6 @@ public class ImportScannerTest {
 	}
 
 	@Test
-	public void testComputeMinimalImportsInClass() throws Exception {
-		String packageName = "spoon.test.testclasses";
-		String className = "SampleImportClass";
-		String qualifiedName = packageName + "." + className;
-
-		Factory aFactory = build(packageName, className).getFactory();
-		CtType<?> theClass = aFactory.Type().get(qualifiedName);
-
-		ImportScanner importContext = new MinimalImportScanner();
-		importContext.computeImports(theClass);
-		Collection<CtImport> imports = importContext.getAllImports();
-
-		assertTrue(imports.isEmpty());
-	}
-
-	@Test
 	public void testComputeImportsInClass() throws Exception {
 		String packageName = "spoon.test.testclasses";
 		String className = "SampleImportClass";
@@ -311,12 +294,12 @@ public class ImportScannerTest {
 		CtFieldReference fieldRef = factory.createFieldReference();
 		fieldRef.setStatic(true);
 
-		ImportScanner importScanner = new MinimalImportScanner();
+		ImportScanner importScanner = new ImportScannerImpl();
 		importScanner.computeImports(fieldRef);
 
 		Collection<CtImport> imports = importScanner.getAllImports();
 
-		assertEquals(0, imports.size());
+		assertEquals(1, imports.size());
 	}
 
 	@Test

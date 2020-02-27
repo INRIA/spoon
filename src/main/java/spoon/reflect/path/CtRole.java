@@ -114,7 +114,8 @@ public enum CtRole {
 	PROVIDED_SERVICE(MODULE_DIRECTIVE, obj -> obj instanceof CtProvidedService),
 	IS_INFERRED,
 	TYPE_REF,
-	LITERAL_BASE;
+	LITERAL_BASE,
+	CASE_KIND;
 
 	private final CtRole superRole;
 	private final List<CtRole> subRoles;

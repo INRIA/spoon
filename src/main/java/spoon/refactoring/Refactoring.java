@@ -205,4 +205,36 @@ public final class Refactoring {
 	public static void changeLocalVariableName(CtLocalVariable<?> localVariable, String newName) throws RefactoringException {
 		new CtRenameLocalVariableRefactoring().setTarget(localVariable).setNewName(newName).refactor();
 	}
+
+	/**
+	 * Removes all deprecated methods for all java files in the given path.
+	 *
+	 * <b>Only use it if you have &gt; jdk8. Older jdk versions may result in wrong results.</b>
+	 * Only removes deprecated methods, that are no longer invoked by any method or
+	 * field. If a deprecated method is invoked by a deprecated method only, which
+	 * can be removed, the deprecated method is removed too.
+	 *
+	 * Result is written to /$Path/$Package. For different output folder see
+	 * {@link Refactoring#removeDeprecatedMethods(String, String)}.
+	 *
+	 * @param input Path to java files in folder.
+	 */
+	public static void removeDeprecatedMethods(String path) {
+		new CtDeprecatedRefactoring().removeDeprecatedMethods(path);
+	}
+
+	/**
+	 * Removes all deprecated methods for all java files in the given path.
+	 *
+	 * <b>Only use it if you have &gt; jdk8. Older jdk versions may result in wrong results.</b>
+	 * Only removes deprecated methods, that are no longer invoked by any method or
+	 * field. If a deprecated method is invoked by a deprecated method only, which
+	 * can be removed, the deprecated method is removed too.
+	 *
+	 * @param input      Path to java files in folder.
+	 * @param resultPath Path for the refactored java files.
+	 */
+	public static void removeDeprecatedMethods(String input, String resultPath) {
+		new CtDeprecatedRefactoring().removeDeprecatedMethods(input, resultPath);
+	}
 }

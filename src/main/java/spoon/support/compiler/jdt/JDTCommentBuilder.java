@@ -5,11 +5,13 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import spoon.SpoonException;
+import spoon.reflect.code.CtAbstractSwitch;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
@@ -23,6 +25,7 @@ import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
@@ -67,7 +70,7 @@ import java.util.regex.Pattern;
  */
 public class JDTCommentBuilder {
 
-	private static final Logger LOGGER = Logger.getLogger(JDTCommentBuilder.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final CompilationUnitDeclaration declarationUnit;
 	private String filePath;
@@ -347,11 +350,10 @@ public class JDTCommentBuilder {
 				e.addComment(comment);
 			}
 
-			@Override
-			public <E> void visitCtSwitch(CtSwitch<E> e) {
-				List<CtCase<? super E>> cases = e.getCases();
+			private <S> void visitSwitch(CtAbstractSwitch<S> e) {
+				List<CtCase<? super S>> cases = e.getCases();
 				CtCase previous = null;
-				for (CtCase<? super E> ctCase : cases) {
+				for (CtCase<? super S> ctCase : cases) {
 					if (previous == null) {
 						if (comment.getPosition().getSourceStart() < ctCase.getPosition().getSourceStart()
 								&& e.getPosition().getSourceStart() < comment.getPosition().getSourceStart()) {
@@ -372,7 +374,7 @@ public class JDTCommentBuilder {
 					}
 					previous = ctCase;
 				}
-				if (previous.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()) {
+				if (previous != null && previous.getPosition().getSourceEnd() < comment.getPosition().getSourceStart()) {
 					addCommentToNear(comment, new ArrayList<>(previous.getStatements()));
 					try {
 						comment.getParent();
@@ -386,6 +388,16 @@ public class JDTCommentBuilder {
 				} catch (ParentNotInitializedException ex) {
 					e.addComment(comment);
 				}
+			}
+
+			@Override
+			public <E> void visitCtSwitch(CtSwitch<E> e) {
+				visitSwitch(e);
+			}
+
+			@Override
+			public <T, S> void visitCtSwitchExpression(CtSwitchExpression<T, S> e) {
+				visitSwitch(e);
 			}
 
 			@Override

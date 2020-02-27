@@ -5,7 +5,7 @@
  */
 package spoon.compiler;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import spoon.OutputType;
 import spoon.compiler.builder.EncodingProvider;
 import spoon.processing.FileGenerator;
@@ -44,6 +44,17 @@ public interface Environment {
 	void setComplianceLevel(int level);
 
 	/**
+	 * Returns true if preview language features are enabled.
+	 */
+	boolean isPreviewFeaturesEnabled();
+
+	/**
+	 * Set to true to enable latest preview language features.
+	 * Note: compliance level should be set to the latest.
+	 */
+	void setPreviewFeaturesEnabled(boolean enabled);
+
+	/**
 	 * @return the kind of pretty-printing expected.
 	 * most robust: {@link PRETTY_PRINTING_MODE#DEBUG}
 	 * most sophisticated: {@link PRETTY_PRINTING_MODE#AUTOIMPORT}
@@ -53,8 +64,7 @@ public interface Environment {
 	void setPrettyPrintingMode(PRETTY_PRINTING_MODE prettyPrintingMode);
 
 	/**
-	 * This method should be called to print out a message with a source
-	 * position link during the processing.
+	 * Logs a debug message
 	 */
 	void debugMessage(String message);
 

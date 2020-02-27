@@ -405,6 +405,9 @@ public class PrinterTest {
 					checkTokenWhitespace(identifier, false);
 					for (int i = 0; i < identifier.length(); i++) {
 						char c = identifier.charAt(i);
+						if ('*' == c) {
+							continue;
+						}
 						if(i==0) {
 							assertTrue(Character.isJavaIdentifierStart(c));
 						} else {

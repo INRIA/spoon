@@ -5,7 +5,8 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
@@ -82,6 +83,7 @@ import org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.StringLiteral;
 import org.eclipse.jdt.internal.compiler.ast.StringLiteralConcatenation;
 import org.eclipse.jdt.internal.compiler.ast.SuperReference;
+import org.eclipse.jdt.internal.compiler.ast.SwitchExpression;
 import org.eclipse.jdt.internal.compiler.ast.SwitchStatement;
 import org.eclipse.jdt.internal.compiler.ast.SynchronizedStatement;
 import org.eclipse.jdt.internal.compiler.ast.ThisReference;
@@ -182,7 +184,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return LOGGER;
 	}
 
-	private static final Logger LOGGER = Logger.getLogger(JDTTreeBuilder.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	public PositionBuilder getPositionBuilder() {
 		return position;
@@ -215,7 +217,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		this.exiter = new ParentExiter(this);
 		this.references = new ReferenceBuilder(this);
 		this.helper = new JDTTreeBuilderHelper(this);
-		LOGGER.setLevel(factory.getEnvironment().getLevel());
+		//LOGGER.setLevel(factory.getEnvironment().getLevel());
 	}
 
 	// an abstract class here is better because the method is actually package-protected, as the type, (and not public as in the case of interface methods in Java)
@@ -713,6 +715,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
+	public void endVisit(SwitchExpression switchExpression, BlockScope scope) {
+		if (context.stack.peek().node instanceof CaseStatement) {
+			context.exit(context.stack.peek().node);
+		}
+		context.exit(switchExpression);
+	}
+
+	@Override
 	public void endVisit(SynchronizedStatement synchronizedStatement, BlockScope scope) {
 		context.exit(synchronizedStatement);
 	}
@@ -975,9 +985,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		context.enter(typeAccess, arrayQualifiedTypeReference);
 
-		final CtArrayTypeReference<Object> arrayType = (CtArrayTypeReference<Object>) references.getTypeReference(arrayQualifiedTypeReference.resolvedType);
-		arrayType.getArrayType().setAnnotations(this.references.buildTypeReference(arrayQualifiedTypeReference, scope).getAnnotations());
+		CtArrayTypeReference<Object> arrayType = (CtArrayTypeReference<Object>) references.getTypeReference(arrayQualifiedTypeReference.resolvedType);
 		typeAccess.setAccessedType(arrayType);
+
+		if (arrayType != null) {
+			arrayType.getArrayType().setAnnotations(this.references.buildTypeReference(arrayQualifiedTypeReference, scope).getAnnotations());
+		}
 
 		return true;
 	}
@@ -1656,6 +1669,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 	@Override
 	public boolean visit(SwitchStatement switchStatement, BlockScope scope) {
 		context.enter(factory.Core().createSwitch(), switchStatement);
+		return true;
+	}
+
+	@Override
+	public boolean visit(SwitchExpression switchExpression, BlockScope blockScope) {
+		context.enter(factory.Core().createSwitchExpression(), switchExpression);
 		return true;
 	}
 

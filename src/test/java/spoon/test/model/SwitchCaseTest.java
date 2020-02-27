@@ -17,25 +17,179 @@
 package spoon.test.model;
 
 import org.junit.Test;
+import spoon.Launcher;
+import spoon.reflect.CtModel;
+import spoon.reflect.code.CaseKind;
+import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class SwitchCaseTest {
+
+	private static String toSingleLineString(CtElement e) {
+		return e.toString().replace("\n", "").replace("\r", "");
+	}
+
+	@Test
+	public void testJava12ArrowCase() {
+		String arrow = "class A { public void f(int i) { int x; switch(i) { case 1 -> x = 10; case 2 -> x = 20; default -> x = 30; }; } }";
+		String arrowWithBlock = "class B { public void f(int i) { int x; switch(i) { case 1 -> { x = 10; break; } case 2 -> x = 20; default -> x = 30; }; } }";
+		String colon = "class C { public void f(int i) { int x; switch(i) { case 1: x = 10; x = 1; break; case 2: x = 20; break; default: x = 30; break; }; } }";
+
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(12);
+		launcher.getEnvironment().setPreviewFeaturesEnabled(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource(new VirtualFile(arrow));
+		launcher.addInputResource(new VirtualFile(arrowWithBlock));
+		launcher.addInputResource(new VirtualFile(colon));
+		CtModel model = launcher.buildModel();
+
+		CtType<?> classA = model.getAllTypes().stream().filter(c -> c.getSimpleName().equals("A")).findFirst().get();
+		CtCase caseA1 = classA.getElements(new TypeFilter<>(CtCase.class)).get(0);
+		CtCase caseA2 = classA.getElements(new TypeFilter<>(CtCase.class)).get(1);
+		CtCase caseA3 = classA.getElements(new TypeFilter<>(CtCase.class)).get(2);
+
+		// contract: we should print arrows like in the original source code
+		assertEquals("case 1 ->    x = 10;", toSingleLineString(caseA1));
+		assertEquals("case 2 ->    x = 20;", toSingleLineString(caseA2));
+		assertEquals("default ->    x = 30;", toSingleLineString(caseA3));
+		assertEquals(caseA1.getCaseKind(), CaseKind.ARROW);
+		assertEquals(caseA2.getCaseKind(), CaseKind.ARROW);
+		assertEquals(caseA3.getCaseKind(), CaseKind.ARROW);
+
+		// contract: we should have implicit breaks (with expressions) for arrows
+		assertTrue(caseA1.getElements(new TypeFilter<>(CtBreak.class)).get(0).isImplicit());
+		assertEquals("x = 10", caseA1.getElements(new TypeFilter<>(CtBreak.class)).get(0).getExpression().toString());
+		assertTrue(caseA2.getElements(new TypeFilter<>(CtBreak.class)).get(0).isImplicit());
+		assertEquals("x = 20", caseA2.getElements(new TypeFilter<>(CtBreak.class)).get(0).getExpression().toString());
+		assertTrue(caseA3.getElements(new TypeFilter<>(CtBreak.class)).get(0).isImplicit());
+		assertEquals("x = 30", caseA3.getElements(new TypeFilter<>(CtBreak.class)).get(0).getExpression().toString());
+
+		CtType<?> classB = model.getAllTypes().stream().filter(c -> c.getSimpleName().equals("B")).findFirst().get();
+		CtCase caseB1 = classB.getElements(new TypeFilter<>(CtCase.class)).get(0);
+
+		// contract: explicit break (inside the block) should be printed
+		assertFalse(caseB1.getElements(new TypeFilter<>(CtBreak.class)).get(0).isImplicit());
+		assertEquals("break", caseB1.getElements(new TypeFilter<>(CtBreak.class)).get(0).toString());
+
+		CtType<?> classC = model.getAllTypes().stream().filter(c -> c.getSimpleName().equals("C")).findFirst().get();
+		CtCase caseC1 = classC.getElements(new TypeFilter<>(CtCase.class)).get(0);
+		CtCase caseC2 = classC.getElements(new TypeFilter<>(CtCase.class)).get(1);
+		CtCase caseC3 = classC.getElements(new TypeFilter<>(CtCase.class)).get(2);
+
+		// contract: old switch should work as usual
+		assertEquals("case 1 :    x = 10;    x = 1;    break;", toSingleLineString(caseC1));
+		assertEquals("case 2 :    x = 20;    break;", toSingleLineString(caseC2));
+		assertEquals("default :    x = 30;    break;", toSingleLineString(caseC3));
+		assertEquals(caseC1.getCaseKind(), CaseKind.COLON);
+		assertEquals(caseC2.getCaseKind(), CaseKind.COLON);
+		assertEquals(caseC3.getCaseKind(), CaseKind.COLON);
+	}
+
+	@Test
+	public void testJava12MultipleCaseExpressions() {
+		// contract: we should handle multiple case expressions correctly
+		String code = "class A { public void f(int i) { int x; switch(i) { case 1,2,3 -> x = 10; case 4 -> x = 20; default -> x = 30; }; } }";
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(12);
+		launcher.getEnvironment().setPreviewFeaturesEnabled(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource(new VirtualFile(code));
+		CtModel model = launcher.buildModel();
+		CtType<?> classA = model.getAllTypes().stream().filter(c -> c.getSimpleName().equals("A")).findFirst().get();
+		CtCase caseA1 = classA.getElements(new TypeFilter<>(CtCase.class)).get(0);
+		CtCase caseA2 = classA.getElements(new TypeFilter<>(CtCase.class)).get(1);
+		CtCase caseA3 = classA.getElements(new TypeFilter<>(CtCase.class)).get(2);
+
+		assertEquals(3, caseA1.getCaseExpressions().size());
+		assertEquals("1", caseA1.getCaseExpressions().get(0).toString());
+		assertEquals("2", caseA1.getCaseExpressions().get(1).toString());
+		assertEquals("3", caseA1.getCaseExpressions().get(2).toString());
+
+		assertEquals(1, caseA2.getCaseExpressions().size());
+		assertEquals("4", caseA2.getCaseExpressions().get(0).toString());
+
+		assertEquals(0, caseA3.getCaseExpressions().size());
+		assertEquals("default ->    x = 30;", toSingleLineString(caseA3));
+	}
+
+	@Test
+	public void testJava12BreakExpression() {
+		// contract: we should properly handle explicit break with expression inside switch expression
+		String code = "class A { public void f(String s) { int result = switch (s) { case \"Foo\": break 1; case \"Bar\": break 2; default: break 0; }; }";
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(12);
+		launcher.getEnvironment().setPreviewFeaturesEnabled(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource(new VirtualFile(code));
+		CtModel model = launcher.buildModel();
+		List<CtBreak> breaks = model.getElements(new TypeFilter<>(CtBreak.class));
+
+		assertEquals("1", breaks.get(0).getExpression().toString());
+		assertEquals("break 1", breaks.get(0).toString());
+		assertNull(breaks.get(0).getLabel());
+
+		assertEquals("2", breaks.get(1).getExpression().toString());
+		assertNull(breaks.get(1).getLabel());
+		assertEquals("break 2", breaks.get(1).toString());
+
+		assertEquals("0", breaks.get(2).getExpression().toString());
+		assertNull(breaks.get(2).getLabel());
+		assertEquals("break 0", breaks.get(2).toString());
+	}
+
+	@Test
+	public void testJava12SwitchExpression() {
+		// contract: we should handle switch expressions properly
+		String code = "class A { public void f(int i) { int x = switch(i) { case 1 -> 10; case 2 -> 20; default -> 30; }; } }";
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(12);
+		launcher.getEnvironment().setPreviewFeaturesEnabled(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource(new VirtualFile(code));
+		CtModel model = launcher.buildModel();
+		CtLocalVariable localVariable = model.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
+		assertTrue(localVariable.getAssignment() instanceof CtSwitchExpression);
+		assertEquals("int x = switch (i) {    case 1 ->        10;    case 2 ->        20;    default ->        30;}", toSingleLineString(localVariable));
+	}
+
+	@Test
+	public void testJava12SwitchExpressionInIf() {
+		// contract: just another test for switch expressions
+		String code = "class A { public void f(int i) { if (switch (i) { case 1, 2 -> true; default -> false; }) {} }; } }";
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(12);
+		launcher.getEnvironment().setPreviewFeaturesEnabled(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource(new VirtualFile(code));
+		CtModel model = launcher.buildModel();
+		CtIf ctIf = model.getElements(new TypeFilter<>(CtIf.class)).get(0);
+		assertEquals("if (switch (i) {    case 1, 2 ->        true;    default ->        false;}) {}", toSingleLineString(ctIf));
+	}
 
 	@Test
 	public void testIterationStatements() {

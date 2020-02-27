@@ -13,6 +13,7 @@ import org.eclipse.jdt.internal.compiler.ast.Annotation;
 import org.eclipse.jdt.internal.compiler.ast.AnnotationMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Argument;
 import org.eclipse.jdt.internal.compiler.ast.ArrayTypeReference;
+import org.eclipse.jdt.internal.compiler.ast.AssertStatement;
 import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.Expression;
 import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
@@ -68,9 +69,10 @@ public class PositionBuilder {
 		return this.jdtTreeBuilder.getFactory().Core().createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
 	}
 
+	/** creates a position for a given element with the information of ASTNode */
 	SourcePosition buildPositionCtElement(CtElement e, ASTNode node) {
 		if (e instanceof CtCatch) {
-			//we cannot compute position of CtCatch, because we do not know position of it's body yet
+			//we cannot compute position of CtCatch, because we do not know position of its body yet
 			//it is computed later by #buildPosition(CtCatch)
 			return SourcePosition.NOPOSITION;
 		}
@@ -403,8 +405,15 @@ public class PositionBuilder {
 				return handlePositionProblem("Unexpected end of file in CtCase on: " + sourceStart);
 			}
 			if (contents[sourceEnd] != ':') {
-				return handlePositionProblem("Unexpected character " + contents[sourceEnd] + " instead of \':\' in CtCase on: " + sourceEnd);
+				if (contents[sourceEnd] == '-' && contents.length > sourceEnd + 1 && contents[sourceEnd + 1] == '>') {
+					sourceEnd++;
+				} else {
+					return handlePositionProblem("Unexpected character " + contents[sourceEnd] + " instead of \':\' or \'->\' in CtCase on: " + sourceEnd);
+				}
 			}
+		} else if ((node instanceof AssertStatement)) {
+			AssertStatement assert_ = (AssertStatement) node;
+			sourceEnd = findNextChar(contents, contents.length, sourceEnd, ';');
 		}
 
 		if (e instanceof CtModifiable) {

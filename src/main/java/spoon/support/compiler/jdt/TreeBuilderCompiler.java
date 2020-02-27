@@ -19,7 +19,6 @@ import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
-import org.eclipse.jdt.internal.compiler.lookup.TypeConstants;
 import org.eclipse.jdt.internal.compiler.util.Messages;
 
 
@@ -36,8 +35,8 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 		Arrays.sort(sourceUnits, (u1, u2) -> {
 			char[] fn1 = u1.getFileName();
 			char[] fn2 = u2.getFileName();
-			boolean isMod1 = CharOperation.endsWith(fn1, TypeConstants.MODULE_INFO_FILE_NAME) || CharOperation.endsWith(fn1, TypeConstants.MODULE_INFO_CLASS_NAME);
-			boolean isMod2 = CharOperation.endsWith(fn2, TypeConstants.MODULE_INFO_FILE_NAME) || CharOperation.endsWith(fn2, TypeConstants.MODULE_INFO_CLASS_NAME);
+			boolean isMod1 = CharOperation.endsWith(fn1, JDTConstants.MODULE_INFO_FILE_NAME) || CharOperation.endsWith(fn1, JDTConstants.MODULE_INFO_CLASS_NAME);
+			boolean isMod2 = CharOperation.endsWith(fn2, JDTConstants.MODULE_INFO_FILE_NAME) || CharOperation.endsWith(fn2, JDTConstants.MODULE_INFO_CLASS_NAME);
 			if (isMod1 == isMod2) {
 				return 0;
 			}

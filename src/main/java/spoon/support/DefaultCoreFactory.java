@@ -45,6 +45,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
@@ -136,6 +137,7 @@ import spoon.support.reflect.code.CtOperatorAssignmentImpl;
 import spoon.support.reflect.code.CtReturnImpl;
 import spoon.support.reflect.code.CtStatementListImpl;
 import spoon.support.reflect.code.CtSuperAccessImpl;
+import spoon.support.reflect.code.CtSwitchExpressionImpl;
 import spoon.support.reflect.code.CtSwitchImpl;
 import spoon.support.reflect.code.CtSynchronizedImpl;
 import spoon.support.reflect.code.CtThisAccessImpl;
@@ -596,6 +598,13 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	}
 
 	@Override
+	public <T, S> CtSwitchExpression<T, S> createSwitchExpression() {
+		CtSwitchExpression<T, S> e = new CtSwitchExpressionImpl<T, S>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
 	public CtSynchronized createSynchronized() {
 		CtSynchronized e = new CtSynchronizedImpl();
 		e.setFactory(getMainFactory());
@@ -917,6 +926,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		}
 		if (klass.equals(spoon.reflect.code.CtSwitch.class)) {
 			return createSwitch();
+		}
+		if (klass.equals(spoon.reflect.code.CtSwitchExpression.class)) {
+			return createSwitchExpression();
 		}
 		if (klass.equals(spoon.reflect.code.CtSynchronized.class)) {
 			return createSynchronized();

@@ -16,12 +16,28 @@
  */
 package spoon.test.refactoring;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
+import java.util.List;
+
 import org.junit.Test;
+
 import spoon.Launcher;
+import spoon.refactoring.Refactoring;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -30,18 +46,11 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.refactoring.processors.ThisTransformationProcessor;
 import spoon.test.refactoring.testclasses.AClass;
 
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 public class RefactoringTest {
 	@Test
 	public void testRefactoringClassChangeAllCtTypeReferenceAssociatedWithClassConcerned() {
 		Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {
+		launcher.setArgs(new String[]{
 				"-i", "src/test/java/spoon/test/refactoring/testclasses",
 				"-o", "target/spooned/refactoring"
 		});
@@ -51,7 +60,7 @@ public class RefactoringTest {
 		assertNotNull(aClass);
 
 		launcher = new Launcher();
-		launcher.setArgs(new String[] {
+		launcher.setArgs(new String[]{
 				"-i", "src/test/java/spoon/test/refactoring/testclasses",
 				"-o", "target/spooned/refactoring",
 				"-p", ThisTransformationProcessor.class.getName()
@@ -80,7 +89,7 @@ public class RefactoringTest {
 	@Test
 	public void testThisInConstructor() {
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {
+		launcher.setArgs(new String[]{
 				"-i", "src/test/java/spoon/test/refactoring/testclasses",
 				"-o", "target/spooned/refactoring"
 		});
@@ -99,7 +108,7 @@ public class RefactoringTest {
 	@Test
 	public void testThisInConstructorAfterATransformation() {
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {
+		launcher.setArgs(new String[]{
 				"-i", "src/test/java/spoon/test/refactoring/testclasses",
 				"-o", "target/spooned/refactoring",
 				"-p", ThisTransformationProcessor.class.getName()
@@ -118,7 +127,7 @@ public class RefactoringTest {
 	@Test
 	public void testTransformedInstanceofAfterATransformation() {
 		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {
+		launcher.setArgs(new String[]{
 				"-i", "src/test/java/spoon/test/refactoring/testclasses",
 				"-o", "target/spooned/refactoring",
 				"-p", ThisTransformationProcessor.class.getName()
@@ -130,5 +139,54 @@ public class RefactoringTest {
 		assertEquals(BinaryOperatorKind.INSTANCEOF, instanceofInvocation.getKind());
 		assertEquals("o", instanceofInvocation.getLeftHandOperand().toString());
 		assertEquals("spoon.test.refactoring.testclasses.AClassX", instanceofInvocation.getRightHandOperand().toString());
+	}
+	@Test
+	public void testRemoveDeprecatedMethods() {
+		if (checkJavaVersion()) {
+			return;
+		}
+		// clean dir if exists
+		try {
+			Files.walk(Paths.get("target/deprecated-refactoring")).sorted(Comparator.reverseOrder())
+					.map(Path::toFile).forEach(File::delete);
+		} catch (Exception e) {
+			// error is kinda okay
+		}
+		// create Spoon
+		String input = "src/test/resources/deprecated/input";
+		String resultPath = "target/deprecated-refactoring";
+		String correctResultPath = "src/test/resources/deprecated/correctResult";
+		Launcher spoon = new Launcher();
+
+		spoon.addInputResource(correctResultPath);
+		List<CtMethod<?>> correctResult = spoon.buildModel().getElements(new TypeFilter<>(CtMethod.class));
+		// save Methods before cleaning
+		// now refactor code
+		Refactoring.removeDeprecatedMethods(input, resultPath);
+		// verify result
+		spoon = new Launcher();
+		spoon.addInputResource(resultPath);
+		List<CtMethod<?>> calculation = spoon.buildModel().getElements(new TypeFilter<>(CtMethod.class));
+		assertTrue(calculation.stream().allMatch(correctResult::contains));
+		assertTrue(correctResult.stream().allMatch(calculation::contains));
+		//clean again
+		try {
+			Files.walk(Paths.get("target/deprecated-refactoring")).sorted(Comparator.reverseOrder())
+					.map(Path::toFile).forEach(File::delete);
+		} catch (Exception e) {
+			// error is kinda okay
+		}
+	}
+	/**
+	 * checks if current java version is >=9.
+	 * True if <=8 else false;
+	 */
+	private boolean checkJavaVersion() {
+		String property = System.getProperty("java.version");
+		if (property != null && !property.isEmpty()) {
+			// java 8 and less are versionning "1.X" where 9 and more are directly versioned "X"
+		return property.startsWith("1.");
+		}
+		return false;
 	}
 }

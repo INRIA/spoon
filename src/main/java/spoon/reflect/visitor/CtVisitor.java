@@ -43,6 +43,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
@@ -365,6 +366,11 @@ public interface CtVisitor {
 	 * Visits a <code>switch</code> statement.
 	 */
 	<S> void visitCtSwitch(CtSwitch<S> switchStatement);
+
+	/**
+	 * Visits a <code>switch</code> expression.
+	 */
+	<T, S> void visitCtSwitchExpression(CtSwitchExpression<T, S> switchExpression);
 
 	/**
 	 * Visits a <code>synchronized</code> modifier.

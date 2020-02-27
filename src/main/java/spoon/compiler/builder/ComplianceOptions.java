@@ -19,4 +19,9 @@ public class ComplianceOptions<T extends ComplianceOptions<T>> extends Options<T
 
 		return myself;
 	}
+
+	public T enablePreview() {
+		args.add("--enable-preview");
+		return myself;
+	}
 }

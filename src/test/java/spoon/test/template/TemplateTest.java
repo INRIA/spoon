@@ -53,6 +53,8 @@ import spoon.test.template.testclasses.AnotherFieldAccessTemplate;
 import spoon.test.template.testclasses.ArrayAccessTemplate;
 import spoon.test.template.testclasses.FieldAccessOfInnerClassTemplate;
 import spoon.test.template.testclasses.FieldAccessTemplate;
+import spoon.test.template.testclasses.Flow;
+import spoon.test.template.testclasses.FlowMatcher;
 import spoon.test.template.testclasses.InnerClassTemplate;
 import spoon.test.template.testclasses.InvocationTemplate;
 import spoon.test.template.testclasses.NtonCodeTemplate;
@@ -810,7 +812,8 @@ public class TemplateTest {
 		Factory factory = spoon.getFactory();
 
 		CtClass<?> testSimpleTpl = factory.Class().create("TestSimpleTpl");
-		new SimpleTemplate("Hello world").apply(testSimpleTpl);
+		//whitespace seems wrong here
+		new SimpleTemplate("HelloWorld").apply(testSimpleTpl);
 
 		Set<CtMethod<?>> listMethods = testSimpleTpl.getMethods();
 		assertEquals(0, testSimpleTpl.getMethodsByName("apply").size());
@@ -997,11 +1000,11 @@ public class TemplateTest {
 		}
 		{
 			//contract: simple name of type reference is substituted in String literal 
-			final CtClass<?> result = (CtClass<?>) new SubstituteLiteralTemplate(factory.Type().createReference("some.ignored.package.TypeName")).apply(factory.createClass());
+			final CtClass<?> result = (CtClass<?>) new SubstituteLiteralTemplate(factory.Type().createReference("some.ignored.foo.TypeName")).apply(factory.createClass());
 			assertEquals("java.lang.String stringField1 = \"TypeName\";", result.getField("stringField1").toString());
 			assertEquals("java.lang.String stringField2 = \"Substring TypeName is substituted too - TypeName\";", result.getField("stringField2").toString());
 			//contract type reference is substituted in invocation as class access
-			assertEquals("java.lang.System.out.println(some.ignored.package.TypeName.class)", result.getMethodsByName("m1").get(0).getBody().getStatement(0).toString());
+			assertEquals("java.lang.System.out.println(some.ignored.foo.TypeName.class)", result.getMethodsByName("m1").get(0).getBody().getStatement(0).toString());
 		}
 		{
 			//contract: number literal is substituted in String literal as number converted to string
@@ -1174,5 +1177,25 @@ public class TemplateTest {
 		assertEquals("o = o instanceof spoon.test.template.TypeReferenceClassAccess.Example<?>", method.getBody().getStatement(4).toString());
 		assertEquals("java.util.function.Supplier<java.lang.Long> p = spoon.test.template.TypeReferenceClassAccess.Example::currentTimeMillis", method.getBody().getStatement(5).toString());
 	}
-	
+
+	@Test
+	public void testMethodCast() throws Exception {
+		//contract: matcher should match methods with cast too
+		//https://github.com/INRIA/spoon/issues/3026
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.getFactory();
+		spoon.createCompiler(
+				factory,
+				SpoonResourceHelper.resources("./src/test/java/spoon/test/template/testclasses/Flow.java"),
+				SpoonResourceHelper.resources("./src/test/java/spoon/test/template/testclasses/FlowMatcher.java"))
+				.build();
+
+		CtClass<?> templateKlass = factory.Class().get(FlowMatcher.class);
+		CtClass<?> klass = factory.Class().get(Flow.class);
+
+		CtMethod<?> method = (CtMethod<?>) templateKlass.getElements(new NamedElementFilter(CtMethod.class, "subFlowMatcher")).get(0);
+		CtElement templateRoot = method.getBody().getStatement(0);
+		TemplateMatcher myMatcher = new TemplateMatcher(templateRoot);
+		assertEquals(2, myMatcher.find(klass).size());
+	}
 }

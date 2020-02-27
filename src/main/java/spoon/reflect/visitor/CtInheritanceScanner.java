@@ -6,6 +6,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtAbstractInvocation;
+import spoon.reflect.code.CtAbstractSwitch;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtArrayRead;
@@ -53,6 +54,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThisAccess;
@@ -178,6 +180,12 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans an abstract invocation.
 	 */
 	public <T> void scanCtAbstractInvocation(CtAbstractInvocation<T> a) {
+	}
+
+	/**
+	 * Scans an abstract switch (either switch statement or switch expression).
+	 */
+	public <S> void scanCtAbstractSwitch(CtAbstractSwitch<S> a) {
 	}
 
 	/**
@@ -806,8 +814,18 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	public <E> void visitCtSwitch(CtSwitch<E> e) {
+		scanCtAbstractSwitch(e);
 		scanCtStatement(e);
 		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
+	}
+
+	public <T, S> void visitCtSwitchExpression(CtSwitchExpression<T, S> e) {
+		scanCtAbstractSwitch(e);
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
 	}

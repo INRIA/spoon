@@ -5,7 +5,7 @@
  */
 package spoon.processing;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;

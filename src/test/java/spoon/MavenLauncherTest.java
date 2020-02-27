@@ -27,6 +27,8 @@ import spoon.support.compiler.FileSystemFolder;
 import spoon.support.compiler.SpoonPom;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Paths;
@@ -143,9 +145,45 @@ public class MavenLauncherTest {
 	}
 
 	@Test
+	public void testForceRefresh() throws FileNotFoundException {
+		// ensure classpath file exists so first constructor invocation won't build classpath
+		File file = new File("./src/test/resources/maven-launcher/system-dependency/spoon.classpath.tmp");
+		new PrintWriter(file).close();
+
+		// contract: classpath is not built
+		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/system-dependency", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		assertEquals(0, launcher.getEnvironment().getSourceClasspath().length);
+
+		// contract: calling constructor with forceRefresh=true should result in classpath being rebuilt
+		MavenLauncher newLauncher = new MavenLauncher("./src/test/resources/maven-launcher/system-dependency", MavenLauncher.SOURCE_TYPE.ALL_SOURCE, true);
+		assertEquals(1, newLauncher.getEnvironment().getSourceClasspath().length);
+	}
+
+	@Test
+	public void testRebuildClasspath() throws FileNotFoundException {
+		// ensure classpath file exists so first constructor invocation won't build classpath
+		File file = new File("./src/test/resources/maven-launcher/system-dependency/spoon.classpath.tmp");
+		new PrintWriter(file).close();
+
+		// contract: classpath is not built
+		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/system-dependency", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		assertEquals(0, launcher.getEnvironment().getSourceClasspath().length);
+
+		// contract: classpath should be rebuilt
+		launcher.rebuildClasspath();
+		assertEquals(1, launcher.getEnvironment().getSourceClasspath().length);
+	}
+
+	@Test
 	public void mavenLauncherTestWithVerySimpleProject() {
 		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/very-simple", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 		assertEquals(1, launcher.getModelBuilder().getInputSources().size());
+	}
+
+	@Test
+	public void testPomSourceDirectory() {
+		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/source-directory", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		assertEquals(2, launcher.getModelBuilder().getInputSources().size());
 	}
 
 	@Test

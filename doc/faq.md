@@ -5,6 +5,26 @@ keywords: frequently asked questions, FAQ, question and answer, collapsible sect
 
 ## Practical Information
 
+### Are there snapshots versions deployed somewhere?
+
+```xml
+<dependencies>
+	<dependency>
+		<groupId>fr.inria.gforge.spoon</groupId>
+		<artifactId>spoon-core</artifactId>
+		<version>{{site.spoon_snapshot}}</version>
+	</dependency>
+</dependencies>
+<repositories>
+	<repository>
+      <id>maven.inria.fr-snapshot</id>
+      <name>Maven Repository for Spoon Snapshots</name>
+      <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
+    </repository>
+</repositories>
+```
+
+
 ### How to access Spoon's source code repository?
 
 See <https://github.com/INRIA/spoon/>.
@@ -60,4 +80,3 @@ final String[] builder = new JDTBuilderImpl() //
 		.sources(new SourceOptions().sources(".")) //
 		.build();
 ```
-
