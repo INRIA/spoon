@@ -17,12 +17,9 @@ import lombok.NonNull;
 import lombok.Singular;
 import lombok.ToString;
 
-
 @ToString
-public class BOMCostPrice
-{
-	public static BOMCostPrice empty(@NonNull final ProductId productId)
-	{
+public class BOMCostPrice {
+	public static BOMCostPrice empty(@NonNull final ProductId productId) {
 		return builder().productId(productId).build();
 	}
 
@@ -31,59 +28,48 @@ public class BOMCostPrice
 	private final HashMap<CostElementId, BOMCostElementPrice> pricesByElementId;
 
 	@Builder
-	private BOMCostPrice(
-			@NonNull final ProductId productId,
-			@NonNull @Singular final Collection<BOMCostElementPrice> costElementPrices)
-	{
+	private BOMCostPrice(@NonNull final ProductId productId,
+			@NonNull @Singular final Collection<BOMCostElementPrice> costElementPrices) {
 		this.productId = productId;
-		pricesByElementId = costElementPrices
-				.stream()
+		pricesByElementId = costElementPrices.stream()
 				.collect(GuavaCollectors.toHashMapByKey(BOMCostElementPrice::getCostElementId));
 	}
 
-	public Stream<CostElementId> streamCostElementIds()
-	{
+	public Stream<CostElementId> streamCostElementIds() {
 		return pricesByElementId.keySet().stream();
 	}
 
-	public BOMCostElementPrice getCostElementPriceOrNull(@NonNull final CostElementId costElementId)
-	{
+	public BOMCostElementPrice getCostElementPriceOrNull(@NonNull final CostElementId costElementId) {
 		return pricesByElementId.get(costElementId);
 	}
 
-	public void clearOwnCostPrice(@NonNull final CostElementId costElementId)
-	{
+	public void clearOwnCostPrice(@NonNull final CostElementId costElementId) {
 		final BOMCostElementPrice elementCostPrice = getCostElementPriceOrNull(costElementId);
-		if (elementCostPrice != null)
-		{
+		if (elementCostPrice != null) {
 			elementCostPrice.clearOwnCostPrice();
 		}
 	}
 
-	public void setComponentsCostPrice(@NonNull final CostAmount costPrice, @NonNull final CostElementId costElementId)
-	{
-		pricesByElementId.computeIfAbsent(costElementId, k -> BOMCostElementPrice.zero(costElementId, costPrice.getCurrencyId()))
+	public void setComponentsCostPrice(@NonNull final CostAmount costPrice,
+			@NonNull final CostElementId costElementId) {
+		pricesByElementId
+				.computeIfAbsent(costElementId, k -> BOMCostElementPrice.zero(costElementId, costPrice.getCurrencyId()))
 				.setComponentsCostPrice(costPrice);
 	}
 
-	public void clearComponentsCostPrice(@NonNull final CostElementId costElementId)
-	{
+	public void clearComponentsCostPrice(@NonNull final CostElementId costElementId) {
 		final BOMCostElementPrice elementCostPrice = getCostElementPriceOrNull(costElementId);
-		if (elementCostPrice != null)
-		{
+		if (elementCostPrice != null) {
 			elementCostPrice.clearComponentsCostPrice();
 		}
 	}
 
-	Collection<BOMCostElementPrice> getElementPrices()
-	{
+	Collection<BOMCostElementPrice> getElementPrices() {
 		return pricesByElementId.values();
 	}
 
-	<T extends RepoIdAware> Stream<T> streamIds(@NonNull final Class<T> idType)
-	{
-		return getElementPrices()
-				.stream()
+	<T extends RepoIdAware> Stream<T> streamIds(@NonNull final Class<T> idType) {
+		return getElementPrices().stream()
 				.map(BOMCostElementPrice::getId)
 				.filter(Predicates.notNull())
 				.map(idType::cast);
