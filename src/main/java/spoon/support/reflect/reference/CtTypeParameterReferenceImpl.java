@@ -128,7 +128,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 		if (parent instanceof CtExecutableReference) {
 			CtExecutableReference parentExec = (CtExecutableReference) parent;
-			if (Objects.nonNull(parentExec.getDeclaringType()) &&!parentExec.getDeclaringType().equals(e)) {
+			if (Objects.nonNull(parentExec.getDeclaringType()) && !parentExec.getDeclaringType().equals(e)) {
 				CtElement parent2 = parentExec.getExecutableDeclaration();
 				if (parent2 instanceof CtMethod) {
 					e = parent2;
