@@ -9,7 +9,7 @@ import spoon.reflect.reference.CtTypeReference;
 /**
  * Issue3275
  */
-public class Issue3275 {
+public class Issue3275Test {
 	// the following code reproduces the behavior from the issue
 	@Test
 	public void test() {
