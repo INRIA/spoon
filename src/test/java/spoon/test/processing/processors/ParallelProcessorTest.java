@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import org.junit.Rule;
@@ -62,10 +63,20 @@ public class ParallelProcessorTest {
 				.noClasspath(true)
 				.outputDirectory(folderFactory.newFolder())
 				.buildModel();
-		System.out.println(atomicCounter.toString());
+		AtomicInteger singleThreadCounter = new AtomicInteger(0);
+		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
+				.processor(new AbstractProcessor<CtElement>() {
+					@Override
+					public void process(CtElement element) {
+						singleThreadCounter.incrementAndGet();
+					}
+				})
+				.noClasspath(true)
+				.outputDirectory(folderFactory.newFolder())
+				.buildModel();
 		for (int j = 0; j < atomicCounter.length(); j++) {
-			// after processing every entry should be > 0.
-			assertTrue(atomicCounter.get(j) > 0);
+			singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(j));
 		}
+		assertTrue(singleThreadCounter.get() == 0);
 	}
 }
