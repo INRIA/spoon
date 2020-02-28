@@ -33,6 +33,11 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 			service.execute(() -> {
 				try {
 					usedProcessor.process(element);
+					processorQueue.put(usedProcessor);
+				} catch (InterruptedException e) {
+					// because rethrow is not possible here.
+					Thread.currentThread().interrupt();
+					e.printStackTrace();
 					processorQueue.add(usedProcessor);
 				} catch (Exception e) {
 					// allows throwing exception, but keeping the processor in the queue
