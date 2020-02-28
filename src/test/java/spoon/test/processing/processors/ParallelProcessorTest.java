@@ -30,7 +30,7 @@ public class ParallelProcessorTest {
 	public TemporaryFolder folderFactory = new TemporaryFolder();
 
 	@Test
-	public void printWithThreadNumber() throws IOException {
+	public void compareWithSingleThreaded1() throws IOException {
 		Integer[] counter = new Integer[] { 0, 0, 0, 0 };
 		AtomicReferenceArray<Integer> atomicCounter = new AtomicReferenceArray<Integer>(counter);
 		Processor<CtElement> p1 = new AbstractProcessor<CtElement>() {
@@ -60,6 +60,67 @@ public class ParallelProcessorTest {
 		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
 				.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1, p2, p3, p4)) {
 				})
+				.noClasspath(true)
+				.outputDirectory(folderFactory.newFolder())
+				.buildModel();
+		AtomicInteger singleThreadCounter = new AtomicInteger(0);
+		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
+				.processor(new AbstractProcessor<CtElement>() {
+					@Override
+					public void process(CtElement element) {
+						singleThreadCounter.incrementAndGet();
+					}
+				})
+				.noClasspath(true)
+				.outputDirectory(folderFactory.newFolder())
+				.buildModel();
+		for (int j = 0; j < atomicCounter.length(); j++) {
+			singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(j));
+		}
+		assertTrue(singleThreadCounter.get() == 0);
+	}
+
+	@Test
+	public void compareWithSingleThreaded2() throws IOException {
+		Integer[] counter = new Integer[] { 0, 0, 0, 0 };
+		AtomicReferenceArray<Integer> atomicCounter = new AtomicReferenceArray<Integer>(counter);
+		Processor<CtElement> p1 = new AbstractProcessor<CtElement>() {
+			@Override
+			public void process(CtElement element) {
+				atomicCounter.getAndUpdate(0, i -> i + 1);
+			}
+		};
+		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
+				.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1)) {
+				})
+				.noClasspath(true)
+				.outputDirectory(folderFactory.newFolder())
+				.buildModel();
+		AtomicInteger singleThreadCounter = new AtomicInteger(0);
+		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
+				.processor(new AbstractProcessor<CtElement>() {
+					@Override
+					public void process(CtElement element) {
+						singleThreadCounter.incrementAndGet();
+					}
+				})
+				.noClasspath(true)
+				.outputDirectory(folderFactory.newFolder())
+				.buildModel();
+		for (int j = 0; j < atomicCounter.length(); j++) {
+			singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(j));
+		}
+		assertTrue(singleThreadCounter.get() == 0);
+	}
+
+	@Test
+	public void consumerConstructorTest() throws IOException {
+		Integer[] counter = new Integer[] { 0, 0, 0, 0 };
+		AtomicReferenceArray<Integer> atomicCounter = new AtomicReferenceArray<Integer>(counter);
+		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
+				.processor(
+						new AbstractParallelProcessor<CtElement>((e) -> atomicCounter.getAndUpdate(0, i -> i + 1), 4) {
+						})
 				.noClasspath(true)
 				.outputDirectory(folderFactory.newFolder())
 				.buildModel();

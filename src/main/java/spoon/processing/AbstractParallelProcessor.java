@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 import spoon.reflect.declaration.CtElement;
 
@@ -24,6 +25,19 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 		processorQueue = new ArrayBlockingQueue<>(processors.size());
 		processorQueue.addAll(processors);
 		service = Executors.newFixedThreadPool(processors.size());
+	}
+
+	public AbstractParallelProcessor(Consumer<E> processFunction, int numberOfProcessors) {
+		processorQueue = new ArrayBlockingQueue<>(numberOfProcessors);
+		for (int i = 0; i < numberOfProcessors; i++) {
+			processorQueue.add(new AbstractProcessor<E>() {
+				@Override
+				public void process(E element) {
+					processFunction.accept(element);
+				}
+			});
+		}
+		service = Executors.newFixedThreadPool(numberOfProcessors);
 	}
 
 	@Override
