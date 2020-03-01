@@ -6,6 +6,7 @@
 package spoon.test.processing.processors;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import spoon.FluentLauncher;
+import spoon.SpoonException;
 import spoon.processing.AbstractParallelProcessor;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
@@ -139,5 +141,24 @@ public class ParallelProcessorTest {
 			singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(j));
 		}
 		assertTrue(singleThreadCounter.get() == 0);
+	}
+
+	@Test
+	public void testDistinctCheck() throws IOException {
+		Integer[] counter = new Integer[] { 0, 0, 0, 0 };
+		AtomicReferenceArray<Integer> atomicCounter = new AtomicReferenceArray<Integer>(counter);
+		Processor<CtElement> p1 = new AbstractProcessor<CtElement>() {
+			@Override
+			public void process(CtElement element) {
+				atomicCounter.getAndUpdate(0, i -> i + 1);
+			}
+		};
+		assertThrows(SpoonException.class,
+				() -> new FluentLauncher().inputResource("src/test/resources/deprecated/input")
+						.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1, p1)) {
+						})
+						.noClasspath(true)
+						.outputDirectory(folderFactory.newFolder())
+						.buildModel());
 	}
 }

@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 
 /**
@@ -22,11 +23,24 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 	private ArrayBlockingQueue<Processor<E>> processorQueue;
 
 	public AbstractParallelProcessor(Collection<Processor<E>> processors) {
+		long distinctNumber = processors.stream().distinct().count();
+		if (distinctNumber == 0) {
+			throw new SpoonException("List of processors is empty");
+		}
+		if (distinctNumber != processors.size()) {
+			throw new SpoonException("Some processors are the same");
+		}
 		processorQueue = new ArrayBlockingQueue<>(processors.size());
 		processorQueue.addAll(processors);
 		service = Executors.newFixedThreadPool(processors.size());
 	}
 
+	/**
+	 *
+	 * @param processFunction
+	 * @param numberOfProcessors
+	 * @throws IllegalArgumentException if numberOfProcessors is less than 1
+	 */
 	public AbstractParallelProcessor(Consumer<E> processFunction, int numberOfProcessors) {
 		processorQueue = new ArrayBlockingQueue<>(numberOfProcessors);
 		for (int i = 0; i < numberOfProcessors; i++) {
@@ -43,19 +57,19 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 	@Override
 	public final void process(E element) {
 		try {
-			Processor<E> usedProcessor = processorQueue.take();
+			Processor<E> currentProcessor = processorQueue.take();
 			service.execute(() -> {
 				try {
-					usedProcessor.process(element);
-					processorQueue.put(usedProcessor);
+					currentProcessor.process(element);
+					processorQueue.put(currentProcessor);
 				} catch (InterruptedException e) {
 					// because rethrow is not possible here.
 					Thread.currentThread().interrupt();
 					e.printStackTrace();
-					processorQueue.add(usedProcessor);
+					processorQueue.add(currentProcessor);
 				} catch (Exception e) {
 					// allows throwing exception, but keeping the processor in the queue
-					processorQueue.add(usedProcessor);
+					processorQueue.add(currentProcessor);
 					throw e;
 				}
 			});
