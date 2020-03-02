@@ -5,11 +5,12 @@
  */
 package spoon.processing;
 
-import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
@@ -22,17 +23,21 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 	private ExecutorService service;
 	private ArrayBlockingQueue<Processor<E>> processorQueue;
 
-	public AbstractParallelProcessor(Collection<Processor<E>> processors) {
-		long distinctNumber = processors.stream().distinct().count();
-		if (distinctNumber == 0) {
-			throw new SpoonException("List of processors is empty");
+	public AbstractParallelProcessor(Iterable<Processor<E>> processors) {
+		// added casts because long number of processors seems big and constructors need
+		// it
+		int processorNumber = (int) StreamSupport.stream(processors.spliterator(), false).count();
+		processorQueue = new ArrayBlockingQueue<>(processorNumber);
+		processors.forEach(processorQueue::add);
+		service = Executors.newFixedThreadPool(processorNumber);
+	}
+
+	public AbstractParallelProcessor(AbstractProcessorFactory<E> processorFactory, int numberOfProcessors) {
+		processorQueue = new ArrayBlockingQueue<>(numberOfProcessors);
+		service = Executors.newFixedThreadPool(numberOfProcessors);
+		for (int i = 0; i < numberOfProcessors; i++) {
+			processorQueue.add(processorFactory.createProcessor());
 		}
-		if (distinctNumber != processors.size()) {
-			throw new SpoonException("Some processors are the same");
-		}
-		processorQueue = new ArrayBlockingQueue<>(processors.size());
-		processorQueue.addAll(processors);
-		service = Executors.newFixedThreadPool(processors.size());
 	}
 
 	/**

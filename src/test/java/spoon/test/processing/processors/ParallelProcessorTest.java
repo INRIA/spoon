@@ -6,7 +6,6 @@
 package spoon.test.processing.processors;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -18,9 +17,9 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import spoon.FluentLauncher;
-import spoon.SpoonException;
 import spoon.processing.AbstractParallelProcessor;
 import spoon.processing.AbstractProcessor;
+import spoon.processing.AbstractProcessorFactory;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 
@@ -120,9 +119,8 @@ public class ParallelProcessorTest {
 		Integer[] counter = new Integer[] { 0, 0, 0, 0 };
 		AtomicReferenceArray<Integer> atomicCounter = new AtomicReferenceArray<Integer>(counter);
 		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
-				.processor(
-						new AbstractParallelProcessor<CtElement>((e) -> atomicCounter.getAndUpdate(0, i -> i + 1), 4) {
-						})
+				.processor(new AbstractParallelProcessor<CtElement>((e) -> atomicCounter.getAndUpdate(0, i -> i + 1), 4) {
+				})
 				.noClasspath(true)
 				.outputDirectory(folderFactory.newFolder())
 				.buildModel();
@@ -144,21 +142,43 @@ public class ParallelProcessorTest {
 	}
 
 	@Test
-	public void testDistinctCheck() throws IOException {
+	public void testFactory() throws IOException {
 		Integer[] counter = new Integer[] { 0, 0, 0, 0 };
 		AtomicReferenceArray<Integer> atomicCounter = new AtomicReferenceArray<Integer>(counter);
-		Processor<CtElement> p1 = new AbstractProcessor<CtElement>() {
+		AbstractProcessorFactory<CtElement> factory = new AbstractProcessorFactory<CtElement>() {
+			private int number = -1;
+
 			@Override
-			public void process(CtElement element) {
-				atomicCounter.getAndUpdate(0, i -> i + 1);
+			public Processor<CtElement> createProcessor() {
+				number++;
+				return new AbstractProcessor<CtElement>() {
+					@Override
+					public void process(CtElement element) {
+						atomicCounter.getAndUpdate(number, i -> i + 1);
+					}
+				};
 			}
 		};
-		assertThrows(SpoonException.class,
-				() -> new FluentLauncher().inputResource("src/test/resources/deprecated/input")
-						.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1, p1)) {
-						})
-						.noClasspath(true)
-						.outputDirectory(folderFactory.newFolder())
-						.buildModel());
+		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
+				.processor(new AbstractParallelProcessor<CtElement>(factory, 4) {
+				})
+				.noClasspath(true)
+				.outputDirectory(folderFactory.newFolder())
+				.buildModel();
+		AtomicInteger singleThreadCounter = new AtomicInteger(0);
+		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
+				.processor(new AbstractProcessor<CtElement>() {
+					@Override
+					public void process(CtElement element) {
+						singleThreadCounter.incrementAndGet();
+					}
+				})
+				.noClasspath(true)
+				.outputDirectory(folderFactory.newFolder())
+				.buildModel();
+		for (int j = 0; j < atomicCounter.length(); j++) {
+			singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(j));
+		}
+		assertTrue(singleThreadCounter.get() == 0);
 	}
 }
