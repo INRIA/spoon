@@ -25,12 +25,11 @@ import spoon.reflect.declaration.CtElement;
  * constructors exist for different approaches creating this. You can create
  * this processor with either a Iterable of processors or a Consumer.
  *
- * @implNote for creating and managing threads a
- *           {@link Executors#newFixedThreadPool()} is used. Creating more
- *           threads then cores can harm the performance. Using a different
- *           thread pool could increase the performance, but this class should
- *           be general usage. If you need better performance you may want to
- *           use an own class with different parallel approach.
+ * For creating and managing threads a {@link Executors#newFixedThreadPool()} is
+ * used. Creating more threads then cores can harm the performance. Using a
+ * different thread pool could increase the performance, but this class should
+ * be general usage. If you need better performance you may want to use an own
+ * class with different parallel approach.
  */
 public abstract class AbstractParallelProcessor<E extends CtElement> extends AbstractProcessor<E> {
 
