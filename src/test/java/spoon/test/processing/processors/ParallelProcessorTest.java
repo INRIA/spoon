@@ -6,9 +6,11 @@
 package spoon.test.processing.processors;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
@@ -17,64 +19,54 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import spoon.FluentLauncher;
+import spoon.SpoonException;
 import spoon.processing.AbstractParallelProcessor;
 import spoon.processing.AbstractProcessor;
-import spoon.processing.AbstractProcessorFactory;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 
-/**
- * ParallelProcessorTest
- */
 public class ParallelProcessorTest {
+	private static final String INPUT_FILES = "src/test/resources/deprecated/input";
 	@Rule
 	public TemporaryFolder folderFactory = new TemporaryFolder();
 
-	@Test
-	public void compareWithSingleThreaded1() throws IOException {
+	private AtomicReferenceArray<Integer> createCounter() {
 		Integer[] counter = new Integer[] { 0, 0, 0, 0 };
 		AtomicReferenceArray<Integer> atomicCounter = new AtomicReferenceArray<Integer>(counter);
-		Processor<CtElement> p1 = new AbstractProcessor<CtElement>() {
+		return atomicCounter;
+	}
+
+	private Processor<CtElement> createProcessor(AtomicReferenceArray<Integer> atomicCounter, int digit) {
+		Processor<CtElement> processor = new AbstractProcessor<CtElement>() {
 			@Override
 			public void process(CtElement element) {
-				atomicCounter.getAndUpdate(0, i -> i + 1);
+				atomicCounter.getAndUpdate(digit, i -> i + 1);
 			}
 		};
-		Processor<CtElement> p2 = new AbstractProcessor<CtElement>() {
-			@Override
-			public void process(CtElement element) {
-				atomicCounter.getAndUpdate(1, i -> i + 1);
-			}
-		};
-		Processor<CtElement> p3 = new AbstractProcessor<CtElement>() {
-			@Override
-			public void process(CtElement element) {
-				atomicCounter.getAndUpdate(2, i -> i + 1);
-			}
-		};
-		Processor<CtElement> p4 = new AbstractProcessor<CtElement>() {
-			@Override
-			public void process(CtElement element) {
-				atomicCounter.getAndUpdate(3, i -> i + 1);
-			}
-		};
-		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
+		return processor;
+	}
+
+	@Test
+	public void compareWithSingleThreaded1() throws IOException {
+		AtomicReferenceArray<Integer> atomicCounter = createCounter();
+		Processor<CtElement> p1 = createProcessor(atomicCounter, 0);
+		Processor<CtElement> p2 = createProcessor(atomicCounter, 1);
+		Processor<CtElement> p3 = createProcessor(atomicCounter, 2);
+		Processor<CtElement> p4 = createProcessor(atomicCounter, 3);
+
+		new FluentLauncher().inputResource(INPUT_FILES)
 				.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1, p2, p3, p4)) {
 				})
 				.noClasspath(true)
 				.outputDirectory(folderFactory.newFolder())
 				.buildModel();
 		AtomicInteger singleThreadCounter = new AtomicInteger(0);
-		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
-				.processor(new AbstractProcessor<CtElement>() {
-					@Override
-					public void process(CtElement element) {
-						singleThreadCounter.incrementAndGet();
-					}
-				})
-				.noClasspath(true)
-				.outputDirectory(folderFactory.newFolder())
-				.buildModel();
+		new FluentLauncher().inputResource(INPUT_FILES).processor(new AbstractProcessor<CtElement>() {
+			@Override
+			public void process(CtElement element) {
+				singleThreadCounter.incrementAndGet();
+			}
+		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
 		for (int j = 0; j < atomicCounter.length(); j++) {
 			singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(j));
 		}
@@ -83,31 +75,22 @@ public class ParallelProcessorTest {
 
 	@Test
 	public void compareWithSingleThreaded2() throws IOException {
-		Integer[] counter = new Integer[] { 0, 0, 0, 0 };
-		AtomicReferenceArray<Integer> atomicCounter = new AtomicReferenceArray<Integer>(counter);
-		Processor<CtElement> p1 = new AbstractProcessor<CtElement>() {
-			@Override
-			public void process(CtElement element) {
-				atomicCounter.getAndUpdate(0, i -> i + 1);
-			}
-		};
-		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
+		AtomicReferenceArray<Integer> atomicCounter = createCounter();
+		Processor<CtElement> p1 = createProcessor(atomicCounter, 0);
+
+		new FluentLauncher().inputResource(INPUT_FILES)
 				.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1)) {
 				})
 				.noClasspath(true)
 				.outputDirectory(folderFactory.newFolder())
 				.buildModel();
 		AtomicInteger singleThreadCounter = new AtomicInteger(0);
-		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
-				.processor(new AbstractProcessor<CtElement>() {
-					@Override
-					public void process(CtElement element) {
-						singleThreadCounter.incrementAndGet();
-					}
-				})
-				.noClasspath(true)
-				.outputDirectory(folderFactory.newFolder())
-				.buildModel();
+		new FluentLauncher().inputResource(INPUT_FILES).processor(new AbstractProcessor<CtElement>() {
+			@Override
+			public void process(CtElement element) {
+				singleThreadCounter.incrementAndGet();
+			}
+		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
 		for (int j = 0; j < atomicCounter.length(); j++) {
 			singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(j));
 		}
@@ -116,25 +99,20 @@ public class ParallelProcessorTest {
 
 	@Test
 	public void consumerConstructorTest() throws IOException {
-		Integer[] counter = new Integer[] { 0, 0, 0, 0 };
-		AtomicReferenceArray<Integer> atomicCounter = new AtomicReferenceArray<Integer>(counter);
-		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
+		AtomicReferenceArray<Integer> atomicCounter = createCounter();
+		new FluentLauncher().inputResource(INPUT_FILES)
 				.processor(new AbstractParallelProcessor<CtElement>((e) -> atomicCounter.getAndUpdate(0, i -> i + 1), 4) {
 				})
 				.noClasspath(true)
 				.outputDirectory(folderFactory.newFolder())
 				.buildModel();
 		AtomicInteger singleThreadCounter = new AtomicInteger(0);
-		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
-				.processor(new AbstractProcessor<CtElement>() {
-					@Override
-					public void process(CtElement element) {
-						singleThreadCounter.incrementAndGet();
-					}
-				})
-				.noClasspath(true)
-				.outputDirectory(folderFactory.newFolder())
-				.buildModel();
+		new FluentLauncher().inputResource(INPUT_FILES).processor(new AbstractProcessor<CtElement>() {
+			@Override
+			public void process(CtElement element) {
+				singleThreadCounter.incrementAndGet();
+			}
+		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
 		for (int j = 0; j < atomicCounter.length(); j++) {
 			singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(j));
 		}
@@ -142,43 +120,86 @@ public class ParallelProcessorTest {
 	}
 
 	@Test
-	public void testFactory() throws IOException {
-		Integer[] counter = new Integer[] { 0, 0, 0, 0 };
-		AtomicReferenceArray<Integer> atomicCounter = new AtomicReferenceArray<Integer>(counter);
-		AbstractProcessorFactory<CtElement> factory = new AbstractProcessorFactory<CtElement>() {
-			private int number = -1;
+	public void compareWithSingleThreaded3() throws IOException {
+		AtomicReferenceArray<Integer> atomicCounter = createCounter();
+		Processor<CtElement> p1 = createProcessor(atomicCounter, 0);
+		Processor<CtElement> p2 = createProcessor(atomicCounter, 1);
+		Processor<CtElement> p3 = createProcessor(atomicCounter, 2);
+		Processor<CtElement> p4 = createProcessor(atomicCounter, 3);
 
-			@Override
-			public Processor<CtElement> createProcessor() {
-				number++;
-				return new AbstractProcessor<CtElement>() {
-					@Override
-					public void process(CtElement element) {
-						atomicCounter.getAndUpdate(number, i -> i + 1);
-					}
-				};
-			}
-		};
-		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
-				.processor(new AbstractParallelProcessor<CtElement>(factory, 4) {
+		new FluentLauncher().inputResource(INPUT_FILES)
+				.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1, p2, p3, p4), 3) {
 				})
 				.noClasspath(true)
 				.outputDirectory(folderFactory.newFolder())
 				.buildModel();
 		AtomicInteger singleThreadCounter = new AtomicInteger(0);
-		new FluentLauncher().inputResource("src/test/resources/deprecated/input")
-				.processor(new AbstractProcessor<CtElement>() {
-					@Override
-					public void process(CtElement element) {
-						singleThreadCounter.incrementAndGet();
-					}
-				})
-				.noClasspath(true)
-				.outputDirectory(folderFactory.newFolder())
-				.buildModel();
+		new FluentLauncher().inputResource(INPUT_FILES).processor(new AbstractProcessor<CtElement>() {
+			@Override
+			public void process(CtElement element) {
+				singleThreadCounter.incrementAndGet();
+			}
+		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
 		for (int j = 0; j < atomicCounter.length(); j++) {
 			singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(j));
 		}
 		assertTrue(singleThreadCounter.get() == 0);
+		// because only 3 are used
+		assertTrue(atomicCounter.get(3) == 0);
+	}
+
+	@Test
+	public void testSize() throws IOException {
+		AtomicReferenceArray<Integer> atomicCounter = createCounter();
+		Processor<CtElement> p1 = createProcessor(atomicCounter, 0);
+
+		assertThrows(IllegalArgumentException.class, () -> new FluentLauncher().inputResource(INPUT_FILES)
+				.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1), 0) {
+				})
+				.noClasspath(true)
+				.outputDirectory(folderFactory.newFolder())
+				.buildModel());
+	}
+
+	@Test
+	public void testSize2() throws IOException {
+		AtomicReferenceArray<Integer> atomicCounter = createCounter();
+		Processor<CtElement> p1 = createProcessor(atomicCounter, 0);
+		assertThrows(IllegalArgumentException.class, () -> new FluentLauncher().inputResource(INPUT_FILES)
+				.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1), -5) {
+				})
+				.noClasspath(true)
+				.outputDirectory(folderFactory.newFolder())
+				.buildModel());
+	}
+
+	@Test
+	public void testSize3() throws IOException {
+		assertThrows(SpoonException.class, () -> new FluentLauncher().inputResource(INPUT_FILES)
+				.processor(new AbstractParallelProcessor<CtElement>(Collections.emptyList(), 1) {
+				})
+				.noClasspath(true)
+				.outputDirectory(folderFactory.newFolder())
+				.buildModel());
+	}
+
+	@Test
+	public void testSize4() throws IOException {
+		assertThrows(IllegalArgumentException.class, () -> new FluentLauncher().inputResource(INPUT_FILES)
+				.processor(new AbstractParallelProcessor<CtElement>(Collections.emptyList()) {
+				})
+				.noClasspath(true)
+				.outputDirectory(folderFactory.newFolder())
+				.buildModel());
+	}
+
+	@Test
+	public void testSize5() throws IOException {
+		assertThrows(IllegalArgumentException.class, () -> new FluentLauncher().inputResource(INPUT_FILES)
+				.processor(new AbstractParallelProcessor<CtElement>((v) -> v.toString(), 0) {
+				})
+				.noClasspath(true)
+				.outputDirectory(folderFactory.newFolder())
+				.buildModel());
 	}
 }
