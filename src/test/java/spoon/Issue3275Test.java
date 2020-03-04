@@ -24,6 +24,5 @@ public class Issue3275Test {
 					}
 				})
 				.buildModel();
-		throw new IllegalArgumentException();
 	}
 }

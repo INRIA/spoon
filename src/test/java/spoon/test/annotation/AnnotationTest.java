@@ -18,6 +18,9 @@ package spoon.test.annotation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import spoon.GithubIssue;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
@@ -58,7 +61,9 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.QueueProcessingManager;
+import spoon.test.UnresolvedBug;
 import spoon.test.annotation.testclasses.AnnotArray;
 import spoon.test.annotation.testclasses.AnnotParamTypeEnum;
 import spoon.test.annotation.testclasses.AnnotParamTypes;
@@ -1611,5 +1616,16 @@ public class AnnotationTest {
 		assertEquals("@spoon.test.annotation.testclasses.CustomAnnotation(something = \"annotation string\")", ctCatchVariable2.getAnnotations().get(0).toString());
 
 	}
-
+	@Test
+	@Category(UnresolvedBug.class)
+	@GithubIssue(issueNumber = "3281")
+	public void test_AnnotationWithNamedElement_HasImplicitAnnotationTypePackage() throws Exception {
+	Launcher launcher = new Launcher();
+	launcher.addInputResource(new VirtualFile("class Cls { @SuppressWarnings(value=\"unchecked\") void meth() {} }"));
+	CtModel model = launcher.buildModel();
+	List<CtElement> elems = model.getElements(e -> e instanceof CtAnnotation);
+	assertEquals(1, elems.size());
+	CtAnnotation<?> annotation = (CtAnnotation<?>) elems.get(0);
+	assertTrue(annotation.getAnnotationType().getPackage().isImplicit());
+}
 }
