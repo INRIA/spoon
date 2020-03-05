@@ -43,7 +43,8 @@ public class UnresolvedBug {
 		for (CtMethod<?> ctMethod : testMethods) {
 			String issueNumber = ctMethod.getAnnotation(GitHubIssue.class).issueNumber();
 			URL url = new URL(githubURL + issueNumber);
-			String data = new String(url.openStream().readAllBytes());
+			//because readAllBytes is jdk9 only
+			String data = new String(url.openStream().readNBytes(Integer.MAX_VALUE));
 			JsonObject issue = new Gson().fromJson(data, JsonObject.class);
 			assertTrue(issue.get("number").getAsString().equals(issueNumber));
 		}
