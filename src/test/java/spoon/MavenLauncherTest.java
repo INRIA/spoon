@@ -40,6 +40,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 public class MavenLauncherTest {
 
@@ -134,6 +135,16 @@ public class MavenLauncherTest {
 	@Test(expected = SpoonException.class)
 	public void mavenLauncherOnDirectoryWithoutPomTest() {
 		new MavenLauncher("./src", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
+	}
+
+	@Test
+	public void classpathBuildResultTest() {
+		//contract: Maven invocation fails
+		MavenLauncher failLauncher = new MavenLauncher("./src/test/resources/maven-launcher/non-existent-dependency", MavenLauncher.SOURCE_TYPE.APP_SOURCE, true);
+		assertFalse(failLauncher.getPomFile().classpathBuiltSuccessfully());
+		//contract: Maven invocation succeeds
+		MavenLauncher successLauncher = new MavenLauncher("./src/test/resources/maven-launcher/system-dependency", MavenLauncher.SOURCE_TYPE.APP_SOURCE, true);
+		assertTrue(successLauncher.getPomFile().classpathBuiltSuccessfully());
 	}
 
 	@Test
