@@ -15,6 +15,7 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
+import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
@@ -55,6 +56,7 @@ public class SpoonPom implements SpoonResource {
 	File directory;
 	MavenLauncher.SOURCE_TYPE sourceType;
 	Environment environment;
+	boolean classpathBuiltSuccessfully = false;
 
 	/**
 	 * Extract the information from the pom
@@ -361,7 +363,8 @@ public class SpoonPom implements SpoonResource {
 			invoker.setErrorHandler(s -> LOGGER.debug(s));
 			invoker.setOutputHandler(s -> LOGGER.debug(s));
 			try {
-				invoker.execute(request);
+				InvocationResult result = invoker.execute(request);
+				this.classpathBuiltSuccessfully = (result.getExitCode() == 0);
 			} catch (MavenInvocationException e) {
 				throw new SpoonException("Maven invocation failed to build a classpath.");
 			}
@@ -471,6 +474,14 @@ public class SpoonPom implements SpoonResource {
 		} else {
 			return spoonClasspathTmpFileName;
 		}
+	}
+
+	/**
+	 * Whether the classpath was built successfully
+	 * @return true if the most recent maven invocation was successful, false otherwise
+	 */
+	public boolean classpathBuiltSuccessfully() {
+		return classpathBuiltSuccessfully;
 	}
 
 	/**
