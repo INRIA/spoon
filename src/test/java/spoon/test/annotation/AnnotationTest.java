@@ -18,7 +18,6 @@ package spoon.test.annotation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import spoon.test.GitHubIssue;
 import spoon.Launcher;
@@ -63,7 +62,6 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.QueueProcessingManager;
-import spoon.test.UnresolvedBug;
 import spoon.test.annotation.testclasses.AnnotArray;
 import spoon.test.annotation.testclasses.AnnotParamTypeEnum;
 import spoon.test.annotation.testclasses.AnnotParamTypes;

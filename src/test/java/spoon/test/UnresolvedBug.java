@@ -28,7 +28,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 /**
  * marker class for marking unresolved bugs.
  */
-@SuppressWarnings("CheckStyle")
 public class UnresolvedBug {
 
 	private List<CtMethod<?>> testMethods = findTestMethods();
