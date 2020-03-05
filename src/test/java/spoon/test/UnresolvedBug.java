@@ -8,7 +8,9 @@ package spoon.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,7 +46,7 @@ public class UnresolvedBug {
 			String issueNumber = ctMethod.getAnnotation(GitHubIssue.class).issueNumber();
 			URL url = new URL(githubURL + issueNumber);
 			//because readAllBytes is jdk9 only
-			String data = new String(url.openStream().readNBytes(Integer.MAX_VALUE));
+			String data = new BufferedReader(new InputStreamReader(url.openStream())).lines().collect(Collectors.joining());
 			JsonObject issue = new Gson().fromJson(data, JsonObject.class);
 			assertTrue(issue.get("number").getAsString().equals(issueNumber));
 		}
