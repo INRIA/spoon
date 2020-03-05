@@ -18,8 +18,10 @@ package spoon.test.annotation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import spoon.test.GitHubIssue;
+import spoon.test.UnresolvedBug;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
