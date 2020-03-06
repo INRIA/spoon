@@ -92,4 +92,4 @@ Related work in architecture enforcement
 
 * [Architecture enforcement with Checkstyle](https://saturnnetwork.wordpress.com/2012/11/26/ultimate-architecture-enforcement-prevent-code-violations-at-code-commit-time/)
 * [Sonar architecture rule engine](https://docs.sonarqube.org/display/SONARQUBE44/Architecture+Rule+Engine)
-* [Archunit:  specify and assert architecture rules in plain Java](https://www.archunit.org/)
+* [Archunit:  specify and assert architecture rules in plain Java](https://www.archunit.org/) ([Maven integration](https://github.com/societe-generale/arch-unit-maven-plugin))
