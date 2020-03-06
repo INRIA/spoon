@@ -440,7 +440,11 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		});
 		if (getFactory().getEnvironment().isCommentsEnabled()) {
 			forEachCompilationUnit(unitList, SpoonProgress.Process.COMMENT_LINKING, unit -> {
-				new JDTCommentBuilder(unit, factory).build();
+				try {
+					new JDTCommentBuilder(unit, factory).build();
+				} catch (Exception e) {
+					getEnvironment().report(null, Level.ERROR, "JDTCommentBuilder crashed with the error, some comments may be missing in the model: " + e.toString());
+				}
 			});
 		}
 	}
