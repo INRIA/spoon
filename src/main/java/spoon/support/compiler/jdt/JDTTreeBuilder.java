@@ -1710,11 +1710,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration localTypeDeclaration, BlockScope scope) {
-		CtType<?> t;
 		if (localTypeDeclaration.binding == null) {
 			// no classpath mode but JDT returns nothing. We create an empty class.
-			t = factory.Core().createClass();
-			t.setSimpleName(CtType.NAME_UNKNOWN);
+			final CtType<?> t = factory.Core().createClass();
+			// we create a unique class name for this anonymous class
+			// see https://github.com/INRIA/spoon/issues/2974
+			t.setSimpleName(Integer.toString(localTypeDeclaration.sourceStart()));
 			((CtClass) t).setSuperclass(references.getTypeReference(null, localTypeDeclaration.allocation.type));
 			context.enter(t, localTypeDeclaration);
 		} else {

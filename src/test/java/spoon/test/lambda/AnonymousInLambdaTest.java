@@ -25,7 +25,9 @@ public class AnonymousInLambdaTest {
 		run.run();
 
 		cp.classes.forEach(
-				t -> assertFalse(t.getSimpleName().contains("<unknown>"))
+				t -> {
+					assertFalse(t.getSimpleName() + " is not good " + t.getPosition(), t.getSimpleName().contains("<unknown>"));
+				}
 		);
 	}
 
