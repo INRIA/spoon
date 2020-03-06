@@ -48,7 +48,13 @@ public class ParallelProcessorTest {
 
 	@Test
 	public void compareWithSingleThreaded1() throws IOException {
+		// contract: running with 4 processors parallel must produce the same result as
+		// single threaded processor.
+		// for testing this a simple processor counting visited nodes is used.
+
+		// create a countingArray for the concurrent processors.
 		AtomicReferenceArray<Integer> atomicCounter = createCounter();
+		// create processors
 		Processor<CtElement> p1 = createProcessor(atomicCounter, 0);
 		Processor<CtElement> p2 = createProcessor(atomicCounter, 1);
 		Processor<CtElement> p3 = createProcessor(atomicCounter, 2);
@@ -60,6 +66,7 @@ public class ParallelProcessorTest {
 				.noClasspath(true)
 				.outputDirectory(folderFactory.newFolder())
 				.buildModel();
+
 		AtomicInteger singleThreadCounter = new AtomicInteger(0);
 		new FluentLauncher().inputResource(INPUT_FILES).processor(new AbstractProcessor<CtElement>() {
 			@Override
@@ -67,6 +74,11 @@ public class ParallelProcessorTest {
 				singleThreadCounter.incrementAndGet();
 			}
 		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
+
+		// after processing both |singleThreadCounter| == sum(|atomicCounter|) must be
+		// true.
+		// for checking this subtract each array value from the
+		// singleThreadCounter and check for == 0
 		for (int j = 0; j < atomicCounter.length(); j++) {
 			singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(j));
 		}
@@ -75,6 +87,9 @@ public class ParallelProcessorTest {
 
 	@Test
 	public void compareWithSingleThreaded2() throws IOException {
+		// contract: a parallelProcessor with one thread must produce the same result as
+		// a normal processor.
+
 		AtomicReferenceArray<Integer> atomicCounter = createCounter();
 		Processor<CtElement> p1 = createProcessor(atomicCounter, 0);
 
@@ -91,14 +106,14 @@ public class ParallelProcessorTest {
 				singleThreadCounter.incrementAndGet();
 			}
 		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
-		for (int j = 0; j < atomicCounter.length(); j++) {
-			singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(j));
-		}
+		singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(0));
 		assertTrue(singleThreadCounter.get() == 0);
 	}
 
 	@Test
 	public void consumerConstructorTest() throws IOException {
+		// contract: creating with consumer constructor must produces correct results.
+		// See other tests for explanation how the testing works.
 		AtomicReferenceArray<Integer> atomicCounter = createCounter();
 		new FluentLauncher().inputResource(INPUT_FILES)
 				.processor(new AbstractParallelProcessor<CtElement>((e) -> atomicCounter.getAndUpdate(0, i -> i + 1), 4) {
@@ -121,6 +136,9 @@ public class ParallelProcessorTest {
 
 	@Test
 	public void compareWithSingleThreaded3() throws IOException {
+		// contract: using an iterable with more elements than used should only use the
+		// given number. Result must be correct too.
+		// Here the iterable<Processor> has size 4 and only 3 are used.
 		AtomicReferenceArray<Integer> atomicCounter = createCounter();
 		Processor<CtElement> p1 = createProcessor(atomicCounter, 0);
 		Processor<CtElement> p2 = createProcessor(atomicCounter, 1);
@@ -150,6 +168,7 @@ public class ParallelProcessorTest {
 
 	@Test
 	public void testSize() throws IOException {
+		// contract: a thread pool with size zero must not created.
 		AtomicReferenceArray<Integer> atomicCounter = createCounter();
 		Processor<CtElement> p1 = createProcessor(atomicCounter, 0);
 
@@ -163,6 +182,7 @@ public class ParallelProcessorTest {
 
 	@Test
 	public void testSize2() throws IOException {
+		// contract: negative processor numbers must throw an exception.
 		AtomicReferenceArray<Integer> atomicCounter = createCounter();
 		Processor<CtElement> p1 = createProcessor(atomicCounter, 0);
 		assertThrows(IllegalArgumentException.class, () -> new FluentLauncher().inputResource(INPUT_FILES)
@@ -175,6 +195,8 @@ public class ParallelProcessorTest {
 
 	@Test
 	public void testSize3() throws IOException {
+		// contract: trying to consume more processor than provided must throw an
+		// exception.
 		assertThrows(SpoonException.class, () -> new FluentLauncher().inputResource(INPUT_FILES)
 				.processor(new AbstractParallelProcessor<CtElement>(Collections.emptyList(), 1) {
 				})
@@ -185,6 +207,8 @@ public class ParallelProcessorTest {
 
 	@Test
 	public void testSize4() throws IOException {
+		// contract: trying to consume more processor than provided must throw an
+		// exception.
 		assertThrows(IllegalArgumentException.class, () -> new FluentLauncher().inputResource(INPUT_FILES)
 				.processor(new AbstractParallelProcessor<CtElement>(Collections.emptyList()) {
 				})
@@ -195,6 +219,8 @@ public class ParallelProcessorTest {
 
 	@Test
 	public void testSize5() throws IOException {
+		// contract: a thread pool with size zero must not created.
+
 		assertThrows(IllegalArgumentException.class, () -> new FluentLauncher().inputResource(INPUT_FILES)
 				.processor(new AbstractParallelProcessor<CtElement>((v) -> v.toString(), 0) {
 				})
