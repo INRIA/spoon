@@ -9,11 +9,13 @@ The main classes of Spoon patterns are those in package `spoon.pattern`:
 * classes: PatternBuilder, Pattern, Match, PatternBuilderHelper, PatternParameterConfigurator, InlinedStatementConfigurator 
 * eums: ConflictResolutionMode, Quantifier
 
+See also [examples in project `spoon-examples`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/analysis/PatternTest.java)
+
 ## Example usage
 
 ```java
 Factory spoonFactory = ...
-Pattern pattern = PatternBuilder.create(mainClass.getMethodsByName("m1").get(0).getBody().clone()).build();
+Pattern pattern = PatternBuilder.create(mainClass.getMethodsByName("m1").get(0).getBody().clone()).configurePatternParameters().build();
 
 //search for all occurences of the method in the root package
 pattern.forEachMatch(spoonFactory.getRootPackage(), (Match match) -> {
