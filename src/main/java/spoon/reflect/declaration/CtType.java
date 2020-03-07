@@ -353,4 +353,13 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * A new unique method name is given for each copy, and this method can be called several times.
 	 */
 	CtType<?> copyType();
+
+	/**
+	 * Generates a list of annotations for this type and all supertypes. Setting includeClasses/includeInterfaces to false excludes all superclasses/superInterfaces from the search.
+	 * The list may contains duplicates, if two types have the same annotation. Ignoring classes still includes interfaces implemented by the classes.
+	 * @param includeClasses if classes should be considered
+	 * @param includeInterfaces if interfaces should be considered
+	 * @return a list of all annotations from supertypes including this type.
+	 */
+	List<CtAnnotation<?>> getAnnotationsFromSuperTypes(boolean includeClasses, boolean includeInterfaces);
 }

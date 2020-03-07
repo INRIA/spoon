@@ -59,6 +59,7 @@ import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.QueueProcessingManager;
+import spoon.support.compiler.VirtualFile;
 import spoon.test.annotation.testclasses.AnnotArray;
 import spoon.test.annotation.testclasses.AnnotParamTypeEnum;
 import spoon.test.annotation.testclasses.AnnotParamTypes;
@@ -1610,6 +1611,66 @@ public class AnnotationTest {
 		assertEquals(1, ctCatchVariable2.getAnnotations().size());
 		assertEquals("@spoon.test.annotation.testclasses.CustomAnnotation(something = \"annotation string\")", ctCatchVariable2.getAnnotations().get(0).toString());
 
+	}
+
+	@Test
+	public void testGetAnnotationsFromSuperTypes() {
+		VirtualFile lower = new VirtualFile(
+			"package spoon.issue3294;@Deprecated	public class Lower extends Upper implements UpperInterface {}");
+		VirtualFile upper = new VirtualFile(
+			"package spoon.issue3294; @SuppressWarnings(\"all\") public class Upper {}");
+		VirtualFile upperInterface = new VirtualFile(
+			"package spoon.issue3294; @SuppressWarnings(\"interface\") public interface UpperInterface {}");
+			VirtualFile bottom = new VirtualFile(
+				"package spoon.issue3294;@Deprecated	public class Bottom extends Lower {}");
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(upper);
+		launcher.addInputResource(upperInterface);
+		launcher.addInputResource(lower);
+		launcher.addInputResource(bottom);
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+		for (CtType<?> type: model.getAllTypes()) {
+			switch (type.getSimpleName()) {
+				case "Lower":
+				//contract: all supertypes are ignored and so only 1 annotation is present.
+				assertEquals(1, type.getAnnotationsFromSuperTypes(false, false).size());
+				//contract: interface and the type itself have both 1 annotation so size must be 2.
+				assertEquals(2, type.getAnnotationsFromSuperTypes(false, true).size());
+				//contract: supertype upper and the type itself have both 1 annotation so size must be 2.
+				assertEquals(2, type.getAnnotationsFromSuperTypes(true, false).size());
+				//contract: upper has 1 annotation, upperInterface has 1 annotation and type itself has 1 annotation, so size must be 3.
+				assertEquals(3, type.getAnnotationsFromSuperTypes(true, true).size());
+					break;
+				case "Upper":
+				//contract: upper class has no supertype and only 1 annotation. type itself is always included.
+				assertEquals(1, type.getAnnotationsFromSuperTypes(false, false).size());
+				assertEquals(1, type.getAnnotationsFromSuperTypes(false, true).size());
+				assertEquals(1, type.getAnnotationsFromSuperTypes(true, false).size());
+				assertEquals(1, type.getAnnotationsFromSuperTypes(true, true).size());
+					break;
+				case "UpperInterface":
+				//contract: upper interface has no supertype and only 1 annotation. type itself is always included.
+				assertEquals(1, type.getAnnotationsFromSuperTypes(false, false).size());
+				assertEquals(1, type.getAnnotationsFromSuperTypes(false, true).size());
+				assertEquals(1, type.getAnnotationsFromSuperTypes(true, false).size());
+				assertEquals(1, type.getAnnotationsFromSuperTypes(true, true).size());
+					break;
+				case "Bottom":
+					//contract: no supertype are used so only 1 annotation, because type itself is always included.
+					assertEquals(1, type.getAnnotationsFromSuperTypes(false, false).size());
+					//contract: interface upperInterface and the type itself have both 1 annotation so size must be 2.
+					//Classes are ignored via parameter.
+					assertEquals(2, type.getAnnotationsFromSuperTypes(false, true).size());
+					//contract: all classes have 1 annotation, interface is ignored.
+					assertEquals(3, type.getAnnotationsFromSuperTypes(true, false).size());
+					// all types have 1 annotation, so size must be 4
+					assertEquals(4, type.getAnnotationsFromSuperTypes(true, true).size());
+						break;
+				default:
+				//never reached
+			}
+		}
 	}
 
 }

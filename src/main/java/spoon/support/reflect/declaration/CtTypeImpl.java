@@ -57,7 +57,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtType}.
@@ -995,5 +997,44 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		CtCompilationUnit cu = getFactory().createCompilationUnit();
 		cu.addDeclaredType(this);
 		return printer.printCompilationUnit(cu);
+	}
+	@Override
+	public List<CtAnnotation<?>> getAnnotationsFromSuperTypes(boolean includeClasses, boolean includeInterfaces) {
+		List<CtAnnotation<?>> annotations = new ArrayList<>();
+		Set<CtType<?>> classes = getSuperClasses(this, new HashSet<CtType<?>>());
+		Set<CtType<?>> visited = new HashSet<>();
+		annotations.addAll(this.getAnnotations());
+		visited.add(this);
+			for (CtType<?> type : classes) {
+				if (includeInterfaces) {
+				for (CtType<?> ctType : getSuperInterfaces(type)) {
+					if (!visited.contains(ctType)) {
+						annotations.addAll(ctType.getAnnotations());
+						visited.add(ctType);
+						}
+					}
+				}
+				if (includeClasses) {
+					if (!visited.contains(type)) {
+					annotations.addAll(type.getAnnotations());
+					visited.add(type);
+					}
+				}
+			}
+	return annotations;
+	}
+	private Set<CtType<?>> getSuperClasses(CtType<?> type, Set<CtType<?>> container) {
+		container.add(type);
+		if (type.getSuperclass() != null) {
+			container.addAll(getSuperClasses(type.getSuperclass().getTypeDeclaration(), container));
+		}
+		return container;
+	}
+	private Set<CtType<?>> getSuperInterfaces(CtType<?> type) {
+		return type.getSuperInterfaces()
+		.stream()
+		.filter(Objects::nonNull)
+		.map(v -> v.getTypeDeclaration())
+		.collect(Collectors.toCollection(HashSet::new));
 	}
 }
