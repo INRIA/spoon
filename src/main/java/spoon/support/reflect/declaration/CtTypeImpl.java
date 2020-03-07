@@ -1001,24 +1001,22 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public List<CtAnnotation<?>> getAnnotationsFromSuperTypes(boolean includeClasses, boolean includeInterfaces) {
 		List<CtAnnotation<?>> annotations = new ArrayList<>();
-		Set<CtType<?>> classes = getSuperClasses(this, new HashSet<CtType<?>>());
+		Set<CtType<?>> superClasses = getSuperClasses(this, new HashSet<CtType<?>>());
 		Set<CtType<?>> visited = new HashSet<>();
 		annotations.addAll(this.getAnnotations());
 		visited.add(this);
-			for (CtType<?> type : classes) {
+			for (CtType<?> type : superClasses) {
 				if (includeInterfaces) {
-				for (CtType<?> ctType : getSuperInterfaces(type)) {
-					if (!visited.contains(ctType)) {
-						annotations.addAll(ctType.getAnnotations());
-						visited.add(ctType);
+					for (CtType<?> superInterface : getSuperInterfaces(type)) {
+						if (!visited.contains(superInterface)) {
+							annotations.addAll(superInterface.getAnnotations());
+							visited.add(superInterface);
+							}
 						}
 					}
-				}
-				if (includeClasses) {
-					if (!visited.contains(type)) {
+				if (includeClasses && !visited.contains(type)) {
 					annotations.addAll(type.getAnnotations());
 					visited.add(type);
-					}
 				}
 			}
 	return annotations;
