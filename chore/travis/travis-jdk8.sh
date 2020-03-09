@@ -9,5 +9,10 @@ wget archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin
 unzip -qq apache-maven-3.3.9-bin.zip
 export M2_HOME=$PWD/apache-maven-3.3.9
 
+# make sure everything is in .m2
+pushd src/test/resources/maven-launcher/pac4j
+mvn dependency:resolve
+popd
+
 $M2_HOME/bin/mvn --version
 $M2_HOME/bin/mvn clean install
