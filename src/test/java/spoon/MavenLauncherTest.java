@@ -191,8 +191,9 @@ public class MavenLauncherTest {
 		// contract: variables coming from parent should be resolved
 		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/pac4j/pac4j-config", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 		List<String> classpath = Arrays.asList(launcher.getEnvironment().getSourceClasspath());
-		// in order to work on CI, make sure the version is the same in Spoon pom.xml
-		// else, we cannot guarantee that the dependency is present in .m2 cache and the test might fail
+
+		// we cannot guarantee that the dependency is present in .m2 cache and the test might fail
+		// see https://github.com/INRIA/spoon/issues/3289
 
 		String lookingFor = Paths.get("junit", "junit", "4.12", "junit-4.12.jar").toString();
 
