@@ -1618,7 +1618,7 @@ public class AnnotationTest {
 	}
 	@Test
 	@Category(UnresolvedBug.class)
-	@GitHubIssue(issueNumber = "3281")
+	@GitHubIssue(issueNumber = 3281)
 	public void test_AnnotationWithNamedElement_HasImplicitAnnotationTypePackage() throws Exception {
 	Launcher launcher = new Launcher();
 	launcher.addInputResource(new VirtualFile("class Cls { @SuppressWarnings(value=\"unchecked\") void meth() {} }"));

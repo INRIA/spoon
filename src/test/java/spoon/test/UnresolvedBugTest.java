@@ -40,7 +40,7 @@ public class UnresolvedBugTest {
 				.filter(v -> v.hasAnnotation(Test.class) && v.hasAnnotation(GitHubIssue.class))
 				.collect(Collectors.toList());
 		for (CtMethod<?> ctMethod : testMethods) {
-			String issueNumber = ctMethod.getAnnotation(GitHubIssue.class).issueNumber();
+			int issueNumber = ctMethod.getAnnotation(GitHubIssue.class).issueNumber();
 			URL url = new URL(githubURL + issueNumber);
 			// because readAllBytes is jdk9 only
 			String data = new BufferedReader(new InputStreamReader(url.openStream())).lines().collect(Collectors.joining());
@@ -66,8 +66,7 @@ public class UnresolvedBugTest {
 		// contract: every test ignored with @Category(UnresolvedBug.class) has an open
 		// issue.
 		testMethods = testMethods.stream()
-				.filter(
-						v -> v.hasAnnotation(Test.class) && !v.hasAnnotation(GitHubIssue.class) && v.hasAnnotation(Category.class)
+				.filter(v -> v.hasAnnotation(Test.class) && !v.hasAnnotation(GitHubIssue.class) && v.hasAnnotation(Category.class)
 								&& v.getAnnotation(Category.class).value()[0].equals(UnresolvedBug.class))
 				.collect(Collectors.toList());
 		assertEquals(testMethods.size(), 0);

@@ -232,9 +232,6 @@ public class SpoonArchitectureEnforcerTest {
 
 	@Test
 	public void testGoodTestClassNames() {
-		//some testclasses are util only and dont have to follow the naming convention for better readability
-		Set<String> testUtilClasses = new HashSet<>(Arrays.asList("spoon.test.GitHubIssue", "spoon.test.UnresolvedBug"));
-
 		// contract: to be run by Maven surefire, all test classes must be called Test* or *Test
 		// reference: "By default, the Surefire Plugin will automatically include all test classes with the following wildcard patterns:"
 		// "**/Test*.java" and "**/*Test.java"
@@ -249,9 +246,6 @@ public class SpoonArchitectureEnforcerTest {
 				return super.matches(element) && element.getAnnotation(Test.class) != null;
 			}
 		})) {
-			if (testUtilClasses.contains(meth.getParent(CtClass.class).getQualifiedName())) {
-				break;
-			}
 			assertTrue("naming contract violated for " + meth.getParent(CtClass.class).getSimpleName(), meth.getParent(CtClass.class).getSimpleName().startsWith("Test") || meth.getParent(CtClass.class).getSimpleName().endsWith("Test"));
 		}
 
