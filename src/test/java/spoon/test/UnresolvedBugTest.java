@@ -45,7 +45,7 @@ public class UnresolvedBugTest {
 			// because readAllBytes is jdk9 only
 			String data = new BufferedReader(new InputStreamReader(url.openStream())).lines().collect(Collectors.joining());
 			JsonObject issue = new Gson().fromJson(data, JsonObject.class);
-			assertTrue(issue.get("number").getAsString().equals(issueNumber));
+			assertTrue(issue.get("number").getAsInt()==issueNumber);
 		}
 	}
 
