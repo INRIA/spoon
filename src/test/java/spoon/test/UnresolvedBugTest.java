@@ -27,15 +27,16 @@ import spoon.reflect.visitor.filter.TypeFilter;
 
 public class UnresolvedBugTest {
 
+	private static final String OPEN_ISSUE_TEXT = "open";
 	private List<CtMethod<?>> testMethods = findTestMethods();
 	private final String githubURL = "https://api.github.com/repos/INRIA/spoon/issues/";
 
 	/**
-	 * Checks if every githubIssue annotation has an github issue.
+	 * Checks if every githubIssue annotation has an open github issue.
 	 */
 	@Test
 	public void checkGithubIssueAnnotations() throws IOException {
-		// contract: every test GitHubIssue annotation points to a valid issue number.
+		// contract: every test GitHubIssue annotation points to a valid issue number and the issue is open.
 		testMethods = testMethods.stream()
 				.filter(v -> v.hasAnnotation(Test.class) && v.hasAnnotation(GitHubIssue.class))
 				.collect(Collectors.toList());
@@ -45,7 +46,8 @@ public class UnresolvedBugTest {
 			// because readAllBytes is jdk9 only
 			String data = new BufferedReader(new InputStreamReader(url.openStream())).lines().collect(Collectors.joining());
 			JsonObject issue = new Gson().fromJson(data, JsonObject.class);
-			assertTrue(issue.get("number").getAsInt()==issueNumber);
+			assertTrue(issue.get("number").getAsInt() == issueNumber);
+			assertTrue(issue.get("state").getAsString().equals(OPEN_ISSUE_TEXT));
 		}
 	}
 
