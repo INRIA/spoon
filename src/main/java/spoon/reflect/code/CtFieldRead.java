@@ -15,7 +15,6 @@ package spoon.reflect.code;
  *     System.out.println(x.field);
  * </pre>
  *
- * If you process this element, keep in mind that you won't process field++.
  *
  * @param <T>
  * 		type of the field
