@@ -17,7 +17,6 @@ package spoon.reflect.code;
  *     x.field = 0;
  * </pre>
  *
- * If you process this element, keep in mind that you won't process field++.
  *
  * @param <T>
  * 		type of the field
