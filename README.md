@@ -70,16 +70,22 @@ R6) When feasible, the text version of a Spoon model is close to the original on
 
 To compile Spoon, you need a Java Development Kit (JDK) and Maven:
 
-```
+```sh
 git clone https://github.com/INRIA/spoon
 cd spoon
 mvn compile
 ```
 
 To run the tests:
-```
+```sh
 mvn test
 ```
+
+:warning: Note tests reproducing, known, unresolved, issues will fail. To ignore them, run:
+```sh
+mvn test -DexcludedGroups="spoon.test.UnresolvedBug"
+```
+
 
 ### Download
 
