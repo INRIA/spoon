@@ -17,9 +17,11 @@
 package spoon.test.annotation;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import org.junit.jupiter.api.Disabled;
 import spoon.test.GitHubIssue;
 import spoon.test.UnresolvedBug;
 import spoon.Launcher;
@@ -1617,8 +1619,8 @@ public class AnnotationTest {
 
 	}
 	@Test
-	@Category(UnresolvedBug.class)
 	@GitHubIssue(issueNumber = 3281)
+	@Ignore(value = "UnresolvedBug")
 	public void test_AnnotationWithNamedElement_HasImplicitAnnotationTypePackage() throws Exception {
 	Launcher launcher = new Launcher();
 	launcher.addInputResource(new VirtualFile("class Cls { @SuppressWarnings(value=\"unchecked\") void meth() {} }"));
