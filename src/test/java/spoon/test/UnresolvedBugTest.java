@@ -46,7 +46,7 @@ public class UnresolvedBugTest {
 	public static void setup() {
 		testMethods = testMethods.stream()
 				.filter(v -> v.hasAnnotation(Test.class) &&  v.hasAnnotation(Ignore.class)
-						&& v.getAnnotation(Ignore.class).value().equals("UnresolvedBug"))
+						&& v.getAnnotation(Ignore.class).value().equalsIgnoreCase("UnresolvedBug"))
 				.collect(Collectors.toList());
 	}
 
