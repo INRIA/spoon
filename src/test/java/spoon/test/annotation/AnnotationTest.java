@@ -64,6 +64,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.QueueProcessingManager;
+import spoon.support.compiler.VirtualFile;
 import spoon.test.annotation.testclasses.AnnotArray;
 import spoon.test.annotation.testclasses.AnnotParamTypeEnum;
 import spoon.test.annotation.testclasses.AnnotParamTypes;
@@ -1616,6 +1617,7 @@ public class AnnotationTest {
 		assertEquals("@spoon.test.annotation.testclasses.CustomAnnotation(something = \"annotation string\")", ctCatchVariable2.getAnnotations().get(0).toString());
 
 	}
+
 	@Test
 	@Category(UnresolvedBug.class)
 	@GitHubIssue(issueNumber = 3281)
