@@ -14,20 +14,3 @@ This module is released as a separated artifact. To use it with maven please add
 </dependency>
 ```
 
-or for the snapshot release:
-
-```xml
-<!--SNAPSHOT release-->
-<dependency>
-    <groupId>fr.inria.gforge.spoon</groupId>
-    <artifactId>spoon-decompiler</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
-</dependency>
-<repositories>
-	<repository>
-      <id>maven.inria.fr-snapshot</id>
-      <name>Maven Repository for Spoon Snapshots</name>
-      <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
-    </repository>
-</repositories>
-```
