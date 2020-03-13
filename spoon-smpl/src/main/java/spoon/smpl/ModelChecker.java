@@ -233,6 +233,33 @@ public class ModelChecker implements FormulaVisitor {
     }
 
     /**
+     * Checks if a given model is valid. A model is valid if all states have
+     * at least one successor.
+     *
+     * @param model Model to validate
+     * @return True if model is valid, false otherwise
+     */
+    public static boolean isValid(Model model) {
+        try {
+            for (int s : model.getStates()) {
+                if (model.getSuccessors(s).size() < 1) {
+                    // invalid because a state had zero successors
+                    return false;
+                }
+
+                // check that the labeling function works (empty result is ok)
+                if (model.getLabels(s).size() + model.getSuccessors(s).size() < 1) {
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * The Model to check formulas on.
      */
     private Model model;

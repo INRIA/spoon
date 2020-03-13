@@ -3,6 +3,7 @@ package spoon;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import spoon.Launcher;
 import spoon.pattern.Pattern;
@@ -75,6 +76,8 @@ public class ModelCheckerTest {
                 .addTransition(2,3)
                 .addTransition(3,3);
 
+        assertTrue(ModelChecker.isValid(model));
+
         ModelChecker checker = new ModelChecker(model);
 
         new True().accept(checker);
@@ -92,6 +95,8 @@ public class ModelCheckerTest {
                 .addLabel(2, new PropositionLabel("q"))
                 .addLabel(3, new PropositionLabel("p"))
                 .addLabel(3, new PropositionLabel("q"));
+
+        assertTrue(ModelChecker.isValid(model));
 
         ModelChecker checker = new ModelChecker(model);
 
@@ -111,6 +116,8 @@ public class ModelCheckerTest {
                 .addLabel(3, new PropositionLabel("p"))
                 .addLabel(3, new PropositionLabel("q"));
 
+        assertTrue(ModelChecker.isValid(model));
+
         ModelChecker checker = new ModelChecker(model);
 
         new Or(new Proposition("p"), new Proposition("q")).accept(checker);
@@ -128,6 +135,8 @@ public class ModelCheckerTest {
                 .addLabel(2, new PropositionLabel("q"))
                 .addLabel(3, new PropositionLabel("p"))
                 .addLabel(3, new PropositionLabel("q"));
+
+        assertTrue(ModelChecker.isValid(model));
 
         ModelChecker checker = new ModelChecker(model);
 
@@ -149,6 +158,8 @@ public class ModelCheckerTest {
              .addLabel(2, new PropositionLabel("q"))
              .addLabel(3, new PropositionLabel("p"))
              .addLabel(3, new PropositionLabel("q"));
+
+        assertTrue(ModelChecker.isValid(model));
 
         ModelChecker checker = new ModelChecker(model);
 
@@ -178,6 +189,8 @@ public class ModelCheckerTest {
                 .addLabel(4, new PropositionLabel("r"))
                 .addLabel(5, new PropositionLabel("r"));
 
+        assertTrue(ModelChecker.isValid(model));
+
         ModelChecker checker = new ModelChecker(model);
 
         new ExistsNext(new Proposition("p")).accept(checker);
@@ -205,6 +218,8 @@ public class ModelCheckerTest {
                 .addLabel(3, new PropositionLabel("q"))
                 .addLabel(4, new PropositionLabel("r"))
                 .addLabel(5, new PropositionLabel("r"));
+
+        assertTrue(ModelChecker.isValid(model));
 
         ModelChecker checker = new ModelChecker(model);
 
@@ -234,6 +249,8 @@ public class ModelCheckerTest {
                 .addLabel(4, new PropositionLabel("q"))
                 .addLabel(5, new PropositionLabel("r"));
 
+        assertTrue(ModelChecker.isValid(model));
+
         ModelChecker checker = new ModelChecker(model);
 
         new ExistsUntil(new Proposition("p"), new Proposition("q")).accept(checker);
@@ -256,6 +273,8 @@ public class ModelCheckerTest {
                 .addLabel(4, new PropositionLabel("q"))
                 .addLabel(5, new PropositionLabel("r"));
 
+        assertTrue(ModelChecker.isValid(model));
+
         ModelChecker checker = new ModelChecker(model);
 
         new AllUntil(new Proposition("p"), new Proposition("q")).accept(checker);
@@ -273,6 +292,8 @@ public class ModelCheckerTest {
                 .addTransition(4,5)
                 .addTransition(5,6)
                 .addTransition(6,6);
+
+        assertTrue(ModelChecker.isValid(model));
 
         assertEquals(makeSet(), ModelChecker.preExists(model, makeSet(1)));
         assertEquals(makeSet(1), ModelChecker.preExists(model, makeSet(2)) );
@@ -294,6 +315,8 @@ public class ModelCheckerTest {
                 .addTransition(5, 6)
                 .addTransition(6, 6);
 
+        assertTrue(ModelChecker.isValid(model));
+
         assertEquals(makeSet(), ModelChecker.preAll(model, makeSet(1)));
         assertEquals(makeSet(), ModelChecker.preAll(model, makeSet(2)));
         assertEquals(makeSet(), ModelChecker.preAll(model, makeSet(4)));
@@ -311,6 +334,8 @@ public class ModelCheckerTest {
         ModelBuilder model = new ModelBuilder();
         model.addStates(1).addTransition(1,1);
         model.addLabel(1, new StatementLabel(stmt));
+
+        assertTrue(ModelChecker.isValid(model));
 
         ModelChecker checker = new ModelChecker(model);
 
