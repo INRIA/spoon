@@ -12,15 +12,25 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
+import org.junit.runner.Description;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunListener;
+import org.junit.runner.notification.RunNotifier;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.InitializationError;
 import spoon.FluentLauncher;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -28,15 +38,26 @@ import spoon.reflect.visitor.filter.TypeFilter;
 public class UnresolvedBugTest {
 
 	private static final String OPEN_ISSUE_TEXT = "open";
-	private List<CtMethod<?>> testMethods = findTestMethods();
+	private static List<CtMethod<?>> testMethods = findTestMethods();
 	private final String githubURL = "https://api.github.com/repos/INRIA/spoon/issues/";
+
+
+	@BeforeClass
+	public static void setup() {
+		testMethods = testMethods.stream()
+				.filter(v -> v.hasAnnotation(Test.class) &&  v.hasAnnotation(Ignore.class)
+						&& v.getAnnotation(Ignore.class).value().equalsIgnoreCase("UnresolvedBug"))
+				.collect(Collectors.toList());
+	}
 
 	/**
 	 * Checks if every githubIssue annotation has an open github issue.
 	 */
+	@Ignore
 	@Test
 	public void checkGithubIssueAnnotations() throws IOException {
 		// contract: every test GitHubIssue annotation points to a valid issue number and the issue is open.
+		// Ignored by default as it is flacky when run in CI
 		testMethods = testMethods.stream()
 				.filter(v -> v.hasAnnotation(Test.class) && v.hasAnnotation(GitHubIssue.class))
 				.collect(Collectors.toList());
@@ -51,7 +72,7 @@ public class UnresolvedBugTest {
 		}
 	}
 
-	private List<CtMethod<?>> findTestMethods() {
+	static private List<CtMethod<?>> findTestMethods() {
 		return new FluentLauncher().inputResource("src/test/java/spoon")
 				.noClasspath(true)
 				.disableConsistencyChecks()
@@ -65,12 +86,60 @@ public class UnresolvedBugTest {
 	 */
 	@Test
 	public void checkUnresolvedBugAnnotations() throws IOException {
-		// contract: every test ignored with @Category(UnresolvedBug.class) has an open
+		// contract: every test ignored with @Ignore("UnresolvedBug") has an open
 		// issue.
+		// Ignored by default as it is flacky when run in CI
 		testMethods = testMethods.stream()
-				.filter(v -> v.hasAnnotation(Test.class) && !v.hasAnnotation(GitHubIssue.class) && v.hasAnnotation(Category.class)
-								&& v.getAnnotation(Category.class).value()[0].equals(UnresolvedBug.class))
+				.filter(v -> !v.hasAnnotation(GitHubIssue.class))
 				.collect(Collectors.toList());
 		assertEquals(testMethods.size(), 0);
+	}
+
+	@Test
+	public void checkThatUnresolvedBugTestFail() throws InitializationError {
+		//contract: Test annotated with UnresolvedBug must fail
+
+		JUnitCore junit = new JUnitCore();
+		FailureListener failures = new FailureListener();
+		junit.addListener(failures);
+		for(CtMethod unresolvedTest: testMethods) {
+			Class testClass = unresolvedTest.getDeclaringType().getActualClass();
+			String testMethod = unresolvedTest.getSimpleName();
+			junit.run(new RunDespiteIgnore(testClass, testMethod));
+			assertTrue(failures.failures.contains(testMethod + "(" + unresolvedTest.getDeclaringType().getQualifiedName() + ")"));
+			System.out.println(unresolvedTest.getDeclaringType().getQualifiedName() + "#" + testMethod + " fails as expected");
+		}
+	}
+
+	class FailureListener extends RunListener {
+		public List<String> failures = new ArrayList<>();
+
+		@Override
+		public void testFailure(Failure failure) {
+			failures.add(failure.getTestHeader());
+		}
+	}
+
+	class RunDespiteIgnore extends BlockJUnit4ClassRunner {
+		private String method;
+
+		/**
+		 * Creates a BlockJUnit4ClassRunner to run {@code klass}
+		 *
+		 * @param klass
+		 * @throws InitializationError if the test class is malformed.
+		 */
+		public RunDespiteIgnore(Class<?> klass, String method) throws InitializationError {
+			super(klass);
+			this.method = method;
+		}
+
+		@Override
+		protected void runChild(final FrameworkMethod method, RunNotifier notifier) {
+			if(method.getName().equals(this.method)) {
+				Description description = describeChild(method);
+				runLeaf(methodBlock(method), description, notifier);
+			}
+		}
 	}
 }
