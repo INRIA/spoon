@@ -16,7 +16,6 @@ package spoon.reflect.code;
  *     );
  * </pre>
  *
- * If you process this element, keep in mind that you will process array[0]++ too.
  *
  * @param <T>
  * 		type of the array

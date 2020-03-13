@@ -17,7 +17,6 @@ package spoon.reflect.code;
  *     array[0] = "new value";
  * </pre>
  *
- * If you process this element, keep in mind that you won't process array[0]++.
  *
  * @param <T>
  * 		type of the array
