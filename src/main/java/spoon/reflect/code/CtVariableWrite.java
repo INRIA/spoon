@@ -20,7 +20,6 @@ package spoon.reflect.code;
  *     variable += "";
  * </pre>
  *
- * If you process this element, keep in mind that you won't process var++.
  *
  * @param <T>
  * 		type of the variable

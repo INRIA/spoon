@@ -17,7 +17,10 @@
 package spoon.test.annotation;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
+
+import spoon.test.GitHubIssue;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
@@ -58,7 +61,9 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.VirtualFile;
 import spoon.support.QueueProcessingManager;
+import spoon.support.compiler.VirtualFile;
 import spoon.test.annotation.testclasses.AnnotArray;
 import spoon.test.annotation.testclasses.AnnotParamTypeEnum;
 import spoon.test.annotation.testclasses.AnnotParamTypes;
@@ -1611,5 +1616,4 @@ public class AnnotationTest {
 		assertEquals("@spoon.test.annotation.testclasses.CustomAnnotation(something = \"annotation string\")", ctCatchVariable2.getAnnotations().get(0).toString());
 
 	}
-
 }

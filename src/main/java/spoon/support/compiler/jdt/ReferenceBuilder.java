@@ -759,7 +759,9 @@ public class ReferenceBuilder {
 			if (binding.enclosingType() != null) {
 				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 			} else {
-				ref.setPackage(getPackageReference(binding.getPackage()));
+				CtPackageReference packageReference = getPackageReference(binding.getPackage());
+				packageReference.setImplicit(true);
+				ref.setPackage(packageReference);
 			}
 			ref.setSimpleName(new String(binding.sourceName()));
 		} else if (binding instanceof TypeVariableBinding) {
