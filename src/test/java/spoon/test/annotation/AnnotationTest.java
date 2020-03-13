@@ -1615,16 +1615,4 @@ public class AnnotationTest {
 		assertEquals("@spoon.test.annotation.testclasses.CustomAnnotation(something = \"annotation string\")", ctCatchVariable2.getAnnotations().get(0).toString());
 
 	}
-	@Test
-	@GitHubIssue(issueNumber = 3281)
-	@Ignore("UnresolvedBug")
-	public void test_AnnotationWithNamedElement_HasImplicitAnnotationTypePackage() throws Exception {
-	Launcher launcher = new Launcher();
-	launcher.addInputResource(new VirtualFile("class Cls { @SuppressWarnings(value=\"unchecked\") void meth() {} }"));
-	CtModel model = launcher.buildModel();
-	List<CtElement> elems = model.getElements(e -> e instanceof CtAnnotation);
-	assertEquals(1, elems.size());
-	CtAnnotation<?> annotation = (CtAnnotation<?>) elems.get(0);
-	assertTrue(annotation.getAnnotationType().getPackage().isImplicit());
-	}
 }
