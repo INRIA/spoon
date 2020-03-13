@@ -4,6 +4,12 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+import spoon.Launcher;
+import spoon.pattern.Pattern;
+import spoon.pattern.PatternBuilder;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.*;
 import spoon.smpl.formula.*;
 
@@ -294,5 +300,26 @@ public class ModelCheckerTest {
         assertEquals(makeSet(1), ModelChecker.preAll(model, makeSet(2, 4)));
         assertEquals(makeSet(2), ModelChecker.preAll(model, makeSet(2, 3)));
         assertEquals(makeSet(3, 5, 6), ModelChecker.preExists(model, makeSet(6)));
+    }
+
+    @Test
+    public void testStatementPattern() {
+        Launcher launcher = new Launcher();
+        CtClass<?> myclass = Launcher.parseClass("class C { void M() { int x = 1; }}");
+        CtElement stmt = ((CtMethod<?>)myclass.getMethods().toArray()[0]).getBody().getStatement(0);
+
+        ModelBuilder model = new ModelBuilder();
+        model.addStates(1).addTransition(1,1);
+        model.addLabel(1, new StatementLabel(stmt));
+
+        ModelChecker checker = new ModelChecker(model);
+
+        Pattern pattern = PatternBuilder.create(stmt).build();
+        new StatementPattern(pattern).accept(checker);
+        assertEquals(makeSet(1), checker.getResult());
+
+        pattern = PatternBuilder.create(myclass).build();
+        new StatementPattern(pattern).accept(checker);
+        assertEquals(makeSet(), checker.getResult());
     }
 }

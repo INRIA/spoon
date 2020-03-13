@@ -4,6 +4,10 @@ import spoon.pattern.Pattern;
 
 /**
  * A StatementPattern is a Predicate that contains a Spoon Pattern.
+ *
+ * The intention is for a StatementPattern to contain a Pattern that
+ * corresponds to a Java statement, but the current implementation
+ * does not enforce this.
  */
 public class StatementPattern implements Predicate {
     /**
