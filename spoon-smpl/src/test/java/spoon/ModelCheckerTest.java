@@ -6,13 +6,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import spoon.Launcher;
-import spoon.pattern.Pattern;
-import spoon.pattern.PatternBuilder;
+//import spoon.pattern.Pattern;
+//import spoon.pattern.PatternBuilder;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.*;
 import spoon.smpl.formula.*;
+import spoon.smpl.pattern.*;
 
 import java.util.*;
 
@@ -339,12 +340,12 @@ public class ModelCheckerTest {
 
         ModelChecker checker = new ModelChecker(model);
 
-        Pattern pattern = PatternBuilder.create(stmt).build();
+        PatternBuilder builder = new PatternBuilder();
+
+        stmt.accept(builder);
+        PatternNode pattern = builder.getResult();
+
         new StatementPattern(pattern).accept(checker);
         assertEquals(makeSet(1), checker.getResult());
-
-        pattern = PatternBuilder.create(myclass).build();
-        new StatementPattern(pattern).accept(checker);
-        assertEquals(makeSet(), checker.getResult());
     }
 }

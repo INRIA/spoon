@@ -1,9 +1,11 @@
 package spoon.smpl.formula;
 
-import spoon.pattern.Pattern;
+//import spoon.pattern.Pattern;
+import spoon.smpl.pattern.PatternNode;
 
 /**
- * A StatementPattern is a Predicate that contains a Spoon Pattern.
+ * A StatementPattern is a Predicate that contains a Spoon Pattern. (temporarily
+ * substituted for an internal pattern matching mechanism)
  *
  * The intention is for a StatementPattern to contain a Pattern that
  * corresponds to a Java statement, but the current implementation
@@ -14,14 +16,14 @@ public class StatementPattern implements Predicate {
      * Create a new StatementPattern Predicate.
      * @param pattern The pattern to match
      */
-    public StatementPattern(Pattern pattern) {
+    public StatementPattern(PatternNode pattern) {
         this.pattern = pattern;
     }
 
     /**
      * @return The Pattern to match
      */
-    public Pattern getPattern() {
+    public PatternNode getPattern() {
         return pattern;
     }
 
@@ -37,5 +39,5 @@ public class StatementPattern implements Predicate {
     /**
      * The Pattern to match.
      */
-    private Pattern pattern;
+    private PatternNode pattern;
 }
