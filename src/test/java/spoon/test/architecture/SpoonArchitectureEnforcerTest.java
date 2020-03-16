@@ -18,6 +18,7 @@ package spoon.test.architecture;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.metamodel.Metamodel;
@@ -32,6 +33,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
@@ -41,10 +43,13 @@ import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -458,5 +463,39 @@ public class SpoonArchitectureEnforcerTest {
 			results.add("Package " + o + " presents in computed but not expected set.");
 		}
 		return StringUtils.join(results, "\n");
+	}
+
+
+	@Test
+	public void testGenericTypes() {
+		// contract: spoon uses no raw types like 'List a', all generic classes are
+		// at least typed with wildcard 'List<?> a'.
+
+		// create spoon ast
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/main/java/spoon");
+		// counter variable as atomic integer, because effective final.
+		AtomicInteger rawTypesNumber = new AtomicInteger(0);
+		Set<CtVariable<?>> rawTypedElements = new HashSet<>();
+
+		// visit variables instead of types, because only raw typed variables are
+		// relevant.
+		launcher.addProcessor(new AbstractProcessor<CtVariable<?>>() {
+			@Override
+			public void process(CtVariable<?> element) {
+				CtTypeReference<?> type = element.getType();
+				if (!Objects.isNull(type) || !Objects.isNull(type.getTypeDeclaration())) {
+					// if a class is neither generic nor parameterized but the defining class is
+					// generic we can safely assume that the variable is raw typed.
+					if (!type.isGenerics() && !type.isParameterized() && type.getTypeDeclaration().isGenerics()) {
+						rawTypesNumber.incrementAndGet();
+						rawTypedElements.add(element);
+					}
+				}
+			}
+		});
+		launcher.run();
+		System.out.println(rawTypesNumber);
+		assertSetEquals("Raw types were encountered during analysis", Collections.emptySet(), rawTypedElements);
 	}
 }
