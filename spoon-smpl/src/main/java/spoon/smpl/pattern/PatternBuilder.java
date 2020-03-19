@@ -225,8 +225,17 @@ public class PatternBuilder implements CtVisitor {
         String varname = ctLocalVariable.getReference().getSimpleName();
         String typename = ctLocalVariable.getType().getSimpleName();
 
-        result.sub.put("variable", new ValueNode(varname, ctLocalVariable.getReference()));
-        result.sub.put("type", new ValueNode(typename, ctLocalVariable.getType()));
+        if (params.contains(varname)) {
+            result.sub.put("variable", new ParamNode(varname));
+        } else {
+            result.sub.put("variable", new ValueNode(varname, ctLocalVariable.getReference()));
+        }
+
+        if (params.contains(typename)) {
+            result.sub.put("type", new ParamNode(typename));
+        } else {
+            result.sub.put("type", new ValueNode(typename, ctLocalVariable.getType()));
+        }
 
         if (ctLocalVariable.getDefaultExpression() != null) {
             ctLocalVariable.getDefaultExpression().accept(this);
