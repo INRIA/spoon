@@ -1,4 +1,9 @@
-package spoon;
+package spoon.smpl;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.junit.Test;
 
@@ -11,14 +16,14 @@ import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.smpl.*;
+
 import spoon.smpl.formula.*;
 import spoon.smpl.pattern.*;
 
-import java.util.*;
+import static spoon.smpl.TestUtils.*;
 
 public class ModelCheckerTest {
-    public class ModelBuilder implements Model {
+    private static class ModelBuilder implements Model {
         public List<Integer> states;
         public Map<Integer, List<Integer>> successors;
         public Map<Integer, List<Label>> labels;
@@ -65,10 +70,6 @@ public class ModelCheckerTest {
         }
     }
 
-    public static Set<Integer> makeSet(Integer ... xs) {
-        return new HashSet<Integer>(Arrays.asList(xs));
-    }
-
     @Test
     public void testTrue() {
         ModelBuilder model = new ModelBuilder();
@@ -82,7 +83,7 @@ public class ModelCheckerTest {
         ModelChecker checker = new ModelChecker(model);
 
         new True().accept(checker);
-        assertEquals(makeSet(1,2,3), checker.getResult());
+        assertEquals(res(1, env(), 2, env(), 3, env()), checker.getResult());
     }
 
     @Test
@@ -102,7 +103,7 @@ public class ModelCheckerTest {
         ModelChecker checker = new ModelChecker(model);
 
         new And(new Proposition("p"), new Proposition("q")).accept(checker);
-        assertEquals(makeSet(3), checker.getResult());
+        assertEquals(res(3, env()), checker.getResult());
     }
 
     @Test
@@ -122,7 +123,7 @@ public class ModelCheckerTest {
         ModelChecker checker = new ModelChecker(model);
 
         new Or(new Proposition("p"), new Proposition("q")).accept(checker);
-        assertEquals(makeSet(1,2,3), checker.getResult());
+        assertEquals(res(1, env(), 2, env(), 3, env()), checker.getResult());
     }
 
     @Test
@@ -142,10 +143,10 @@ public class ModelCheckerTest {
         ModelChecker checker = new ModelChecker(model);
 
         new Neg(new Proposition("p")).accept(checker);
-        assertEquals(makeSet(2), checker.getResult());
+        assertEquals(res(2, env()), checker.getResult());
 
         new Neg(new Proposition("q")).accept(checker);
-        assertEquals(makeSet(1), checker.getResult());
+        assertEquals(res(1, env()), checker.getResult());
     }
 
     @Test
@@ -165,13 +166,13 @@ public class ModelCheckerTest {
         ModelChecker checker = new ModelChecker(model);
 
         new Proposition("p").accept(checker);
-        assertEquals(makeSet(1,3), checker.getResult());
+        assertEquals(res(1, env(), 3, env()), checker.getResult());
 
         new Proposition("q").accept(checker);
-        assertEquals(makeSet(2,3), checker.getResult());
+        assertEquals(res(2, env(), 3, env()), checker.getResult());
 
         new Proposition("r").accept(checker);
-        assertEquals(makeSet(), checker.getResult());
+        assertEquals(res(), checker.getResult());
     }
 
     @Test
@@ -195,13 +196,13 @@ public class ModelCheckerTest {
         ModelChecker checker = new ModelChecker(model);
 
         new ExistsNext(new Proposition("p")).accept(checker);
-        assertEquals(makeSet(1,2), checker.getResult());
+        assertEquals(res(1, env(), 2, env()), checker.getResult());
 
         new ExistsNext(new Proposition("q")).accept(checker);
-        assertEquals(makeSet(1,4,5), checker.getResult());
+        assertEquals(res(1, env(), 4, env(), 5, env()), checker.getResult());
 
         new ExistsNext(new Proposition("r")).accept(checker);
-        assertEquals(makeSet(3), checker.getResult());
+        assertEquals(res(3, env()), checker.getResult());
     }
 
     @Test
@@ -225,13 +226,13 @@ public class ModelCheckerTest {
         ModelChecker checker = new ModelChecker(model);
 
         new AllNext(new Proposition("p")).accept(checker);
-        assertEquals(makeSet(2), checker.getResult());
+        assertEquals(res(2, env()), checker.getResult());
 
         new AllNext(new Proposition("q")).accept(checker);
-        assertEquals(makeSet(4,5), checker.getResult());
+        assertEquals(res(4, env(), 5, env()), checker.getResult());
 
         new AllNext(new Proposition("r")).accept(checker);
-        assertEquals(makeSet(3), checker.getResult());
+        assertEquals(res(3, env()), checker.getResult());
     }
 
     @Test
@@ -255,7 +256,7 @@ public class ModelCheckerTest {
         ModelChecker checker = new ModelChecker(model);
 
         new ExistsUntil(new Proposition("p"), new Proposition("q")).accept(checker);
-        assertEquals(makeSet(1,2,3,4), checker.getResult());
+        assertEquals(res(1, env(), 2, env(), 3, env(), 4, env()), checker.getResult());
     }
 
     @Test
@@ -279,7 +280,7 @@ public class ModelCheckerTest {
         ModelChecker checker = new ModelChecker(model);
 
         new AllUntil(new Proposition("p"), new Proposition("q")).accept(checker);
-        assertEquals(makeSet(2,3,4), checker.getResult());
+        assertEquals(res(2, env(), 3, env(), 4, env()), checker.getResult());
     }
 
     @Test
@@ -296,12 +297,12 @@ public class ModelCheckerTest {
 
         assertTrue(ModelChecker.isValid(model));
 
-        assertEquals(makeSet(), ModelChecker.preExists(model, makeSet(1)));
-        assertEquals(makeSet(1), ModelChecker.preExists(model, makeSet(2)) );
-        assertEquals(makeSet(1), ModelChecker.preExists(model, makeSet(4)));
-        assertEquals(makeSet(1), ModelChecker.preExists(model, makeSet(2,4)));
-        assertEquals(makeSet(1,2), ModelChecker.preExists(model, makeSet(2,3)));
-        assertEquals(makeSet(3,5,6), ModelChecker.preExists(model, makeSet(6)));
+        assertEquals(intSet(), ModelChecker.preExists(model, intSet(1)));
+        assertEquals(intSet(1), ModelChecker.preExists(model, intSet(2)) );
+        assertEquals(intSet(1), ModelChecker.preExists(model, intSet(4)));
+        assertEquals(intSet(1), ModelChecker.preExists(model, intSet(2,4)));
+        assertEquals(intSet(1,2), ModelChecker.preExists(model, intSet(2,3)));
+        assertEquals(intSet(3,5,6), ModelChecker.preExists(model, intSet(6)));
     }
 
     @Test
@@ -318,12 +319,12 @@ public class ModelCheckerTest {
 
         assertTrue(ModelChecker.isValid(model));
 
-        assertEquals(makeSet(), ModelChecker.preAll(model, makeSet(1)));
-        assertEquals(makeSet(), ModelChecker.preAll(model, makeSet(2)));
-        assertEquals(makeSet(), ModelChecker.preAll(model, makeSet(4)));
-        assertEquals(makeSet(1), ModelChecker.preAll(model, makeSet(2, 4)));
-        assertEquals(makeSet(2), ModelChecker.preAll(model, makeSet(2, 3)));
-        assertEquals(makeSet(3, 5, 6), ModelChecker.preExists(model, makeSet(6)));
+        assertEquals(intSet(), ModelChecker.preAll(model, intSet(1)));
+        assertEquals(intSet(), ModelChecker.preAll(model, intSet(2)));
+        assertEquals(intSet(), ModelChecker.preAll(model, intSet(4)));
+        assertEquals(intSet(1), ModelChecker.preAll(model, intSet(2, 4)));
+        assertEquals(intSet(2), ModelChecker.preAll(model, intSet(2, 3)));
+        assertEquals(intSet(3, 5, 6), ModelChecker.preExists(model, intSet(6)));
     }
 
     @Test
@@ -346,6 +347,6 @@ public class ModelCheckerTest {
         PatternNode pattern = builder.getResult();
 
         new StatementPattern(pattern).accept(checker);
-        assertEquals(makeSet(1), checker.getResult());
+        assertEquals(res(1, env()), checker.getResult());
     }
 }

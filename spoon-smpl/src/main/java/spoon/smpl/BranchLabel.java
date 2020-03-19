@@ -8,6 +8,8 @@ import spoon.smpl.pattern.PatternBuilder;
 import spoon.smpl.pattern.PatternMatcher;
 import spoon.smpl.pattern.PatternNode;
 
+import java.util.Map;
+
 /**
  * A BranchLabel is a Label used to associate states with CtElement code
  * elements that can be matched using BranchPattern Formula elements.
@@ -36,6 +38,8 @@ public class BranchLabel implements Label {
         PatternBuilder builder = new PatternBuilder();
         cond.accept(builder);
         this.condPattern = builder.getResult();
+
+        this.parameters = null;
     }
 
     /**
@@ -53,10 +57,21 @@ public class BranchLabel implements Label {
 
             PatternMatcher matcher = new PatternMatcher(bp.getConditionPattern());
             condPattern.accept(matcher);
+            parameters = matcher.getParameters();
             return matcher.getResult();
         } else {
             return false;
         }
+    }
+
+    @Override
+    public Map<String, Object> getMatchedParameters() {
+        return parameters;
+    }
+
+    @Override
+    public void reset() {
+        parameters = null;
     }
 
     /**
@@ -77,4 +92,6 @@ public class BranchLabel implements Label {
      * Part of temporary substitute for spoon.pattern.
      */
     private PatternNode condPattern;
+
+    private Map<String, Object> parameters;
 }

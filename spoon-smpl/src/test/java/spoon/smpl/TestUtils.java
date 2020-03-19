@@ -1,0 +1,90 @@
+package spoon.smpl;
+
+import fr.inria.controlflow.ControlFlowBuilder;
+import fr.inria.controlflow.ControlFlowGraph;
+import spoon.Launcher;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
+import spoon.smpl.pattern.PatternBuilder;
+import spoon.smpl.pattern.PatternNode;
+
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
+
+public class TestUtils {
+    public static ModelChecker.ResultSet res(Object ... xs) {
+        ModelChecker.ResultSet resultSet = new ModelChecker.ResultSet();
+
+        for (int i = 0; i < xs.length; i += 2) {
+            resultSet.add(new ModelChecker.Result((Integer)xs[i], (Environment)xs[i+1]));
+        }
+
+        return resultSet;
+    }
+
+    public static Set<Environment> envSet(Environment ... envs) {
+        return new HashSet<>(Arrays.asList(envs));
+    }
+
+    public static Environment env(Object ... xs) {
+        Environment result = new Environment();
+
+        for (int i = 0; i < xs.length; i += 2) {
+            result.put((String) xs[i], xs[i+1]);
+        }
+
+        return result;
+    }
+
+    public static Environment.NegativeBinding envNeg(Object ... xs) {
+        return new Environment.NegativeBinding(xs);
+    }
+
+    public static Set<Integer> intSet(Integer ... xs) {
+        return new HashSet<Integer>(Arrays.asList(xs));
+    }
+
+    public static PatternNode makePattern(CtElement element, List<String> params) {
+        PatternBuilder builder = new PatternBuilder(params);
+        element.accept(builder);
+        return builder.getResult();
+    }
+
+    public static PatternNode makePattern(CtElement element) {
+        return makePattern(element, new ArrayList<String>());
+    }
+
+    public static CtMethod<?> parseMethod(String methodCode) {
+        CtClass<?> myclass = Launcher.parseClass("class A { " + methodCode + " }");
+        return (CtMethod<?>) myclass.getMethods().toArray()[0];
+    }
+
+    public static CtElement parseStatement(String code) {
+        CtClass<?> myclass = Launcher.parseClass("class A { void m() { " + code + " } }");
+        return ((CtMethod<?>)myclass.getMethods().toArray()[0]).getBody().getLastStatement();
+    }
+
+    public static CtElement parseExpression(String code) {
+        CtClass<?> myclass = Launcher.parseClass("class A { Object m() { return " + code + " } }");
+        CtReturn<?> ctReturn = ((CtMethod<?>)myclass.getMethods().toArray()[0]).getBody().getLastStatement();
+        return ctReturn.getReturnedExpression();
+    }
+
+    public static CtElement parseReturnStatement(String code) {
+        CtClass<?> myclass = Launcher.parseClass("class A { Object m() { " + code + " } }");
+        return ((CtMethod<?>)myclass.getMethods().toArray()[0]).getBody().getLastStatement();
+    }
+
+    public static ControlFlowGraph methodCfg(CtMethod<?> method) {
+        ControlFlowBuilder cfgBuilder = new ControlFlowBuilder();
+        ControlFlowGraph cfg = cfgBuilder.build(method);
+        cfg.simplify();
+
+        return cfg;
+    }
+}

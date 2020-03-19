@@ -3,6 +3,8 @@ package spoon.smpl;
 import spoon.smpl.formula.Predicate;
 import spoon.smpl.formula.Proposition;
 
+import java.util.Map;
+
 /**
  * A PropositionLabel is a Label used to associate states with simple, constant proposition strings
  * that can be matched using Proposition Formula elements.
@@ -27,6 +29,16 @@ public class PropositionLabel implements Label {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public Map<String, Object> getMatchedParameters() {
+        return null;
+    }
+
+    @Override
+    public void reset() {
+
     }
 
     /**

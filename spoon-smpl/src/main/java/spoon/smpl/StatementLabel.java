@@ -6,6 +6,9 @@ import spoon.smpl.formula.StatementPattern;
 import spoon.smpl.formula.Predicate;
 import spoon.smpl.pattern.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * A StatementLabel is a Label used to associate states with CtElement code
  * elements that can be matched using StatementPattern Formula elements.
@@ -24,6 +27,8 @@ public class StatementLabel implements Label {
         PatternBuilder builder = new PatternBuilder();
         code.accept(builder);
         this.codePattern = builder.getResult();
+
+        this.parameters = null;
     }
 
     /**
@@ -36,10 +41,21 @@ public class StatementLabel implements Label {
             StatementPattern sp = (StatementPattern) obj;
             PatternMatcher matcher = new PatternMatcher(sp.getPattern());
             codePattern.accept(matcher);
+            parameters = matcher.getParameters();
             return matcher.getResult();
         } else {
             return false;
         }
+    }
+
+    @Override
+    public Map<String, Object> getMatchedParameters() {
+        return parameters;
+    }
+
+    @Override
+    public void reset() {
+        parameters = null;
     }
 
     /**
@@ -60,4 +76,6 @@ public class StatementLabel implements Label {
      * Part of temporary substitute for spoon.pattern.
      */
     private PatternNode codePattern;
+
+    private Map<String, Object> parameters;
 }
