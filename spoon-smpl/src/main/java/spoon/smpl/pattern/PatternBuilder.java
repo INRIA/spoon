@@ -94,7 +94,7 @@ public class PatternBuilder implements CtVisitor {
         PatternNode rhs = resultStack.pop();
 
         ElemNode result = new ElemNode(ctBinaryOperator);
-        result.sub.put("kind", new ValueNode(ctBinaryOperator.getKind()));
+        result.sub.put("kind", new ValueNode(ctBinaryOperator.getKind(), ctBinaryOperator.getKind()));
         result.sub.put("lhs", lhs);
         result.sub.put("rhs", rhs);
 
@@ -214,15 +214,19 @@ public class PatternBuilder implements CtVisitor {
     @Override
     public <T> void visitCtLiteral(CtLiteral<T> ctLiteral) {
         ElemNode result = new ElemNode(ctLiteral);
-        result.sub.put("value", new ValueNode(ctLiteral.getValue()));
+        result.sub.put("value", new ValueNode(ctLiteral.getValue(), ctLiteral));
         resultStack.push(result);
     }
 
     @Override
     public <T> void visitCtLocalVariable(CtLocalVariable<T> ctLocalVariable) {
         ElemNode result = new ElemNode(ctLocalVariable);
-        result.sub.put("variable", new ValueNode(ctLocalVariable.getReference().getSimpleName()));
-        result.sub.put("type", new ValueNode(ctLocalVariable.getReference().getType()));
+
+        String varname = ctLocalVariable.getReference().getSimpleName();
+        String typename = ctLocalVariable.getType().getSimpleName();
+
+        result.sub.put("variable", new ValueNode(varname, ctLocalVariable.getReference()));
+        result.sub.put("type", new ValueNode(typename, ctLocalVariable.getType()));
 
         if (ctLocalVariable.getDefaultExpression() != null) {
             ctLocalVariable.getDefaultExpression().accept(this);
@@ -393,7 +397,7 @@ public class PatternBuilder implements CtVisitor {
         }
         else {
             ElemNode result = new ElemNode(ctVariableRead);
-            result.sub.put("variable", new ValueNode(varname));
+            result.sub.put("variable", new ValueNode(varname, ctVariableRead));
             resultStack.push(result);
         }
     }

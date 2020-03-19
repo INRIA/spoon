@@ -6,8 +6,9 @@ package spoon.smpl.pattern;
  * This class roughly corresponds to spoon.pattern.internal.node.ConstantNode
  */
 public class ValueNode implements PatternNode {
-    public ValueNode(Object value) {
-        this.value = value;
+    public ValueNode(Object matchValue, Object srcValue) {
+        this.matchValue = matchValue;
+        this.srcValue = srcValue;
     }
 
     @Override
@@ -18,12 +19,13 @@ public class ValueNode implements PatternNode {
     @Override
     public boolean equals(Object other) {
         if (other instanceof ValueNode) {
-            return value.equals(((ValueNode)other).value);
+            return matchValue.equals(((ValueNode)other).matchValue);
         }
         else {
             return false;
         }
     }
 
-    public Object value;
+    public final Object matchValue;
+    public final Object srcValue;
 }

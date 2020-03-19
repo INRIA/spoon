@@ -88,11 +88,11 @@ public class PatternMatcher implements PatternNodeVisitor {
 
     @Override
     public void visit(ValueNode otherNode) {
-        print("match ValueNode " + otherNode.value.toString());
+        print("match ValueNode " + otherNode.matchValue.toString());
         PatternNode myNode = patternStack.pop();
 
         if (myNode instanceof ValueNode) {
-            result = (((ValueNode)myNode).value.equals(otherNode.value));
+            result = (((ValueNode)myNode).equals(otherNode));
         }
         else if (myNode instanceof ParamNode) {
             result = bindParameter(((ParamNode)myNode).name, otherNode);
