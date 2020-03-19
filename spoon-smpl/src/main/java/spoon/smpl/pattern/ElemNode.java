@@ -31,6 +31,6 @@ public class ElemNode implements PatternNode {
         }
     }
 
-    public CtElement elem;
-    public Map<String, PatternNode> sub;
+    public final CtElement elem;
+    public final Map<String, PatternNode> sub;
 }
