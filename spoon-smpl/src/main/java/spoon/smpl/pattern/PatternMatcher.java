@@ -40,8 +40,22 @@ public class PatternMatcher implements PatternNodeVisitor {
         return result;
     }
 
-    public Map<String, PatternNode> getParameters() {
-        return parameters;
+    public Map<String, Object> getParameters() {
+        Map<String, Object> result = new HashMap<>();
+
+        for (String key : parameters.keySet()) {
+            PatternNode node = parameters.get(key);
+
+            if (node instanceof ValueNode) {
+                result.put(key, ((ValueNode) node).srcValue);
+            } else if (node instanceof ElemNode) {
+                result.put(key, ((ElemNode) node).elem);
+            } else {
+                throw new IllegalStateException("This should be unreachable");
+            }
+        }
+
+        return result;
     }
 
     @Override
