@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
@@ -14,6 +15,7 @@ import java.util.stream.StreamSupport;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
 
 /**
@@ -103,7 +105,7 @@ public class ParallelEarlyTerminatingScanner<T> extends EarlyTerminatingScanner<
 					e.printStackTrace();
 					scannerQueue.add(currentScanner);
 				} catch (Exception e) {
-					// allows throwing exception, but keeping the processor in the queue
+					// allows throwing exception, but keeping the scanner in the queue
 					scannerQueue.add(currentScanner);
 					throw e;
 				}
@@ -127,12 +129,50 @@ public class ParallelEarlyTerminatingScanner<T> extends EarlyTerminatingScanner<
 
 	@Override
 	protected boolean isTerminated() {
-		return isTerminated.get();
+		return scannerQueue.stream().allMatch(EarlyTerminatingScanner::isTerminated);
 	}
 
 	@Override
 	protected void terminate() {
 		isTerminated.set(true);
 		scannerQueue.forEach(v -> v.terminate());
+	}
+
+	@Override
+	public EarlyTerminatingScanner<T> setListener(CtScannerListener listener) {
+		scannerQueue.forEach(v -> v.setListener(listener));
+		return this;
+	}
+
+	@Override
+	public CtScannerListener getListener() {
+		return scannerQueue.peek().getListener();
+	}
+
+	@Override
+	public EarlyTerminatingScanner<T> setVisitCompilationUnitContent(boolean visitCompilationUnitContent) {
+		scannerQueue.forEach(v -> v.setVisitCompilationUnitContent(visitCompilationUnitContent));
+		return this;
+	}
+
+	@Override
+	public boolean isVisitCompilationUnitContent() {
+		return scannerQueue.peek().isVisitCompilationUnitContent();
+	}
+
+	public void awaitTermination(long timeout) throws InterruptedException {
+		service.shutdown();
+		service.awaitTermination(timeout, TimeUnit.MILLISECONDS);
+	}
+
+	// see https://bugs.openjdk.java.net/browse/JDK-6179024
+	/**
+	 * waits till all tasks are completed. Forever
+	 *
+	 * @throws InterruptedException
+	 */
+	public void awaitTermination() throws InterruptedException {
+		service.shutdown();
+		service.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 	}
 }
