@@ -13,6 +13,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
@@ -157,6 +158,15 @@ public class EqualsChecker extends CtInheritanceScanner {
 			setNotEqual(CtRole.OPERATOR_KIND);
 		}
 		super.visitCtUnaryOperator(e);
+	}
+
+	@Override
+	public <T> void visitCtConstructor(CtConstructor<T> e) {
+		final CtConstructor peek = (CtConstructor) this.other;
+		if (!e.getType().equals(peek.getType())) {
+			setNotEqual(CtRole.STATEMENT.DECLARING_TYPE);
+		}
+		super.visitCtConstructor(e);
 	}
 
 	@Override

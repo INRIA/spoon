@@ -66,6 +66,9 @@ public class ConstructorTest {
 
 		assertTrue(ctType.getConstructor().isImplicit());
 		assertFalse(aClass.getConstructor().isImplicit());
+
+		// contract: constructors of two different classes are not equal
+		assertFalse(aClass.getConstructor().equals(ctType.getConstructor()));
 	}
 
 	@Test
