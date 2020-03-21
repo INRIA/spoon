@@ -24,15 +24,37 @@ import spoon.reflect.visitor.chain.CtScannerListener;
 import spoon.reflect.visitor.chain.ScanningMode;
 
 /**
- * ParallelEarlyTerminatingScanner
+ * ParallelEarlyTerminatingScanner allows using multiple threads for concurrent
+ * scanning with {@link EarlyTerminatingScanner}.
+ *
+ * <b> This class should only be used if all scanners do the same.</b> Otherwise
+ * the result may vary from the expected result. All scanners <b> must </b>
+ * synchronize shared fields like Collections by themselves.
+ *
+ * For creating and managing threads a {@link Executors#newFixedThreadPool()} is
+ * used. Creating more threads then cores can harm the performance. Using a
+ * different thread pool could increase the performance, but this class should
+ * be general usage. If you need better performance you may want to use an own
+ * class with different parallel approach.
  */
+
 public class ParallelEarlyTerminatingScanner<T> extends EarlyTerminatingScanner<T> {
 
 	private ExecutorService service;
 	private ArrayBlockingQueue<EarlyTerminatingScanner<T>> scannerQueue;
 	private AtomicBoolean isTerminated = new AtomicBoolean(false);
 
-	public ParallelEarlyTerminatingScanner(Iterable<EarlyTerminatingScanner<T>> scanners) {
+	/**
+	 * Creates a new ParallelEarlyTerminatingScanner from given iterable. The
+	 * iterable is fully consumed. Giving an endless iterable of
+	 * EarlyTerminatingScanner will result in errors. The scanners must follow the
+	 * guidelines given in the class description.
+	 *
+	 * @param scanners iterable of scanners.
+	 * @throws IllegalArgumentException if size of iterable is less than 1.
+	 *
+	 */
+	public ParallelEarlyTerminatingScanner(Iterable<? extends EarlyTerminatingScanner<T>> scanners) {
 		// added cast because constructors need int
 		int scannerNumber = (int) StreamSupport.stream(scanners.spliterator(), false).count();
 		scannerQueue = new ArrayBlockingQueue<>(scannerNumber);
@@ -40,10 +62,24 @@ public class ParallelEarlyTerminatingScanner<T> extends EarlyTerminatingScanner<
 		service = Executors.newFixedThreadPool(scannerNumber);
 	}
 
-	public ParallelEarlyTerminatingScanner(Iterable<EarlyTerminatingScanner<T>> scanners, int numberOfScanners) {
+	/**
+	 * Creates a new ParallelEarlyTerminatingScanner from given iterable. The
+	 * EarlyTerminatingScanner must follow the guidelines given in the class
+	 * description.
+	 *
+	 * @param scanners         iterable of EarlyTerminatingScanner.
+	 * @param numberOfScanners number consumed from the iterable added to the active
+	 *                         scanners.
+	 * @throws SpoonException           if iterable has less values then
+	 *                                  numberOfScanners.
+	 * @throws IllegalArgumentException if numberOfScanners is less than 1.
+	 *
+	 */
+	public ParallelEarlyTerminatingScanner(Iterable<? extends EarlyTerminatingScanner<T>> scanners,
+			int numberOfScanners) {
 		scannerQueue = new ArrayBlockingQueue<>(numberOfScanners);
 		service = Executors.newFixedThreadPool(numberOfScanners);
-		Iterator<EarlyTerminatingScanner<T>> it = scanners.iterator();
+		Iterator<? extends EarlyTerminatingScanner<T>> it = scanners.iterator();
 		for (int i = 0; i < numberOfScanners; i++) {
 			if (!it.hasNext()) {
 				throw new SpoonException("not enough elements provided, iterable is already empty");
@@ -122,7 +158,13 @@ public class ParallelEarlyTerminatingScanner<T> extends EarlyTerminatingScanner<
 		}
 	}
 
-	// write in Doc that this method cant be deterministic.
+	/**
+	 * The return value of this method is <b> not</b> deterministic if multiple
+	 * results could be found.
+	 *
+	 * @return the result of scanning - the value, which was stored by a previous
+	 *         call of {@link #setResult(Object)}
+	 */
 	@Override
 	public T getResult() {
 		return scannerQueue.stream()
@@ -134,7 +176,7 @@ public class ParallelEarlyTerminatingScanner<T> extends EarlyTerminatingScanner<
 
 	@Override
 	protected boolean isTerminated() {
-		return scannerQueue.stream().allMatch(EarlyTerminatingScanner::isTerminated);
+		return isTerminated.get();
 	}
 
 	@Override
@@ -165,18 +207,30 @@ public class ParallelEarlyTerminatingScanner<T> extends EarlyTerminatingScanner<
 		return scannerQueue.peek().isVisitCompilationUnitContent();
 	}
 
+	/**
+	 * Blocks until all tasks have completed execution, the timeout occurs, or the
+	 * current thread is interrupted, whichever happens first. <b> Dont use this
+	 * method with timeout 0<b>. Timeout 0 returns directly. Use
+	 * {@link #awaitTermination} instead.
+	 *
+	 * @param timeout the maximum time to wait in milliseconds.
+	 * @throws InterruptedException if interrupted while waiting
+	 */
 	public void awaitTermination(long timeout) throws InterruptedException {
 		service.shutdown();
 		service.awaitTermination(timeout, TimeUnit.MILLISECONDS);
 	}
 
-	// see https://bugs.openjdk.java.net/browse/JDK-6179024
 	/**
-	 * waits till all tasks are completed. Forever
+	 * Blocks until all tasks have completed execution or the current thread is
+	 * interrupted, whichever happens first.
 	 *
-	 * @throws InterruptedException
+	 * @throws InterruptedException if interrupted while waiting
 	 */
 	public void awaitTermination() throws InterruptedException {
+		// JDK developers find the behavior timeout = 0 returns instant clearly
+		// expected. We need this method, because normally you dont relay on timeouts.
+		// see https://bugs.openjdk.java.net/browse/JDK-6179024 for more info.
 		service.shutdown();
 		service.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 	}
