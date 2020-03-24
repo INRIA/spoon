@@ -58,7 +58,7 @@ public class BranchLabel implements Label {
             PatternMatcher matcher = new PatternMatcher(bp.getConditionPattern());
             condPattern.accept(matcher);
             parameters = matcher.getParameters();
-            return matcher.getResult();
+            return matcher.getResult() && bp.processParameterBindings(parameters);
         } else {
             return false;
         }

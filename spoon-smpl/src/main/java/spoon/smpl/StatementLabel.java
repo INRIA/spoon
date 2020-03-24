@@ -6,7 +6,6 @@ import spoon.smpl.formula.StatementPattern;
 import spoon.smpl.formula.Predicate;
 import spoon.smpl.pattern.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -42,7 +41,7 @@ public class StatementLabel implements Label {
             PatternMatcher matcher = new PatternMatcher(sp.getPattern());
             codePattern.accept(matcher);
             parameters = matcher.getParameters();
-            return matcher.getResult();
+            return matcher.getResult() && sp.processParameterBindings(parameters);
         } else {
             return false;
         }
