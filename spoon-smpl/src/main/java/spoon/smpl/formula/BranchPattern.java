@@ -1,8 +1,11 @@
 package spoon.smpl.formula;
 
 //import spoon.pattern.Pattern;
+import org.apache.commons.lang3.NotImplementedException;
 import spoon.reflect.declaration.CtElement;
 import spoon.smpl.pattern.PatternNode;
+
+import java.util.Map;
 
 /**
  * A BranchPattern is a Predicate that contains a Spoon Pattern (temporarily
@@ -44,6 +47,12 @@ public class BranchPattern implements Predicate {
     @Override
     public void accept(FormulaVisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public boolean processParameterBindings(Map<String, Object> parameters) {
+        // TODO: implement me
+        throw new NotImplementedException("Not implemented");
     }
 
     /**

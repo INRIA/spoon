@@ -1,5 +1,7 @@
 package spoon.smpl.formula;
 
+import java.util.Map;
+
 /**
  * A Proposition is a constant, unparameterized predicate. The actual proposition is represented
  * by a given string.
@@ -20,6 +22,11 @@ public class Proposition implements Predicate {
     @Override
     public void accept(FormulaVisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public boolean processParameterBindings(Map<String, Object> parameters) {
+        return true;
     }
 
     /**

@@ -1,5 +1,7 @@
 package spoon.smpl.formula;
 
+import java.util.Map;
+
 /**
  * A Predicate is a Formula that can appear in or match things from the set of state labels of a CTL model.
  *
@@ -7,4 +9,5 @@ package spoon.smpl.formula;
  * predicate matches one or more of the states' labels.
  */
 public interface Predicate extends Formula {
+    public boolean processParameterBindings(Map<String, Object> parameters);
 }
