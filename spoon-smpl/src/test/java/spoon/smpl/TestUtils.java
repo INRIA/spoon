@@ -7,21 +7,30 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.smpl.formula.ParameterPostProcessStrategy;
 import spoon.smpl.pattern.PatternBuilder;
 import spoon.smpl.pattern.PatternNode;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TestUtils {
+    public static Map<String, ParameterPostProcessStrategy> metavars(Object ... xs) {
+        Map<String, ParameterPostProcessStrategy> result = new HashMap<>();
+
+        for (int i = 0; i < xs.length; i += 2) {
+            result.put((String) xs[i], (ParameterPostProcessStrategy) xs[i+1]);
+        }
+
+        return result;
+    }
+
     public static ModelChecker.ResultSet res(Object ... xs) {
         ModelChecker.ResultSet resultSet = new ModelChecker.ResultSet();
 
         for (int i = 0; i < xs.length; i += 2) {
-            resultSet.add(new ModelChecker.Result((Integer)xs[i], (Environment)xs[i+1]));
+            resultSet.add(new ModelChecker.Result((Integer) xs[i], (Environment) xs[i+1]));
         }
 
         return resultSet;
@@ -43,6 +52,35 @@ public class TestUtils {
 
     public static Environment.NegativeBinding envNeg(Object ... xs) {
         return new Environment.NegativeBinding(xs);
+    }
+
+    public static String sortedEnvs(String s) {
+        String result = s;
+        Pattern p = Pattern.compile("\\{([^}]*)\\}");
+        Matcher matcher = p.matcher(s);
+
+        while (matcher.find()) {
+            String found = matcher.group();
+            found = found.substring(1, found.length() - 1);
+            List<String> stuff = Arrays.asList(found.split(",\\s*"));
+
+            Collections.sort(stuff);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("{");
+
+            for (int i = 0; i < stuff.size(); ++i) {
+                sb.append(stuff.get(i));
+                sb.append(", ");
+            }
+
+            sb.delete(sb.length() - 2, sb.length());
+            sb.append("}");
+
+            result = result.replace(matcher.group(), sb.toString());
+        }
+
+        return result;
     }
 
     public static Set<Integer> intSet(Integer ... xs) {
