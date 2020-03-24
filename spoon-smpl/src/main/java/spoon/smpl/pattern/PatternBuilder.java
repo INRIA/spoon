@@ -403,10 +403,9 @@ public class PatternBuilder implements CtVisitor {
 
         if (params.contains(varname)) {
             resultStack.push(new ParamNode(varname));
-        }
-        else {
+        } else {
             ElemNode result = new ElemNode(ctVariableRead);
-            result.sub.put("variable", new ValueNode(varname, ctVariableRead));
+            result.sub.put("variable", new ValueNode(varname, ctVariableRead.getVariable()));
             resultStack.push(result);
         }
     }
