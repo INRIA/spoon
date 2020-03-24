@@ -17,13 +17,17 @@ import java.util.Map;
  * but the current implementation does not enforce this.
  */
 public class BranchPattern implements Predicate {
+    public BranchPattern(PatternNode cond, Class<? extends CtElement> branchType) {
+        this(cond, branchType, null);
+    }
     /**
      * Create a new BranchPattern Predicate.
      * @param cond The pattern to match (against the condition)
      */
-    public BranchPattern(PatternNode cond, Class<? extends CtElement> branchType) {
+    public BranchPattern(PatternNode cond, Class<? extends CtElement> branchType, Map<String, ParameterPostProcessStrategy> paramStrats) {
         this.cond = cond;
         this.branchType = branchType;
+        this.paramStrats = paramStrats;
     }
 
     /**
@@ -51,8 +55,17 @@ public class BranchPattern implements Predicate {
 
     @Override
     public boolean processParameterBindings(Map<String, Object> parameters) {
-        // TODO: implement me
-        throw new NotImplementedException("Not implemented");
+        if (paramStrats == null) {
+            return true;
+        }
+
+        for (String key : paramStrats.keySet()) {
+            if (parameters.containsKey(key) && !paramStrats.get(key).apply(parameters, key)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -64,4 +77,6 @@ public class BranchPattern implements Predicate {
      * The type of the branch statement element.
      */
     private Class<? extends CtElement> branchType;
+
+    private Map<String, ParameterPostProcessStrategy> paramStrats;
 }
