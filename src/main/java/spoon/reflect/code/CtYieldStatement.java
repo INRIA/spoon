@@ -21,7 +21,7 @@ import static spoon.reflect.path.CtRole.EXPRESSION;
  *     x = switch ("foo") {
  *         default -> {
  * 					x=x+1;
- * 					yield x; <--- yield statement
+ * 					yield x; //<--- yield statement
  * 					}
  *     };
  * </pre>
@@ -30,9 +30,7 @@ import static spoon.reflect.path.CtRole.EXPRESSION;
  * <pre>
  *     int x = 0;
  *     x = switch ("foo") {
- *         default -> {
- * 					4; <---  implicit yield statement
- * 					}
+ *         default -> 4; //<---  implicit yield statement
  *     };
  * </pre>
  * the example wouldn't be allowed without the brackets at the default case, 
