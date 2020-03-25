@@ -74,6 +74,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotatedElementType;
@@ -454,16 +455,6 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtBreak(CtBreak b) {
-		if (child instanceof CtExpression) {
-			if (!(childJDT instanceof SingleNameReference && ((SingleNameReference) childJDT).isLabel)) {
-				b.setExpression((CtExpression) child);
-				ASTNode node = jdtTreeBuilder.getContextBuilder().stack.peek().node;
-				if (node instanceof BreakStatement) {
-					b.setImplicit(((BreakStatement) node).isImplicit);
-				}
-				return;
-			}
-		}
 		super.visitCtBreak(b);
 	}
 
@@ -990,5 +981,17 @@ public class ParentExiter extends CtInheritanceScanner {
 			e.setBoundingType(((CtTypeAccess) child).getAccessedType());
 		}
 		super.visitCtWildcardReference(e);
+	}
+
+	@Override
+	public void visitCtYieldStatement(CtYieldStatement e) {
+		if (child instanceof CtExpression) {
+			e.setExpression((CtExpression<?>) child);
+			if (e.isImplicit()) {
+				e.setPosition(child.getPosition());
+			}
+			return;
+		}
+		super.visitCtYieldStatement(e);
 	}
 }

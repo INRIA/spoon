@@ -71,6 +71,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -916,4 +917,11 @@ public class ControlFlowBuilder implements CtVisitor {
 	public void visitCtTypeMemberWildcardImportReference(CtTypeMemberWildcardImportReference wildcardReference) {
 
 	}
+
+	@Override
+	public void visitCtYieldStatement(CtYieldStatement statement) {
+		// TODO Auto-generated method stub
+		//add because java14 switches, stub because not implemented
+	}
+
 }

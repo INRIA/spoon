@@ -550,9 +550,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (breakStatement.getTargetLabel() != null) {
 				printer.writeSpace().writeKeyword(breakStatement.getTargetLabel());
 			}
-		} else {
-			// Arrow (->) syntax from Java 12
-			int a= 3;
 		}
 		exitCtStatement(breakStatement);
 	}
@@ -2102,6 +2099,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	@Override
 	public void visitCtYieldStatement(CtYieldStatement statement) {
+		if (statement.isImplicit()) {
+			scan(statement.getExpression());
+			exitCtStatement(statement);
+			return;
+		}
 		enterCtStatement(statement);
 		printer.writeKeyword("yield");
 		// checkstyle wants "return;" and not "return ;"

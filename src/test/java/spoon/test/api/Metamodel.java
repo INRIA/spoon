@@ -1205,7 +1205,6 @@ public class Metamodel {
 			types.add(new Type("CtBreak", spoon.reflect.code.CtBreak.class, spoon.support.reflect.code.CtBreakImpl.class, fm -> fm
 				.field(CtRole.IS_IMPLICIT, false, false)
 				.field(CtRole.LABEL, false, false)
-				.field(CtRole.EXPRESSION, false, false)
 				.field(CtRole.TARGET_LABEL, false, false)
 				.field(CtRole.POSITION, false, false)
 				.field(CtRole.ANNOTATION, false, false)
@@ -1316,5 +1315,11 @@ public class Metamodel {
 				.field(CtRole.TARGET, false, false)
 
 			));
+			types.add(new Type("CtYieldStatement", spoon.reflect.code.CtYieldStatement.class, spoon.support.reflect.code.CtYieldStatementImpl.class, fm -> fm
+			.field(CtRole.IS_IMPLICIT, false, false)
+			.field(CtRole.POSITION, false, false)
+			.field(CtRole.ANNOTATION, false, false)
+			.field(CtRole.EXPRESSION, false, false)
+			.field(CtRole.COMMENT, false, false)));
 	}
 }
