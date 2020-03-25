@@ -45,8 +45,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 @DisplayName("Switchcase Tests")
-
-
 public class SwitchCaseTest {
 
 	private static String toSingleLineString(CtElement e) {
@@ -63,6 +61,7 @@ public class SwitchCaseTest {
 
 	@Nested
 	class Misc {
+		@DisplayName("Switch Creation")
 		@Test
 		public void testIterationStatements() {
 			Factory factory = createFactory();
@@ -94,6 +93,7 @@ public class SwitchCaseTest {
 			assertTrue(c.getStatements().equals(l));
 		}
 
+		@DisplayName("Switch over String")
 		@Test
 		public void testSwitchStatementOnAString() throws Exception {
 			CtClass<?> clazz = build("spoon.test.model.testclasses", "SwitchStringClass");
@@ -130,7 +130,7 @@ public class SwitchCaseTest {
 				"Model print should be the same as the model");
 			}
 		}
-
+		@DisplayName("SwitchExpression with arrow")
 		@Test
 		public void testJava14Arrow() {
 			String arrow = "class A { public void f(int i) { int x; switch(i) { case 1 -> x = 10; case 2 -> x = 20; default -> x = 30; }; } }";
@@ -144,6 +144,7 @@ public class SwitchCaseTest {
 				() -> checkArrowCase(switchArrows.getCases().get(2), "default ->    x = 30;")
 				);
 		}
+		@DisplayName("SwitchExpression inside If")
 		@Test
 		public void testJava12SwitchExpressionInIf() {
 			// contract: just another test for switch expressions
@@ -152,7 +153,7 @@ public class SwitchCaseTest {
 			CtIf ctIf = model.getElements(new TypeFilter<>(CtIf.class)).get(0);
 			assertEquals("if (switch (i) {    case 1, 2 ->        true;    default ->        false;}) {}", toSingleLineString(ctIf));
 		}
-
+		@DisplayName("SwitchExpression with arrow")
 		@Test
 		public void testJava12SwitchExpression() {
 			// contract: we should handle switch expressions properly
@@ -162,7 +163,7 @@ public class SwitchCaseTest {
 			assertTrue(localVariable.getAssignment() instanceof CtSwitchExpression, "Assignment by switch must be detected");
 			assertEquals("int x = switch (i) {    case 1 ->        10;    case 2 ->        20;    default ->        30;}", toSingleLineString(localVariable));
 		}
-
+		@DisplayName("SwitchExpression with case blockStatement")
 		@Test
 		public void testJava14ArrowWithBlock() {
 			String arrowWithBlock = "class B { public void f(int i) { int x; switch(i) { case 1 -> { x = 10; break; } case 2 -> x = 20; default -> x = 30; }; } }";
@@ -174,6 +175,7 @@ public class SwitchCaseTest {
 			assertFalse(ctBreak.isImplicit());
 			assertEquals("break", ctBreak.toString());
 		}
+		@DisplayName("SwitchExpression with multi case")
 		@Test
 		public void testJava14MultipleCaseExpressions() {
 			// contract: we should handle multiple case expressions correctly
@@ -199,7 +201,7 @@ public class SwitchCaseTest {
 			assertEquals(code, toSingleLineString(toCheck));
 			assertEquals(CaseKind.COLON, toCheck.getCaseKind());
 		}
-
+		@DisplayName("Switch with \":\" caseKind")
 		@Test
 		public void testSwitchColons() {
 			String colon = "class C { public void f(int i) { int x; switch(i) { case 1: x = 10; x = 1; break; case 2: x = 20; break; default: x = 30; break; }; } }";
@@ -222,6 +224,7 @@ public class SwitchCaseTest {
 			assertTrue(yield.isImplicit() == isImplicit, "implicit flag must be set correct");
 			assertTrue(yield.toString().equals(toString), "toString for yields must respect implicit");
 		}
+		@DisplayName("SwitchExpression with case yield")
 		@Test
 		public void testJava14yield() {
 			// contract: we should properly handle explicit yield with expression inside switch expression
