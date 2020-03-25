@@ -33,7 +33,7 @@ import static spoon.reflect.path.CtRole.EXPRESSION;
  *         default -> 4; //<---  implicit yield statement
  *     };
  * </pre>
- * the example wouldn't be allowed without the brackets at the default case, 
+ * the example wouldn't be allowed without the brackets at the default case,
  * because java syntax defines case -> [expression] or case -> [blockStatement]
  * and yield is <b>not</b> a expression.
  */

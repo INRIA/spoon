@@ -13,7 +13,6 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLabelledFlowBreak;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.ParentFunction;
 
@@ -27,8 +26,6 @@ public class CtBreakImpl extends CtStatementImpl implements CtBreak {
 	@MetamodelPropertyField(role = TARGET_LABEL)
 	String targetLabel;
 
-	@MetamodelPropertyField(role = CtRole.EXPRESSION)
-	CtExpression<?> expression;
 
 	@Override
 	public void accept(CtVisitor visitor) {
