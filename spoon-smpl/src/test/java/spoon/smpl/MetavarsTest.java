@@ -43,7 +43,10 @@ public class MetavarsTest {
 
     @Test
     public void testCompatibleBindings() {
-        // test metavar binding to the same element in multiple places
+
+        // contract: metavariables bound to "same thing" in different nodes are joined under AND
+        // TODO: add tests for other formula connectors such as OR
+
         Model modelA = new CFGModel(methodCfg(parseMethod("int m() { int x = 1; return x; }")));
         ModelChecker checkerA = new ModelChecker(modelA);
         //System.out.println(((CFGModel) modelA).getCfg().toGraphVisText());
@@ -63,7 +66,9 @@ public class MetavarsTest {
 
     @Test
     public void testIncompatibleBindings() {
-        // test metavar binding to different elements -> incompatible environment
+
+        // contract: metavariables bound to different things are rejected under AND
+
         Model modelA = new CFGModel(methodCfg(parseMethod("int m() { int x = 1; return y; }")));
         ModelChecker checkerA = new ModelChecker(modelA);
         //System.out.println(((CFGModel) modelA).getCfg().toGraphVisText());
@@ -83,6 +88,9 @@ public class MetavarsTest {
 
     @Test
     public void testMultipleVars() {
+
+        // contract: a single formula element can use many metavariables
+
         Model modelA = new CFGModel(methodCfg(parseMethod("int m() { int x = 1; return x; }")));
         ModelChecker checkerA = new ModelChecker(modelA);
         //System.out.println(((CFGModel) modelA).getCfg().toGraphVisText());
@@ -106,6 +114,9 @@ public class MetavarsTest {
 
     @Test
     public void testExpressionConstraint() {
+
+        // contract: expression metavariables bind to any expression
+
         Model modelA = new CFGModel(methodCfg(parseMethod("int m() { int x = 1; return x; }")));
         ModelChecker checkerA = new ModelChecker(modelA);
         //System.out.println(((CFGModel) modelA).getCfg().toGraphVisText());
@@ -123,10 +134,11 @@ public class MetavarsTest {
         stmt("return E;", metavars("E", new ExpressionConstraint())).accept(checkerB);
         assertEquals("[(5, {E=0})]", checkerB.getResult().toString());
 
-        // but when E is an identifier it doesnt match in model B
+        // when E is an identifier it still matches in model A
         stmt("return E;", metavars("E", new IdentifierConstraint())).accept(checkerA);
         assertEquals("[(5, {E=x})]", checkerA.getResult().toString());
 
+        // but when E is an identifier it doesnt match in model B
         stmt("return E;", metavars("E", new IdentifierConstraint())).accept(checkerB);
         assertEquals("[]", checkerB.getResult().toString());
     }
