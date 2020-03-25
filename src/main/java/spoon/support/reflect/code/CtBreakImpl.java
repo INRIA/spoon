@@ -9,7 +9,6 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBreak;
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLabelledFlowBreak;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;

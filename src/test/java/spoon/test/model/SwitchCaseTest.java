@@ -8,6 +8,20 @@
 
 package spoon.test.model;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.createFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,20 +44,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
-import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.createFactory;
 @DisplayName("Switchcase Tests")
 public class SwitchCaseTest {
 
@@ -188,8 +188,8 @@ public class SwitchCaseTest {
 			CtCase<?> caseA3 = switchBreak.getCases().get(2);
 
 			assertAll(
-					() -> checkCaseExpression(caseA1, List.of("1", "2", "3"), 3),
-					() -> checkCaseExpression(caseA2, List.of("4"), 1),
+					() -> checkCaseExpression(caseA1, Arrays.asList("1", "2", "3"), 3),
+					() -> checkCaseExpression(caseA2, Arrays.asList("4"), 1),
 					() -> checkCaseExpression(caseA3, Collections.emptyList(), 0),
 					() -> assertEquals("default ->    x = 30;", toSingleLineString(caseA3))
 			);
