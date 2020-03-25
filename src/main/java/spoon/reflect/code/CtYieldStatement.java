@@ -21,7 +21,7 @@ import static spoon.reflect.path.CtRole.EXPRESSION;
  *     x = switch ("foo") {
  *         default -> {
  * 					x=x+1;
- * 					yield x; //<--- yield statement
+ * 					yield x; //&lt;--- yield statement
  * 					}
  *     };
  * </pre>
@@ -30,11 +30,11 @@ import static spoon.reflect.path.CtRole.EXPRESSION;
  * <pre>
  *     int x = 0;
  *     x = switch ("foo") {
- *         default -> 4; //<---  implicit yield statement
+ *         default -> 4; //&lt;---  implicit yield statement
  *     };
  * </pre>
  * the example wouldn't be allowed without the brackets at the default case,
- * because java syntax defines case -> [expression] or case -> [blockStatement]
+ * because java syntax defines case -&gt; [expression] or case -&gt; [blockStatement]
  * and yield is <b>not</b> a expression.
  */
 public interface CtYieldStatement extends CtCFlowBreak  {

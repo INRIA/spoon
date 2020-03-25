@@ -607,8 +607,10 @@ public interface CoreFactory {
 	/** Creates a "uses" directive for a Java 9 module file */
 	CtUsedService createUsedService();
 
+
 	/**
-	 * Creates a <code>yield</code> statement.
+	 * Creates a <code>yield</code> statement
+	 * @return yieldStatement
 	 */
 	CtYieldStatement createYieldStatement();
 }
