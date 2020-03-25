@@ -95,6 +95,7 @@ import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
