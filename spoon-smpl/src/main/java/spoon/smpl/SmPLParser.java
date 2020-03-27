@@ -1,12 +1,18 @@
 package spoon.smpl;
 
+import fr.inria.controlflow.BranchKind;
+import fr.inria.controlflow.ControlFlowBuilder;
+import fr.inria.controlflow.ControlFlowGraph;
+import fr.inria.controlflow.ControlFlowNode;
+import org.apache.commons.lang3.NotImplementedException;
 import spoon.Launcher;
-import spoon.reflect.declaration.CtElement;
-import spoon.smpl.formula.Formula;
+import spoon.reflect.code.*;
+import spoon.reflect.declaration.*;
+import spoon.smpl.formula.*;
+import spoon.smpl.metavars.*;
+import spoon.smpl.pattern.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -15,9 +21,133 @@ import java.util.regex.Matcher;
 
 
 public class SmPLParser {
-    public static Formula parse(String smpl) {
-        Launcher.parseClass(rewrite(smpl));
-        return null;
+    public static SmPLRule parse(String smpl) {
+        return compile(Launcher.parseClass(rewrite(smpl)));
+    }
+
+    public static SmPLRule compile(CtClass<?> ast) {
+        String ruleName = "anonymous";
+
+        if (ast.getDeclaredField("__SmPLRuleName__") != null) {
+            ruleName = ((CtLiteral) ast.getDeclaredField("__SmPLRuleName__")
+                                       .getFieldDeclaration()
+                                       .getAssignment()).getValue().toString();
+        }
+
+        Map<String, MetavariableConstraint> metavars = new HashMap<>();
+
+        if (ast.getMethodsByName("__SmPLMetavars__").size() != 0) {
+            CtMethod<?> mth = ast.getMethodsByName("__SmPLMetavars__").get(0);
+
+            for (CtElement e : mth.getBody().getStatements()) {
+                CtInvocation<?> invocation = (CtInvocation<?>) e;
+                CtElement arg = invocation.getArguments().get(0);
+                String varname = null;
+
+                if (arg instanceof CtFieldRead<?>) {
+                    varname = ((CtFieldRead<?>) arg).getVariable().getSimpleName();
+                } else if (arg instanceof CtTypeAccess<?>) {
+                    varname = ((CtTypeAccess<?>) arg).getAccessedType().getSimpleName();
+                } else {
+                    throw new IllegalArgumentException("Unable to extract metavariable name at <position>");
+                }
+
+                switch (invocation.getExecutable().getSimpleName()) {
+                    case "type":
+                        metavars.put(varname, new TypeConstraint());
+                        break;
+
+                    case "identifier":
+                        metavars.put(varname, new IdentifierConstraint());
+                        break;
+
+                    case "constant":
+                        metavars.put(varname, new ConstantConstraint());
+                        break;
+
+                    default:
+                        throw new IllegalArgumentException("Unknown metavariable type " + invocation.getExecutable().getSimpleName());
+                }
+            }
+        }
+
+        CtMethod<?> ruleMethod = null;
+
+        for (CtMethod<?> mth : ast.getMethods()) {
+            if (!mth.getSimpleName().equals("__SmPLMetavars__")) {
+                ruleMethod = mth;
+            }
+        }
+
+        if (ruleMethod == null) {
+            throw new IllegalArgumentException("Unable to find rule method in input");
+        }
+
+        ControlFlowBuilder cfgBuilder = new ControlFlowBuilder();
+        ControlFlowGraph cfg = cfgBuilder.build(ruleMethod.getBody());
+        cfg.simplify();
+        ControlFlowNode startNode = cfg.findNodesOfKind(BranchKind.BEGIN).get(0).next().get(0);
+
+        SmPLRule rule = new SmPLRuleImpl(compileFormula(startNode, metavars), metavars);
+        rule.setName(ruleName);
+
+        return rule;
+    }
+
+    public static Formula compileFormula(ControlFlowNode node, Map<String, MetavariableConstraint> metavars) {
+        if (node.getKind() == BranchKind.EXIT) {
+            return null;
+        }
+
+        PatternBuilder patternBuilder = new PatternBuilder(new ArrayList<String>(metavars.keySet()));
+
+        switch (node.next().size()) {
+            case 0:
+                throw new IllegalArgumentException("Control flow node with no outgoing path");
+
+            case 1:
+                switch (node.getKind()) {
+                    case STATEMENT:
+                        node.getStatement().accept(patternBuilder);
+                        StatementPattern formula = new StatementPattern(patternBuilder.getResult(), metavars);
+                        formula.setStringRepresentation(node.getStatement().toString());
+
+                        Formula innerFormula = compileFormula(node.next().get(0), metavars);
+
+                        if (innerFormula == null) {
+                            return formula;
+                        } else {
+                            return new And(formula, new AllNext(innerFormula));
+                        }
+
+                    case BRANCH:
+                        throw new NotImplementedException("Not implemented");
+
+                    default:
+                        throw new IllegalArgumentException("Unexpected control flow node kind for single successor: " + node.getKind().toString());
+                }
+
+            default:
+                switch (node.getKind()) {
+                    case STATEMENT:
+                        throw new NotImplementedException("Not implemented");
+
+                    case BRANCH:
+                        node.getStatement().accept(patternBuilder);
+                        PatternNode cond = patternBuilder.getResult();
+                        Class<? extends CtElement> branchType = node.getStatement().getParent().getClass();
+
+                        BranchPattern formula = new BranchPattern(cond, branchType, metavars);
+                        formula.setStringRepresentation(node.getStatement().toString());
+
+                        return new And(formula,
+                                       new AllNext(new Or(compileFormula(node.next().get(0), metavars),
+                                                          compileFormula(node.next().get(1), metavars))));
+
+                    default:
+                        throw new IllegalArgumentException("Unexpected control flow node kind for multiple successors: " + node.getKind().toString());
+                }
+        }
     }
 
     public static String prettify(String text) {
