@@ -57,6 +57,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
@@ -1065,6 +1066,23 @@ public class CommentTest {
 		assertEquals("foo \nf\n", t.getDocComment());
 
 		assertEquals("foo \nf", t.getComments().get(0).getContent());
+	}
+
+	@Test
+	public void testDocCommentAbovePackageDeclaration() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/Issue3300PackageComment.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+
+		CtModel model = launcher.buildModel();
+
+		CtType<?> t = model.getAllTypes().iterator().next();
+
+		CtPackageDeclaration pkgDecl = launcher.getFactory().CompilationUnit().getOrCreate(t).getPackageDeclaration();
+
+		assertEquals("foo \nf\n", pkgDecl.getDocComment());
+
+		assertEquals("foo \nf", pkgDecl.getComments().get(0).getContent());
 	}
 
 	@Test
