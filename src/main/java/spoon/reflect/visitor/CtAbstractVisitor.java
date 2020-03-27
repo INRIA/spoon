@@ -527,6 +527,6 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	@Override
 	public void visitCtYieldStatement(CtYieldStatement statement) {
-		String foo = "";
+
 	}
 }
