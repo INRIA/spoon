@@ -41,105 +41,135 @@ public class MetavarsTest {
         return new StatementPattern(makePattern(parseReturnStatement(code), new ArrayList<>(metavars.keySet())), metavars);
     }
 
-    @Test
-    public void testCompatibleBindings() {
+    private static Model modelAlice() {
+        // alice declares x and returns x
+        return new CFGModel(methodCfg(parseMethod("int m() { int x = 1; return x; }")));
+    }
 
-        // contract: metavariables bound to "same thing" in different nodes are joined under AND
-        // TODO: add tests for other formula connectors such as OR
-
-        Model modelA = new CFGModel(methodCfg(parseMethod("int m() { int x = 1; return x; }")));
-        ModelChecker checkerA = new ModelChecker(modelA);
-        //System.out.println(((CFGModel) modelA).getCfg().toGraphVisText());
-
-        Map<String, MetavariableConstraint> meta = metavars("z", new IdentifierConstraint());
-
-        stmt("int z = 1;", meta).accept(checkerA);
-        assertEquals("[(4, {z=x})]", checkerA.getResult().toString());
-
-        retstmt("return z;", meta).accept(checkerA);
-        assertEquals("[(5, {z=x})]", checkerA.getResult().toString());
-
-        new And(stmt("int z = 1;", meta),
-                new AllNext(retstmt("return z;", meta))).accept(checkerA);
-        assertEquals("[(4, {z=x})]", checkerA.getResult().toString());
+    private static Model modelBob() {
+        // bob declares x and returns y
+        return new CFGModel(methodCfg(parseMethod("int m() { int x = 1; return y; }")));
     }
 
     @Test
-    public void testIncompatibleBindings() {
+    public void testIdentifierConstraintsOnSingleStates() {
+
+        // contract: "identifier" metavariables bind as expected when checking single states
+
+        ModelChecker checkerAlice = new ModelChecker(modelAlice());
+
+        stmt("T x = 1;", metavars("T", new IdentifierConstraint())).accept(checkerAlice);
+        assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
+
+        stmt("int z = 1;", metavars("z", new IdentifierConstraint())).accept(checkerAlice);
+        assertEquals("[(4, {z=x})]", sortedEnvs(checkerAlice.getResult().toString()));
+
+        stmt("int x = C;", metavars("C", new IdentifierConstraint())).accept(checkerAlice);
+        assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
+
+        retstmt("return z;", metavars("z", new IdentifierConstraint())).accept(checkerAlice);
+        assertEquals("[(5, {z=x})]", checkerAlice.getResult().toString());
+    }
+
+    @Test
+    public void testTypeConstraintsOnSingleStates() {
+
+        // contract: "type" metavariables bind as expected when checking single states
+
+        ModelChecker checkerAlice = new ModelChecker(modelAlice());
+
+        stmt("T x = 1;", metavars("T", new TypeConstraint())).accept(checkerAlice);
+        assertEquals("[(4, {T=int})]", sortedEnvs(checkerAlice.getResult().toString()));
+
+        stmt("int z = 1;", metavars("z", new TypeConstraint())).accept(checkerAlice);
+        assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
+
+        stmt("int x = C;", metavars("C", new TypeConstraint())).accept(checkerAlice);
+        assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
+
+        retstmt("return z;", metavars("z", new TypeConstraint())).accept(checkerAlice);
+        assertEquals("[]", checkerAlice.getResult().toString());
+    }
+
+    @Test
+    public void testConstantConstraintsOnSingleStates() {
+
+        // contract: "constant" metavariables bind as expected when checking single states
+
+        ModelChecker checkerAlice = new ModelChecker(modelAlice());
+
+        stmt("T x = 1;", metavars("T", new ConstantConstraint())).accept(checkerAlice);
+        assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
+
+        stmt("int z = 1;", metavars("z", new ConstantConstraint())).accept(checkerAlice);
+        assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
+
+        stmt("int x = C;", metavars("C", new ConstantConstraint())).accept(checkerAlice);
+        assertEquals("[(4, {C=1})]", sortedEnvs(checkerAlice.getResult().toString()));
+
+        retstmt("return z;", metavars("z", new ConstantConstraint())).accept(checkerAlice);
+        assertEquals("[]", checkerAlice.getResult().toString());
+    }
+
+    @Test
+    public void testExpressionConstraintsOnSingleStates() {
+
+        // contract: "expression" metavariables bind as expected when checking single states
+
+        ModelChecker checkerAlice = new ModelChecker(modelAlice());
+
+        stmt("T x = 1;", metavars("T", new ExpressionConstraint())).accept(checkerAlice);
+        assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
+
+        stmt("int z = 1;", metavars("z", new ExpressionConstraint())).accept(checkerAlice);
+        assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
+
+        stmt("int x = C;", metavars("C", new ExpressionConstraint())).accept(checkerAlice);
+        assertEquals("[(4, {C=1})]", sortedEnvs(checkerAlice.getResult().toString()));
+
+        retstmt("return z;", metavars("z", new ExpressionConstraint())).accept(checkerAlice);
+        assertEquals("[(5, {z=x})]", checkerAlice.getResult().toString());
+    }
+
+    @Test
+    public void testIntersectionOfCompatibleIdenticalBindings() {
+
+        // contract: metavariables bound to "same thing" in different nodes are joined under AND
+
+        ModelChecker checkerAlice = new ModelChecker(modelAlice());
+        Map<String, MetavariableConstraint> meta = metavars("z", new IdentifierConstraint());
+
+        new And(stmt("int z = 1;", meta),
+                new AllNext(retstmt("return z;", meta))).accept(checkerAlice);
+        assertEquals("[(4, {z=x})]", checkerAlice.getResult().toString());
+    }
+
+    @Test
+    public void testIntersectionOfIncompatibleBindings() {
 
         // contract: metavariables bound to different things are rejected under AND
 
-        Model modelA = new CFGModel(methodCfg(parseMethod("int m() { int x = 1; return y; }")));
-        ModelChecker checkerA = new ModelChecker(modelA);
-        //System.out.println(((CFGModel) modelA).getCfg().toGraphVisText());
-
+        ModelChecker checkerBob = new ModelChecker(modelBob());
         Map<String, MetavariableConstraint> meta = metavars("z", new IdentifierConstraint());
 
-        stmt("int z = 1;", meta).accept(checkerA);
-        assertEquals("[(4, {z=x})]", checkerA.getResult().toString());
-
-        retstmt("return z;", meta).accept(checkerA);
-        assertEquals("[(5, {z=y})]", checkerA.getResult().toString());
-
         new And(stmt("int z = 1;", meta),
-                new AllNext(retstmt("return z;", meta))).accept(checkerA);
-        assertEquals("[]", checkerA.getResult().toString()); // incompatible environments -> no result
+                new AllNext(retstmt("return z;", meta))).accept(checkerBob);
+        assertEquals("[]", checkerBob.getResult().toString());
     }
+
+    // TODO: add tests for other formula connectors such as OR
 
     @Test
     public void testMultipleVars() {
 
         // contract: a single formula element can use many metavariables
 
-        Model modelA = new CFGModel(methodCfg(parseMethod("int m() { int x = 1; return x; }")));
-        ModelChecker checkerA = new ModelChecker(modelA);
-        //System.out.println(((CFGModel) modelA).getCfg().toGraphVisText());
-
+        ModelChecker checkerAlice = new ModelChecker(modelAlice());
         Map<String, MetavariableConstraint> meta = metavars("T", new TypeConstraint(),
-                                                                  "C", new ConstantConstraint(),
-                                                                  "ret", new IdentifierConstraint());
+                                                            "C", new ConstantConstraint(),
+                                                            "ret", new IdentifierConstraint());
 
-        stmt("T ret = C;", meta).accept(checkerA);
-        assertEquals("[(4, {C=1, T=int, ret=x})]", sortedEnvs(checkerA.getResult().toString()));
-
-        retstmt("return ret;", meta).accept(checkerA);
-        assertEquals("[(5, {ret=x})]", checkerA.getResult().toString());
-
-        new And(stmt("T ret = C;", meta),
-                new AllNext(retstmt("return ret;", meta))).accept(checkerA);
-        assertEquals("[(4, {C=1, T=int, ret=x})]", sortedEnvs(checkerA.getResult().toString()));
-    }
-
-    // TODO: add test for every type of constraint
-
-    @Test
-    public void testExpressionConstraint() {
-
-        // contract: expression metavariables bind to any expression
-
-        Model modelA = new CFGModel(methodCfg(parseMethod("int m() { int x = 1; return x; }")));
-        ModelChecker checkerA = new ModelChecker(modelA);
-        //System.out.println(((CFGModel) modelA).getCfg().toGraphVisText());
-
-        resetControlFlowNodeCounter();
-
-        Model modelB = new CFGModel(methodCfg(parseMethod("int m() { int x = 1; return 0; }")));
-        ModelChecker checkerB = new ModelChecker(modelB);
-        //System.out.println(((CFGModel) modelB).getCfg().toGraphVisText());
-
-        // when E is an expression it matches in both models
-        stmt("return E;", metavars("E", new ExpressionConstraint())).accept(checkerA);
-        assertEquals("[(5, {E=x})]", checkerA.getResult().toString());
-
-        stmt("return E;", metavars("E", new ExpressionConstraint())).accept(checkerB);
-        assertEquals("[(5, {E=0})]", checkerB.getResult().toString());
-
-        // when E is an identifier it still matches in model A
-        stmt("return E;", metavars("E", new IdentifierConstraint())).accept(checkerA);
-        assertEquals("[(5, {E=x})]", checkerA.getResult().toString());
-
-        // but when E is an identifier it doesnt match in model B
-        stmt("return E;", metavars("E", new IdentifierConstraint())).accept(checkerB);
-        assertEquals("[]", checkerB.getResult().toString());
+        stmt("T ret = C;", meta).accept(checkerAlice);
+        assertEquals("[(4, {C=1, T=int, ret=x})]", sortedEnvs(checkerAlice.getResult().toString()));
     }
 }
