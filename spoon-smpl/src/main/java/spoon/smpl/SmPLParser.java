@@ -103,6 +103,10 @@ public class SmPLParser {
         List<RewriteRule> body = new ArrayList<>();
         List<RewriteRule> dots = new ArrayList<>();
 
+        // TODO: rule name
+        // TODO: escape character
+        // TODO: strings
+
         // Initial context
         init.add(new RewriteRule("atat", "(?s)^@@",
                 (ctx) -> { ctx.pop(); ctx.push(metavars); },
