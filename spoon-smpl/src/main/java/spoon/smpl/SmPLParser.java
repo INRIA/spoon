@@ -21,21 +21,31 @@ public class SmPLParser {
     }
 
     public static String prettify(String text) {
+        return prettify(text, '{', '}', 4, false);
+    }
+    public static String prettify(String text, char open, char close, int indentSize, boolean addNewlines) {
         StringBuilder result = new StringBuilder();
 
         int indent = 0;
         boolean doIndent = false;
 
         for (char c : text.toCharArray()) {
-            if (c == '}') {
+            if (c == close) {
                 indent -= 1;
+
+                if (addNewlines) {
+                    result.append('\n');
+                    doIndent = true;
+                }
             }
 
             if (doIndent) {
                 doIndent = false;
 
                 for (int i = 0; i < indent; ++i) {
-                    result.append("    ");
+                    for (int j = 0; j < indentSize; ++j) {
+                        result.append(" ");
+                    }
                 }
             }
 
@@ -45,8 +55,13 @@ public class SmPLParser {
                 doIndent = true;
             }
 
-            if (c == '{') {
+            if (c == open) {
                 indent += 1;
+
+                if (addNewlines) {
+                    result.append('\n');
+                    doIndent = true;
+                }
             }
         }
 
