@@ -33,11 +33,11 @@ public class MetavarsTest {
         }
     }
 
-    private static Formula stmt(String code, Map<String, ParameterPostProcessStrategy> metavars) {
+    private static Formula stmt(String code, Map<String, MetavariableConstraint> metavars) {
         return new StatementPattern(makePattern(parseStatement(code), new ArrayList<>(metavars.keySet())), metavars);
     }
 
-    private static Formula retstmt(String code, Map<String, ParameterPostProcessStrategy> metavars) {
+    private static Formula retstmt(String code, Map<String, MetavariableConstraint> metavars) {
         return new StatementPattern(makePattern(parseReturnStatement(code), new ArrayList<>(metavars.keySet())), metavars);
     }
 
@@ -51,7 +51,7 @@ public class MetavarsTest {
         ModelChecker checkerA = new ModelChecker(modelA);
         //System.out.println(((CFGModel) modelA).getCfg().toGraphVisText());
 
-        Map<String, ParameterPostProcessStrategy> meta = metavars("z", new IdentifierConstraint());
+        Map<String, MetavariableConstraint> meta = metavars("z", new IdentifierConstraint());
 
         stmt("int z = 1;", meta).accept(checkerA);
         assertEquals("[(4, {z=x})]", checkerA.getResult().toString());
@@ -73,7 +73,7 @@ public class MetavarsTest {
         ModelChecker checkerA = new ModelChecker(modelA);
         //System.out.println(((CFGModel) modelA).getCfg().toGraphVisText());
 
-        Map<String, ParameterPostProcessStrategy> meta = metavars("z", new IdentifierConstraint());
+        Map<String, MetavariableConstraint> meta = metavars("z", new IdentifierConstraint());
 
         stmt("int z = 1;", meta).accept(checkerA);
         assertEquals("[(4, {z=x})]", checkerA.getResult().toString());
@@ -95,7 +95,7 @@ public class MetavarsTest {
         ModelChecker checkerA = new ModelChecker(modelA);
         //System.out.println(((CFGModel) modelA).getCfg().toGraphVisText());
 
-        Map<String, ParameterPostProcessStrategy> meta = metavars("T", new TypeConstraint(),
+        Map<String, MetavariableConstraint> meta = metavars("T", new TypeConstraint(),
                                                                   "C", new ConstantConstraint(),
                                                                   "ret", new IdentifierConstraint());
 

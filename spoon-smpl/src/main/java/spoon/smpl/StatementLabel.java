@@ -27,7 +27,7 @@ public class StatementLabel implements Label {
         code.accept(builder);
         this.codePattern = builder.getResult();
 
-        this.parameters = null;
+        this.metavarBindings = null;
     }
 
     /**
@@ -38,23 +38,31 @@ public class StatementLabel implements Label {
     public boolean matches(Predicate obj) {
         if (obj instanceof StatementPattern) {
             StatementPattern sp = (StatementPattern) obj;
-            PatternMatcher matcher = new PatternMatcher(sp.getPattern());
+            PatternMatcher matcher = new PatternMatcher(sp.getPattern(), sp.getMetavariables());
             codePattern.accept(matcher);
-            parameters = matcher.getParameters();
-            return matcher.getResult() && sp.processParameterBindings(parameters);
+            metavarBindings = matcher.getParameters();
+            return matcher.getResult() && sp.processMetavariableBindings(metavarBindings);
         } else {
             return false;
         }
     }
 
+    /**
+     * Retrieve any metavariable bindings involved in matching the most recently
+     * given predicate.
+     * @return most recent metavariable bindings, or null if there were no bindings
+     */
     @Override
-    public Map<String, Object> getMatchedParameters() {
-        return parameters;
+    public Map<String, Object> getMetavariableBindings() {
+        return metavarBindings;
     }
 
+    /**
+     * Reset/clear metavariable bindings
+     */
     @Override
     public void reset() {
-        parameters = null;
+        metavarBindings = null;
     }
 
     /**
@@ -76,5 +84,5 @@ public class StatementLabel implements Label {
      */
     private PatternNode codePattern;
 
-    private Map<String, Object> parameters;
+    private Map<String, Object> metavarBindings;
 }

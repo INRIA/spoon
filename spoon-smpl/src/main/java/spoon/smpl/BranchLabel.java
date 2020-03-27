@@ -39,7 +39,7 @@ public class BranchLabel implements Label {
         cond.accept(builder);
         this.condPattern = builder.getResult();
 
-        this.parameters = null;
+        this.metavarBindings = null;
     }
 
     /**
@@ -55,23 +55,31 @@ public class BranchLabel implements Label {
                 return false;
             }
 
-            PatternMatcher matcher = new PatternMatcher(bp.getConditionPattern());
+            PatternMatcher matcher = new PatternMatcher(bp.getConditionPattern(), bp.getMetavariables());
             condPattern.accept(matcher);
-            parameters = matcher.getParameters();
-            return matcher.getResult() && bp.processParameterBindings(parameters);
+            metavarBindings = matcher.getParameters();
+            return matcher.getResult() && bp.processMetavariableBindings(metavarBindings);
         } else {
             return false;
         }
     }
 
+    /**
+     * Retrieve any metavariable bindings involved in matching the most recently
+     * given predicate.
+     * @return most recent metavariable bindings, or null if there were no bindings
+     */
     @Override
-    public Map<String, Object> getMatchedParameters() {
-        return parameters;
+    public Map<String, Object> getMetavariableBindings() {
+        return metavarBindings;
     }
 
+    /**
+     * Reset/clear metavariable bindings
+     */
     @Override
     public void reset() {
-        parameters = null;
+        metavarBindings = null;
     }
 
     /**
@@ -93,5 +101,5 @@ public class BranchLabel implements Label {
      */
     private PatternNode condPattern;
 
-    private Map<String, Object> parameters;
+    private Map<String, Object> metavarBindings;
 }

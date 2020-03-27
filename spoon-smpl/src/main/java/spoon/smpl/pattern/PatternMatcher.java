@@ -1,6 +1,8 @@
 package spoon.smpl.pattern;
 
 import org.apache.commons.lang3.NotImplementedException;
+import spoon.reflect.declaration.CtElement;
+import spoon.smpl.formula.MetavariableConstraint;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,8 +16,9 @@ import java.util.Stack;
  * parameter nodes.
  */
 public class PatternMatcher implements PatternNodeVisitor {
-    public PatternMatcher(PatternNode pattern) {
+    public PatternMatcher(PatternNode pattern, Map<String, MetavariableConstraint> metavars) {
         this.initialPattern = pattern;
+        this.metavars = metavars;
         reset();
     }
 
@@ -36,21 +39,7 @@ public class PatternMatcher implements PatternNodeVisitor {
     }
 
     public Map<String, Object> getParameters() {
-        Map<String, Object> result = new HashMap<>();
-
-        for (String key : parameters.keySet()) {
-            PatternNode node = parameters.get(key);
-
-            if (node instanceof ValueNode) {
-                result.put(key, ((ValueNode) node).srcValue);
-            } else if (node instanceof ElemNode) {
-                result.put(key, ((ElemNode) node).elem);
-            } else {
-                throw new IllegalStateException("This should be unreachable");
-            }
-        }
-
-        return result;
+        return parameters;
     }
 
     @Override
@@ -79,7 +68,7 @@ public class PatternMatcher implements PatternNodeVisitor {
             result = true;
         }
         else if (myNode instanceof ParamNode) {
-            result = bindParameter(((ParamNode)myNode).name, otherNode);
+            result = bindParameter(((ParamNode) myNode).name, otherNode.elem);
         }
         else {
             result = false;
@@ -96,27 +85,34 @@ public class PatternMatcher implements PatternNodeVisitor {
         PatternNode myNode = patternStack.pop();
 
         if (myNode instanceof ValueNode) {
-            result = (((ValueNode)myNode).equals(otherNode));
+            result = myNode.equals(otherNode);
         }
         else if (myNode instanceof ParamNode) {
-            result = bindParameter(((ParamNode)myNode).name, otherNode);
+            result = bindParameter(((ParamNode) myNode).name, (CtElement) otherNode.srcValue);
         }
         else {
             result = false;
         }
     }
 
-    private boolean bindParameter(String name, PatternNode value) {
+    private boolean bindParameter(String name, CtElement value) {
+        Object binding = metavars.get(name).apply(value);
+
+        if (binding == null) {
+            return false;
+        }
+
         if (!parameters.containsKey(name)) {
-            parameters.put(name, value);
+            parameters.put(name, binding);
             return true;
         } else {
-            return parameters.get(name).equals(value);
+            return parameters.get(name).equals(binding);
         }
     }
 
     private PatternNode initialPattern;
+    private Map<String, MetavariableConstraint> metavars;
     private Stack<PatternNode> patternStack;
-    private Map<String, PatternNode> parameters;
+    private Map<String, Object> parameters;
     private Boolean result;
 }

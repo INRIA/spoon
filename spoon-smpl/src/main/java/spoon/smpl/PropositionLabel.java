@@ -31,15 +31,20 @@ public class PropositionLabel implements Label {
         }
     }
 
+    /**
+     * Propositions do not support metavariables.
+     * @return null
+     */
     @Override
-    public Map<String, Object> getMatchedParameters() {
+    public Map<String, Object> getMetavariableBindings() {
         return null;
     }
 
+    /**
+     * Propositions do not support metavariables.
+     */
     @Override
-    public void reset() {
-
-    }
+    public void reset() { }
 
     /**
      * The proposition string.

@@ -16,14 +16,14 @@ public interface Label {
     public boolean matches(Predicate obj);
 
     /**
-     * Retrieve any parameter mappings involved in matching the most recently
+     * Retrieve any metavariable bindings involved in matching the most recently
      * given predicate.
-     * @return most recent parameter mappings, or null if there are no mappings
+     * @return most recent metavariable bindings, or null if there were no bindings
      */
-    public Map<String, Object> getMatchedParameters();
+    public Map<String, Object> getMetavariableBindings();
 
     /**
-     * Reset/clear parameter mappings
+     * Reset/clear metavariable bindings
      */
     public void reset();
 }

@@ -242,7 +242,7 @@ public class ModelChecker implements FormulaVisitor {
         for (int s : model.getStates()) {
             for (Label label : model.getLabels(s)) {
                 if (label.matches(element)) {
-                    Map<String, Object> params = label.getMatchedParameters();
+                    Map<String, Object> params = label.getMetavariableBindings();
                     Environment environment = new Environment();
 
                     if (params != null) {

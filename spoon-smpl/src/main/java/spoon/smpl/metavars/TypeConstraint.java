@@ -1,19 +1,23 @@
 package spoon.smpl.metavars;
 
 import spoon.reflect.reference.CtTypeReference;
-import spoon.smpl.formula.ParameterPostProcessStrategy;
+import spoon.smpl.formula.MetavariableConstraint;
 
-import java.util.Map;
-
-public class TypeConstraint implements ParameterPostProcessStrategy {
+/**
+ * A TypeConstraint restricts a metavariable binding to be a CtTypeReference.
+ */
+public class TypeConstraint implements MetavariableConstraint {
+    /**
+     * Validate and potentially modify a value bound to a metavariable.
+     * @param value Value bound to metavariable
+     * @return The Object that is a valid binding under the constraint, or null if the value does not match the constraint
+     */
     @Override
-    public Boolean apply(Map<String, Object> parameters, String paramName) {
-        Object obj = parameters.get(paramName);
-
-        if (obj instanceof CtTypeReference) {
-            return true;
+    public Object apply(Object value) {
+        if (value instanceof CtTypeReference) {
+            return value;
         } else {
-            return false;
+            return null;
         }
     }
 }

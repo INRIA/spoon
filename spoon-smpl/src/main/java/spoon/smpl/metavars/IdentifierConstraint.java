@@ -1,23 +1,30 @@
 package spoon.smpl.metavars;
 
 import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.reference.CtVariableReference;
-import spoon.smpl.formula.ParameterPostProcessStrategy;
+import spoon.smpl.formula.MetavariableConstraint;
 
-import java.util.Map;
-
-public class IdentifierConstraint implements ParameterPostProcessStrategy {
+/**
+ * An IdentifierConstraint restricts a metavariable binding to be CtVariableReference, potentially
+ * by refining a given binding to a CtVariableRead or CtVariableWrite.
+ */
+public class IdentifierConstraint implements MetavariableConstraint {
+    /**
+     * Validate and potentially modify a value bound to a metavariable.
+     * @param value Value bound to metavariable
+     * @return The Object that is a valid binding under the constraint, or null if the value does not match the constraint
+     */
     @Override
-    public Boolean apply(Map<String, Object> parameters, String paramName) {
-        Object obj = parameters.get(paramName);
-
-        if (obj instanceof CtVariableReference) {
-            return true;
-        } else if (obj instanceof CtVariableRead) {
-            parameters.put(paramName, ((CtVariableRead) obj).getVariable());
-            return true;
+    public Object apply(Object value) {
+        if (value instanceof CtVariableReference) {
+            return value;
+        } else if (value instanceof CtVariableRead) {
+            return ((CtVariableRead<?>) value).getVariable();
+        } else if (value instanceof CtVariableWrite) {
+            return ((CtVariableWrite<?>) value).getVariable();
         } else {
-            return false;
+            return null;
         }
     }
 }

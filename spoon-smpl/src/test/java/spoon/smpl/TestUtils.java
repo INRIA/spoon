@@ -7,7 +7,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.smpl.formula.ParameterPostProcessStrategy;
+import spoon.smpl.formula.MetavariableConstraint;
 import spoon.smpl.pattern.PatternBuilder;
 import spoon.smpl.pattern.PatternNode;
 
@@ -16,11 +16,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TestUtils {
-    public static Map<String, ParameterPostProcessStrategy> metavars(Object ... xs) {
-        Map<String, ParameterPostProcessStrategy> result = new HashMap<>();
+    public static Map<String, MetavariableConstraint> metavars(Object ... xs) {
+        Map<String, MetavariableConstraint> result = new HashMap<>();
 
         for (int i = 0; i < xs.length; i += 2) {
-            result.put((String) xs[i], (ParameterPostProcessStrategy) xs[i+1]);
+            result.put((String) xs[i], (MetavariableConstraint) xs[i + 1]);
         }
 
         return result;

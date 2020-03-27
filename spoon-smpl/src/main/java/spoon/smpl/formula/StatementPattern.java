@@ -21,12 +21,30 @@ public class StatementPattern implements Predicate {
      * Create a new StatementPattern Predicate.
      * @param pattern The pattern to match
      */
-    public StatementPattern(PatternNode pattern, Map<String, ParameterPostProcessStrategy> paramStrats) {
+    public StatementPattern(PatternNode pattern, Map<String, MetavariableConstraint> metavars) {
+        this.stringRep = "???";
         this.pattern = pattern;
-        this.paramStrats = paramStrats;
+        this.metavars = metavars;
     }
 
     /**
+     * Set the string representation for the statement, to be used in toString.
+     * @param stringRep String representation of statement
+     */
+    public void setStringRepresentation(String stringRep) {
+        this.stringRep = stringRep;
+    }
+
+    /**
+     * Get the string representation of the statement.
+     * @return String representation of statement
+     */
+    public String getStringRepresentation() {
+        return stringRep;
+    }
+
+    /**
+     * Get the pattern to match.
      * @return The Pattern to match
      */
     public PatternNode getPattern() {
@@ -42,25 +60,60 @@ public class StatementPattern implements Predicate {
         visitor.visit(this);
     }
 
+    /**
+     * Get the metavariables (and their constraints) associated with the predicate.
+     * @return Metavariable names and their respective constraints
+     */
     @Override
-    public boolean processParameterBindings(Map<String, Object> parameters) {
-        if (paramStrats == null) {
+    public Map<String, MetavariableConstraint> getMetavariables() {
+        return metavars;
+    }
+
+    /**
+     * Validate and potentially modify metavariable bindings.
+     * @param parameters Mutable map of metavariable bindings
+     * @return True if bindings could be validated (potentially by modification), false otherwise
+     */
+    @Override
+    public boolean processMetavariableBindings(Map<String, Object> parameters) {
+        if (metavars == null) {
             return true;
         }
 
-        for (String key : paramStrats.keySet()) {
-            if (parameters.containsKey(key) && !paramStrats.get(key).apply(parameters, key)) {
-                return false;
+        for (String key : metavars.keySet()) {
+            if (parameters.containsKey(key)) {
+                Object result = metavars.get(key).apply(parameters.get(key));
+
+                if (result != null) {
+                    parameters.put(key, result);
+                } else {
+                    return false;
+                }
             }
         }
 
         return true;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Statement(").append(getStringRepresentation()).append(")");
+        return sb.toString();
+    }
+
+    /**
+     * String representation of statement.
+     */
+    private String stringRep;
+
     /**
      * The Pattern to match.
      */
     private PatternNode pattern;
 
-    private Map<String, ParameterPostProcessStrategy> paramStrats;
+    /**
+     * Metavariable names and their respective constraints.
+     */
+    private Map<String, MetavariableConstraint> metavars;
 }

@@ -24,8 +24,21 @@ public class Proposition implements Predicate {
         visitor.visit(this);
     }
 
+    /**
+     * Propositions do not support metavariables.
+     * @return null
+     */
     @Override
-    public boolean processParameterBindings(Map<String, Object> parameters) {
+    public Map<String, MetavariableConstraint> getMetavariables() {
+        return null;
+    }
+
+    /**
+     * Propositions do not support metavariables.
+     * @return true
+     */
+    @Override
+    public boolean processMetavariableBindings(Map<String, Object> parameters) {
         return true;
     }
 
