@@ -2106,7 +2106,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		enterCtStatement(statement);
 		printer.writeKeyword("yield");
-		// checkstyle wants "return;" and not "return ;"
 		if (statement.getExpression() != null) {
 			printer.writeSpace();
 		}
