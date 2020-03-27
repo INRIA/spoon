@@ -82,7 +82,15 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> ctAssignment) {
-        throw new NotImplementedException("Not implemented");
+        ElemNode result = new ElemNode(ctAssignment);
+
+        ctAssignment.getAssigned().accept(this);
+        result.sub.put("lhs", resultStack.pop());
+
+        ctAssignment.getAssignment().accept(this);
+        result.sub.put("rhs", resultStack.pop());
+
+        resultStack.push(result);
     }
 
     @Override
@@ -103,7 +111,19 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <R> void visitCtBlock(CtBlock<R> ctBlock) {
-        throw new NotImplementedException("Not implemented");
+        ElemNode result = new ElemNode(ctBlock);
+
+        // TODO: should probably add a type ListNode and get rid of this hack
+        result.sub.put("numstatements", new ValueNode(ctBlock.getStatements().size(), null));
+
+        int n = 0;
+
+        for (CtStatement stm : ctBlock.getStatements()) {
+            stm.accept(this);
+            result.sub.put("statement" + Integer.toString(n), resultStack.pop());
+        }
+
+        resultStack.push(result);
     }
 
     @Override
@@ -198,7 +218,20 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public void visitCtIf(CtIf ctIf) {
-        throw new NotImplementedException("Not implemented");
+        ElemNode result = new ElemNode(ctIf);
+
+        ctIf.getCondition().accept(this);
+        result.sub.put("cond", resultStack.pop());
+
+        ctIf.getThenStatement().accept(this);
+        result.sub.put("then", resultStack.pop());
+
+        if (ctIf.getElseStatement() != null) {
+            ctIf.getElseStatement().accept(this);
+            result.sub.put("else", resultStack.pop());
+        }
+
+        resultStack.push(result);
     }
 
     @Override
@@ -247,7 +280,15 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtLocalVariableReference(CtLocalVariableReference<T> ctLocalVariableReference) {
-        throw new NotImplementedException("Not implemented");
+        String varname = ctLocalVariableReference.getSimpleName();
+
+        if (params.contains(varname)) {
+            resultStack.push(new ParamNode(varname));
+        } else {
+            ElemNode result = new ElemNode(ctLocalVariableReference);
+            result.sub.put("variable", new ValueNode(varname, ctLocalVariableReference.getSimpleName()));
+            resultStack.push(result);
+        }
     }
 
     @Override
@@ -412,7 +453,15 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtVariableWrite(CtVariableWrite<T> ctVariableWrite) {
-        throw new NotImplementedException("Not implemented");
+        String varname = ctVariableWrite.getVariable().getSimpleName();
+
+        if (params.contains(varname)) {
+            resultStack.push(new ParamNode(varname));
+        } else {
+            ElemNode result = new ElemNode(ctVariableWrite);
+            result.sub.put("variable", new ValueNode(varname, ctVariableWrite.getVariable()));
+            resultStack.push(result);
+        }
     }
 
     @Override
@@ -436,7 +485,11 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtFieldWrite(CtFieldWrite<T> ctFieldWrite) {
-        throw new NotImplementedException("Not implemented");
+        CtVariableWrite<T> ctVariableWrite = ctFieldWrite.getFactory().createVariableWrite();
+        CtVariableReference<T> ctVariableReference = ctFieldWrite.getFactory().createLocalVariableReference();
+        ctVariableReference.setSimpleName(ctFieldWrite.getVariable().getSimpleName());
+        ctVariableWrite.setVariable(ctVariableReference);
+        visitCtVariableWrite(ctVariableWrite);
     }
 
     @Override
