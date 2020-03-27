@@ -1053,6 +1053,21 @@ public class CommentTest {
 	}
 
 	@Test
+	public void testIssue3300() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/Issue3300.java");
+		launcher.getEnvironment().setCommentEnabled(true);
+
+		CtModel model = launcher.buildModel();
+
+		CtType<?> t = model.getElements(new TypeFilter<>(CtType.class)).get(0);
+
+		assertEquals("foo \nf\n", t.getDocComment());
+
+		assertEquals("foo \nf", t.getComments().get(0).getContent());
+	}
+
+	@Test
 	public void testStatementComments() {
 		// contract: the statements have their comment even if they are nested in another block
 		Launcher launcher = new Launcher();
