@@ -361,9 +361,13 @@ public class ReferenceBuilder {
 							// Big crisis here. We are already in noclasspath mode but JDT doesn't support always
 							// creation of a package in this mode. So, if we are in this brace, we make the job of JDT...
 							packageBinding = new PackageBinding(chars, null, environment, environment.module) {
+								// PackageBinding was a class instead of abstract class in earlier jdt versions.
+								// To circumvent this change to an abstract class, an anonymous class is used here.
 								@Override
 								public PlainPackageBinding getIncarnation(ModuleBinding arg0) {
-									//https://github.com/eclipse/eclipse.jdt.core/blob/master/org.eclipse.jdt.core/compiler/org/eclipse/jdt/internal/compiler/lookup/PlainPackageBinding.java#L43
+									// this method returns always null, because we dont know the enclosingModule here.
+									// Link to original method from PlainPackageBinding:
+									// https://github.com/eclipse/eclipse.jdt.core/blob/master/org.eclipse.jdt.core/compiler/org/eclipse/jdt/internal/compiler/lookup/PlainPackageBinding.java#L43
 									return null;
 								}
 							};
