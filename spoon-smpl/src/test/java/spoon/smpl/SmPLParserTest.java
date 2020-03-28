@@ -149,4 +149,32 @@ public class SmPLParserTest {
                 "    }\n" +
                 "}\n", result);
     }
+
+    @Test
+    public void testParsingAnonymousRule() {
+
+        // contract: the parser sets null as name for anonymous rules
+
+        SmPLRule rule = parse("@@\n" +
+                              "identifier x;\n" +
+                              "@@\n" +
+                              "return x;\n");
+
+        assertEquals(null, rule.getName());
+    }
+
+    @Test
+    public void testParsingRuleName() {
+
+        // contract: the parser correctly parses and sets the rule name
+
+        SmPLRule rule;
+
+        rule = parse("@ myrule @\n" +
+                     "identifier x;\n" +
+                     "@@\n" +
+                     "return x;\n");
+
+        assertEquals("myrule", rule.getName());
+    }
 }

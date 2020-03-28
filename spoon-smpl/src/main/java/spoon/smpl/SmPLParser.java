@@ -26,7 +26,7 @@ public class SmPLParser {
     }
 
     public static SmPLRule compile(CtClass<?> ast) {
-        String ruleName = "anonymous";
+        String ruleName = null;
 
         if (ast.getDeclaredField("__SmPLRuleName__") != null) {
             ruleName = ((CtLiteral) ast.getDeclaredField("__SmPLRuleName__")
@@ -233,7 +233,6 @@ public class SmPLParser {
         List<RewriteRule> body = new ArrayList<>();
         List<RewriteRule> dots = new ArrayList<>();
 
-        // TODO: rule name
         // TODO: escape character
         // TODO: strings
 
@@ -241,6 +240,13 @@ public class SmPLParser {
         init.add(new RewriteRule("atat", "(?s)^@@",
                 (ctx) -> { ctx.pop(); ctx.push(metavars); },
                 (result, match) -> { result.out.append("void __SmPLMetavars__() {\n"); }));
+
+        init.add(new RewriteRule("atat_rulename", "(?s)^@\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*@",
+                (ctx) -> { ctx.pop(); ctx.push(metavars); },
+                (result, match) -> {
+                    result.out.append("String __SmPLRuleName__ = \"" + match.group(1) + "\";\n");
+                    result.out.append("void __SmPLMetavars__() {\n");
+                }));
 
         // Metavars context
         metavars.add(new RewriteRule("whitespace", "(?s)^\\s+",
