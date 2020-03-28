@@ -1,8 +1,7 @@
 package spoon.smpl.pattern;
 
-import org.apache.commons.lang3.NotImplementedException;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
-import spoon.smpl.formula.MetavariableConstraint;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +15,8 @@ import java.util.Stack;
  * parameter nodes.
  */
 public class PatternMatcher implements PatternNodeVisitor {
-    public PatternMatcher(PatternNode pattern, Map<String, MetavariableConstraint> metavars) {
+    public PatternMatcher(PatternNode pattern) {
         this.initialPattern = pattern;
-        this.metavars = metavars;
         reset();
     }
 
@@ -77,7 +75,7 @@ public class PatternMatcher implements PatternNodeVisitor {
 
     @Override
     public void visit(ParamNode node) {
-        throw new NotImplementedException("Not supported");
+        throw new IllegalArgumentException("Not supported");
     }
 
     @Override
@@ -96,22 +94,33 @@ public class PatternMatcher implements PatternNodeVisitor {
     }
 
     private boolean bindParameter(String name, CtElement value) {
-        Object binding = metavars.get(name).apply(value);
-
-        if (binding == null) {
-            return false;
-        }
-
         if (!parameters.containsKey(name)) {
-            parameters.put(name, binding);
+            parameters.put(name, value);
             return true;
         } else {
-            return parameters.get(name).equals(binding);
+            if (parameters.get(name).equals(value)) {
+                return true;
+            } else {
+                return tryNarrowingParameter(name, (CtElement) parameters.get(name), value);
+            }
         }
     }
 
+    private boolean tryNarrowingParameter(String name, CtElement e1, CtElement e2) {
+        if (e1 instanceof CtVariableAccess<?> && e2 instanceof CtVariableAccess<?>) {
+            CtVariableAccess<?> va1 = (CtVariableAccess<?>) e1;
+            CtVariableAccess<?> va2 = (CtVariableAccess<?>) e2;
+
+            if (va1.getVariable().equals(va2.getVariable())) {
+                parameters.put(name, va1.getVariable());
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private PatternNode initialPattern;
-    private Map<String, MetavariableConstraint> metavars;
     private Stack<PatternNode> patternStack;
     private Map<String, Object> parameters;
     private Boolean result;

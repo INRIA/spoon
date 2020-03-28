@@ -38,7 +38,7 @@ public class StatementLabel implements Label {
     public boolean matches(Predicate obj) {
         if (obj instanceof StatementPattern) {
             StatementPattern sp = (StatementPattern) obj;
-            PatternMatcher matcher = new PatternMatcher(sp.getPattern(), sp.getMetavariables());
+            PatternMatcher matcher = new PatternMatcher(sp.getPattern());
             codePattern.accept(matcher);
             metavarBindings = matcher.getParameters();
             return matcher.getResult() && sp.processMetavariableBindings(metavarBindings);
