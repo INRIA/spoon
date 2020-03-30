@@ -65,6 +65,10 @@ public class SmPLParser {
                         metavars.put(varname, new ConstantConstraint());
                         break;
 
+                    case "expression":
+                        metavars.put(varname, new ExpressionConstraint());
+                        break;
+
                     default:
                         throw new IllegalArgumentException("Unknown metavariable type " + invocation.getExecutable().getSimpleName());
                 }
@@ -278,6 +282,14 @@ public class SmPLParser {
                 (result, match) -> {
                     for (String id : match.group(1).split("\\s*,\\s*")) {
                         result.out.append("constant(").append(id).append(");\n");
+                    }
+                }));
+
+        metavars.add(new RewriteRule("expression", "(?s)^expression\\s+([^;]+);",
+                (ctx) -> {},
+                (result, match) -> {
+                    for (String id : match.group(1).split("\\s*,\\s*")) {
+                        result.out.append("expression(").append(id).append(");\n");
                     }
                 }));
 
