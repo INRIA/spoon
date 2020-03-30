@@ -2,6 +2,7 @@ package spoon.smpl;
 
 import fr.inria.controlflow.ControlFlowBuilder;
 import fr.inria.controlflow.ControlFlowGraph;
+import fr.inria.controlflow.ControlFlowNode;
 import spoon.Launcher;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
@@ -11,11 +12,24 @@ import spoon.smpl.formula.MetavariableConstraint;
 import spoon.smpl.pattern.PatternBuilder;
 import spoon.smpl.pattern.PatternNode;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.junit.Assert.fail;
+
 public class TestUtils {
+    public static void resetControlFlowNodeCounter() {
+        try {
+            Field field = ControlFlowNode.class.getDeclaredField("count");
+            field.setAccessible(true);
+            ControlFlowNode.count = 0;
+        } catch (Exception e) {
+            fail("Unable to reset ControlFlowNode id counter");
+        }
+    }
+
     public static Map<String, MetavariableConstraint> metavars(Object ... xs) {
         Map<String, MetavariableConstraint> result = new HashMap<>();
 

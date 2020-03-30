@@ -1,6 +1,5 @@
 package spoon.smpl;
 
-import fr.inria.controlflow.ControlFlowNode;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.smpl.formula.*;
@@ -9,11 +8,9 @@ import spoon.smpl.metavars.ExpressionConstraint;
 import spoon.smpl.metavars.IdentifierConstraint;
 import spoon.smpl.metavars.TypeConstraint;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static spoon.smpl.TestUtils.*;
 import static spoon.smpl.TestUtils.parseReturnStatement;
 
@@ -22,15 +19,8 @@ import static spoon.smpl.TestUtils.parseReturnStatement;
  */
 public class MetavarsTest {
     @Before
-    public void resetControlFlowNodeCounter() {
-        // needed for consistent IDs in CFGModels
-        try {
-            Field field = ControlFlowNode.class.getDeclaredField("count");
-            field.setAccessible(true);
-            ControlFlowNode.count = 0;
-        } catch (Exception e) {
-            fail("Unable to reset ControlFlowNode id counter");
-        }
+    public void before() {
+        resetControlFlowNodeCounter();
     }
 
     private static Formula stmt(String code, Map<String, MetavariableConstraint> metavars) {

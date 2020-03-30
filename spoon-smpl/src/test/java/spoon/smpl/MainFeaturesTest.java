@@ -1,5 +1,6 @@
 package spoon.smpl;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -10,6 +11,11 @@ import static spoon.smpl.TestUtils.*;
  * implementation.
  */
 public class MainFeaturesTest {
+    @Before
+    public void before() {
+        resetControlFlowNodeCounter();
+    }
+
     @Test
     public void test1() {
 

@@ -1,7 +1,5 @@
 package spoon.smpl;
 
-import fr.inria.controlflow.ControlFlowNode;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,9 +7,6 @@ import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.smpl.formula.*;
 
-import java.lang.reflect.Field;
-
-import static org.junit.Assert.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -19,14 +14,8 @@ import static spoon.smpl.TestUtils.*;
 
 public class CFGModelTest {
     @Before
-    public void resetControlFlowNodeCounter() {
-        try {
-            Field field = ControlFlowNode.class.getDeclaredField("count");
-            field.setAccessible(true);
-            ControlFlowNode.count = 0;
-        } catch (Exception e) {
-            fail("Unable to reset ControlFlowNode id counter");
-        }
+    public void before() {
+        resetControlFlowNodeCounter();
     }
 
     @Test
