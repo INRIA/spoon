@@ -4,8 +4,6 @@ import fr.inria.controlflow.ControlFlowBuilder;
 import fr.inria.controlflow.ControlFlowGraph;
 import spoon.Launcher;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -24,32 +22,32 @@ public class CommandlineApplication {
         System.out.println("usage:");
     }
 
-    enum State { BASE, FILENAME_SMPL, FILENAME_JAVA };
+    enum ArgumentState { BASE, FILENAME_SMPL, FILENAME_JAVA };
 
     public static void main(String[] args) {
         String smplFilename = null;
         String javaFilename = null;
 
-        State state = State.BASE;
+        ArgumentState argumentState = ArgumentState.BASE;
 
         for (String arg : args) {
-            switch (state) {
+            switch (argumentState) {
                 case BASE:
                     if (arg.equals("--smpl-file")) {
-                        state = State.FILENAME_SMPL;
+                        argumentState = ArgumentState.FILENAME_SMPL;
                     } else if (arg.equals("--java-file")) {
-                        state = State.FILENAME_JAVA;
+                        argumentState = ArgumentState.FILENAME_JAVA;
                     }
                     break;
 
                 case FILENAME_SMPL:
                     smplFilename = arg;
-                    state = State.BASE;
+                    argumentState = ArgumentState.BASE;
                     break;
 
                 case FILENAME_JAVA:
                     javaFilename = arg;
-                    state = State.BASE;
+                    argumentState = ArgumentState.BASE;
                     break;
 
                 default:
@@ -57,12 +55,12 @@ public class CommandlineApplication {
             }
         }
 
-        if (state != State.BASE) {
+        if (argumentState != ArgumentState.BASE) {
             usage();
 
             System.exit(args.length > 0 ? 1 : 0);
         }
-        
+
         if (smplFilename != null && javaFilename != null) {
             try {
                 SmPLRule smplRule = SmPLParser.parse(readFile(smplFilename, StandardCharsets.UTF_8));
