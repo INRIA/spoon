@@ -74,4 +74,19 @@ public class CFGModelTest {
         //System.out.println(model.getCfg().toGraphVisText());
         assertEquals(res(5, env()), checker.getResult());
     }
+
+    @Test
+    public void testBeginNodeBug() {
+
+        // contract: the CFGModel should not include a state for the BEGIN node
+
+        Model model = new CFGModel(methodCfg(parseMethod("void foo() { int x = 1; } ")));
+        ModelChecker checker = new ModelChecker(model);
+
+        new AllNext(new StatementPattern(makePattern(parseStatement("int x = 1;")))).accept(checker);
+
+        assertEquals(res(), checker.getResult());
+
+        // Before bugfix was [(2, {})] where 2 is the ID of the BEGIN node in the CFG
+    }
 }

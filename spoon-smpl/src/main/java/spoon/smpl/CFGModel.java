@@ -27,6 +27,11 @@ public class CFGModel implements Model {
         labels = new HashMap<Integer, List<Label>>();
 
         cfg.vertexSet().forEach(node -> {
+            if (node.getKind() == BranchKind.BEGIN) {
+                // Dont add a state for the BEGIN node
+                return;
+            }
+
             int state = node.getId();
 
             // Add a state ID for each vertex ID and prepare lists of successors and labels
