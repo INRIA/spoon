@@ -2,10 +2,7 @@ package spoon.smpl;
 
 import spoon.smpl.formula.*;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Stack;
-import java.util.Map;
+import java.util.*;
 
 /**
  * ModelChecker implements the CTL model-checking algorithm.
@@ -273,9 +270,13 @@ public class ModelChecker implements FormulaVisitor {
 
         Set<Integer> canTransition = ModelChecker.preExists(model, innerResult.getIncludedStates());
 
-        for (Result r : innerResult) {
-            for (int s : canTransition) {
-                resultSet.add(new Result(s, r.getEnvironment()));
+        for (int s : canTransition) {
+            List<Integer> successors = model.getSuccessors(s);
+
+            for (Result r : innerResult) {
+                if (successors.contains(r.getState())) {
+                    resultSet.add(new Result(s, r.getEnvironment()));
+                }
             }
         }
 
@@ -295,9 +296,13 @@ public class ModelChecker implements FormulaVisitor {
 
         Set<Integer> canOnlyTransition = ModelChecker.preAll(model, innerResult.getIncludedStates());
 
-        for (Result r : innerResult) {
-            for (int s : canOnlyTransition) {
-                resultSet.add(new Result(s, r.getEnvironment()));
+        for (int s : canOnlyTransition) {
+            List<Integer> successors = model.getSuccessors(s);
+
+            for (Result r : innerResult) {
+                if (successors.contains(r.getState())) {
+                    resultSet.add(new Result(s, r.getEnvironment()));
+                }
             }
         }
 
