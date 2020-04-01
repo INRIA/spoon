@@ -43,8 +43,10 @@ import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment;
 import org.eclipse.jdt.internal.compiler.lookup.MethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.MissingTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ModuleBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ParameterizedTypeBinding;
+import org.eclipse.jdt.internal.compiler.lookup.PlainPackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.PolyTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
@@ -358,8 +360,18 @@ public class ReferenceBuilder {
 						if (packageBinding == null || packageBinding instanceof ProblemPackageBinding) {
 							// Big crisis here. We are already in noclasspath mode but JDT doesn't support always
 							// creation of a package in this mode. So, if we are in this brace, we make the job of JDT...
-							packageBinding = new PackageBinding(chars, null, environment, environment.module);
-						}
+							packageBinding = new PackageBinding(chars, null, environment, environment.module) {
+								// PackageBinding was a class instead of abstract class in earlier jdt versions.
+								// To circumvent this change to an abstract class, an anonymous class is used here.
+								@Override
+								public PlainPackageBinding getIncarnation(ModuleBinding arg0) {
+									// this method returns always null, because we dont know the enclosingModule here.
+									// Link to original method from PlainPackageBinding:
+									// https://github.com/eclipse/eclipse.jdt.core/blob/master/org.eclipse.jdt.core/compiler/org/eclipse/jdt/internal/compiler/lookup/PlainPackageBinding.java#L43
+									return null;
+								}
+							};
+													}
 						return getPackageReference(packageBinding);
 					}
 				}

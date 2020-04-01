@@ -63,6 +63,7 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
@@ -1282,5 +1283,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public <T> CtTypeReference<T> createSimplyQualifiedReference(String qualifiedName) {
 		return Type().createSimplyQualifiedReference(qualifiedName);
+	}
+
+	@Override
+	public CtYieldStatement createYieldStatement(boolean isImplicit) {
+		return Core().createYieldStatement().setImplicit(isImplicit);
 	}
 }

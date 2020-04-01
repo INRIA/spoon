@@ -803,7 +803,7 @@ public class CommentTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
-		launcher.getEnvironment().setComplianceLevel(12);
+		launcher.getEnvironment().setComplianceLevel(13);
 		launcher.getEnvironment().setPreviewFeaturesEnabled(true);
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/");
