@@ -69,6 +69,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
@@ -548,13 +549,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeKeyword("break");
 			if (breakStatement.getTargetLabel() != null) {
 				printer.writeSpace().writeKeyword(breakStatement.getTargetLabel());
-			} else if (breakStatement.getExpression() != null) {
-				printer.writeSpace();
-				scan(breakStatement.getExpression());
 			}
-		} else {
-			// Arrow (->) syntax from Java 12
-			scan(breakStatement.getExpression());
 		}
 		exitCtStatement(breakStatement);
 	}
@@ -2101,4 +2096,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void setIgnoreImplicit(boolean ignoreImplicit) {
 		this.ignoreImplicit = ignoreImplicit;
 }
+
+	@Override
+	public void visitCtYieldStatement(CtYieldStatement statement) {
+		if (statement.isImplicit()) {
+			scan(statement.getExpression());
+			exitCtStatement(statement);
+			return;
+		}
+		enterCtStatement(statement);
+		printer.writeKeyword("yield");
+		if (statement.getExpression() != null) {
+			printer.writeSpace();
+		}
+		scan(statement.getExpression());
+		exitCtStatement(statement);
+	}
 }

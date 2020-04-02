@@ -69,6 +69,7 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -1031,4 +1032,12 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(wildcardReference);
 		scanCtVisitable(wildcardReference);
 	}
+	public void visitCtYieldStatement(CtYieldStatement e) {
+		scanCtCFlowBreak(e);
+		scanCtStatement(e);
+		scanCtCodeElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
+	}
+
 }
