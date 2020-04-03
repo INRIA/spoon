@@ -46,6 +46,11 @@ public class PropositionLabel implements Label {
     @Override
     public void reset() { }
 
+    @Override
+    public String toString() {
+        return label;
+    }
+
     /**
      * The proposition string.
      */

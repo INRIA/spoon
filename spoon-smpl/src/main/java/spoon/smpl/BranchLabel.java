@@ -90,6 +90,11 @@ public class BranchLabel implements Label {
         return cond;
     }
 
+    @Override
+    public String toString() {
+        return "if (" + cond.toString() + ")";
+    }
+
     /**
      * The branch condition element.
      */

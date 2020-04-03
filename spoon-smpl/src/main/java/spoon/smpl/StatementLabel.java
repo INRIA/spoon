@@ -73,6 +73,11 @@ public class StatementLabel implements Label {
         return code;
     }
 
+    @Override
+    public String toString() {
+        return code.toString();
+    }
+
     /**
      * The code element.
      */

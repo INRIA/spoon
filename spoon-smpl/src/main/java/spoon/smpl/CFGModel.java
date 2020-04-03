@@ -93,6 +93,46 @@ public class CFGModel implements Model {
         return labels.get(state);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        List<Integer> states = getStates();
+        Collections.sort(states);
+
+        sb.append("CFGModel(states=").append(states).append(", ")
+          .append("successors={");
+
+        for (int state : states) {
+            for (int next : getSuccessors(state)) {
+                sb.append(state).append("->").append(next).append(", ");
+            }
+        }
+
+        sb.delete(sb.length() - 2, sb.length());
+        sb.append("}, labels={");
+
+        for (int state : states) {
+            if (getLabels(state).size() > 0 ) {
+                sb.append(state).append(": [");
+
+                for (Label label : getLabels(state)) {
+                    sb.append(label.toString()).append(", ");
+                }
+
+                sb.delete(sb.length() - 2, sb.length());
+                sb.append("], ");
+            } else {
+                sb.append(state).append(": [], ");
+            }
+        }
+
+        sb.delete(sb.length() - 2, sb.length());
+        sb.append("})");
+
+        return sb.toString();
+    }
+
     /**
      * @return the Control Flow Graph used to generate the model
      */
