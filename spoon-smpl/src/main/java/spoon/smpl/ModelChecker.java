@@ -8,13 +8,75 @@ import java.util.*;
  * ModelChecker implements the CTL model-checking algorithm.
  */
 public class ModelChecker implements FormulaVisitor {
+    public static class Witness {
+        public Witness(int state, String metavar, Object binding, List<Witness> witnesses) {
+            this.state = state;
+            this.metavar = metavar;
+            this.binding = binding;
+            this.witnesses = witnesses;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("<")
+              .append(state).append(", ")
+              .append(metavar).append(", ")
+              .append(binding).append(", ")
+              .append(witnesses)
+              .append(">");
+
+            return sb.toString();
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (!(other instanceof Witness)) {
+                return false;
+            }
+
+            Witness otherWitness = (Witness) other;
+
+            return state == otherWitness.state &&
+                   metavar.equals(otherWitness.metavar) &&
+                   binding.equals(otherWitness.binding) &&
+                   witnesses.equals(otherWitness.witnesses);
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 37;
+            int result = 1;
+            result = prime * result + 17 * state;
+            result = prime * result + 19 * metavar.hashCode();
+            result = prime * result + 23 * binding.hashCode();
+            result = prime * result + 29 * witnesses.hashCode();
+            return result;
+        }
+
+        public final int state;
+        public final String metavar;
+        public final Object binding;
+        public final List<Witness> witnesses;
+    }
+
+    public static List<Witness> emptyWitnessForest() {
+        return new ArrayList<>();
+    }
+
+    public static List<Witness> newWitnessForest(Witness outermostWitness) {
+        return new ArrayList<>(Arrays.asList(outermostWitness));
+    }
+
     /**
      * A Result is a state-environment pair in which some formula holds.
      */
     public static class Result {
-        public Result(int state, Environment environment) {
+        public Result(int state, Environment environment, List<Witness> witnesses) {
             this.state = state;
             this.environment = environment;
+            this.witnesses = witnesses;
         }
 
         public int getState() {
@@ -25,11 +87,19 @@ public class ModelChecker implements FormulaVisitor {
             return environment;
         }
 
+        public List<Witness> getWitnesses() {
+            return witnesses;
+        }
+
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
 
-            sb.append("(").append(state).append(", ").append(environment.toString()).append(")");
+            sb.append("(").append(state).append(", ")
+                          .append(environment.toString()).append(", ")
+                          .append(witnesses.toString())
+                          .append(")");
+
             return sb.toString();
         }
 
@@ -54,6 +124,7 @@ public class ModelChecker implements FormulaVisitor {
 
         private final int state;
         private final Environment environment;
+        private final List<Witness> witnesses;
     }
 
     /**
@@ -72,6 +143,16 @@ public class ModelChecker implements FormulaVisitor {
             }
 
             return result;
+        }
+
+        public List<Witness> getAllWitnesses() {
+            List<Witness> witnesses = new ArrayList<>();
+
+            for (Result r : this) {
+                witnesses.addAll(r.getWitnesses());
+            }
+
+            return witnesses;
         }
 
         /**
@@ -97,7 +178,12 @@ public class ModelChecker implements FormulaVisitor {
                         continue;
                     }
 
-                    result.add(new Result(r1.getState(), jointEnvironment));
+                    List<Witness> jointWitnesses = emptyWitnessForest();
+
+                    jointWitnesses.addAll(r1.getWitnesses());
+                    jointWitnesses.addAll(r2.getWitnesses());
+
+                    result.add(new Result(r1.getState(), jointEnvironment, jointWitnesses));
                 }
             }
 
@@ -134,7 +220,7 @@ public class ModelChecker implements FormulaVisitor {
 
             for (int state : model.getStates()) {
                 if (!includedStates.contains(state)) {
-                    negatedResultSet.add(new Result(state, new Environment()));
+                    negatedResultSet.add(new Result(state, new Environment(), emptyWitnessForest()));
                 }
             }
 
@@ -146,7 +232,7 @@ public class ModelChecker implements FormulaVisitor {
                 }
 
                 for (Environment e : negatedEnvironment) {
-                    negatedResultSet.add(new Result(result.getState(), e));
+                    negatedResultSet.add(new Result(result.getState(), e, emptyWitnessForest()));
                 }
             }
 
@@ -172,6 +258,8 @@ public class ModelChecker implements FormulaVisitor {
         return resultStack.pop();
     }
 
+    // TODO: add logic syntax specifications to all Formula-visiting methods
+
     /**
      * Computes the set of states that satisfy True, i.e all states.
      * @param element
@@ -181,7 +269,7 @@ public class ModelChecker implements FormulaVisitor {
         ResultSet resultSet = new ResultSet();
 
         for (int s : model.getStates()) {
-            resultSet.add(new Result(s, new Environment()));
+            resultSet.add(new Result(s, new Environment(), emptyWitnessForest()));
         }
 
         resultStack.push(resultSet);
@@ -248,7 +336,7 @@ public class ModelChecker implements FormulaVisitor {
 
                     label.reset();
 
-                    resultSet.add(new Result(s, environment));
+                    resultSet.add(new Result(s, environment, emptyWitnessForest()));
                     break;
                 }
             }
@@ -275,7 +363,7 @@ public class ModelChecker implements FormulaVisitor {
 
             for (Result r : innerResult) {
                 if (successors.contains(r.getState())) {
-                    resultSet.add(new Result(s, r.getEnvironment()));
+                    resultSet.add(new Result(s, r.getEnvironment(), emptyWitnessForest()));
                 }
             }
         }
@@ -290,18 +378,26 @@ public class ModelChecker implements FormulaVisitor {
     @Override
     public void visit(AllNext element) {
         element.getInnerElement().accept(this);
-        ResultSet innerResult = resultStack.pop();
+        ResultSet innerResultSet = resultStack.pop();
 
         ResultSet resultSet = new ResultSet();
 
-        Set<Integer> canOnlyTransition = ModelChecker.preAll(model, innerResult.getIncludedStates());
+        Set<Integer> canOnlyTransition = ModelChecker.preAll(model, innerResultSet.getIncludedStates());
 
         for (int s : canOnlyTransition) {
             List<Integer> successors = model.getSuccessors(s);
+            List<Witness> witnesses = emptyWitnessForest();
 
-            for (Result r : innerResult) {
+            // build joint witness forest for all successors
+            for (Result r : innerResultSet) {
                 if (successors.contains(r.getState())) {
-                    resultSet.add(new Result(s, r.getEnvironment()));
+                    witnesses.addAll(r.getWitnesses());
+                }
+            }
+
+            for (Result r : innerResultSet) {
+                if (successors.contains(r.getState())) {
+                    resultSet.add(new Result(s, r.getEnvironment(), witnesses));
                 }
             }
         }
@@ -315,29 +411,41 @@ public class ModelChecker implements FormulaVisitor {
      */
     @Override
     public void visit(ExistsUntil element) {
+        List<Witness> witnesses = emptyWitnessForest();
+
         // find the states that satisfy X in E[X U Y]
         element.getLhs().accept(this);
-        ResultSet satphi = resultStack.pop();
+        ResultSet satX = resultStack.pop();
+
+        witnesses.addAll(satX.getAllWitnesses());
 
         // find the states that satisfy Y in E[X U Y], these also satisfy E[X U Y] for any X
         element.getRhs().accept(this);
-        ResultSet resultSet = resultStack.pop();
+        ResultSet satY  = resultStack.pop();
+
+        witnesses.addAll(satY.getAllWitnesses());
+
+        ResultSet resultSet = new ResultSet();
+
+        for (Result r : satY) {
+            resultSet.add(new Result(r.getState(), r.getEnvironment(), witnesses));
+        }
 
         while (true) {
-            // find the states that can transition into a state known to satisfy E[X U Y]
+            // find the states that can POSSIBLY transition into a state known to satisfy E[X U Y]
             Set<Integer> satisfyingStates = resultSet.getIncludedStates();
-            Set<Integer> canTransition = ModelChecker.preExists(model, satisfyingStates);
+            Set<Integer> canOnlyTransition = ModelChecker.preExists(model, satisfyingStates);
 
             ResultSet pre = new ResultSet();
 
             for (Result r : resultSet) {
-                for (int s : canTransition) {
-                    pre.add(new Result(s, r.getEnvironment()));
+                for (int s : canOnlyTransition) {
+                    pre.add(new Result(s, r.getEnvironment(), witnesses));
                 }
             }
 
             // compute the intersection with states that satisfy X
-            pre = ResultSet.intersect(pre, satphi);
+            pre = ResultSet.intersect(pre, satX);
 
             // extend the set of states known to satisfy E[X U Y], until there is no change
             if (!resultSet.addAll(pre)) {
@@ -354,13 +462,25 @@ public class ModelChecker implements FormulaVisitor {
      */
     @Override
     public void visit(AllUntil element) {
+        List<Witness> witnesses = emptyWitnessForest();
+
         // find the states that satisfy X in A[X U Y]
         element.getLhs().accept(this);
-        ResultSet satphi = resultStack.pop();
+        ResultSet satX = resultStack.pop();
+
+        witnesses.addAll(satX.getAllWitnesses());
 
         // find the states that satisfy Y in A[X U Y], these also satisfy A[X U Y] for any X
         element.getRhs().accept(this);
-        ResultSet resultSet = resultStack.pop();
+        ResultSet satY  = resultStack.pop();
+
+        witnesses.addAll(satY.getAllWitnesses());
+
+        ResultSet resultSet = new ResultSet();
+
+        for (Result r : satY) {
+            resultSet.add(new Result(r.getState(), r.getEnvironment(), witnesses));
+        }
 
         while (true) {
             // find the states that can ONLY transition into a state known to satisfy A[X U Y]
@@ -371,12 +491,12 @@ public class ModelChecker implements FormulaVisitor {
 
             for (Result r : resultSet) {
                 for (int s : canOnlyTransition) {
-                    pre.add(new Result(s, r.getEnvironment()));
+                    pre.add(new Result(s, r.getEnvironment(), witnesses));
                 }
             }
 
             // compute the intersection with states that satisfy X
-            pre = ResultSet.intersect(pre, satphi);
+            pre = ResultSet.intersect(pre, satX);
 
             // extend the set of states known to satisfy A[X U Y], until there is no change
             if (!resultSet.addAll(pre)) {
@@ -398,7 +518,11 @@ public class ModelChecker implements FormulaVisitor {
             Environment changedEnvironment = result.getEnvironment().clone();
             changedEnvironment.remove(element.getVarName());
             resultSet.add(new Result(result.getState(),
-                                     changedEnvironment));
+                                     changedEnvironment,
+                                     newWitnessForest(new Witness(result.getState(),
+                                                                  element.getVarName(),
+                                                                  result.getEnvironment().get(element.getVarName()),
+                                                                  result.getWitnesses()))));
         }
 
         resultStack.push(resultSet);
@@ -413,7 +537,7 @@ public class ModelChecker implements FormulaVisitor {
 
         // TODO: could probably optimize this by e.g letting the state "-1" intersect with any other state, so we would need just one result here
         for (int s : model.getStates()) {
-            resultSet.add(new Result(s, environment));
+            resultSet.add(new Result(s, environment, emptyWitnessForest()));
         }
 
         resultStack.push(resultSet);

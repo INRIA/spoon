@@ -49,6 +49,6 @@ public class MainFeaturesTest {
 
         rule.getFormula().accept(modelChecker);
 
-        assertEquals("[(4, {C=5, T=int, ret=y})]", sortedEnvs(modelChecker.getResult().toString()));
+        assertEquals("[(4, {C=5, T=int, ret=y}, [])]", sortedEnvs(modelChecker.getResult().toString()));
     }
 }

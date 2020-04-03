@@ -38,13 +38,13 @@ public class IntegrationBugsTest {
         Model model = new CFGModel(methodCfg(parseMethod("void foo() { int x = 1; int y = 1; }")));
         ModelChecker checker = new ModelChecker(model);
 
-        Map<String, MetavariableConstraint> meta = metavars("v", new IdentifierConstraint());
+        Map<String, MetavariableConstraint> meta = makeMetavars("v", new IdentifierConstraint());
         List<String> metakeys = new ArrayList<>(meta.keySet());
 
         new AllNext(new StatementPattern(makePattern(parseStatement("int v = 1;"), metakeys), meta))
                 .accept(checker);
 
-        assertEquals("[(4, {v=y})]", sortedEnvs(checker.getResult().toString()));
+        assertEquals("[(4, {v=y}, [])]", sortedEnvs(checker.getResult().toString()));
 
         // Before bugfix was [(4, {v=y}), (4, {v=x})]
     }
@@ -59,13 +59,13 @@ public class IntegrationBugsTest {
         Model model = new CFGModel(methodCfg(parseMethod("void foo() { int x = 1; int y = 1; }")));
         ModelChecker checker = new ModelChecker(model);
 
-        Map<String, MetavariableConstraint> meta = metavars("v", new IdentifierConstraint());
+        Map<String, MetavariableConstraint> meta = makeMetavars("v", new IdentifierConstraint());
         List<String> metakeys = new ArrayList<>(meta.keySet());
 
         new ExistsNext(new StatementPattern(makePattern(parseStatement("int v = 1;"), metakeys), meta))
                 .accept(checker);
 
-        assertEquals("[(4, {v=y})]", sortedEnvs(checker.getResult().toString()));
+        assertEquals("[(4, {v=y}, [])]", sortedEnvs(checker.getResult().toString()));
 
         // Before bugfix was [(4, {v=y}), (4, {v=x})]
     }

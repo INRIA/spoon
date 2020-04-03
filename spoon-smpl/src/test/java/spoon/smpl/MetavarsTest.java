@@ -48,17 +48,17 @@ public class MetavarsTest {
 
         ModelChecker checkerAlice = new ModelChecker(modelAlice());
 
-        stmt("T x = 1;", metavars("T", new IdentifierConstraint())).accept(checkerAlice);
+        stmt("T x = 1;", makeMetavars("T", new IdentifierConstraint())).accept(checkerAlice);
         assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
 
-        stmt("int z = 1;", metavars("z", new IdentifierConstraint())).accept(checkerAlice);
-        assertEquals("[(4, {z=x})]", sortedEnvs(checkerAlice.getResult().toString()));
+        stmt("int z = 1;", makeMetavars("z", new IdentifierConstraint())).accept(checkerAlice);
+        assertEquals("[(4, {z=x}, [])]", sortedEnvs(checkerAlice.getResult().toString()));
 
-        stmt("int x = C;", metavars("C", new IdentifierConstraint())).accept(checkerAlice);
+        stmt("int x = C;", makeMetavars("C", new IdentifierConstraint())).accept(checkerAlice);
         assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
 
-        retstmt("return z;", metavars("z", new IdentifierConstraint())).accept(checkerAlice);
-        assertEquals("[(5, {z=x})]", checkerAlice.getResult().toString());
+        retstmt("return z;", makeMetavars("z", new IdentifierConstraint())).accept(checkerAlice);
+        assertEquals("[(5, {z=x}, [])]", checkerAlice.getResult().toString());
     }
 
     @Test
@@ -68,16 +68,16 @@ public class MetavarsTest {
 
         ModelChecker checkerAlice = new ModelChecker(modelAlice());
 
-        stmt("T x = 1;", metavars("T", new TypeConstraint())).accept(checkerAlice);
-        assertEquals("[(4, {T=int})]", sortedEnvs(checkerAlice.getResult().toString()));
+        stmt("T x = 1;", makeMetavars("T", new TypeConstraint())).accept(checkerAlice);
+        assertEquals("[(4, {T=int}, [])]", sortedEnvs(checkerAlice.getResult().toString()));
 
-        stmt("int z = 1;", metavars("z", new TypeConstraint())).accept(checkerAlice);
+        stmt("int z = 1;", makeMetavars("z", new TypeConstraint())).accept(checkerAlice);
         assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
 
-        stmt("int x = C;", metavars("C", new TypeConstraint())).accept(checkerAlice);
+        stmt("int x = C;", makeMetavars("C", new TypeConstraint())).accept(checkerAlice);
         assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
 
-        retstmt("return z;", metavars("z", new TypeConstraint())).accept(checkerAlice);
+        retstmt("return z;", makeMetavars("z", new TypeConstraint())).accept(checkerAlice);
         assertEquals("[]", checkerAlice.getResult().toString());
     }
 
@@ -88,16 +88,16 @@ public class MetavarsTest {
 
         ModelChecker checkerAlice = new ModelChecker(modelAlice());
 
-        stmt("T x = 1;", metavars("T", new ConstantConstraint())).accept(checkerAlice);
+        stmt("T x = 1;", makeMetavars("T", new ConstantConstraint())).accept(checkerAlice);
         assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
 
-        stmt("int z = 1;", metavars("z", new ConstantConstraint())).accept(checkerAlice);
+        stmt("int z = 1;", makeMetavars("z", new ConstantConstraint())).accept(checkerAlice);
         assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
 
-        stmt("int x = C;", metavars("C", new ConstantConstraint())).accept(checkerAlice);
-        assertEquals("[(4, {C=1})]", sortedEnvs(checkerAlice.getResult().toString()));
+        stmt("int x = C;", makeMetavars("C", new ConstantConstraint())).accept(checkerAlice);
+        assertEquals("[(4, {C=1}, [])]", sortedEnvs(checkerAlice.getResult().toString()));
 
-        retstmt("return z;", metavars("z", new ConstantConstraint())).accept(checkerAlice);
+        retstmt("return z;", makeMetavars("z", new ConstantConstraint())).accept(checkerAlice);
         assertEquals("[]", checkerAlice.getResult().toString());
     }
 
@@ -108,17 +108,17 @@ public class MetavarsTest {
 
         ModelChecker checkerAlice = new ModelChecker(modelAlice());
 
-        stmt("T x = 1;", metavars("T", new ExpressionConstraint())).accept(checkerAlice);
+        stmt("T x = 1;", makeMetavars("T", new ExpressionConstraint())).accept(checkerAlice);
         assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
 
-        stmt("int z = 1;", metavars("z", new ExpressionConstraint())).accept(checkerAlice);
+        stmt("int z = 1;", makeMetavars("z", new ExpressionConstraint())).accept(checkerAlice);
         assertEquals("[]", sortedEnvs(checkerAlice.getResult().toString()));
 
-        stmt("int x = C;", metavars("C", new ExpressionConstraint())).accept(checkerAlice);
-        assertEquals("[(4, {C=1})]", sortedEnvs(checkerAlice.getResult().toString()));
+        stmt("int x = C;", makeMetavars("C", new ExpressionConstraint())).accept(checkerAlice);
+        assertEquals("[(4, {C=1}, [])]", sortedEnvs(checkerAlice.getResult().toString()));
 
-        retstmt("return z;", metavars("z", new ExpressionConstraint())).accept(checkerAlice);
-        assertEquals("[(5, {z=x})]", checkerAlice.getResult().toString());
+        retstmt("return z;", makeMetavars("z", new ExpressionConstraint())).accept(checkerAlice);
+        assertEquals("[(5, {z=x}, [])]", checkerAlice.getResult().toString());
     }
 
     @Test
@@ -127,11 +127,11 @@ public class MetavarsTest {
         // contract: metavariables bound to "same thing" in different nodes are joined under AND
 
         ModelChecker checkerAlice = new ModelChecker(modelAlice());
-        Map<String, MetavariableConstraint> meta = metavars("z", new IdentifierConstraint());
+        Map<String, MetavariableConstraint> meta = makeMetavars("z", new IdentifierConstraint());
 
         new And(stmt("int z = 1;", meta),
                 new AllNext(retstmt("return z;", meta))).accept(checkerAlice);
-        assertEquals("[(4, {z=x})]", checkerAlice.getResult().toString());
+        assertEquals("[(4, {z=x}, [])]", checkerAlice.getResult().toString());
     }
 
     @Test
@@ -140,7 +140,7 @@ public class MetavarsTest {
         // contract: metavariables bound to different things are rejected under AND
 
         ModelChecker checkerBob = new ModelChecker(modelBob());
-        Map<String, MetavariableConstraint> meta = metavars("z", new IdentifierConstraint());
+        Map<String, MetavariableConstraint> meta = makeMetavars("z", new IdentifierConstraint());
 
         new And(stmt("int z = 1;", meta),
                 new AllNext(retstmt("return z;", meta))).accept(checkerBob);
@@ -155,11 +155,11 @@ public class MetavarsTest {
         // contract: a single formula element can use many metavariables
 
         ModelChecker checkerAlice = new ModelChecker(modelAlice());
-        Map<String, MetavariableConstraint> meta = metavars("T", new TypeConstraint(),
-                                                            "C", new ConstantConstraint(),
-                                                            "ret", new IdentifierConstraint());
+        Map<String, MetavariableConstraint> meta = makeMetavars("T", new TypeConstraint(),
+                                                                "C", new ConstantConstraint(),
+                                                                "ret", new IdentifierConstraint());
 
         stmt("T ret = C;", meta).accept(checkerAlice);
-        assertEquals("[(4, {C=1, T=int, ret=x})]", sortedEnvs(checkerAlice.getResult().toString()));
+        assertEquals("[(4, {C=1, T=int, ret=x}, [])]", sortedEnvs(checkerAlice.getResult().toString()));
     }
 }

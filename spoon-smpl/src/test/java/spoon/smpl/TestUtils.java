@@ -30,7 +30,7 @@ public class TestUtils {
         }
     }
 
-    public static Map<String, MetavariableConstraint> metavars(Object ... xs) {
+    public static Map<String, MetavariableConstraint> makeMetavars(Object ... xs) {
         Map<String, MetavariableConstraint> result = new HashMap<>();
 
         for (int i = 0; i < xs.length; i += 2) {
@@ -44,7 +44,7 @@ public class TestUtils {
         ModelChecker.ResultSet resultSet = new ModelChecker.ResultSet();
 
         for (int i = 0; i < xs.length; i += 2) {
-            resultSet.add(new ModelChecker.Result((Integer) xs[i], (Environment) xs[i+1]));
+            resultSet.add(new ModelChecker.Result((Integer) xs[i], (Environment) xs[i+1], new ArrayList<>()));
         }
 
         return resultSet;
