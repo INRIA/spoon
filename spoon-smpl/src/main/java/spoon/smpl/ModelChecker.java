@@ -387,6 +387,38 @@ public class ModelChecker implements FormulaVisitor {
         resultStack.push(resultSet);
     }
 
+    @Override
+    public void visit(ExistsVar element) {
+        element.getInnerElement().accept(this);
+        ResultSet innerResultSet = resultStack.pop();
+
+        ResultSet resultSet = new ResultSet();
+
+        for (Result result : innerResultSet) {
+            Environment changedEnvironment = result.getEnvironment().clone();
+            changedEnvironment.remove(element.getVarName());
+            resultSet.add(new Result(result.getState(),
+                                     changedEnvironment));
+        }
+
+        resultStack.push(resultSet);
+    }
+
+    @Override
+    public void visit(SetEnv element) {
+        ResultSet resultSet = new ResultSet();
+
+        Environment environment = new Environment();
+        environment.put(element.getMetavariableName(), element.getValue());
+
+        // TODO: could probably optimize this by e.g letting the state "-1" intersect with any other state, so we would need just one result here
+        for (int s : model.getStates()) {
+            resultSet.add(new Result(s, environment));
+        }
+
+        resultStack.push(resultSet);
+    }
+
     /**
      * Computes the set of states that have some successor in a given set of target states, i.e
      * the states that CAN transition into the set of target states.

@@ -13,4 +13,6 @@ public interface FormulaVisitor {
     public void visit(AllNext element);
     public void visit(ExistsUntil element);
     public void visit(AllUntil element);
+    public void visit(ExistsVar element);
+    public void visit(SetEnv element);
 }

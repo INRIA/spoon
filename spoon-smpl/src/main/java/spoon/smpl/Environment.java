@@ -154,4 +154,9 @@ public class Environment extends HashMap<String, Object> {
         result.addAll(workqueue);
         return result;
     }
+
+    @Override
+    public Environment clone() {
+        return (Environment) super.clone();
+    }
 }
