@@ -2,6 +2,8 @@ package spoon.smpl;
 
 import fr.inria.controlflow.BranchKind;
 import fr.inria.controlflow.ControlFlowGraph;
+import fr.inria.controlflow.ControlFlowNode;
+import spoon.reflect.code.CtIf;
 import spoon.reflect.declaration.CtElement;
 import spoon.smpl.formula.BranchPattern;
 
@@ -63,6 +65,32 @@ public class CFGModel implements Model {
                     default:
                         break;
                 }
+            }
+        });
+
+        // Annotate branches
+        cfg.vertexSet().forEach(node -> {
+            if (node.getKind() != BranchKind.BRANCH) {
+                return;
+            }
+
+            int state = node.getId();
+
+            CtIf ifStmt = (CtIf) node.getStatement().getParent();
+            boolean hasElse = ifStmt.getElseStatement() != null;
+
+            for (ControlFlowNode next : node.next()) {
+                if (next.getStatement().getParent() == ifStmt.getThenStatement()) {
+                    labels.get(next.getId()).add(new PropositionLabel("trueBranch"));
+                } else if (hasElse && next.getStatement().getParent() == ifStmt.getElseStatement()) {
+                    labels.get(next.getId()).add(new PropositionLabel("falseBranch"));
+                }/* else {
+                    // TODO: do we need "after"? its a bit tricky for if-statements with (condition-less) else-stms
+                    // if we do need "after", perhaps it would be easier to use an unsimplified CFG and
+                    // use the convergence nodes. otherwise do an O(n²) search for first matching common
+                    // successor i guess
+                    labels.get(next.getId()).add(new PropositionLabel("after"));
+                }*/
             }
         });
     }
