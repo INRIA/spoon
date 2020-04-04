@@ -51,6 +51,20 @@ public class PropositionLabel implements Label {
         return label;
     }
 
+    @Override
+    public int hashCode() {
+        return label.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof PropositionLabel)) {
+            return false;
+        }
+
+        return label.equals(((PropositionLabel) other).label);
+    }
+
     /**
      * The proposition string.
      */

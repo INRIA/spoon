@@ -1,5 +1,6 @@
 package spoon.smpl;
 
+import fr.inria.controlflow.BranchKind;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -88,5 +89,53 @@ public class CFGModelTest {
         assertEquals(res(), checker.getResult());
 
         // Before bugfix was [(2, {})] where 2 is the ID of the BEGIN node in the CFG
+    }
+
+    @Test
+    public void testExitNodeHasSelfLoop() {
+
+        // contract: the exit node should have itself as its single successor
+
+        CFGModel model = new CFGModel(methodCfg(parseMethod("void foo() { int x = 1; } ")));
+
+        model.getCfg().findNodesOfKind(BranchKind.EXIT).forEach((node) -> {
+            // TODO: this assumes state ids correspond to node ids which isnt being tested
+            assertEquals(1, model.getSuccessors(node.getId()).size());
+            assertTrue(node.getId() == model.getSuccessors(node.getId()).get(0));
+        });
+    }
+
+    @Test
+    public void testBranchAnnotations() {
+
+        // contract: a CFGModel should annotate the first statement in a branch
+
+        Model model = new CFGModel(methodCfg(parseMethod("int foo(int n) {     \n" +
+                                                         "    if (n > 0) {     \n" +
+                                                         "        return 1;    \n" +
+                                                         "    } else {         \n" +
+                                                         "        return 0;    \n" +
+                                                         "    }                \n" +
+                                                         "}                    \n")));
+
+        assertTrue(model.getLabels(7).contains(new PropositionLabel("trueBranch")));
+        assertTrue(model.getLabels(10).contains(new PropositionLabel("falseBranch")));
+    }
+
+    @Test
+    public void testToString() {
+
+        // contract: CFGModel should provide a useful string representation
+
+        Model model = new CFGModel(methodCfg(parseMethod("int foo(int n) {     \n" +
+                                                         "    if (n > 0) {     \n" +
+                                                         "        return 1;    \n" +
+                                                         "    } else {         \n" +
+                                                         "        return 0;    \n" +
+                                                         "    }                \n" +
+                                                         "}                    \n")));
+
+        assertTrue(model.toString().contains("states=[1, 4, 7, 10]"));
+        assertTrue(model.toString().contains("successors={1->1, 4->7, 4->10, 7->1, 10->1}"));
     }
 }
