@@ -139,4 +139,12 @@ public class TestUtils {
 
         return cfg;
     }
+
+    public static ModelChecker.Witness witness(int state, String metavar, Object binding) {
+        return new ModelChecker.Witness(state, metavar, binding, new HashSet<>());
+    }
+
+    public static ModelChecker.Witness witness(int state, String metavar, Object binding, ModelChecker.Witness ... witnesses) {
+        return new ModelChecker.Witness(state, metavar, binding, new HashSet<ModelChecker.Witness>(Arrays.asList(witnesses)));
+    }
 }
