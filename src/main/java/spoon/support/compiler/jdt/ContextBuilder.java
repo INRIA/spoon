@@ -423,7 +423,7 @@ public class ContextBuilder {
 
 
 	// https://stackoverflow.com/questions/29132884/lazy-field-initialization-with-lambdas
-	static <Z> Supplier<Z> lazily(Supplier<Z> supplier, Supplier<Z> supplierElse) {
+	private static <Z> Supplier<Z> lazily(Supplier<Z> supplier, Supplier<Z> supplierElse) {
 		return new Supplier<Z>() {
 				Z value; // = null
 				@Override public Z get() {
