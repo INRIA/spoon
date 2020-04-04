@@ -269,7 +269,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 	public CtCompilationUnitImpl setFile(File file) {
 		this.file = file;
 		//reset cached position (if any)
-		this.position = SourcePosition.NOPOSITION;
+		this.position =  () -> SourcePosition.NOPOSITION;
 		return this;
 	}
 
@@ -378,13 +378,13 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 		if (position == SourcePosition.NOPOSITION) {
 			String sourceCode = getOriginalSourceCode();
 			if (sourceCode != null) {
-				position = getFactory().Core().createSourcePosition((CompilationUnit) this, 0, sourceCode.length() - 1, getLineSeparatorPositions());
+				setPosition(getFactory().Core().createSourcePosition((CompilationUnit) this, 0, sourceCode.length() - 1, getLineSeparatorPositions()));
 			} else {
 				//it is a virtual compilation unit (e.g. for Snippet)
-				position = getFactory().Core().createSourcePosition((CompilationUnit) this, 0, Integer.MAX_VALUE - 1, getLineSeparatorPositions());
+				setPosition(getFactory().Core().createSourcePosition((CompilationUnit) this, 0, Integer.MAX_VALUE - 1, getLineSeparatorPositions()));
 			}
 		}
-		return position;
+		return position.get();
 	}
 
 	@Override

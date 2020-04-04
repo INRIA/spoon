@@ -43,6 +43,8 @@ import spoon.reflect.visitor.chain.CtQuery;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.DerivedProperty;
+import spoon.support.Experimental;
+import spoon.support.Internal;
 import spoon.support.StandardEnvironment;
 import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.util.EmptyClearableList;
@@ -63,6 +65,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import static spoon.reflect.visitor.CommentHelper.printComment;
 
@@ -75,7 +78,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
 	private static final Factory DEFAULT_FACTORY = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
-
 
 	public static <T> List<T> emptyList() {
 		return EmptyClearableList.instance();
@@ -100,7 +102,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	private List<CtComment> comments = emptyList();
 
 	@MetamodelPropertyField(role = CtRole.POSITION)
-	SourcePosition position = SourcePosition.NOPOSITION;
+	Supplier<SourcePosition> position = () -> SourcePosition.NOPOSITION;
 
 	Map<String, Object> metadata;
 
@@ -123,7 +125,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		boolean ret = EqualsVisitor.equals(this, (CtElement) o);
 		// neat online testing of core Java contract
 		if (ret && !factory.getEnvironment().checksAreSkipped() && this.hashCode() != o.hashCode()) {
-			throw new IllegalStateException("violation of equal/hashcode contract between \n" + this.toString() + "\nand\n" + o.toString() + "\n");
+			throw new IllegalStateException(
+					"violation of equal/hashcode contract between \n" + this.toString() + "\nand\n" + o.toString() + "\n");
 		}
 		return ret;
 	}
@@ -183,7 +186,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public SourcePosition getPosition() {
 		if (position != null) {
-			return position;
+			return position.get();
 		}
 		return SourcePosition.NOPOSITION;
 	}
@@ -257,10 +260,14 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public <E extends CtElement> E setPosition(SourcePosition position) {
 		if (position == null) {
-			position = SourcePosition.NOPOSITION;
+			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.POSITION,
+					SourcePosition.NOPOSITION, this.position);
+			this.position = () -> position;
+		} else {
+			getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.POSITION, position,
+					this.position);
+			this.position = () -> position;
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.POSITION, position, this.position);
-		this.position = position;
 		return (E) this;
 	}
 
@@ -615,5 +622,13 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 		this.accept(scanner);
 		return directChildren;
+	}
+
+	@Experimental
+	@Internal
+	@Override
+	public <E extends CtElement> E setPosition(Supplier<SourcePosition> position) {
+		this.position = position;
+		return (E) this;
 	}
 }

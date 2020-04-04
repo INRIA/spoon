@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static java.lang.String.format;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.CASTS_CONTAINER_DEFAULT_CAPACITY;
@@ -88,11 +89,7 @@ public class ContextBuilder {
 		stack.push(new ASTPair(e, node));
 		if (!(e instanceof CtPackage) || (compilationUnitSpoon.getFile() != null && compilationUnitSpoon.getFile().getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION))) {
 			if (compilationunitdeclaration != null && !e.isImplicit()) {
-				try {
-					e.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPositionCtElement(e, node));
-				} catch (Exception ex) {
-					e.setPosition(SourcePosition.NOPOSITION);
-				}
+					e.setPosition(lazily(() -> this.jdtTreeBuilder.getPositionBuilder().buildPositionCtElement(e, node), () -> SourcePosition.NOPOSITION));
 			}
 		}
 
@@ -422,4 +419,24 @@ public class ContextBuilder {
 	public char[] getCompilationUnitContents() {
 		return compilationunitdeclaration.compilationResult.compilationUnit.getContents();
 	}
+
+
+
+	// https://stackoverflow.com/questions/29132884/lazy-field-initialization-with-lambdas
+	static <Z> Supplier<Z> lazily(Supplier<Z> supplier, Supplier<Z> supplierElse) {
+		return new Supplier<Z>() {
+				Z value; // = null
+				@Override public Z get() {
+						if (value == null) {
+							System.out.println("Loading value");
+							try {
+								value = supplier.get();
+							} catch (Exception e) {
+								value = supplierElse.get();
+							}
+						}
+						return value;
+				}
+		};
+}
 }

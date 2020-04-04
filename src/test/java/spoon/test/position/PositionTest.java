@@ -1427,4 +1427,17 @@ public class PositionTest {
 				)
 		);
 	}
+
+	@Test
+	public void showCaseLazyPosition() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile("class A { int a = 3;}"));
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+		List<CtElement> foo = model.getElements(new TypeFilter<CtElement>(CtElement.class));
+		System.out.println("##### lazy finished #####");
+		for (CtElement ele : foo) {
+			ele.getPosition();
+		}
+	}
 }

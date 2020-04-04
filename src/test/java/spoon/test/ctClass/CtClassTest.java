@@ -102,7 +102,7 @@ public class CtClassTest {
 
 		// now we clone and reset the position
 		CtConstructor cons2 = foo.getConstructors().toArray(new CtConstructor[0])[0].clone();
-		cons2.setPosition(null);
+		cons2.setPosition(() -> null);
 		// adding the constructor, this time, without a position
 		foo.addConstructor(cons2);
 		// without position, it has been addded at the end
