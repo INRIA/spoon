@@ -86,21 +86,20 @@ public class Environment extends HashMap<String, Object> {
      * @param e Environment to negate
      * @return Set of alternatives representing the negation of the given environment
      */
-    public static Set<Environment> negate(Environment e) {
-        if (e.isEmpty()) {
-            return null;
-        }
-
+    public static Set<Environment> negate(Environment e) {        // The negation of the bottom/conflicting environment is the top/any-environment
         Set<Environment> result = new HashSet<>();
 
-        // See invariant comment below
-        Queue<Environment> workqueue = new LinkedList<>();
-
-        // The negation of the bottom/conflicting environment is the top/any-environment
         if (e == null) {
             result.add(new Environment());
             return result;
         }
+
+        if (e.isEmpty()) {
+            return null;
+        }
+
+        // See invariant comment below
+        Queue<Environment> workqueue = new LinkedList<>();
 
         // Negate positive bindings by simply flipping them to negatives
         Environment positivesFlipped = new Environment();
