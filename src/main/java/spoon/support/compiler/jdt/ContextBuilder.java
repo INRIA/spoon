@@ -428,7 +428,6 @@ public class ContextBuilder {
 				Z value; // = null
 				@Override public Z get() {
 						if (value == null) {
-							System.out.println("Loading value");
 							try {
 								value = supplier.get();
 							} catch (Exception e) {
