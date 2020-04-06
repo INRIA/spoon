@@ -52,7 +52,7 @@ def indent_multiline_str(xs):
 
 def valid_e2e(x):
     """
-    given an object, returns the object if it is a dict-like containing the keys "name", "contract",
+    given an object, returns the object if it is a dict containing the keys "name", "contract",
     "input", "expected" and "patch" and where "name" holds a valid Java method name, or raises
     an exception if any of these constraints do not hold.
     """
@@ -85,8 +85,8 @@ def parse_e2e(text):
     
     returns a dict {section1: "content1", section2: "content2" ...}
     """
-    return valid_e2e(dict((x,y) for (x,y) in list(map(lambda x: (x[0], x[1].strip() + "\n"),
-                                                   re.findall(r"(?s)\[([^\]]+)\](.+?)(?=\[|$)", text)))))
+    return valid_e2e(dict(list(map(lambda x: (x[0], x[1].strip() + "\n"),
+                                   re.findall(r"(?s)\[([^\]]+)\](.+?)(?=\[|$)", text)))))
 
 
 
