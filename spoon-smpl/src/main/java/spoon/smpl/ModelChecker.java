@@ -110,7 +110,8 @@ public class ModelChecker implements FormulaVisitor {
             }
 
             Result otherResult = (Result) other;
-            return state == otherResult.state && environment.equals(otherResult.environment);
+            return state == otherResult.state && environment.equals(otherResult.environment)
+                   && witnesses.equals(otherResult.witnesses);
         }
 
         @Override
@@ -119,6 +120,7 @@ public class ModelChecker implements FormulaVisitor {
             int result = 1;
             result = prime * result + 17 * state;
             result = prime * result + 23 * environment.hashCode();
+            result = prime * result + 29 * witnesses.hashCode();
             return result;
         }
 
