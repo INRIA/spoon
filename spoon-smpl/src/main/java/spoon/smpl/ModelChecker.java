@@ -365,7 +365,7 @@ public class ModelChecker implements FormulaVisitor {
 
             for (Result r : innerResult) {
                 if (successors.contains(r.getState())) {
-                    resultSet.add(new Result(s, r.getEnvironment(), emptyWitnessForest()));
+                    resultSet.add(new Result(s, r.getEnvironment(), r.getWitnesses()));
                 }
             }
         }
@@ -388,18 +388,10 @@ public class ModelChecker implements FormulaVisitor {
 
         for (int s : canOnlyTransition) {
             List<Integer> successors = model.getSuccessors(s);
-            Set<Witness> witnesses = emptyWitnessForest();
-
-            // build joint witness forest for all successors
-            for (Result r : innerResultSet) {
-                if (successors.contains(r.getState())) {
-                    witnesses.addAll(r.getWitnesses());
-                }
-            }
 
             for (Result r : innerResultSet) {
                 if (successors.contains(r.getState())) {
-                    resultSet.add(new Result(s, r.getEnvironment(), witnesses));
+                    resultSet.add(new Result(s, r.getEnvironment(), r.getWitnesses()));
                 }
             }
         }
@@ -413,36 +405,26 @@ public class ModelChecker implements FormulaVisitor {
      */
     @Override
     public void visit(ExistsUntil element) {
-        Set<Witness> witnesses = emptyWitnessForest();
-
         // find the states that satisfy X in E[X U Y]
         element.getLhs().accept(this);
         ResultSet satX = resultStack.pop();
 
-        witnesses.addAll(satX.getAllWitnesses());
-
         // find the states that satisfy Y in E[X U Y], these also satisfy E[X U Y] for any X
         element.getRhs().accept(this);
-        ResultSet satY  = resultStack.pop();
-
-        witnesses.addAll(satY.getAllWitnesses());
-
-        ResultSet resultSet = new ResultSet();
-
-        for (Result r : satY) {
-            resultSet.add(new Result(r.getState(), r.getEnvironment(), witnesses));
-        }
+        ResultSet resultSet  = resultStack.pop();
 
         while (true) {
-            // find the states that can POSSIBLY transition into a state known to satisfy E[X U Y]
+            // find the states that CAN transition into a state known to satisfy E[X U Y]
             Set<Integer> satisfyingStates = resultSet.getIncludedStates();
-            Set<Integer> canOnlyTransition = ModelChecker.preExists(model, satisfyingStates);
+
+            Set<Integer> canTransition = ModelChecker.preExists(model, satisfyingStates);
+            canTransition.removeAll(satisfyingStates);
 
             ResultSet pre = new ResultSet();
 
             for (Result r : resultSet) {
-                for (int s : canOnlyTransition) {
-                    pre.add(new Result(s, r.getEnvironment(), witnesses));
+                for (int s : canTransition) {
+                    pre.add(new Result(s, r.getEnvironment(), r.getWitnesses()));
                 }
             }
 
@@ -464,36 +446,26 @@ public class ModelChecker implements FormulaVisitor {
      */
     @Override
     public void visit(AllUntil element) {
-        Set<Witness> witnesses = emptyWitnessForest();
-
         // find the states that satisfy X in A[X U Y]
         element.getLhs().accept(this);
         ResultSet satX = resultStack.pop();
 
-        witnesses.addAll(satX.getAllWitnesses());
-
         // find the states that satisfy Y in A[X U Y], these also satisfy A[X U Y] for any X
         element.getRhs().accept(this);
-        ResultSet satY  = resultStack.pop();
-
-        witnesses.addAll(satY.getAllWitnesses());
-
-        ResultSet resultSet = new ResultSet();
-
-        for (Result r : satY) {
-            resultSet.add(new Result(r.getState(), r.getEnvironment(), witnesses));
-        }
+        ResultSet resultSet  = resultStack.pop();
 
         while (true) {
             // find the states that can ONLY transition into a state known to satisfy A[X U Y]
             Set<Integer> satisfyingStates = resultSet.getIncludedStates();
+
             Set<Integer> canOnlyTransition = ModelChecker.preAll(model, satisfyingStates);
+            canOnlyTransition.removeAll(satisfyingStates);
 
             ResultSet pre = new ResultSet();
 
             for (Result r : resultSet) {
                 for (int s : canOnlyTransition) {
-                    pre.add(new Result(s, r.getEnvironment(), witnesses));
+                    pre.add(new Result(s, r.getEnvironment(), r.getWitnesses()));
                 }
             }
 

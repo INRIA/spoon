@@ -89,7 +89,8 @@ public class WitnessesTest {
 
         phi.accept(checker);
 
-        assertEquals(new HashSet<>(asList(witness(4, "v1", x, witness(8, "c", one), witness(11, "c", zero)))),
+        assertEquals(new HashSet<>(asList(witness(4, "v1", x, witness(8, "c", one)),
+                                          witness(4, "v1", x, witness(11, "c", zero)))),
                      checker.getResult().getAllWitnesses());
 
     }
