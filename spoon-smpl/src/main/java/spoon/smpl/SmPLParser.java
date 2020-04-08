@@ -18,13 +18,25 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-
-
+/**
+ * SmPLParser contains methods for rewriting SmPL text input to an SmPL Java DSL (domain-specific language)
+ * and to compile this DSL into an SmPLRule instance.
+ */
 public class SmPLParser {
+    /**
+     * Parse an SmPL rule given in plain text.
+     * @param smpl SmPL rule in plain text
+     * @return SmPLRule instance corresponding to input
+     */
     public static SmPLRule parse(String smpl) {
         return compile(Launcher.parseClass(rewrite(smpl)));
     }
 
+    /**
+     * Compile a given AST in the SmPL Java DSL.
+     * @param ast AST to compile
+     * @return SmPLRule instance
+     */
     public static SmPLRule compile(CtClass<?> ast) {
         String ruleName = null;
 
@@ -154,9 +166,24 @@ public class SmPLParser {
         }
     }
 
+    /**
+     * Format text for pretty-printing.
+     * @param text Text to format
+     * @return Formatted text
+     */
     public static String prettify(String text) {
         return prettify(text, '{', '}', 4, false);
     }
+
+    /**
+     * Format text for pretty-printing.
+     * @param text Text to format
+     * @param open Indentation-increasing character
+     * @param close Indentation-decreasing character
+     * @param indentSize Indentation size
+     * @param addNewlines Add newlines after indentation-altering characters?
+     * @return Formatted text
+     */
     public static String prettify(String text, char open, char close, int indentSize, boolean addNewlines) {
         StringBuilder result = new StringBuilder();
 
@@ -202,6 +229,11 @@ public class SmPLParser {
         return result.toString();
     }
 
+    /**
+     * Rewrite an SmPL rule given in plain text into an SmPL Java DSL.
+     * @param text SmPL rule in plain text
+     * @return Plain text Java code in SmPL Java DSL
+     */
     public static String rewrite(String text) {
         class Result {
             public Result() {
