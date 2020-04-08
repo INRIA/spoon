@@ -41,9 +41,9 @@ public class SmPLParser {
         String ruleName = null;
 
         if (ast.getDeclaredField("__SmPLRuleName__") != null) {
-            ruleName = ((CtLiteral) ast.getDeclaredField("__SmPLRuleName__")
-                                       .getFieldDeclaration()
-                                       .getAssignment()).getValue().toString();
+            ruleName = ((CtLiteral<?>) ast.getDeclaredField("__SmPLRuleName__")
+                                          .getFieldDeclaration()
+                                          .getAssignment()).getValue().toString();
         }
 
         Map<String, MetavariableConstraint> metavars = new HashMap<>();
