@@ -5,6 +5,8 @@ import fr.inria.controlflow.ControlFlowGraph;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.smpl.formula.Formula;
+import spoon.smpl.formula.SubformulaCollector;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -31,7 +33,13 @@ public class CommandlineApplication {
         System.out.println("        check        run model checker");
         System.out.println("                     requires --smpl-file and --java-file");
         System.out.println();
+        System.out.println("        checksub     run model checker on every subformula");
+        System.out.println("                     requires --smpl-file and --java-file");
+        System.out.println();
         System.out.println("        rewrite      rewrite SmPL input");
+        System.out.println("                     requires --smpl-file");
+        System.out.println();
+        System.out.println("        ctl          compile and print CTL formula");
         System.out.println("                     requires --smpl-file");
         System.out.println();
         System.out.println("    ARGs:");
@@ -40,7 +48,7 @@ public class CommandlineApplication {
         System.out.println();
     }
 
-    enum Action { MODELCHECK, REWRITE, PATCH };
+    enum Action { CHECK, CHECKSUB, REWRITE, PATCH, CTL };
     enum ArgumentState { BASE, FAIL, ACTION, FILENAME_SMPL, FILENAME_JAVA };
 
     public static void main(String[] args) {
@@ -58,13 +66,19 @@ public class CommandlineApplication {
             switch (argumentState) {
                 case ACTION:
                     if (arg.equals("check")) {
-                        action = Action.MODELCHECK;
+                        action = Action.CHECK;
+                        argumentState = ArgumentState.BASE;
+                    } else if (arg.equals("checksub")) {
+                        action = Action.CHECKSUB;
                         argumentState = ArgumentState.BASE;
                     } else if (arg.equals("rewrite")) {
                         action = Action.REWRITE;
                         argumentState = ArgumentState.BASE;
                     } else if (arg.equals("patch")) {
                         action = Action.PATCH;
+                        argumentState = ArgumentState.BASE;
+                    } else if (arg.equals("ctl")) {
+                        action = Action.CTL;
                         argumentState = ArgumentState.BASE;
                     } else {
                         argumentState = ArgumentState.FAIL;
@@ -92,13 +106,13 @@ public class CommandlineApplication {
             }
         }
 
-        if (argumentState != ArgumentState.BASE) {
+        if (action == null || argumentState != ArgumentState.BASE) {
             usage();
 
             System.exit(args.length > 0 ? 1 : 0);
         }
 
-        if (action == Action.MODELCHECK || action == Action.PATCH) {
+        if (action == Action.CHECK || action == Action.CHECKSUB ||  action == Action.PATCH) {
             if (smplFilename != null && javaFilename != null) {
                 try {
                     SmPLRule smplRule = SmPLParser.parse(readFile(smplFilename, StandardCharsets.UTF_8));
@@ -113,14 +127,29 @@ public class CommandlineApplication {
                         CFGModel model = new CFGModel(cfg);
                         ModelChecker modelChecker = new ModelChecker(model);
 
-                        smplRule.getFormula().accept(modelChecker);
-
-                        if (action == Action.MODELCHECK) {
+                        if (action == Action.CHECKSUB) {
                             System.out.println(method.getSimpleName());
                             System.out.println(cfg.toGraphVisText());
-                            System.out.println(modelChecker.getResult());
-                        } else if (action == Action.PATCH) {
-                            Transformer.transform(model, modelChecker.getResult().getAllWitnesses());
+
+                            SubformulaCollector subformulas = new SubformulaCollector();
+                            smplRule.getFormula().accept(subformulas);
+
+                            for (Formula phi : subformulas.getResult()) {
+                                phi.accept(modelChecker);
+
+                                System.out.println(phi);
+                                System.out.println(modelChecker.getResult());
+                            }
+                        } else {
+                            smplRule.getFormula().accept(modelChecker);
+
+                            if (action == Action.CHECK) {
+                                System.out.println(method.getSimpleName());
+                                System.out.println(cfg.toGraphVisText());
+                                System.out.println(modelChecker.getResult());
+                            } else if (action == Action.PATCH) {
+                                Transformer.transform(model, modelChecker.getResult().getAllWitnesses());
+                            }
                         }
                     }
 
@@ -150,6 +179,21 @@ public class CommandlineApplication {
                 }
             } else {
                 System.out.println("rewrite: Missing file name");
+                System.out.println();
+                usage();
+                System.exit(1);
+            }
+        } else if (action == Action.CTL) {
+            if (smplFilename != null) {
+                try {
+                    System.out.println(SmPLParser.parse(readFile(smplFilename, StandardCharsets.UTF_8)).getFormula());
+                    System.exit(0);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+            } else {
+                System.out.println("ctl: Missing file name");
                 System.out.println();
                 usage();
                 System.exit(1);
