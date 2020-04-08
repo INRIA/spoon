@@ -96,7 +96,8 @@ public class SmPLParser {
         }
 
         if (ruleMethod == null) {
-            throw new IllegalArgumentException("Unable to find rule method in input");
+            // A completely empty rule matches nothing
+            return new SmPLRuleImpl(new Neg(new True()), metavars);
         }
 
         ControlFlowBuilder cfgBuilder = new ControlFlowBuilder();
