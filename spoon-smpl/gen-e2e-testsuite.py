@@ -129,7 +129,7 @@ def test_from_file(filename):
     output.append("        CFGModel model = new CFGModel(methodCfg(method));")
     output.append("        ModelChecker checker = new ModelChecker(model);")
     output.append("        rule.getFormula().accept(checker);")
-    output.append("        Transformer.transform(model, checker.getResult());")
+    output.append("        Transformer.transform(model, checker.getResult().getAllWitnesses());")
     output.append("    });")
     output.append("")
     
