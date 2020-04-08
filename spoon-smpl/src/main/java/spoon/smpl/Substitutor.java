@@ -396,7 +396,7 @@ public class Substitutor implements CtVisitor {
 
     @Override
     public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
-        throw new NotImplementedException("Not implemented");
+        operator.getOperand().accept(this);
     }
 
     @Override
@@ -421,7 +421,19 @@ public class Substitutor implements CtVisitor {
 
     @Override
     public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
-        throw new NotImplementedException("Not implemented");
+        String varname = fieldRead.getVariable().getSimpleName();
+
+        if (!bindings.containsKey(varname)) {
+            return;
+        }
+
+        Object boundValue = bindings.get(varname);
+
+        if (boundValue instanceof CtVariableReference<?>) {
+            fieldRead.getVariable().setSimpleName(((CtVariableReference<?>) bindings.get(varname)).getSimpleName());
+        } else if (boundValue instanceof CtExpression<?>) {
+            fieldRead.replace((CtExpression<?>) boundValue);
+        }
     }
 
     @Override
