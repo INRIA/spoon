@@ -40,11 +40,24 @@ public class TestUtils {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     public static ModelChecker.ResultSet res(Object ... xs) {
         ModelChecker.ResultSet resultSet = new ModelChecker.ResultSet();
 
-        for (int i = 0; i < xs.length; i += 2) {
-            resultSet.add(new ModelChecker.Result((Integer) xs[i], (Environment) xs[i+1], new HashSet<>()));
+        int i = 0;
+
+        while (true) {
+            if (i+1 >= xs.length) {
+                break;
+            }
+
+            if (i+2 < xs.length && xs[i+2] instanceof Set<?>) {
+                resultSet.add(new ModelChecker.Result((Integer) xs[i], (Environment) xs[i+1], (Set<ModelChecker.Witness>) xs[i+2]));
+                i += 3;
+            } else {
+                resultSet.add(new ModelChecker.Result((Integer) xs[i], (Environment) xs[i+1], new HashSet<>()));
+                i += 2;
+            }
         }
 
         return resultSet;

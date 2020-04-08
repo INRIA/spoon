@@ -4,13 +4,11 @@ import fr.inria.controlflow.BranchKind;
 import fr.inria.controlflow.ControlFlowBuilder;
 import fr.inria.controlflow.ControlFlowGraph;
 import fr.inria.controlflow.ControlFlowNode;
-import org.apache.commons.lang3.NotImplementedException;
 import spoon.Launcher;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.smpl.formula.*;
 import spoon.smpl.metavars.*;
-import spoon.smpl.pattern.*;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -105,66 +103,11 @@ public class SmPLParser {
         cfg.simplify();
         ControlFlowNode startNode = cfg.findNodesOfKind(BranchKind.BEGIN).get(0).next().get(0);
 
-        SmPLRule rule = new SmPLRuleImpl(compileFormula(startNode, metavars), metavars);
+        FormulaCompiler fc = new FormulaCompiler(metavars);
+        SmPLRule rule = new SmPLRuleImpl(fc.compileFormula(startNode), metavars);
         rule.setName(ruleName);
 
         return rule;
-    }
-
-    public static Formula compileFormula(ControlFlowNode node, Map<String, MetavariableConstraint> metavars) {
-        if (node.getKind() == BranchKind.EXIT) {
-            return null;
-        }
-
-        PatternBuilder patternBuilder = new PatternBuilder(new ArrayList<String>(metavars.keySet()));
-
-        switch (node.next().size()) {
-            case 0:
-                throw new IllegalArgumentException("Control flow node with no outgoing path");
-
-            case 1:
-                switch (node.getKind()) {
-                    case STATEMENT:
-                        node.getStatement().accept(patternBuilder);
-                        StatementPattern formula = new StatementPattern(patternBuilder.getResult(), metavars);
-                        formula.setStringRepresentation(node.getStatement().toString());
-
-                        Formula innerFormula = compileFormula(node.next().get(0), metavars);
-
-                        if (innerFormula == null) {
-                            return formula;
-                        } else {
-                            return new And(formula, new AllNext(innerFormula));
-                        }
-
-                    case BRANCH:
-                        throw new NotImplementedException("Not implemented");
-
-                    default:
-                        throw new IllegalArgumentException("Unexpected control flow node kind for single successor: " + node.getKind().toString());
-                }
-
-            default:
-                switch (node.getKind()) {
-                    case STATEMENT:
-                        throw new NotImplementedException("Not implemented");
-
-                    case BRANCH:
-                        node.getStatement().accept(patternBuilder);
-                        PatternNode cond = patternBuilder.getResult();
-                        Class<? extends CtElement> branchType = node.getStatement().getParent().getClass();
-
-                        BranchPattern formula = new BranchPattern(cond, branchType, metavars);
-                        formula.setStringRepresentation(node.getStatement().toString());
-
-                        return new And(formula,
-                                       new AllNext(new Or(compileFormula(node.next().get(0), metavars),
-                                                          compileFormula(node.next().get(1), metavars))));
-
-                    default:
-                        throw new IllegalArgumentException("Unexpected control flow node kind for multiple successors: " + node.getKind().toString());
-                }
-        }
     }
 
     /**

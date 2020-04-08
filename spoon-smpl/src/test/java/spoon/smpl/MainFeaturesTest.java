@@ -4,6 +4,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+
+import static java.util.Arrays.asList;
+
 import static spoon.smpl.TestUtils.*;
 
 /**
@@ -46,9 +49,13 @@ public class MainFeaturesTest {
 
         SmPLRule rule = SmPLParser.parse(smplString);
         ModelChecker modelChecker = new ModelChecker(model);
-
         rule.getFormula().accept(modelChecker);
 
-        assertEquals("[(4, {C=5, T=int, ret=y}, [])]", sortedEnvs(modelChecker.getResult().toString()));
+        ModelChecker.ResultSet result = modelChecker.getResult();
+
+        assertEquals(1, result.size());
+        assertEquals(4, result.iterator().next().getState());
+        assertEquals(env(), result.iterator().next().getEnvironment());
+        assertEquals("[<4, T, int, [<4, ret, y, [<5, C, 5, []>]>]>]", result.getAllWitnesses().toString());
     }
 }
