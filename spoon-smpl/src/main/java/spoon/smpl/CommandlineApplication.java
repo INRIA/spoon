@@ -3,6 +3,8 @@ package spoon.smpl;
 import fr.inria.controlflow.ControlFlowBuilder;
 import fr.inria.controlflow.ControlFlowGraph;
 import spoon.Launcher;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -23,6 +25,9 @@ public class CommandlineApplication {
         System.out.println("smplcli ACTION [ARG [ARG ..]]");
         System.out.println();
         System.out.println("    ACTIONs:");
+        System.out.println("        patch        apply SmPL patch");
+        System.out.println("                     requires --smpl-file and --java-file");
+        System.out.println();
         System.out.println("        check        run model checker");
         System.out.println("                     requires --smpl-file and --java-file");
         System.out.println();
@@ -35,7 +40,7 @@ public class CommandlineApplication {
         System.out.println();
     }
 
-    enum Action { MODELCHECK, REWRITE };
+    enum Action { MODELCHECK, REWRITE, PATCH };
     enum ArgumentState { BASE, FAIL, ACTION, FILENAME_SMPL, FILENAME_JAVA };
 
     public static void main(String[] args) {
@@ -57,6 +62,9 @@ public class CommandlineApplication {
                         argumentState = ArgumentState.BASE;
                     } else if (arg.equals("rewrite")) {
                         action = Action.REWRITE;
+                        argumentState = ArgumentState.BASE;
+                    } else if (arg.equals("patch")) {
+                        action = Action.PATCH;
                         argumentState = ArgumentState.BASE;
                     } else {
                         argumentState = ArgumentState.FAIL;
@@ -90,28 +98,35 @@ public class CommandlineApplication {
             System.exit(args.length > 0 ? 1 : 0);
         }
 
-        if (action == Action.MODELCHECK) {
+        if (action == Action.MODELCHECK || action == Action.PATCH) {
             if (smplFilename != null && javaFilename != null) {
                 try {
                     SmPLRule smplRule = SmPLParser.parse(readFile(smplFilename, StandardCharsets.UTF_8));
 
-                    Launcher.parseClass(readFile(javaFilename, StandardCharsets.UTF_8))
-                            .getMethods()
-                            .forEach((mth) -> {
-                                System.out.println(mth.getSimpleName());
+                    CtClass<?> inputClass = Launcher.parseClass(readFile(javaFilename, StandardCharsets.UTF_8));
 
-                                ControlFlowBuilder cfgBuilder = new ControlFlowBuilder();
-                                ControlFlowGraph cfg = cfgBuilder.build(mth);
-                                cfg.simplify();
+                    for (CtMethod<?> method : inputClass.getMethods()) {
+                        ControlFlowBuilder cfgBuilder = new ControlFlowBuilder();
+                        ControlFlowGraph cfg = cfgBuilder.build(method);
+                        cfg.simplify();
 
-                                System.out.println(cfg.toGraphVisText());
+                        CFGModel model = new CFGModel(cfg);
+                        ModelChecker modelChecker = new ModelChecker(model);
 
-                                Model model = new CFGModel(cfg);
-                                ModelChecker modelChecker = new ModelChecker(model);
+                        smplRule.getFormula().accept(modelChecker);
 
-                                smplRule.getFormula().accept(modelChecker);
-                                System.out.println(modelChecker.getResult());
-                            });
+                        if (action == Action.MODELCHECK) {
+                            System.out.println(method.getSimpleName());
+                            System.out.println(cfg.toGraphVisText());
+                            System.out.println(modelChecker.getResult());
+                        } else if (action == Action.PATCH) {
+                            Transformer.transform(model, modelChecker.getResult().getAllWitnesses());
+                        }
+                    }
+
+                    if (action == Action.PATCH) {
+                        System.out.println(inputClass);
+                    }
 
                     System.exit(0);
                 } catch (Exception e) {
