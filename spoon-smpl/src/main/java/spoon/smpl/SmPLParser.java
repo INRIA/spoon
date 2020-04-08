@@ -280,7 +280,7 @@ public class SmPLParser {
         init.add(new RewriteRule("atat_rulename", "(?s)^@\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*@",
                 (ctx) -> { ctx.pop(); ctx.push(metavars); },
                 (result, match) -> {
-                    result.out.append("String __SmPLRuleName__ = \"" + match.group(1) + "\";\n");
+                    result.out.append("String __SmPLRuleName__ = \"").append(match.group(1)).append("\";\n");
                     result.out.append("void __SmPLMetavars__() {\n");
                 }));
 
@@ -325,6 +325,7 @@ public class SmPLParser {
                     }
                 }));
 
+        // TODO: call this method header context instead?
         // Code context
         code.add(new RewriteRule("whitespace", "(?s)^\\s+",
                 (ctx) -> {},
@@ -345,6 +346,22 @@ public class SmPLParser {
                     result.hasMethodHeader = true;
                 }));
 
+        code.add(new RewriteRule("delete", "(?s)^[-]",
+                (ctx) -> { ctx.pop(); ctx.push(body); },
+                (result, match) -> {
+                    result.out.append("__SmPLUndeclared__ method() {\n");
+                    result.out.append("__SmPLDelete__();\n");
+                    result.hasMethodHeader = true;
+                }));
+
+        code.add(new RewriteRule("add", "(?s)^[+]",
+                (ctx) -> { ctx.pop(); ctx.push(body); },
+                (result, match) -> {
+                    result.out.append("__SmPLUndeclared__ method() {\n");
+                    result.out.append("__SmPLAdd__();\n");
+                    result.hasMethodHeader = true;
+                }));
+
         code.add(new RewriteRule("anychar", "(?s)^.",
                 (ctx) -> { ctx.pop(); ctx.push(body); },
                 (result, match) -> {
@@ -354,6 +371,22 @@ public class SmPLParser {
                 }));
 
         // Method body context
+        body.add(new RewriteRule("horizontal_whitespace", "(?s)^[^\\S\\r\\n]+",
+                (ctx) -> {},
+                (result, match) -> { result.out.append(match.group()); }));
+
+        body.add(new RewriteRule("newline_minus", "(?s)^(\\r?\\n)+[-]",
+                (ctx) -> {},
+                (result, match) -> { result.out.append("\n__SmPLDelete__();\n"); }));
+
+        body.add(new RewriteRule("newline_plus", "(?s)^(\\r?\\n)+[+]",
+                (ctx) -> {},
+                (result, match) -> { result.out.append("\n__SmPLAdd__();\n"); }));
+
+        body.add(new RewriteRule("newline_noop", "(?s)^(\\r?\\n)+(?=[^+-]|$)",
+                (ctx) -> {},
+                (result, match) -> { result.out.append(match.group()); }));
+
         body.add(new RewriteRule("dots", "(?s)^\\.\\.\\.",
                 (ctx) -> { ctx.push(dots); },
                 (result, match) -> { result.out.append("__SmPLDots__("); }));
@@ -363,7 +396,25 @@ public class SmPLParser {
                 (result, match) -> { result.out.append(match.group()); }));
 
         // Dots context
-        dots.add(new RewriteRule("whitespace", "(?s)^\\s+",
+        dots.add(new RewriteRule("horizontal_whitespace", "(?s)^[^\\S\\r\\n]+",
+                (ctx) -> {},
+                (result, match) -> {}));
+
+        dots.add(new RewriteRule("newline_minus", "(?s)^(\\r?\\n)+[-]",
+                (ctx) -> { ctx.pop(); },
+                (result, match) -> {
+                    result.out.append(");\n");
+                    result.out.append("__SmPLDelete__();\n");
+                }));
+
+        dots.add(new RewriteRule("newline_plus", "(?s)^(\\r?\\n)+[+]",
+                (ctx) -> { ctx.pop(); },
+                (result, match) -> {
+                    result.out.append(");\n");
+                    result.out.append("__SmPLAdd__();\n");
+                }));
+
+        dots.add(new RewriteRule("newline_noop", "(?s)^(\\r?\\n)+(?=[^+-]|$)",
                 (ctx) -> {},
                 (result, match) -> {}));
 
