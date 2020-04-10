@@ -97,7 +97,20 @@ public class FormulaCompiler {
         queuedOperations = new ArrayList<>();
         operationsAnchor = null;
 
-        return optimize(compileFormulaInner(cfg.findNodesOfKind(BranchKind.BEGIN).get(0).next().get(0)));
+        Formula result = compileFormulaInner(cfg.findNodesOfKind(BranchKind.BEGIN).get(0).next().get(0));
+        String prevStr = result.toString();
+
+        while (true) {
+            result = optimize(result);
+
+            if (result.toString().equals(prevStr)) {
+                break;
+            }
+
+            prevStr = result.toString();
+        }
+
+        return result;
     }
 
     /**
