@@ -22,4 +22,14 @@ public class DeleteOperationImpl implements DeleteOperation {
     public String toString() {
         return "Delete";
     }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return (other instanceof DeleteOperation && other.hashCode() == hashCode());
+    }
 }

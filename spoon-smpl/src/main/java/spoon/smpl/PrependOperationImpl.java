@@ -37,6 +37,16 @@ public class PrependOperationImpl implements PrependOperation {
         return "Append(" + elementToPrepend.toString() + ")";
     }
 
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return (other instanceof PrependOperation && other.hashCode() == hashCode());
+    }
+
     /**
      * Element to prepend.
      */

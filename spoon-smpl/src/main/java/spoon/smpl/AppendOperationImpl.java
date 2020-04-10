@@ -37,6 +37,16 @@ public class AppendOperationImpl implements AppendOperation {
         return "Append(" + elementToAppend.toString() + ")";
     }
 
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return (other instanceof AppendOperation && other.hashCode() == hashCode());
+    }
+
     /**
      * Element to append.
      */
