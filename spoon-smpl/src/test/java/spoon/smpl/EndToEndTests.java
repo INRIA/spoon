@@ -47,7 +47,7 @@ public class EndToEndTests {
     }
     @Test
     public void testAppendToContext() {
-        // contract: a patch should be able to append elements to a context line
+        // contract: a patch should be able to append elements to a context statement
 
         CtClass<?> input = Launcher.parseClass("class A {\n" +
                                                "    void m1() {\n" +
@@ -456,7 +456,7 @@ public class EndToEndTests {
     }
     @Test
     public void testPrependToContext() {
-        // contract: a patch should be able to prepend elements to a context line
+        // contract: a patch should be able to prepend elements to a context statement
 
         CtClass<?> input = Launcher.parseClass("class A {\n" +
                                                "    void m1() {\n" +

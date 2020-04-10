@@ -2,7 +2,7 @@
 AppendToContext
 
 [contract]
-a patch should be able to append elements to a context line
+a patch should be able to append elements to a context statement
 
 [input]
 class A {

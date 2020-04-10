@@ -2,7 +2,7 @@
 PrependToContext
 
 [contract]
-a patch should be able to prepend elements to a context line
+a patch should be able to prepend elements to a context statement
 
 [input]
 class A {
