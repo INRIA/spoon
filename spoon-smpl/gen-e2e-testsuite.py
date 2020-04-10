@@ -148,7 +148,7 @@ def gen_suite_tests(dirname, recursive):
     """
     output = list()
     
-    for f in os.listdir(dirname):
+    for f in sorted(os.listdir(dirname)):
         filename = "{}/{}".format(dirname, f)
         
         if os.path.isfile(filename):
