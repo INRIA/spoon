@@ -119,6 +119,8 @@ public class FormulaCompiler {
      * @return CTL-VW Formula
      */
     private Formula compileFormulaInner(ControlFlowNode node) {
+        Formula formula;
+
         if (node.getKind() == BranchKind.EXIT) {
             return null;
         }
@@ -133,22 +135,39 @@ public class FormulaCompiler {
                         return compileStatementFormula(node);
 
                     case BLOCK_BEGIN:
-                        if (!(node.getTag() instanceof String)) {
+                        if (!(node.getTag() instanceof SmPLCFGAdapter.NodeTag)) {
                             throw new IllegalArgumentException("invalid BLOCK_BEGIN tag for node " +
                                                                 Integer.toString(node.getId()));
                         }
 
-                        return new And(new Proposition((String) node.getTag()),
-                                       new AllNext(compileFormulaInner(node.next().get(0))));
+                        formula = new And(new Proposition(((SmPLCFGAdapter.NodeTag) node.getTag()).getLabel()),
+                                                  new ExistsVar("_v", new SetEnv("_v", new ArrayList<>())));
+
+                        operationsAnchor = formula;
+
+                        formula = new And(new And(formula,
+                                                  new AllNext(compileFormulaInner(node.next().get(0)))),
+                                          new ExistsVar("_v", new SetEnv("_v", new ArrayList<>())));
+
+                        operationsAnchor = formula;
+                        return formula;
 
                     case CONVERGE:
+                        formula = new And(new Proposition("after"),
+                                          new ExistsVar("_v", new SetEnv("_v", new ArrayList<>())));
+
+                        operationsAnchor = formula;
+
                         Formula innerFormula = compileFormulaInner(node.next().get(0));
 
                         if (innerFormula == null) {
-                            return new Proposition("after");
+                            return formula;
                         } else {
-                            return new And(new Proposition("after"),
-                                       new AllNext(innerFormula));
+                            formula = new And(new And(formula, new AllNext(innerFormula)),
+                                              new ExistsVar("_v", new SetEnv("_v", new ArrayList<>())));
+
+                            operationsAnchor = formula;
+                            return formula;
                         }
 
                     default:
@@ -166,8 +185,13 @@ public class FormulaCompiler {
                         PatternNode cond = patternBuilder.getResult();
                         Class<? extends CtElement> branchType = node.getStatement().getParent().getClass();
 
-                        Formula formula = new BranchPattern(cond, branchType, metavars);
+                        formula = new BranchPattern(cond, branchType, metavars);
                         ((BranchPattern) formula).setStringRepresentation(node.getStatement().toString());
+
+                        if (queuedOperations.size() > 0) {
+                            formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", queuedOperations)));
+                            queuedOperations = new ArrayList<>();
+                        }
 
                         // Mark first occurences of metavars as quantified before compiling inner formulas
                         List<String> newMetavars = getUnquantifiedMetavarsUsedIn(node.getStatement());

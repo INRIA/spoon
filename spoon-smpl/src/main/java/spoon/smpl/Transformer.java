@@ -1,5 +1,8 @@
 package spoon.smpl;
 
+import fr.inria.controlflow.BranchKind;
+import fr.inria.controlflow.ControlFlowNode;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,14 +52,32 @@ public class Transformer {
 
             // Process any PrependOperations in the list
             objects.stream().filter((obj) -> obj instanceof PrependOperation).forEachOrdered((obj) -> {
-                ((PrependOperation) obj).accept(model.getCfg().findNodeById(witness.state).getStatement(), bindings);
+                ControlFlowNode node = model.getCfg().findNodeById(witness.state);
+                BranchKind kind = node.getKind();
+
+                if (kind == BranchKind.STATEMENT) {
+                    ((PrependOperation) obj).accept(node.getStatement(), bindings);
+                } else if (kind == BranchKind.BRANCH || kind == BranchKind.BLOCK_BEGIN || kind == BranchKind.CONVERGE) {
+                    ((PrependOperation) obj).accept(((SmPLCFGAdapter.NodeTag) node.getTag()).getAnchor(), bindings);
+                } else {
+                    throw new IllegalArgumentException("unexpected node kind " + kind);
+                }
             });
 
             // Process any AppendOperations in the list, in reverse order to preserve correct output order
             objects.stream().filter((obj) -> obj instanceof AppendOperation)
                     .collect(Collectors.toCollection(LinkedList::new))
                     .descendingIterator().forEachRemaining((obj) -> {
-                        ((AppendOperation) obj).accept(model.getCfg().findNodeById(witness.state).getStatement(), bindings);
+                        ControlFlowNode node = model.getCfg().findNodeById(witness.state);
+                        BranchKind kind = node.getKind();
+
+                        if (kind == BranchKind.STATEMENT) {
+                            ((AppendOperation) obj).accept(node.getStatement(), bindings);
+                        } else if (kind == BranchKind.BRANCH || kind == BranchKind.BLOCK_BEGIN || kind == BranchKind.CONVERGE) {
+                            ((AppendOperation) obj).accept(((SmPLCFGAdapter.NodeTag) node.getTag()).getAnchor(), bindings);
+                        } else {
+                            throw new IllegalArgumentException("unexpected node kind " + kind);
+                        }
                     });
 
             // Process any DeleteOperations in the list

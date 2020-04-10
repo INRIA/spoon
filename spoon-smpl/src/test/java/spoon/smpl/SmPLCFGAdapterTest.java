@@ -88,7 +88,8 @@ public class SmPLCFGAdapterTest {
                 assertEquals(1, cfg.incomingEdgesOf(node).size());
                 ControlFlowNode ancestor = cfg.incomingEdgesOf(node).iterator().next().getSourceNode();
                 assertEquals(BranchKind.BLOCK_BEGIN, ancestor.getKind());
-                assertEquals("trueBranch", ancestor.getTag());
+                assertTrue(ancestor.getTag() instanceof SmPLCFGAdapter.NodeTag);
+                assertEquals("trueBranch", ((SmPLCFGAdapter.NodeTag) ancestor.getTag()).getLabel());
             }
 
             if (node.getStatement().toString().equals("int z = 2")) {
@@ -96,7 +97,8 @@ public class SmPLCFGAdapterTest {
                 assertEquals(1, cfg.incomingEdgesOf(node).size());
                 ControlFlowNode ancestor = cfg.incomingEdgesOf(node).iterator().next().getSourceNode();
                 assertEquals(BranchKind.BLOCK_BEGIN, ancestor.getKind());
-                assertEquals("falseBranch", ancestor.getTag());
+                assertTrue(ancestor.getTag() instanceof SmPLCFGAdapter.NodeTag);
+                assertEquals("falseBranch", ((SmPLCFGAdapter.NodeTag) ancestor.getTag()).getLabel());
             }
         }
 

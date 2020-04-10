@@ -58,7 +58,7 @@ public class CFGModel implements Model {
                     labels.get(state).add(new PropositionLabel("after"));
                     break;
                 case BLOCK_BEGIN:
-                    labels.get(state).add(new PropositionLabel((String) node.getTag()));
+                    labels.get(state).add(new PropositionLabel(((SmPLCFGAdapter.NodeTag) node.getTag()).getLabel()));
                     break;
                 case EXIT: // Allowed to be present
                     break;
