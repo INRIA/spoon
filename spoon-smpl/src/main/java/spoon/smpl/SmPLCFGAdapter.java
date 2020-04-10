@@ -1,10 +1,8 @@
 package spoon.smpl;
 
-import fr.inria.controlflow.BranchKind;
-import fr.inria.controlflow.ControlFlowEdge;
-import fr.inria.controlflow.ControlFlowGraph;
-import fr.inria.controlflow.ControlFlowNode;
+import fr.inria.controlflow.*;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.declaration.CtMethod;
 
 import java.util.List;
 import java.util.Set;
@@ -21,6 +19,18 @@ import java.util.Set;
  * 4) All CONVERGE nodes with single successor being another CONVERGE node are removed.
  */
 public class SmPLCFGAdapter {
+    /**
+     * Create a new SmPL-adapted CFG from a given method element.
+     * @param method Method for which to generate an SmPL-adapted CFG
+     */
+    public SmPLCFGAdapter(CtMethod<?> method) {
+        this(new ControlFlowBuilder().build(method.getBody()));
+    }
+
+    /**
+     * Create a new SmPL-adapted CFG from a given unsimplified generic CFG.
+     * @param cfg CFG to adapt
+     */
     public SmPLCFGAdapter(ControlFlowGraph cfg) {
         this.cfg = cfg;
 
