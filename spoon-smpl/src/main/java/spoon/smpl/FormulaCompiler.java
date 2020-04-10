@@ -22,6 +22,7 @@ public class FormulaCompiler {
     public FormulaCompiler(SmPLCFGAdapter cfg) { this(cfg, new HashMap<>()); }
     /**
      * Create a new FormulaCompiler.
+     * @param cfg SmPL-adapted CFG to produce formula from
      * @param metavars Metavariable names and their constraints
      */
     public FormulaCompiler(SmPLCFGAdapter cfg, Map<String, MetavariableConstraint> metavars) {
@@ -88,8 +89,7 @@ public class FormulaCompiler {
     }
 
     /**
-     * Compile a CTL-VW Formula.
-     * @param node First node of control flow graph to generate formula for
+     * Compile the CTL-VW Formula.
      * @return CTL-VW Formula
      */
     public Formula compileFormula() {
