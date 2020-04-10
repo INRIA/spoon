@@ -98,16 +98,11 @@ public class FormulaCompiler {
         operationsAnchor = null;
 
         Formula result = compileFormulaInner(cfg.findNodesOfKind(BranchKind.BEGIN).get(0).next().get(0));
-        String prevStr = result.toString();
+        String prevStr = "";
 
-        while (true) {
-            result = optimize(result);
-
-            if (result.toString().equals(prevStr)) {
-                break;
-            }
-
+        while (!prevStr.equals(result.toString())) {
             prevStr = result.toString();
+            result = optimize(result);
         }
 
         return result;
