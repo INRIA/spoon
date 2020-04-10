@@ -8,6 +8,9 @@ import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.smpl.formula.*;
 
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -21,6 +24,9 @@ public class CFGModelTest {
 
     @Test
     public void testSimple() {
+
+        // contract: CFGModel should produce a checkable model from a given CFG
+
         CtMethod<?> method = parseMethod("int m() { int x = 1; return x + 1; }");
         CFGModel model = new CFGModel(methodCfg(method));
 
@@ -37,6 +43,9 @@ public class CFGModelTest {
 
     @Test
     public void testBranch() {
+
+        // TODO: split this test into multiple tests with clear contracts
+
         CtMethod<?> method = parseMethod("int m() { int x = 8; if (x > 0) { return 1; } else { return 0; } }");
         CFGModel model = new CFGModel(methodCfg(method));
 
@@ -47,32 +56,30 @@ public class CFGModelTest {
 
         phi = new BranchPattern(makePattern(parseExpression("x > 0")), CtIf.class);
         phi.accept(checker);
-        //System.out.println(model.getCfg().toGraphVisText());
         assertEquals(res(5, env()), checker.getResult());
 
         phi = new And(new BranchPattern(makePattern(parseExpression("x > 0")), CtIf.class),
-                      new ExistsNext(new StatementPattern(makePattern(parseStatement("return 0;")))));
+                      new ExistsNext(new And(new Proposition("falseBranch"),
+                                             new AllNext(new StatementPattern(makePattern(parseStatement("return 0;")))))));
         phi.accept(checker);
-        //System.out.println(model.getCfg().toGraphVisText());
         assertEquals(res(5, env()), checker.getResult());
 
         phi = new And(new BranchPattern(makePattern(parseExpression("x > 0")), CtIf.class),
                 new AllNext(new StatementPattern(makePattern(parseStatement("return 0;")))));
         phi.accept(checker);
-        //System.out.println(model.getCfg().toGraphVisText());
         assertEquals(res(), checker.getResult());
 
         phi = new Or(new StatementPattern(makePattern(parseStatement("return 1;"))),
                         new StatementPattern(makePattern(parseStatement("return 0;"))));
         phi.accept(checker);
-        //System.out.println(model.getCfg().toGraphVisText());
         assertEquals(res(8, env(), 11, env()), checker.getResult());
 
         phi = new And(new BranchPattern(makePattern(parseExpression("x > 0")), CtIf.class),
-                new AllNext(new Or(new StatementPattern(makePattern(parseStatement("return 1;"))),
-                                   new StatementPattern(makePattern(parseStatement("return 0;"))))));
+                new AllNext(new Or(new And(new Proposition("trueBranch"),
+                                           new AllNext(new StatementPattern(makePattern(parseStatement("return 1;"))))),
+                                   new And(new Proposition("falseBranch"),
+                                           new AllNext(new StatementPattern(makePattern(parseStatement("return 0;"))))))));
         phi.accept(checker);
-        //System.out.println(model.getCfg().toGraphVisText());
         assertEquals(res(5, env()), checker.getResult());
     }
 
@@ -108,7 +115,7 @@ public class CFGModelTest {
     @Test
     public void testBranchAnnotations() {
 
-        // contract: a CFGModel should annotate the first statement in a branch
+        // contract: a CFGModel should annotate branches with proposition labels
 
         Model model = new CFGModel(methodCfg(parseMethod("int foo(int n) {     \n" +
                                                          "    if (n > 0) {     \n" +
@@ -118,8 +125,27 @@ public class CFGModelTest {
                                                          "    }                \n" +
                                                          "}                    \n")));
 
-        assertTrue(model.getLabels(7).contains(new PropositionLabel("trueBranch")));
-        assertTrue(model.getLabels(10).contains(new PropositionLabel("falseBranch")));
+        for (int state : model.getStates()) {
+            for (Label label : model.getLabels(state)) {
+                if (label instanceof StatementLabel) {
+                    StatementLabel stmLabel = (StatementLabel) label;
+
+                    if (stmLabel.getStatement().toString().equals("return 1")) {
+                        for (int otherState : model.getStates()) {
+                            if (model.getSuccessors(otherState).contains(state)) {
+                                assertTrue(model.getLabels(otherState).contains(new PropositionLabel("trueBranch")));
+                            }
+                        }
+                    } else if (stmLabel.getStatement().toString().equals("return 0")) {
+                        for (int otherState : model.getStates()) {
+                            if (model.getSuccessors(otherState).contains(state)) {
+                                assertTrue(model.getLabels(otherState).contains(new PropositionLabel("falseBranch")));
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Test
@@ -135,7 +161,36 @@ public class CFGModelTest {
                                                          "    }                \n" +
                                                          "}                    \n")));
 
-        assertTrue(model.toString().contains("states=[1, 4, 7, 10]"));
-        assertTrue(model.toString().contains("successors={1->1, 4->7, 4->10, 7->1, 10->1}"));
+        Pattern regex = Pattern.compile("labels=\\{(\\d+): \\[\\], (\\d+): \\[if \\(n > 0\\)\\], (\\d+): \\[after\\], " +
+                                        "(\\d+): \\[trueBranch\\], (\\d+): \\[return 1\\], (\\d+): \\[falseBranch\\], " +
+                                        "(\\d+): \\[return 0\\]}");
+
+        Matcher matcher = regex.matcher(model.toString());
+        assertTrue(matcher.find());
+
+        String exit = matcher.group(1);
+        String ifstm = matcher.group(2);
+        String after = matcher.group(3);
+        String truebranch = matcher.group(4);
+        String retone = matcher.group(5);
+        String falsebranch = matcher.group(6);
+        String retzero = matcher.group(7);
+
+        assertTrue(model.toString().contains("states=[" + exit + ", " +
+                                                          ifstm + ", " +
+                                                          after + ", " +
+                                                          truebranch + ", " +
+                                                          retone + ", " +
+                                                          falsebranch + ", " +
+                                                          retzero + "]"));
+
+        assertTrue(model.toString().contains("successors={" + exit + "->" + exit + ", " +
+                                                              ifstm + "->" + truebranch + ", " +
+                                                              ifstm + "->" + falsebranch + ", " +
+                                                              after + "->" + exit + ", " +
+                                                              truebranch + "->" + retone + ", " +
+                                                              retone + "->" + exit + ", " +
+                                                              falsebranch + "->" + retzero + ", " +
+                                                              retzero + "->" + exit + "}"));
     }
 }

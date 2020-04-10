@@ -1,7 +1,6 @@
 package spoon.smpl;
 
 import fr.inria.controlflow.ControlFlowBuilder;
-import fr.inria.controlflow.ControlFlowGraph;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
@@ -121,15 +120,14 @@ public class CommandlineApplication {
 
                     for (CtMethod<?> method : inputClass.getMethods()) {
                         ControlFlowBuilder cfgBuilder = new ControlFlowBuilder();
-                        ControlFlowGraph cfg = cfgBuilder.build(method);
-                        cfg.simplify();
+                        SmPLCFGAdapter cfg = new SmPLCFGAdapter(cfgBuilder.build(method));
 
                         CFGModel model = new CFGModel(cfg);
                         ModelChecker modelChecker = new ModelChecker(model);
 
                         if (action == Action.CHECKSUB) {
                             System.out.println(method.getSimpleName());
-                            System.out.println(cfg.toGraphVisText());
+                            System.out.println(model);
 
                             SubformulaCollector subformulas = new SubformulaCollector();
                             smplRule.getFormula().accept(subformulas);
@@ -145,7 +143,7 @@ public class CommandlineApplication {
 
                             if (action == Action.CHECK) {
                                 System.out.println(method.getSimpleName());
-                                System.out.println(cfg.toGraphVisText());
+                                System.out.println(model);
                                 System.out.println(modelChecker.getResult());
                             } else if (action == Action.PATCH) {
                                 Transformer.transform(model, modelChecker.getResult().getAllWitnesses());

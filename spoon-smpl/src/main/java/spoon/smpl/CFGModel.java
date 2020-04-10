@@ -1,37 +1,30 @@
 package spoon.smpl;
 
 import fr.inria.controlflow.BranchKind;
-import fr.inria.controlflow.ControlFlowGraph;
 import fr.inria.controlflow.ControlFlowNode;
-import spoon.reflect.code.CtIf;
 import spoon.reflect.declaration.CtElement;
-import spoon.smpl.formula.BranchPattern;
 
 import java.util.*;
 
 /**
- * A CFGModel builds a CTL model from a given CFG.
+ * A CFGModel builds a CTL model from a given SmPL-adapted CFG.
  */
 public class CFGModel implements Model {
     /**
-     * Create a new CTL model from a given CFG.
-     * @param cfg The ControlFlowGraph to use as a model, must have been simplified
+     * Create a new CTL model from a given SmPL-adapted CFG.
+     * @param cfg SmPL-adapted CFG to use as model
      */
-    public CFGModel(ControlFlowGraph cfg) {
-        if (cfg.findNodesOfKind(BranchKind.BLOCK_BEGIN).size() > 0) {
-            throw new IllegalArgumentException("The CFG must be simplified (see ControlFlowGraph::simplify)");
-        }
-
+    public CFGModel(SmPLCFGAdapter cfg) {
         this.cfg = cfg;
 
-        states = new ArrayList<Integer>();
-        successors = new HashMap<Integer, List<Integer>>();
-        labels = new HashMap<Integer, List<Label>>();
+        states = new ArrayList<>();
+        successors = new HashMap<>();
+        labels = new HashMap<>();
 
-        cfg.vertexSet().forEach(node -> {
+        for (ControlFlowNode node : cfg.vertexSet()) {
             if (node.getKind() == BranchKind.BEGIN) {
                 // Dont add a state for the BEGIN node
-                return;
+                continue;
             }
 
             int state = node.getId();
@@ -54,45 +47,25 @@ public class CFGModel implements Model {
             CtElement stmt = node.getStatement();
 
             // Add label
-            if (stmt != null) {
-                switch (node.getKind()) {
-                    case BRANCH:
-                        labels.get(state).add(new BranchLabel(stmt));
-                        break;
-                    case STATEMENT:
-                        labels.get(state).add(new StatementLabel(stmt));
-                        break;
-                    default:
-                        break;
-                }
+            switch (node.getKind()) {
+                case BRANCH:
+                    labels.get(state).add(new BranchLabel(stmt));
+                    break;
+                case STATEMENT:
+                    labels.get(state).add(new StatementLabel(stmt));
+                    break;
+                case CONVERGE:
+                    labels.get(state).add(new PropositionLabel("after"));
+                    break;
+                case BLOCK_BEGIN:
+                    labels.get(state).add(new PropositionLabel((String) node.getTag()));
+                    break;
+                case EXIT: // Allowed to be present
+                    break;
+                default:
+                    throw new IllegalStateException("unsupported kind " + node.getKind().toString());
             }
-        });
-
-        // Annotate branches
-        cfg.vertexSet().forEach(node -> {
-            if (node.getKind() != BranchKind.BRANCH) {
-                return;
-            }
-
-            int state = node.getId();
-
-            CtIf ifStmt = (CtIf) node.getStatement().getParent();
-            boolean hasElse = ifStmt.getElseStatement() != null;
-
-            for (ControlFlowNode next : node.next()) {
-                if (next.getStatement().getParent() == ifStmt.getThenStatement()) {
-                    labels.get(next.getId()).add(new PropositionLabel("trueBranch"));
-                } else if (hasElse && next.getStatement().getParent() == ifStmt.getElseStatement()) {
-                    labels.get(next.getId()).add(new PropositionLabel("falseBranch"));
-                }/* else {
-                    // TODO: do we need "after"? its a bit tricky for if-statements with (condition-less) else-stms
-                    // if we do need "after", perhaps it would be easier to use an unsimplified CFG and
-                    // use the convergence nodes. otherwise do an O(n²) search for first matching common
-                    // successor i guess
-                    labels.get(next.getId()).add(new PropositionLabel("after"));
-                }*/
-            }
-        });
+        }
     }
 
     /**
@@ -162,14 +135,14 @@ public class CFGModel implements Model {
     }
 
     /**
-     * @return the Control Flow Graph used to generate the model
+     * @return the SmPL-adapted CFG used to generate the model
      */
-    public ControlFlowGraph getCfg() { return cfg; }
+    public SmPLCFGAdapter getCfg() { return cfg; }
 
     /**
-     * The Control Flow Graph used to generate the model.
+     * The SmPL-adapted CFG used to generate the model.
      */
-    private ControlFlowGraph cfg;
+    private SmPLCFGAdapter cfg;
 
     /**
      * The set of state IDs.

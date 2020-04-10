@@ -1,9 +1,5 @@
 package spoon.smpl;
 
-import fr.inria.controlflow.BranchKind;
-import fr.inria.controlflow.ControlFlowBuilder;
-import fr.inria.controlflow.ControlFlowGraph;
-import fr.inria.controlflow.ControlFlowNode;
 import spoon.Launcher;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
@@ -98,13 +94,8 @@ public class SmPLParser {
             return new SmPLRuleImpl(new Neg(new True()), metavars);
         }
 
-        ControlFlowBuilder cfgBuilder = new ControlFlowBuilder();
-        ControlFlowGraph cfg = cfgBuilder.build(ruleMethod.getBody());
-        cfg.simplify();
-        ControlFlowNode startNode = cfg.findNodesOfKind(BranchKind.BEGIN).get(0).next().get(0);
-
-        FormulaCompiler fc = new FormulaCompiler(metavars);
-        SmPLRule rule = new SmPLRuleImpl(fc.compileFormula(startNode), metavars);
+        FormulaCompiler fc = new FormulaCompiler(new SmPLCFGAdapter(ruleMethod), metavars);
+        SmPLRule rule = new SmPLRuleImpl(fc.compileFormula(), metavars);
         rule.setName(ruleName);
 
         return rule;
@@ -275,7 +266,8 @@ public class SmPLParser {
                 (ctx) -> {},
                 (result, match) -> {}));
 
-        code.add(new RewriteRule("method_decl", "(?s)^((public|protected|private|static)\\s+)*(<[A-Za-z,\\s]+>)?\\s*[A-Za-z<>,\\s]+\\s*[A-Za-z]+\\s*\\([^\\{]+\\{",
+        // TODO: separate context for the signature
+        code.add(new RewriteRule("method_decl", "(?s)^[A-Za-z]+\\s+[A-Za-z]+\\s*\\([A-Za-z,\\s]*\\)\\s*\\{",
                 (ctx) -> { ctx.pop(); ctx.push(body); },
                 (result, match) -> {
                     result.out.append(match.group());
