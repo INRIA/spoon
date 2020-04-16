@@ -29,6 +29,7 @@ import java.util.List;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
@@ -280,6 +281,22 @@ public class TargetedExpressionTest {
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedBar).target(expectedBarTypeAccess).result("Bar.staticFieldBar"), elements.get(7));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedBar).target(expectedBarTypeAccess).result("Bar.staticFieldBar"), elements.get(8));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedFiiFuu).target(launcher.getFactory().Code().createTypeAccess(expectedFiiFuu)).result("Fii.Fuu.i"), elements.get(9));
+	}
+
+	@Test
+	public void testOnlyStaticTargetFieldReadNoClasspath() {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/targeted/StaticFieldReadOnly.java");
+		CtModel model = launcher.buildModel();
+
+		List<CtInvocation<?>> invocations = model.getElements(e -> e.getExecutable().getSimpleName().equals("error"));
+		CtInvocation<?> inv = invocations.get(0);
+		CtFieldRead<?> fieldRead = (CtFieldRead<?>) inv.getTarget();
+		CtExpression<?> target = fieldRead.getTarget();
+
+		assertTrue(target instanceof CtTypeAccess);
+		assertEquals("Launcher", ((CtTypeAccess<?>) target).getAccessedType().getSimpleName());
 	}
 
 	@Test
