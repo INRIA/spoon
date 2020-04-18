@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
-import java.rmi.activation.ActivateFailedException;
 import java.util.List;
 
 import org.junit.Test;
