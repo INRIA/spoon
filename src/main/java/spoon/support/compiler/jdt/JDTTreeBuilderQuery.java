@@ -8,14 +8,7 @@
 package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
-import org.eclipse.jdt.internal.compiler.ast.Annotation;
-import org.eclipse.jdt.internal.compiler.ast.Assignment;
-import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.Expression;
-import org.eclipse.jdt.internal.compiler.ast.ImportReference;
-import org.eclipse.jdt.internal.compiler.ast.OperatorIds;
-import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
-import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
@@ -206,6 +199,19 @@ class JDTTreeBuilderQuery {
 				.equals(CharOperation.subarray(qualifiedNameReference.tokens, 0, qualifiedNameReference.tokens.length - 1),
 						((FieldBinding) qualifiedNameReference.binding).declaringClass.compoundName);
 	}
+
+	/**
+	 * Check if the name reference is resolved in the JDT tree, i.e. that the declaration is available.
+	 *
+	 * @param qualifiedNameReference
+     * 		Reference which should contain a field binding.
+	 * @return true if the field has been resolved by the jdt builder.
+	 */
+	static boolean isResolvedField(QualifiedNameReference qualifiedNameReference) {
+		return qualifiedNameReference.binding instanceof FieldBinding
+				&& ((FieldBinding) qualifiedNameReference.binding).original().sourceField() != null;
+	}
+
 
 	/**
 	 * Checks if the last node in the stack in the context is an assignment and have a lhs equals to the given expression.
