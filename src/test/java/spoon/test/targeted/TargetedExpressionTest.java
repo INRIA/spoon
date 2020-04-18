@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
+import java.rmi.activation.ActivateFailedException;
 import java.util.List;
 
 import org.junit.Test;
@@ -299,6 +300,22 @@ public class TargetedExpressionTest {
 
 		assertTrue(target instanceof CtTypeAccess);
 		assertEquals("Launcher", ((CtTypeAccess<?>) target).getAccessedType().getSimpleName());
+	}
+
+	@Test
+	public void testNestedClassAccessEnclosingTypeFieldNoClasspath() {
+		// Checks that a nested class accessing a field of an enclosing type's non-static field correctly
+		// resolves to a non-static field access. See https://github.com/INRIA/spoon/issues/3334 for details.
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/targeted/Outer.java");
+		CtModel model = launcher.buildModel();
+
+		List<CtFieldRead<?>> fieldReads = model.getElements(e -> e.getVariable().getSimpleName().equals("cls"));
+		assertEquals(1, fieldReads.size());
+		CtFieldRead<?> fieldRead = fieldReads.get(0);
+
+		assertTrue(fieldRead.getTarget() instanceof CtThisAccess);
 	}
 
 	@Test
