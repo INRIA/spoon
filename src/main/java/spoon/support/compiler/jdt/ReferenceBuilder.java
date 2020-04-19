@@ -1079,7 +1079,7 @@ public class ReferenceBuilder {
 	}
 
 	private static boolean containsStarImport(ImportReference[] imports) {
-	    return imports != null && Arrays.stream(imports).anyMatch(imp -> imp.toString().endsWith("*"));
+		return imports != null && Arrays.stream(imports).anyMatch(imp -> imp.toString().endsWith("*"));
 	}
 
 	/**
