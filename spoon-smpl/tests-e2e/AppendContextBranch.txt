@@ -2,7 +2,7 @@
 AppendContextBranch
 
 [contract]
-a patch should be able to append elements to a context branch
+a patch should be able to append elements below a context branch
 
 [input]
 class A {

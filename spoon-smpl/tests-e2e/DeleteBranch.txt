@@ -1,0 +1,27 @@
+[name]
+DeleteBranch
+
+[contract]
+a patch should be able to delete a complete branch statement
+
+[input]
+class A {
+    void m1() {
+        if (true) {
+            int x = 0;
+        }
+    }
+}
+
+[expected]
+class A {
+    void m1() {
+    }
+}
+
+[patch]
+@@
+@@
+- if (true) {
+-     int x = 0;
+- }

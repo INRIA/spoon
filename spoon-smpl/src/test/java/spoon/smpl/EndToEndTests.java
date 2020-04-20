@@ -10,7 +10,7 @@ import static spoon.smpl.TestUtils.*;
 public class EndToEndTests {
     @Test
     public void testAppendContextBranch() {
-        // contract: a patch should be able to append elements to a context branch
+        // contract: a patch should be able to append elements below a context branch
 
         CtClass<?> input = Launcher.parseClass("class A {\n" +
                                                "    void m1() {\n" +
@@ -130,6 +130,214 @@ public class EndToEndTests {
                                          "  ...\n" +
                                          "- v1 = C;\n" +
                                          "+ v1 = C + 1;\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testDeleteBranch() {
+        // contract: a patch should be able to delete a complete branch statement
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        if (true) {\n" +
+                                               "            int x = 0;\n" +
+                                               "        }\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "@@\n" +
+                                         "- if (true) {\n" +
+                                         "-     int x = 0;\n" +
+                                         "- }\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testDeleteBranchInBranch() {
+        // contract: a patch should be able to delete a complete branch statement nested inside another branch
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        if (somevariable) {\n" +
+                                               "            before();\n" +
+                                               "            \n" +
+                                               "            if (true) {\n" +
+                                               "                int x = 0;\n" +
+                                               "            }\n" +
+                                               "            \n" +
+                                               "            after();\n" +
+                                               "        }\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        if (somevariable) {\n" +
+                                                  "            before();\n" +
+                                                  "            after();\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "@@\n" +
+                                         "- if (true) {\n" +
+                                         "-     int x = 0;\n" +
+                                         "- }\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testDeleteEnclosingBranch() {
+        // contract: a patch should be able to delete an enclosing branch statement while keeping inner context
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        if (true) {\n" +
+                                               "            int x = 0;\n" +
+                                               "        }\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    void m2() {\n" +
+                                               "        if (true) {\n" +
+                                               "            if (true) {\n" +
+                                               "                int x = 0;\n" +
+                                               "            }\n" +
+                                               "        }\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    void m3() {\n" +
+                                               "        if (false) {\n" +
+                                               "            if (true) {\n" +
+                                               "                int x = 0;\n" +
+                                               "            }\n" +
+                                               "        }\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        int x = 0;\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    void m2() {\n" +
+                                                  "        if (true) {\n" +
+                                                  "            int x = 0;\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    void m3() {\n" +
+                                                  "        if (false) {\n" +
+                                                  "            int x = 0;\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "@@\n" +
+                                         "- if (true) {\n" +
+                                         "      int x = 0;\n" +
+                                         "- }\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testDeleteEnclosingBranchDots() {
+        // contract: a patch should be able to delete an enclosing branch statement while keeping inner context
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        if (true) {\n" +
+                                               "            int x = 0;\n" +
+                                               "        }\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    void m2() {\n" +
+                                               "        if (true) {\n" +
+                                               "            if (true) {\n" +
+                                               "                int x = 0;\n" +
+                                               "            }\n" +
+                                               "        }\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    void m3() {\n" +
+                                               "        if (false) {\n" +
+                                               "            if (true) {\n" +
+                                               "                int x = 0;\n" +
+                                               "            }\n" +
+                                               "        }\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    void m4() {\n" +
+                                               "        if (true) {\n" +
+                                               "            if (false) {\n" +
+                                               "                int x = 0;\n" +
+                                               "            }\n" +
+                                               "        }\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        int x = 0;\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    void m2() {\n" +
+                                                  "        int x = 0;\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    void m3() {\n" +
+                                                  "        if (false) {\n" +
+                                                  "            int x = 0;\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    void m4() {\n" +
+                                                  "        if (false) {\n" +
+                                                  "            int x = 0;\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "@@\n" +
+                                         "- if (true) {\n" +
+                                         "      ...\n" +
+                                         "- }\n");
     
         input.getMethods().forEach((method) -> {
             CFGModel model = new CFGModel(methodCfg(method));
@@ -297,6 +505,42 @@ public class EndToEndTests {
         assertEquals(expected.toString(), input.toString());
     }
     @Test
+    public void testEncloseInBranch() {
+        // contract: a patch should be able to add a branch statement enclosing context
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        anchor();\n" +
+                                               "        foo();\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        anchor();\n" +
+                                                  "        if (debug) {\n" +
+                                                  "            foo();\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "@@\n" +
+                                         "  anchor();\n" +
+                                         "+ if (debug) {\n" +
+                                         "      foo();\n" +
+                                         "+ }\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
     public void testHelloWorld() {
         // contract: hello world template test
 
@@ -419,7 +663,7 @@ public class EndToEndTests {
     }
     @Test
     public void testPrependContextBranch() {
-        // contract: a patch should be able to prepend elements to a context branch
+        // contract: a patch should be able to prepend elements above a context branch
 
         CtClass<?> input = Launcher.parseClass("class A {\n" +
                                                "    void m1() {\n" +
