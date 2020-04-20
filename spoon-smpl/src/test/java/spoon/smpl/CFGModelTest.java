@@ -130,13 +130,13 @@ public class CFGModelTest {
                 if (label instanceof StatementLabel) {
                     StatementLabel stmLabel = (StatementLabel) label;
 
-                    if (stmLabel.getStatement().toString().equals("return 1")) {
+                    if (stmLabel.getCodeElement().toString().equals("return 1")) {
                         for (int otherState : model.getStates()) {
                             if (model.getSuccessors(otherState).contains(state)) {
                                 assertTrue(model.getLabels(otherState).contains(new PropositionLabel("trueBranch")));
                             }
                         }
-                    } else if (stmLabel.getStatement().toString().equals("return 0")) {
+                    } else if (stmLabel.getCodeElement().toString().equals("return 0")) {
                         for (int otherState : model.getStates()) {
                             if (model.getSuccessors(otherState).contains(state)) {
                                 assertTrue(model.getLabels(otherState).contains(new PropositionLabel("falseBranch")));

@@ -15,19 +15,13 @@ import java.util.Map;
  * The intention is for a StatementLabel to contain code that corresponds
  * to a Java statement, but the current implementation does not enforce this.
  */
-public class StatementLabel implements Label {
+public class StatementLabel extends CodeElementLabel {
     /**
      * Create a new StatementLabel.
-     * @param code Code element
+     * @param codeElement Code element
      */
-    public StatementLabel(CtElement code) {
-        this.code = code;
-
-        PatternBuilder builder = new PatternBuilder();
-        code.accept(builder);
-        this.codePattern = builder.getResult();
-
-        this.metavarBindings = null;
+    public StatementLabel(CtElement codeElement) {
+        super(codeElement);
     }
 
     /**
@@ -43,51 +37,7 @@ public class StatementLabel implements Label {
             metavarBindings = matcher.getParameters();
             return matcher.getResult() && sp.processMetavariableBindings(metavarBindings);
         } else {
-            return false;
+            return super.matches(obj);
         }
     }
-
-    /**
-     * Retrieve any metavariable bindings involved in matching the most recently
-     * given predicate.
-     * @return most recent metavariable bindings, or null if there were no bindings
-     */
-    @Override
-    public Map<String, Object> getMetavariableBindings() {
-        return metavarBindings;
-    }
-
-    /**
-     * Reset/clear metavariable bindings
-     */
-    @Override
-    public void reset() {
-        metavarBindings = null;
-    }
-
-    /**
-     * Get the code element.
-     * @return The code element
-     */
-    public CtElement getStatement() {
-        return code;
-    }
-
-    @Override
-    public String toString() {
-        return code.toString();
-    }
-
-    /**
-     * The code element.
-     */
-    private CtElement code;
-
-    /**
-     * The pattern corresponding to the code element.
-     * Part of temporary substitute for spoon.pattern.
-     */
-    private PatternNode codePattern;
-
-    private Map<String, Object> metavarBindings;
 }
