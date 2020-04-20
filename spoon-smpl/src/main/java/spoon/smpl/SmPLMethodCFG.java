@@ -9,16 +9,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * SmPLCFGAdapter imposes constraints on and adaptations to a ControlFlowGraph for use
- * in SmPL-related contexts. The constraints are that the ControlFlowGraph must not be
- * simplified (see ControlFlowGraph::simplify).
- *
- * The adaptations are:
- * 1) The outmost BLOCK_BEGIN node (successor to the BEGIN node) is removed.
- * 2) All remaining BLOCK_BEGIN nodes are tagged with String "trueBranch" or "falseBranch".
- * 3) All BLOCK_END nodes are removed.
+ * An SmPLMethodCFG creates and adapts a ControlFlowGraph for a given method such as to make it
+ * suitable for use in an SmPL context.
  */
-public class SmPLCFGAdapter {
+public class SmPLMethodCFG {
     /**
      * A NodeTag is a combination of a String label and an AST element anchor.
      *
@@ -74,20 +68,8 @@ public class SmPLCFGAdapter {
      * Create a new SmPL-adapted CFG from a given method element.
      * @param method Method for which to generate an SmPL-adapted CFG
      */
-    public SmPLCFGAdapter(CtMethod<?> method) {
-        this(new ControlFlowBuilder().build(method.getBody()));
-    }
-
-    /**
-     * Create a new SmPL-adapted CFG from a given unsimplified generic CFG.
-     * @param cfg CFG to adapt
-     */
-    public SmPLCFGAdapter(ControlFlowGraph cfg) {
-        this.cfg = cfg;
-
-        if (cfg.findNodesOfKind(BranchKind.BLOCK_BEGIN).size() == 0) {
-            throw new IllegalArgumentException("The CFG must NOT be simplified (see ControlFlowGraph::simplify)");
-        }
+    public SmPLMethodCFG(CtMethod<?> method) {
+        this.cfg = new ControlFlowBuilder().build(method.getBody());
 
         removeOutermostBlockBeginNode(cfg);
         removeBlockEndNodes(cfg);

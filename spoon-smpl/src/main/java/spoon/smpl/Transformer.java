@@ -58,7 +58,7 @@ public class Transformer {
                 if (kind == BranchKind.STATEMENT) {
                     ((PrependOperation) obj).accept(node.getStatement(), bindings);
                 } else if (kind == BranchKind.BRANCH || kind == BranchKind.BLOCK_BEGIN || kind == BranchKind.CONVERGE) {
-                    ((PrependOperation) obj).accept(((SmPLCFGAdapter.NodeTag) node.getTag()).getAnchor(), bindings);
+                    ((PrependOperation) obj).accept(((SmPLMethodCFG.NodeTag) node.getTag()).getAnchor(), bindings);
                 } else {
                     throw new IllegalArgumentException("unexpected node kind " + kind);
                 }
@@ -74,7 +74,7 @@ public class Transformer {
                         if (kind == BranchKind.STATEMENT) {
                             ((AppendOperation) obj).accept(node.getStatement(), bindings);
                         } else if (kind == BranchKind.BRANCH || kind == BranchKind.BLOCK_BEGIN || kind == BranchKind.CONVERGE) {
-                            ((AppendOperation) obj).accept(((SmPLCFGAdapter.NodeTag) node.getTag()).getAnchor(), bindings);
+                            ((AppendOperation) obj).accept(((SmPLMethodCFG.NodeTag) node.getTag()).getAnchor(), bindings);
                         } else {
                             throw new IllegalArgumentException("unexpected node kind " + kind);
                         }

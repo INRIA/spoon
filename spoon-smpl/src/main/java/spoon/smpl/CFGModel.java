@@ -14,7 +14,7 @@ public class CFGModel implements Model {
      * Create a new CTL model from a given SmPL-adapted CFG.
      * @param cfg SmPL-adapted CFG to use as model
      */
-    public CFGModel(SmPLCFGAdapter cfg) {
+    public CFGModel(SmPLMethodCFG cfg) {
         this.cfg = cfg;
 
         states = new ArrayList<>();
@@ -58,7 +58,7 @@ public class CFGModel implements Model {
                     labels.get(state).add(new PropositionLabel("after"));
                     break;
                 case BLOCK_BEGIN:
-                    labels.get(state).add(new PropositionLabel(((SmPLCFGAdapter.NodeTag) node.getTag()).getLabel()));
+                    labels.get(state).add(new PropositionLabel(((SmPLMethodCFG.NodeTag) node.getTag()).getLabel()));
                     break;
                 case EXIT: // Allowed to be present
                     break;
@@ -137,12 +137,12 @@ public class CFGModel implements Model {
     /**
      * @return the SmPL-adapted CFG used to generate the model
      */
-    public SmPLCFGAdapter getCfg() { return cfg; }
+    public SmPLMethodCFG getCfg() { return cfg; }
 
     /**
      * The SmPL-adapted CFG used to generate the model.
      */
-    private SmPLCFGAdapter cfg;
+    private SmPLMethodCFG cfg;
 
     /**
      * The set of state IDs.

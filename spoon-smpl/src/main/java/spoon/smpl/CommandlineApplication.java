@@ -1,6 +1,5 @@
 package spoon.smpl;
 
-import fr.inria.controlflow.ControlFlowBuilder;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
@@ -119,8 +118,7 @@ public class CommandlineApplication {
                     CtClass<?> inputClass = Launcher.parseClass(readFile(javaFilename, StandardCharsets.UTF_8));
 
                     for (CtMethod<?> method : inputClass.getMethods()) {
-                        ControlFlowBuilder cfgBuilder = new ControlFlowBuilder();
-                        SmPLCFGAdapter cfg = new SmPLCFGAdapter(cfgBuilder.build(method));
+                        SmPLMethodCFG cfg = new SmPLMethodCFG(method);
 
                         CFGModel model = new CFGModel(cfg);
                         ModelChecker modelChecker = new ModelChecker(model);

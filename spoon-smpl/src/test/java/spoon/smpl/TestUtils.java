@@ -1,6 +1,5 @@
 package spoon.smpl;
 
-import fr.inria.controlflow.ControlFlowBuilder;
 import fr.inria.controlflow.ControlFlowNode;
 import spoon.Launcher;
 import spoon.reflect.code.CtReturn;
@@ -144,9 +143,8 @@ public class TestUtils {
         return ((CtMethod<?>)myclass.getMethods().toArray()[0]).getBody().getLastStatement();
     }
 
-    public static SmPLCFGAdapter methodCfg(CtMethod<?> method) {
-        ControlFlowBuilder cfgBuilder = new ControlFlowBuilder();
-        return new SmPLCFGAdapter(cfgBuilder.build(method));
+    public static SmPLMethodCFG methodCfg(CtMethod<?> method) {
+        return new SmPLMethodCFG(method);
     }
 
     public static ModelChecker.Witness witness(int state, String metavar, Object binding) {

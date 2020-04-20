@@ -94,7 +94,7 @@ public class SmPLParser {
             return new SmPLRuleImpl(new Not(new True()), metavars);
         }
 
-        FormulaCompiler fc = new FormulaCompiler(new SmPLCFGAdapter(ruleMethod), metavars);
+        FormulaCompiler fc = new FormulaCompiler(new SmPLMethodCFG(ruleMethod), metavars);
         SmPLRule rule = new SmPLRuleImpl(fc.compileFormula(), metavars);
         rule.setName(ruleName);
 
