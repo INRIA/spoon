@@ -302,6 +302,22 @@ public class TargetedExpressionTest {
 	}
 
 	@Test
+	public void testNestedClassAccessEnclosingTypeFieldNoClasspath() {
+		// Checks that a nested class accessing a field of an enclosing type's non-static field correctly
+		// resolves to a non-static field access. See https://github.com/INRIA/spoon/issues/3334 for details.
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/targeted/Outer.java");
+		CtModel model = launcher.buildModel();
+
+		List<CtFieldRead<?>> fieldReads = model.getElements(e -> e.getVariable().getSimpleName().equals("cls"));
+		assertEquals(1, fieldReads.size());
+		CtFieldRead<?> fieldRead = fieldReads.get(0);
+
+		assertTrue(fieldRead.getTarget() instanceof CtThisAccess);
+	}
+
+	@Test
 	public void testTargetsOfInv() throws Exception {
 		// contract: Specify declaring type of the executable of an invocation, the target of the invocation and its result.
 		final Factory factory = build(Foo.class, Bar.class, SuperClass.class);
