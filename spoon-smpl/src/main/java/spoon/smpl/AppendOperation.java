@@ -1,12 +1,59 @@
 package spoon.smpl;
 
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtElement;
+
+import java.util.Map;
+
 /**
- * AppendOperation defines a prioritized category of operations that when present in a list
- * of operations must be:
- * 1) processed AFTER any PrependOperation
- * 2) processed BEFORE any DeleteOperation
- * 3) processed BEFORE any non-prioritized class of Operation
- * 4) processed in the reverse order relative to the order of elements in the list
+ * An Operation that appends an element to a given anchor element.
  */
-public interface AppendOperation extends Operation {
+public class AppendOperation implements Operation {
+    /**
+     * Create a new AppendOperation given the AST element that should be appended.
+     * @param elementToAppend Element to append
+     */
+    public AppendOperation(CtElement elementToAppend) {
+        this.elementToAppend = elementToAppend;
+    }
+
+    /**
+     * Append the contained element to a given target element (by means of insertAfter).
+     * @param category Operation is applied when category is APPEND
+     * @param targetElement Target element to append to
+     * @param bindings Metavariable bindings to use
+     */
+    @Override
+    public void accept(OperationFilter category, CtElement targetElement, Map<String, Object> bindings) {
+        if (category != OperationFilter.APPEND) {
+            return;
+        }
+
+        if (targetElement instanceof CtStatement) {
+            CtStatement stmt = (CtStatement) targetElement;
+            stmt.insertAfter((CtStatement) Substitutor.apply(elementToAppend, bindings));
+        } else {
+            throw new IllegalArgumentException("cannot append to " + targetElement.getClass().toString());
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Append(" + elementToAppend.toString() + ")";
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return (other instanceof AppendOperation && other.hashCode() == hashCode());
+    }
+
+    /**
+     * Element to append.
+     */
+    public CtElement elementToAppend;
 }

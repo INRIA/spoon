@@ -49,14 +49,17 @@ public class TransformerTest {
         final List<String> messages = new ArrayList<>();
         Set<ModelChecker.Witness> witnesses = new HashSet<>();
 
-        Operation operation = (element, bindings) -> {
-            messages.add("Operation applied to " + element.toString() + " with bindings " + bindings.toString());
+        Operation operation = (category, element, bindings) -> {
+            if (category == OperationFilter.PREPEND) {
+                messages.add("Operation applied to " + element.toString() + " with bindings " + bindings.toString());
+            }
         };
 
-        witnesses.add(witness(4, "x", "y1", witness(4, "whatever", operation)));
-        witnesses.add(witness(5, "x", "y2", witness(5, "whatever", operation)));
+        witnesses.add(witness(4, "x", "y1", witness(4, "whatever", Arrays.asList(operation))));
+        witnesses.add(witness(5, "x", "y2", witness(5, "whatever", Arrays.asList(operation))));
 
         Transformer.transform(model, witnesses);
+
         assertTrue(messages.contains("Operation applied to int x = 1 with bindings {x=y1}"));
         assertTrue(messages.contains("Operation applied to int y = 1 with bindings {x=y2}"));
     }
@@ -76,8 +79,8 @@ public class TransformerTest {
 
         List<Operation> operations = new ArrayList<>();
 
-        operations.add((element, bindings) -> { messages.add("hello"); } );
-        operations.add((element, bindings) -> { messages.add("world"); } );
+        operations.add((category, element, bindings) -> { if (category == OperationFilter.PREPEND) { messages.add("hello"); } } );
+        operations.add((category, element, bindings) -> { if (category == OperationFilter.PREPEND) { messages.add("world"); } } );
 
         witnesses.add(witness(4, "whatever", operations));
 
@@ -101,9 +104,9 @@ public class TransformerTest {
 
         List<Operation> operations = new ArrayList<>();
 
-        operations.add((PrependOperation) (element, bindings) -> { messages.add("prepend"); } );
-        operations.add((AppendOperation) (element, bindings) -> { messages.add("append"); } );
-        operations.add((DeleteOperation) (element, bindings) -> { messages.add("delete"); } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.PREPEND) { messages.add("prepend"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.APPEND) { messages.add("append"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.DELETE) { messages.add("delete"); } } );
 
         witnesses.add(witness(4, "whatever", operations));
 
@@ -130,12 +133,12 @@ public class TransformerTest {
 
         List<Operation> operations = new ArrayList<>();
 
-        operations.add((PrependOperation) (element, bindings) -> { messages.add("prepend1"); } );
-        operations.add((PrependOperation) (element, bindings) -> { messages.add("prepend2"); } );
-        operations.add((AppendOperation) (element, bindings) -> { messages.add("append1"); } );
-        operations.add((AppendOperation) (element, bindings) -> { messages.add("append2"); } );
-        operations.add((DeleteOperation) (element, bindings) -> { messages.add("delete1"); } );
-        operations.add((DeleteOperation) (element, bindings) -> { messages.add("delete2"); } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.PREPEND) { messages.add("prepend1"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.PREPEND) { messages.add("prepend2"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.APPEND) { messages.add("append1"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.APPEND) { messages.add("append2"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.DELETE) { messages.add("delete1"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.DELETE) { messages.add("delete2"); } } );
 
         witnesses.add(witness(4, "whatever", operations));
 

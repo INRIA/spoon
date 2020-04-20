@@ -2,6 +2,7 @@ package spoon.smpl;
 
 import fr.inria.controlflow.BranchKind;
 import fr.inria.controlflow.ControlFlowNode;
+import spoon.reflect.declaration.CtElement;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,53 +50,35 @@ public class Transformer {
             // The witness binding is a list of operations, apply them
 
             List<?> objects = (List<?>) witness.binding;
+            ControlFlowNode node = model.getCfg().findNodeById(witness.state);
+            BranchKind kind = node.getKind();
 
-            // Process any PrependOperations in the list
-            objects.stream().filter((obj) -> obj instanceof PrependOperation).forEachOrdered((obj) -> {
-                ControlFlowNode node = model.getCfg().findNodeById(witness.state);
-                BranchKind kind = node.getKind();
+            CtElement targetElement;
 
-                if (kind == BranchKind.STATEMENT) {
-                    ((PrependOperation) obj).accept(node.getStatement(), bindings);
-                } else if (kind == BranchKind.BRANCH || kind == BranchKind.BLOCK_BEGIN || kind == BranchKind.CONVERGE) {
-                    ((PrependOperation) obj).accept(((SmPLMethodCFG.NodeTag) node.getTag()).getAnchor(), bindings);
-                } else {
-                    throw new IllegalArgumentException("unexpected node kind " + kind);
-                }
+            if (kind == BranchKind.STATEMENT) {
+                targetElement = node.getStatement();
+            } else if (kind == BranchKind.BRANCH || kind == BranchKind.BLOCK_BEGIN) {
+                targetElement = ((SmPLMethodCFG.NodeTag) node.getTag()).getAnchor();
+            } else {
+                throw new IllegalArgumentException("unexpected node kind " + kind);
+            }
+
+            // Process any prepend operations in the list
+            objects.stream().filter((obj) -> obj instanceof Operation).forEachOrdered((obj) -> {
+                ((Operation) obj).accept(OperationFilter.PREPEND, targetElement, bindings);
             });
 
-            // Process any AppendOperations in the list, in reverse order to preserve correct output order
-            objects.stream().filter((obj) -> obj instanceof AppendOperation)
+            // Process any append operations in the list, in reverse order to preserve correct output order
+            objects.stream().filter((obj) -> obj instanceof Operation)
                     .collect(Collectors.toCollection(LinkedList::new))
                     .descendingIterator().forEachRemaining((obj) -> {
-                        ControlFlowNode node = model.getCfg().findNodeById(witness.state);
-                        BranchKind kind = node.getKind();
-
-                        if (kind == BranchKind.STATEMENT) {
-                            ((AppendOperation) obj).accept(node.getStatement(), bindings);
-                        } else if (kind == BranchKind.BRANCH || kind == BranchKind.BLOCK_BEGIN || kind == BranchKind.CONVERGE) {
-                            ((AppendOperation) obj).accept(((SmPLMethodCFG.NodeTag) node.getTag()).getAnchor(), bindings);
-                        } else {
-                            throw new IllegalArgumentException("unexpected node kind " + kind);
-                        }
+                        ((Operation) obj).accept(OperationFilter.APPEND, targetElement, bindings);
                     });
 
-            // Process any DeleteOperations in the list
-            objects.stream().filter((obj) -> obj instanceof DeleteOperation).forEachOrdered((obj) -> {
-                ((DeleteOperation) obj).accept(model.getCfg().findNodeById(witness.state).getStatement(), bindings);
+            // Process any delete operations in the list
+            objects.stream().filter((obj) -> obj instanceof Operation).forEachOrdered((obj) -> {
+                ((Operation) obj).accept(OperationFilter.DELETE, targetElement, bindings);
             });
-
-            // Finally process any other Operations
-            objects.stream().filter((obj) -> !(obj instanceof PrependOperation))
-                            .filter((obj) -> !(obj instanceof AppendOperation))
-                            .filter((obj) -> !(obj instanceof DeleteOperation))
-                            .filter((obj) -> obj instanceof Operation).forEachOrdered((obj) -> {
-                ((Operation) obj).accept(model.getCfg().findNodeById(witness.state).getStatement(), bindings);
-            });
-        } else if (witness.binding instanceof Operation) {
-            // TODO: get rid of this case?
-            // The witness binding is a single operation, apply it
-            ((Operation) witness.binding).accept(model.getCfg().findNodeById(witness.state).getStatement(), bindings);
         } else {
             // The witness binding is an actual metavariable binding, record it and process sub-witnesses
             bindings.put(witness.metavar, witness.binding);

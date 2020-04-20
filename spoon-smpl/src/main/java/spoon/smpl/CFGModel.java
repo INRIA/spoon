@@ -52,7 +52,11 @@ public class CFGModel implements Model {
                     labels.get(state).add(new BranchLabel(stmt));
                     break;
                 case STATEMENT:
-                    labels.get(state).add(new StatementLabel(stmt));
+                    if (SmPLMethodCFG.isMethodHeaderNode(node)) {
+                        labels.get(state).add(new PropositionLabel("methodHeader"));
+                    } else {
+                        labels.get(state).add(new StatementLabel(stmt));
+                    }
                     break;
                 case CONVERGE:
                     labels.get(state).add(new PropositionLabel("after"));

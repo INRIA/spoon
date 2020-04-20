@@ -1,29 +1,34 @@
 package spoon.smpl;
 
 import org.junit.Test;
-
-import static org.junit.Assert.fail;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import static spoon.smpl.SmPLParser.parse;
 import static spoon.smpl.SmPLParser.rewrite;
-import static spoon.smpl.SmPLParser.prettify;
 
 public class SmPLParserTest {
     @Test(expected = RuntimeException.class)
     public void testRewriteEmptyString() {
+
+        // contract: asking SmPLParser to rewrite the empty string should cause exception
+
         rewrite("");
     }
 
     @Test(expected = RuntimeException.class)
     public void testRewriteBad01() {
+
+        // contract: asking SmPLParser to rewrite nonsense string should cause exception
+
         rewrite("hello");
     }
 
     @Test
     public void testRewriteEmptyRule() {
-        String result = prettify(rewrite("@@\n@@\n"));
+
+        // contract: SmPLParser can handle an empty rule, producing an empty Java DSL class.
+
+        String result = DebugUtils.prettify(rewrite("@@\n@@\n"));
         assertEquals("class SmPLRule {\n" +
                 "    void __SmPLMetavars__() {\n" +
                 "    }\n" +
@@ -32,7 +37,10 @@ public class SmPLParserTest {
 
     @Test
     public void testRewriteSimpleRule() {
-        String result = prettify(rewrite(
+
+        // contract: SmPLParser correctly rewrites very basic SmPL rules
+
+        String result = DebugUtils.prettify(rewrite(
                 "@@\n" +
                 "identifier x;\n" +
                 "@@\n" +
@@ -53,7 +61,10 @@ public class SmPLParserTest {
 
     @Test
     public void testRewriteMultipleIdentifiersSingleLine() {
-        String result = prettify(rewrite(
+
+        // contract: SmPLParser.rewrite correctly rewrites multiple metavariable declarations on a single line
+
+        String result = DebugUtils.prettify(rewrite(
                 "@@\n" +
                 "identifier x,y;\n" +
                 "@@\n" +
@@ -77,7 +88,10 @@ public class SmPLParserTest {
 
     @Test
     public void testRewriteMultipleIdentifiersMultipleLines() {
-        String result = prettify(rewrite(
+
+        // contract: SmPLParser.rewrite correctly rewrites multiple metavariable declarations on multiple lines
+
+        String result = DebugUtils.prettify(rewrite(
                 "@@\n" +
                 "identifier x;\n" +
                 "identifier y;\n" +
@@ -102,7 +116,10 @@ public class SmPLParserTest {
 
     @Test
     public void testRewriteSimpleDots() {
-        String result = prettify(rewrite(
+
+        // contract: SmPLParser.rewrite corrently rewrites a dots statement with a simple constraint
+
+        String result = DebugUtils.prettify(rewrite(
                 "@@\n" +
                 "identifier x;\n" +
                 "@@\n" +
@@ -125,7 +142,10 @@ public class SmPLParserTest {
 
     @Test
     public void testRewriteReturningConstants() {
-        String result = prettify(rewrite(
+
+        // contract: SmPLParser.rewrite correctly rewrites the remove-locals-used-to-return-constants example
+
+        String result = DebugUtils.prettify(rewrite(
                 "@@\n" +
                 "type T;\n" +
                 "identifier ret;\n" +

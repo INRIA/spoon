@@ -1,8 +1,11 @@
 package spoon.smpl;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import spoon.Launcher;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
+import spoon.reflect.visitor.CtScanner;
 import spoon.smpl.formula.*;
 import spoon.smpl.metavars.*;
 
@@ -19,31 +22,49 @@ import java.util.regex.Matcher;
 public class SmPLParser {
     /**
      * Parse an SmPL rule given in plain text.
+     *
      * @param smpl SmPL rule in plain text
      * @return SmPLRule instance corresponding to input
      */
     public static SmPLRule parse(String smpl) {
-        return compile(Launcher.parseClass(rewrite(smpl)));
+        List<String> separated = separate(rewrite(smpl));
+
+        CtClass<?> dels = Launcher.parseClass(separated.get(0));
+        CtClass<?> adds = Launcher.parseClass(separated.get(1));
+
+        Set<Integer> delsLines = collectStatementLines(dels);
+        Set<Integer> addsLines = collectStatementLines(adds);
+
+        Set<Integer> commonLines = new HashSet<>(delsLines);
+        commonLines.retainAll(addsLines);
+
+        AnchoredOperations anchoredOperations = anchorAdditions(adds, commonLines);
+
+        Set<Integer> containedCommonLines = findContainedCommonLines(adds, commonLines);
+        commonLines.removeAll(containedCommonLines);
+
+        return compile(dels, commonLines, anchoredOperations);
     }
 
     /**
      * Compile a given AST in the SmPL Java DSL.
+     *
      * @param ast AST to compile
      * @return SmPLRule instance
      */
-    public static SmPLRule compile(CtClass<?> ast) {
+    public static SmPLRule compile(CtClass<?> ast, Set<Integer> commonLines, AnchoredOperations additions) {
         String ruleName = null;
 
-        if (ast.getDeclaredField("__SmPLRuleName__") != null) {
-            ruleName = ((CtLiteral<?>) ast.getDeclaredField("__SmPLRuleName__")
+        if (ast.getDeclaredField(SmPLJavaDSL.getRuleNameFieldName()) != null) {
+            ruleName = ((CtLiteral<?>) ast.getDeclaredField(SmPLJavaDSL.getRuleNameFieldName())
                                           .getFieldDeclaration()
                                           .getAssignment()).getValue().toString();
         }
 
         Map<String, MetavariableConstraint> metavars = new HashMap<>();
 
-        if (ast.getMethodsByName("__SmPLMetavars__").size() != 0) {
-            CtMethod<?> mth = ast.getMethodsByName("__SmPLMetavars__").get(0);
+        if (ast.getMethodsByName(SmPLJavaDSL.getMetavarsMethodName()).size() != 0) {
+            CtMethod<?> mth = ast.getMethodsByName(SmPLJavaDSL.getMetavarsMethodName()).get(0);
 
             for (CtElement e : mth.getBody().getStatements()) {
                 CtInvocation<?> invocation = (CtInvocation<?>) e;
@@ -81,20 +102,14 @@ public class SmPLParser {
             }
         }
 
-        CtMethod<?> ruleMethod = null;
-
-        for (CtMethod<?> mth : ast.getMethods()) {
-            if (!mth.getSimpleName().equals("__SmPLMetavars__")) {
-                ruleMethod = mth;
-            }
-        }
+        CtMethod<?> ruleMethod = SmPLJavaDSL.getRuleMethod(ast);
 
         if (ruleMethod == null) {
             // A completely empty rule matches nothing
             return new SmPLRuleImpl(new Not(new True()), metavars);
         }
 
-        FormulaCompiler fc = new FormulaCompiler(new SmPLMethodCFG(ruleMethod), metavars);
+        FormulaCompiler fc = new FormulaCompiler(new SmPLMethodCFG(ruleMethod), metavars, commonLines, additions);
         SmPLRule rule = new SmPLRuleImpl(fc.compileFormula(), metavars);
         rule.setName(ruleName);
 
@@ -102,70 +117,8 @@ public class SmPLParser {
     }
 
     /**
-     * Format text for pretty-printing.
-     * @param text Text to format
-     * @return Formatted text
-     */
-    public static String prettify(String text) {
-        return prettify(text, '{', '}', 4, false);
-    }
-
-    /**
-     * Format text for pretty-printing.
-     * @param text Text to format
-     * @param open Indentation-increasing character
-     * @param close Indentation-decreasing character
-     * @param indentSize Indentation size
-     * @param addNewlines Add newlines after indentation-altering characters?
-     * @return Formatted text
-     */
-    public static String prettify(String text, char open, char close, int indentSize, boolean addNewlines) {
-        StringBuilder result = new StringBuilder();
-
-        int indent = 0;
-        boolean doIndent = false;
-
-        for (char c : text.toCharArray()) {
-            if (c == close) {
-                indent -= 1;
-
-                if (addNewlines) {
-                    result.append('\n');
-                    doIndent = true;
-                }
-            }
-
-            if (doIndent) {
-                doIndent = false;
-
-                for (int i = 0; i < indent; ++i) {
-                    for (int j = 0; j < indentSize; ++j) {
-                        result.append(" ");
-                    }
-                }
-            }
-
-            result.append(c);
-
-            if (c == '\n') {
-                doIndent = true;
-            }
-
-            if (c == open) {
-                indent += 1;
-
-                if (addNewlines) {
-                    result.append('\n');
-                    doIndent = true;
-                }
-            }
-        }
-
-        return result.toString();
-    }
-
-    /**
      * Rewrite an SmPL rule given in plain text into an SmPL Java DSL.
+     *
      * @param text SmPL rule in plain text
      * @return Plain text Java code in SmPL Java DSL
      */
@@ -224,7 +177,7 @@ public class SmPLParser {
                 (ctx) -> {},
                 (result, match) -> {}));
 
-        metavars.add(new RewriteRule("atat", "(?s)^@@",
+        metavars.add(new RewriteRule("atat", "(?s)^@@([^\\S\n]*\n)?",
                 (ctx) -> { ctx.pop(); ctx.push(code); },
                 (result, match) -> { result.out.append("}\n"); }));
 
@@ -262,9 +215,9 @@ public class SmPLParser {
 
         // TODO: call this method header context instead?
         // Code context
-        code.add(new RewriteRule("whitespace", "(?s)^\\s+",
+        /*code.add(new RewriteRule("whitespace", "(?s)^\\s+",
                 (ctx) -> {},
-                (result, match) -> {}));
+                (result, match) -> {}));*/
 
         // TODO: separate context for the signature
         code.add(new RewriteRule("method_decl", "(?s)^[A-Za-z]+\\s+[A-Za-z]+\\s*\\([A-Za-z,\\s]*\\)\\s*\\{",
@@ -282,22 +235,6 @@ public class SmPLParser {
                     result.hasMethodHeader = true;
                 }));
 
-        code.add(new RewriteRule("delete", "(?s)^[-]",
-                (ctx) -> { ctx.pop(); ctx.push(body); },
-                (result, match) -> {
-                    result.out.append("__SmPLUndeclared__ method() {\n");
-                    result.out.append("__SmPLDelete__();\n");
-                    result.hasMethodHeader = true;
-                }));
-
-        code.add(new RewriteRule("add", "(?s)^[+]",
-                (ctx) -> { ctx.pop(); ctx.push(body); },
-                (result, match) -> {
-                    result.out.append("__SmPLUndeclared__ method() {\n");
-                    result.out.append("__SmPLAdd__();\n");
-                    result.hasMethodHeader = true;
-                }));
-
         code.add(new RewriteRule("anychar", "(?s)^.",
                 (ctx) -> { ctx.pop(); ctx.push(body); },
                 (result, match) -> {
@@ -307,22 +244,6 @@ public class SmPLParser {
                 }));
 
         // Method body context
-        body.add(new RewriteRule("horizontal_whitespace", "(?s)^[^\\S\\r\\n]+",
-                (ctx) -> {},
-                (result, match) -> { result.out.append(match.group()); }));
-
-        body.add(new RewriteRule("newline_minus", "(?s)^(\\r?\\n)+[-]",
-                (ctx) -> {},
-                (result, match) -> { result.out.append("\n__SmPLDelete__();\n"); }));
-
-        body.add(new RewriteRule("newline_plus", "(?s)^(\\r?\\n)+[+]",
-                (ctx) -> {},
-                (result, match) -> { result.out.append("\n__SmPLAdd__();\n"); }));
-
-        body.add(new RewriteRule("newline_noop", "(?s)^(\\r?\\n)+(?=[^+-]|$)",
-                (ctx) -> {},
-                (result, match) -> { result.out.append(match.group()); }));
-
         body.add(new RewriteRule("dots", "(?s)^\\.\\.\\.",
                 (ctx) -> { ctx.push(dots); },
                 (result, match) -> { result.out.append("__SmPLDots__("); }));
@@ -332,25 +253,7 @@ public class SmPLParser {
                 (result, match) -> { result.out.append(match.group()); }));
 
         // Dots context
-        dots.add(new RewriteRule("horizontal_whitespace", "(?s)^[^\\S\\r\\n]+",
-                (ctx) -> {},
-                (result, match) -> {}));
-
-        dots.add(new RewriteRule("newline_minus", "(?s)^(\\r?\\n)+[-]",
-                (ctx) -> { ctx.pop(); },
-                (result, match) -> {
-                    result.out.append(");\n");
-                    result.out.append("__SmPLDelete__();\n");
-                }));
-
-        dots.add(new RewriteRule("newline_plus", "(?s)^(\\r?\\n)+[+]",
-                (ctx) -> { ctx.pop(); },
-                (result, match) -> {
-                    result.out.append(");\n");
-                    result.out.append("__SmPLAdd__();\n");
-                }));
-
-        dots.add(new RewriteRule("newline_noop", "(?s)^(\\r?\\n)+(?=[^+-]|$)",
+        dots.add(new RewriteRule("whitespace", "(?s)^\\s+",
                 (ctx) -> {},
                 (result, match) -> {}));
 
@@ -373,9 +276,9 @@ public class SmPLParser {
 
         Stack<List<RewriteRule>> context = new Stack<>();
         context.push(init);
-        
+
         int pos = 0;
-        
+
         while (pos < text.length()) {
             List<String> expected = new ArrayList<>();
             boolean foundSomething = false;
@@ -409,5 +312,220 @@ public class SmPLParser {
         result.out.append("}\n");
 
         return result.out.toString();
+    }
+
+    /**
+     * Separate an SmPL patch given in plain text into two versions where one removes all
+     * added lines retaining only deletions and context lines, and the other replaces all
+     * deleted lines with a dummy placeholder for anchoring.
+     *
+     * @param input SmPL patch in plain text to separate
+     * @return List of two Strings containing the two separated versions
+     */
+    private static List<String> separate(String input) {
+        StringBuilder dels = new StringBuilder();
+        StringBuilder adds = new StringBuilder();
+
+        for (String str : input.split("\n")) {
+            if (str.charAt(0) == '-') {
+                dels.append(' ').append(str.substring(1)).append("\n");
+                if (str.contains(SmPLJavaDSL.getDotsElementName() + "();")) {
+                    adds.append("\n");
+                } else {
+                    adds.append(SmPLJavaDSL.getDeletionAnchorName()).append("();\n");
+                }
+            } else if (str.charAt(0) == '+') {
+                dels.append("\n");
+                adds.append(' ').append(str.substring(1)).append("\n");
+            } else {
+                dels.append(str).append("\n");
+                adds.append(str).append("\n");
+            }
+        }
+
+        return Arrays.asList(dels.toString(), adds.toString());
+    }
+
+    /**
+     * Find appropriate anchors for all addition operations.
+     *
+     * @param e SmPL rule class in the SmPL Java DSL
+     * @param commonLines Set of context lines common to both the deletions and the additions ASTs
+     * @return Map of anchors to lists of operations
+     */
+    private static AnchoredOperations anchorAdditions(CtClass<?> e, Set<Integer> commonLines) {
+        CtMethod<?> ruleMethod = SmPLJavaDSL.getRuleMethod(e);
+        return anchorAdditions(ruleMethod.getBody(), commonLines, 0, null);
+    }
+
+    /**
+     * Recursive helper function for anchorAdditions.
+     *
+     * @param e Element to scan
+     * @param commonLines Set of context lines common to both the deletions and the additions ASTs
+     * @param blockAnchor Line number of statement seen as current block-insert anchor.
+     * @param context Anchoring context, one of null, "methodHeader", "trueBranch" or "falseBranch"
+     * @return Map of anchors to lists of operations
+     */
+    private static AnchoredOperations anchorAdditions(CtElement e, Set<Integer> commonLines, int blockAnchor, String context) {
+        AnchoredOperations result = new AnchoredOperations();
+
+        // Temporary storage for operations until an anchor is found
+        List<Pair<InsertIntoBlockOperation.Anchor, CtElement>> unanchored = new ArrayList<>();
+
+        // Less temporary storage for operations encountered without an anchor that cannot be anchored
+        // to the next encountered anchorable statement, to be dealt with later
+        List<Pair<InsertIntoBlockOperation.Anchor, CtElement>> unanchoredCommitted = new ArrayList<>();
+
+        int elementAnchor = 0;
+        boolean isAfterDots = false;
+
+        if (e instanceof CtBlock<?>) {
+            for (CtStatement stmt : ((CtBlock<?>) e).getStatements()) {
+                int stmtLine = stmt.getPosition().getLine();
+
+                if (SmPLJavaDSL.isDeletionAnchor(stmt) || commonLines.contains(stmtLine)) {
+                    if (!SmPLJavaDSL.isDots(stmt)) {
+                        isAfterDots = false;
+                        elementAnchor = stmtLine;
+
+                        // The InsertIntoBlockOperation.Anchor is irrelevant here
+                        for (Pair<InsertIntoBlockOperation.Anchor, CtElement> element : unanchored) {
+                            result.addKeyIfNotExists(elementAnchor);
+                            result.get(elementAnchor).add(new PrependOperation(element.getRight()));
+                        }
+                    } else {
+                        unanchoredCommitted.addAll(unanchored);
+                        isAfterDots = true;
+                    }
+
+                    unanchored.clear();
+
+                    // Process branches of if-then-else statements
+                    if (stmt instanceof CtIf) {
+                        CtIf ctIf = (CtIf) stmt;
+                        result.join(anchorAdditions(ctIf.getThenStatement(), commonLines, stmtLine, "trueBranch"));
+
+                        if (ctIf.getElseStatement() != null) {
+                            result.join(anchorAdditions(((CtIf) stmt).getElseStatement(), commonLines, stmtLine, "falseBranch"));
+                        }
+                    }
+                } else {
+                    if (elementAnchor != 0) {
+                        result.addKeyIfNotExists(elementAnchor);
+                        result.get(elementAnchor).add(new AppendOperation(stmt));
+                    } else {
+                        unanchored.add(new ImmutablePair<>(isAfterDots ? InsertIntoBlockOperation.Anchor.BOTTOM
+                                                                       : InsertIntoBlockOperation.Anchor.TOP, stmt));
+                    }
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("cannot handle " + e.getClass().toString());
+        }
+
+        unanchored.addAll(unanchoredCommitted);
+
+        // Process unanchored elements
+        if (unanchored.size() > 0) {
+            result.addKeyIfNotExists(blockAnchor);
+
+            for (Pair<InsertIntoBlockOperation.Anchor, CtElement> element : unanchored) {
+                switch (context) {
+                    case "methodHeader":
+                        result.get(blockAnchor)
+                              .add(new InsertIntoBlockOperation(InsertIntoBlockOperation.BlockType.METHODBODY,
+                                                                InsertIntoBlockOperation.Anchor.TOP,
+                                                                (CtStatement) element.getRight()));
+                        break;
+                    case "trueBranch":
+                        result.get(blockAnchor)
+                              .add(new InsertIntoBlockOperation(InsertIntoBlockOperation.BlockType.TRUEBRANCH,
+                                                                element.getLeft(),
+                                                                (CtStatement) element.getRight()));
+                        break;
+                    case "falseBranch":
+                        result.get(blockAnchor)
+                              .add(new InsertIntoBlockOperation(InsertIntoBlockOperation.BlockType.FALSEBRANCH,
+                                                                element.getLeft(),
+                                                                (CtStatement) element.getRight()));
+                        break;
+                    default:
+                        throw new IllegalStateException("unknown context " + context);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Scan the rule method of a given class in the SmPL Java DSL and collect the line
+     * numbers associated with statements in the method body.
+     *
+     * @param ctClass Class in SmPL Java DSL
+     * @return Set of line numbers at which statements occur in the rule method
+     */
+    private static Set<Integer> collectStatementLines(CtClass<?> ctClass) {
+        class LineCollectingScanner extends CtScanner {
+            public Set<Integer> result = new HashSet<>();
+
+            @Override
+            protected void enter(CtElement e) {
+                if (!SmPLJavaDSL.isDeletionAnchor(e) && e instanceof CtStatement && !(e instanceof CtBlock)) {
+                    result.add(e.getPosition().getLine());
+                }
+            }
+        }
+
+        LineCollectingScanner lines = new LineCollectingScanner();
+        lines.scan(SmPLJavaDSL.getRuleMethod(ctClass).getBody().getStatements());
+        return lines.result;
+    }
+
+    /**
+     * Scan the rule method of a given class in the SmPL Java DSL and find the set of
+     * statement-associated line numbers that are included in a given set of 'common' line
+     * numbers, but for which the parent element is a block belonging to a statement that
+     * does not occur on a line belonging to the set of 'common' line numbers.
+     *
+     * i.e the set of context lines enclosed in non-context lines.
+     *
+     * @param ctClass Class in SmPL Java DSL
+     * @param commonLines Set of 'common' line numbers
+     * @return Set of line numbers enclosed by statements that are not associated with common lines
+     */
+    private static Set<Integer> findContainedCommonLines(CtClass<?> ctClass, Set<Integer> commonLines) {
+        class ContainedCommonLineScanner extends CtScanner {
+            public ContainedCommonLineScanner(int rootParent, Set<Integer> commonLines) {
+                this.rootParent = rootParent;
+                this.commonLines = commonLines;
+            }
+
+            private int rootParent;
+            private Set<Integer> commonLines;
+            public Set<Integer> result = new HashSet<>();
+
+            @Override
+            protected void enter(CtElement e) {
+                if (e instanceof CtStatement && !(e instanceof CtBlock)) {
+                    int elementPos = e.getPosition().getLine();
+
+                    if (!commonLines.contains(elementPos)) {
+                        return;
+                    }
+
+                    int parentStmtPos = e.getParent().getParent().getPosition().getLine();
+
+                    if (parentStmtPos != rootParent && !commonLines.contains(parentStmtPos)) {
+                        result.add(elementPos);
+                    }
+                }
+            }
+        }
+
+        ContainedCommonLineScanner contained = new ContainedCommonLineScanner(SmPLJavaDSL.getRuleMethod(ctClass).getPosition().getLine(), commonLines);
+        contained.scan(SmPLJavaDSL.getRuleMethod(ctClass).getBody().getStatements());
+        return contained.result;
     }
 }

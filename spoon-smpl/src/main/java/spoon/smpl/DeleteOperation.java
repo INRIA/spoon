@@ -1,12 +1,63 @@
 package spoon.smpl;
 
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
+import spoon.reflect.declaration.CtElement;
+
+import java.util.Map;
+
 /**
- * AppendOperation defines a prioritized category of operations that when present in a list
- * of operations must be:
- * 1) processed AFTER any PrependOperation
- * 2) processed AFTER any AppendOperation
- * 3) processed BEFORE any non-prioritized class of Operation
- * 4) processed in the same order relative to the order of elements in the list
+ * An Operation that deletes a given element.
  */
-public interface DeleteOperation extends Operation {
+public class DeleteOperation implements Operation {
+    /**
+     * Delete the target element from its surrounding AST context.
+     * @param category Operation is applied when category is DELETE
+     * @param targetElement Element to delete
+     * @param bindings Irrelevant
+     */
+    @Override
+    public void accept(OperationFilter category, CtElement targetElement, Map<String, Object> bindings) {
+        if (category != OperationFilter.DELETE) {
+            return;
+        }
+
+        // Move inner elements out from branches of if-then-else-statements
+        if (targetElement instanceof CtIf) {
+            CtIf ifstmt = (CtIf) targetElement;
+
+            if (ifstmt.getThenStatement() instanceof CtBlock<?>) {
+                ifstmt.insertBefore((CtStatementList) ifstmt.getThenStatement());
+            } else {
+                ifstmt.insertBefore((CtStatement) ifstmt.getThenStatement());
+            }
+
+            if (ifstmt.getElseStatement() != null) {
+                if (ifstmt.getElseStatement() instanceof CtBlock<?>) {
+                    ifstmt.insertBefore((CtStatementList) ifstmt.getElseStatement());
+                } else {
+                    ifstmt.insertBefore((CtStatement) ifstmt.getElseStatement());
+                }
+            }
+        }
+
+        targetElement.delete();
+    }
+
+    @Override
+    public String toString() {
+        return "Delete";
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return (other instanceof DeleteOperation && other.hashCode() == hashCode());
+    }
 }

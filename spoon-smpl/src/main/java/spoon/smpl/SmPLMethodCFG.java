@@ -74,6 +74,26 @@ public class SmPLMethodCFG {
         removeOutermostBlockBeginNode(cfg);
         removeBlockEndNodes(cfg);
 
+        // Add method header node and annotate method body BLOCK_BEGIN node
+        cfg.findNodesOfKind(BranchKind.BEGIN).forEach((cfgEntryNode) -> {
+            if (cfgEntryNode.next().size() != 1) {
+                throw new IllegalArgumentException("invalid BEGIN node in CFG");
+            }
+
+            ControlFlowNode cfgEntryNodeSuccessor = cfgEntryNode.next().get(0);
+
+            // Remove the path from the CFG entry node to its successor
+            cfg.removeEdge(cfgEntryNode, cfgEntryNodeSuccessor);
+
+            // Create a node for the method header / signature
+            ControlFlowNode methodHeaderNode = new ControlFlowNode(method, cfg, BranchKind.STATEMENT);
+            methodHeaderNode.setTag(new NodeTag("methodHeader", method));
+
+            // Connect CFG entry node -> method header node -> CFG entry successor
+            cfg.addEdge(cfgEntryNode, methodHeaderNode);
+            cfg.addEdge(methodHeaderNode, cfgEntryNodeSuccessor);
+        });
+
         // Annotate branches
         for (ControlFlowNode node : cfg.vertexSet()) {
             if (node.getKind() != BranchKind.BRANCH) {
@@ -135,12 +155,15 @@ public class SmPLMethodCFG {
         }
     }
 
-    private static ControlFlowNode findConvergenceNode(ControlFlowNode node) {
-        // FIXME: this relies on implementation details of ControlFlowBuilder::visitCtIf and ControlFlowNode.count
-        // A good fix would be adding this info explicitly to spoon-control-flow, e.g by having
-        // ControlFlowNodes have a field .postBranchConverge that was set to the specific
-        // convergence node created for the branch, and having a method ControlFlowNode::getPostBranchConvergenceNode
-        return node.getParent().findNodeById(node.getId() + 1);
+    /**
+     * Check a given node for being the special method header node.
+     *
+     * @param node Node to check
+     * @return True if given node is the special method header node, false otherwise
+     */
+    public static boolean isMethodHeaderNode(ControlFlowNode node) {
+        return node.getTag() instanceof NodeTag
+               && ((NodeTag) node.getTag()).getLabel().equals("methodHeader");
     }
 
     /**
@@ -188,6 +211,20 @@ public class SmPLMethodCFG {
     @Override
     public String toString() {
         return cfg.toGraphVisText();
+    }
+
+    /**
+     * Find the post-branch convergence node corresponding to a BRANCH node.
+     *
+     * @param node Branch node to find convergence node for
+     * @return Convergence node corresponding to given branch node
+     */
+    private static ControlFlowNode findConvergenceNode(ControlFlowNode node) {
+        // FIXME: this relies on implementation details of ControlFlowBuilder::visitCtIf and ControlFlowNode.count
+        // A good fix would be adding this info explicitly to spoon-control-flow, e.g by having
+        // ControlFlowNodes have a field .postBranchConverge that was set to the specific
+        // convergence node created for the branch, and having a method ControlFlowNode::getPostBranchConvergenceNode
+        return node.getParent().findNodeById(node.getId() + 1);
     }
 
     /**

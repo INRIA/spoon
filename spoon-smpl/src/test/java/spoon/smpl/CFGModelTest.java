@@ -91,7 +91,7 @@ public class CFGModelTest {
         Model model = new CFGModel(methodCfg(parseMethod("void foo() { int x = 1; } ")));
         ModelChecker checker = new ModelChecker(model);
 
-        new AllNext(new StatementPattern(makePattern(parseStatement("int x = 1;")))).accept(checker);
+        new AllNext(new AllNext(new StatementPattern(makePattern(parseStatement("int x = 1;"))))).accept(checker);
 
         assertEquals(res(), checker.getResult());
 
@@ -161,9 +161,7 @@ public class CFGModelTest {
                                                          "    }                \n" +
                                                          "}                    \n")));
 
-        Pattern regex = Pattern.compile("labels=\\{(\\d+): \\[\\], (\\d+): \\[if \\(n > 0\\)\\], (\\d+): \\[after\\], " +
-                                        "(\\d+): \\[trueBranch\\], (\\d+): \\[return 1\\], (\\d+): \\[falseBranch\\], " +
-                                        "(\\d+): \\[return 0\\]}");
+        Pattern regex = Pattern.compile("labels=\\{(\\d+): \\[\\], (\\d+): \\[if \\(n > 0\\)\\], (\\d+): \\[after\\], (\\d+): \\[trueBranch\\], (\\d+): \\[return 1\\], (\\d+): \\[falseBranch\\], (\\d+): \\[return 0\\], (\\d+): \\[methodHeader\\]}");
 
         Matcher matcher = regex.matcher(model.toString());
         assertTrue(matcher.find());
@@ -175,6 +173,7 @@ public class CFGModelTest {
         String retone = matcher.group(5);
         String falsebranch = matcher.group(6);
         String retzero = matcher.group(7);
+        String header = matcher.group(8);
 
         assertTrue(model.toString().contains("states=[" + exit + ", " +
                                                           ifstm + ", " +
@@ -182,7 +181,8 @@ public class CFGModelTest {
                                                           truebranch + ", " +
                                                           retone + ", " +
                                                           falsebranch + ", " +
-                                                          retzero + "]"));
+                                                          retzero + ", " +
+                                                          header + "]"));
 
         assertTrue(model.toString().contains("successors={" + exit + "->" + exit + ", " +
                                                               ifstm + "->" + truebranch + ", " +
@@ -191,6 +191,7 @@ public class CFGModelTest {
                                                               truebranch + "->" + retone + ", " +
                                                               retone + "->" + exit + ", " +
                                                               falsebranch + "->" + retzero + ", " +
-                                                              retzero + "->" + exit + "}"));
+                                                              retzero + "->" + exit + ", " +
+                                                              header + "->" + ifstm + "}"));
     }
 }

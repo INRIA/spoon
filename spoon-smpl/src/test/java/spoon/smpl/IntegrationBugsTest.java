@@ -27,6 +27,8 @@ public class IntegrationBugsTest {
 
         // contract: AX(Predicate) should include the successor constraint when generating results
 
+        // TODO: this is a model checker bug, rewrite in the model checker test suite.
+
         // Background: The model checker is supposed to compute SAT(AX(Predicate)) according to
         //             SAT(AX(Predicate)) = { (s,env) | (s',env) in SAT(Predicate),
         //                                              s in StatesOnlyTransitioningTo(StatesIn(SAT(Predicate))),
@@ -41,7 +43,8 @@ public class IntegrationBugsTest {
         Map<String, MetavariableConstraint> meta = makeMetavars("v", new IdentifierConstraint());
         List<String> metakeys = new ArrayList<>(meta.keySet());
 
-        new AllNext(new StatementPattern(makePattern(parseStatement("int v = 1;"), metakeys), meta))
+        new And(new Not(new Proposition("methodHeader")),
+                new AllNext(new StatementPattern(makePattern(parseStatement("int v = 1;"), metakeys), meta)))
                 .accept(checker);
 
         assertEquals("[(4, {v=y}, [])]", sortedEnvs(checker.getResult().toString()));
@@ -54,6 +57,8 @@ public class IntegrationBugsTest {
 
         // contract: EX(Predicate) should include the successor constraint when generating results
 
+        // TODO: this is a model checker bug, rewrite in the model checker test suite.
+
         // Background: Failing to check successor constraint, see testModelCheckerAllNextBug01
 
         Model model = new CFGModel(methodCfg(parseMethod("void foo() { int x = 1; int y = 1; }")));
@@ -62,7 +67,8 @@ public class IntegrationBugsTest {
         Map<String, MetavariableConstraint> meta = makeMetavars("v", new IdentifierConstraint());
         List<String> metakeys = new ArrayList<>(meta.keySet());
 
-        new ExistsNext(new StatementPattern(makePattern(parseStatement("int v = 1;"), metakeys), meta))
+        new And(new Not(new Proposition("methodHeader")),
+                new ExistsNext(new StatementPattern(makePattern(parseStatement("int v = 1;"), metakeys), meta)))
                 .accept(checker);
 
         assertEquals("[(4, {v=y}, [])]", sortedEnvs(checker.getResult().toString()));

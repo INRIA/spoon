@@ -54,7 +54,6 @@ public class MainFeaturesTest {
         ModelChecker.ResultSet result = modelChecker.getResult();
 
         assertEquals(1, result.size());
-        assertEquals(4, result.iterator().next().getState());
         assertEquals(env(), result.iterator().next().getEnvironment());
         assertEquals("[<4, T, int, [<4, ret, y, [<5, C, 5, []>]>]>]", result.getAllWitnesses().toString());
     }

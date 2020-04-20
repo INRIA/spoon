@@ -3,18 +3,26 @@ package spoon.smpl;
 import spoon.reflect.declaration.CtElement;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
+
 
 /**
  * An Operation is a (generally non-pure) function that takes a CtElement and a map of
- * metavariable bindings and then possibly inflicts some mutation on the CtElement.
+ * metavariable bindings and then possibly inflicts some mutation on the CtElement
+ * or its parent structure / environment.
  */
-public interface Operation extends BiConsumer<CtElement, Map<String, Object>> {
+public interface Operation extends TriConsumer<OperationFilter, CtElement, Map<String, Object>> {
     /**
      * Apply the operation.
+     *
+     * The Operation should inspect the 'category' parameter to validate whether or not
+     * the operation should be applied. For example, an Operation that appends elements
+     * to an anchor element should probably only apply their effect if the call comes
+     * with the OperationFilter.APPEND category value.
+     *
+     * @param category Category to match
      * @param element Element to operate on
      * @param bindings Metavariable bindings to use
      */
     @Override
-    public void accept(CtElement element, Map<String, Object> bindings);
+    public void accept(OperationFilter category, CtElement element, Map<String, Object> bindings);
 }
