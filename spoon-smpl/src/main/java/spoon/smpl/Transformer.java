@@ -32,9 +32,10 @@ public class Transformer {
      */
     public static void transform(CFGModel model, Set<ModelChecker.Witness> witnesses) {
         Map<String, Object> bindings = new HashMap<>();
+        HashSet<Integer> done = new HashSet<>();
 
         for (ModelChecker.Witness witness : witnesses) {
-            transform(model, bindings, witness);
+            transform(model, bindings, witness, done);
         }
     }
 
@@ -45,8 +46,14 @@ public class Transformer {
      * @param bindings Metavariable bindings
      * @param witness CTL-VW witness that encodes zero or more transformations
      */
-    private static void transform(CFGModel model, Map<String, Object> bindings, ModelChecker.Witness witness) {
+    private static void transform(CFGModel model, Map<String, Object> bindings, ModelChecker.Witness witness, Set<Integer> done) {
         if (witness.binding instanceof List<?>) {
+            if (done.contains(witness.state)) {
+                return;
+            }
+
+            done.add(witness.state);
+
             // The witness binding is a list of operations, apply them
 
             List<?> objects = (List<?>) witness.binding;
@@ -84,7 +91,7 @@ public class Transformer {
             bindings.put(witness.metavar, witness.binding);
 
             for (ModelChecker.Witness subWitness : witness.witnesses) {
-                transform(model, bindings, subWitness);
+                transform(model, bindings, subWitness, done);
             }
 
             bindings.remove(witness.metavar);
