@@ -178,7 +178,15 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtExecutableReference(CtExecutableReference<T> ctExecutableReference) {
-        throw new NotImplementedException("Not implemented");
+        ElemNode result = new ElemNode(ctExecutableReference);
+
+        if (ctExecutableReference.getDeclaringType() != null) {
+            result.sub.put("declaringtype", new ValueNode(ctExecutableReference.getDeclaringType().getSimpleName(), ctExecutableReference.getDeclaringType()));
+        }
+
+        result.sub.put("name", new ValueNode(ctExecutableReference.getSimpleName(), ctExecutableReference.getSimpleName()));
+
+        resultStack.push(result);
     }
 
     @Override
@@ -241,7 +249,22 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtInvocation(CtInvocation<T> ctInvocation) {
-        throw new NotImplementedException("Not implemented");
+        ElemNode result = new ElemNode(ctInvocation);
+
+        ctInvocation.getExecutable().accept(this);
+        result.sub.put("executable", resultStack.pop());
+
+        int numargs = ctInvocation.getArguments().size();
+
+        result.sub.put("numargs", new ValueNode(numargs, numargs));
+
+        for (int i = 0; i < numargs; ++i) {
+            // TODO: also include argument types?
+            ctInvocation.getArguments().get(i).accept(this);
+            result.sub.put("arg" + Integer.toString(i), resultStack.pop());
+        }
+
+        resultStack.push(result);
     }
 
     @Override
@@ -435,7 +458,13 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtUnaryOperator(CtUnaryOperator<T> ctUnaryOperator) {
-        throw new NotImplementedException("Not implemented");
+        ElemNode result = new ElemNode(ctUnaryOperator);
+        result.sub.put("kind", new ValueNode(ctUnaryOperator.getKind(), ctUnaryOperator.getKind()));
+
+        ctUnaryOperator.getOperand().accept(this);
+        result.sub.put("operand", resultStack.pop());
+
+        resultStack.push(result);
     }
 
     @Override
