@@ -1,10 +1,16 @@
 package spoon.smpl;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtVariableReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.smpl.formula.Predicate;
+import spoon.smpl.formula.VariableUsePredicate;
 import spoon.smpl.pattern.PatternBuilder;
 import spoon.smpl.pattern.PatternNode;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +37,49 @@ abstract public class CodeElementLabel implements Label {
      * @return True if the predicate is a VariableUsePredicate which matches the label
      */
     public boolean matches(Predicate obj) {
-        return false;
+        if (obj instanceof VariableUsePredicate) {
+            VariableUsePredicate vup = (VariableUsePredicate) obj;
+            Map<String, Object> variablesUsed = new HashMap<>();
+
+            CtScanner scanner = new CtScanner() {
+                @Override
+                protected void enter(CtElement e) {
+                    if (e instanceof CtVariableReference<?>) {
+                        variablesUsed.put(((CtVariableReference<?>) e).getSimpleName(), e);
+                    }
+
+                    if (e instanceof CtVariable<?>) {
+                        variablesUsed.put(((CtVariable<?>) e).getSimpleName(), e);
+                    }
+                }
+            };
+
+            scanner.scan(codeElement);
+
+            if (vup.getMetavariables().containsKey(vup.getVariable())) {
+                metavarBindings = new ArrayList<>();
+
+                for (String varname : variablesUsed.keySet()) {
+                    Map<String, Object> params = new HashMap<>();
+                    params.put(vup.getVariable(), variablesUsed.get(varname));
+                    metavarBindings.add(params);
+                }
+
+                List<Map<String, Object>> metavarBindingsCopy = new ArrayList<>(metavarBindings);
+
+                for (int i = metavarBindingsCopy.size() - 1; i >= 0; --i) {
+                    if (!vup.processMetavariableBindings(metavarBindingsCopy.get(i))) {
+                        metavarBindings.remove(i);
+                    }
+                }
+
+                return metavarBindings.size() > 0;
+            } else {
+                return variablesUsed.containsKey(vup.getVariable());
+            }
+        } else {
+            return false;
+        }
     }
 
     /**

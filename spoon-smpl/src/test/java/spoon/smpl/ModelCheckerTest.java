@@ -1,9 +1,6 @@
 package spoon.smpl;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 import org.junit.Test;
 
@@ -18,6 +15,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 
 import spoon.smpl.formula.*;
+import spoon.smpl.metavars.IdentifierConstraint;
 import spoon.smpl.pattern.*;
 
 import static spoon.smpl.TestUtils.*;
@@ -350,5 +348,97 @@ public class ModelCheckerTest {
 
         new StatementPattern(pattern).accept(checker);
         assertEquals(res(1, env()), checker.getResult());
+    }
+
+    static class VariableUseLabel implements Label {
+        public VariableUseLabel(List<String> usedVarNames) {
+            this.usedVarNames = usedVarNames;
+        }
+
+        public List<String> usedVarNames;
+        public List<Map<String, Object>> bindings;
+
+        public boolean matches(Predicate obj) {
+            if (obj instanceof VariableUsePredicate) {
+                VariableUsePredicate vup = (VariableUsePredicate) obj;
+
+                if (vup.getMetavariables().containsKey(vup.getVariable())) {
+                    bindings = new ArrayList<>();
+
+                    for (String varname : usedVarNames) {
+                        Map<String, Object> binding = new HashMap<>();
+                        binding.put(vup.getVariable(), varname);
+                        bindings.add(binding);
+                    }
+
+                    return true;
+                } else {
+                    return usedVarNames.contains(vup.getVariable());
+                }
+            }
+
+            return false;
+        }
+
+        public List<Map<String, Object>> getMetavariableBindings() { return bindings; }
+        public void reset() { }
+    }
+
+    static class AnyConstraint implements MetavariableConstraint {
+        public Object apply(Object value) {
+            return value;
+        }
+    }
+
+    @Test
+    public void testVariableUsePredicateExplicitMatch() {
+
+        // contract: correct model checking for VariableUsePredicate over explicitly matching variables
+
+        ModelBuilder model = new ModelBuilder();
+        model.addStates(1,2,3)
+             .addTransition(1,2)
+             .addTransition(1,3)
+             .addTransition(2,1)
+             .addTransition(3,3);
+
+        assertTrue(ModelChecker.isValid(model));
+
+        model.addLabel(1, new VariableUseLabel(Arrays.asList("x")))
+             .addLabel(2, new VariableUseLabel(Arrays.asList("x", "y")))
+             .addLabel(3, new VariableUseLabel(Arrays.asList("y")));
+
+        ModelChecker checker = new ModelChecker(model);
+
+        new VariableUsePredicate("x", new HashMap<>()).accept(checker);
+        assertEquals(res(1, env(), 2, env()), checker.getResult());
+
+        new VariableUsePredicate("y", new HashMap<>()).accept(checker);
+        assertEquals(res(2, env(), 3, env()), checker.getResult());
+    }
+
+    @Test
+    public void testVariableUsePredicateMetavariableBind() {
+
+        // contract: correct model checking for VariableUsePredicate over metavariables
+
+        ModelBuilder model = new ModelBuilder();
+        model.addStates(1,2,3)
+             .addTransition(1,2)
+             .addTransition(1,3)
+             .addTransition(2,1)
+             .addTransition(3,3);
+
+        assertTrue(ModelChecker.isValid(model));
+
+        model.addLabel(1, new VariableUseLabel(Arrays.asList("x")))
+             .addLabel(2, new VariableUseLabel(Arrays.asList("x", "y")))
+             .addLabel(3, new VariableUseLabel(Arrays.asList("y")));
+
+        ModelChecker checker = new ModelChecker(model);
+
+        new VariableUsePredicate("z", makeMetavars("z", new AnyConstraint())).accept(checker);
+        assertEquals(res(1, env("z", "x"), 2, env("z", "x"), 2, env("z", "y"), 3, env("z", "y")),
+                     checker.getResult());
     }
 }
