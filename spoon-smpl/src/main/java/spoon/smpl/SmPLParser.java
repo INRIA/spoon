@@ -43,6 +43,17 @@ public class SmPLParser {
         Set<Integer> containedCommonLines = findContainedCommonLines(adds, commonLines);
         commonLines.removeAll(containedCommonLines);
 
+        class DeletionAnchorRemover extends CtScanner {
+            @Override
+            protected void enter(CtElement e) {
+                if (SmPLJavaDSL.isDeletionAnchor(e)) {
+                    e.delete();
+                }
+            }
+        }
+
+        new DeletionAnchorRemover().scan(adds);
+
         return compile(dels, commonLines, anchoredOperations);
     }
 
