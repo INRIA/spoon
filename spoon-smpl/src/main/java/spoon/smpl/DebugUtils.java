@@ -65,4 +65,67 @@ public class DebugUtils {
 
         return sb;
     }
+
+    /**
+     * Format text for pretty-printing.
+     * @param text Text to format
+     * @return Formatted text
+     */
+    public static String prettify(String text) {
+        return prettify(text, '{', '}', 4, false);
+    }
+
+    /**
+     * Format text for pretty-printing.
+     * @param text Text to format
+     * @param open Indentation-increasing character
+     * @param close Indentation-decreasing character
+     * @param indentSize Indentation size
+     * @param addNewlines Add newlines after indentation-altering characters?
+     * @return Formatted text
+     */
+    public static String prettify(String text, char open, char close, int indentSize, boolean addNewlines) {
+        StringBuilder result = new StringBuilder();
+
+        int indent = 0;
+        boolean doIndent = false;
+
+        for (char c : text.toCharArray()) {
+            if (c == close) {
+                indent -= 1;
+
+                if (addNewlines) {
+                    result.append('\n');
+                    doIndent = true;
+                }
+            }
+
+            if (doIndent) {
+                doIndent = false;
+
+                for (int i = 0; i < indent; ++i) {
+                    for (int j = 0; j < indentSize; ++j) {
+                        result.append(" ");
+                    }
+                }
+            }
+
+            result.append(c);
+
+            if (c == '\n') {
+                doIndent = true;
+            }
+
+            if (c == open) {
+                indent += 1;
+
+                if (addNewlines) {
+                    result.append('\n');
+                    doIndent = true;
+                }
+            }
+        }
+
+        return result.toString();
+    }
 }

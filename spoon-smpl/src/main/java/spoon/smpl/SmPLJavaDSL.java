@@ -15,6 +15,19 @@ import java.util.List;
  */
 public class SmPLJavaDSL {
     /**
+     * Name of the field used to hold the name of the rule.
+     */
+    private static final String ruleNameFieldName = "__SmPLRuleName__";
+
+    /**
+     * Get the name of the field used to hold the name of the rule.
+     * @return Name of the field used to hold the name of the rule
+     */
+    public static String getRuleNameFieldName() {
+        return ruleNameFieldName;
+    }
+
+    /**
      * Name of the method used to encode metavariable definitions.
      */
     private static final String metavarsMethodName = "__SmPLMetavars__";
