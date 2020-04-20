@@ -659,7 +659,11 @@ public class JDTTreeBuilderHelper {
 		} else if (ref.isStatic()) {
 			target = createTypeAccess(qualifiedNameReference, ref);
 		} else if (!ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
-			target = jdtTreeBuilder.getFactory().Code().createThisAccess(jdtTreeBuilder.getReferencesBuilder().<Object>getTypeReference(qualifiedNameReference.actualReceiverType), true);
+			if (!JDTTreeBuilderQuery.isResolvedField(qualifiedNameReference)) {
+				target = createTypeAccessNoClasspath(qualifiedNameReference);
+			} else {
+				target = jdtTreeBuilder.getFactory().Code().createThisAccess(jdtTreeBuilder.getReferencesBuilder().<Object>getTypeReference(qualifiedNameReference.actualReceiverType), true);
+			}
 		}
 		return target;
 	}
