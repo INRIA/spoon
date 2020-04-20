@@ -5,6 +5,7 @@ import spoon.smpl.formula.Predicate;
 import spoon.smpl.pattern.PatternBuilder;
 import spoon.smpl.pattern.PatternNode;
 
+import java.util.List;
 import java.util.Map;
 
 abstract public class CodeElementLabel implements Label {
@@ -40,7 +41,7 @@ abstract public class CodeElementLabel implements Label {
      * @return Most recent metavariable bindings, or null if there were none
      */
     @Override
-    public Map<String, Object> getMetavariableBindings() {
+    public List<Map<String, Object>> getMetavariableBindings() {
         return metavarBindings;
     }
 
@@ -79,5 +80,5 @@ abstract public class CodeElementLabel implements Label {
     /**
      * The most recently matched metavariable bindings.
      */
-    protected Map<String, Object> metavarBindings;
+    protected List<Map<String, Object>> metavarBindings;
 }

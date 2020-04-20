@@ -354,16 +354,19 @@ public class ModelChecker implements FormulaVisitor {
         for (int s : model.getStates()) {
             for (Label label : model.getLabels(s)) {
                 if (label.matches(element)) {
-                    Map<String, Object> params = label.getMetavariableBindings();
-                    Environment environment = new Environment();
+                    List<Map<String, Object>> bindings = label.getMetavariableBindings();
 
-                    if (params != null) {
-                        environment.putAll(params);
+                    if (bindings == null) {
+                        resultSet.add(new Result(s, new Environment(), emptyWitnessForest()));
+                    } else {
+                        for (Map<String, Object> parameters : bindings) {
+                            Environment environment = new Environment();
+                            environment.putAll(parameters);
+                            resultSet.add(new Result(s, environment, emptyWitnessForest()));
+                        }
                     }
 
                     label.reset();
-
-                    resultSet.add(new Result(s, environment, emptyWitnessForest()));
                     break;
                 }
             }

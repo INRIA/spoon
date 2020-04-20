@@ -8,6 +8,8 @@ import spoon.smpl.pattern.PatternBuilder;
 import spoon.smpl.pattern.PatternMatcher;
 import spoon.smpl.pattern.PatternNode;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,8 +53,8 @@ public class BranchLabel extends CodeElementLabel {
 
             PatternMatcher matcher = new PatternMatcher(bp.getConditionPattern());
             codePattern.accept(matcher);
-            metavarBindings = matcher.getParameters();
-            return matcher.getResult() && bp.processMetavariableBindings(metavarBindings);
+            metavarBindings = Arrays.asList(matcher.getParameters());
+            return matcher.getResult() && bp.processMetavariableBindings(metavarBindings.get(0));
         } else {
             return super.matches(obj);
         }
