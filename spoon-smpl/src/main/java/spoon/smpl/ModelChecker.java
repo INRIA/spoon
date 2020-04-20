@@ -312,7 +312,7 @@ public class ModelChecker implements FormulaVisitor {
      * @param element
      */
     @Override
-    public void visit(Neg element) {
+    public void visit(Not element) {
         element.getInnerElement().accept(this);
         ResultSet innerResult = resultStack.pop();
         resultStack.push(ResultSet.negate(model, innerResult));

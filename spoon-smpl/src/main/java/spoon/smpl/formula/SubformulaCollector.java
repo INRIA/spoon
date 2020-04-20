@@ -34,7 +34,7 @@ public class SubformulaCollector implements FormulaVisitor {
     }
 
     @Override
-    public void visit(Neg element) {
+    public void visit(Not element) {
         subformulas.add(element);
         element.getInnerElement().accept(this);
     }

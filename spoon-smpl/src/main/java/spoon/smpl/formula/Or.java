@@ -28,6 +28,6 @@ public class Or extends BinaryConnective {
      */
     @Override
     public String toString() {
-        return "(" + getLhs().toString() + " || " + getRhs().toString() + ")";
+        return "Or(" + getLhs().toString() + ", " + getRhs().toString() + ")";
     }
 }

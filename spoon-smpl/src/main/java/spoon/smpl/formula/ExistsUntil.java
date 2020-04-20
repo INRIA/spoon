@@ -31,6 +31,6 @@ public class ExistsUntil extends BinaryConnective {
      */
     @Override
     public String toString() {
-        return "E[" + getLhs().toString() + " U " + getRhs().toString() + "]";
+        return "EU(" + getLhs().toString() + ", " + getRhs().toString() + ")";
     }
 }

@@ -3,13 +3,13 @@ package spoon.smpl.formula;
 /**
  * Neg represents negation, the classical "NOT" logical connective.
  */
-public class Neg extends UnaryConnective {
+public class Not extends UnaryConnective {
     /**
      * Create a new "NOT" logical connective.
      *
      * @param innerElement
      */
-    public Neg(Formula innerElement)
+    public Not(Formula innerElement)
     {
         super(innerElement);
     }
@@ -28,6 +28,6 @@ public class Neg extends UnaryConnective {
      */
     @Override
     public String toString() {
-        return "-" + getInnerElement().toString();
+        return "Not(" + getInnerElement().toString() + ")";
     }
 }

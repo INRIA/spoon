@@ -31,6 +31,6 @@ public class AllUntil extends BinaryConnective {
      */
     @Override
     public String toString() {
-        return "A[" + getLhs().toString() + " U " + getRhs().toString() + "]";
+        return "AU(" + getLhs().toString() + ", " + getRhs().toString() + ")";
     }
 }

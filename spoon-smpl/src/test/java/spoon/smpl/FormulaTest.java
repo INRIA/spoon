@@ -12,11 +12,10 @@ public class FormulaTest {
 
         // contract: formula elements should have a nice structurally recursive string representation
 
-        Formula phi = new AllNext(new AllUntil(new And(new ExistsNext(new Neg(new True())),
+        Formula phi = new AllNext(new AllUntil(new And(new ExistsNext(new Not(new True())),
                                                        new ExistsUntil(new Or(new ExistsVar("x", new Proposition("Proposition")),
                                                                               new SetEnv("y", 1)), new True())), new True()));
-
-        assertEquals("AX(A[(EX(-T) && E[(Ex(Proposition) || SetEnv(y = 1)) U T]) U T])",
+        assertEquals("AX(AU(And(EX(Not(T)), EU(Or(E(x, Proposition), SetEnv(y = 1)), T)), T))",
                      phi.toString());
     }
 }

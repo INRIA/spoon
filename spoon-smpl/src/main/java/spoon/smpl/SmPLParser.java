@@ -91,7 +91,7 @@ public class SmPLParser {
 
         if (ruleMethod == null) {
             // A completely empty rule matches nothing
-            return new SmPLRuleImpl(new Neg(new True()), metavars);
+            return new SmPLRuleImpl(new Not(new True()), metavars);
         }
 
         FormulaCompiler fc = new FormulaCompiler(new SmPLCFGAdapter(ruleMethod), metavars);

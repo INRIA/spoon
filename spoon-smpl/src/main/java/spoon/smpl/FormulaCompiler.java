@@ -71,8 +71,8 @@ public class FormulaCompiler {
             return new ExistsUntil(optimize(((ExistsUntil) input).getLhs()), optimize(((ExistsUntil) input).getRhs()));
         } else if (input instanceof ExistsVar) {
             return new ExistsVar(((ExistsVar) input).getVarName(), optimize(((ExistsVar) input).getInnerElement()));
-        } else if (input instanceof Neg) {
-            return new Neg(optimize(((Neg) input).getInnerElement()));
+        } else if (input instanceof Not) {
+            return new Not(optimize(((Not) input).getInnerElement()));
         } else if (input instanceof Or) {
             return new Or(optimize(((Or) input).getLhs()), optimize(((Or) input).getRhs()));
         } else if (input instanceof Proposition) {

@@ -28,6 +28,6 @@ public class And extends BinaryConnective {
      */
     @Override
     public String toString() {
-        return "(" + getLhs().toString() + " && " + getRhs().toString() + ")";
+        return "And(" + getLhs().toString() + ", " + getRhs().toString() + ")";
     }
 }

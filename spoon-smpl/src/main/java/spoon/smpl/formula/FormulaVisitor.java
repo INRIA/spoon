@@ -7,7 +7,7 @@ public interface FormulaVisitor {
     public void visit(True element);
     public void visit(And element);
     public void visit(Or element);
-    public void visit(Neg element);
+    public void visit(Not element);
     public void visit(Predicate element);
     public void visit(ExistsNext element);
     public void visit(AllNext element);

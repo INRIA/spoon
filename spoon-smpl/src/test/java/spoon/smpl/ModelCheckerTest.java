@@ -142,10 +142,10 @@ public class ModelCheckerTest {
 
         ModelChecker checker = new ModelChecker(model);
 
-        new Neg(new Proposition("p")).accept(checker);
+        new Not(new Proposition("p")).accept(checker);
         assertEquals(res(2, env()), checker.getResult());
 
-        new Neg(new Proposition("q")).accept(checker);
+        new Not(new Proposition("q")).accept(checker);
         assertEquals(res(1, env()), checker.getResult());
     }
 

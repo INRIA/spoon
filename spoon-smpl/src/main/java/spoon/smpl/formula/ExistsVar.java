@@ -40,7 +40,7 @@ public class ExistsVar implements Formula {
      */
     @Override
     public String toString() {
-        return "E" + varName + "(" + innerElement.toString() + ")";
+        return "E(" + varName + ", " + innerElement.toString() + ")";
     }
 
     private String varName;
