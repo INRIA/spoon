@@ -127,7 +127,9 @@ public class Substitutor implements CtVisitor {
 
     @Override
     public <R> void visitCtBlock(CtBlock<R> block) {
-        throw new NotImplementedException("Not implemented");
+        for (CtStatement stmt : block.getStatements()) {
+            stmt.accept(this);
+        }
     }
 
     @Override
@@ -222,7 +224,12 @@ public class Substitutor implements CtVisitor {
 
     @Override
     public void visitCtIf(CtIf ifElement) {
-        throw new NotImplementedException("Not implemented");
+        ifElement.getCondition().accept(this);
+        ifElement.getThenStatement().accept(this);
+
+        if (ifElement.getElseStatement() != null) {
+            ifElement.getElseStatement().accept(this);
+        }
     }
 
     @Override
@@ -232,7 +239,7 @@ public class Substitutor implements CtVisitor {
 
     @Override
     public <T> void visitCtInvocation(CtInvocation<T> invocation) {
-        throw new NotImplementedException("Not implemented");
+        invocation.getArguments().forEach((argument) -> { argument.accept(this); });
     }
 
     @Override
@@ -331,7 +338,7 @@ public class Substitutor implements CtVisitor {
 
     @Override
     public <R> void visitCtReturn(CtReturn<R> returnStatement) {
-        throw new NotImplementedException("Not implemented");
+        returnStatement.getReturnedExpression().accept(this);
     }
 
     @Override
