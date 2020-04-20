@@ -23,6 +23,8 @@ import spoon.smpl.pattern.*;
 import static spoon.smpl.TestUtils.*;
 
 public class ModelCheckerTest {
+    // TODO: add test for the merging in ResultSet.negate
+
     private static class ModelBuilder implements Model {
         public List<Integer> states;
         public Map<Integer, List<Integer>> successors;

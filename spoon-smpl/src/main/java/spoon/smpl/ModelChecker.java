@@ -234,7 +234,32 @@ public class ModelChecker implements FormulaVisitor {
                 }
 
                 for (Environment e : negatedEnvironment) {
-                    negatedResultSet.add(new Result(result.getState(), e, emptyWitnessForest()));
+                    boolean wasMerged = false;
+                    Result replacedResult = null;
+                    Result mergedResult = null;
+
+                    for (Result negatedResult : negatedResultSet) {
+                        if (result.getState() != negatedResult.getState()) {
+                            continue;
+                        }
+
+                        Environment jointEnvironment = Environment.join(result.getEnvironment(), negatedResult.getEnvironment());
+
+                        if (jointEnvironment != null) {
+                            replacedResult = negatedResult;
+                            mergedResult = new Result(negatedResult.getState(), jointEnvironment, emptyWitnessForest());
+                            wasMerged = true;
+                            break;
+                        }
+                    }
+
+                    if (wasMerged) {
+                        negatedResultSet.remove(replacedResult);
+                        negatedResultSet.add(mergedResult);
+                    }
+                    else {
+                        negatedResultSet.add(new Result(result.getState(), e, emptyWitnessForest()));
+                    }
                 }
             }
 
