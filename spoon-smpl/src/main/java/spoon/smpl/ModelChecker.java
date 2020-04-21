@@ -243,7 +243,7 @@ public class ModelChecker implements FormulaVisitor {
                             continue;
                         }
 
-                        Environment jointEnvironment = Environment.join(result.getEnvironment(), negatedResult.getEnvironment());
+                        Environment jointEnvironment = Environment.join(e, negatedResult.getEnvironment());
 
                         if (jointEnvironment != null) {
                             replacedResult = negatedResult;
