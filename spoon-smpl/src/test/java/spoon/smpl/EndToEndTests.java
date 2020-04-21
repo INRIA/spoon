@@ -739,4 +739,94 @@ public class EndToEndTests {
     
         assertEquals(expected.toString(), input.toString());
     }
+    @Test
+    public void testRemoveLocalsReturningConstants001() {
+        // contract: test using remove-locals-returning-constants patch example
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    int m1() {\n" +
+                                               "        int x = 0;\n" +
+                                               "        return x;\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    int m1b() {\n" +
+                                               "        int x = 0;\n" +
+                                               "        x = x + 1;\n" +
+                                               "        return x;\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    float m2() {\n" +
+                                               "        float x = 3.0f;\n" +
+                                               "        return x;\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    float m2b() {\n" +
+                                               "        float x = 3.0f;\n" +
+                                               "        float y = square(x);\n" +
+                                               "        return x;\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    String m3() {\n" +
+                                               "        String x = \"Hello, World!\";\n" +
+                                               "        return x;\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    String m3b() {\n" +
+                                               "        String x = \"Hello, World!\";\n" +
+                                               "        print(x);\n" +
+                                               "        return x;\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    int m1() {\n" +
+                                                  "        return 0;\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    int m1b() {\n" +
+                                                  "        int x = 0;\n" +
+                                                  "        x = x + 1;\n" +
+                                                  "        return x;\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    float m2() {\n" +
+                                                  "        return 3.0f;\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    float m2b() {\n" +
+                                                  "        float x = 3.0f;\n" +
+                                                  "        float y = square(x);\n" +
+                                                  "        return x;\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    String m3() {\n" +
+                                                  "        return \"Hello, World!\";\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    String m3b() {\n" +
+                                                  "        String x = \"Hello, World!\";\n" +
+                                                  "        print(x);\n" +
+                                                  "        return x;\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "type T;\n" +
+                                         "identifier ret;\n" +
+                                         "constant C;\n" +
+                                         "@@\n" +
+                                         "- T ret = C;\n" +
+                                         "  ... when != ret\n" +
+                                         "- return ret;\n" +
+                                         "+ return C;\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
 }
