@@ -1865,7 +1865,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					printer.writeSeparator(CtPackage.PACKAGE_SEPARATOR);
 				}
 			}
-			elementPrinterHelper.writeAnnotations(ref);
+			// You don't want to include annotations in import of an annotated object
+			if (ref.isParentInitialized() && !(ref.getParent() instanceof CtImport)) {
+				elementPrinterHelper.writeAnnotations(ref);
+			}
 			printer.writeIdentifier(ref.getSimpleName());
 		}
 		if (withGenerics && !context.ignoreGenerics()) {
