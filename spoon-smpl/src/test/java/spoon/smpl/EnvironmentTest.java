@@ -109,4 +109,25 @@ public class EnvironmentTest {
         assertEquals(null, Environment.join(e1, e2));
         assertEquals(null, Environment.join(e2, e1));
     }
+
+    @Test
+    public void testJoinDoesNotMutateInputs() {
+
+        // contract: Environment.join(a,b) should not mutate a or b
+
+        Environment e1 = new Environment();
+        Environment e2 = new Environment();
+
+        e1.put("x", new Environment.NegativeBinding("y"));
+        e2.put("x", new Environment.NegativeBinding("z"));
+
+        // TODO: use hashCodes
+        String e1str = e1.toString();
+        String e2str = e2.toString();
+
+        Environment e3 = Environment.join(e1, e2);
+
+        assertEquals(e1str, e1.toString());
+        assertEquals(e2str, e2.toString());
+    }
 }

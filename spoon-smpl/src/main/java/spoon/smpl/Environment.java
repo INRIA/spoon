@@ -14,6 +14,8 @@ public class Environment extends HashMap<String, Object> {
             super();
             this.addAll(Arrays.asList(xs));
         }
+
+        // TODO: implement hashCode
     }
 
     public Environment() {
@@ -37,7 +39,7 @@ public class Environment extends HashMap<String, Object> {
             return null;
         }
 
-        Environment result = new Environment(e1);
+        Environment result = e1.clone();
 
         for (String key : e2.keySet()) {
             if (result.containsKey(key)) {
@@ -156,6 +158,20 @@ public class Environment extends HashMap<String, Object> {
 
     @Override
     public Environment clone() {
-        return (Environment) super.clone();
+        Environment result = new Environment();
+
+        for (String key : keySet()) {
+            Object obj = get(key);
+
+            if (obj instanceof NegativeBinding) {
+                result.put(key, ((NegativeBinding) obj).clone());
+            } else {
+                result.put(key, obj);
+            }
+        }
+
+        return result;
     }
+
+    // TODO: implement hashCode
 }
