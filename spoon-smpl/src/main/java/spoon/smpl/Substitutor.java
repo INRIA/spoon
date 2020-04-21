@@ -8,6 +8,7 @@ import spoon.reflect.reference.*;
 import spoon.reflect.visitor.CtVisitor;
 
 import java.lang.annotation.Annotation;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -239,7 +240,11 @@ public class Substitutor implements CtVisitor {
 
     @Override
     public <T> void visitCtInvocation(CtInvocation<T> invocation) {
-        invocation.getArguments().forEach((argument) -> { argument.accept(this); });
+        List<CtExpression<?>> arguments = invocation.getArguments();
+
+        for (int i = 0; i < arguments.size(); ++i) {
+            arguments.get(i).accept(this);
+        }
     }
 
     @Override
@@ -398,7 +403,11 @@ public class Substitutor implements CtVisitor {
 
     @Override
     public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
-        throw new NotImplementedException("Not implemented");
+        String typename = typeAccess.getAccessedType().getSimpleName();
+
+        if (bindings.containsKey(typename)) {
+            typeAccess.replace((CtElement) bindings.get(typename));
+        }
     }
 
     @Override
