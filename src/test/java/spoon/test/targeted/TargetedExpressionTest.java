@@ -29,6 +29,7 @@ import java.util.List;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtFieldRead;
@@ -280,6 +281,40 @@ public class TargetedExpressionTest {
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedBar).target(expectedBarTypeAccess).result("Bar.staticFieldBar"), elements.get(7));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedBar).target(expectedBarTypeAccess).result("Bar.staticFieldBar"), elements.get(8));
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedFiiFuu).target(launcher.getFactory().Code().createTypeAccess(expectedFiiFuu)).result("Fii.Fuu.i"), elements.get(9));
+	}
+
+	@Test
+	public void testOnlyStaticTargetFieldReadNoClasspath() {
+		// bug case kindly provided by @slarse
+		// in https://github.com/INRIA/spoon/issues/3329
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/targeted/StaticFieldReadOnly.java");
+		CtModel model = launcher.buildModel();
+
+		List<CtInvocation<?>> invocations = model.getElements(e -> e.getExecutable().getSimpleName().equals("error"));
+		CtInvocation<?> inv = invocations.get(0);
+		CtFieldRead<?> fieldRead = (CtFieldRead<?>) inv.getTarget();
+		CtExpression<?> target = fieldRead.getTarget();
+
+		assertTrue(target instanceof CtTypeAccess);
+		assertEquals("Launcher", ((CtTypeAccess<?>) target).getAccessedType().getSimpleName());
+	}
+
+	@Test
+	public void testNestedClassAccessEnclosingTypeFieldNoClasspath() {
+		// Checks that a nested class accessing a field of an enclosing type's non-static field correctly
+		// resolves to a non-static field access. See https://github.com/INRIA/spoon/issues/3334 for details.
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/spoon/test/noclasspath/targeted/Outer.java");
+		CtModel model = launcher.buildModel();
+
+		List<CtFieldRead<?>> fieldReads = model.getElements(e -> e.getVariable().getSimpleName().equals("cls"));
+		assertEquals(1, fieldReads.size());
+		CtFieldRead<?> fieldRead = fieldReads.get(0);
+
+		assertTrue(fieldRead.getTarget() instanceof CtThisAccess);
 	}
 
 	@Test

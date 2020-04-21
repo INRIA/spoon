@@ -208,6 +208,19 @@ class JDTTreeBuilderQuery {
 	}
 
 	/**
+	 * Check if the name reference is resolved in the JDT tree, i.e. that the declaration is available.
+	 *
+	 * @param qualifiedNameReference
+	 * 		Reference which should contain a field binding.
+	 * @return true if the field has been resolved by the jdt builder.
+	 */
+	static boolean isResolvedField(QualifiedNameReference qualifiedNameReference) {
+		return qualifiedNameReference.binding instanceof FieldBinding
+				&& ((FieldBinding) qualifiedNameReference.binding).original().sourceField() != null;
+	}
+
+
+	/**
 	 * Checks if the last node in the stack in the context is an assignment and have a lhs equals to the given expression.
 	 *
 	 * @param context
