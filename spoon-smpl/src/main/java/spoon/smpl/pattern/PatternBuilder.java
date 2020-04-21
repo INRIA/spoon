@@ -453,7 +453,15 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtTypeAccess(CtTypeAccess<T> ctTypeAccess) {
-        throw new NotImplementedException("Not implemented");
+        String typename = ctTypeAccess.getAccessedType().getSimpleName();
+
+        if (params.contains(typename)) {
+            resultStack.push(new ParamNode(typename));
+        } else {
+            ElemNode result = new ElemNode(ctTypeAccess);
+            result.sub.put("typename", new ValueNode(typename, ctTypeAccess));
+            resultStack.push(result);
+        }
     }
 
     @Override
