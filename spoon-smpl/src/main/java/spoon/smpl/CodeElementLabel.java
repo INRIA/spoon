@@ -39,22 +39,8 @@ abstract public class CodeElementLabel implements Label {
     public boolean matches(Predicate obj) {
         if (obj instanceof VariableUsePredicate) {
             VariableUsePredicate vup = (VariableUsePredicate) obj;
-            Map<String, Object> variablesUsed = new HashMap<>();
-
-            CtScanner scanner = new CtScanner() {
-                @Override
-                protected void enter(CtElement e) {
-                    if (e instanceof CtVariableReference<?>) {
-                        variablesUsed.put(((CtVariableReference<?>) e).getSimpleName(), e);
-                    }
-
-                    if (e instanceof CtVariable<?>) {
-                        variablesUsed.put(((CtVariable<?>) e).getSimpleName(), e);
-                    }
-                }
-            };
-
-            scanner.scan(codeElement);
+            List<String> metakeys = new ArrayList<>(vup.getMetavariables().keySet());
+            Map<String, CtElement> variablesUsed = new VariableUseScanner(codeElement, metakeys).getResult();
 
             if (vup.getMetavariables().containsKey(vup.getVariable())) {
                 metavarBindings = new ArrayList<>();

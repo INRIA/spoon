@@ -297,28 +297,9 @@ public class FormulaCompiler {
      * @return Sorted list of metavariable names
      */
     private List<String> getMetavarsUsedIn(CtElement e) {
-        List<String> result = new ArrayList<>();
-
-        e.filterChildren(new TypeFilter<>(CtLocalVariable.class)).forEach((element) -> {
-            String varname = ((CtLocalVariable<?>) element).getReference().getSimpleName();
-            String typename = ((CtLocalVariable<?>) element).getType().getSimpleName();
-
-            if (metavars.containsKey(varname) && !result.contains(varname)) {
-                result.add(varname);
-            }
-
-            if (metavars.containsKey(typename) && !result.contains(typename)) {
-                result.add(typename);
-            }
-        });
-
-        e.filterChildren(new TypeFilter<>(CtVariableReference.class)).forEach((element) -> {
-            String varname = element.toString();
-
-            if (metavars.containsKey(varname) && !result.contains(varname)) {
-                result.add(varname);
-            }
-        });
+        List<String> metakeys = new ArrayList<>(metavars.keySet());
+        List<String> result = new ArrayList<>(new VariableUseScanner(e, metakeys).getResult().keySet());
+        result.retainAll(metakeys);
 
         Collections.sort(result);
 
