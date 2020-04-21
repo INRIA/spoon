@@ -388,6 +388,8 @@ public class PatternBuilder implements CtVisitor {
     public <R> void visitCtReturn(CtReturn<R> ctReturn) {
         ElemNode result = new ElemNode(ctReturn);
 
+        result.sub.put("is_void", new ValueNode(ctReturn.getReturnedExpression() == null, null));
+
         if (ctReturn.getReturnedExpression() != null) {
             ctReturn.getReturnedExpression().accept(this);
             result.sub.put("expr", resultStack.pop());
