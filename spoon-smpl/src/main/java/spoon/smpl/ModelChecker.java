@@ -227,27 +227,27 @@ public class ModelChecker implements FormulaVisitor {
             }
 
             for (Result result : resultSet) {
-                Set<Environment> negatedEnvironment = Environment.negate(result.getEnvironment());
+                Set<Environment> negatedEnvironmentSet = Environment.negate(result.getEnvironment());
 
-                if (negatedEnvironment == null) {
+                if (negatedEnvironmentSet == null) {
                     continue;
                 }
 
-                for (Environment e : negatedEnvironment) {
+                for (Environment negatedEnvironment : negatedEnvironmentSet) {
                     boolean wasMerged = false;
                     Result replacedResult = null;
                     Result mergedResult = null;
 
-                    for (Result negatedResult : negatedResultSet) {
-                        if (result.getState() != negatedResult.getState()) {
+                    for (Result existingNegatedResult : negatedResultSet) {
+                        if (result.getState() != existingNegatedResult.getState()) {
                             continue;
                         }
 
-                        Environment jointEnvironment = Environment.join(e, negatedResult.getEnvironment());
+                        Environment jointEnvironment = Environment.join(negatedEnvironment, existingNegatedResult.getEnvironment());
 
                         if (jointEnvironment != null) {
-                            replacedResult = negatedResult;
-                            mergedResult = new Result(negatedResult.getState(), jointEnvironment, emptyWitnessForest());
+                            replacedResult = existingNegatedResult;
+                            mergedResult = new Result(existingNegatedResult.getState(), jointEnvironment, emptyWitnessForest());
                             wasMerged = true;
                             break;
                         }
@@ -258,7 +258,7 @@ public class ModelChecker implements FormulaVisitor {
                         negatedResultSet.add(mergedResult);
                     }
                     else {
-                        negatedResultSet.add(new Result(result.getState(), e, emptyWitnessForest()));
+                        negatedResultSet.add(new Result(result.getState(), negatedEnvironment, emptyWitnessForest()));
                     }
                 }
             }
