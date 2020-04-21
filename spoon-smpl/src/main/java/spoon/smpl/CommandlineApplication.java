@@ -37,6 +37,9 @@ public class CommandlineApplication {
         System.out.println("        rewrite      rewrite SmPL input");
         System.out.println("                     requires --smpl-file");
         System.out.println();
+        System.out.println("        compile      compile SmPL input");
+        System.out.println("                     requires --smpl-file");
+        System.out.println();
         System.out.println("        ctl          compile and print CTL formula");
         System.out.println("                     requires --smpl-file");
         System.out.println();
@@ -46,7 +49,7 @@ public class CommandlineApplication {
         System.out.println();
     }
 
-    enum Action { CHECK, CHECKSUB, REWRITE, PATCH, CTL };
+    enum Action { CHECK, CHECKSUB, REWRITE, COMPILE, PATCH, CTL };
     enum ArgumentState { BASE, FAIL, ACTION, FILENAME_SMPL, FILENAME_JAVA };
 
     public static void main(String[] args) {
@@ -71,6 +74,9 @@ public class CommandlineApplication {
                         argumentState = ArgumentState.BASE;
                     } else if (arg.equals("rewrite")) {
                         action = Action.REWRITE;
+                        argumentState = ArgumentState.BASE;
+                    } else if (arg.equals("compile")) {
+                        action = Action.COMPILE;
                         argumentState = ArgumentState.BASE;
                     } else if (arg.equals("patch")) {
                         action = Action.PATCH;
@@ -179,10 +185,17 @@ public class CommandlineApplication {
                 usage();
                 System.exit(1);
             }
-        } else if (action == Action.CTL) {
+        } else if (action == Action.CTL || action == Action.COMPILE) {
             if (smplFilename != null) {
                 try {
-                    System.out.println(SmPLParser.parse(readFile(smplFilename, StandardCharsets.UTF_8)).getFormula());
+                    SmPLRule rule = SmPLParser.parse(readFile(smplFilename, StandardCharsets.UTF_8));
+
+                    if (action == Action.CTL) {
+                        System.out.println(rule.getFormula());
+                    } else if (action == Action.COMPILE) {
+                        System.out.println(rule);
+                    }
+
                     System.exit(0);
                 } catch (Exception e) {
                     e.printStackTrace();
