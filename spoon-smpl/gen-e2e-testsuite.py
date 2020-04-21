@@ -95,7 +95,7 @@ def parse_e2e_file(filename):
     parses an e2e test spec in a given filename
     """
     try:
-        return parse_e2e(open(filename).read())
+        return parse_e2e(open(filename).read().replace('"', '\\"'))
     except Exception as e:
         raise RuntimeError("invalid e2e file \"{}\": {}".format(filename, str(e))) from None
 
