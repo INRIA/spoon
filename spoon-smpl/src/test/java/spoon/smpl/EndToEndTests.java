@@ -741,7 +741,7 @@ public class EndToEndTests {
     }
     @Test
     public void testRemoveLocalsReturningConstants001() {
-        // contract: test using remove-locals-returning-constants patch example
+        // contract: correct application of remove-locals-returning-constants patch example
 
         CtClass<?> input = Launcher.parseClass("class A {\n" +
                                                "    int m1() {\n" +

@@ -3,6 +3,7 @@ package spoon.smpl;
 import spoon.smpl.formula.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * ModelChecker implements the CTL model-checking algorithm.
@@ -416,10 +417,37 @@ public class ModelChecker implements FormulaVisitor {
 
         for (int s : canOnlyTransition) {
             List<Integer> successors = model.getSuccessors(s);
+            Map<Integer, List<Result>> successorResultsMap = new HashMap<>();
 
-            for (Result r : innerResultSet) {
-                if (successors.contains(r.getState())) {
+            successors.forEach((n) -> {
+                successorResultsMap.put(n, innerResultSet.stream()
+                                                         .filter((result) -> result.getState() == n)
+                                                         .collect(Collectors.toList()));
+            });
+
+            if (successorResultsMap.size() == 1) {
+                for (Result r : successorResultsMap.get(successorResultsMap.keySet().iterator().next())) {
                     resultSet.add(new Result(s, r.getEnvironment(), r.getWitnesses()));
+                }
+            } else {
+                CombinationsGenerator<Result> combos = new CombinationsGenerator<>();
+
+                for (Integer key : successorResultsMap.keySet()) {
+                    combos.addWheel(successorResultsMap.get(key));
+                }
+
+                while (combos.next()) {
+                    Environment jointEnvironment = new Environment();
+                    Set<Witness> jointWitnesses = new HashSet<>();
+
+                    for (Result r : combos.current()) {
+                        jointEnvironment = Environment.join(jointEnvironment, r.getEnvironment());
+                        jointWitnesses.addAll(r.getWitnesses());
+                    }
+
+                    if (jointEnvironment != null) {
+                        resultSet.add(new Result(s, jointEnvironment, jointWitnesses));
+                    }
                 }
             }
         }
@@ -446,13 +474,16 @@ public class ModelChecker implements FormulaVisitor {
             Set<Integer> satisfyingStates = resultSet.getIncludedStates();
 
             Set<Integer> canTransition = ModelChecker.preExists(model, satisfyingStates);
-            canTransition.removeAll(satisfyingStates);
 
             ResultSet pre = new ResultSet();
 
-            for (Result r : resultSet) {
-                for (int s : canTransition) {
-                    pre.add(new Result(s, r.getEnvironment(), r.getWitnesses()));
+            for (int s : canTransition) {
+                List<Integer> successors = model.getSuccessors(s);
+
+                for (Result r : resultSet) {
+                    if (successors.contains(r.getState())) {
+                        pre.add(new Result(s, r.getEnvironment(), r.getWitnesses()));
+                    }
                 }
             }
 
@@ -480,20 +511,50 @@ public class ModelChecker implements FormulaVisitor {
 
         // find the states that satisfy Y in A[X U Y], these also satisfy A[X U Y] for any X
         element.getRhs().accept(this);
-        ResultSet resultSet  = resultStack.pop();
+        ResultSet resultSet = resultStack.pop();
 
         while (true) {
             // find the states that can ONLY transition into a state known to satisfy A[X U Y]
             Set<Integer> satisfyingStates = resultSet.getIncludedStates();
 
             Set<Integer> canOnlyTransition = ModelChecker.preAll(model, satisfyingStates);
-            canOnlyTransition.removeAll(satisfyingStates);
 
             ResultSet pre = new ResultSet();
 
-            for (Result r : resultSet) {
-                for (int s : canOnlyTransition) {
-                    pre.add(new Result(s, r.getEnvironment(), r.getWitnesses()));
+            for (int s : canOnlyTransition) {
+                List<Integer> successors = model.getSuccessors(s);
+                Map<Integer, List<Result>> successorResultsMap = new HashMap<>();
+
+                successors.forEach((n) -> {
+                    successorResultsMap.put(n, resultSet.stream()
+                                                        .filter((result) -> result.getState() == n)
+                                                        .collect(Collectors.toList()));
+                });
+
+                if (successorResultsMap.size() == 1) {
+                    for (Result r : successorResultsMap.get(successorResultsMap.keySet().iterator().next())) {
+                        pre.add(new Result(s, r.getEnvironment(), r.getWitnesses()));
+                    }
+                } else {
+                    CombinationsGenerator<Result> combos = new CombinationsGenerator<>();
+
+                    for (Integer key : successorResultsMap.keySet()) {
+                        combos.addWheel(successorResultsMap.get(key));
+                    }
+
+                    while (combos.next()) {
+                        Environment jointEnvironment = new Environment();
+                        Set<Witness> jointWitnesses = new HashSet<>();
+
+                        for (Result r : combos.current()) {
+                            jointEnvironment = Environment.join(jointEnvironment, r.getEnvironment());
+                            jointWitnesses.addAll(r.getWitnesses());
+                        }
+
+                        if (jointEnvironment != null) {
+                            pre.add(new Result(s, jointEnvironment, jointWitnesses));
+                        }
+                    }
                 }
             }
 

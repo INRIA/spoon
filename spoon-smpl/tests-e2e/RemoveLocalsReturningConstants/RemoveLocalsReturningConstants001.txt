@@ -2,7 +2,7 @@
 RemoveLocalsReturningConstants001
 
 [contract]
-test using remove-locals-returning-constants patch example
+correct application of remove-locals-returning-constants patch example
 
 
 [patch]
