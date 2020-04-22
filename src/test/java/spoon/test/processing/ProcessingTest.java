@@ -24,6 +24,7 @@ import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.processing.AbstractManualProcessor;
 import spoon.processing.AbstractProcessor;
+import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.processing.ProcessorPropertiesImpl;
 import spoon.processing.Property;
@@ -430,5 +431,79 @@ public class ProcessingTest {
 		assertFalse(fileContent.contains("import spoon.test.processing.testclasses.test.sub.A;"));
 		assertTrue(fileContent.contains("import spoon.test.processing.testclasses.test.sub.D;"));
 		assertTrue(fileContent.contains("private D a = new D();"));
+	}
+
+	@Test
+	public void testNullableSettingForProcessor() throws IOException {
+		class AProcessor extends AbstractProcessor<CtElement> {
+			@Property(nullable = false)
+			String aString = null;
+
+			@Property(nullable = true)
+			int anInt;
+
+			@Property
+			Object anObject;
+
+			@Property(nullable = true)
+			int[] arrayInt;
+
+			@Override
+			public void process(CtElement element) {
+			}
+		}
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/spoon/test/processor/test");
+		Processor<CtElement> processor = new AProcessor();
+		processor.setFactory(launcher.getFactory());
+		ProcessorProperties props = new ProcessorPropertiesImpl();
+
+		props.set("aString", null);
+		props.set("anInt", "42");
+		props.set("anObject", null);
+		props.set("arrayInt", "[42,43]");
+
+		ProcessorUtils.initProperties(processor, props);
+		launcher.addProcessor(processor);
+		launcher.run();
+		int warnings = launcher.getEnvironment().getWarningCount();
+		assertTrue(warnings == 2);
+	}
+
+	@Test
+	public void testNullableSettingForProcessor2() throws IOException {
+		class AProcessor extends AbstractProcessor<CtElement> {
+			@Property(nullable = true)
+			String aString = null;
+
+			@Property(nullable = true)
+			int anInt;
+
+			@Property(nullable = true)
+			Object anObject;
+
+			@Property(nullable = true)
+			int[] arrayInt;
+
+			@Override
+			public void process(CtElement element) {
+			}
+		}
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/spoon/test/processor/test");
+		Processor<CtElement> processor = new AProcessor();
+		processor.setFactory(launcher.getFactory());
+		ProcessorProperties props = new ProcessorPropertiesImpl();
+
+		props.set("aString", null);
+		props.set("anInt", "42");
+		props.set("anObject", null);
+		props.set("arrayInt", "[42,43]");
+
+		ProcessorUtils.initProperties(processor, props);
+		launcher.addProcessor(processor);
+		launcher.run();
+		int warnings = launcher.getEnvironment().getWarningCount();
+		assertTrue(warnings == 0);
 	}
 }

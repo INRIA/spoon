@@ -57,8 +57,10 @@ public final class ProcessorUtils {
 								throw new SpoonException("Error while assigning the value to " + f.getName(), e);
 							}
 						} else {
-							p.getFactory().getEnvironment().report(p, Level.WARN,
-									"No value found for property '" + f.getName() + "' in processor " + p.getClass().getName());
+								if (!f.getAnnotation(Property.class).nullable()) {
+									p.getFactory().getEnvironment().report(p, Level.WARN,
+											"No value found for property '" + f.getName() + "' in processor " + p.getClass().getName());
+							}
 						}
 					}
 				}

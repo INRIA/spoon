@@ -23,4 +23,8 @@ public @interface Property {
 	 * An optional text that describes the property.
 	 */
 	String value() default "";
+	/**
+	 * If a value is nullable, spoon will expect that the user handles null values and will not print errors.
+	 */
+	boolean nullable() default false;
 }
