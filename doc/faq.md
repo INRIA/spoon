@@ -27,7 +27,7 @@ keywords: frequently asked questions, FAQ, question and answer, collapsible sect
 
 ### How to access Spoon's source code repository?
 
-See <https://github.com/INRIA/spoon/>.
+Spoon is developed on GitHub at <https://github.com/INRIA/spoon/>. You can browse the Spoon source using code intelligence (Go-to-definition, Find References, and Hover tooltips) at <https://sourcegraph.com/github.com/INRIA/spoon>.
 
 ### What is the meaning of each digit in the version X.Y.Z of spoon?
 
