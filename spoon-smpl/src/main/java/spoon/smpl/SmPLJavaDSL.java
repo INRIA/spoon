@@ -85,8 +85,7 @@ public class SmPLJavaDSL {
      * @return True if element represents a deletion anchor, false otherwise
      */
     public static boolean isDeletionAnchor(CtElement e) {
-        return e instanceof CtInvocation<?>
-               && ((CtInvocation<?>) e).getExecutable().getSimpleName().equals(deletionAnchorName);
+        return isExecutableWithName(e, deletionAnchorName);
     }
 
     /**
@@ -95,8 +94,7 @@ public class SmPLJavaDSL {
      * @return True if element represents an SmPL dots construct, false otherwise
      */
     public static boolean isDots(CtElement e) {
-        return e instanceof CtInvocation<?>
-               && ((CtInvocation<?>) e).getExecutable().getSimpleName().equals(dotsElementName);
+        return isExecutableWithName(e, dotsElementName);
     }
 
     /**
@@ -118,6 +116,7 @@ public class SmPLJavaDSL {
     /**
      * Given a CtInvocation representing an SmPL dots construct in the SmPL Java DSL, collect
      * all arguments provided in "when != x" constraints.
+     *
      * @param dots Element representing an SmPL dots construct
      * @return List of arguments x provided in "when != x" constraints
      */
@@ -137,11 +136,23 @@ public class SmPLJavaDSL {
     /**
      * Check if a given element represents a "when != x" constraint on dots in the SmPL
      * Java DSL.
+     *
      * @param e Element to check
      * @return True if element represents a "when != x" constraint, false otherwise
      */
     public static boolean isWhenNotEquals(CtElement e) {
+        return isExecutableWithName(e, dotsWhenNotEqualName);
+    }
+
+    /**
+     * Check if a given AST element is an invocation of a given executable name.
+     *
+     * @param e Element to check
+     * @param name Executable name to match
+     * @return True if the given element is an invocation matching the given executable name, false otherwise
+     */
+    private static boolean isExecutableWithName(CtElement e, String name) {
         return e instanceof CtInvocation<?>
-               && ((CtInvocation<?>) e).getExecutable().getSimpleName().equals(dotsWhenNotEqualName);
+               && ((CtInvocation<?>) e).getExecutable().getSimpleName().equals(name);
     }
 }
