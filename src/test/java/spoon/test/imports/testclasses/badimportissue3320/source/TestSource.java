@@ -3,11 +3,6 @@ package spoon.test.imports.testclasses.badimportissue3320.source;
 import spoon.test.imports.testclasses.badimportissue3320.source.other.SomeObjectDto;
 import spoon.test.imports.testclasses.badimportissue3320.source.other.TestAnnotation;
 
-/**
- * @author Gibah Joseph
- * Email: gibahjoe@gmail.com
- * Apr, 2020
- **/
 public class TestSource {
     private String firstName;
     private String lastName;
