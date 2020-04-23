@@ -5,8 +5,6 @@ import fr.inria.controlflow.ControlFlowNode;
 import org.apache.commons.lang3.NotImplementedException;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.reference.CtVariableReference;
-import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.smpl.formula.*;
 import spoon.smpl.pattern.PatternBuilder;
 
@@ -22,7 +20,7 @@ public class FormulaCompiler {
      * @param cfg SmPL-adapted CFG to produce formula from
      * @param metavars Metavariable names and their constraints
      */
-    public FormulaCompiler(SmPLMethodCFG cfg, Map<String, MetavariableConstraint> metavars, Set<Integer> commonLines, AnchoredOperations additions) {
+    public FormulaCompiler(SmPLMethodCFG cfg, Map<String, MetavariableConstraint> metavars, Set<Integer> commonLines, AnchoredOperationsMap additions) {
         this.cfg = cfg;
         this.quantifiedMetavars = new ArrayList<>();
         this.metavars = metavars;
@@ -345,5 +343,5 @@ public class FormulaCompiler {
     /**
      * Map of anchored lists of addition operations.
      */
-    private AnchoredOperations additions;
+    private AnchoredOperationsMap additions;
 }

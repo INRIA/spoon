@@ -38,7 +38,7 @@ public class SmPLParser {
         Set<Integer> commonLines = new HashSet<>(delsLines);
         commonLines.retainAll(addsLines);
 
-        AnchoredOperations anchoredOperations = anchorAdditions(adds, commonLines);
+        AnchoredOperationsMap anchoredOperations = anchorAdditions(adds, commonLines);
 
         Set<Integer> containedCommonLines = findContainedCommonLines(adds, commonLines);
         commonLines.removeAll(containedCommonLines);
@@ -63,7 +63,7 @@ public class SmPLParser {
      * @param ast AST to compile
      * @return SmPLRule instance
      */
-    public static SmPLRule compile(CtClass<?> ast, Set<Integer> commonLines, AnchoredOperations additions) {
+    public static SmPLRule compile(CtClass<?> ast, Set<Integer> commonLines, AnchoredOperationsMap additions) {
         String ruleName = null;
 
         if (ast.getDeclaredField(SmPLJavaDSL.getRuleNameFieldName()) != null) {
@@ -364,7 +364,7 @@ public class SmPLParser {
      * @param commonLines Set of context lines common to both the deletions and the additions ASTs
      * @return Map of anchors to lists of operations
      */
-    private static AnchoredOperations anchorAdditions(CtClass<?> e, Set<Integer> commonLines) {
+    private static AnchoredOperationsMap anchorAdditions(CtClass<?> e, Set<Integer> commonLines) {
         CtMethod<?> ruleMethod = SmPLJavaDSL.getRuleMethod(e);
         return anchorAdditions(ruleMethod.getBody(), commonLines, 0, null);
     }
@@ -378,8 +378,8 @@ public class SmPLParser {
      * @param context Anchoring context, one of null, "methodHeader", "trueBranch" or "falseBranch"
      * @return Map of anchors to lists of operations
      */
-    private static AnchoredOperations anchorAdditions(CtElement e, Set<Integer> commonLines, int blockAnchor, String context) {
-        AnchoredOperations result = new AnchoredOperations();
+    private static AnchoredOperationsMap anchorAdditions(CtElement e, Set<Integer> commonLines, int blockAnchor, String context) {
+        AnchoredOperationsMap result = new AnchoredOperationsMap();
 
         // Temporary storage for operations until an anchor is found
         List<Pair<InsertIntoBlockOperation.Anchor, CtElement>> unanchored = new ArrayList<>();
