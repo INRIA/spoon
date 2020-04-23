@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -436,53 +437,16 @@ public class ProcessingTest {
 	@Test
 	public void testNullableSettingForProcessor() throws IOException {
 		class AProcessor extends AbstractProcessor<CtElement> {
-			@Property(nullable = false)
+			@Property(notNullable = false)
 			String aString = null;
 
-			@Property(nullable = true)
+			@Property
 			int anInt;
 
 			@Property
 			Object anObject;
 
-			@Property(nullable = true)
-			int[] arrayInt;
-
-			@Override
-			public void process(CtElement element) {
-			}
-		}
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/spoon/test/processor/test");
-		Processor<CtElement> processor = new AProcessor();
-		processor.setFactory(launcher.getFactory());
-		ProcessorProperties props = new ProcessorPropertiesImpl();
-
-		props.set("aString", null);
-		props.set("anInt", "42");
-		props.set("anObject", null);
-		props.set("arrayInt", "[42,43]");
-
-		ProcessorUtils.initProperties(processor, props);
-		launcher.addProcessor(processor);
-		launcher.run();
-		int warnings = launcher.getEnvironment().getWarningCount();
-		assertTrue(warnings == 2);
-	}
-
-	@Test
-	public void testNullableSettingForProcessor2() throws IOException {
-		class AProcessor extends AbstractProcessor<CtElement> {
-			@Property(nullable = true)
-			String aString = null;
-
-			@Property(nullable = true)
-			int anInt;
-
-			@Property(nullable = true)
-			Object anObject;
-
-			@Property(nullable = true)
+			@Property
 			int[] arrayInt;
 
 			@Override
@@ -505,5 +469,38 @@ public class ProcessingTest {
 		launcher.run();
 		int warnings = launcher.getEnvironment().getWarningCount();
 		assertTrue(warnings == 0);
+	}
+
+	@Test
+	public void testNullableSettingForProcessor2() throws IOException {
+		class AProcessor extends AbstractProcessor<CtElement> {
+			@Property(notNullable = true)
+			String aString = null;
+
+			@Property(notNullable = true)
+			int anInt;
+
+			@Property(notNullable = true)
+			Object anObject;
+
+			@Property(notNullable = true)
+			int[] arrayInt;
+
+			@Override
+			public void process(CtElement element) {
+			}
+		}
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/spoon/test/processor/test");
+		Processor<CtElement> processor = new AProcessor();
+		processor.setFactory(launcher.getFactory());
+		ProcessorProperties props = new ProcessorPropertiesImpl();
+
+		props.set("aString", null);
+		props.set("anInt", "42");
+		props.set("anObject", null);
+		props.set("arrayInt", "[42,43]");
+
+		assertThrows(SpoonException.class, () -> ProcessorUtils.initProperties(processor, props));
 	}
 }

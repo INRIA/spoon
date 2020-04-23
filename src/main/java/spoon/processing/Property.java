@@ -24,7 +24,7 @@ public @interface Property {
 	 */
 	String value() default "";
 	/**
-	 * If a value is nullable, spoon will expect that the user handles null values and will not print errors.
+	 * If a value is notNullable, spoon will throw a {@link spoon.SpoonException} for null values.
 	 */
-	boolean nullable() default false;
+	boolean notNullable() default false;
 }
