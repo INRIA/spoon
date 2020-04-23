@@ -174,15 +174,17 @@ public class SmPLParser {
         // Initial context
         init.add(new RewriteRule("atat", "(?s)^@@",
                 (ctx) -> { ctx.pop(); ctx.push(metavars); },
-                (result, match) -> { result.out.append("void __SmPLMetavars__() {\n"); }));
+                (result, match) -> { result.out.append("void ").append(SmPLJavaDSL.getMetavarsMethodName()).append("() {\n"); }));
 
         init.add(new RewriteRule("atat_rulename", "(?s)^@\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*@",
                 (ctx) -> { ctx.pop(); ctx.push(metavars); },
                 (result, match) -> {
-                    result.out.append("String __SmPLRuleName__ = \"").append(match.group(1)).append("\";\n");
-                    result.out.append("void __SmPLMetavars__() {\n");
+                    result.out.append("String ").append(SmPLJavaDSL.getRuleNameFieldName())
+                            .append(" = \"").append(match.group(1)).append("\";\n");
+                    result.out.append("void ").append(SmPLJavaDSL.getMetavarsMethodName()).append("() {\n");
                 }));
 
+        // TODO: replace hardcoded names with calls to SmPLJavaDSL.getWhatever
         // Metavars context
         metavars.add(new RewriteRule("whitespace", "(?s)^\\s+",
                 (ctx) -> {},
@@ -242,7 +244,7 @@ public class SmPLParser {
                 (ctx) -> { ctx.pop(); ctx.push(body); ctx.push(dots); },
                 (result, match) -> {
                     result.out.append("__SmPLUndeclared__ method() {\n");
-                    result.out.append("__SmPLDots__(");
+                    result.out.append(SmPLJavaDSL.getDotsElementName()).append("(");
                     result.hasMethodHeader = true;
                 }));
 
@@ -257,7 +259,7 @@ public class SmPLParser {
         // Method body context
         body.add(new RewriteRule("dots", "(?s)^\\.\\.\\.",
                 (ctx) -> { ctx.push(dots); },
-                (result, match) -> { result.out.append("__SmPLDots__("); }));
+                (result, match) -> { result.out.append(SmPLJavaDSL.getDotsElementName()).append("("); }));
 
         body.add(new RewriteRule("anychar", "(?s)^.",
                 (ctx) -> {},
@@ -275,7 +277,8 @@ public class SmPLParser {
                         result.out.append(",");
                     }
 
-                    result.out.append("whenNotEqual(").append(match.group(1)).append(")");
+                    result.out.append(SmPLJavaDSL.getDotsWhenNotEqualName()).append("(")
+                            .append(match.group(1)).append(")");
                 }));
 
         dots.add(new RewriteRule("when_exists", "(?s)^when\\s+exists",
@@ -285,7 +288,7 @@ public class SmPLParser {
                         result.out.append(",");
                     }
 
-                    result.out.append("whenExists()");
+                    result.out.append(SmPLJavaDSL.getDotsWhenExistsName()).append("()");
                 }));
 
         dots.add(new RewriteRule("anychar", "(?s)^.",
