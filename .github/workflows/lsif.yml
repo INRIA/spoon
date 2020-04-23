@@ -1,5 +1,8 @@
 name: LSIF
-on: [push, pull_request]
+on:
+  push:
+    branches: 
+      - master
 jobs:
   build:
     name: Build and push LSIF data
