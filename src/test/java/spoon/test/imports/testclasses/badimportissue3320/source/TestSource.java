@@ -1,9 +1,7 @@
 package spoon.test.imports.testclasses.badimportissue3320.source;
 
 import spoon.test.imports.testclasses.badimportissue3320.source.other.SomeObjectDto;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import spoon.test.imports.testclasses.badimportissue3320.source.other.TestAnnotation;
 
 /**
  * @author Gibah Joseph
@@ -18,12 +16,12 @@ public class TestSource {
         return firstName;
     }
 
-    public TestSource setObject(@NotNull @Valid SomeObjectDto someObjectDto) {
+    public TestSource setObject(@TestAnnotation SomeObjectDto someObjectDto) {
 
         return this;
     }
 
-    public TestSource setFirstName(@NotNull @Valid String firstName) {
+    public TestSource setFirstName(@TestAnnotation String firstName) {
         this.firstName = firstName;
         return this;
     }

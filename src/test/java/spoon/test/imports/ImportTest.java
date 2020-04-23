@@ -1779,7 +1779,8 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 	}
 
 	@Test
-	public void testThatCorrectImportsAreGeneratedForJavaxAnnotatedElements() {
+	public void testImportsForElementsAnnotatedWithTypeUseAnnotations() {
+		// contract: correct import generated for method parameters annotated with TYPE_USE annotations
 		final Launcher l = new Launcher();
 		Environment e = l.getEnvironment();
 
@@ -1791,9 +1792,6 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		CtType<TestSource> objectCtType = l.getFactory().Type().get(TestSource.class);
 		CompilationUnit compilationUnit = l.getFactory().CompilationUnit().getOrCreate(objectCtType);
 
-		for (CtImport anImport : compilationUnit.getImports()) {
-			System.out.println(anImport.prettyprint());
-		}
 		assertEquals(1, compilationUnit.getImports().stream().filter(ctImport -> ctImport.prettyprint().equals("import spoon.test.imports.testclasses.badimportissue3320.source.other.SomeObjectDto;")).count());
 	}
 }
