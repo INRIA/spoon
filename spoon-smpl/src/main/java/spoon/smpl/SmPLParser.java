@@ -278,6 +278,16 @@ public class SmPLParser {
                     result.out.append("whenNotEqual(").append(match.group(1)).append(")");
                 }));
 
+        dots.add(new RewriteRule("when_exists", "(?s)^when\\s+exists",
+                (ctx) -> {},
+                (result, match) -> {
+                    if (result.out.charAt(result.out.length() - 1) == ')') {
+                        result.out.append(",");
+                    }
+
+                    result.out.append("whenExists()");
+                }));
+
         dots.add(new RewriteRule("anychar", "(?s)^.",
                 (ctx) -> { ctx.pop(); },
                 (result, match) -> { result.out.append(");\n").append(match.group()); }));

@@ -210,11 +210,12 @@ public class FormulaCompiler {
      */
     private Formula compileStatementFormula(ControlFlowNode node) {
         if (SmPLJavaDSL.isDots(node.getStatement())) {
+            CtInvocation<?> dots = (CtInvocation<?>) node.getStatement();
             // TODO: add guards needed for ensuring shortest path
             Formula formula = new True();
             Formula innerFormula = compileFormulaInner(node.next().get(0));
 
-            List<String> whenNotEquals = SmPLJavaDSL.getWhenNotEquals((CtInvocation<?>) node.getStatement());
+            List<String> whenNotEquals = SmPLJavaDSL.getWhenNotEquals(dots);
 
             if (whenNotEquals.size() > 0) {
                 Iterator<String> it = whenNotEquals.iterator();
@@ -229,7 +230,11 @@ public class FormulaCompiler {
             if (innerFormula == null) {
                 return formula;
             } else {
-                return new AllUntil(formula, innerFormula);
+                if (SmPLJavaDSL.hasWhenExists(dots)) {
+                    return new ExistsUntil(formula, innerFormula);
+                } else {
+                    return new AllUntil(formula, innerFormula);
+                }
             }
         } else if (isMethodHeader(node)) {
             Formula formula = new Proposition("methodHeader");

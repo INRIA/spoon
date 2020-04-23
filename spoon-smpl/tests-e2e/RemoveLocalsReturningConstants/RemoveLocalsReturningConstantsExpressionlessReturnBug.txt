@@ -1,0 +1,39 @@
+[name]
+RemoveLocalsReturningConstantsExpressionlessReturnBug
+
+[contract]
+correct application of remove-locals-returning-constants patch example
+
+
+[patch]
+@@
+type T;
+identifier ret;
+constant C;
+@@
+- T ret = C;
+  ... when != ret
+- return ret;
++ return C;
+
+
+[input]
+class input
+{
+    public void foo(boolean x)
+    {
+        int ret = 42;
+        return;
+    }
+}
+
+
+[expected]
+class input
+{
+    public void foo(boolean x)
+    {
+        int ret = 42;
+        return;
+    }
+}

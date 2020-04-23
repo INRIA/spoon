@@ -67,6 +67,19 @@ public class SmPLJavaDSL {
     }
 
     /**
+     * Name of executable used to encode "when exists" constraints on dots.
+     */
+    private static final String dotsWhenExistsName = "whenExists";
+
+    /**
+     * Get name of executable used to encode "when exists" constraints on dots.
+     * @return Name of executable used to encode "when exists" constraints on dots
+     */
+    public static String getDotsWhenExistsName() {
+        return dotsWhenExistsName;
+    }
+
+    /**
      * Name of executable used to encode deleted lines available for anchoring.
      */
     private static final String deletionAnchorName = "__SmPLDeletion__";
@@ -142,6 +155,34 @@ public class SmPLJavaDSL {
      */
     public static boolean isWhenNotEquals(CtElement e) {
         return isExecutableWithName(e, dotsWhenNotEqualName);
+    }
+
+    /**
+     * Given a CtInvocation representing an SmPL dots construct in the SmPL Java DSL, check
+     * if the dots constructs specifies the "when exists" constraint relaxation.
+     *
+     * @param dots Element representing an SmPL dots construct
+     * @return True if dots construct specifies "when exists" relaxation, false otherwise
+     */
+    public static boolean hasWhenExists(CtInvocation<?> dots) {
+        for (CtExpression<?> stmt : dots.getArguments()) {
+            if (isWhenExists(stmt)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if a given element represents a "when exists" constraint relaxation on dots in the SmPL
+     * Java DSL.
+     *
+     * @param e Element to check
+     * @return True if element represents a "when exists" constraint relaxation, false otherwise
+     */
+    public static boolean isWhenExists(CtElement e) {
+        return isExecutableWithName(e, dotsWhenExistsName);
     }
 
     /**

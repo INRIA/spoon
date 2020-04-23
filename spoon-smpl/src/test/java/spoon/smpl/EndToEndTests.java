@@ -829,4 +829,339 @@ public class EndToEndTests {
     
         assertEquals(expected.toString(), input.toString());
     }
+    @Test
+    public void testRemoveLocalsReturningConstantsBranch() {
+        // contract: correct application of remove-locals-returning-constants patch example
+
+        CtClass<?> input = Launcher.parseClass("class input\n" +
+                                               "{\n" +
+                                               "    public int foo(boolean x)\n" +
+                                               "    {\n" +
+                                               "        int ret = 42;\n" +
+                                               "        \n" +
+                                               "        if (x == true)\n" +
+                                               "        {\n" +
+                                               "            return ret;\n" +
+                                               "        }\n" +
+                                               "        else\n" +
+                                               "        {\n" +
+                                               "            return ret;\n" +
+                                               "        }\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class input\n" +
+                                                  "{\n" +
+                                                  "    public int foo(boolean x)\n" +
+                                                  "    {\n" +
+                                                  "        if (x == true)\n" +
+                                                  "        {\n" +
+                                                  "            return 42;\n" +
+                                                  "        }\n" +
+                                                  "        else\n" +
+                                                  "        {\n" +
+                                                  "            return 42;\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "type T;\n" +
+                                         "identifier ret;\n" +
+                                         "constant C;\n" +
+                                         "@@\n" +
+                                         "- T ret = C;\n" +
+                                         "  ... when != ret\n" +
+                                         "- return ret;\n" +
+                                         "+ return C;\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testRemoveLocalsReturningConstantsBranchMultiple() {
+        // contract: correct application of remove-locals-returning-constants patch example
+
+        CtClass<?> input = Launcher.parseClass("class input\n" +
+                                               "{\n" +
+                                               "    public int foo(int n)\n" +
+                                               "    {\n" +
+                                               "        int a = 123;\n" +
+                                               "        int b = 234;\n" +
+                                               "        int c = 345;\n" +
+                                               "        \n" +
+                                               "        if (n == 0)\n" +
+                                               "        {\n" +
+                                               "            return a;\n" +
+                                               "        }\n" +
+                                               "        else if (n == 1)\n" +
+                                               "        {\n" +
+                                               "            return b;\n" +
+                                               "        }\n" +
+                                               "        else\n" +
+                                               "        {\n" +
+                                               "            return c;\n" +
+                                               "        }\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class input\n" +
+                                                  "{\n" +
+                                                  "    public int foo(int n)\n" +
+                                                  "    {\n" +
+                                                  "        int a = 123;\n" +
+                                                  "        int b = 234;\n" +
+                                                  "        int c = 345;\n" +
+                                                  "        \n" +
+                                                  "        if (n == 0)\n" +
+                                                  "        {\n" +
+                                                  "            return a;\n" +
+                                                  "        }\n" +
+                                                  "        else if (n == 1)\n" +
+                                                  "        {\n" +
+                                                  "            return b;\n" +
+                                                  "        }\n" +
+                                                  "        else\n" +
+                                                  "        {\n" +
+                                                  "            return c;\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "type T;\n" +
+                                         "identifier ret;\n" +
+                                         "constant C;\n" +
+                                         "@@\n" +
+                                         "- T ret = C;\n" +
+                                         "  ... when != ret\n" +
+                                         "- return ret;\n" +
+                                         "+ return C;\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testRemoveLocalsReturningConstantsBranchMultipleWhenExists() {
+        // contract: correct application of remove-locals-returning-constants patch example
+
+        CtClass<?> input = Launcher.parseClass("class input\n" +
+                                               "{\n" +
+                                               "    public int foo(int n)\n" +
+                                               "    {\n" +
+                                               "        int a = 123;\n" +
+                                               "        int b = 234;\n" +
+                                               "        int c = 345;\n" +
+                                               "        \n" +
+                                               "        if (n == 0)\n" +
+                                               "        {\n" +
+                                               "            return a;\n" +
+                                               "        }\n" +
+                                               "        else if (n == 1)\n" +
+                                               "        {\n" +
+                                               "            return b;\n" +
+                                               "        }\n" +
+                                               "        else\n" +
+                                               "        {\n" +
+                                               "            return c;\n" +
+                                               "        }\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class input\n" +
+                                                  "{\n" +
+                                                  "    public int foo(int n)\n" +
+                                                  "    {\n" +
+                                                  "        if (n == 0)\n" +
+                                                  "        {\n" +
+                                                  "            return 123;\n" +
+                                                  "        }\n" +
+                                                  "        else if (n == 1)\n" +
+                                                  "        {\n" +
+                                                  "            return 234;\n" +
+                                                  "        }\n" +
+                                                  "        else\n" +
+                                                  "        {\n" +
+                                                  "            return 345;\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "type T;\n" +
+                                         "identifier ret;\n" +
+                                         "constant C;\n" +
+                                         "@@\n" +
+                                         "- T ret = C;\n" +
+                                         "  ... when != ret\n" +
+                                         "      when exists\n" +
+                                         "- return ret;\n" +
+                                         "+ return C;\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testRemoveLocalsReturningConstantsElselessBranch() {
+        // contract: correct application of remove-locals-returning-constants patch example
+
+        CtClass<?> input = Launcher.parseClass("class input\n" +
+                                               "{\n" +
+                                               "    public int foo(boolean x)\n" +
+                                               "    {\n" +
+                                               "        int ret = 42;\n" +
+                                               "        \n" +
+                                               "        if (x == true)\n" +
+                                               "        {\n" +
+                                               "            return ret;\n" +
+                                               "        }\n" +
+                                               "        \n" +
+                                               "        return ret;\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class input\n" +
+                                                  "{\n" +
+                                                  "    public int foo(boolean x)\n" +
+                                                  "    {\n" +
+                                                  "        if (x == true)\n" +
+                                                  "        {\n" +
+                                                  "            return 42;\n" +
+                                                  "        }\n" +
+                                                  "        \n" +
+                                                  "        return 42;\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "type T;\n" +
+                                         "identifier ret;\n" +
+                                         "constant C;\n" +
+                                         "@@\n" +
+                                         "- T ret = C;\n" +
+                                         "  ... when != ret\n" +
+                                         "- return ret;\n" +
+                                         "+ return C;\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testRemoveLocalsReturningConstantsExpressionlessReturnBug() {
+        // contract: correct application of remove-locals-returning-constants patch example
+
+        CtClass<?> input = Launcher.parseClass("class input\n" +
+                                               "{\n" +
+                                               "    public void foo(boolean x)\n" +
+                                               "    {\n" +
+                                               "        int ret = 42;\n" +
+                                               "        return;\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class input\n" +
+                                                  "{\n" +
+                                                  "    public void foo(boolean x)\n" +
+                                                  "    {\n" +
+                                                  "        int ret = 42;\n" +
+                                                  "        return;\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "type T;\n" +
+                                         "identifier ret;\n" +
+                                         "constant C;\n" +
+                                         "@@\n" +
+                                         "- T ret = C;\n" +
+                                         "  ... when != ret\n" +
+                                         "- return ret;\n" +
+                                         "+ return C;\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testRemoveLocalsReturningConstantsRejectUsageInBranchCondition() {
+        // contract: correct application of remove-locals-returning-constants patch example
+
+        CtClass<?> input = Launcher.parseClass("class input\n" +
+                                               "{\n" +
+                                               "    public int foo()\n" +
+                                               "    {\n" +
+                                               "        int y = 42;\n" +
+                                               "        \n" +
+                                               "        if (y > 0)\n" +
+                                               "        {\n" +
+                                               "            return y;\n" +
+                                               "        }\n" +
+                                               "        \n" +
+                                               "        return y;\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class input\n" +
+                                                  "{\n" +
+                                                  "    public int foo()\n" +
+                                                  "    {\n" +
+                                                  "        int y = 42;\n" +
+                                                  "        \n" +
+                                                  "        if (y > 0)\n" +
+                                                  "        {\n" +
+                                                  "            return y;\n" +
+                                                  "        }\n" +
+                                                  "        \n" +
+                                                  "        return y;\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "type T;\n" +
+                                         "identifier ret;\n" +
+                                         "constant C;\n" +
+                                         "@@\n" +
+                                         "- T ret = C;\n" +
+                                         "  ... when != ret\n" +
+                                         "- return ret;\n" +
+                                         "+ return C;\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
 }
