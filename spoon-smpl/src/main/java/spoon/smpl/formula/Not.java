@@ -1,7 +1,7 @@
 package spoon.smpl.formula;
 
 /**
- * Neg represents negation, the classical "NOT" logical connective.
+ * Not represents negation, the classical "NOT" logical connective.
  */
 public class Not extends UnaryConnective {
     /**
