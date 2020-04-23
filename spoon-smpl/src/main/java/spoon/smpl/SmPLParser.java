@@ -291,6 +291,16 @@ public class SmPLParser {
                     result.out.append(SmPLJavaDSL.getDotsWhenExistsName()).append("()");
                 }));
 
+        dots.add(new RewriteRule("when_any", "(?s)^when\\s+any",
+                (ctx) -> {},
+                (result, match) -> {
+                    if (result.out.charAt(result.out.length() - 1) == ')') {
+                        result.out.append(",");
+                    }
+
+                    result.out.append(SmPLJavaDSL.getDotsWhenAnyName()).append("()");
+                }));
+
         dots.add(new RewriteRule("anychar", "(?s)^.",
                 (ctx) -> { ctx.pop(); },
                 (result, match) -> { result.out.append(");\n").append(match.group()); }));

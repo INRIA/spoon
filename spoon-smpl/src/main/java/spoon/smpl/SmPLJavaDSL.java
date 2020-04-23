@@ -10,6 +10,8 @@ import spoon.reflect.declaration.CtMethod;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: add names for metavariable types (identifier, type, constant ...)
+
 /**
  * Utilities to define and facilitate working with the SmPL Java DSL.
  */
@@ -77,6 +79,19 @@ public class SmPLJavaDSL {
      */
     public static String getDotsWhenExistsName() {
         return dotsWhenExistsName;
+    }
+
+    /**
+     * Name of executable used to encode "when any" constraints on dots.
+     */
+    private static final String dotsWhenAnyName = "whenAny";
+
+    /**
+     * Get name of executable used to encode "when any" constraints on dots.
+     * @return Name of executable used to encode "when any" constraints on dots
+     */
+    public static String getDotsWhenAnyName() {
+        return dotsWhenAnyName;
     }
 
     /**
@@ -165,13 +180,7 @@ public class SmPLJavaDSL {
      * @return True if dots construct specifies "when exists" relaxation, false otherwise
      */
     public static boolean hasWhenExists(CtInvocation<?> dots) {
-        for (CtExpression<?> stmt : dots.getArguments()) {
-            if (isWhenExists(stmt)) {
-                return true;
-            }
-        }
-
-        return false;
+        return dots.getArguments().stream().anyMatch(SmPLJavaDSL::isWhenExists);
     }
 
     /**
@@ -183,6 +192,28 @@ public class SmPLJavaDSL {
      */
     public static boolean isWhenExists(CtElement e) {
         return isExecutableWithName(e, dotsWhenExistsName);
+    }
+
+    /**
+     * Given a CtInvocation representing an SmPL dots construct in the SmPL Java DSL, check
+     * if the dots constructs specifies the "when any" constraint relaxation.
+     *
+     * @param dots Element representing an SmPL dots construct
+     * @return True if dots construct specifies "when any" relaxation, false otherwise
+     */
+    public static boolean hasWhenAny(CtInvocation<?> dots) {
+        return dots.getArguments().stream().anyMatch(SmPLJavaDSL::isWhenAny);
+    }
+
+    /**
+     * Check if a given element represents a "when any" constraint relaxation on dots in the SmPL
+     * Java DSL.
+     *
+     * @param e Element to check
+     * @return True if element represents a "when any" constraint relaxation, false otherwise
+     */
+    public static boolean isWhenAny(CtElement e) {
+        return isExecutableWithName(e, dotsWhenAnyName);
     }
 
     /**

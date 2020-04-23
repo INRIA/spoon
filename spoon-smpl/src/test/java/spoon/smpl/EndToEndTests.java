@@ -317,7 +317,9 @@ public class EndToEndTests {
                                                   "    }\n" +
                                                   "    \n" +
                                                   "    void m2() {\n" +
-                                                  "        int x = 0;\n" +
+                                                  "        if (true) {\n" +
+                                                  "            int x = 0;\n" +
+                                                  "        }\n" +
                                                   "    }\n" +
                                                   "    \n" +
                                                   "    void m3() {\n" +
@@ -494,6 +496,74 @@ public class EndToEndTests {
                                          "  if (input > 0) {\n" +
                                          "-     v1 = C;\n" +
                                          "  }\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testDotsShortestPath() {
+        // contract: dots by default should only match the shortest path between enclosing anchors (if any)
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        foo(x);\n" +
+                                               "        foo(x);\n" +
+                                               "        bar(x);\n" +
+                                               "        bar(x);\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        foo(x);\n" +
+                                                  "        bar(x);\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "@@\n" +
+                                         "- foo(x);\n" +
+                                         "  ...\n" +
+                                         "- bar(x);\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testDotsWhenAny() {
+        // contract: dots shortest path restriction is lifted by using when any
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        foo(x);\n" +
+                                               "        foo(x);\n" +
+                                               "        bar(x);\n" +
+                                               "        bar(x);\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "@@\n" +
+                                         "- foo(x);\n" +
+                                         "  ... when any\n" +
+                                         "- bar(x);\n");
     
         input.getMethods().forEach((method) -> {
             CFGModel model = new CFGModel(methodCfg(method));

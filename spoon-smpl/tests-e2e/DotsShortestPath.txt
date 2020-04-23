@@ -1,0 +1,30 @@
+[name]
+DotsShortestPath
+
+[contract]
+dots by default should only match the shortest path between enclosing anchors (if any)
+
+[patch]
+@@
+@@
+- foo(x);
+  ...
+- bar(x);
+
+[input]
+class A {
+    void m1() {
+        foo(x);
+        foo(x);
+        bar(x);
+        bar(x);
+    }
+}
+
+[expected]
+class A {
+    void m1() {
+        foo(x);
+        bar(x);
+    }
+}

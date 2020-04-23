@@ -27,6 +27,7 @@ public class FormulaCompiler {
         this.patternBuilder = new PatternBuilder(new ArrayList<>(metavars.keySet()));
         this.commonLines = commonLines;
         this.additions = additions;
+        this.dotsPreGuard = null;
     }
 
     /**
@@ -165,6 +166,8 @@ public class FormulaCompiler {
 
                         ((BranchPattern) formula).setStringRepresentation(statement.toString());
 
+                        dotsPreGuard = formula;
+
                         ArrayList<Operation> ops = new ArrayList<>();
 
                         if (!commonLines.contains(line)) {
@@ -212,8 +215,29 @@ public class FormulaCompiler {
         if (SmPLJavaDSL.isDots(node.getStatement())) {
             CtInvocation<?> dots = (CtInvocation<?>) node.getStatement();
             // TODO: add guards needed for ensuring shortest path
-            Formula formula = new True();
+
+            Formula savedPreGuard = dotsPreGuard;
             Formula innerFormula = compileFormulaInner(node.next().get(0));
+
+            Formula postGuard = findFirstCodeElementFormula(innerFormula);
+
+            Formula formula;
+
+            if (!SmPLJavaDSL.hasWhenAny(dots)) {
+                if (savedPreGuard != null) {
+                    formula = savedPreGuard;
+
+                    if (postGuard != null) {
+                        formula = new Or(formula, postGuard);
+                    }
+
+                    formula = new Not(formula);
+                } else {
+                    formula = (postGuard == null) ? new True() : new Not(postGuard);
+                }
+            } else {
+                formula = new True();
+            }
 
             List<String> whenNotEquals = SmPLJavaDSL.getWhenNotEquals(dots);
 
@@ -253,6 +277,8 @@ public class FormulaCompiler {
 
             Formula formula = new StatementPattern(patternBuilder.getResult(), metavars);
             ((StatementPattern) formula).setStringRepresentation(statement.toString());
+
+            dotsPreGuard = formula;
 
             ArrayList<Operation> ops = new ArrayList<>();
 
@@ -321,6 +347,43 @@ public class FormulaCompiler {
     }
 
     /**
+     * Find the first 'code element' predicate formula in a given formula tree.
+     *
+     * @param input Formula tree to search
+     */
+    private static Formula findFirstCodeElementFormula(Formula input) {
+        if (input == null) {
+            return null;
+        } else if (input instanceof UnaryConnective) {
+            return findFirstCodeElementFormula(((UnaryConnective) input).getInnerElement());
+        } else if (input instanceof BinaryConnective) {
+            if (input instanceof And && ((And) input).getLhs() instanceof Proposition) {
+                if (((Proposition) ((And) input).getLhs()).getProposition().equals("after")) {
+                    return null;
+                }
+            }
+            Formula lhs = findFirstCodeElementFormula(((BinaryConnective) input).getLhs());
+            return (lhs != null) ? lhs : findFirstCodeElementFormula(((BinaryConnective) input).getRhs());
+        } else if (input instanceof BranchPattern) {
+            return input;
+        } else if (input instanceof ExistsVar) {
+            return findFirstCodeElementFormula(((ExistsVar) input).getInnerElement());
+        } else if (input instanceof Proposition) {
+            return null;
+        } else if (input instanceof SetEnv) {
+            return null;
+        } else if (input instanceof StatementPattern) {
+            return input;
+        } else if (input instanceof True) {
+            return null;
+        } else if (input instanceof VariableUsePredicate) {
+            return null;
+        } else {
+            throw new IllegalArgumentException("unhandled formula element " + input.getClass().toString());
+        }
+    }
+
+    /**
      * SmPL-adapted CFG to use for formula generation.
      */
     private SmPLMethodCFG cfg;
@@ -349,4 +412,9 @@ public class FormulaCompiler {
      * Map of anchored lists of addition operations.
      */
     private AnchoredOperationsMap additions;
+
+    /**
+     * Stored code element formula to be used as shortest-path guard for dots.
+     */
+    private Formula dotsPreGuard;
 }

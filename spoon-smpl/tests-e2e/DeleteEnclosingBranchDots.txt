@@ -44,7 +44,9 @@ class A {
     }
     
     void m2() {
-        int x = 0;
+        if (true) {
+            int x = 0;
+        }
     }
     
     void m3() {
