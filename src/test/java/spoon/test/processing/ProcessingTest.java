@@ -436,6 +436,7 @@ public class ProcessingTest {
 
 	@Test
 	public void testNullableSettingForProcessor() throws IOException {
+		//contract: nullable( = notNullable == false) properties with a null value must not throw a exception.
 		class AProcessor extends AbstractProcessor<CtElement> {
 			@Property(notNullable = false)
 			String aString = null;
@@ -473,6 +474,8 @@ public class ProcessingTest {
 
 	@Test
 	public void testNullableSettingForProcessor2() throws IOException {
+		//contract: notNullable( = notNullable == true) properties with a null value must throw a spoonexception.
+
 		class AProcessor extends AbstractProcessor<CtElement> {
 			@Property(notNullable = true)
 			String aString = null;

@@ -8,7 +8,6 @@
 package spoon.testing.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.logging.log4j.Level;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.processing.Processor;
@@ -58,10 +57,8 @@ public final class ProcessorUtils {
 							}
 						} else {
 								if (f.getAnnotation(Property.class).notNullable()) {
-									p.getFactory().getEnvironment().report(p, Level.WARN,
-											"No value found for property '" + f.getName() + "' in processor " + p.getClass().getName());
-											throw new SpoonException("No value found for property '" + f.getName()
-																								+ "' in processor " + p.getClass().getName());
+										throw new SpoonException("No value found for property '" + f.getName()
+																							+ "' in processor " + p.getClass().getName());
 							}
 						}
 					}
