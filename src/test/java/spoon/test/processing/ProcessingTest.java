@@ -463,7 +463,7 @@ public class ProcessingTest {
 		props.set("aString", null);
 		props.set("anInt", "42");
 		props.set("anObject", null);
-		props.set("arrayInt", "[42,43]");
+		props.set("arrayInt", "[42,44]");
 
 		ProcessorUtils.initProperties(processor, props);
 		launcher.addProcessor(processor);
