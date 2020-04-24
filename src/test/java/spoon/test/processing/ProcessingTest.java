@@ -24,6 +24,7 @@ import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.processing.AbstractManualProcessor;
 import spoon.processing.AbstractProcessor;
+import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
 import spoon.processing.ProcessorPropertiesImpl;
 import spoon.processing.Property;
@@ -52,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -430,5 +432,78 @@ public class ProcessingTest {
 		assertFalse(fileContent.contains("import spoon.test.processing.testclasses.test.sub.A;"));
 		assertTrue(fileContent.contains("import spoon.test.processing.testclasses.test.sub.D;"));
 		assertTrue(fileContent.contains("private D a = new D();"));
+	}
+
+	@Test
+	public void testNullableSettingForProcessor() throws IOException {
+		//contract: nullable( = notNullable == false) properties with a null value must not throw a exception.
+		class AProcessor extends AbstractProcessor<CtElement> {
+			@Property(notNullable = false)
+			String aString = null;
+
+			@Property
+			int anInt;
+
+			@Property
+			Object anObject;
+
+			@Property
+			int[] arrayInt;
+
+			@Override
+			public void process(CtElement element) {
+			}
+		}
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/spoon/test/processor/test");
+		Processor<CtElement> processor = new AProcessor();
+		processor.setFactory(launcher.getFactory());
+		ProcessorProperties props = new ProcessorPropertiesImpl();
+
+		props.set("aString", null);
+		props.set("anInt", "42");
+		props.set("anObject", null);
+		props.set("arrayInt", "[42,44]");
+
+		ProcessorUtils.initProperties(processor, props);
+		launcher.addProcessor(processor);
+		launcher.run();
+		int warnings = launcher.getEnvironment().getWarningCount();
+		assertTrue(warnings == 0);
+	}
+
+	@Test
+	public void testNullableSettingForProcessor2() throws IOException {
+		//contract: notNullable( = notNullable == true) properties with a null value must throw a spoonexception.
+
+		class AProcessor extends AbstractProcessor<CtElement> {
+			@Property(notNullable = true)
+			String aString = null;
+
+			@Property(notNullable = true)
+			int anInt;
+
+			@Property(notNullable = true)
+			Object anObject;
+
+			@Property(notNullable = true)
+			int[] arrayInt;
+
+			@Override
+			public void process(CtElement element) {
+			}
+		}
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/spoon/test/processor/test");
+		Processor<CtElement> processor = new AProcessor();
+		processor.setFactory(launcher.getFactory());
+		ProcessorProperties props = new ProcessorPropertiesImpl();
+
+		props.set("aString", null);
+		props.set("anInt", "42");
+		props.set("anObject", null);
+		props.set("arrayInt", "[42,43]");
+
+		assertThrows(SpoonException.class, () -> ProcessorUtils.initProperties(processor, props));
 	}
 }
