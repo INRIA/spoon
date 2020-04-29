@@ -28,7 +28,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>8.1.0-SNAPSHOT</version>
+            <version>8.2.0-SNAPSHOT</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jboss.windup.decompiler.fernflower/fernflower -->
         <dependency>
@@ -45,7 +45,7 @@
         <dependency>
             <groupId>org.benf</groupId>
             <artifactId>cfr</artifactId>
-            <version>0.148</version>
+            <version>0.149</version>
         </dependency>
 
     </dependencies>
