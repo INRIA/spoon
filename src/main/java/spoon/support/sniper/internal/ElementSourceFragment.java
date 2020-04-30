@@ -14,6 +14,7 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.cu.position.NoSourcePosition;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModifiable;
@@ -239,6 +240,14 @@ public class ElementSourceFragment implements SourceFragment {
 							parentFragment.addChild(otherFragment);
 							return otherFragment;
 						}
+						if (otherElement instanceof CtAnnotation<?>) {
+							/*
+							 * it can happen for annotations of type TYPE_USE and FIELD
+							 * In such case the annotation belongs to 2 elements
+							 * And one of them cannot have matching source position - OK
+							 */
+							return null;
+						}
 						throw new SpoonException("otherFragment (" + otherElement.getPosition() + ") " + cmp.toString() + " of " + parentFragment.getSourcePosition());
 
 					}
@@ -252,6 +261,7 @@ public class ElementSourceFragment implements SourceFragment {
 //							 */
 //							return null;
 //						}
+					//It happened... See spoon.test.issue3321.SniperPrettyPrinterJavaxTest
 					//something is wrong ...
 					throw new SpoonException("The SourcePosition of elements are not consistent\nparentFragment: " + parentFragment + "\notherFragment: " + otherElement.getPosition());
 				}

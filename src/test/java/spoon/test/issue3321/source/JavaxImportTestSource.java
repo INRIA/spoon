@@ -11,29 +11,7 @@ import javax.validation.constraints.NotNull;
  * Apr, 2020
  **/
 public class JavaxImportTestSource {
-    private String firstName;
-    private String lastName;
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public JavaxImportTestSource setObject(@NotNull @Valid SomeObjectDto someObjectDto) {
-
-        return this;
-    }
-
-    public JavaxImportTestSource setFirstName(@NotNull @Valid String firstName) {
-        this.firstName = firstName;
-        return this;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public JavaxImportTestSource setLastName(String lastName) {
-        this.lastName = lastName;
+    public JavaxImportTestSource setObject(@NotNull SomeObjectDto someObjectDto) {
         return this;
     }
 }

@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.junit.Ignore;
 import spoon.Launcher;
 import spoon.compiler.Environment;
+import spoon.reflect.CtModel;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.GitHubIssue;
 
@@ -26,6 +27,9 @@ public class SniperPrettyPrinterJavaxTest {
         l.addProcessor(new CtClassProcessor());
         l.addInputResource("src/test/java/spoon/test/issue3321/source/JavaxImportTestSource.java");
         l.setSourceOutputDirectory("src/test/resources");
+
+        //CtModel model = l.buildModel();
+
         l.run();
     }
 }
