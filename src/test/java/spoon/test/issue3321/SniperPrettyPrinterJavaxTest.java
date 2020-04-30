@@ -12,6 +12,8 @@ import spoon.support.sniper.SniperJavaPrettyPrinter;
  **/
 public class SniperPrettyPrinterJavaxTest {
     @Test
+    @GitHubIssue(issueNumber = 3321)
+    @Ignore("UnresolvedBug")
     public void testThatCanGenerateSniperPrettyPrintedSourceForJavaxAnnotatedClasses() {
         final Launcher l = new Launcher();
         Environment e = l.getEnvironment();
