@@ -1061,8 +1061,8 @@ public class ReferenceBuilder {
 				ref.setPackage(javaLangPackageReference);
 			} catch (NoClassDefFoundError | ClassNotFoundException e) {
 				ContextBuilder ctx = jdtTreeBuilder.getContextBuilder();
-				boolean isNoClasspath = jdtTreeBuilder.getFactory().getEnvironment().getNoClasspath();
-				if (isNoClasspath && containsStarImport(ctx.compilationunitdeclaration.imports)) {
+				assert jdtTreeBuilder.getFactory().getEnvironment().getNoClasspath();
+				if (containsStarImport(ctx.compilationunitdeclaration.imports)) {
 					// If there is an unresolved star import in noclasspath,
 					// we can't tell which package the type belongs to (#3337)
 					CtPackageReference pkgRef = jdtTreeBuilder.getFactory().Core().createPackageReference();
