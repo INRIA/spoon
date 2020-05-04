@@ -18,11 +18,13 @@ package spoon.test.ctType;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
@@ -35,12 +37,16 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.ctType.testclasses.X;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -212,5 +218,23 @@ public class CtTypeTest {
 			name = ref.getParent(CtNamedElement.class).getSimpleName();
 		}
 		return ref.toString() + " " + name;
+	}
+
+	@Test
+	public void testRetainsInterfaceOrder() {
+		final Launcher launcher = new Launcher();
+		List<String> expectedInterfaceOrder = Arrays.asList(
+				"java.util.function.Supplier<java.lang.Integer>",
+				"java.util.function.Consumer<java.lang.Integer>",
+				"java.lang.Comparable<java.lang.Integer>"
+		);
+		launcher.addInputResource("./src/test/java/spoon/test/ctType/testclasses/MultiInterfaceImplementation.java");
+
+		CtModel model = launcher.buildModel();
+		CtType<?> type = model.getAllTypes().iterator().next();
+		List<String> interfaces = type.getSuperInterfaces()
+				.stream().map(CtElement::toString).collect(Collectors.toList());
+
+		assertEquals(expectedInterfaceOrder, interfaces);
 	}
 }
