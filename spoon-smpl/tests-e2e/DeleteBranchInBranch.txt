@@ -6,7 +6,12 @@ a patch should be able to delete a complete branch statement nested inside anoth
 
 [input]
 class A {
+    void before() {}
+    void after() {}
+    
     void m1() {
+        boolean somevariable = Math.random() < 0.5;
+        
         if (somevariable) {
             before();
             
@@ -21,7 +26,12 @@ class A {
 
 [expected]
 class A {
+    void before() {}
+    void after() {}
+    
     void m1() {
+        boolean somevariable = Math.random() < 0.5;
+        
         if (somevariable) {
             before();
             after();

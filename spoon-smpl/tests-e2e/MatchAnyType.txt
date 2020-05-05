@@ -6,6 +6,8 @@ a 'type' metavariable should match any type
 
 [input]
 class A {
+    class ASpecificType {}
+    
     void foo() {
         int x;
     }
@@ -21,6 +23,8 @@ class A {
 
 [expected]
 class A {
+    class ASpecificType {}
+    
     void foo() {
         
     }

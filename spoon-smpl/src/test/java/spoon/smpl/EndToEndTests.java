@@ -177,7 +177,12 @@ public class EndToEndTests {
         // contract: a patch should be able to delete a complete branch statement nested inside another branch
 
         CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void before() {}\n" +
+                                               "    void after() {}\n" +
+                                               "    \n" +
                                                "    void m1() {\n" +
+                                               "        boolean somevariable = Math.random() < 0.5;\n" +
+                                               "        \n" +
                                                "        if (somevariable) {\n" +
                                                "            before();\n" +
                                                "            \n" +
@@ -191,7 +196,12 @@ public class EndToEndTests {
                                                "}\n");
     
         CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void before() {}\n" +
+                                                  "    void after() {}\n" +
+                                                  "    \n" +
                                                   "    void m1() {\n" +
+                                                  "        boolean somevariable = Math.random() < 0.5;\n" +
+                                                  "        \n" +
                                                   "        if (somevariable) {\n" +
                                                   "            before();\n" +
                                                   "            after();\n" +
@@ -511,7 +521,10 @@ public class EndToEndTests {
         // contract: dots by default should only match the shortest path between enclosing anchors (if any)
 
         CtClass<?> input = Launcher.parseClass("class A {\n" +
-                                               "    void m1() {\n" +
+                                               "    void foo(Object x) {}\n" +
+                                               "    void bar(Object x) {}\n" +
+                                               "    \n" +
+                                               "    void m1(Object x) {\n" +
                                                "        foo(x);\n" +
                                                "        foo(x);\n" +
                                                "        bar(x);\n" +
@@ -520,7 +533,10 @@ public class EndToEndTests {
                                                "}\n");
     
         CtClass<?> expected = Launcher.parseClass("class A {\n" +
-                                                  "    void m1() {\n" +
+                                                  "    void foo(Object x) {}\n" +
+                                                  "    void bar(Object x) {}\n" +
+                                                  "    \n" +
+                                                  "    void m1(Object x) {\n" +
                                                   "        foo(x);\n" +
                                                   "        bar(x);\n" +
                                                   "    }\n" +
@@ -546,7 +562,10 @@ public class EndToEndTests {
         // contract: dots shortest path restriction is lifted by using when any
 
         CtClass<?> input = Launcher.parseClass("class A {\n" +
-                                               "    void m1() {\n" +
+                                               "    void foo(Object x) {}\n" +
+                                               "    void bar(Object x) {}\n" +
+                                               "    \n" +
+                                               "    void m1(Object x) {\n" +
                                                "        foo(x);\n" +
                                                "        foo(x);\n" +
                                                "        bar(x);\n" +
@@ -555,7 +574,10 @@ public class EndToEndTests {
                                                "}\n");
     
         CtClass<?> expected = Launcher.parseClass("class A {\n" +
-                                                  "    void m1() {\n" +
+                                                  "    void foo(Object x) {}\n" +
+                                                  "    void bar(Object x) {}\n" +
+                                                  "    \n" +
+                                                  "    void m1(Object x) {\n" +
                                                   "    }\n" +
                                                   "}\n");
     
@@ -579,6 +601,9 @@ public class EndToEndTests {
         // contract: a patch should be able to add a branch statement enclosing context
 
         CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void anchor() {}\n" +
+                                               "    void foo() {}\n" +
+                                               "    \n" +
                                                "    void m1() {\n" +
                                                "        anchor();\n" +
                                                "        foo();\n" +
@@ -586,7 +611,11 @@ public class EndToEndTests {
                                                "}\n");
     
         CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void anchor() {}\n" +
+                                                  "    void foo() {}\n" +
+                                                  "    \n" +
                                                   "    void m1() {\n" +
+                                                  "        boolean debug = Math.random() < 0.5;\n" +
                                                   "        anchor();\n" +
                                                   "        if (debug) {\n" +
                                                   "            foo();\n" +
@@ -596,6 +625,7 @@ public class EndToEndTests {
     
         SmPLRule rule = SmPLParser.parse("@@\n" +
                                          "@@\n" +
+                                         "+ boolean debug = Math.random() < 0.5;\n" +
                                          "  anchor();\n" +
                                          "+ if (debug) {\n" +
                                          "      foo();\n" +
@@ -645,6 +675,8 @@ public class EndToEndTests {
         // contract: a 'type' metavariable should match any type
 
         CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    class ASpecificType {}\n" +
+                                               "    \n" +
                                                "    void foo() {\n" +
                                                "        int x;\n" +
                                                "    }\n" +
@@ -659,6 +691,8 @@ public class EndToEndTests {
                                                "}\n");
     
         CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    class ASpecificType {}\n" +
+                                                  "    \n" +
                                                   "    void foo() {\n" +
                                                   "        \n" +
                                                   "    }\n" +
@@ -691,6 +725,8 @@ public class EndToEndTests {
         // contract: a concretely given type in SmPL should match that precise type
 
         CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    class ASpecificType {}\n" +
+                                               "    \n" +
                                                "    void foo() {\n" +
                                                "        int x;\n" +
                                                "    }\n" +
@@ -705,6 +741,8 @@ public class EndToEndTests {
                                                "}\n");
     
         CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    class ASpecificType {}\n" +
+                                                  "    \n" +
                                                   "    void foo() {\n" +
                                                   "        int x;\n" +
                                                   "    }\n" +
@@ -814,6 +852,9 @@ public class EndToEndTests {
         // contract: correct application of remove-locals-returning-constants patch example
 
         CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    float square(float x) { return x*x; }\n" +
+                                               "    void print(Object x) { System.out.println(x); }\n" +
+                                               "    \n" +
                                                "    int m1() {\n" +
                                                "        int x = 0;\n" +
                                                "        return x;\n" +
@@ -849,6 +890,9 @@ public class EndToEndTests {
                                                "}\n");
     
         CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    float square(float x) { return x*x; }\n" +
+                                                  "    void print(Object x) { System.out.println(x); }\n" +
+                                                  "    \n" +
                                                   "    int m1() {\n" +
                                                   "        return 0;\n" +
                                                   "    }\n" +

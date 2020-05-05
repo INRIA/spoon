@@ -19,6 +19,9 @@ constant C;
 
 [input]
 class A {
+    float square(float x) { return x*x; }
+    void print(Object x) { System.out.println(x); }
+    
     int m1() {
         int x = 0;
         return x;
@@ -56,6 +59,9 @@ class A {
 
 [expected]
 class A {
+    float square(float x) { return x*x; }
+    void print(Object x) { System.out.println(x); }
+    
     int m1() {
         return 0;
     }

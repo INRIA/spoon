@@ -6,6 +6,9 @@ a patch should be able to add a branch statement enclosing context
 
 [input]
 class A {
+    void anchor() {}
+    void foo() {}
+    
     void m1() {
         anchor();
         foo();
@@ -14,7 +17,11 @@ class A {
 
 [expected]
 class A {
+    void anchor() {}
+    void foo() {}
+    
     void m1() {
+        boolean debug = Math.random() < 0.5;
         anchor();
         if (debug) {
             foo();
@@ -25,6 +32,7 @@ class A {
 [patch]
 @@
 @@
++ boolean debug = Math.random() < 0.5;
   anchor();
 + if (debug) {
       foo();

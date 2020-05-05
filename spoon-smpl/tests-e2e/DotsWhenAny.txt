@@ -13,7 +13,10 @@ dots shortest path restriction is lifted by using when any
 
 [input]
 class A {
-    void m1() {
+    void foo(Object x) {}
+    void bar(Object x) {}
+    
+    void m1(Object x) {
         foo(x);
         foo(x);
         bar(x);
@@ -23,6 +26,9 @@ class A {
 
 [expected]
 class A {
-    void m1() {
+    void foo(Object x) {}
+    void bar(Object x) {}
+    
+    void m1(Object x) {
     }
 }
