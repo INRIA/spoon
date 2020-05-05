@@ -1,0 +1,52 @@
+[name]
+TypedIdentifierMetavariables2
+
+[contract]
+correct bindings of explicitly typed identifier metavariables
+
+[input]
+class A {
+    class ASpecificType {}
+    void log(Object x) { System.out.println(x.toString()); }
+    
+    void foo() {
+        int x = 0;
+        log(x);
+    }
+    
+    void bar() {
+        float x = 0.0f;
+        log(x);
+    }
+    
+    void baz() {
+        ASpecificType x = new ASpecificType();
+        log(x);
+    }
+}
+
+[expected]
+class A {
+    class ASpecificType {}
+    void log(Object x) { System.out.println(x.toString()); }
+    
+    void foo() {
+        int x = 0;
+        log(x);
+    }
+    
+    void bar() {
+        float x = 0.0f;
+        log(x);
+    }
+    
+    void baz() {
+        ASpecificType x = new ASpecificType();
+    }
+}
+
+[patch]
+@@
+ASpecificType x;
+@@
+- log(x);

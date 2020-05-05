@@ -1278,4 +1278,118 @@ public class EndToEndTests {
     
         assertEquals(expected.toString(), input.toString());
     }
+    @Test
+    public void testTypedIdentifierMetavariables1() {
+        // contract: correct bindings of explicitly typed identifier metavariables
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    class ASpecificType {}\n" +
+                                               "    void log(Object x) { System.out.println(x.toString()); }\n" +
+                                               "    \n" +
+                                               "    void foo() {\n" +
+                                               "        int x = 0;\n" +
+                                               "        log(x);\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    void bar() {\n" +
+                                               "        float x = 0.0f;\n" +
+                                               "        log(x);\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    void baz() {\n" +
+                                               "        ASpecificType x = new ASpecificType();\n" +
+                                               "        log(x);\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    class ASpecificType {}\n" +
+                                                  "    void log(Object x) { System.out.println(x.toString()); }\n" +
+                                                  "    \n" +
+                                                  "    void foo() {\n" +
+                                                  "        int x = 0;\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    void bar() {\n" +
+                                                  "        float x = 0.0f;\n" +
+                                                  "        log(x);\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    void baz() {\n" +
+                                                  "        ASpecificType x = new ASpecificType();\n" +
+                                                  "        log(x);\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "int x;\n" +
+                                         "@@\n" +
+                                         "- log(x);\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testTypedIdentifierMetavariables2() {
+        // contract: correct bindings of explicitly typed identifier metavariables
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    class ASpecificType {}\n" +
+                                               "    void log(Object x) { System.out.println(x.toString()); }\n" +
+                                               "    \n" +
+                                               "    void foo() {\n" +
+                                               "        int x = 0;\n" +
+                                               "        log(x);\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    void bar() {\n" +
+                                               "        float x = 0.0f;\n" +
+                                               "        log(x);\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    void baz() {\n" +
+                                               "        ASpecificType x = new ASpecificType();\n" +
+                                               "        log(x);\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    class ASpecificType {}\n" +
+                                                  "    void log(Object x) { System.out.println(x.toString()); }\n" +
+                                                  "    \n" +
+                                                  "    void foo() {\n" +
+                                                  "        int x = 0;\n" +
+                                                  "        log(x);\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    void bar() {\n" +
+                                                  "        float x = 0.0f;\n" +
+                                                  "        log(x);\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    void baz() {\n" +
+                                                  "        ASpecificType x = new ASpecificType();\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "ASpecificType x;\n" +
+                                         "@@\n" +
+                                         "- log(x);\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
 }

@@ -78,37 +78,44 @@ public class SmPLParser {
             CtMethod<?> mth = ast.getMethodsByName(SmPLJavaDSL.getMetavarsMethodName()).get(0);
 
             for (CtElement e : mth.getBody().getStatements()) {
-                CtInvocation<?> invocation = (CtInvocation<?>) e;
-                CtElement arg = invocation.getArguments().get(0);
-                String varname = null;
+                if (e instanceof CtInvocation) {
+                    CtInvocation<?> invocation = (CtInvocation<?>) e;
+                    CtElement arg = invocation.getArguments().get(0);
+                    String varname = null;
 
-                if (arg instanceof CtFieldRead<?>) {
-                    varname = ((CtFieldRead<?>) arg).getVariable().getSimpleName();
-                } else if (arg instanceof CtTypeAccess<?>) {
-                    varname = ((CtTypeAccess<?>) arg).getAccessedType().getSimpleName();
+                    if (arg instanceof CtFieldRead<?>) {
+                        varname = ((CtFieldRead<?>) arg).getVariable().getSimpleName();
+                    } else if (arg instanceof CtTypeAccess<?>) {
+                        varname = ((CtTypeAccess<?>) arg).getAccessedType().getSimpleName();
+                    } else {
+                        throw new IllegalArgumentException("Unable to extract metavariable name at <position>");
+                    }
+
+                    switch (invocation.getExecutable().getSimpleName()) {
+                        case "type":
+                            metavars.put(varname, new TypeConstraint());
+                            break;
+
+                        case "identifier":
+                            metavars.put(varname, new IdentifierConstraint());
+                            break;
+
+                        case "constant":
+                            metavars.put(varname, new ConstantConstraint());
+                            break;
+
+                        case "expression":
+                            metavars.put(varname, new ExpressionConstraint());
+                            break;
+
+                        default:
+                            throw new IllegalArgumentException("Unknown metavariable type " + invocation.getExecutable().getSimpleName());
+                    }
+                } else if (e instanceof CtLocalVariable) {
+                    CtLocalVariable<?> ctLocalVar = (CtLocalVariable<?>) e;
+                    metavars.put(ctLocalVar.getSimpleName(), new TypedIdentifierConstraint(ctLocalVar.getType().getSimpleName()));
                 } else {
-                    throw new IllegalArgumentException("Unable to extract metavariable name at <position>");
-                }
-
-                switch (invocation.getExecutable().getSimpleName()) {
-                    case "type":
-                        metavars.put(varname, new TypeConstraint());
-                        break;
-
-                    case "identifier":
-                        metavars.put(varname, new IdentifierConstraint());
-                        break;
-
-                    case "constant":
-                        metavars.put(varname, new ConstantConstraint());
-                        break;
-
-                    case "expression":
-                        metavars.put(varname, new ExpressionConstraint());
-                        break;
-
-                    default:
-                        throw new IllegalArgumentException("Unknown metavariable type " + invocation.getExecutable().getSimpleName());
+                    throw new IllegalArgumentException("unhandled metavariable element " + e.toString());
                 }
             }
         }
@@ -225,6 +232,14 @@ public class SmPLParser {
                         result.out.append("expression(").append(id).append(");\n");
                     }
                 }));
+
+        metavars.add(new RewriteRule("explicit_type", "(?s)^([A-Za-z_][A-Za-z0-9_]*)\\s+([^;]+);",
+        (ctx) -> {},
+        (result, match) -> {
+            for (String id : match.group(2).split("\\s*,\\s*")) {
+                result.out.append(match.group(1)).append(" ").append(id).append(";\n");
+            }
+        }));
 
         // TODO: call this method header context instead?
         // Code context
