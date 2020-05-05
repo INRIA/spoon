@@ -32,17 +32,25 @@ public class ValueNode implements PatternNode {
 
         sb.append("Val(");
 
-        sb.append(matchValue.getClass().getSimpleName());
-        sb.append(":");
-        sb.append(matchValue.toString());
+        if (matchValue == null) {
+            sb.append("null");
+        } else {
+            sb.append(matchValue.getClass().getSimpleName());
+            sb.append(":");
+            sb.append(matchValue.toString());
+        }
+
         sb.append("; ");
 
-        sb.append(srcValue.getClass().getSimpleName());
-        sb.append(":");
-        sb.append(srcValue.toString());
+        if (srcValue == null) {
+            sb.append("null");
+        } else {
+            sb.append(srcValue.getClass().getSimpleName());
+            sb.append(":");
+            sb.append(srcValue.toString());
+        }
 
         sb.append(")");
-
         return sb.toString();
     }
 
