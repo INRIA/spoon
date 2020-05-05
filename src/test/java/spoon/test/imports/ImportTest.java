@@ -71,6 +71,7 @@ import spoon.test.imports.testclasses.StaticNoOrdered;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.ToBeModified;
+import spoon.test.imports.testclasses.badimportissue3320.source.TestSource;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.BufferedReader;
@@ -1777,4 +1778,22 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		}
 	}
 
+	@Test
+	public void testImportsForElementsAnnotatedWithTypeUseAnnotations() {
+		// contract: correct import generated for method parameters annotated with TYPE_USE annotations
+		final Launcher launcher = new Launcher();
+		Environment environment = launcher.getEnvironment();
+
+		environment.setNoClasspath(true);
+		environment.setAutoImports(true);
+		launcher.addInputResource("src/test/java/spoon/test/imports/testclasses/badimportissue3320/source/TestSource.java");
+		launcher.run();
+
+		CtType<TestSource> objectCtType = launcher.getFactory().Type().get(TestSource.class);
+		CompilationUnit compilationUnit = launcher.getFactory().CompilationUnit().getOrCreate(objectCtType);
+
+		assertEquals(1, compilationUnit.getImports().stream()
+				.filter(ctImport -> ctImport.prettyprint().equals("import spoon.test.imports.testclasses.badimportissue3320.source.other.SomeObjectDto;"))
+				.count());
+	}
 }

@@ -23,4 +23,8 @@ public @interface Property {
 	 * An optional text that describes the property.
 	 */
 	String value() default "";
+	/**
+	 * If a value is notNullable, spoon will throw a {@link spoon.SpoonException} for null values.
+	 */
+	boolean notNullable() default false;
 }
