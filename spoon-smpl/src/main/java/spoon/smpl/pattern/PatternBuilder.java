@@ -616,6 +616,11 @@ public class PatternBuilder implements CtVisitor {
         throw new NotImplementedException("Not implemented");
     }
 
+    @Override
+    public void visitCtYieldStatement(CtYieldStatement ctYieldStatement) {
+        throw new NotImplementedException("Not implemented");
+    }
+
     private List<String> params;
     private Stack<PatternNode> resultStack;
 }

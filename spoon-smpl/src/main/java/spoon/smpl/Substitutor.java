@@ -530,4 +530,9 @@ public class Substitutor implements CtVisitor {
     public void visitCtTypeMemberWildcardImportReference(CtTypeMemberWildcardImportReference wildcardReference) {
         throw new NotImplementedException("Not implemented");
     }
+
+    @Override
+    public void visitCtYieldStatement(CtYieldStatement ctYieldStatement) {
+        throw new NotImplementedException("Not implemented");
+    }
 }
