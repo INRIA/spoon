@@ -8,9 +8,12 @@
 package spoon.support.util;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.comparator.QualifiedNameComparator;
 
 public class QualifiedNameBasedSortedSet<E extends CtElement> extends
@@ -27,4 +30,13 @@ public class QualifiedNameBasedSortedSet<E extends CtElement> extends
 		super(new QualifiedNameComparator());
 	}
 
+	@Override
+	public Iterator<E> iterator() {
+		return stream().iterator();
+	}
+
+	@Override
+	public Stream<E> stream() {
+		return super.stream().sorted(new CtLineElementComparator());
+	}
 }
