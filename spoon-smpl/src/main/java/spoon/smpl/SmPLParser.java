@@ -48,6 +48,7 @@ public class SmPLParser {
             CtClass<?> adds = Launcher.parseClass(separated.get(1));
 
             // TODO: we probably want to keep legitimate this-accesses, only remove those associated with SmPLGeneralIdentifier
+            // part of hack to fix parsing of e.g "foo.x" with zero context for "foo"
             nullifyThisAccessTargets(dels);
             nullifyThisAccessTargets(adds);
 
@@ -722,7 +723,13 @@ public class SmPLParser {
         return contained.result;
     }
 
+    /**
+     * Given a CtElement AST, Replace with null all targets of CtTargetedExpressions that are
+     * CtThisAccesses
+     * @param e AST to operate on
+     */
     private static void nullifyThisAccessTargets(CtElement e) {
+        // part of hack to fix parsing of e.g "foo.x" with zero context for "foo"
         CtScanner scanner = new CtScanner() {
             @Override
             protected void enter(CtElement e) {
