@@ -29,77 +29,12 @@ public class FormulaCompiler {
     }
 
     /**
-     * Optimize a given formula.
-     *
-     * Optimizations:
-     * 1) Operation-capturing formulas "And(LHS, ExistsVar("_v", SetEnv("_v", List<Operation>)))"
-     *    with empty operation lists are replaced by LHS.
-     *
-     * @param input Formula to optimize
-     * @return Optimized formula
-     */
-    public static Formula optimize(Formula input) {
-        if (input == null) {
-            return null;
-        } else if (input instanceof AllNext) {
-            return new AllNext(optimize(((AllNext) input).getInnerElement()));
-        } else if (input instanceof AllUntil) {
-            return new AllUntil(optimize(((AllUntil) input).getLhs()), optimize(((AllUntil) input).getRhs()));
-        } else if (input instanceof And) {
-            And and = (And) input;
-
-            if (and.getRhs() instanceof ExistsVar
-                && ((ExistsVar) and.getRhs()).getVarName().equals("_v")
-                && ((ExistsVar) and.getRhs()).getInnerElement() instanceof SetEnv
-                && ((SetEnv) ((ExistsVar) and.getRhs()).getInnerElement()).getValue() instanceof List
-                && ((List<?>) ((SetEnv) ((ExistsVar) and.getRhs()).getInnerElement()).getValue()).size() == 0) {
-                return and.getLhs();
-            }
-
-            return new And(optimize(and.getLhs()), optimize(and.getRhs()));
-        } else if (input instanceof Branch) {
-            return input;
-        } else if (input instanceof ExistsNext) {
-            return new ExistsNext(optimize(((ExistsNext) input).getInnerElement()));
-        } else if (input instanceof ExistsUntil) {
-            return new ExistsUntil(optimize(((ExistsUntil) input).getLhs()), optimize(((ExistsUntil) input).getRhs()));
-        } else if (input instanceof ExistsVar) {
-            return new ExistsVar(((ExistsVar) input).getVarName(), optimize(((ExistsVar) input).getInnerElement()));
-        } else if (input instanceof Not) {
-            return new Not(optimize(((Not) input).getInnerElement()));
-        } else if (input instanceof Or) {
-            return new Or(optimize(((Or) input).getLhs()), optimize(((Or) input).getRhs()));
-        } else if (input instanceof Proposition) {
-            return input;
-        } else if (input instanceof SetEnv) {
-            return input;
-        } else if (input instanceof Statement) {
-            return input;
-        } else if (input instanceof True) {
-            return input;
-        } else if (input instanceof VariableUsePredicate) {
-            return input;
-        } else {
-            throw new IllegalArgumentException("unhandled formula element " + input.getClass().toString());
-        }
-    }
-
-    /**
      * Compile the CTL-VW Formula.
      * @return CTL-VW Formula
      */
     public Formula compileFormula() {
         quantifiedMetavars = new ArrayList<>();
-
-        Formula result = compileFormulaInner(cfg.findNodesOfKind(BranchKind.BEGIN).get(0).next().get(0));
-        String prevStr = "";
-
-        while (!prevStr.equals(result.toString())) {
-            prevStr = result.toString();
-            result = optimize(result);
-        }
-
-        return result;
+        return FormulaOptimizer.optimizeFully(compileFormulaInner(cfg.findNodesOfKind(BranchKind.BEGIN).get(0).next().get(0)));
     }
 
     /**
@@ -207,7 +142,6 @@ public class FormulaCompiler {
     private Formula compileStatementFormula(ControlFlowNode node) {
         if (SmPLJavaDSL.isDots(node.getStatement())) {
             CtInvocation<?> dots = (CtInvocation<?>) node.getStatement();
-            // TODO: add guards needed for ensuring shortest path
 
             Formula savedPreGuard = dotsPreGuard;
             Formula innerFormula = compileFormulaInner(node.next().get(0));
@@ -253,7 +187,7 @@ public class FormulaCompiler {
                     return new AllUntil(formula, innerFormula);
                 }
             }
-        } else if (isMethodHeader(node)) {
+        } else if (SmPLMethodCFG.isMethodHeaderNode(node)) {
             Formula formula = new Proposition("methodHeader");
 
             List<Operation> methodBodyOps = additions.getOperationsAnchoredToMethodBody();
@@ -305,11 +239,6 @@ public class FormulaCompiler {
         }
     }
 
-    private static boolean isMethodHeader(ControlFlowNode node) {
-        return node.getTag() instanceof SmPLMethodCFG.NodeTag
-               && ((SmPLMethodCFG.NodeTag) node.getTag()).getLabel().equals("methodHeader");
-    }
-
     /**
      * Get sorted list of metavariable names referenced in a given AST element.
      * @param e Element to scan
@@ -336,6 +265,7 @@ public class FormulaCompiler {
         return result;
     }
 
+    // TODO: what about disjunctions, e.g Or(Statement1, Statement2)?
     /**
      * Find the first 'code element' predicate formula in a given formula tree.
      *
