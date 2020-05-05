@@ -341,7 +341,22 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
-        throw new NotImplementedException("Not implemented");
+        ElemNode result = new ElemNode(ctConstructorCall);
+
+        ctConstructorCall.getExecutable().accept(this);
+        result.sub.put("executable", resultStack.pop());
+
+        int numargs = ctConstructorCall.getArguments().size();
+
+        result.sub.put("numargs", new ValueNode(numargs, numargs));
+
+        for (int i = 0; i < numargs; ++i) {
+            // TODO: also include argument types?
+            ctConstructorCall.getArguments().get(i).accept(this);
+            result.sub.put("arg" + Integer.toString(i), resultStack.pop());
+        }
+
+        resultStack.push(result);
     }
 
     @Override
