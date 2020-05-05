@@ -20,4 +20,14 @@ public class True implements Formula {
     public String toString() {
         return "T";
     }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof True;
+    }
 }

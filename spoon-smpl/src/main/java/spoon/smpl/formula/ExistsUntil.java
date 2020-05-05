@@ -32,4 +32,14 @@ public class ExistsUntil extends BinaryConnective {
     public String toString() {
         return "EU(" + getLhs().toString() + ", " + getRhs().toString() + ")";
     }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return this == other || (other instanceof ExistsUntil && other.hashCode() == hashCode());
+    }
 }

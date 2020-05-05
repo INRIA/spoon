@@ -60,6 +60,16 @@ public class Proposition implements Predicate {
         return proposition;
     }
 
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return this == other || (other instanceof Proposition && other.hashCode() == hashCode());
+    }
+
     /**
      * The proposition String.
      */

@@ -28,4 +28,14 @@ public class Or extends BinaryConnective {
     public String toString() {
         return "Or(" + getLhs().toString() + ", " + getRhs().toString() + ")";
     }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return this == other || (other instanceof Or && other.hashCode() == hashCode());
+    }
 }

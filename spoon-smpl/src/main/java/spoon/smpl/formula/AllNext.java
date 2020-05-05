@@ -30,4 +30,14 @@ public class AllNext extends UnaryConnective {
     public String toString() {
         return "AX(" + getInnerElement().toString() + ")";
     }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return this == other || (other instanceof AllNext && other.hashCode() == hashCode());
+    }
 }

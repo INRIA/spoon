@@ -58,6 +58,16 @@ public class SetEnv implements Formula {
         return "SetEnv(" + metavar + " = " + value.toString() + ")";
     }
 
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return this == other || (other instanceof SetEnv && other.hashCode() == hashCode());
+    }
+
     /**
      * Target variable name.
      */

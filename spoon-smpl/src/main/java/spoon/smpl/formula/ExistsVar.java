@@ -51,6 +51,19 @@ public class ExistsVar implements Formula {
         return "E(" + varName + ", " + innerElement.toString() + ")";
     }
 
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return this == other || (other instanceof ExistsVar && other.hashCode() == hashCode());
+    }
+
+    /**
+     * Name of quantified variable.
+     */
     private String varName;
 
     /**
