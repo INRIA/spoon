@@ -719,6 +719,59 @@ public class EndToEndTests {
         assertEquals(expected.toString(), input.toString());
     }
     @Test
+    public void testFieldReads() {
+        // contract: correct matching of field reads
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    class Point { Integer x,y; public Point(Integer x, Integer y) {} }\n" +
+                                               "    class Logger { public void log(Object x) {} }\n" +
+                                               "    \n" +
+                                               "    void m1() {\n" +
+                                               "        Point point = new Point(1,2);\n" +
+                                               "        Logger logger = new Logger();\n" +
+                                               "        logger.log(point);\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    void m2() {\n" +
+                                               "        Point point = new Point(1,2);\n" +
+                                               "        Logger logger = new Logger();\n" +
+                                               "        logger.log(point.x);\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    class Point { Integer x,y; public Point(Integer x, Integer y) {} }\n" +
+                                                  "    class Logger { public void log(Object x) {} }\n" +
+                                                  "    \n" +
+                                                  "    void m1() {\n" +
+                                                  "        Point point = new Point(1,2);\n" +
+                                                  "        Logger logger = new Logger();\n" +
+                                                  "        logger.log(point);\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    void m2() {\n" +
+                                                  "        Point point = new Point(1,2);\n" +
+                                                  "        Logger logger = new Logger();\n" +
+                                                  "        logger.log(\"The X coordinate is \" + point.x.toString());\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "Point p;\n" +
+                                         "@@\n" +
+                                         "- logger.log(p.x);\n" +
+                                         "+ logger.log(\"The X coordinate is \" + p.x.toString());\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
     public void testHelloWorld() {
         // contract: hello world template test
 
