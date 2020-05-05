@@ -139,8 +139,10 @@ public class CommandlineApplication {
                             for (Formula phi : subformulas.getResult()) {
                                 phi.accept(modelChecker);
 
-                                System.out.println(phi);
+                                System.out.println(DebugUtils.prettifyFormula(phi));
+                                System.out.print("  ");
                                 System.out.println(modelChecker.getResult());
+                                System.out.println();
                             }
                         } else {
                             smplRule.getFormula().accept(modelChecker);
@@ -191,7 +193,7 @@ public class CommandlineApplication {
                     SmPLRule rule = SmPLParser.parse(readFile(smplFilename, StandardCharsets.UTF_8));
 
                     if (action == Action.CTL) {
-                        System.out.println(rule.getFormula());
+                        System.out.println(DebugUtils.prettifyFormula(rule.getFormula()));
                     } else if (action == Action.COMPILE) {
                         System.out.println(rule);
                     }
