@@ -2,8 +2,7 @@ package spoon.smpl.pattern;
 
 import spoon.reflect.declaration.CtElement;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Part of temporary substitute for spoon.pattern
@@ -29,6 +28,31 @@ public class ElemNode implements PatternNode {
         else {
             return false;
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Elem(");
+        sb.append(elem.getClass().getSimpleName());
+        sb.append(", ");
+
+        List<String> subKeys = new ArrayList<>(sub.keySet());
+        Collections.sort(subKeys);
+
+        for (String key : subKeys) {
+            sb.append(key);
+            sb.append("=");
+            sb.append(sub.get(key).toString());
+            sb.append(", ");
+        }
+
+        sb.delete(sb.length() - 2, sb.length());
+
+        sb.append(")");
+
+        return sb.toString();
     }
 
     public final CtElement elem;

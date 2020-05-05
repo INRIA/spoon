@@ -26,6 +26,26 @@ public class ValueNode implements PatternNode {
         }
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Val(");
+
+        sb.append(matchValue.getClass().getSimpleName());
+        sb.append(":");
+        sb.append(matchValue.toString());
+        sb.append("; ");
+
+        sb.append(srcValue.getClass().getSimpleName());
+        sb.append(":");
+        sb.append(srcValue.toString());
+
+        sb.append(")");
+
+        return sb.toString();
+    }
+
     public final Object matchValue;
     public final Object srcValue;
 }

@@ -25,5 +25,10 @@ public class ParamNode implements PatternNode {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Param(" + name + ")";
+    }
+
     public String name;
 }
