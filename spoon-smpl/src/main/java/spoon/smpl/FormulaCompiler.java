@@ -38,6 +38,20 @@ public class FormulaCompiler {
     }
 
     /**
+     * Create a disjunction of a number of formula alternatives using the Sequential-Or connective.
+     *
+     * @param alternatives Formula alternatives to join in disjunction
+     * @return Formula containing sequential-or disjunction of all alternatives
+     */
+    public static Formula joinAlternatives(List<Formula> alternatives) {
+        if (alternatives.size() == 1) {
+            return FormulaOptimizer.optimizeFully(alternatives.get(0));
+        } else {
+            return FormulaOptimizer.optimizeFully(new SequentialOr(alternatives));
+        }
+    }
+
+    /**
      * Compile a CTL-VW Formula.
      * @param node First node of control flow graph to generate formula for
      * @return CTL-VW Formula

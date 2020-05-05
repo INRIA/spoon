@@ -141,6 +141,84 @@ public class EndToEndTests {
         assertEquals(expected.toString(), input.toString());
     }
     @Test
+    public void testBasicPatternDisjunction() {
+        // contract: matching of pattern disjunction including clause-order priority
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void a() {}\n" +
+                                               "    void b() {}\n" +
+                                               "    void c() {}\n" +
+                                               "    \n" +
+                                               "    void m1() {\n" +
+                                               "        a();\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    void m2() {\n" +
+                                               "        b();\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    void m3() {\n" +
+                                               "        c();\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    void m4() {\n" +
+                                               "        a();\n" +
+                                               "        b();\n" +
+                                               "        c();\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    void m5() {\n" +
+                                               "        c();\n" +
+                                               "        b();\n" +
+                                               "        a();\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void a() {}\n" +
+                                                  "    void b() {}\n" +
+                                                  "    void c() {}\n" +
+                                                  "    \n" +
+                                                  "    void m1() {\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    void m2() {\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    void m3() {\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    void m4() {\n" +
+                                                  "        b();\n" +
+                                                  "        c();\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    void m5() {\n" +
+                                                  "        c();\n" +
+                                                  "        b();\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "@@\n" +
+                                         "(\n" +
+                                         "- a();\n" +
+                                         "|\n" +
+                                         "- b();\n" +
+                                         "|\n" +
+                                         "- c();\n" +
+                                         ")\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
     public void testDeleteBranch() {
         // contract: a patch should be able to delete a complete branch statement
 
