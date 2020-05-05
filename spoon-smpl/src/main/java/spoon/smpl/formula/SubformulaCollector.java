@@ -80,4 +80,13 @@ public class SubformulaCollector implements FormulaVisitor {
     public void visit(SetEnv element) {
         subformulas.add(element);
     }
+
+    @Override
+    public void visit(SequentialOr element) {
+        subformulas.add(element);
+
+        for (Formula phi : element) {
+            phi.accept(this);
+        }
+    }
 }

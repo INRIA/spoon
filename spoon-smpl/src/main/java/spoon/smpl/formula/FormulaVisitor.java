@@ -15,4 +15,5 @@ public interface FormulaVisitor {
     public void visit(AllUntil element);
     public void visit(ExistsVar element);
     public void visit(SetEnv element);
+    public void visit(SequentialOr element);
 }

@@ -607,6 +607,39 @@ public class ModelChecker implements FormulaVisitor {
     }
 
     /**
+     * Compute the set of states that satisfy a "sequential disjunction" of N clauses.
+     *
+     * @param element Sequential disjunction of N clauses
+     */
+    @Override
+    public void visit(SequentialOr element) {
+        if (!element.isValid()) {
+            throw new IllegalArgumentException("invalid disjunction");
+        }
+
+        element.get(0).accept(this);
+        ResultSet r0 = resultStack.pop();
+
+        ResultSet notr0 = ResultSet.negate(model, r0);
+
+        element.get(1).accept(this);
+        ResultSet r1pre = resultStack.pop();
+
+        ResultSet r1 = ResultSet.intersect(notr0, r1pre);
+
+        ResultSet result = ResultSet.join(r0, r1);
+
+        for (int i = 2; i < element.size(); ++i) {
+            element.get(i).accept(this);
+            r1pre = resultStack.pop();
+            r1 = ResultSet.intersect(ResultSet.negate(model, result), r1pre);
+            result = ResultSet.join(result, r1);
+        }
+
+        resultStack.push(result);
+    }
+
+    /**
      * Computes the set of states that have some successor in a given set of target states, i.e
      * the states that CAN transition into the set of target states.
      * @param model Model
