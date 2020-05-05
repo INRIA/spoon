@@ -47,6 +47,7 @@ public class SmPLParser {
             CtClass<?> dels = Launcher.parseClass(separated.get(0));
             CtClass<?> adds = Launcher.parseClass(separated.get(1));
 
+            // TODO: we probably want to keep legitimate this-accesses, only remove those associated with SmPLGeneralIdentifier
             nullifyThisAccessTargets(dels);
             nullifyThisAccessTargets(adds);
 
