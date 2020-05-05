@@ -6,6 +6,9 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.smpl.formula.Formula;
+
+import java.util.Stack;
 
 /**
  * Collection of static debug utility methods.
@@ -127,5 +130,63 @@ public class DebugUtils {
         }
 
         return result.toString();
+    }
+
+    /**
+     * Produce a pretty-printed String of a given formula.
+     *
+     * @param phi Formula to pretty-print
+     * @return Pretty-printed String
+     */
+    public static String prettifyFormula(Formula phi) {
+        return prettifyFormula(phi.toString());
+    }
+
+    /**
+     * Reformat a given String, adding line breaks after commas and indenting the content
+     * following a comma such that it aligns with the appropriate enclosing opening parenthesis.
+     *
+     * Example:
+     *   input: "And(First, Or(Second, Third))"
+     *  output: "And(First,
+     *               Or(Second,
+     *                  Third))
+     *
+     * @param str String to reformat
+     * @return Reformatted String
+     */
+    public static String prettifyFormula(String str) {
+        StringBuilder sb = new StringBuilder();
+
+        Stack<Integer> indentStack = new Stack<>();
+        indentStack.push(0);
+
+        int offset = 0;
+        boolean doIndent = false;
+
+        for (char c : str.toCharArray()) {
+            if (doIndent) {
+                doIndent = false;
+                sb.append("\n");
+
+                for (int i = 0; i < indentStack.peek(); ++i) {
+                    sb.append(" ");
+                }
+
+                offset = indentStack.peek();
+            }
+            if (c == '(') {
+                indentStack.push(offset);
+            } else if (c == ')') {
+                indentStack.pop();
+            } else if (c == ',') {
+                doIndent = true;
+            }
+
+            sb.append(c);
+            ++offset;
+        }
+
+        return sb.toString();
     }
 }
