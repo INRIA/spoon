@@ -14,7 +14,7 @@ import java.util.Map;
  * model where a variable is used that can be bound to the metavariable "v1" according to
  * its constraints.
  */
-public class VariableUsePredicate implements Predicate {
+public class VariableUsePredicate extends ParameterizedPredicate {
     /**
      * Create a new VariableUsePredicate using a given variable (or metavariable) name and
      * metavariable spec.
@@ -23,8 +23,8 @@ public class VariableUsePredicate implements Predicate {
      * @param metavars Metavariable names and their corresponding constraints
      */
     public VariableUsePredicate(String variable, Map<String, MetavariableConstraint> metavars) {
+        super(metavars);
         this.variable = variable;
-        this.metavars = metavars;
     }
 
     /**
@@ -37,38 +37,6 @@ public class VariableUsePredicate implements Predicate {
     }
 
     @Override
-    public Map<String, MetavariableConstraint> getMetavariables() {
-        return metavars;
-    }
-
-    /**
-     * Validate and potentially modify metavariable bindings.
-     *
-     * @param parameters Mutable map of metavariable bindings
-     * @return True if bindings could be validated (potentially by modification), false otherwise
-     */
-    @Override
-    public boolean processMetavariableBindings(Map<String, Object> parameters) {
-        if (metavars == null) {
-            return true;
-        }
-
-        for (String key : metavars.keySet()) {
-            if (parameters.containsKey(key)) {
-                Object result = metavars.get(key).apply(parameters.get(key));
-
-                if (result != null) {
-                    parameters.put(key, result);
-                } else {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    @Override
     public void accept(FormulaVisitor visitor) {
         visitor.visit(this);
     }
@@ -78,13 +46,18 @@ public class VariableUsePredicate implements Predicate {
         return "Used(" + variable + ")";
     }
 
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return this == other || (other instanceof VariableUsePredicate && other.hashCode() == hashCode());
+    }
+
     /**
      * Variable (or metavariable) name to match.
      */
     private String variable;
-
-    /**
-     * Metavariable names and their corresponding constraints.
-     */
-    private Map<String, MetavariableConstraint> metavars;
 }
