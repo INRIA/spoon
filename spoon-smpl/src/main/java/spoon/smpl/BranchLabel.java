@@ -2,19 +2,15 @@ package spoon.smpl;
 
 import spoon.reflect.code.CtIf;
 import spoon.reflect.declaration.CtElement;
-import spoon.smpl.formula.BranchPattern;
+import spoon.smpl.formula.Branch;
 import spoon.smpl.formula.Predicate;
-import spoon.smpl.pattern.PatternBuilder;
 import spoon.smpl.pattern.PatternMatcher;
-import spoon.smpl.pattern.PatternNode;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A BranchLabel is a Label used to associate states with CtElement code
- * elements that can be matched using BranchPattern Formula elements.
+ * elements that can be matched using Branch Formula elements.
  */
 public class BranchLabel extends CodeElementLabel {
     /**
@@ -41,17 +37,17 @@ public class BranchLabel extends CodeElementLabel {
     /**
      * Test whether the label matches the given predicate.
      * @param obj Predicate to test
-     * @return True if the predicate is a BranchPattern element whose Pattern matches the code exactly once, false otherwise.
+     * @return True if the predicate is a Branch element whose Pattern matches the code exactly once, false otherwise.
      */
     public boolean matches(Predicate obj) {
-        if (obj instanceof BranchPattern) {
-            BranchPattern bp = (BranchPattern) obj;
+        if (obj instanceof Branch) {
+            Branch bp = (Branch) obj;
 
             if (!bp.getBranchType().isInstance(codeElement.getParent())) {
                 return false;
             }
 
-            PatternMatcher matcher = new PatternMatcher(bp.getConditionPattern());
+            PatternMatcher matcher = new PatternMatcher(bp.getPattern());
             codePattern.accept(matcher);
             metavarBindings = Arrays.asList(matcher.getParameters());
             return matcher.getResult() && bp.processMetavariableBindings(metavarBindings.get(0));

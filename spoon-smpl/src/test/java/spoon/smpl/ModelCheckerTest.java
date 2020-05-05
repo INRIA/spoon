@@ -15,7 +15,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 
 import spoon.smpl.formula.*;
-import spoon.smpl.metavars.IdentifierConstraint;
 import spoon.smpl.pattern.*;
 
 import static spoon.smpl.TestUtils.*;
@@ -341,12 +340,7 @@ public class ModelCheckerTest {
 
         ModelChecker checker = new ModelChecker(model);
 
-        PatternBuilder builder = new PatternBuilder();
-
-        stmt.accept(builder);
-        PatternNode pattern = builder.getResult();
-
-        new StatementPattern(pattern).accept(checker);
+        new Statement(stmt).accept(checker);
         assertEquals(res(1, env()), checker.getResult());
     }
 

@@ -23,7 +23,7 @@ import static spoon.smpl.TestUtils.*;
 
 public class WitnessesTest {
     private static Formula stmt(String code, Map<String, MetavariableConstraint> metavars) {
-        return new StatementPattern(makePattern(parseStatement(code), new ArrayList<>(metavars.keySet())), metavars);
+        return new Statement(parseStatement(code), metavars);
     }
 
     @Before

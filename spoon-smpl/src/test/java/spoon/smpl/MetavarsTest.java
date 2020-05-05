@@ -24,11 +24,11 @@ public class MetavarsTest {
     }
 
     private static Formula stmt(String code, Map<String, MetavariableConstraint> metavars) {
-        return new StatementPattern(makePattern(parseStatement(code), new ArrayList<>(metavars.keySet())), metavars);
+        return new Statement(parseStatement(code), metavars);
     }
 
     private static Formula retstmt(String code, Map<String, MetavariableConstraint> metavars) {
-        return new StatementPattern(makePattern(parseReturnStatement(code), new ArrayList<>(metavars.keySet())), metavars);
+        return new Statement(parseReturnStatement(code), metavars);
     }
 
     private static Model modelAlice() {

@@ -44,7 +44,7 @@ public class IntegrationBugsTest {
         List<String> metakeys = new ArrayList<>(meta.keySet());
 
         new And(new Not(new Proposition("methodHeader")),
-                new AllNext(new StatementPattern(makePattern(parseStatement("int v = 1;"), metakeys), meta)))
+                new AllNext(new Statement(parseStatement("int v = 1;"), meta)))
                 .accept(checker);
 
         assertEquals("[(4, {v=y}, [])]", sortedEnvs(checker.getResult().toString()));
@@ -68,7 +68,7 @@ public class IntegrationBugsTest {
         List<String> metakeys = new ArrayList<>(meta.keySet());
 
         new And(new Not(new Proposition("methodHeader")),
-                new ExistsNext(new StatementPattern(makePattern(parseStatement("int v = 1;"), metakeys), meta)))
+                new ExistsNext(new Statement(parseStatement("int v = 1;"), meta)))
                 .accept(checker);
 
         assertEquals("[(4, {v=y}, [])]", sortedEnvs(checker.getResult().toString()));

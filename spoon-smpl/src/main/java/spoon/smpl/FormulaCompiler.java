@@ -6,7 +6,6 @@ import org.apache.commons.lang3.NotImplementedException;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
 import spoon.smpl.formula.*;
-import spoon.smpl.pattern.PatternBuilder;
 
 import java.util.*;
 
@@ -24,7 +23,6 @@ public class FormulaCompiler {
         this.cfg = cfg;
         this.quantifiedMetavars = new ArrayList<>();
         this.metavars = metavars;
-        this.patternBuilder = new PatternBuilder(new ArrayList<>(metavars.keySet()));
         this.commonLines = commonLines;
         this.additions = additions;
         this.dotsPreGuard = null;
@@ -59,7 +57,7 @@ public class FormulaCompiler {
             }
 
             return new And(optimize(and.getLhs()), optimize(and.getRhs()));
-        } else if (input instanceof BranchPattern) {
+        } else if (input instanceof Branch) {
             return input;
         } else if (input instanceof ExistsNext) {
             return new ExistsNext(optimize(((ExistsNext) input).getInnerElement()));
@@ -75,7 +73,7 @@ public class FormulaCompiler {
             return input;
         } else if (input instanceof SetEnv) {
             return input;
-        } else if (input instanceof StatementPattern) {
+        } else if (input instanceof Statement) {
             return input;
         } else if (input instanceof True) {
             return input;
@@ -159,13 +157,8 @@ public class FormulaCompiler {
                     case BRANCH:
                         CtElement statement = node.getStatement();
                         int line = statement.getPosition().getLine();
-                        statement.accept(patternBuilder);
 
-                        Class<? extends CtElement> branchType = statement.getParent().getClass();
-                        formula = new BranchPattern(patternBuilder.getResult(), branchType, metavars);
-
-                        ((BranchPattern) formula).setStringRepresentation(statement.toString());
-
+                        formula = new Branch(statement.getParent(), metavars);
                         dotsPreGuard = formula;
 
                         ArrayList<Operation> ops = new ArrayList<>();
@@ -273,11 +266,8 @@ public class FormulaCompiler {
         } else {
             CtElement statement = node.getStatement();
             int line = statement.getPosition().getLine();
-            statement.accept(patternBuilder);
 
-            Formula formula = new StatementPattern(patternBuilder.getResult(), metavars);
-            ((StatementPattern) formula).setStringRepresentation(statement.toString());
-
+            Formula formula = new Statement(statement, metavars);
             dotsPreGuard = formula;
 
             ArrayList<Operation> ops = new ArrayList<>();
@@ -364,7 +354,7 @@ public class FormulaCompiler {
             }
             Formula lhs = findFirstCodeElementFormula(((BinaryConnective) input).getLhs());
             return (lhs != null) ? lhs : findFirstCodeElementFormula(((BinaryConnective) input).getRhs());
-        } else if (input instanceof BranchPattern) {
+        } else if (input instanceof Branch) {
             return input;
         } else if (input instanceof ExistsVar) {
             return findFirstCodeElementFormula(((ExistsVar) input).getInnerElement());
@@ -372,7 +362,7 @@ public class FormulaCompiler {
             return null;
         } else if (input instanceof SetEnv) {
             return null;
-        } else if (input instanceof StatementPattern) {
+        } else if (input instanceof Statement) {
             return input;
         } else if (input instanceof True) {
             return null;
@@ -397,11 +387,6 @@ public class FormulaCompiler {
      * Metavariable names and their corresponding constraints.
      */
     private Map<String, MetavariableConstraint> metavars;
-
-    /**
-     * A PatternBuilder to build patterns.
-     */
-    private PatternBuilder patternBuilder;
 
     /**
      * Set of line numbers associated with common (context) statements.

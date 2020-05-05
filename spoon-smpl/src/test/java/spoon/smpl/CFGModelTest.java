@@ -4,7 +4,6 @@ import fr.inria.controlflow.BranchKind;
 import org.junit.Before;
 import org.junit.Test;
 
-import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.smpl.formula.*;
 
@@ -31,9 +30,9 @@ public class CFGModelTest {
         CFGModel model = new CFGModel(methodCfg(method));
 
         Formula phi = new And(
-                new StatementPattern(makePattern(parseStatement("int x = 1;"))),
+                new Statement(parseStatement("int x = 1;")),
                 new ExistsNext(
-                        new StatementPattern(makePattern(parseReturnStatement("return x + 1;")))));
+                        new Statement(parseReturnStatement("return x + 1;"))));
 
         ModelChecker checker = new ModelChecker(model);
         phi.accept(checker);
@@ -54,31 +53,31 @@ public class CFGModelTest {
         ModelChecker checker = new ModelChecker(model);
         Formula phi;
 
-        phi = new BranchPattern(makePattern(parseExpression("x > 0")), CtIf.class);
+        phi = new Branch(parseStatement("if (x > 0) {}"));
         phi.accept(checker);
         assertEquals(res(5, env()), checker.getResult());
 
-        phi = new And(new BranchPattern(makePattern(parseExpression("x > 0")), CtIf.class),
+        phi = new And(new Branch(parseStatement("if (x > 0) {}")),
                       new ExistsNext(new And(new Proposition("falseBranch"),
-                                             new AllNext(new StatementPattern(makePattern(parseStatement("return 0;")))))));
+                                             new AllNext(new Statement(parseStatement("return 0;"))))));
         phi.accept(checker);
         assertEquals(res(5, env()), checker.getResult());
 
-        phi = new And(new BranchPattern(makePattern(parseExpression("x > 0")), CtIf.class),
-                new AllNext(new StatementPattern(makePattern(parseStatement("return 0;")))));
+        phi = new And(new Branch(parseStatement("if (x > 0) {}")),
+                new AllNext(new Statement(parseStatement("return 0;"))));
         phi.accept(checker);
         assertEquals(res(), checker.getResult());
 
-        phi = new Or(new StatementPattern(makePattern(parseStatement("return 1;"))),
-                        new StatementPattern(makePattern(parseStatement("return 0;"))));
+        phi = new Or(new Statement(parseStatement("return 1;")),
+                        new Statement(parseStatement("return 0;")));
         phi.accept(checker);
         assertEquals(res(8, env(), 11, env()), checker.getResult());
 
-        phi = new And(new BranchPattern(makePattern(parseExpression("x > 0")), CtIf.class),
+        phi = new And(new Branch(parseStatement("if (x > 0) {}")),
                 new AllNext(new Or(new And(new Proposition("trueBranch"),
-                                           new AllNext(new StatementPattern(makePattern(parseStatement("return 1;"))))),
+                                           new AllNext(new Statement(parseStatement("return 1;")))),
                                    new And(new Proposition("falseBranch"),
-                                           new AllNext(new StatementPattern(makePattern(parseStatement("return 0;"))))))));
+                                           new AllNext(new Statement(parseStatement("return 0;")))))));
         phi.accept(checker);
         assertEquals(res(5, env()), checker.getResult());
     }
@@ -91,7 +90,7 @@ public class CFGModelTest {
         Model model = new CFGModel(methodCfg(parseMethod("void foo() { int x = 1; } ")));
         ModelChecker checker = new ModelChecker(model);
 
-        new AllNext(new AllNext(new StatementPattern(makePattern(parseStatement("int x = 1;"))))).accept(checker);
+        new AllNext(new AllNext(new Statement(parseStatement("int x = 1;")))).accept(checker);
 
         assertEquals(res(), checker.getResult());
 
