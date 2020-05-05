@@ -1,5 +1,6 @@
 package spoon.smpl.metavars;
 
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtVariableReference;
@@ -19,7 +20,9 @@ public class IdentifierConstraint implements MetavariableConstraint {
     public Object apply(Object value) {
         if (value instanceof CtVariableReference) {
             return value;
-        } else if (value instanceof CtVariableAccess<?>) {
+        } else if (value instanceof CtFieldAccess) {
+            return null;
+        } else if (value instanceof CtVariableAccess) {
             return ((CtVariableAccess<?>) value).getVariable();
         } else if (value instanceof CtVariable) {
             CtVariable ctVariable = (CtVariable) value;
