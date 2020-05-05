@@ -82,6 +82,7 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.support.reflect.CtExtendedModifier;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1059,12 +1060,26 @@ public class ReferenceBuilder {
 				javaLangPackageReference.setSimpleName("java.lang");
 				ref.setPackage(javaLangPackageReference);
 			} catch (NoClassDefFoundError | ClassNotFoundException e) {
-				// in that case we consider the package should be the same as the current one. Fix #1293
-				ref.setPackage(jdtTreeBuilder.getContextBuilder().compilationUnitSpoon.getDeclaredPackage().getReference());
+				assert jdtTreeBuilder.getFactory().getEnvironment().getNoClasspath();
+				ContextBuilder ctx = jdtTreeBuilder.getContextBuilder();
+				if (containsStarImport(ctx.compilationunitdeclaration.imports)) {
+					// If there is an unresolved star import in noclasspath,
+					// we can't tell which package the type belongs to (#3337)
+					CtPackageReference pkgRef = jdtTreeBuilder.getFactory().Core().createPackageReference();
+					pkgRef.setImplicit(true);
+					ref.setPackage(pkgRef);
+				} else {
+					// otherwise the type must belong to the CU's package (#1293)
+					ref.setPackage(ctx.compilationUnitSpoon.getDeclaredPackage().getReference());
+				}
 			}
 		} else {
 			throw new AssertionError("unexpected declaring type: " + declaring.getClass() + " of " + declaring);
 		}
+	}
+
+	private static boolean containsStarImport(ImportReference[] imports) {
+		return imports != null && Arrays.stream(imports).anyMatch(imp -> imp.toString().endsWith("*"));
 	}
 
 	/**
