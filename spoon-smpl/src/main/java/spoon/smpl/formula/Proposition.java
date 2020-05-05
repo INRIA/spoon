@@ -4,12 +4,13 @@ import java.util.Map;
 
 /**
  * A Proposition is a constant, unparameterized predicate. The actual proposition is represented
- * by a given string.
+ * by a given String.
  */
 public class Proposition implements Predicate {
     /**
      * Create a new Proposition.
-     * @param proposition The proposition string
+     *
+     * @param proposition The proposition String
      */
     public Proposition(String proposition) {
         this.proposition = proposition;
@@ -17,6 +18,7 @@ public class Proposition implements Predicate {
 
     /**
      * Implements the Visitor pattern.
+     *
      * @param visitor Visitor to accept
      */
     @Override
@@ -26,6 +28,7 @@ public class Proposition implements Predicate {
 
     /**
      * Propositions do not support metavariables.
+     *
      * @return null
      */
     @Override
@@ -35,6 +38,7 @@ public class Proposition implements Predicate {
 
     /**
      * Propositions do not support metavariables.
+     *
      * @return true
      */
     @Override
@@ -43,23 +47,21 @@ public class Proposition implements Predicate {
     }
 
     /**
-     * Get the proposition string.
-     * @return The proposition string
+     * Get the proposition String.
+     *
+     * @return The proposition String
      */
     public String getProposition() {
         return proposition;
     }
 
-    /**
-     * @return a string representation of this element
-     */
     @Override
     public String toString() {
         return proposition;
     }
 
     /**
-     * The proposition string.
+     * The proposition String.
      */
     private String proposition;
 }

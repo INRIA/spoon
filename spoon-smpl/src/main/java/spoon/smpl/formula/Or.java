@@ -16,6 +16,7 @@ public class Or extends BinaryConnective {
 
     /**
      * Implements the Visitor pattern.
+     *
      * @param visitor Visitor to accept
      */
     @Override
@@ -23,9 +24,6 @@ public class Or extends BinaryConnective {
         visitor.visit(this);
     }
 
-    /**
-     * @return a string representation of this element and its children
-     */
     @Override
     public String toString() {
         return "Or(" + getLhs().toString() + ", " + getRhs().toString() + ")";

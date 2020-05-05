@@ -6,6 +6,7 @@ package spoon.smpl.formula;
 public interface Formula {
     /**
      * Accept a visitor according to the Visitor pattern.
+     *
      * @param visitor Visitor to accept
      */
     public void accept(FormulaVisitor visitor);

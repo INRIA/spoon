@@ -9,6 +9,7 @@ import java.util.function.Function;
 public interface MetavariableConstraint extends Function<Object, Object> {
     /**
      * Validate and potentially modify a value bound to a metavariable.
+     *
      * @param value Value bound to metavariable
      * @return The Object that is a valid binding under the constraint, or null if the value does not match the constraint
      */

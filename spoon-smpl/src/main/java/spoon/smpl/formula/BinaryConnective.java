@@ -7,6 +7,7 @@ package spoon.smpl.formula;
 abstract public class BinaryConnective implements Formula {
     /**
      * Create a new binary connective.
+     *
      * @param lhs Left operand
      * @param rhs Right operand
      */
@@ -17,6 +18,7 @@ abstract public class BinaryConnective implements Formula {
 
     /**
      * Get the first operand.
+     *
      * @return The first operand
      */
     public Formula getLhs() {
@@ -25,6 +27,7 @@ abstract public class BinaryConnective implements Formula {
 
     /**
      * Get the second operand.
+     *
      * @return The second operand
      */
     public Formula getRhs() {

@@ -11,12 +11,14 @@ import java.util.Map;
 public interface Predicate extends Formula {
     /**
      * Get the metavariables (and their constraints) associated with the predicate.
+     *
      * @return Metavariables
      */
     public Map<String, MetavariableConstraint> getMetavariables();
 
     /**
      * Validate and potentially modify metavariable bindings.
+     *
      * @param parameters Mutable map of metavariable bindings
      * @return True if bindings could be validated (potentially by modification), false otherwise
      */

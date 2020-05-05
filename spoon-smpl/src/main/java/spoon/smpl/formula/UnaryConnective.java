@@ -7,6 +7,7 @@ package spoon.smpl.formula;
 abstract public class UnaryConnective implements Formula {
     /**
      * Create a new binary connective.
+     *
      * @param innerElement The operand
      */
     public UnaryConnective(Formula innerElement) {
@@ -15,6 +16,7 @@ abstract public class UnaryConnective implements Formula {
 
     /**
      * Get the operand.
+     *
      * @return The operand
      */
     public Formula getInnerElement() {

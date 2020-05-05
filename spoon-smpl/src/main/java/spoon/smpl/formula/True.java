@@ -8,6 +8,7 @@ package spoon.smpl.formula;
 public class True implements Formula {
     /**
      * Implements the Visitor pattern.
+     *
      * @param visitor Visitor to accept
      */
     @Override
@@ -15,9 +16,6 @@ public class True implements Formula {
         visitor.visit(this);
     }
 
-    /**
-     * @return a string representation of this element
-     */
     @Override
     public String toString() {
         return "T";

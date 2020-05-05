@@ -9,6 +9,7 @@ package spoon.smpl.formula;
 public class AllUntil extends BinaryConnective {
     /**
      * Create a new AU logical connective.
+     *
      * @param lhs The Formula that must hold until the second one does
      * @param rhs The Formula that must eventually hold
      */
@@ -19,6 +20,7 @@ public class AllUntil extends BinaryConnective {
 
     /**
      * Implements the Visitor pattern.
+     *
      * @param visitor Visitor to accept
      */
     @Override
@@ -26,9 +28,6 @@ public class AllUntil extends BinaryConnective {
         visitor.visit(this);
     }
 
-    /**
-     * @return a string representation of this element and its children
-     */
     @Override
     public String toString() {
         return "AU(" + getLhs().toString() + ", " + getRhs().toString() + ")";

@@ -1,14 +1,15 @@
 package spoon.smpl.formula;
 
 /**
- * ExistsNext represents the existentially quantified variable logical connective of CTL-V(W).
+ * ExistsVar represents the existentially quantified variable logical connective of CTL-V(W).
  *
- * Semantically, "Ev(p)" selects the states that satisfy the formula "p" while also removing
+ * Semantically, "E(v, p)" selects the states that satisfy the formula "p" while also removing
  * the binding for the metavariable "v" from the environment, if such a binding exists.
  */
 public class ExistsVar implements Formula {
     /**
      * Create a new existentially quantified variable logical connective.
+     *
      * @param varName Variable name
      * @param innerElement The Formula that should hold in some successor
      */
@@ -18,10 +19,20 @@ public class ExistsVar implements Formula {
         this.innerElement = innerElement;
     }
 
+    /**
+     * Get the name of the quantified variable.
+     *
+     * @return The name of the quantified variable
+     */
     public String getVarName() {
         return varName;
     }
 
+    /**
+     * Get the inner formula.
+     *
+     * @return The inner formula
+     */
     public Formula getInnerElement() {
         return innerElement;
     }
@@ -35,14 +46,15 @@ public class ExistsVar implements Formula {
         visitor.visit(this);
     }
 
-    /**
-     * @return a string representation of this element and its children
-     */
     @Override
     public String toString() {
         return "E(" + varName + ", " + innerElement.toString() + ")";
     }
 
     private String varName;
+
+    /**
+     * Inner formula.
+     */
     private Formula innerElement;
 }

@@ -9,6 +9,7 @@ package spoon.smpl.formula;
 public class ExistsUntil extends BinaryConnective {
     /**
      * Create a new EU logical connective.
+     *
      * @param lhs The Formula that must hold until the second one does
      * @param rhs The Formula that must eventually hold
      */
@@ -19,6 +20,7 @@ public class ExistsUntil extends BinaryConnective {
 
     /**
      * Implements the Visitor pattern.
+     *
      * @param visitor Visitor to accept
      */
     @Override
@@ -26,9 +28,6 @@ public class ExistsUntil extends BinaryConnective {
         visitor.visit(this);
     }
 
-    /**
-     * @return a string representation of this element and its children
-     */
     @Override
     public String toString() {
         return "EU(" + getLhs().toString() + ", " + getRhs().toString() + ")";
