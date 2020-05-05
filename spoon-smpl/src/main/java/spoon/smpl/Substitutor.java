@@ -200,7 +200,6 @@ public class Substitutor implements CtVisitor {
 
     @Override
     public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
-        throw new NotImplementedException("Not implemented");
     }
 
     @Override
@@ -244,6 +243,10 @@ public class Substitutor implements CtVisitor {
 
         for (int i = 0; i < arguments.size(); ++i) {
             arguments.get(i).accept(this);
+        }
+
+        if (invocation.getTarget() != null) {
+            invocation.getTarget().accept(this);
         }
     }
 
@@ -437,6 +440,10 @@ public class Substitutor implements CtVisitor {
 
     @Override
     public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
+        if (fieldRead.getTarget() != null) {
+            fieldRead.getTarget().accept(this);
+        }
+
         String varname = fieldRead.getVariable().getSimpleName();
 
         if (!bindings.containsKey(varname)) {

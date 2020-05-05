@@ -180,7 +180,9 @@ public class PatternBuilder implements CtVisitor {
     public <T> void visitCtExecutableReference(CtExecutableReference<T> ctExecutableReference) {
         ElemNode result = new ElemNode(ctExecutableReference);
 
-        if (ctExecutableReference.getDeclaringType() != null) {
+        CtTypeReference<?> declType = ctExecutableReference.getDeclaringType();
+
+        if (declType != null && !declType.getSimpleName().equals("__SmPLGeneralIdentifier__")) {
             result.sub.put("declaringtype", new ValueNode(ctExecutableReference.getDeclaringType().getSimpleName(), ctExecutableReference.getDeclaringType()));
         }
 
@@ -201,7 +203,7 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtThisAccess(CtThisAccess<T> ctThisAccess) {
-        throw new NotImplementedException("Not implemented");
+        resultStack.push(new ValueNode("CtThisAccess", ctThisAccess));
     }
 
     @Override
@@ -253,6 +255,11 @@ public class PatternBuilder implements CtVisitor {
 
         ctInvocation.getExecutable().accept(this);
         result.sub.put("executable", resultStack.pop());
+
+        if (ctInvocation.getTarget() != null) {
+            ctInvocation.getTarget().accept(this);
+            result.sub.put("target", resultStack.pop());
+        }
 
         int numargs = ctInvocation.getArguments().size();
 
@@ -530,11 +537,21 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtFieldRead(CtFieldRead<T> ctFieldRead) {
-        CtVariableRead<T> ctVariableRead = ctFieldRead.getFactory().createVariableRead();
-        CtVariableReference<T> ctVariableReference = ctFieldRead.getFactory().createLocalVariableReference();
-        ctVariableReference.setSimpleName(ctFieldRead.getVariable().getSimpleName());
-        ctVariableRead.setVariable(ctVariableReference);
-        visitCtVariableRead(ctVariableRead);
+        if (ctFieldRead.getTarget() == null || (ctFieldRead.getTarget() instanceof CtThisAccess<?>)) {
+            CtVariableRead<T> ctVariableRead = ctFieldRead.getFactory().createVariableRead();
+            CtVariableReference<T> ctVariableReference = ctFieldRead.getFactory().createLocalVariableReference();
+            ctVariableReference.setSimpleName(ctFieldRead.getVariable().getSimpleName());
+            ctVariableRead.setVariable(ctVariableReference);
+            ctVariableRead.setType(ctFieldRead.getType());
+            visitCtVariableRead(ctVariableRead);
+        } else {
+            String fieldName = ctFieldRead.getVariable().getSimpleName();
+            ElemNode result = new ElemNode(ctFieldRead);
+            result.sub.put("field", new ValueNode(fieldName, ctFieldRead));
+            ctFieldRead.getTarget().accept(this);
+            result.sub.put("target", resultStack.pop());
+            resultStack.push(result);
+        }
     }
 
     @Override
