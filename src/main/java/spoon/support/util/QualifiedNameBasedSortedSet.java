@@ -24,9 +24,9 @@ import spoon.reflect.reference.CtReference;
 import spoon.support.comparator.QualifiedNameComparator;
 
 public class QualifiedNameBasedSortedSet<E extends CtElement> implements Set<E>, Serializable {
-	private static final long serialVersionUID = 1L;
+    private final LinkedHashSet<QualifiedNameHashEqualsWrapper> set;
 
-	private final LinkedHashSet<QualifiedNameHashEqualsWrapper> set;
+	private static final long serialVersionUID = 1L;
 
 	public QualifiedNameBasedSortedSet(Collection<E> elements) {
 		this();
@@ -34,22 +34,7 @@ public class QualifiedNameBasedSortedSet<E extends CtElement> implements Set<E>,
 	}
 
 	public QualifiedNameBasedSortedSet() {
-		set = new LinkedHashSet<>();
-	}
-
-	private static String getQualifiedName(CtElement element) {
-		if (element instanceof CtTypeInformation) {
-			return ((CtTypeInformation) element).getQualifiedName();
-		} else if (element instanceof CtPackage) {
-			return ((CtPackage) element).getQualifiedName();
-		} else if (element instanceof CtReference) {
-			return ((CtReference) element).getSimpleName();
-		} else if (element instanceof CtNamedElement) {
-			return ((CtNamedElement) element).getSimpleName();
-		}
-
-		Launcher.LOGGER.warn(QualifiedNameBasedSortedSet.class.getName() + " used for element without name: " + element.getClass().getName());
-		return "";
+	    set = new LinkedHashSet<>();
 	}
 
 	@Override
@@ -68,7 +53,7 @@ public class QualifiedNameBasedSortedSet<E extends CtElement> implements Set<E>,
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
 	public Iterator<E> iterator() {
 		return set.stream().map(e -> (E) e.element).iterator();
 	}
@@ -96,7 +81,7 @@ public class QualifiedNameBasedSortedSet<E extends CtElement> implements Set<E>,
 
 	@Override
 	public boolean containsAll(Collection<?> collection) {
-		return collection.stream().allMatch(this::contains);
+	    return collection.stream().allMatch(this::contains);
 	}
 
 	@Override
@@ -106,12 +91,12 @@ public class QualifiedNameBasedSortedSet<E extends CtElement> implements Set<E>,
 
 	@Override
 	public boolean retainAll(Collection<?> collection) {
-		throw new UnsupportedOperationException();
+	    throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> collection) {
-		throw new UnsupportedOperationException();
+	    throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -124,8 +109,9 @@ public class QualifiedNameBasedSortedSet<E extends CtElement> implements Set<E>,
 	 * name.
 	 */
 	private static final class QualifiedNameHashEqualsWrapper implements Serializable {
-		private static final long serialVersionUID = 1L;
 		final CtElement element;
+
+		private static final long serialVersionUID = 1L;
 
 		QualifiedNameHashEqualsWrapper(CtElement element) {
 			this.element = element;
@@ -143,6 +129,21 @@ public class QualifiedNameBasedSortedSet<E extends CtElement> implements Set<E>,
 		public int hashCode() {
 			return Objects.hash(getQualifiedName(element));
 		}
+	}
+
+	private static String getQualifiedName(CtElement element) {
+		if (element instanceof CtTypeInformation) {
+			return ((CtTypeInformation) element).getQualifiedName();
+		} else if (element instanceof CtPackage) {
+			return ((CtPackage) element).getQualifiedName();
+		} else if (element instanceof CtReference) {
+			return ((CtReference) element).getSimpleName();
+		} else if (element instanceof CtNamedElement) {
+			return ((CtNamedElement) element).getSimpleName();
+		}
+
+		Launcher.LOGGER.warn( QualifiedNameBasedSortedSet.class.getName() + " used for element without name: " + element.getClass().getName());
+		return "";
 	}
 
 }
