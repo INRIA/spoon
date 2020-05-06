@@ -230,8 +230,8 @@ public class SpoonifierTest {
 				"\t\t\t\t\tCtExecutableReference ctExecutableReference0 = factory.createExecutableReference();\n" +
 				"\t\t\t\t\tctExecutableReference0.setSimpleName(\"<init>\");\n" +
 				"\t\t\t\t\tctInvocation0.setValueByRole(CtRole.EXECUTABLE_REF, ctExecutableReference0);\n" +
-				"\t\t\t\t\t\tctExecutableReference0.setValueByRole(CtRole.DECLARING_TYPE, factory.Type().createSimplyQualifiedReference(\"java.lang.Object\"));\n" +
-				"\t\t\t\t\t\tctExecutableReference0.setValueByRole(CtRole.TYPE, factory.Type().createSimplyQualifiedReference(\"java.lang.Object\"));\n" +
+				"\t\t\t\t\t\tctExecutableReference0.setValueByRole(CtRole.DECLARING_TYPE, factory.Type().createReference(\"java.lang.Object\"));\n" +
+				"\t\t\t\t\t\tctExecutableReference0.setValueByRole(CtRole.TYPE, factory.Type().createReference(\"java.lang.Object\"));\n" +
 				"\t\t\tctBlock0.setValueByRole(CtRole.STATEMENT, ctBlock0Statements);\n" +
 				"\t\tCtField ctField0 = factory.createField();\n" +
 				"\t\tctField0.setSimpleName(\"i\");\n" +
@@ -273,7 +273,7 @@ public class SpoonifierTest {
 				"\t\t\t\t\t\tCtParameterReference ctParameterReference0 = factory.createParameterReference();\n" +
 				"\t\t\t\t\t\tctParameterReference0.setSimpleName(\"toto\");\n" +
 				"\t\t\t\t\t\tctVariableRead0.setValueByRole(CtRole.VARIABLE, ctParameterReference0);\n" +
-				"\t\t\t\t\t\t\tctParameterReference0.setValueByRole(CtRole.TYPE, factory.Type().createSimplyQualifiedReference(\"java.lang.String\"));\n" +
+				"\t\t\t\t\t\t\tctParameterReference0.setValueByRole(CtRole.TYPE, factory.Type().createReference(\"java.lang.String\"));\n" +
 				"\t\t\tctBlock1.setValueByRole(CtRole.STATEMENT, ctBlock1Statements);\n" +
 				"\t\tctMethod0.setValueByRole(CtRole.PARAMETER, ctMethod0Parameters);\n" +
 				"\tctClass0.setValueByRole(CtRole.TYPE_MEMBER, ctClass0TypeMembers);\n";
