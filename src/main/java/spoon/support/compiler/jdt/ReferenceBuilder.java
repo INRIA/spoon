@@ -571,7 +571,7 @@ public class ReferenceBuilder {
 					} else {
 						// In noclasspath mode, type arguments to constructor calls on types not on the classpath
 						// cause the type arguments to not be resolved if they are implicit (i.e. just `<>`).
-						// See #114 for details.
+						// See #3360 for details.
 						final Deque<ASTPair> stack = jdtTreeBuilder.getContextBuilder().stack;
 						assert stack.peek() != null;
 						assert stack.peek().node instanceof AllocationExpression;
@@ -587,7 +587,7 @@ public class ReferenceBuilder {
 								type.addActualTypeArgument(typeArgRef);
 							}
 						} else {
-							// the expected type is not available if the constructor call occurs in a method call
+							// the expected type is not available if the constructor call occurs in e.g. a method call
 							type.addActualTypeArgument(jdtTreeBuilder.getFactory().Type().OMITTED_TYPE_ARG_TYPE);
 						}
 					}
