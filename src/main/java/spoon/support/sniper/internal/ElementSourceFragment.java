@@ -245,6 +245,8 @@ public class ElementSourceFragment implements SourceFragment {
 							 * it can happen for annotations of type TYPE_USE and FIELD
 							 * In such case the annotation belongs to 2 elements
 							 * And one of them cannot have matching source position - OK
+							 *
+							 * See https://github.com/INRIA/spoon/issues/3321
 							 */
 							return null;
 						}
