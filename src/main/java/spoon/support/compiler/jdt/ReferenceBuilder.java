@@ -580,7 +580,7 @@ public class ReferenceBuilder {
 						ParameterizedTypeBinding expectedType = (ParameterizedTypeBinding) alloc.expectedType();
 
 						if (expectedType != null) {
-						    // type arguments can be recovered from the expected type
+							// type arguments can be recovered from the expected type
 							for (TypeBinding binding : expectedType.typeArguments()) {
 								CtTypeReference<?> typeArgRef = getTypeReference(binding);
 								typeArgRef.setImplicit(true);
