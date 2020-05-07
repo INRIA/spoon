@@ -800,7 +800,6 @@ public class ReferenceBuilder {
 				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 			} else {
 				CtPackageReference packageReference = getPackageReference(binding.getPackage());
-				packageReference.setImplicit(true);
 				ref.setPackage(packageReference);
 			}
 			ref.setSimpleName(new String(binding.sourceName()));
