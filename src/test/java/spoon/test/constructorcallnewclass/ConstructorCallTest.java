@@ -19,8 +19,10 @@ package spoon.test.constructorcallnewclass;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -32,8 +34,10 @@ import spoon.test.constructorcallnewclass.testclasses.Foo;
 import spoon.test.constructorcallnewclass.testclasses.Panini;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -140,4 +144,40 @@ public class ConstructorCallTest {
 		assertEquals("new Bar()", call2.toString());
 	}
 
+	@Test
+	public void testParameterizedConstructorCallOmittedTypeArgsNoClasspath() {
+		// contract: omitted type arguments to constructors must be properly resolved if the context allows
+		// the expected type to be known
+		List<String> expectedTypeArgNames = Arrays.asList("Integer", "String");
+		String sourceFile = "./src/test/resources/noclasspath/GenericTypeEmptyDiamond.java";
+
+		CtTypeReference<?> executableType = getConstructorCallTypeFrom("GenericKnownExpectedType", sourceFile);
+
+		assertTrue(executableType.isParameterized());
+		assertEquals(expectedTypeArgNames,
+				executableType.getActualTypeArguments().stream()
+						.map(CtTypeReference::getSimpleName).collect(Collectors.toList()));
+		assertTrue(executableType.getActualTypeArguments().stream().allMatch(CtElement::isImplicit));
+	}
+
+	@Test
+	public void testParameterizedConstructorCallOmittedTypeArgsUnknownExpectedTypeNoClasspath() {
+		// contract: even if the expected type is not known for omitted type arguments the type access must be
+		// detected as parameterized
+		String sourceFile = "./src/test/resources/noclasspath/GenericTypeEmptyDiamond.java";
+		CtTypeReference<?> executableType = getConstructorCallTypeFrom("GenericUnknownExpectedType", sourceFile);
+		assertTrue(executableType.isParameterized());
+		assertTrue(executableType.getActualTypeArguments().stream().allMatch(CtElement::isImplicit));
+	}
+
+	private CtTypeReference<?> getConstructorCallTypeFrom(String simpleName, String sourceFile) {
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource(sourceFile);
+		CtModel model = launcher.buildModel();
+		List<CtConstructorCall<?>> calls =
+				model.getElements(element -> element.getExecutable().getType().getSimpleName().equals(simpleName));
+		assert calls.size() == 1;
+		return calls.get(0).getExecutable().getType();
+	}
 }
