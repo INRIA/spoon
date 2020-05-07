@@ -170,6 +170,15 @@ public class ConstructorCallTest {
 		assertTrue(executableType.getActualTypeArguments().stream().allMatch(CtElement::isImplicit));
 	}
 
+	@Test
+	public void testParameterizedConstructorCallOmittedTypeArgsResolvedTypeNoClasspath() {
+		// contract: if a resolved type (here, java.util.ArrayList) is parameterized with empty diamonds in an
+		// unresolved method, the resolved type reference should still be parameterized.
+		String sourceFile = "./src/test/resources/noclasspath/GenericTypeEmptyDiamond.java";
+		CtTypeReference<?> executableType = getConstructorCallTypeFrom("ArrayList", sourceFile);
+		assertTrue(executableType.isParameterized());
+	}
+
 	private CtTypeReference<?> getConstructorCallTypeFrom(String simpleName, String sourceFile) {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
