@@ -86,6 +86,7 @@ import spoon.support.reflect.CtExtendedModifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -563,8 +564,33 @@ public class ReferenceBuilder {
 		if (original.resolvedType instanceof ProblemReferenceBinding && original.getTypeArguments() != null) {
 			for (TypeReference[] typeReferences : original.getTypeArguments()) {
 				if (typeReferences != null) {
-					for (TypeReference typeReference : typeReferences) {
-						type.addActualTypeArgument(this.getTypeReference(typeReference.resolvedType));
+					if (typeReferences.length > 0) {
+						for (TypeReference typeReference : typeReferences) {
+							type.addActualTypeArgument(this.getTypeReference(typeReference.resolvedType));
+						}
+					} else {
+					    // In noclasspath mode, type arguments to constructor calls on types not on the classpath
+						// cause the type arguments to not be resolved if they are implicit (i.e. just `<>`).
+						// See #114 for details.
+						final Deque<ASTPair> stack = jdtTreeBuilder.getContextBuilder().stack;
+						assert jdtTreeBuilder.getFactory().getEnvironment().getNoClasspath();
+						assert stack.peek() != null;
+						assert stack.peek().node instanceof AllocationExpression;
+
+						AllocationExpression alloc = (AllocationExpression) stack.peek().node;
+						ParameterizedTypeBinding expectedType = (ParameterizedTypeBinding) alloc.expectedType();
+
+						if (expectedType != null) {
+						    // type arguments can be recovered from the expected type
+							for (TypeBinding binding : expectedType.typeArguments()) {
+								CtTypeReference<?> typeArgRef = getTypeReference(binding);
+								typeArgRef.setImplicit(true);
+								type.addActualTypeArgument(typeArgRef);
+							}
+						} else {
+							// the expected type is not available if the constructor call occurs in a method call
+							type.addActualTypeArgument(jdtTreeBuilder.getFactory().Type().OMITTED_TYPE_ARG_TYPE);
+						}
 					}
 				}
 			}
