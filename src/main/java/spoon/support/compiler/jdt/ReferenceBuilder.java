@@ -580,19 +580,19 @@ public class ReferenceBuilder {
 	 * In noclasspath mode, empty diamonds in constructor calls on generic types can be lost. This happens if any
 	 * of the following apply:
 	 *
-     * <ul>
+	 * <ul>
 	 *     <li>The generic type is not on the classpath.</li>
 	 *     <li>The generic type is used in a context where the type arguments cannot be inferred, such as in an
 	 *     unresolved method
 	 *     </li>
-     * </ul>
+	 * </ul>
 	 *
 	 * See #3360 for details.
 	 */
 	private void tryRecoverTypeArguments(CtTypeReference<?> type) {
 		final Deque<ASTPair> stack = jdtTreeBuilder.getContextBuilder().stack;
 		if (stack.peek() == null || !(stack.peek().node instanceof AllocationExpression)) {
-		    // have thus far only ended up here with a generic array type,
+			// have thus far only ended up here with a generic array type,
 			// don't know if we want or need to deal with those
 			return;
 		}
