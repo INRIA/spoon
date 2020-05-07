@@ -573,7 +573,6 @@ public class ReferenceBuilder {
 						// cause the type arguments to not be resolved if they are implicit (i.e. just `<>`).
 						// See #114 for details.
 						final Deque<ASTPair> stack = jdtTreeBuilder.getContextBuilder().stack;
-						assert jdtTreeBuilder.getFactory().getEnvironment().getNoClasspath();
 						assert stack.peek() != null;
 						assert stack.peek().node instanceof AllocationExpression;
 
