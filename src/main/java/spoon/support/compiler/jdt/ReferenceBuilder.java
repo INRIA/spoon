@@ -569,7 +569,7 @@ public class ReferenceBuilder {
 							type.addActualTypeArgument(this.getTypeReference(typeReference.resolvedType));
 						}
 					} else {
-					    // In noclasspath mode, type arguments to constructor calls on types not on the classpath
+						// In noclasspath mode, type arguments to constructor calls on types not on the classpath
 						// cause the type arguments to not be resolved if they are implicit (i.e. just `<>`).
 						// See #114 for details.
 						final Deque<ASTPair> stack = jdtTreeBuilder.getContextBuilder().stack;
