@@ -564,34 +564,51 @@ public class ReferenceBuilder {
 		if (original.resolvedType instanceof ProblemReferenceBinding && original.getTypeArguments() != null) {
 			for (TypeReference[] typeReferences : original.getTypeArguments()) {
 				if (typeReferences != null) {
-					if (typeReferences.length > 0) {
-						for (TypeReference typeReference : typeReferences) {
-							type.addActualTypeArgument(this.getTypeReference(typeReference.resolvedType));
-						}
-					} else {
-						// In noclasspath mode, type arguments to constructor calls on types not on the classpath
-						// cause the type arguments to not be resolved if they are implicit (i.e. just `<>`).
-						// See #3360 for details.
-						final Deque<ASTPair> stack = jdtTreeBuilder.getContextBuilder().stack;
-						assert stack.peek() != null;
-						assert stack.peek().node instanceof AllocationExpression;
-
-						AllocationExpression alloc = (AllocationExpression) stack.peek().node;
-						ParameterizedTypeBinding expectedType = (ParameterizedTypeBinding) alloc.expectedType();
-
-						if (expectedType != null) {
-							// type arguments can be recovered from the expected type
-							for (TypeBinding binding : expectedType.typeArguments()) {
-								CtTypeReference<?> typeArgRef = getTypeReference(binding);
-								typeArgRef.setImplicit(true);
-								type.addActualTypeArgument(typeArgRef);
-							}
-						} else {
-							// the expected type is not available if the constructor call occurs in e.g. a method call
-							type.addActualTypeArgument(jdtTreeBuilder.getFactory().Type().OMITTED_TYPE_ARG_TYPE);
-						}
+					for (TypeReference typeReference : typeReferences) {
+						type.addActualTypeArgument(this.getTypeReference(typeReference.resolvedType));
 					}
 				}
+			}
+		}
+
+		if (original.isParameterizedTypeReference() && !type.isParameterized()) {
+			tryRecoverTypeArguments(type);
+		}
+	}
+
+	/**
+	 * In noclasspath mode, empty diamonds in constructor calls on generic types can be lost. This happens if any
+	 * of the following apply:
+	 *
+     * <ul>
+	 *     <li>The generic type is not on the classpath.</li>
+	 *     <li>The generic type is used in a context where the type arguments cannot be inferred, such as in an
+	 *     unresolved method
+	 *     </li>
+     * </ul>
+	 *
+	 * See #3360 for details.
+	 */
+	private void tryRecoverTypeArguments(CtTypeReference<?> type) {
+		final Deque<ASTPair> stack = jdtTreeBuilder.getContextBuilder().stack;
+		if (stack.peek() == null || !(stack.peek().node instanceof AllocationExpression)) {
+		    // have thus far only ended up here with a generic array type,
+			// don't know if we want or need to deal with those
+			return;
+		}
+
+		AllocationExpression alloc = (AllocationExpression) stack.peek().node;
+		if (alloc.expectedType() == null || !(alloc.expectedType() instanceof ParameterizedTypeBinding)) {
+			// the expected type is not available/parameterized if the constructor call occurred in e.g. an unresolved
+			// method, or in a method that did not expect a parameterized argument
+			type.addActualTypeArgument(jdtTreeBuilder.getFactory().Type().OMITTED_TYPE_ARG_TYPE);
+		} else {
+			ParameterizedTypeBinding expectedType = (ParameterizedTypeBinding) alloc.expectedType();
+			// type arguments can be recovered from the expected type
+			for (TypeBinding binding : expectedType.typeArguments()) {
+				CtTypeReference<?> typeArgRef = getTypeReference(binding);
+				typeArgRef.setImplicit(true);
+				type.addActualTypeArgument(typeArgRef);
 			}
 		}
 	}
