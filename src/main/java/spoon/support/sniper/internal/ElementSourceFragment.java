@@ -252,6 +252,7 @@ public class ElementSourceFragment implements SourceFragment {
 //							 */
 //							return null;
 //						}
+					//It happened... See spoon.test.issue3321.SniperPrettyPrinterJavaxTest
 					//something is wrong ...
 					throw new SpoonException("The SourcePosition of elements are not consistent\nparentFragment: " + parentFragment + "\notherFragment: " + otherElement.getPosition());
 				}
