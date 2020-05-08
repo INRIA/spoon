@@ -93,6 +93,7 @@ public class TypeFactory extends SubFactory {
 	public final CtTypeReference<Set> SET = createReference(Set.class);
 	public final CtTypeReference<Map> MAP = createReference(Map.class);
 	public final CtTypeReference<Enum> ENUM = createReference(Enum.class);
+	public final CtTypeReference<?> OMITTED_TYPE_ARG_TYPE = createReference(CtTypeReference.OMITTED_TYPE_ARG_NAME);
 
 	private final Map<Class<?>, CtType<?>> shadowCache = new ConcurrentHashMap<>();
 
