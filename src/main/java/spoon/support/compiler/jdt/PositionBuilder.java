@@ -392,9 +392,8 @@ public class PositionBuilder {
 			return buildPositionCtElement(e, (Argument) pair.node);
 		} else if (node instanceof TypeReference) {
 			TypeReference typeReference = (TypeReference) node;
-			//if(typeReference.annotations != null && typeReference.annotations.length > 0) {
-			if(typeReference.resolvedType.getTypeAnnotations() != null) {
-				for(int a = 0; a < typeReference.resolvedType.getTypeAnnotations().length; a++) {
+			if (typeReference.resolvedType.getTypeAnnotations() != null) {
+				for (int a = 0; a < typeReference.resolvedType.getTypeAnnotations().length; a++) {
 					sourceStart = findPrevAnnotations(contents, 0, sourceStart);
 				}
 			}
