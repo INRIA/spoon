@@ -26,6 +26,7 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -219,6 +220,11 @@ public class JavaReflectionTreeBuilderTest {
 
 		assertFalse(type.isShadow());
 		assertTrue(shadowType.isShadow());
+
+		// Some elements, such as superinterfaces and thrown types, are ordered by their source position if they have
+		// one. As a shadow model has no source positions, but a model built from source does, we must unset the source
+		// positions of the normal model's elements to ensure that there are no ordering discrepancies.
+		type.descendantIterator().forEachRemaining(e -> e.setPosition(SourcePosition.NOPOSITION));
 
 		ShadowEqualsVisitor sev = new ShadowEqualsVisitor(new HashSet<>(Arrays.asList(
 				//shadow classes has no body

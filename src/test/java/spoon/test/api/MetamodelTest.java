@@ -63,6 +63,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -284,10 +285,19 @@ public class MetamodelTest {
 		}
 		assertSame(expectedConcept.getMetamodelInterface().getActualClass(), runtimeConcept.getMetamodelInterface().getActualClass());
 		assertEquals(expectedConcept.getKind(), runtimeConcept.getKind());
-		assertEquals(expectedConcept.getSuperConcepts().size(), runtimeConcept.getSuperConcepts().size());
-		for (int i = 0; i < expectedConcept.getSuperConcepts().size(); i++) {
-			assertConceptsEqual(expectedConcept.getSuperConcepts().get(i), runtimeConcept.getSuperConcepts().get(i));
+
+		// must be sorted as the order of super concepts from source is affected by the order of elements in the
+		// implements clause
+		List<MetamodelConcept> expectedSuperConcepts = expectedConcept.getSuperConcepts();
+		List<MetamodelConcept> runtimeSuperConcepts = runtimeConcept.getSuperConcepts();
+		expectedSuperConcepts.sort(Comparator.comparing(MetamodelConcept::getName));
+		runtimeSuperConcepts.sort(Comparator.comparing(MetamodelConcept::getName));
+
+		assertEquals(expectedSuperConcepts.size(), runtimeSuperConcepts.size());
+		for (int i = 0; i < expectedSuperConcepts.size(); i++) {
+			assertConceptsEqual(expectedSuperConcepts.get(i), runtimeSuperConcepts.get(i));
 		}
+
 		Map<CtRole, MetamodelProperty> expectedRoleToProperty = new HashMap(expectedConcept.getRoleToProperty());
 		for (Map.Entry<CtRole, MetamodelProperty> e : runtimeConcept.getRoleToProperty().entrySet()) {
 			MetamodelProperty runtimeProperty = e.getValue();
