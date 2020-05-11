@@ -731,4 +731,24 @@ public class TypeReferenceTest {
 		}
 		return (CtTypeReference<?>) ref;
 	}
+
+	@Test
+	public void testUnqualifiedExternalTypeMemberAccess() {
+		// contract: if a type member is accessed without qualification, but it is not part of the current
+		// compilation unit, any qualification attached to it through import resolution must remain implicit
+		// See #3363 for details
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/UnqualifiedExternalTypeMemberAccess.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+		List<CtTypeReference<?>> typeReferences = model.getElements(e -> e.getSimpleName().equals("SOMETHING"));
+
+		assertEquals("There should only be one reference to SOMETHING, check the resource!", 1, typeReferences.size());
+
+		CtTypeReference<?> typeRef = typeReferences.get(0);
+		CtTypeReference<?> declType = typeRef.getDeclaringType();
+
+		assertEquals("Constants", declType.getSimpleName());
+		assertTrue(declType.isImplicit());
+	}
 }
