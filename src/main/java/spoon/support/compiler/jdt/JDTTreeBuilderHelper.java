@@ -641,7 +641,7 @@ public class JDTTreeBuilderHelper {
 		}
 		CtReference packageOrDeclaringType = jdtTreeBuilder.getReferencesBuilder().getDeclaringReferenceFromImports(singleNameReference.token);
 		if (packageOrDeclaringType != null) {
-		    // must be implicit as a SingleNameReference is not qualified, see #3363
+			// must be implicit as a SingleNameReference is not qualified, see #3363
 			packageOrDeclaringType.setImplicit(true);
 		}
 		jdtTreeBuilder.getReferencesBuilder().setPackageOrDeclaringType(typeReference, packageOrDeclaringType);
