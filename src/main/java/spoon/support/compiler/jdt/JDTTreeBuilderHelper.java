@@ -639,7 +639,12 @@ public class JDTTreeBuilderHelper {
 		} else {
 			typeReference.setSimpleName(CharOperation.charToString(singleNameReference.binding.readableName()));
 		}
-		jdtTreeBuilder.getReferencesBuilder().setPackageOrDeclaringType(typeReference, jdtTreeBuilder.getReferencesBuilder().getDeclaringReferenceFromImports(singleNameReference.token));
+		CtReference packageOrDeclaringType = jdtTreeBuilder.getReferencesBuilder().getDeclaringReferenceFromImports(singleNameReference.token);
+		if (packageOrDeclaringType != null) {
+		    // must be implicit as a SingleNameReference is not qualified, see #3363
+			packageOrDeclaringType.setImplicit(true);
+		}
+		jdtTreeBuilder.getReferencesBuilder().setPackageOrDeclaringType(typeReference, packageOrDeclaringType);
 		return jdtTreeBuilder.getFactory().Code().createTypeAccess(typeReference);
 	}
 
