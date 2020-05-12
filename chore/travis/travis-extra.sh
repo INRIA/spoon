@@ -72,7 +72,11 @@ cd ../spoon-dataflow
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/
 
 # download and install z3 lib
-wget https://github.com/Z3Prover/z3/releases/download/z3-4.8.4/z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
+# the github URL is rate limited, and this results in flaky CI
+# wget https://github.com/Z3Prover/z3/releases/download/z3-4.8.4/z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
+# so we have a copy on OW2
+wget https://projects.ow2.org/download/spoon/WebHome/z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
+
 unzip z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
 export LD_LIBRARY_PATH=./z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04/bin
 

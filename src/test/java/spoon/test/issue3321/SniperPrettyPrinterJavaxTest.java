@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.junit.Ignore;
 import spoon.Launcher;
 import spoon.compiler.Environment;
+import spoon.reflect.CtModel;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.GitHubIssue;
 
@@ -14,9 +15,9 @@ import spoon.test.GitHubIssue;
  **/
 public class SniperPrettyPrinterJavaxTest {
     @Test
-    @GitHubIssue(issueNumber = 3321)
-    @Ignore("UnresolvedBug")
     public void testThatCanGenerateSniperPrettyPrintedSourceForJavaxAnnotatedClasses() {
+        //This test insure that annotations being cloned and associated to to elements
+        //(here a CtParameter and its associated CtTypeReference) do not trigger a crash of the sniper pretty printer.
         final Launcher l = new Launcher();
         Environment e = l.getEnvironment();
 
@@ -27,5 +28,7 @@ public class SniperPrettyPrinterJavaxTest {
         l.addInputResource("src/test/java/spoon/test/issue3321/source/JavaxImportTestSource.java");
         l.setSourceOutputDirectory("src/test/resources");
         l.run();
+
+
     }
 }

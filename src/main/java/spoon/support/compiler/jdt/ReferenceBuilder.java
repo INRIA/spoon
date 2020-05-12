@@ -82,9 +82,11 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.support.reflect.CtExtendedModifier;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -568,6 +570,47 @@ public class ReferenceBuilder {
 				}
 			}
 		}
+
+		if (original.isParameterizedTypeReference() && !type.isParameterized()) {
+			tryRecoverTypeArguments(type);
+		}
+	}
+
+	/**
+	 * In noclasspath mode, empty diamonds in constructor calls on generic types can be lost. This happens if any
+	 * of the following apply:
+	 *
+	 * <ul>
+	 *     <li>The generic type is not on the classpath.</li>
+	 *     <li>The generic type is used in a context where the type arguments cannot be inferred, such as in an
+	 *     unresolved method
+	 *     </li>
+	 * </ul>
+	 *
+	 * See #3360 for details.
+	 */
+	private void tryRecoverTypeArguments(CtTypeReference<?> type) {
+		final Deque<ASTPair> stack = jdtTreeBuilder.getContextBuilder().stack;
+		if (stack.peek() == null || !(stack.peek().node instanceof AllocationExpression)) {
+			// have thus far only ended up here with a generic array type,
+			// don't know if we want or need to deal with those
+			return;
+		}
+
+		AllocationExpression alloc = (AllocationExpression) stack.peek().node;
+		if (alloc.expectedType() == null || !(alloc.expectedType() instanceof ParameterizedTypeBinding)) {
+			// the expected type is not available/parameterized if the constructor call occurred in e.g. an unresolved
+			// method, or in a method that did not expect a parameterized argument
+			type.addActualTypeArgument(jdtTreeBuilder.getFactory().Type().OMITTED_TYPE_ARG_TYPE.clone());
+		} else {
+			ParameterizedTypeBinding expectedType = (ParameterizedTypeBinding) alloc.expectedType();
+			// type arguments can be recovered from the expected type
+			for (TypeBinding binding : expectedType.typeArguments()) {
+				CtTypeReference<?> typeArgRef = getTypeReference(binding);
+				typeArgRef.setImplicit(true);
+				type.addActualTypeArgument(typeArgRef);
+			}
+		}
 	}
 
 	/**
@@ -774,7 +817,6 @@ public class ReferenceBuilder {
 				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 			} else {
 				CtPackageReference packageReference = getPackageReference(binding.getPackage());
-				packageReference.setImplicit(true);
 				ref.setPackage(packageReference);
 			}
 			ref.setSimpleName(new String(binding.sourceName()));
@@ -1059,12 +1101,26 @@ public class ReferenceBuilder {
 				javaLangPackageReference.setSimpleName("java.lang");
 				ref.setPackage(javaLangPackageReference);
 			} catch (NoClassDefFoundError | ClassNotFoundException e) {
-				// in that case we consider the package should be the same as the current one. Fix #1293
-				ref.setPackage(jdtTreeBuilder.getContextBuilder().compilationUnitSpoon.getDeclaredPackage().getReference());
+				assert jdtTreeBuilder.getFactory().getEnvironment().getNoClasspath();
+				ContextBuilder ctx = jdtTreeBuilder.getContextBuilder();
+				if (containsStarImport(ctx.compilationunitdeclaration.imports)) {
+					// If there is an unresolved star import in noclasspath,
+					// we can't tell which package the type belongs to (#3337)
+					CtPackageReference pkgRef = jdtTreeBuilder.getFactory().Core().createPackageReference();
+					pkgRef.setImplicit(true);
+					ref.setPackage(pkgRef);
+				} else {
+					// otherwise the type must belong to the CU's package (#1293)
+					ref.setPackage(ctx.compilationUnitSpoon.getDeclaredPackage().getReference());
+				}
 			}
 		} else {
 			throw new AssertionError("unexpected declaring type: " + declaring.getClass() + " of " + declaring);
 		}
+	}
+
+	private static boolean containsStarImport(ImportReference[] imports) {
+		return imports != null && Arrays.stream(imports).anyMatch(imp -> imp.toString().endsWith("*"));
 	}
 
 	/**
