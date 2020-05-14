@@ -15,17 +15,14 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.*;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
+
+import java.util.Objects;
 
 public class EqualsChecker extends CtInheritanceScanner {
 	protected CtElement other;
@@ -61,6 +58,26 @@ public class EqualsChecker extends CtInheritanceScanner {
 			setNotEqual(CtRole.NAME);
 		}
 		super.scanCtNamedElement(e);
+	}
+
+	@Override
+	public void scanCtTypeMember(CtTypeMember member) {
+		final CtTypeMember otherMember = (CtTypeMember) this.other;
+
+		if(otherMember.getDeclaringType() != member.getDeclaringType()) {
+			CtType<?> memberDeclaringType = member.getDeclaringType();
+			CtType<?> otherMemberDeclaringType = otherMember.getDeclaringType();
+
+			if(memberDeclaringType != null && otherMemberDeclaringType != null) {
+				if(!Objects.equals(memberDeclaringType.getQualifiedName(), otherMemberDeclaringType.getQualifiedName())) {
+					setNotEqual(CtRole.DECLARING_TYPE);
+				}
+			} else {
+				setNotEqual(CtRole.DECLARING_TYPE);
+			}
+		}
+
+		super.scanCtTypeMember(member);
 	}
 
 	@Override
