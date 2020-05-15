@@ -71,7 +71,7 @@
         <unboundid.version>3.2.1</unboundid.version>
         <h2.version>1.4.194</h2.version>
 		<java.version>1.8</java.version>
-        <jackson.version>2.8.7</jackson.version>
+        <jackson.version>2.9.10.4</jackson.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
