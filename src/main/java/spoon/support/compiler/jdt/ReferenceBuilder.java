@@ -1127,8 +1127,8 @@ public class ReferenceBuilder {
 	 * not modified (but they may be replaced).
 	 */
 	void setImplicitPackageOrDeclaringType(CtTypeReference<?> ref, CtReference declaring) {
-	    CtTypeReference<?> oldDeclaring = ref.getDeclaringType();
-	    CtPackageReference oldPackage = ref.getPackage();
+		CtTypeReference<?> oldDeclaring = ref.getDeclaringType();
+		CtPackageReference oldPackage = ref.getPackage();
 
 		setPackageOrDeclaringType(ref, declaring);
 		CtTypeReference<?> currentDeclaring = ref.getDeclaringType();
