@@ -320,4 +320,19 @@ public class TryCatchTest {
 		assertNull(catches.get(1).getParameter().getType()); // multicatch with UnknownException
 		assertNull(catches.get(2).getParameter().getType()); // multicatch with UnknownException
 	}
+
+	@Test
+	public void testCatchQualifiedReferenceNoClasspath() {
+	    Launcher launcher = new Launcher();
+	    launcher.getEnvironment().setNoClasspath(true);
+	    launcher.addInputResource("./src/test/resources/noclasspath/CatchQualifiedReference.java");
+	    CtModel model = launcher.buildModel();
+
+	    List<CtCatch> catchers = model.getElements(e -> true);
+
+	    assertEquals("There should only be one catch statement, check the resource", 1, catchers.size());
+	    CtTypeReference<?> caughtType = catchers.get(0).getParameter().getType();
+
+	    assertEquals("some.neat.pkg.CustomException", caughtType.getQualifiedName());
+	}
 }
