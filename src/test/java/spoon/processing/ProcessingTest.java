@@ -19,6 +19,10 @@ package spoon.processing;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.Environment;
+import spoon.leafactorci.engine.RefactoringRule;
+import spoon.leafactorci.engine.logging.IterationLogger;
+import spoon.leafactorci.rules.DrawAllocationRefactoringRule;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtType;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
@@ -29,11 +33,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProcessingTest {
 
@@ -91,6 +97,41 @@ public class ProcessingTest {
 
 		Path path = Files.createTempDirectory("emptydir");
 		l.addInputResource("src/test/resources/compilation5/A.java");
+		l.setSourceOutputDirectory(path.toFile());
+		l.run();
+	}
+
+
+
+	@Test
+	public void testRedundantImports() throws IOException {
+		final Launcher l = new Launcher();
+		Environment e = l.getEnvironment();
+
+		e.setNoClasspath(true);
+		e.setAutoImports(true);
+		e.setPrettyPrinterCreator(() -> new SniperJavaPrettyPrinter(l.getEnvironment()));
+
+		RefactoringRule rule = (RefactoringRule) new DrawAllocationRefactoringRule(new IterationLogger());
+		l.addProcessor(rule);
+		Path tempDir = Files.createTempDirectory("temporary-output");
+		System.out.println("TempDir: " + tempDir);
+		l.addInputResource("src/test/resources/compilation6/A.java");
+		l.setSourceOutputDirectory(tempDir.toFile());
+		l.run();
+
+		CtModel model = l.getModel();
+		String packageName = model.getAllPackages().toArray()[model.getAllPackages().size() - 1].toString();
+		packageName = packageName.replaceAll("\\.", "/");
+		String producedFile = new String(Files.readAllBytes(Paths.get(tempDir + "/" + packageName + "/" + "A.java")));
+		//                                                togglePrints(true);
+		// Compare result with the sample
+		producedFile = producedFile.replaceAll("\t", "    ");
+		String outputSample = new String(Files.readAllBytes(Paths.get("src/test/resources/compilation6/B.java")));
+		assertEquals(outputSample, producedFile);
+
+		Path path = Files.createTempDirectory("emptydir");
+
 		l.setSourceOutputDirectory(path.toFile());
 		l.run();
 	}
