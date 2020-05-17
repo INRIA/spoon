@@ -3,6 +3,7 @@
 
 import sys
 import time
+import datetime
 import subprocess
 import os
 from PyQt5.QtGui import *
@@ -87,7 +88,7 @@ class Main(QMainWindow):
             java_file.close()
             
             cmdstr = "./smplcli.sh " + self.current_mode + " --smpl-file /tmp/smplgui_py_smpl_text.cocci --java-file /tmp/smplgui_py_java_text.java; exit 0"
-            self.output_text.setPlainText(cmdstr + "\n\n" + subprocess.check_output(cmdstr, stderr=subprocess.STDOUT, shell=True).decode("utf-8") + "\n")
+            self.output_text.setPlainText(datetime.datetime.now().isoformat("T") + "\n" + cmdstr + "\n\n" + subprocess.check_output(cmdstr, stderr=subprocess.STDOUT, shell=True).decode("utf-8") + "\n")
             return True
         elif event.key() == 16777269:
             self.is_switching_mode = True
