@@ -8,6 +8,8 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.formula.Formula;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -186,6 +188,45 @@ public class DebugUtils {
             sb.append(c);
             ++offset;
         }
+
+        return sb.toString();
+    }
+
+    public static String prettifyModel(Model model) {
+        StringBuilder sb = new StringBuilder();
+
+        List<Integer> states = model.getStates();
+        Collections.sort(states);
+
+        sb.append("Model(states=").append(states).append(", ")
+                .append("successors={");
+
+        for (int state : states) {
+            for (int next : model.getSuccessors(state)) {
+                sb.append(state).append("->").append(next).append(", ");
+            }
+        }
+
+        sb.delete(sb.length() - 2, sb.length());
+        sb.append("}, labels={");
+
+        for (int state : states) {
+            if (model.getLabels(state).size() > 0 ) {
+                sb.append(state).append(": [");
+
+                for (Label label : model.getLabels(state)) {
+                    sb.append(label.toString()).append(", ");
+                }
+
+                sb.delete(sb.length() - 2, sb.length());
+                sb.append("], ");
+            } else {
+                sb.append(state).append(": [], ");
+            }
+        }
+
+        sb.delete(sb.length() - 2, sb.length());
+        sb.append("})");
 
         return sb.toString();
     }
