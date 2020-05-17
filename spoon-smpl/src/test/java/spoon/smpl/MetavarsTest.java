@@ -2,6 +2,8 @@ package spoon.smpl;
 
 import org.junit.Before;
 import org.junit.Test;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.smpl.formula.*;
 import spoon.smpl.metavars.ConstantConstraint;
 import spoon.smpl.metavars.ExpressionConstraint;
@@ -10,7 +12,7 @@ import spoon.smpl.metavars.TypeConstraint;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static spoon.smpl.TestUtils.*;
 import static spoon.smpl.TestUtils.parseReturnStatement;
 
@@ -161,5 +163,40 @@ public class MetavarsTest {
 
         stmt("T ret = C;", meta).accept(checkerAlice);
         assertEquals("[(4, {C=1, T=int, ret=x}, [])]", sortedEnvs(checkerAlice.getResult().toString()));
+    }
+
+    @Test
+    public void testTypeConstraintOnTypeAccess() {
+
+        // contract: a "type" metavariable should be able to bind the accessed type of a CtTypeAccess
+
+        Model model = new CFGModel(methodCfg(parseMethod("void m() { print(Integer); }")));
+
+        // verify that the model indeed contains a CtTypeAccess
+        boolean foundTypeAccess = false;
+
+        for (int state : model.getStates()) {
+            for (Label label : model.getLabels(state)) {
+                if (label instanceof StatementLabel && label.toString().contains("print(Integer)")) {
+                    StatementLabel stmLabel = (StatementLabel) label;
+                    CtInvocation<?> ctInvocation = (CtInvocation<?>) stmLabel.getCodeElement();
+                    foundTypeAccess = ctInvocation.getArguments().get(0) instanceof CtTypeAccess;
+                }
+            }
+        }
+
+        if (!foundTypeAccess) {
+            fail("no CtTypeAccess found in model");
+        }
+
+        Map<String, MetavariableConstraint> metavars = makeMetavars("x", new TypeConstraint());
+        ModelChecker checker = new ModelChecker(model);
+
+        stmt("print(x);", metavars).accept(checker);
+
+        ModelChecker.ResultSet result = checker.getResult();
+
+        assertEquals(1, result.size());
+        assertTrue(result.toString().contains("x=Integer"));
     }
 }
