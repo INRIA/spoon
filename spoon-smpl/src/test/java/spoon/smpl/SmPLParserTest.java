@@ -1,8 +1,12 @@
 package spoon.smpl;
 
 import org.junit.Test;
+import spoon.Launcher;
+import spoon.reflect.declaration.CtClass;
+
 import static org.junit.Assert.assertEquals;
 
+import static org.junit.Assert.fail;
 import static spoon.smpl.SmPLParser.parse;
 import static spoon.smpl.SmPLParser.rewrite;
 
@@ -196,5 +200,19 @@ public class SmPLParserTest {
                      "return x;\n");
 
         assertEquals("myrule", rule.getName());
+    }
+
+    @Test
+    public void testDisappearingFieldReadTargetBug() {
+
+        // contract: the fieldread target of the expression "foo.x" with no further context for "foo" should not disappear when parsing a patch
+
+        CtClass<?> ctClass = Launcher.parseClass(SmPLParser.rewrite("@@\n" +
+                                                                    "@@\n" +
+                                                                    "print(foo.x);\n"));
+
+        if (!ctClass.toString().contains("print(foo.x)")) {
+            fail(ctClass.toString() + " does not contain \"print(foo.x)\"");
+        }
     }
 }
