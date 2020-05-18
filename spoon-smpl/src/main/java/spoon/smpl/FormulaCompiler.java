@@ -154,7 +154,7 @@ public class FormulaCompiler {
      * @return CTL-VW Formula
      */
     private Formula compileStatementFormula(ControlFlowNode node) {
-        if (SmPLJavaDSL.isDots(node.getStatement())) {
+        if (SmPLJavaDSL.isStatementLevelDots(node.getStatement())) {
             CtInvocation<?> dots = (CtInvocation<?>) node.getStatement();
 
             Formula savedPreGuard = dotsPreGuard;

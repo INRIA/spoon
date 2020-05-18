@@ -131,15 +131,6 @@ public class SmPLJavaDSL {
     }
 
     /**
-     * Check if a given element represents an SmPL dots construct in the SmPL Java DSL.
-     * @param e Element to check
-     * @return True if element represents an SmPL dots construct, false otherwise
-     */
-    public static boolean isDots(CtElement e) {
-        return isExecutableWithName(e, dotsElementName);
-    }
-
-    /**
      * Given a CtClass in the SmPL Java DSL, find the method encoding the matching/transformation
      * rule.
      * @param ctClass Class in SmPL Java DSL
@@ -153,6 +144,16 @@ public class SmPLJavaDSL {
         }
 
         return null;
+    }
+
+    /**
+     * Check if a given element represents a statement-level SmPL dots operator.
+     *
+     * @param e Element to check
+     * @return True if element represents a statement-level SmPL dots operator, false otherwise
+     */
+    public static boolean isStatementLevelDots(CtElement e) {
+        return isExecutableWithName(e, dotsElementName);
     }
 
     /**

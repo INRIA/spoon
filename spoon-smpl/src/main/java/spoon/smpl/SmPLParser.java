@@ -579,7 +579,7 @@ public class SmPLParser {
                 int stmtLine = stmt.getPosition().getLine();
 
                 if (SmPLJavaDSL.isDeletionAnchor(stmt) || commonLines.contains(stmtLine)) {
-                    if (!SmPLJavaDSL.isDots(stmt)) {
+                    if (!SmPLJavaDSL.isStatementLevelDots(stmt)) {
                         isAfterDots = false;
                         elementAnchor = stmtLine;
 
