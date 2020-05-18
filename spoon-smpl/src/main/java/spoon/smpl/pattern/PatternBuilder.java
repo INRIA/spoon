@@ -5,6 +5,7 @@ import spoon.reflect.declaration.*;
 import spoon.reflect.reference.*;
 import spoon.reflect.visitor.CtVisitor;
 import org.apache.commons.lang3.NotImplementedException;
+import spoon.smpl.SmPLJavaDSL;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -182,7 +183,7 @@ public class PatternBuilder implements CtVisitor {
 
         CtTypeReference<?> declType = ctExecutableReference.getDeclaringType();
 
-        if (declType != null && !declType.getSimpleName().equals("__SmPLGeneralIdentifier__")) {
+        if (declType != null && !declType.getSimpleName().equals(SmPLJavaDSL.getUnspecifiedElementOrTypeName())) {
             result.sub.put("declaringtype", new ValueNode(ctExecutableReference.getDeclaringType().getSimpleName(), ctExecutableReference.getDeclaringType()));
         }
 

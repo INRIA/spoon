@@ -388,7 +388,7 @@ public class SmPLParser {
                 continue;
             }
 
-            result.out.append("__SmPLGeneralIdentifier__ ").append(memberName).append(";\n");
+            result.out.append(SmPLJavaDSL.getUnspecifiedElementOrTypeName()).append(" ").append(memberName).append(";\n");
             addedMembers.add(memberName);
         }
 

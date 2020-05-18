@@ -108,6 +108,20 @@ public class SmPLJavaDSL {
     }
 
     /**
+     * Name for elements that indicate missing/unspecified information.
+     */
+    private static final String unspecifiedElementOrTypeName = "__SmPLUnspecified__";
+
+    /**
+     * Get name for elements that indicate missing/unspecified information.
+     *
+     * @return Name for elements that indicate missing/unspecified information
+     */
+    public static String getUnspecifiedElementOrTypeName() {
+        return unspecifiedElementOrTypeName;
+    }
+
+    /**
      * Check if a given element represents a deletion anchor in the SmPL Java DSL.
      * @param e Element to check
      * @return True if element represents a deletion anchor, false otherwise
