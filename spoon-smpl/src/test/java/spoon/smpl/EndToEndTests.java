@@ -901,6 +901,138 @@ public class EndToEndTests {
         assertEquals(expected.toString(), input.toString());
     }
     @Test
+    public void testMethodHeaderBinding() {
+        // contract: binding metavariables on the method header
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    int square(int x) {\n" +
+                                               "        return x*x;\n" +
+                                               "    }\n" +
+                                               "    float square(float x) {\n" +
+                                               "        return x*x;\n" +
+                                               "    }\n" +
+                                               "    int square(double x) {\n" +
+                                               "        return x*x;\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    int square(int x) {\n" +
+                                                  "        int y = 0;\n" +
+                                                  "        return x*x;\n" +
+                                                  "    }\n" +
+                                                  "    float square(float x) {\n" +
+                                                  "        float y = 0;\n" +
+                                                  "        return x*x;\n" +
+                                                  "    }\n" +
+                                                  "    int square(double x) {\n" +
+                                                  "        return x*x;\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "type T1;\n" +
+                                         "expression E;\n" +
+                                         "@@\n" +
+                                         "  T1 square(T1 x) {\n" +
+                                         "+     T1 y = 0;\n" +
+                                         "      return E;\n" +
+                                         "  }\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testMethodHeaderDots() {
+        // contract: using dots to match arbitrary sequences of parameters in method header
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void drawCircle(Point origin, float radius) {\n" +
+                                               "        log(\"Coordinates: \" + origin.x.toString() + \", \" + origin.y.toString());\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    void drawRectangle(float width, float height, Point topLeftCorner) {\n" +
+                                               "        log(\"Coordinates: \" + topLeftCorner.x.toString() + \", \" + topLeftCorner.y.toString());\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void drawCircle(Point origin, float radius) {\n" +
+                                                  "        log(\"Point: \" + origin.toString());\n" +
+                                                  "    }\n" +
+                                                  "    void drawRectangle(float width, float height, Point topLeftCorner) {\n" +
+                                                  "        log(\"Point: \" + topLeftCorner.toString());\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "type T;\n" +
+                                         "identifier fn, pt;\n" +
+                                         "@@\n" +
+                                         "  T fn(..., Point pt, ...) {\n" +
+                                         "      ...\n" +
+                                         "-     log(\"Coordinates: \" + pt.x.toString() + \", \" + pt.y.toString());\n" +
+                                         "+     log(\"Point: \" + pt.toString());\n" +
+                                         "  }\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testMethodHeaderLiteralMatch() {
+        // contract: literal matching on the method header
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    int square(int x) {\n" +
+                                               "        return x*x;\n" +
+                                               "    }\n" +
+                                               "    \n" +
+                                               "    int cube(int x) {\n" +
+                                               "        return x*x*x;\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    int square(int x) {\n" +
+                                                  "        log(\"square called\");\n" +
+                                                  "        return x*x;\n" +
+                                                  "    }\n" +
+                                                  "    \n" +
+                                                  "    int cube(int x) {\n" +
+                                                  "        return x*x*x;\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "expression E;\n" +
+                                         "@@\n" +
+                                         "  int square(int x) {\n" +
+                                         "+     log(\"square called\");\n" +
+                                         "      return E;\n" +
+                                         "  }\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
     public void testPrependContextBranch() {
         // contract: a patch should be able to prepend elements above a context branch
 

@@ -3,6 +3,7 @@ package spoon.smpl;
 import fr.inria.controlflow.BranchKind;
 import fr.inria.controlflow.ControlFlowNode;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 
 import java.util.*;
 
@@ -54,6 +55,9 @@ public class CFGModel implements Model {
                 case STATEMENT:
                     if (SmPLMethodCFG.isMethodHeaderNode(node)) {
                         labels.get(state).add(new PropositionLabel("methodHeader"));
+
+                        SmPLMethodCFG.NodeTag nodeTag = (SmPLMethodCFG.NodeTag) node.getTag();
+                        labels.get(state).add(new MethodHeaderLabel((CtMethod<?>) nodeTag.getAnchor()));
                     } else {
                         labels.get(state).add(new StatementLabel(stmt));
                     }

@@ -255,12 +255,8 @@ public class Substitutor implements CtVisitor {
 
     @Override
     public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
-        String varname = localVariable.getReference().getSimpleName();
-
-        // TODO: can we really not do this by visiting .getReference()?
-        if (bindings.containsKey(varname) && bindings.get(varname) instanceof CtLocalVariableReference<?>) {
-            localVariable.setSimpleName(((CtLocalVariableReference<?>) bindings.get(varname)).getSimpleName());
-        }
+        localVariable.getType().accept(this);
+        localVariable.getReference().accept(this);
 
         if (localVariable.getDefaultExpression() != null) {
             localVariable.getDefaultExpression().accept(this);
@@ -341,7 +337,9 @@ public class Substitutor implements CtVisitor {
 
     @Override
     public <T> void visitCtParameterReference(CtParameterReference<T> reference) {
-        throw new NotImplementedException("Not implemented");
+        if (bindings.containsKey(reference.getSimpleName())) {
+            reference.replace((CtElement) bindings.get(reference.getSimpleName()));
+        }
     }
 
     @Override
@@ -401,7 +399,11 @@ public class Substitutor implements CtVisitor {
 
     @Override
     public <T> void visitCtTypeReference(CtTypeReference<T> reference) {
-        throw new NotImplementedException("Not implemented");
+        String typename = reference.getSimpleName();
+
+        if (bindings.containsKey(typename)) {
+            reference.replace((CtElement) bindings.get(typename));
+        }
     }
 
     @Override

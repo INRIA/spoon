@@ -399,12 +399,28 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtParameter(CtParameter<T> ctParameter) {
-        throw new NotImplementedException("Not implemented");
+        ElemNode result = new ElemNode(ctParameter);
+
+        ctParameter.getType().accept(this);
+        result.sub.put("type", resultStack.pop());
+
+        ctParameter.getReference().accept(this);
+        result.sub.put("reference", resultStack.pop());
+
+        resultStack.push(result);
     }
 
     @Override
     public <T> void visitCtParameterReference(CtParameterReference<T> ctParameterReference) {
-        throw new NotImplementedException("Not implemented");
+        String paramname = ctParameterReference.getSimpleName();
+
+        if (params.contains(paramname)) {
+            resultStack.push(new ParamNode(paramname));
+        } else {
+            ElemNode result = new ElemNode(ctParameterReference);
+            result.sub.put("paramname", new ValueNode(paramname, ctParameterReference));
+            resultStack.push(result);
+        }
     }
 
     @Override
@@ -473,7 +489,15 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtTypeReference(CtTypeReference<T> ctTypeReference) {
-        throw new NotImplementedException("Not implemented");
+        String typename = ctTypeReference.getSimpleName();
+
+        if (params.contains(typename)) {
+            resultStack.push(new ParamNode(typename));
+        } else {
+            ElemNode result = new ElemNode(ctTypeReference);
+            result.sub.put("typename", new ValueNode(ctTypeReference.getSimpleName(), ctTypeReference));
+            resultStack.push(result);
+        }
     }
 
     @Override

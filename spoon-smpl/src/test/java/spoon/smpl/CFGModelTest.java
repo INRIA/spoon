@@ -7,9 +7,6 @@ import org.junit.Test;
 import spoon.reflect.declaration.*;
 import spoon.smpl.formula.*;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -160,37 +157,7 @@ public class CFGModelTest {
                                                          "    }                \n" +
                                                          "}                    \n")));
 
-        Pattern regex = Pattern.compile("labels=\\{(\\d+): \\[\\], (\\d+): \\[if \\(n > 0\\)\\], (\\d+): \\[after\\], (\\d+): \\[trueBranch\\], (\\d+): \\[return 1\\], (\\d+): \\[falseBranch\\], (\\d+): \\[return 0\\], (\\d+): \\[methodHeader\\]}");
-
-        Matcher matcher = regex.matcher(model.toString());
-        assertTrue(matcher.find());
-
-        String exit = matcher.group(1);
-        String ifstm = matcher.group(2);
-        String after = matcher.group(3);
-        String truebranch = matcher.group(4);
-        String retone = matcher.group(5);
-        String falsebranch = matcher.group(6);
-        String retzero = matcher.group(7);
-        String header = matcher.group(8);
-
-        assertTrue(model.toString().contains("states=[" + exit + ", " +
-                                                          ifstm + ", " +
-                                                          after + ", " +
-                                                          truebranch + ", " +
-                                                          retone + ", " +
-                                                          falsebranch + ", " +
-                                                          retzero + ", " +
-                                                          header + "]"));
-
-        assertTrue(model.toString().contains("successors={" + exit + "->" + exit + ", " +
-                                                              ifstm + "->" + truebranch + ", " +
-                                                              ifstm + "->" + falsebranch + ", " +
-                                                              after + "->" + exit + ", " +
-                                                              truebranch + "->" + retone + ", " +
-                                                              retone + "->" + exit + ", " +
-                                                              falsebranch + "->" + retzero + ", " +
-                                                              retzero + "->" + exit + ", " +
-                                                              header + "->" + ifstm + "}"));
+        assertEquals("CFGModel(states=[1, 4, 5, 6, 7, 9, 10, 13], successors={1->1, 4->6, 4->9, 5->1, 6->7, 7->1, 9->10, 10->1, 13->4}, labels={1: [], 4: [if (n > 0)], 5: [after], 6: [trueBranch], 7: [return 1], 9: [falseBranch], 10: [return 0], 13: [methodHeader, int foo(int n)]})",
+                     model.toString());
     }
 }

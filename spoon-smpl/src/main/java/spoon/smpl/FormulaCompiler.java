@@ -5,6 +5,7 @@ import fr.inria.controlflow.ControlFlowNode;
 import org.apache.commons.lang3.NotImplementedException;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.formula.*;
 
 import java.util.*;
@@ -34,7 +35,18 @@ public class FormulaCompiler {
      */
     public Formula compileFormula() {
         quantifiedMetavars = new ArrayList<>();
-        return FormulaOptimizer.optimizeFully(compileFormulaInner(cfg.findNodesOfKind(BranchKind.BEGIN).get(0).next().get(0)));
+        metavarsToQuantifyOutermost = new ArrayList<>();
+
+        Formula formula = FormulaOptimizer.optimizeFully(compileFormulaInner(cfg.findNodesOfKind(BranchKind.BEGIN).get(0).next().get(0)));
+
+        Collections.sort(metavarsToQuantifyOutermost);
+        Collections.reverse(metavarsToQuantifyOutermost);
+
+        for (String var : metavarsToQuantifyOutermost) {
+            formula = new ExistsVar(var, formula);
+        }
+
+        return formula;
     }
 
     /**
@@ -61,6 +73,36 @@ public class FormulaCompiler {
 
         if (node.getKind() == BranchKind.EXIT) {
             return null;
+        }
+
+        if (SmPLMethodCFG.isMethodHeaderNode(node)) {
+            if (!(node.getTag() instanceof SmPLMethodCFG.NodeTag)) {
+                throw new IllegalArgumentException("invalid tag type for method header node");
+            }
+
+            SmPLMethodCFG.NodeTag tag = (SmPLMethodCFG.NodeTag) node.getTag();
+
+            if (!(tag.getAnchor() instanceof CtMethod)) {
+                throw new IllegalArgumentException("invalid anchor for method header node");
+            }
+
+            if (SmPLJavaDSL.isUnspecifiedMethodHeader(tag.getAnchor())) {
+                formula = new Proposition("methodHeader");
+            } else {
+                formula = new MethodHeaderPredicate((CtMethod<?>) tag.getAnchor(), metavars);
+                Set<String> metavarsUsed = ((MethodHeaderPredicate) formula).getMetavarsUsedInHeader();
+
+                quantifiedMetavars.addAll(metavarsUsed);
+                metavarsToQuantifyOutermost.addAll(metavarsUsed);
+            }
+
+            List<Operation> methodBodyOps = additions.getOperationsAnchoredToMethodBody();
+
+            if (methodBodyOps != null && methodBodyOps.size() > 0) {
+                formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", methodBodyOps)));
+            }
+
+            return new And(formula, new ExistsUntil(new True(), compileFormulaInner(node.next().get(0))));
         }
 
         switch (node.next().size()) {
@@ -201,16 +243,6 @@ public class FormulaCompiler {
                     return new AllUntil(formula, innerFormula);
                 }
             }
-        } else if (SmPLMethodCFG.isMethodHeaderNode(node)) {
-            Formula formula = new Proposition("methodHeader");
-
-            List<Operation> methodBodyOps = additions.getOperationsAnchoredToMethodBody();
-
-            if (methodBodyOps != null && methodBodyOps.size() > 0) {
-                formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", methodBodyOps)));
-            }
-
-            return new And(formula, new ExistsUntil(new True(), compileFormulaInner(node.next().get(0))));
         } else {
             CtElement statement = node.getStatement();
             int line = statement.getPosition().getLine();
@@ -346,4 +378,6 @@ public class FormulaCompiler {
      * Stored code element formula to be used as shortest-path guard for dots.
      */
     private Formula dotsPreGuard;
+
+    private List<String> metavarsToQuantifyOutermost;
 }

@@ -6,6 +6,7 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -157,6 +158,27 @@ public class SmPLJavaDSL {
     }
 
     /**
+     * Check if a given element represents a parameter (or argument) -level SmPL dots operator.
+     *
+     * @param e Element to check
+     * @return True if element represents a parameter (or argument) -level SmPL dots operator, false otherwise
+     */
+    public static boolean isParameterLevelDots(CtElement e) {
+        return (e instanceof CtParameter && ((CtParameter<?>) e).getSimpleName().equals(dotsElementName))
+               || (e instanceof CtVariableRead && ((CtVariableRead<?>) e).getVariable().getSimpleName().equals(dotsElementName));
+    }
+
+    /**
+     * Create a source code String for a parameter (or argument) -level SmPL dots operator.
+     *
+     * @return Source code string for a parameter (or argument) -level SmPL dots operator
+     */
+    public static String createDotsParameterString() {
+        // TODO: should these be unique / fresh identifiers?
+        return "Object " + dotsElementName;
+    }
+
+    /**
      * Given a CtInvocation representing an SmPL dots construct in the SmPL Java DSL, collect
      * all arguments provided in "when != x" constraints.
      *
@@ -239,6 +261,17 @@ public class SmPLJavaDSL {
      */
     public static String createUnspecifiedMethodHeaderString() {
         return "void " + unspecifiedElementOrTypeName + "()";
+    }
+
+    /**
+     * Check whether the given element is a CtMethod with a method header that is a representation of an
+     * unspecified method header (unspecified return type, name and list of parameters).
+     *
+     * @param e Element to check
+     * @return True if element represents an unspecified method header, false otherwise
+     */
+    public static boolean isUnspecifiedMethodHeader(CtElement e) {
+        return e instanceof CtMethod && ((CtMethod<?>) e).getSimpleName().equals(unspecifiedElementOrTypeName);
     }
 
     /**
