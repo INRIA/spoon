@@ -102,7 +102,7 @@ public class FormulaCompiler {
                 formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", methodBodyOps)));
             }
 
-            return new And(formula, new ExistsUntil(new True(), compileFormulaInner(node.next().get(0))));
+            return new And(formula, new AllNext(compileFormulaInner(node.next().get(0))));
         }
 
         switch (node.next().size()) {

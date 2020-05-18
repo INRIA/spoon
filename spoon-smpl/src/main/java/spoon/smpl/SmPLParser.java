@@ -302,7 +302,13 @@ public class SmPLParser {
                 (result, match) -> {
                     result.hasMethodHeader = true;
                     result.out.append(SmPLJavaDSL.createUnspecifiedMethodHeaderString())
-                              .append(" {\n");
+                              .append(" {\n")
+                              .append(SmPLJavaDSL.getDotsElementName())
+                              .append("(")
+                              .append(SmPLJavaDSL.getDotsWhenExistsName()).append("()")
+                              .append(", ")
+                              .append(SmPLJavaDSL.getDotsWhenAnyName()).append("()")
+                              .append(");\n");
                     return 0;
                 }));
 

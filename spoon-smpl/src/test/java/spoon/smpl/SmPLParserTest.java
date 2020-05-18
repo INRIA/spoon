@@ -11,6 +11,10 @@ import static spoon.smpl.SmPLParser.parse;
 import static spoon.smpl.SmPLParser.rewrite;
 
 public class SmPLParserTest {
+    String implicitDots = SmPLJavaDSL.getDotsElementName() + "(" +
+                          SmPLJavaDSL.getDotsWhenExistsName() + "(), " +
+                          SmPLJavaDSL.getDotsWhenAnyName() + "());";
+
     @Test(expected = RuntimeException.class)
     public void testRewriteEmptyString() {
 
@@ -57,6 +61,7 @@ public class SmPLParserTest {
                 "        identifier(x);\n" +
                 "    }\n" +
                 "    " + SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
+                "        " + implicitDots + "\n" +
                 "        int x = 1;\n" +
                 "        return x + 1;\n" +
                 "    }\n" +
@@ -83,6 +88,7 @@ public class SmPLParserTest {
                 "        identifier(y);\n" +
                 "    }\n" +
                 "    " + SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
+                "        " + implicitDots + "\n" +
                 "        int x = 1;\n" +
                 "        int y = 2;\n" +
                 "        return x + y;\n" +
@@ -111,6 +117,7 @@ public class SmPLParserTest {
                 "        identifier(y);\n" +
                 "    }\n" +
                 "    " + SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
+                "        " + implicitDots + "\n" +
                 "        int x = 1;\n" +
                 "        int y = 2;\n" +
                 "        return x + y;\n" +
@@ -137,6 +144,7 @@ public class SmPLParserTest {
                 "        identifier(x);\n" +
                 "    }\n" +
                 "    " + SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
+                "        " + implicitDots + "\n" +
                 "        int x = 1;\n" +
                 "        __SmPLDots__(whenNotEqual(x));\n" +
                 "        return x + 1;\n" +
@@ -167,6 +175,7 @@ public class SmPLParserTest {
                 "        constant(C);\n" +
                 "    }\n" +
                 "    " + SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
+                "        " + implicitDots + "\n" +
                 "        T ret = C;\n" +
                 "        __SmPLDots__(whenNotEqual(ret));\n" +
                 "        return ret;\n" +
