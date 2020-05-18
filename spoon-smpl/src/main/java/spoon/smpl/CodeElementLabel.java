@@ -69,10 +69,9 @@ abstract public class CodeElementLabel implements Label {
     }
 
     /**
-     * Retrieve any metavariable bindings involved in matching the most recently
-     * given predicate.
+     * Retrieve any metavariable bindings involved in matching the most recently given predicate.
      *
-     * @return Most recent metavariable bindings, or null if there were none
+     * @return Most recent metavariable bindings, or null if there are none
      */
     @Override
     public List<Map<String, Object>> getMetavariableBindings() {
