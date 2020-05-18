@@ -1119,6 +1119,29 @@ public class ReferenceBuilder {
 		}
 	}
 
+	/**
+	 * Same as {@link #setPackageOrDeclaringType(CtTypeReference, CtReference)}, but ensures that the set declaring
+	 * type or package reference is made implicit.
+	 *
+	 * NOTE: Only a package/declaring type that's set by this method is made implicit, pre-existing references are
+	 * not modified (but they may be replaced).
+	 */
+	void setImplicitPackageOrDeclaringType(CtTypeReference<?> ref, CtReference declaring) {
+		CtTypeReference<?> oldDeclaring = ref.getDeclaringType();
+		CtPackageReference oldPackage = ref.getPackage();
+
+		setPackageOrDeclaringType(ref, declaring);
+		CtTypeReference<?> currentDeclaring = ref.getDeclaringType();
+		CtPackageReference currentPackage = ref.getPackage();
+
+		if (currentDeclaring != oldDeclaring) {
+			currentDeclaring.setImplicit(true);
+		}
+		if (currentPackage != oldPackage) {
+			currentPackage.setImplicit(true);
+		}
+	}
+
 	private static boolean containsStarImport(ImportReference[] imports) {
 		return imports != null && Arrays.stream(imports).anyMatch(imp -> imp.toString().endsWith("*"));
 	}
