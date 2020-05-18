@@ -33,8 +33,8 @@ public class SmPLParserTest {
         // contract: SmPLParser can handle an empty rule, producing an empty Java DSL class.
 
         String result = DebugUtils.prettify(rewrite("@@\n@@\n"));
-        assertEquals("class SmPLRule {\n" +
-                "    void __SmPLMetavars__() {\n" +
+        assertEquals("class RewrittenSmPLRule {\n" +
+                "    void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
                 "    }\n" +
                 "}\n", result);
     }
@@ -52,11 +52,11 @@ public class SmPLParserTest {
                 "return x + 1;\n"));
 
         assertEquals(
-                "class SmPLRule {\n" +
-                "    void __SmPLMetavars__() {\n" +
+                "class RewrittenSmPLRule {\n" +
+                "    void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
                 "        identifier(x);\n" +
                 "    }\n" +
-                "    __SmPLUndeclared__ method() {\n" +
+                "    " + SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
                 "        int x = 1;\n" +
                 "        return x + 1;\n" +
                 "    }\n" +
@@ -77,12 +77,12 @@ public class SmPLParserTest {
                 "return x + y;\n"));
 
         assertEquals(
-                "class SmPLRule {\n" +
-                "    void __SmPLMetavars__() {\n" +
+                "class RewrittenSmPLRule {\n" +
+                "    void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
                 "        identifier(x);\n" +
                 "        identifier(y);\n" +
                 "    }\n" +
-                "    __SmPLUndeclared__ method() {\n" +
+                "    " + SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
                 "        int x = 1;\n" +
                 "        int y = 2;\n" +
                 "        return x + y;\n" +
@@ -105,12 +105,12 @@ public class SmPLParserTest {
                 "return x + y;\n"));
 
         assertEquals(
-                "class SmPLRule {\n" +
-                "    void __SmPLMetavars__() {\n" +
+                "class RewrittenSmPLRule {\n" +
+                "    void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
                 "        identifier(x);\n" +
                 "        identifier(y);\n" +
                 "    }\n" +
-                "    __SmPLUndeclared__ method() {\n" +
+                "    " + SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
                 "        int x = 1;\n" +
                 "        int y = 2;\n" +
                 "        return x + y;\n" +
@@ -132,11 +132,11 @@ public class SmPLParserTest {
                 "return x + 1;\n"));
 
         assertEquals(
-                "class SmPLRule {\n" +
-                "    void __SmPLMetavars__() {\n" +
+                "class RewrittenSmPLRule {\n" +
+                "    void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
                 "        identifier(x);\n" +
                 "    }\n" +
-                "    __SmPLUndeclared__ method() {\n" +
+                "    " + SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
                 "        int x = 1;\n" +
                 "        __SmPLDots__(whenNotEqual(x));\n" +
                 "        return x + 1;\n" +
@@ -160,13 +160,13 @@ public class SmPLParserTest {
                 "return ret;\n"));
 
         assertEquals(
-                "class SmPLRule {\n" +
-                "    void __SmPLMetavars__() {\n" +
+                "class RewrittenSmPLRule {\n" +
+                "    void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
                 "        type(T);\n" +
                 "        identifier(ret);\n" +
                 "        constant(C);\n" +
                 "    }\n" +
-                "    __SmPLUndeclared__ method() {\n" +
+                "    " + SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
                 "        T ret = C;\n" +
                 "        __SmPLDots__(whenNotEqual(ret));\n" +
                 "        return ret;\n" +

@@ -232,6 +232,16 @@ public class SmPLJavaDSL {
     }
 
     /**
+     * Create a source code String for a representation of an unspecified method header (unspecified return type,
+     * name and list of parameters).
+     *
+     * @return Source code String for a method header that represents an unspecified method
+     */
+    public static String createUnspecifiedMethodHeaderString() {
+        return "void " + unspecifiedElementOrTypeName + "()";
+    }
+
+    /**
      * Check if a given AST element is an invocation of a given executable name.
      *
      * @param e Element to check

@@ -277,7 +277,7 @@ public class SmPLParser {
         code.add(new RewriteRule("dots", "(?s)^\\.\\.\\.",
                 (ctx) -> { ctx.pop(); ctx.push(body); ctx.push(dots); },
                 (result, match) -> {
-                    result.out.append("__SmPLUndeclared__ method() {\n");
+                    result.out.append(SmPLJavaDSL.createUnspecifiedMethodHeaderString()).append(" {\n");
                     result.out.append(SmPLJavaDSL.getDotsElementName()).append("(");
                     result.hasMethodHeader = true;
                 }));
@@ -285,7 +285,7 @@ public class SmPLParser {
         code.add(new RewriteRule("anychar", "(?s)^.",
                 (ctx) -> { ctx.pop(); ctx.push(body); },
                 (result, match) -> {
-                    result.out.append("__SmPLUndeclared__ method() {\n");
+                    result.out.append(SmPLJavaDSL.createUnspecifiedMethodHeaderString()).append(" {\n");
                     result.out.append(match.group());
                     result.hasMethodHeader = true;
                 }));
@@ -340,7 +340,9 @@ public class SmPLParser {
                 (result, match) -> { result.out.append(");\n").append(match.group()); }));
 
         Result result = new Result();
-        result.out.append("class SmPLRule {\n");
+
+        // TODO: standardize class name in SmPLJavaDSL?
+        result.out.append("class RewrittenSmPLRule {\n");
 
         Stack<List<RewriteRule>> context = new Stack<>();
         context.push(init);
