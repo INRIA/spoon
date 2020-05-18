@@ -46,6 +46,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -480,6 +481,24 @@ public class TargetedExpressionTest {
 		final List<CtFieldAccess<?>> elements = launcher.getFactory().Class().get("Foo").getConstructor().getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(1, elements.size());
 		assertEqualsFieldAccess(new ExpectedTargetedExpression().declaringType(expectedFoo).target(expectedThisAccess).result("this.bar"), elements.get(0));
+	}
+
+	@Test
+	public void testUnqualifiedStaticMethodCallNoclasspath() {
+		// contract: If a static method of some other type is accessed without qualification, any qualification attached
+		// to it must be implicit. See #3370 for details
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/UnqualifiedStaticMethodCall.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+		List<CtTypeAccess<?>> typeAccesses = model.getElements(e -> e.getAccessedType().getSimpleName().equals("SomeClass"));
+
+		assertEquals("There should only be one reference to SomeClass, check the resource!", 1, typeAccesses.size());
+
+		CtPackageReference pkg = typeAccesses.get(0).getAccessedType().getPackage();
+
+		assertEquals("pkg", pkg.getSimpleName());
+		assertTrue(pkg.isImplicit());
 	}
 
 	@Test
