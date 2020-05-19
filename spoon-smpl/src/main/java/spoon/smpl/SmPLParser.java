@@ -164,10 +164,15 @@ public class SmPLParser {
             public Result() {
                 out = new StringBuilder();
                 hasMethodHeader = false;
+
+                // Want to detect error state where hasMethodHeader is true but isUnspecifiedMethodHeader
+                //   has not been set to true or false.
+                isUnspecifiedMethodHeader = null;
             }
 
             public StringBuilder out;
             public boolean hasMethodHeader;
+            public Boolean isUnspecifiedMethodHeader;
         }
 
         class RewriteRule {
@@ -187,6 +192,10 @@ public class SmPLParser {
         if (text.length() < 1) {
             throw new RuntimeException("Empty input");
         }
+
+        String implicitDots = SmPLJavaDSL.getDotsElementName() + "(" +
+                              SmPLJavaDSL.getDotsWhenExistsName() + "(), " +
+                              SmPLJavaDSL.getDotsWhenAnyName() + "());";
 
         List<RewriteRule> init = new ArrayList<>();
         List<RewriteRule> metavars = new ArrayList<>();
@@ -294,6 +303,7 @@ public class SmPLParser {
                 (ctx) -> { ctx.pop(); ctx.push(header_modifiers); },
                 (result, match) -> {
                     result.hasMethodHeader = true;
+                    result.isUnspecifiedMethodHeader = false;
                     return 0;
                 }));
 
@@ -301,14 +311,11 @@ public class SmPLParser {
                 (ctx) -> { ctx.pop(); ctx.push(body); },
                 (result, match) -> {
                     result.hasMethodHeader = true;
+                    result.isUnspecifiedMethodHeader = true;
                     result.out.append(SmPLJavaDSL.createUnspecifiedMethodHeaderString())
                               .append(" {\n")
-                              .append(SmPLJavaDSL.getDotsElementName())
-                              .append("(")
-                              .append(SmPLJavaDSL.getDotsWhenExistsName()).append("()")
-                              .append(", ")
-                              .append(SmPLJavaDSL.getDotsWhenAnyName()).append("()")
-                              .append(");\n");
+                              .append(implicitDots)
+                              .append("\n");
                     return 0;
                 }));
 
@@ -457,6 +464,14 @@ public class SmPLParser {
         }
 
         if (result.hasMethodHeader) {
+            if (result.isUnspecifiedMethodHeader == null) {
+                throw new IllegalStateException("isUnspecifiedMethodHeader is undefined");
+            }
+
+            if (result.isUnspecifiedMethodHeader) {
+                result.out.append(implicitDots).append("\n");
+            }
+
             result.out.append("}\n");
         }
 

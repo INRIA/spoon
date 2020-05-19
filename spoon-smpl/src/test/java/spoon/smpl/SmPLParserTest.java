@@ -64,6 +64,7 @@ public class SmPLParserTest {
                 "        " + implicitDots + "\n" +
                 "        int x = 1;\n" +
                 "        return x + 1;\n" +
+                "        " + implicitDots + "\n" +
                 "    }\n" +
                 "}\n", result);
     }
@@ -92,6 +93,7 @@ public class SmPLParserTest {
                 "        int x = 1;\n" +
                 "        int y = 2;\n" +
                 "        return x + y;\n" +
+                "        " + implicitDots + "\n" +
                 "    }\n" +
                 "}\n", result);
     }
@@ -121,6 +123,7 @@ public class SmPLParserTest {
                 "        int x = 1;\n" +
                 "        int y = 2;\n" +
                 "        return x + y;\n" +
+                "        " + implicitDots + "\n" +
                 "    }\n" +
                 "}\n", result);
     }
@@ -148,6 +151,7 @@ public class SmPLParserTest {
                 "        int x = 1;\n" +
                 "        __SmPLDots__(whenNotEqual(x));\n" +
                 "        return x + 1;\n" +
+                "        " + implicitDots + "\n" +
                 "    }\n" +
                 "}\n", result);
     }
@@ -179,6 +183,7 @@ public class SmPLParserTest {
                 "        T ret = C;\n" +
                 "        __SmPLDots__(whenNotEqual(ret));\n" +
                 "        return ret;\n" +
+                "        " + implicitDots + "\n" +
                 "    }\n" +
                 "}\n", result);
     }

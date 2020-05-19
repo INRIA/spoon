@@ -68,7 +68,8 @@ public class CFGModel implements Model {
                 case BLOCK_BEGIN:
                     labels.get(state).add(new PropositionLabel(((SmPLMethodCFG.NodeTag) node.getTag()).getLabel()));
                     break;
-                case EXIT: // Allowed to be present
+                case EXIT:
+                    labels.get(state).add(new PropositionLabel("end"));
                     break;
                 default:
                     throw new IllegalStateException("unsupported kind " + node.getKind().toString());

@@ -72,7 +72,7 @@ public class FormulaCompiler {
         Formula formula;
 
         if (node.getKind() == BranchKind.EXIT) {
-            return null;
+            return new Proposition("end");
         }
 
         if (SmPLMethodCFG.isMethodHeaderNode(node)) {
