@@ -6,6 +6,7 @@ import time
 import datetime
 import subprocess
 import os
+import re
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore
@@ -16,7 +17,7 @@ class Main(QMainWindow):
     def __init__(self):
         super().__init__()
         
-        self.runmodes = ["check", "checksub", "rewrite", "compile", "patch", "ctl"]
+        self.runmodes = ["check", "checksub", "rewrite", "compile", "patch", "ctl", "gentest"]
         self.current_mode = "patch"
         self.is_switching_mode = False
         
@@ -79,16 +80,11 @@ class Main(QMainWindow):
             self.output_text.setPlainText("Mode set to {}.\nF5 to execute.".format(self.current_mode))
             return True
         elif event.key() == 16777268:
-            smpl_file = open("/tmp/smplgui_py_smpl_text.cocci", "w+")
-            smpl_file.write(self.smpl_text.toPlainText() + "\n")
-            smpl_file.close()
+            if (self.current_mode == "gentest"):
+                self.generate_test()
+            else:
+                self.save_and_run(self.current_mode)
             
-            java_file = open("/tmp/smplgui_py_java_text.java", "w+")
-            java_file.write(self.java_text.toPlainText() + "\n")
-            java_file.close()
-            
-            cmdstr = "./smplcli.sh " + self.current_mode + " --smpl-file /tmp/smplgui_py_smpl_text.cocci --java-file /tmp/smplgui_py_java_text.java; exit 0"
-            self.output_text.setPlainText(datetime.datetime.now().isoformat("T") + "\n" + cmdstr + "\n\n" + subprocess.check_output(cmdstr, stderr=subprocess.STDOUT, shell=True).decode("utf-8") + "\n")
             return True
         elif event.key() == 16777269:
             self.is_switching_mode = True
@@ -106,6 +102,24 @@ class Main(QMainWindow):
             return True
         else:
             return False
+    
+    def save_and_run(self, action):
+        smpl_file = open("/tmp/smplgui_py_smpl_text.cocci", "w+")
+        smpl_file.write(self.smpl_text.toPlainText() + "\n")
+        smpl_file.close()
+        
+        java_file = open("/tmp/smplgui_py_java_text.java", "w+")
+        java_file.write(self.java_text.toPlainText() + "\n")
+        java_file.close()
+        
+        cmdstr = "./smplcli.sh " + action + " --smpl-file /tmp/smplgui_py_smpl_text.cocci --java-file /tmp/smplgui_py_java_text.java; exit 0"
+        self.output_text.setPlainText(datetime.datetime.now().isoformat("T") + "\n" + cmdstr + "\n\n" + subprocess.check_output(cmdstr, stderr=subprocess.STDOUT, shell=True).decode("utf-8") + "\n")
+    
+    def generate_test(self):
+        self.save_and_run("patch")
+        output = re.sub(r"(?s).+?\n(?=class)", "", self.output_text.toPlainText())
+        
+        self.output_text.setPlainText("[name]\n\n[contract]\n\n[patch]\n" + self.smpl_text.toPlainText() + "\n\n[input]\n" + self.java_text.toPlainText() + "\n\n[expected]\n" + output)
 
 def main():
     app = QApplication(sys.argv)
