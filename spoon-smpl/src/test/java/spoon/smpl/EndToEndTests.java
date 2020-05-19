@@ -1635,7 +1635,44 @@ public class EndToEndTests {
         assertEquals(expected.toString(), input.toString());
     }
     @Test
-    public void testAddToBottom() {
+    public void testAddToEmptyMethod() {
+        // contract: a patch should be able to add statements to an empty method body
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "    }\n" +
+                                               "    void m2() {\n" +
+                                               "        a();\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        foo();\n" +
+                                                  "        bar();\n" +
+                                                  "    }\n" +
+                                                  "    void m2() {\n" +
+                                                  "        a();\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ identifier fn; @@\n" +
+                                         "void fn() {\n" +
+                                         "+ foo();\n" +
+                                         "+ bar();\n" +
+                                         "}\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testAddToMethodBottom() {
         // contract: a patch should be able to add statements at the bottom of methods
 
         CtClass<?> input = Launcher.parseClass("class A {\n" +
@@ -1675,44 +1712,7 @@ public class EndToEndTests {
         assertEquals(expected.toString(), input.toString());
     }
     @Test
-    public void testAddToEmptyMethod() {
-        // contract: a patch should be able to add statements to an empty method body
-
-        CtClass<?> input = Launcher.parseClass("class A {\n" +
-                                               "    void m1() {\n" +
-                                               "    }\n" +
-                                               "    void m2() {\n" +
-                                               "        a();\n" +
-                                               "    }\n" +
-                                               "}\n");
-    
-        CtClass<?> expected = Launcher.parseClass("class A {\n" +
-                                                  "    void m1() {\n" +
-                                                  "        foo();\n" +
-                                                  "        bar();\n" +
-                                                  "    }\n" +
-                                                  "    void m2() {\n" +
-                                                  "        a();\n" +
-                                                  "    }\n" +
-                                                  "}\n");
-    
-        SmPLRule rule = SmPLParser.parse("@@ identifier fn; @@\n" +
-                                         "void fn() {\n" +
-                                         "+ foo();\n" +
-                                         "+ bar();\n" +
-                                         "}\n");
-    
-        input.getMethods().forEach((method) -> {
-            CFGModel model = new CFGModel(methodCfg(method));
-            ModelChecker checker = new ModelChecker(model);
-            rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
-        });
-    
-        assertEquals(expected.toString(), input.toString());
-    }
-    @Test
-    public void testAddToTop() {
+    public void testAddToMethodTop() {
         // contract: a patch should be able to add statements at the top of methods
 
         CtClass<?> input = Launcher.parseClass("class A {\n" +
