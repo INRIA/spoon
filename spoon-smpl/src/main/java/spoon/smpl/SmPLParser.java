@@ -647,7 +647,7 @@ public class SmPLParser {
      */
     private static AnchoredOperationsMap anchorAdditions(CtClass<?> e, Set<Integer> commonLines) {
         CtMethod<?> ruleMethod = SmPLJavaDSL.getRuleMethod(e);
-        return anchorAdditions(ruleMethod.getBody(), commonLines, 0, null);
+        return anchorAdditions(ruleMethod.getBody(), commonLines, AnchoredOperationsMap.methodBodyAnchor, "methodBody");
     }
 
     /**
@@ -677,8 +677,25 @@ public class SmPLParser {
                 int stmtLine = stmt.getPosition().getLine();
 
                 if (SmPLJavaDSL.isDeletionAnchor(stmt) || commonLines.contains(stmtLine)) {
-                    if (!SmPLJavaDSL.isStatementLevelDots(stmt)) {
+                    // This is a deletion or a context statement
+
+                    if (SmPLJavaDSL.isStatementLevelDots(stmt)) {
+                        // TODO: this is pretty awful, find a cleaner way
+                        // Arriving at dots carrying an unanchored statement that was itself preceded by dots
+                        //   yields an impossible situation
+                        if (unanchored.size() > 0) {
+                            for (Pair<InsertIntoBlockOperation.Anchor, CtElement> pair : unanchored) {
+                                if (pair.getLeft().equals(InsertIntoBlockOperation.Anchor.BOTTOM)) {
+                                    throw new IllegalArgumentException("unanchorable statement");
+                                }
+                            }
+                        }
+
+                        unanchoredCommitted.addAll(unanchored);
+                        isAfterDots = true;
+                    } else {
                         isAfterDots = false;
+                        // TODO: if we used line+offset maybe we could support multiple anchorable statements per line in a patch
                         elementAnchor = stmtLine;
 
                         // The InsertIntoBlockOperation.Anchor is irrelevant here
@@ -686,9 +703,6 @@ public class SmPLParser {
                             result.addKeyIfNotExists(elementAnchor);
                             result.get(elementAnchor).add(new PrependOperation(element.getRight()));
                         }
-                    } else {
-                        unanchoredCommitted.addAll(unanchored);
-                        isAfterDots = true;
                     }
 
                     unanchored.clear();
@@ -703,6 +717,8 @@ public class SmPLParser {
                         }
                     }
                 } else {
+                    // This is an addition
+
                     if (elementAnchor != 0) {
                         result.addKeyIfNotExists(elementAnchor);
                         result.get(elementAnchor).add(new AppendOperation(stmt));
@@ -724,10 +740,10 @@ public class SmPLParser {
 
             for (Pair<InsertIntoBlockOperation.Anchor, CtElement> element : unanchored) {
                 switch (context) {
-                    case "methodHeader":
+                    case "methodBody":
                         result.get(blockAnchor)
                               .add(new InsertIntoBlockOperation(InsertIntoBlockOperation.BlockType.METHODBODY,
-                                                                InsertIntoBlockOperation.Anchor.TOP,
+                                                                element.getLeft(),
                                                                 (CtStatement) element.getRight()));
                         break;
                     case "trueBranch":

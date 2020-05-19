@@ -1,0 +1,34 @@
+[name]
+AddToEmptyMethod
+
+[contract]
+a patch should be able to add statements to an empty method body
+
+[patch]
+@@ identifier fn; @@
+void fn() {
++ foo();
++ bar();
+}
+
+[input]
+class A {
+    void m1() {
+    }
+
+    void m2() {
+        a();
+    }
+}
+
+[expected]
+class A {
+    void m1() {
+        foo();
+        bar();
+    }
+
+    void m2() {
+        a();
+    }
+}
