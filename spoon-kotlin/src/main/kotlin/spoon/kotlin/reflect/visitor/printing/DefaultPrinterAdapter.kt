@@ -2,7 +2,7 @@ package spoon.kotlin.reflect.visitor.printing
 
 import spoon.kotlin.reflect.KtModifierKind
 
-open class DefaultPrinterAdapter(
+internal open class DefaultPrinterAdapter(
         private val ignoredModifiers : List<KtModifierKind> = listOf(
             KtModifierKind.PUBLIC, KtModifierKind.FINAL)
 ) : AbstractPrinterAdapter() {
@@ -75,6 +75,7 @@ open class DefaultPrinterAdapter(
      * Constructor delegation: constructor(x : Int) : this(x)
      * Object declaration: val o = object : T
      */
+
     fun writeColon(context : ColonContext) = write(when(context) {
         ColonContext.DECLARATION_TYPE -> ": "
         else -> " : "
