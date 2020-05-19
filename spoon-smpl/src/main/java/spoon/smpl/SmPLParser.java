@@ -39,10 +39,10 @@ public class SmPLParser {
         }
 
         List<SmPLRule> ruleAlternatives = new ArrayList<>();
-        List<String> inputAlternatives = separateDisjunctions(rewrite(smpl));
+        List<String> inputAlternatives = separateDisjunctions(smpl);
 
         for (String alternative : inputAlternatives) {
-            List<String> separated = separateAdditionsDeletions(alternative);
+            List<String> separated = separateAdditionsDeletions(rewrite(alternative));
 
             CtClass<?> dels = Launcher.parseClass(separated.get(0));
             CtClass<?> adds = Launcher.parseClass(separated.get(1));
