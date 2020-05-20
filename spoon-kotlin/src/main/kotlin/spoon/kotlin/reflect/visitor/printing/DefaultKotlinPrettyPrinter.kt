@@ -399,8 +399,10 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <R : Any?> visitCtReturn(p0: CtReturn<R>?) {
-        TODO("Not yet implemented")
+    override fun <R : Any?> visitCtReturn(ctReturn: CtReturn<R>) {
+        if(ctReturn.isImplicit && ctReturn.returnedExpression != null)
+            ctReturn.returnedExpression.accept(this)
+        else adapter.write("UNIMPLEMENTED RETURN")
     }
 
     override fun visitCtBreak(p0: CtBreak?) {

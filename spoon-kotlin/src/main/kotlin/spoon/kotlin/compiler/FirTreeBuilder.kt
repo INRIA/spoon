@@ -116,7 +116,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
 
         fun branchToStatement(e : CtElement) : CtStatement = when(e) {
             is CtStatement -> e
-            is CtExpression<*> -> e.wrapAsStatementExpression()
+            is CtExpression<*> -> e.wrapInImplicitReturn()
             else -> throw RuntimeException("Branch is not statement nor expression")
         }
 
@@ -138,7 +138,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
         val statements = block.statements.map { it.accept(this, null).single.let { s ->
             s.setParent(ktBlock)
             if(s is CtExpression<*> && s !is CtStatement) {
-                s.wrapAsStatementExpression()
+                s.wrapInImplicitReturn()
             } else {
                 s
             }
@@ -270,7 +270,10 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
     private fun FirClass<*>.isEnumClass() = this.classKind == ClassKind.ENUM_CLASS
     private fun FirWhenExpression.isIf() = this.subject == null &&
             this.subjectVariable?.apply { warn("Subject variable found: ${this}") } == null // Temporary warn, don't know what subject variable is
-    private fun <T> CtExpression<T>.wrapAsStatementExpression() =
-        KtExpressionStatementImpl<T>(this)
-
+    private fun <T> CtExpression<T>.wrapInImplicitReturn() : CtReturn<T> {
+        val r = factory.Core().createReturn<T>()
+        r.setReturnedExpression<CtReturn<T>>(this)
+        r.setImplicit<CtReturn<T>>(true)
+        return r
+    }
 }
