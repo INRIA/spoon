@@ -4,8 +4,9 @@ import spoon.kotlin.reflect.KtModifierKind
 
 open class DefaultPrinterAdapter(
         private val ignoredModifiers : List<KtModifierKind> = listOf(
-            KtModifierKind.PUBLIC, KtModifierKind.FINAL)
-) : AbstractPrinterAdapter() {
+            KtModifierKind.PUBLIC, KtModifierKind.FINAL),
+        open val LINE_SEPARATOR : String = "\n" // System.getProperty("line.separator")
+) : AbstractPrinterAdapter(LINE_SEPARATOR) {
 
     /**
     * Declaration type: fun foo(): Int, var bar: String
@@ -16,7 +17,6 @@ open class DefaultPrinterAdapter(
     enum class ColonContext { DECLARATION_TYPE, OF_SUPERTYPE, CONSTRUCTOR_DELEGATION, OBJECT_DECLARATION }
 
     val KT_FILE_EXTENSION = ".kt"
-    open val LINE_SEPARATOR = "\n" // System.getProperty("line.separator")
     val KDOC_START = "/**"
     val BLOCK_COMMENT_START = "/* "
     val BLOCK_COMMENT_END = "*/"
