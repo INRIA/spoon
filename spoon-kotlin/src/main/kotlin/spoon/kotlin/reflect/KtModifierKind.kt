@@ -25,41 +25,42 @@ enum class KtModifierKind(val token : String) {
 
     OPEN("open"),
 
-    SEALED("sealed"),
-
     ABSTRACT("abstract"),
 
-    // # Class
-
-    INNER("inner"),
-
-    COMPANION("companion"),
-
-    DATA("data"),
-
-    ANNOTATION("annotation"),
-
-
-    INLINE("inline"), // Function and class
-
-    // # Member
-    OVERRIDE("override"),
-
-    // ## Function
-
-    SUSPEND("suspend"),
-
-    INFIX("infix"),
-
-    TAILREC("tailrec"),
-
-    OPERATOR("operator"),
-
-    // ## Variable/Property
+    SEALED("sealed"),
 
     CONST("const"), // Top-level property
 
+    // # Extended declaration
+
+    OVERRIDE("override"),
+
     LATEINIT("lateinit"),
+
+    TAILREC("tailrec"),
+
+    VARARG("vararg"),
+
+    SUSPEND("suspend"),
+
+    INNER("inner"),
+
+    // Enum
+
+    ANNOTATION("annotation"),
+
+    COMPANION("companion"),
+
+    INLINE("inline"),
+
+    INFIX("infix"),
+
+    OPERATOR("operator"),
+
+    DATA("data"),
+
+
+    // # Variable Mutability
 
     VAR("var"),
 
@@ -69,8 +70,6 @@ enum class KtModifierKind(val token : String) {
     NOINLINE("noinline"),
 
     CROSSINLINE("crossinline"),
-
-    VARARG("vararg"),
 
     // # Type projection
 
