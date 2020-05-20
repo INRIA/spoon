@@ -15,7 +15,7 @@ class DefaultKotlinPrettyPrinter(
 ) : CtVisitor, PrettyPrinter {
 
     private val LEFT_ROUND = '('
-    private val RIGHT_ROUND = '('
+    private val RIGHT_ROUND = ')'
     private val LEFT_SQUARE = '['
     private val RIGHT_SQUARE = ']'
     private val LEFT_CURL = '{'
