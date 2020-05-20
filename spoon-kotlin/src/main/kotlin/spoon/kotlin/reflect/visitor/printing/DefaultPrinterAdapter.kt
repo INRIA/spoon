@@ -2,7 +2,7 @@ package spoon.kotlin.reflect.visitor.printing
 
 import spoon.kotlin.reflect.KtModifierKind
 
-internal open class DefaultPrinterAdapter(
+open class DefaultPrinterAdapter(
         private val ignoredModifiers : List<KtModifierKind> = listOf(
             KtModifierKind.PUBLIC, KtModifierKind.FINAL)
 ) : AbstractPrinterAdapter() {
