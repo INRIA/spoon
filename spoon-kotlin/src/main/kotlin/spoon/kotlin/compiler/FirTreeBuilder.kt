@@ -172,7 +172,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
     }
 
     override fun visitProperty(property: FirProperty, data: Nothing?): CompositeTransformResult.Single<CtVariable<*>> {
-       // if(property.isLocal) return visitLocalVariable(property, data)
+        if(property.isLocal) return visitLocalVariable(property, data)
 
         val ctProperty = factory.Core().createField<Any>()
         ctProperty.setSimpleName<CtField<*>>(property.name.identifier)
@@ -266,8 +266,52 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
         return l.compose()
     }
 
-    fun visitLocalVariable(property: FirProperty, data: Nothing?) : CompositeTransformResult<CtVariable<*>> {
-        return TODO()
+    fun visitLocalVariable(property: FirProperty, data: Nothing?) : CompositeTransformResult.Single<CtVariable<*>> {
+        val localVar = factory.Core().createLocalVariable<Any>().also {
+            it.setSimpleName<CtLocalVariable<Any>>(property.name.identifier)
+        }
+
+        val transformedExpression = property.initializer?.accept(this,null)
+        if(transformedExpression != null) {
+            when(val initializer = transformedExpression.single) {
+                is CtExpression<*> -> {
+                    localVar.setDefaultExpression<CtLocalVariable<Any>>(initializer as CtExpression<Any>)
+                    initializer.setParent(localVar)
+                }
+                is CtIf -> {
+                    val typeRef = initializer.getMetadata(KtMetadataKeys.KT_IF_TYPE) as CtTypeReference<Any>
+                    val statementExpression = initializer.wrapInStatementExpression(typeRef)
+                    statementExpression.setImplicit<CtStatement>(true)
+                    localVar.setDefaultExpression<CtLocalVariable<Any>>(statementExpression)
+                    initializer.setParent(localVar)
+                    statementExpression.setParent(localVar)
+                }
+                else -> warn("Local variable initializer not a CtExpression, if- or block-statement: $initializer")
+            }
+        }
+
+        // Transform and add delegate to metadata if it exists
+        val delegate = property.delegate?.accept(this,null)
+        if(delegate != null && delegate.isSingle) {
+            val ctDelegate = delegate.single
+            if(ctDelegate is CtExpression<*>) {
+                localVar.putMetadata<CtElement>(KtMetadataKeys.PROPERTY_DELEGATE, ctDelegate)
+            }
+        }
+
+        // Add modifiers
+        addModifiersAsMetadata(localVar, KtModifierKind.fromProperty(property))
+
+        val returnType = property.returnTypeRef
+        // Add type
+        localVar.setType<CtLocalVariable<*>>(referenceBuilder.getNewTypeReference(returnType))
+
+        // Mark as implicit/explicit type
+        val explicitType = (returnType is FirResolvedTypeRef && returnType.delegatedTypeRef != null)
+        localVar.putMetadata<CtLocalVariable<*>>(KtMetadataKeys.VARIABLE_EXPLICIT_TYPE, explicitType)
+        localVar.setInferred<CtLocalVariable<Any>>(!explicitType)
+
+        return localVar.compose()
     }
 
 
