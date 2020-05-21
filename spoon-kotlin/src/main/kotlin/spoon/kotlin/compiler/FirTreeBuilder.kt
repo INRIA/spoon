@@ -6,10 +6,7 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.declarations.*
-import org.jetbrains.kotlin.fir.expressions.FirBlock
-import org.jetbrains.kotlin.fir.expressions.FirConstExpression
-import org.jetbrains.kotlin.fir.expressions.FirConstKind
-import org.jetbrains.kotlin.fir.expressions.FirWhenExpression
+import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.visitors.CompositeTransformResult
@@ -205,6 +202,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
             val ctDelegate = delegate.single
             if(ctDelegate is CtExpression<*>) {
                 ctProperty.putMetadata<CtElement>(KtMetadataKeys.PROPERTY_DELEGATE, ctDelegate)
+                ctDelegate.setParent(ctProperty)
             }
         }
 
@@ -296,6 +294,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
             val ctDelegate = delegate.single
             if(ctDelegate is CtExpression<*>) {
                 localVar.putMetadata<CtElement>(KtMetadataKeys.PROPERTY_DELEGATE, ctDelegate)
+                ctDelegate.setParent(localVar)
             }
         }
 
@@ -312,6 +311,30 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
         localVar.setInferred<CtLocalVariable<Any>>(!explicitType)
 
         return localVar.compose()
+    }
+
+    override fun visitReturnExpression(
+        returnExpression: FirReturnExpression,
+        data: Nothing?
+    ): CompositeTransformResult.Single<CtReturn<*>> {
+        val ctReturn = factory.Core().createReturn<Any>()
+        val ctExpr = returnExpression.result.accept(this,null).single
+
+        when(ctExpr) {
+            is CtExpression<*> -> {
+                ctReturn.setReturnedExpression<CtReturn<Any>>(ctExpr as CtExpression<Any>)
+                ctExpr.setParent(ctReturn)
+            }
+            is CtIf -> {
+                val typeRef = ctExpr.getMetadata(KtMetadataKeys.KT_IF_TYPE) as CtTypeReference<Any>
+                val statementExpression = ctExpr.wrapInStatementExpression(typeRef)
+                statementExpression.setImplicit<CtStatement>(true)
+                ctReturn.setReturnedExpression<CtReturn<Any>>(statementExpression)
+                ctExpr.setParent(ctReturn)
+                statementExpression.setParent(ctReturn)
+            }
+        }
+        return ctReturn.compose()
     }
 
 
