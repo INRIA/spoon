@@ -88,9 +88,10 @@ public class Environment extends HashMap<String, Object> {
      * @param e Environment to negate
      * @return Set of alternatives representing the negation of the given environment
      */
-    public static Set<Environment> negate(Environment e) {        // The negation of the bottom/conflicting environment is the top/any-environment
+    public static Set<Environment> negate(Environment e) {
         Set<Environment> result = new HashSet<>();
 
+        // The negation of the bottom/conflicting environment is the top/any-environment
         if (e == null) {
             result.add(new Environment());
             return result;
@@ -103,9 +104,6 @@ public class Environment extends HashMap<String, Object> {
         // See invariant comment below
         Queue<Environment> workqueue = new LinkedList<>();
 
-        // Negate positive bindings by simply flipping them to negatives
-        Environment positivesFlipped = new Environment();
-
         for (String key : e.keySet()) {
             Object val = e.get(key);
 
@@ -113,12 +111,24 @@ public class Environment extends HashMap<String, Object> {
                 NegativeBinding binding = new NegativeBinding();
                 binding.add(val);
 
-                positivesFlipped.put(key, binding);
+                Environment env = new Environment();
+                env.put(key, binding);
+
+                for (String key2 : e.keySet()) {
+                    if (key2.equals(key)) {
+                        continue;
+                    }
+
+                    env.put(key2, e.get(key2));
+                }
+
+                workqueue.add(env);
             }
         }
 
-        // Set initial base environment for production of alternatives
-        workqueue.add(positivesFlipped);
+        if (workqueue.isEmpty()) {
+            workqueue.add(new Environment());
+        }
 
         // Negate negative bindings
         for (String key : e.keySet()) {

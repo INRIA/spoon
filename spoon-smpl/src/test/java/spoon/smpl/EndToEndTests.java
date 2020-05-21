@@ -219,6 +219,38 @@ public class EndToEndTests {
         assertEquals(expected.toString(), input.toString());
     }
     @Test
+    public void testEnvironmentNegationBug() {
+        // contract: the bug where the environments (Tv1=int, v1=x) and (Tv1=(int), v1=(y)) could not be joined should be fixed
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    int m1(int x, int y) {\n" +
+                                               "        return f(x, y);\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    int m1(int x, int y) {\n" +
+                                                  "        a(x);\n" +
+                                                  "        return f(x, y);\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ type Tf, Tv1; identifier v1, f; @@\n" +
+                                         "Tf f(Tv1 v1, ...) {\n" +
+                                         "+ a(v1);\n" +
+                                         "...\n" +
+                                         "}\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
     public void testSendStickyBroadcast() {
         // contract: correct application of the \"sticky_broadcasts\" patch from the c4j paper
 
