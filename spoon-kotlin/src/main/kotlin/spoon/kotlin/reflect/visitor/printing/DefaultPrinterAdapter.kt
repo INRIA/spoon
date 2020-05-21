@@ -26,7 +26,8 @@ open class DefaultPrinterAdapter(
     open val INDENT_UNIT = "    " // 4 spaces
     var indentCount = 0
 
-    private var onNewLine = false
+    var onNewLine = false
+        private set
 
     private val sb : StringBuilder = StringBuilder()
 

@@ -119,7 +119,7 @@ class DefaultKotlinPrettyPrinter(
         adapter write "class" and SPACE and ctClass.simpleName
 
         val inheritanceList = ArrayList<String>()
-        if(ctClass.superclass != null) {
+        if(ctClass.superclass != null && ctClass.superclass.qualifiedName != "kotlin.Any") {
             inheritanceList.add("${getTypeName(ctClass.superclass)}()") // TODO Primary constr call
         }
         if(ctClass.superInterfaces.isNotEmpty()) {
@@ -177,8 +177,19 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun visitCtIf(p0: CtIf?) {
-        TODO("Not yet implemented")
+    override fun visitCtIf(ctIf: CtIf) {
+        adapter write "if" and SPACE and LEFT_ROUND
+        ctIf.condition.accept(this)
+        adapter write RIGHT_ROUND and SPACE
+
+        ctIf.getThenStatement<CtStatement>().accept(this)
+
+        val elseStmt = ctIf.getElseStatement<CtStatement>()
+        if(elseStmt != null) {
+            adapter write SPACE and "else" and SPACE
+            elseStmt.accept(this)
+        }
+        if(!adapter.onNewLine) adapter.newline()
     }
 
     override fun <T : Any?> visitCtFieldReference(p0: CtFieldReference<T>?) {
@@ -387,8 +398,15 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <R : Any?> visitCtBlock(p0: CtBlock<R>?) {
-        TODO("Not yet implemented")
+    override fun <R : Any?> visitCtBlock(block: CtBlock<R>) {
+        adapter write LEFT_CURL
+        adapter.pushIndent()
+        adapter.newline()
+
+        block.statements.forEach { it.accept(this); adapter.newline() }
+
+        adapter.popIndent()
+        adapter write RIGHT_CURL
     }
 
     override fun <T : Any?> visitCtUnboundVariableReference(p0: CtUnboundVariableReference<T>?) {
@@ -477,16 +495,13 @@ class DefaultKotlinPrettyPrinter(
         adapter write RIGHT_ROUND
 
         // TODO If single block explicit type could be absent
-        adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
-        method.type.accept(this)
-        adapter write SPACE
-        adapter writeln LEFT_CURL // TODO Single block; delegate '{' and '}' to block?
-
-        adapter.pushIndent()
+        if(method.type.qualifiedName != "kotlin.Unit") {
+            adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
+            method.type.accept(this)
+            adapter write SPACE
+        }
         method.body.accept(this)
-        adapter.popIndent()
 
-        adapter writeln RIGHT_CURL
     }
 
     override fun <T : Any?> visitCtAnnotationFieldAccess(p0: CtAnnotationFieldAccess<T>?) {
