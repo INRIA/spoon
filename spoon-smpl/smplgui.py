@@ -22,6 +22,25 @@ class Main(QMainWindow):
         self.is_switching_mode = False
         
         self.initUI()
+        
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.on_timer)
+        self.timer.start(100)
+        
+        self.queued_shell_command = None
+        self.queued_shell_command_timeout = 0
+    
+    def shell_exec(self, cmdstr):
+        then = time.time()
+        result = subprocess.check_output(cmdstr, stderr=subprocess.STDOUT, shell=True)
+        elapsed = time.time() - then
+        return (result, elapsed)
+    
+    def on_timer(self):
+        if self.queued_shell_command is not None and self.queued_shell_command_timeout <= time.time():
+            output, elapsed = self.shell_exec(self.queued_shell_command)
+            self.output_text.setPlainText(self.queued_shell_command + "\n\n" + output.decode("utf-8") + "\n\nTime: {:.3f}".format(elapsed))
+            self.queued_shell_command = None
     
     def wrap_layout(self, x):
         wid = QWidget(self)
@@ -103,20 +122,28 @@ class Main(QMainWindow):
         else:
             return False
     
-    def save_and_run(self, action):
-        smpl_file = open("/tmp/smplgui_py_smpl_text.cocci", "w+")
-        smpl_file.write(self.smpl_text.toPlainText() + "\n")
-        smpl_file.close()
-        
-        java_file = open("/tmp/smplgui_py_java_text.java", "w+")
-        java_file.write(self.java_text.toPlainText() + "\n")
-        java_file.close()
-        
-        cmdstr = "./smplcli.sh " + action + " --smpl-file /tmp/smplgui_py_smpl_text.cocci --java-file /tmp/smplgui_py_java_text.java; exit 0"
-        self.output_text.setPlainText(datetime.datetime.now().isoformat("T") + "\n" + cmdstr + "\n\n" + subprocess.check_output(cmdstr, stderr=subprocess.STDOUT, shell=True).decode("utf-8") + "\n")
+    def save_and_run(self, action, run_now=False):
+        if self.queued_shell_command is None:
+            smpl_file = open("/tmp/smplgui_py_smpl_text.cocci", "w+")
+            smpl_file.write(self.smpl_text.toPlainText() + "\n")
+            smpl_file.close()
+            
+            java_file = open("/tmp/smplgui_py_java_text.java", "w+")
+            java_file.write(self.java_text.toPlainText() + "\n")
+            java_file.close()
+            
+            cmdstr = "./smplcli.sh " + action + " --smpl-file /tmp/smplgui_py_smpl_text.cocci --java-file /tmp/smplgui_py_java_text.java; exit 0"
+            
+            if run_now:
+                output, elapsed = self.shell_exec(cmdstr)
+                self.output_text.setPlainText(cmdstr + "\n\n" + output.decode("utf-8") + "\n\nTime: {:.3f}".format(elapsed))
+            else:
+                self.queued_shell_command = cmdstr
+                self.queued_shell_command_timeout = time.time() + 0.1
+                self.output_text.setPlainText("")
     
     def generate_test(self):
-        self.save_and_run("patch")
+        self.save_and_run("patch", True)
         output = re.sub(r"(?s).+?\n(?=class)", "", self.output_text.toPlainText())
         
         self.output_text.setPlainText("[name]\n\n[contract]\n\n[patch]\n" + self.smpl_text.toPlainText() + "\n\n[input]\n" + self.java_text.toPlainText() + "\n\n[expected]\n" + output)
