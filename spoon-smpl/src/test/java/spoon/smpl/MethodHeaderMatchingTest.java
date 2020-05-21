@@ -141,7 +141,7 @@ public class MethodHeaderMatchingTest {
     public void testMatchAny() {
         // contract: the predicate T fn(...) with T and fn being metavariables should match any method header
 
-        CtMethod<?> predicateMethod = parseMethod("T fn(Object " + SmPLJavaDSL.getDotsElementName() + ") { }");
+        CtMethod<?> predicateMethod = parseMethod("T fn(Object " + SmPLJavaDSL.getDotsStatementElementName() + ") { }");
 
         Map<String, MetavariableConstraint> metavars = new HashMap<>();
         metavars.put("T", new TypeConstraint());
@@ -166,8 +166,8 @@ public class MethodHeaderMatchingTest {
         for (String key : methods.keySet()) {
             String typename = methods.get(key).getType().getSimpleName();
 
-            CtMethod<?> matchingPredicateMethod = parseMethod(typename + " fn(Object " + SmPLJavaDSL.getDotsElementName() + ") { }");
-            CtMethod<?> mismatchedPredicateMethod = parseMethod((typename.equals("int") ? "void" : "int") + " fn(Object " + SmPLJavaDSL.getDotsElementName() + ") { }");
+            CtMethod<?> matchingPredicateMethod = parseMethod(typename + " fn(Object " + SmPLJavaDSL.getDotsStatementElementName() + ") { }");
+            CtMethod<?> mismatchedPredicateMethod = parseMethod((typename.equals("int") ? "void" : "int") + " fn(Object " + SmPLJavaDSL.getDotsStatementElementName() + ") { }");
 
             assertEquals(true, matches(methods.get(key), new MethodHeaderPredicate(matchingPredicateMethod, metavars)));
             assertEquals(false, matches(methods.get(key), new MethodHeaderPredicate(mismatchedPredicateMethod, metavars)));

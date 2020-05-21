@@ -46,14 +46,14 @@ public class SmPLJavaDSL {
     /**
      * Name of executable used to encode dots statements.
      */
-    private static final String dotsElementName = "__SmPLDots__";
+    private static final String dotsStatementElementName = "__SmPLDots__";
 
     /**
      * Get name of executable used to encode dots statements.
      * @return Name of executable used to encode dots statements
      */
-    public static String getDotsElementName() {
-        return dotsElementName;
+    public static String getDotsStatementElementName() {
+        return dotsStatementElementName;
     }
 
     /**
@@ -154,7 +154,7 @@ public class SmPLJavaDSL {
      * @return True if element represents a statement-level SmPL dots operator, false otherwise
      */
     public static boolean isStatementLevelDots(CtElement e) {
-        return isExecutableWithName(e, dotsElementName);
+        return isExecutableWithName(e, dotsStatementElementName);
     }
 
     /**
@@ -164,8 +164,8 @@ public class SmPLJavaDSL {
      * @return True if element represents a parameter (or argument) -level SmPL dots operator, false otherwise
      */
     public static boolean isParameterLevelDots(CtElement e) {
-        return (e instanceof CtParameter && ((CtParameter<?>) e).getSimpleName().equals(dotsElementName))
-               || (e instanceof CtVariableRead && ((CtVariableRead<?>) e).getVariable().getSimpleName().equals(dotsElementName));
+        return (e instanceof CtParameter && ((CtParameter<?>) e).getSimpleName().equals(dotsStatementElementName))
+               || (e instanceof CtVariableRead && ((CtVariableRead<?>) e).getVariable().getSimpleName().equals(dotsStatementElementName));
     }
 
     /**
@@ -175,7 +175,7 @@ public class SmPLJavaDSL {
      */
     public static String createDotsParameterString() {
         // TODO: should these be unique / fresh identifiers?
-        return "Object " + dotsElementName;
+        return "Object " + dotsStatementElementName;
     }
 
     /**

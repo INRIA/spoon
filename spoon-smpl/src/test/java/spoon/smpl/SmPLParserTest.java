@@ -11,7 +11,7 @@ import static spoon.smpl.SmPLParser.parse;
 import static spoon.smpl.SmPLParser.rewrite;
 
 public class SmPLParserTest {
-    String implicitDots = SmPLJavaDSL.getDotsElementName() + "(" +
+    String implicitDots = SmPLJavaDSL.getDotsStatementElementName() + "(" +
                           SmPLJavaDSL.getDotsWhenExistsName() + "(), " +
                           SmPLJavaDSL.getDotsWhenAnyName() + "());";
 

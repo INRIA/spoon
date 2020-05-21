@@ -193,7 +193,7 @@ public class SmPLParser {
             throw new RuntimeException("Empty input");
         }
 
-        String implicitDots = SmPLJavaDSL.getDotsElementName() + "(" +
+        String implicitDots = SmPLJavaDSL.getDotsStatementElementName() + "(" +
                               SmPLJavaDSL.getDotsWhenExistsName() + "(), " +
                               SmPLJavaDSL.getDotsWhenAnyName() + "());";
 
@@ -378,7 +378,7 @@ public class SmPLParser {
         body.add(new RewriteRule("dots", "(?s)^\\.\\.\\.",
                 (ctx) -> { ctx.push(statementDots); },
                 (result, match) -> {
-                    result.out.append(SmPLJavaDSL.getDotsElementName()).append("(");
+                    result.out.append(SmPLJavaDSL.getDotsStatementElementName()).append("(");
                     return match.end();
                 }));
 
@@ -617,7 +617,7 @@ public class SmPLParser {
             if (str.length() > 0) {
                 if (str.charAt(0) == '-') {
                     dels.append(' ').append(str.substring(1)).append("\n");
-                    if (str.contains(SmPLJavaDSL.getDotsElementName() + "();")) {
+                    if (str.contains(SmPLJavaDSL.getDotsStatementElementName() + "();")) {
                         adds.append("\n");
                     } else {
                         adds.append(SmPLJavaDSL.getDeletionAnchorName()).append("();\n");
