@@ -1,7 +1,6 @@
 package spoon.kotlin.compiler
 
 import spoon.kotlin.ktMetadata.KtMetadataKeys
-import spoon.kotlin.reflect.KtExpressionStatementImpl
 import spoon.kotlin.reflect.KtModifierKind
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.descriptors.ClassKind
@@ -18,9 +17,12 @@ import org.jetbrains.kotlin.fir.visitors.FirVisitor
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
+import spoon.kotlin.reflect.KtStatementExpression
+import spoon.kotlin.reflect.KtStatementExpressionImpl
 import spoon.reflect.code.*
 import spoon.reflect.declaration.*
 import spoon.reflect.factory.Factory
+import spoon.reflect.reference.CtTypeReference
 import spoon.support.reflect.code.CtLiteralImpl
 
 class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<CompositeTransformResult<CtElement>, Nothing?>() {
@@ -179,14 +181,23 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
         val transformedExpression = property.initializer?.accept(this, null)
         if(transformedExpression != null && transformedExpression.isSingle) {
             val initializer = transformedExpression.single
-            if(initializer is CtExpression<*>) {
-                ctProperty.setDefaultExpression<CtField<Any>>(initializer as CtExpression<Any>)
-                initializer.setParent(ctProperty)
-            }
-            else {
-                warn("Property initializer not a CtExpression: $initializer")
+            when (initializer) {
+                is CtExpression<*> -> {
+                    ctProperty.setDefaultExpression<CtField<Any>>(initializer as CtExpression<Any>)
+                    initializer.setParent(ctProperty)
+                }
+                is CtIf -> {
+                    val typeRef = initializer.getMetadata(KtMetadataKeys.KT_IF_TYPE) as CtTypeReference<Any>
+                    val statementExpression = initializer.wrapInStatementExpression(typeRef)
+                    statementExpression.setImplicit<CtStatement>(true)
+                    ctProperty.setDefaultExpression<CtField<Any>>(statementExpression)
+                    initializer.setParent(ctProperty)
+                    statementExpression.setParent(ctProperty)
+                }
+                else -> warn("Property initializer not a CtExpression, if- or block-statement: $initializer")
             }
         }
+
 
         // Transform and add delegate to metadata if it exists
         val delegate = property.delegate?.accept(this,null)
@@ -275,5 +286,10 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
         r.setReturnedExpression<CtReturn<T>>(this)
         r.setImplicit<CtReturn<T>>(true)
         return r
+    }
+    private fun <T> CtStatement.wrapInStatementExpression(type : CtTypeReference<T>) : KtStatementExpression<T> {
+        val se = KtStatementExpressionImpl<T>(this)
+        se.setType<KtStatementExpression<T>>(type)
+        return se
     }
 }
