@@ -291,9 +291,9 @@ class DefaultKotlinPrettyPrinter(
 
         // Modifiers
         val modifierSet : Set<KtModifierKind>? = getModifiersMetadata(field)
-        val modifiers : Set<KtModifierKind> = modifierSet?.filterIf(
-            KtModifierKind.OVERRIDE in modifierSet)
-        { it != KtModifierKind.OPEN } ?: setOf(KtModifierKind.VAR)
+        val modifiers : Set<KtModifierKind> =
+            modifierSet?.filterIf(KtModifierKind.OVERRIDE in modifierSet) { it != KtModifierKind.OPEN } ?:
+            setOf(KtModifierKind.VAR)
 
         adapter writeModifiers modifiers
 
@@ -330,8 +330,29 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtLocalVariable(p0: CtLocalVariable<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtLocalVariable(localVar: CtLocalVariable<T>) {
+        val modifiers = getModifiersMetadata(localVar)
+        adapter writeModifiers modifiers and localVar.simpleName
+
+        if(!localVar.isInferred || forceExplicitTypes) {
+            adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
+            //visitCtTypeReference(localVar.type) //TODO
+            adapter write getTypeName(localVar.type)
+        }
+
+        // Initializer or delegate
+        if(localVar.defaultExpression != null) {
+            adapter write " = "
+            localVar.defaultExpression.accept(this)
+        } else {
+            val delegate = localVar.getMetadata(KtMetadataKeys.PROPERTY_DELEGATE) as CtExpression<*>?
+            if(delegate != null) {
+                adapter write " by "
+                delegate.accept(this)
+            }
+        }
+
+        adapter.newline()
     }
 
     override fun <T : Any?> visitCtCodeSnippetExpression(p0: CtCodeSnippetExpression<T>?) {
@@ -497,10 +518,13 @@ class DefaultKotlinPrettyPrinter(
         // TODO If single block explicit type could be absent
         if(method.type.qualifiedName != "kotlin.Unit") {
             adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
-            method.type.accept(this)
-            adapter write SPACE
+           // method.type.accept(this) // TODO
+            adapter write getTypeName(method.type)
         }
+        adapter write SPACE
         method.body.accept(this)
+
+        adapter.newline()
 
     }
 
