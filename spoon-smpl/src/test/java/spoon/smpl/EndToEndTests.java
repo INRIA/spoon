@@ -1752,6 +1752,461 @@ public class EndToEndTests {
         assertEquals(expected.toString(), input.toString());
     }
     @Test
+    public void testMethodCallArgDotsMatchAny() {
+        // contract: the expression 'f(...)' should match any method call to 'f' regardless of argument list
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        f();\n" +
+                                               "        f(1);\n" +
+                                               "        f(2, 3);\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ @@\n" +
+                                         "- f(...);\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testMethodCallArgDotsMatchSingle() {
+        // contract: the expression 'f(..., E, ...)' should match any method call to 'f' where the expression E appears anywhere in the argument list
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        f();\n" +
+                                               "        f(1);\n" +
+                                               "        f(2, 3);\n" +
+                                               "        f(1, 2, 3);\n" +
+                                               "        f(2, 1, 3);\n" +
+                                               "        f(2, 3, 1);\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        f();\n" +
+                                                  "        f(2, 3);\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ @@\n" +
+                                         "- f(..., 1, ...);\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testMethodCallArgDotsMatchSingleAtEnd() {
+        // contract: the expression 'f(..., E)' should match any method call to 'f' where the expression E appears as the last argument
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        f();\n" +
+                                               "        f(1);\n" +
+                                               "        f(2, 3);\n" +
+                                               "        f(1, 2, 3);\n" +
+                                               "        f(2, 1, 3);\n" +
+                                               "        f(2, 3, 1);\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        f();\n" +
+                                                  "        f(2, 3);\n" +
+                                                  "        f(1, 2, 3);\n" +
+                                                  "        f(2, 1, 3);\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ @@\n" +
+                                         "- f(..., 1);\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testMethodCallArgDotsMatchSingleAtStart() {
+        // contract: the expression 'f(E, ...)' should match any method call to 'f' where the expression E appears as the first argument
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        f();\n" +
+                                               "        f(1);\n" +
+                                               "        f(2, 3);\n" +
+                                               "        f(1, 2, 3);\n" +
+                                               "        f(2, 1, 3);\n" +
+                                               "        f(2, 3, 1);\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        f();\n" +
+                                                  "        f(2, 3);\n" +
+                                                  "        f(2, 1, 3);\n" +
+                                                  "        f(2, 3, 1);\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ @@\n" +
+                                         "- f(1, ...);\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testMethodCallArgDotsNested1() {
+        // contract: the expression 'f(..., g(...), ...)' should match any method call to 'f' with any argument list where a call to 'g' occurs (with any argument list for 'g')
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        f();\n" +
+                                               "        f(1);\n" +
+                                               "        f(2, 3);\n" +
+                                               "        f(g());\n" +
+                                               "        f(g(), 1);\n" +
+                                               "        f(2, g(), 3);\n" +
+                                               "        f(1, 2, g());\n" +
+                                               "        f(g(1, 2));\n" +
+                                               "        f(g(2, 1), 1);\n" +
+                                               "        f(2, g(1, 3), 3);\n" +
+                                               "        f(1, 2, g(2, 3));\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        f();\n" +
+                                                  "        f(1);\n" +
+                                                  "        f(2, 3);\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ @@\n" +
+                                         "- f(..., g(...), ...);\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testMethodCallArgDotsNested2() {
+        // contract: the expression 'f(..., g(..., 1, ...), ...)' should match any method call to 'f' with any argument list where a call to 'g' occurs containing the argument 1 in its argument list
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        f();\n" +
+                                               "        f(1);\n" +
+                                               "        f(2, 3);\n" +
+                                               "        f(g());\n" +
+                                               "        f(g(), 1);\n" +
+                                               "        f(2, g(), 3);\n" +
+                                               "        f(1, 2, g());\n" +
+                                               "        f(g(1, 2));\n" +
+                                               "        f(g(2, 1), 1);\n" +
+                                               "        f(2, g(1, 3), 3);\n" +
+                                               "        f(1, 2, g(2, 3));\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        f();\n" +
+                                                  "        f(1);\n" +
+                                                  "        f(2, 3);\n" +
+                                                  "        f(g());\n" +
+                                                  "        f(g(), 1);\n" +
+                                                  "        f(2, g(), 3);\n" +
+                                                  "        f(1, 2, g());\n" +
+                                                  "        f(1, 2, g(2, 3));\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ @@\n" +
+                                         "- f(..., g(..., 1, ...), ...);\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testMethodCallArgDotsNested3() {
+        // contract: the expression 'f(..., g(1, ...), ...)' should match any method call to 'f' with any argument list where a call to 'g' occurs containing the argument 1 as its first argument
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        f();\n" +
+                                               "        f(1);\n" +
+                                               "        f(2, 3);\n" +
+                                               "        f(g());\n" +
+                                               "        f(g(), 1);\n" +
+                                               "        f(2, g(), 3);\n" +
+                                               "        f(1, 2, g());\n" +
+                                               "        f(g(1, 2));\n" +
+                                               "        f(g(2, 1), 1);\n" +
+                                               "        f(2, g(1, 3), 3);\n" +
+                                               "        f(1, 2, g(2, 3));\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        f();\n" +
+                                                  "        f(1);\n" +
+                                                  "        f(2, 3);\n" +
+                                                  "        f(g());\n" +
+                                                  "        f(g(), 1);\n" +
+                                                  "        f(2, g(), 3);\n" +
+                                                  "        f(1, 2, g());\n" +
+                                                  "        f(g(2, 1), 1);\n" +
+                                                  "        f(1, 2, g(2, 3));\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ @@\n" +
+                                         "- f(..., g(1, ...), ...);\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testMethodCallArgDotsNested4() {
+        // contract: the expression 'f(..., g(..., 1), ...)' should match any method call to 'f' with any argument list where a call to 'g' occurs containing the argument 1 as its last argument
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        f();\n" +
+                                               "        f(1);\n" +
+                                               "        f(2, 3);\n" +
+                                               "        f(g());\n" +
+                                               "        f(g(), 1);\n" +
+                                               "        f(2, g(), 3);\n" +
+                                               "        f(1, 2, g());\n" +
+                                               "        f(g(1, 2));\n" +
+                                               "        f(g(2, 1), 1);\n" +
+                                               "        f(2, g(1, 3), 3);\n" +
+                                               "        f(1, 2, g(2, 3));\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        f();\n" +
+                                                  "        f(1);\n" +
+                                                  "        f(2, 3);\n" +
+                                                  "        f(g());\n" +
+                                                  "        f(g(), 1);\n" +
+                                                  "        f(2, g(), 3);\n" +
+                                                  "        f(1, 2, g());\n" +
+                                                  "        f(g(1, 2));\n" +
+                                                  "        f(2, g(1, 3), 3);\n" +
+                                                  "        f(1, 2, g(2, 3));\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ @@\n" +
+                                         "- f(..., g(..., 1), ...);\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testMethodCallArgDotsNested5() {
+        // contract: the expression 'f(..., g(..., 1))' should match any method call to 'f' with last argument a call to 'g' containing the argument 1 as its last argument
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        f();\n" +
+                                               "        f(1);\n" +
+                                               "        f(2, 3);\n" +
+                                               "        f(g());\n" +
+                                               "        f(g(), 1);\n" +
+                                               "        f(2, g(), 3);\n" +
+                                               "        f(1, 2, g());\n" +
+                                               "        f(g(1, 2));\n" +
+                                               "        f(g(2, 1), 1);\n" +
+                                               "        f(2, g(1, 3), 3);\n" +
+                                               "        f(1, 2, g(2, 3));\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        f();\n" +
+                                                  "        f(1);\n" +
+                                                  "        f(2, 3);\n" +
+                                                  "        f(g());\n" +
+                                                  "        f(g(), 1);\n" +
+                                                  "        f(2, g(), 3);\n" +
+                                                  "        f(1, 2, g());\n" +
+                                                  "        f(g(1, 2));\n" +
+                                                  "        f(g(2, 1), 1);\n" +
+                                                  "        f(2, g(1, 3), 3);\n" +
+                                                  "        f(1, 2, g(2, 3));\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ @@\n" +
+                                         "- f(..., g(..., 1));\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testMethodCallArgDotsNested6() {
+        // contract: the expression 'f(..., g(1, ...))' should match any method call to 'f' with last argument a call to 'g' containing the argument 1 as its first argument
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        f();\n" +
+                                               "        f(1);\n" +
+                                               "        f(2, 3);\n" +
+                                               "        f(g());\n" +
+                                               "        f(g(), 1);\n" +
+                                               "        f(2, g(), 3);\n" +
+                                               "        f(1, 2, g());\n" +
+                                               "        f(g(1, 2));\n" +
+                                               "        f(g(2, 1), 1);\n" +
+                                               "        f(2, g(1, 3), 3);\n" +
+                                               "        f(1, 2, g(2, 3));\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        f();\n" +
+                                                  "        f(1);\n" +
+                                                  "        f(2, 3);\n" +
+                                                  "        f(g());\n" +
+                                                  "        f(g(), 1);\n" +
+                                                  "        f(2, g(), 3);\n" +
+                                                  "        f(1, 2, g());\n" +
+                                                  "        f(g(2, 1), 1);\n" +
+                                                  "        f(2, g(1, 3), 3);\n" +
+                                                  "        f(1, 2, g(2, 3));\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ @@\n" +
+                                         "- f(..., g(1, ...));\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testMethodCallArgDotsNested7() {
+        // contract: the expression 'f(1, ..., g(..., 3))' should match any method call to 'f' with first argument 1 and last argument a call to 'g' containing the argument 3 as its last argument
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void m1() {\n" +
+                                               "        f();\n" +
+                                               "        f(1);\n" +
+                                               "        f(2, 3);\n" +
+                                               "        f(g());\n" +
+                                               "        f(g(), 1);\n" +
+                                               "        f(2, g(), 3);\n" +
+                                               "        f(1, 2, g());\n" +
+                                               "        f(g(1, 2));\n" +
+                                               "        f(g(2, 1), 1);\n" +
+                                               "        f(2, g(1, 3), 3);\n" +
+                                               "        f(1, 2, g(2, 3));\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        f();\n" +
+                                                  "        f(1);\n" +
+                                                  "        f(2, 3);\n" +
+                                                  "        f(g());\n" +
+                                                  "        f(g(), 1);\n" +
+                                                  "        f(2, g(), 3);\n" +
+                                                  "        f(1, 2, g());\n" +
+                                                  "        f(g(1, 2));\n" +
+                                                  "        f(g(2, 1), 1);\n" +
+                                                  "        f(2, g(1, 3), 3);\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ @@\n" +
+                                         "- f(1, ..., g(..., 3));\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
     public void testPrependContextBranch() {
         // contract: a patch should be able to prepend elements above a context branch
 

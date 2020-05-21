@@ -57,6 +57,19 @@ public class SmPLJavaDSL {
     }
 
     /**
+     * Name of executable used to encode dots parameters and call arguments.
+     */
+    private static final String dotsParameterOrArgumentElementName = "__SmPLDotsArg__";
+
+    /**
+     * Get name of executable used to encode dots parameters and call arguments.
+     * @return Name of executable used to encode dots parameters and call arguments.
+     */
+    public static String getDotsParameterOrArgumentElementName() {
+        return dotsParameterOrArgumentElementName;
+    }
+
+    /**
      * Name of executable used to encode "when != x" constraints on dots.
      */
     private static final String dotsWhenNotEqualName = "whenNotEqual";

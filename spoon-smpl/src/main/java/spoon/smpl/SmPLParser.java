@@ -168,11 +168,14 @@ public class SmPLParser {
                 // Want to detect error state where hasMethodHeader is true but isUnspecifiedMethodHeader
                 //   has not been set to true or false.
                 isUnspecifiedMethodHeader = null;
+
+                hasDotsArguments = false;
             }
 
             public StringBuilder out;
             public boolean hasMethodHeader;
             public Boolean isUnspecifiedMethodHeader;
+            public boolean hasDotsArguments;
         }
 
         class RewriteRule {
@@ -205,6 +208,7 @@ public class SmPLParser {
         List<RewriteRule> header_name = new ArrayList<>();
         List<RewriteRule> header_params = new ArrayList<>();
         List<RewriteRule> body = new ArrayList<>();
+        List<RewriteRule> paramList = new ArrayList<>();
         List<RewriteRule> statementDots = new ArrayList<>();
 
         RewriteRule whitespaceNoOp = new RewriteRule("whitespace", "(?s)^\\s+",
@@ -382,7 +386,38 @@ public class SmPLParser {
                     return match.end();
                 }));
 
+        body.add(new RewriteRule("open_paren", "(?s)^\\(",
+                 (ctx) -> { ctx.push(paramList); },
+                 (result, match) -> {
+                    result.out.append("(");
+                    return match.end();
+                 }));
+
         body.add(anycharCopy);
+
+        paramList.add(new RewriteRule("dots", "(?s)^\\.\\.\\.",
+                (ctx) -> { },
+                (result, match) -> {
+                    result.hasDotsArguments = true;
+                    result.out.append(SmPLJavaDSL.getDotsParameterOrArgumentElementName());
+                    return match.end();
+                }));
+
+        paramList.add(new RewriteRule("open_paren", "(?s)^\\(",
+                (ctx) -> { ctx.push(paramList); },
+                (result, match) -> {
+                    result.out.append("(");
+                    return match.end();
+                }));
+
+        paramList.add(new RewriteRule("close_paren", "(?s)^\\)",
+                (ctx) -> { ctx.pop(); },
+                (result, match) -> {
+                    result.out.append(")");
+                    return match.end();
+                }));
+
+        paramList.add(anycharCopy);
 
         // Context for statement dots
         statementDots.add(whitespaceNoOp);
@@ -432,6 +467,12 @@ public class SmPLParser {
 
         // TODO: standardize class name in SmPLJavaDSL?
         result.out.append("class RewrittenSmPLRule {\n");
+
+        if (result.hasDotsArguments) {
+            result.out.append("Object ")
+                      .append(SmPLJavaDSL.getDotsParameterOrArgumentElementName())
+                      .append(" = null;\n");
+        }
 
         Stack<List<RewriteRule>> context = new Stack<>();
         context.push(init);

@@ -93,7 +93,7 @@ public class PatternMatcher implements PatternNodeVisitor {
         }
     }
 
-    private boolean bindParameter(String name, CtElement value) {
+    protected boolean bindParameter(String name, CtElement value) {
         if (!parameters.containsKey(name)) {
             parameters.put(name, value);
             return true;
@@ -106,7 +106,7 @@ public class PatternMatcher implements PatternNodeVisitor {
         }
     }
 
-    private boolean tryNarrowingParameter(String name, CtElement e1, CtElement e2) {
+    protected boolean tryNarrowingParameter(String name, CtElement e1, CtElement e2) {
         if (e1 instanceof CtVariableAccess<?> && e2 instanceof CtVariableAccess<?>) {
             CtVariableAccess<?> va1 = (CtVariableAccess<?>) e1;
             CtVariableAccess<?> va2 = (CtVariableAccess<?>) e2;
@@ -120,8 +120,8 @@ public class PatternMatcher implements PatternNodeVisitor {
         return false;
     }
 
-    private PatternNode initialPattern;
-    private Stack<PatternNode> patternStack;
-    private Map<String, Object> parameters;
-    private Boolean result;
+    protected PatternNode initialPattern;
+    protected Stack<PatternNode> patternStack;
+    protected Map<String, Object> parameters;
+    protected Boolean result;
 }

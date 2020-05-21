@@ -32,7 +32,7 @@ public class StatementLabel extends CodeElementLabel {
     public boolean matches(Predicate obj) {
         if (obj instanceof Statement) {
             Statement sp = (Statement) obj;
-            PatternMatcher matcher = new PatternMatcher(sp.getPattern());
+            PatternMatcher matcher = new DotsExtPatternMatcher(sp.getPattern());
             codePattern.accept(matcher);
             metavarBindings = Arrays.asList(matcher.getParameters());
             return matcher.getResult() && sp.processMetavariableBindings(metavarBindings.get(0));

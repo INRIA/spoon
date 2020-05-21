@@ -4,7 +4,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.declaration.CtElement;
 import spoon.smpl.formula.Branch;
 import spoon.smpl.formula.Predicate;
-import spoon.smpl.pattern.PatternMatcher;
+import spoon.smpl.pattern.*;
 
 import java.util.Arrays;
 
@@ -47,7 +47,7 @@ public class BranchLabel extends CodeElementLabel {
                 return false;
             }
 
-            PatternMatcher matcher = new PatternMatcher(bp.getPattern());
+            PatternMatcher matcher = new DotsExtPatternMatcher(bp.getPattern());
             codePattern.accept(matcher);
             metavarBindings = Arrays.asList(matcher.getParameters());
             return matcher.getResult() && bp.processMetavariableBindings(metavarBindings.get(0));
