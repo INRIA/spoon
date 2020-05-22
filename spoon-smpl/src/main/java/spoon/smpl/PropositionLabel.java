@@ -3,7 +3,6 @@ package spoon.smpl;
 import spoon.smpl.formula.Predicate;
 import spoon.smpl.formula.Proposition;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,7 +36,7 @@ public class PropositionLabel implements Label {
      * @return null
      */
     @Override
-    public List<Map<String, Object>> getMetavariableBindings() {
+    public Map<String, Object> getMetavariableBindings() {
         return null;
     }
 

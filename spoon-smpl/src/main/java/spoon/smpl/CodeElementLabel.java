@@ -31,7 +31,7 @@ abstract public class CodeElementLabel implements Label {
      * Test whether the label matches the given predicate.
      *
      * @param obj Predicate to test
-     * @return True if the predicate is a VariableUsePredicate which matches the label
+     * @return True if the predicate matches the label, false otherwise
      */
     public boolean matches(Predicate obj) {
         if (obj instanceof VariableUsePredicate) {
@@ -40,23 +40,23 @@ abstract public class CodeElementLabel implements Label {
             Map<String, CtElement> variablesUsed = new VariableUseScanner(codeElement, metakeys).getResult();
 
             if (vup.getMetavariables().containsKey(vup.getVariable())) {
-                metavarBindings = new ArrayList<>();
+                Environment.MultipleAlternativesPositiveBinding alternatives = new Environment.MultipleAlternativesPositiveBinding();
 
                 for (String varname : variablesUsed.keySet()) {
-                    Map<String, Object> params = new HashMap<>();
-                    params.put(vup.getVariable(), variablesUsed.get(varname));
-                    metavarBindings.add(params);
-                }
+                    Object processed = vup.getMetavariables().get(vup.getVariable()).apply(variablesUsed.get(varname));
 
-                List<Map<String, Object>> metavarBindingsCopy = new ArrayList<>(metavarBindings);
-
-                for (int i = metavarBindingsCopy.size() - 1; i >= 0; --i) {
-                    if (!vup.processMetavariableBindings(metavarBindingsCopy.get(i))) {
-                        metavarBindings.remove(i);
+                    if (processed != null) {
+                        alternatives.add(processed);
                     }
                 }
 
-                return metavarBindings.size() > 0;
+                if (alternatives.size() > 0) {
+                    metavarBindings = new HashMap<>();
+                    metavarBindings.put(vup.getVariable(), alternatives);
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return variablesUsed.containsKey(vup.getVariable());
             }
@@ -71,7 +71,7 @@ abstract public class CodeElementLabel implements Label {
      * @return Most recent metavariable bindings, or null if there are none
      */
     @Override
-    public List<Map<String, Object>> getMetavariableBindings() {
+    public Map<String, Object> getMetavariableBindings() {
         return metavarBindings;
     }
 
@@ -110,5 +110,5 @@ abstract public class CodeElementLabel implements Label {
     /**
      * The most recently matched metavariable bindings.
      */
-    protected List<Map<String, Object>> metavarBindings;
+    protected Map<String, Object> metavarBindings;
 }

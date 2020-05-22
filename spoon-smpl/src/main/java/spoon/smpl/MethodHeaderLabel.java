@@ -76,8 +76,8 @@ public class MethodHeaderLabel implements Label {
      * @return Most recent metavariable bindings, or null if there are none
      */
     @Override
-    public List<Map<String, Object>> getMetavariableBindings() {
-        return Arrays.asList(metavarBindings);
+    public Map<String, Object> getMetavariableBindings() {
+        return metavarBindings;
     }
 
     /**

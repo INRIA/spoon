@@ -235,32 +235,7 @@ public class ModelChecker implements FormulaVisitor {
                 }
 
                 for (Environment negatedEnvironment : negatedEnvironmentSet) {
-                    boolean wasMerged = false;
-                    Result replacedResult = null;
-                    Result mergedResult = null;
-
-                    for (Result existingNegatedResult : negatedResultSet) {
-                        if (result.getState() != existingNegatedResult.getState()) {
-                            continue;
-                        }
-
-                        Environment jointEnvironment = Environment.join(negatedEnvironment, existingNegatedResult.getEnvironment());
-
-                        if (jointEnvironment != null) {
-                            replacedResult = existingNegatedResult;
-                            mergedResult = new Result(existingNegatedResult.getState(), jointEnvironment, emptyWitnessForest());
-                            wasMerged = true;
-                            break;
-                        }
-                    }
-
-                    if (wasMerged) {
-                        negatedResultSet.remove(replacedResult);
-                        negatedResultSet.add(mergedResult);
-                    }
-                    else {
-                        negatedResultSet.add(new Result(result.getState(), negatedEnvironment, emptyWitnessForest()));
-                    }
+                    negatedResultSet.add(new Result(result.getState(), negatedEnvironment, emptyWitnessForest()));
                 }
             }
 
@@ -355,16 +330,14 @@ public class ModelChecker implements FormulaVisitor {
         for (int s : model.getStates()) {
             for (Label label : model.getLabels(s)) {
                 if (label.matches(element)) {
-                    List<Map<String, Object>> bindings = label.getMetavariableBindings();
+                    Map<String, Object> bindings = label.getMetavariableBindings();
 
                     if (bindings == null) {
                         resultSet.add(new Result(s, new Environment(), emptyWitnessForest()));
                     } else {
-                        for (Map<String, Object> parameters : bindings) {
-                            Environment environment = new Environment();
-                            environment.putAll(parameters);
-                            resultSet.add(new Result(s, environment, emptyWitnessForest()));
-                        }
+                        Environment environment = new Environment();
+                        environment.putAll(bindings);
+                        resultSet.add(new Result(s, environment, emptyWitnessForest()));
                     }
 
                     label.reset();

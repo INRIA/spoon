@@ -6,8 +6,6 @@ import spoon.smpl.formula.Statement;
 import spoon.smpl.formula.Predicate;
 import spoon.smpl.pattern.*;
 
-import java.util.Arrays;
-
 /**
  * A StatementLabel is a Label used to associate states with CtElement code
  * elements that can be matched using Statement Formula elements.
@@ -34,8 +32,8 @@ public class StatementLabel extends CodeElementLabel {
             Statement sp = (Statement) obj;
             PatternMatcher matcher = new DotsExtPatternMatcher(sp.getPattern());
             codePattern.accept(matcher);
-            metavarBindings = Arrays.asList(matcher.getParameters());
-            return matcher.getResult() && sp.processMetavariableBindings(metavarBindings.get(0));
+            metavarBindings = matcher.getParameters();
+            return matcher.getResult() && sp.processMetavariableBindings(metavarBindings);
         } else {
             return super.matches(obj);
         }

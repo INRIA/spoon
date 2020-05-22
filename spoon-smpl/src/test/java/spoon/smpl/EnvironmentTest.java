@@ -51,7 +51,7 @@ public class EnvironmentTest {
         e1.put("x", 1);
         e1.put("y", 2);
 
-        assertEquals(envSet(env("x", 1, "y", envNeg(2)), env("x", envNeg(1), "y", 2)), Environment.negate(e1));
+        assertEquals(envSet(env("x", envNeg(1)), env("y", envNeg(2))), Environment.negate(e1));
     }
 
     @Test

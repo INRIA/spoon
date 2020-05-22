@@ -349,19 +349,19 @@ public class ModelCheckerTest {
         }
 
         public List<String> usedVarNames;
-        public List<Map<String, Object>> bindings;
+        public Map<String, Object> bindings;
 
         public boolean matches(Predicate obj) {
             if (obj instanceof VariableUsePredicate) {
                 VariableUsePredicate vup = (VariableUsePredicate) obj;
 
                 if (vup.getMetavariables().containsKey(vup.getVariable())) {
-                    bindings = new ArrayList<>();
+                    bindings = new HashMap<>();
 
-                    for (String varname : usedVarNames) {
-                        Map<String, Object> binding = new HashMap<>();
-                        binding.put(vup.getVariable(), varname);
-                        bindings.add(binding);
+                    if (usedVarNames.size() == 1) {
+                        bindings.put(vup.getVariable(), usedVarNames.get(0));
+                    } else {
+                        bindings.put(vup.getVariable(), usedVarNames);
                     }
 
                     return true;
@@ -373,7 +373,7 @@ public class ModelCheckerTest {
             return false;
         }
 
-        public List<Map<String, Object>> getMetavariableBindings() { return bindings; }
+        public Map<String, Object> getMetavariableBindings() { return bindings; }
         public void reset() { }
     }
 
@@ -431,7 +431,7 @@ public class ModelCheckerTest {
         ModelChecker checker = new ModelChecker(model);
 
         new VariableUsePredicate("z", makeMetavars("z", new AnyConstraint())).accept(checker);
-        assertEquals(res(1, env("z", "x"), 2, env("z", "x"), 2, env("z", "y"), 3, env("z", "y")),
+        assertEquals(res(1, env("z", "x"), 2, env("z", Arrays.asList("x", "y")), 3, env("z", "y")),
                      checker.getResult());
     }
 }

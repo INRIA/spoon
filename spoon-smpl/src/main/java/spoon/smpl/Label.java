@@ -2,7 +2,6 @@ package spoon.smpl;
 
 import spoon.smpl.formula.Predicate;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,7 +20,7 @@ public interface Label {
      * given predicate.
      * @return most recent metavariable bindings, or null if there were no bindings
      */
-    public List<Map<String, Object>> getMetavariableBindings();
+    public Map<String, Object> getMetavariableBindings();
 
     /**
      * Reset/clear metavariable bindings

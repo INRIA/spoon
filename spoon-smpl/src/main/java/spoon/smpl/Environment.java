@@ -1,21 +1,47 @@
 package spoon.smpl;
 
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.Queue;
+import java.util.*;
 
 public class Environment extends HashMap<String, Object> {
+    public static class MultipleAlternativesPositiveBinding extends HashSet<Object> {
+        public static MultipleAlternativesPositiveBinding create(Object ... xs) {
+            MultipleAlternativesPositiveBinding result = new MultipleAlternativesPositiveBinding();
+            result.addAll(Arrays.asList(xs));
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "P" + super.toString();
+        }
+
+        @Override
+        public int hashCode() {
+            return 23 * super.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return this == other || (other instanceof MultipleAlternativesPositiveBinding && hashCode() == other.hashCode());
+        }
+    }
+
     public static class NegativeBinding extends HashSet<Object> {
         public NegativeBinding(Object ... xs) {
             super();
             this.addAll(Arrays.asList(xs));
         }
 
-        // TODO: implement hashCode
+        @Override
+        public int hashCode() {
+            return 17 * super.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return this == other || (other instanceof NegativeBinding && hashCode() == other.hashCode());
+        }
     }
 
     public Environment() {
@@ -109,18 +135,24 @@ public class Environment extends HashMap<String, Object> {
 
             if (!(val instanceof NegativeBinding)) {
                 NegativeBinding binding = new NegativeBinding();
-                binding.add(val);
+
+                if (val instanceof MultipleAlternativesPositiveBinding) {
+                    binding.addAll((MultipleAlternativesPositiveBinding) val);
+                } else {
+                    binding.add(val);
+                }
 
                 Environment env = new Environment();
                 env.put(key, binding);
 
-                for (String key2 : e.keySet()) {
+                // TODO: properly figure out if this bit should be included or not
+                /*for (String key2 : e.keySet()) {
                     if (key2.equals(key)) {
                         continue;
                     }
 
                     env.put(key2, e.get(key2));
-                }
+                }*/
 
                 workqueue.add(env);
             }
@@ -182,6 +214,4 @@ public class Environment extends HashMap<String, Object> {
 
         return result;
     }
-
-    // TODO: implement hashCode
 }
