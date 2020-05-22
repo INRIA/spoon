@@ -191,7 +191,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
                     initializer.setParent(ctProperty)
                     statementExpression.setParent(ctProperty)
                 }
-                else -> warn("Property initializer not a CtExpression, if- or block-statement: $initializer")
+                else -> warn("Property initializer not a CtExpression or if-statement: $initializer")
             }
         }
 
@@ -284,7 +284,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
                     initializer.setParent(localVar)
                     statementExpression.setParent(localVar)
                 }
-                else -> warn("Local variable initializer not a CtExpression, if- or block-statement: $initializer")
+                else -> warn("Local variable initializer not a CtExpression or if-statement: $initializer")
             }
         }
 
