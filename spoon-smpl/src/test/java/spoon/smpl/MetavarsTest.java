@@ -14,7 +14,6 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 import static spoon.smpl.TestUtils.*;
-import static spoon.smpl.TestUtils.parseReturnStatement;
 
 /**
  * This is essentially an integration test of most of the SmPL stack, leaving out the parser.

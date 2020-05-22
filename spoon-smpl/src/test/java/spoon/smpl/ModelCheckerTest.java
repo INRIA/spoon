@@ -15,7 +15,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 
 import spoon.smpl.formula.*;
-import spoon.smpl.pattern.*;
 
 import static spoon.smpl.TestUtils.*;
 

@@ -1,9 +1,6 @@
 package spoon.smpl;
 
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtVariable;
-import spoon.reflect.reference.CtVariableReference;
-import spoon.reflect.visitor.CtScanner;
 import spoon.smpl.formula.Predicate;
 import spoon.smpl.formula.VariableUsePredicate;
 import spoon.smpl.pattern.PatternBuilder;

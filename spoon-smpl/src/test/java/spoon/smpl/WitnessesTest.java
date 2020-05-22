@@ -11,7 +11,6 @@ import spoon.smpl.formula.*;
 import spoon.smpl.metavars.ConstantConstraint;
 import spoon.smpl.metavars.IdentifierConstraint;
 
-import java.util.ArrayList;
 import static java.util.Arrays.asList;
 
 import java.util.HashSet;

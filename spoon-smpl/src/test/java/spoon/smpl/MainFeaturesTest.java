@@ -5,8 +5,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-import static java.util.Arrays.asList;
-
 import static spoon.smpl.TestUtils.*;
 
 /**
