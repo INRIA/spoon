@@ -117,6 +117,15 @@ enum class KtModifierKind(val token : String) {
             sort()
         }
 
+        fun fromValueParameter(valueParameter: FirValueParameter) : List<KtModifierKind> =
+            ArrayList<KtModifierKind>().apply {
+                if(valueParameter.isVararg)         add(VARARG)
+                if(valueParameter.isNoinline)       add(NOINLINE)
+                if(valueParameter.isCrossinline)    add(CROSSINLINE)
+                // Val and var are not part of value param grammar
+                sort()
+            }
+
         fun fromTypeVariable() : List<KtModifierKind> = TODO()
 
         private fun convertModality(m : Modality?) : KtModifierKind? = when(m) {

@@ -65,23 +65,23 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
         return transformedTopLvlDecl.composeManySingles()
     }
 
-    override fun visitRegularClass(firClass: FirRegularClass, data: Nothing?): CompositeTransformResult<CtElement> {
+    override fun visitRegularClass(regularClass: FirRegularClass, data: Nothing?): CompositeTransformResult<CtElement> {
         val module = helper.getOrCreateModule(file, factory)
         val pkg = if(file.packageFqName.isRoot) module.rootPackage else
             factory.Package().getOrCreate(file.packageFqName.shortName().identifier, module)
-        val type = helper.createType(firClass)
+        val type = helper.createType(regularClass)
         pkg.addType<CtPackage>(type)
 
         // Modifiers
-        val modifierList = KtModifierKind.fromClass(firClass)
+        val modifierList = KtModifierKind.fromClass(regularClass)
         addModifiersAsMetadata(type, modifierList)
 
-        val decls = firClass.declarations.map { it.accept(this,null).single.also { decl ->
+        val decls = regularClass.declarations.map { it.accept(this,null).single.also { decl ->
                 decl.setParent(type)
                 when(decl) {
                     is CtField<*> -> type.addField(decl)
                     is CtMethod<*> -> {
-                        if(firClass.isInterface() && decl.body != null) {
+                        if(regularClass.isInterface() && decl.body != null) {
                             decl.setDefaultMethod<Nothing>(true)
                         }
                         type.addMethod(decl)
@@ -147,25 +147,59 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
         return ktBlock.compose()
     }
 
-    override fun visitSimpleFunction(firFunction: FirSimpleFunction, data: Nothing?): CompositeTransformResult.Single<CtMethod<*>> {
+    override fun visitSimpleFunction(simpleFunction: FirSimpleFunction, data: Nothing?): CompositeTransformResult.Single<CtMethod<*>> {
         val ctMethod = factory.Core().createMethod<Any>()
-        ctMethod.setSimpleName<CtMethod<Any>>(firFunction.name.identifier)
+        ctMethod.setSimpleName<CtMethod<Any>>(simpleFunction.name.identifier)
 
         // Add modifiers
-        val modifiers = KtModifierKind.fromFunctionDeclaration(firFunction)
+        val modifiers = KtModifierKind.fromFunctionDeclaration(simpleFunction)
         addModifiersAsMetadata(ctMethod, modifiers)
 
+        simpleFunction.valueParameters.forEach {
+            val p = it.accept(this,null).single
+            if(p !is CtParameter<*>) {
+                warn("Transformed parameter is not CtParameter")
+            }
+            else ctMethod.addParameter<CtMethod<Any>>(p)
+        }
+
         // Add body
-        val body = firFunction.body
+        val body = simpleFunction.body
         if(body != null) {
             val ctBody = body.accept(this, null).single
             ctMethod.setBody<CtMethod<Any>>(ctBody as CtStatement)
         }
 
         // Set (return) type
-        ctMethod.setType<CtMethod<*>>(referenceBuilder.getNewTypeReference<Any>(firFunction.returnTypeRef))
+        ctMethod.setType<CtMethod<*>>(referenceBuilder.getNewTypeReference<Any>(simpleFunction.returnTypeRef))
 
         return ctMethod.compose()
+    }
+
+    override fun visitValueParameter(
+        valueParameter: FirValueParameter,
+        data: Nothing?
+    ): CompositeTransformResult.Single<CtParameter<*>> {
+        val ctParam = factory.Core().createParameter<Any>()
+        ctParam.setSimpleName<CtParameter<Any>>(valueParameter.name.identifier)
+        ctParam.setInferred<CtParameter<Any>>(false) // Not allowed
+
+        // Modifiers
+        val modifierList = KtModifierKind.fromValueParameter(valueParameter)
+        addModifiersAsMetadata(ctParam, modifierList)
+        ctParam.setVarArgs<CtParameter<Any>>(KtModifierKind.VARARG in modifierList)
+
+        // Default value
+        val defaultValue = valueParameter.defaultValue?.accept(this, null)?.single
+        if(defaultValue != null) {
+            ctParam.putMetadata<CtParameter<*>>(KtMetadataKeys.PARAMETER_DEFAULT_VALUE, defaultValue)
+            defaultValue.setParent(ctParam)
+        }
+
+        // Type
+        ctParam.setType<CtParameter<Any>>(referenceBuilder.getNewTypeReference<Any>(valueParameter.returnTypeRef))
+
+        return ctParam.compose()
     }
 
     override fun visitProperty(property: FirProperty, data: Nothing?): CompositeTransformResult.Single<CtVariable<*>> {
