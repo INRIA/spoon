@@ -136,6 +136,20 @@ public class SmPLJavaDSL {
     }
 
     /**
+     * Name for elements that indicate unsupported elements that have been substituted.
+     */
+    private static String unsupportedElementName = "__SmPLUnsupported__";
+
+    /**
+     * Get name for elements that indicate unsupported elements that have been substituted.
+     *
+     * @return Name for elements that indicate unsupported elements that have been substituted
+     */
+    public static String getUnsupportedElementName() {
+        return unsupportedElementName;
+    }
+
+    /**
      * Check if a given element represents a deletion anchor in the SmPL Java DSL.
      * @param e Element to check
      * @return True if element represents a deletion anchor, false otherwise

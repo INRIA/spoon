@@ -58,6 +58,8 @@ public class CFGModel implements Model {
 
                         SmPLMethodCFG.NodeTag nodeTag = (SmPLMethodCFG.NodeTag) node.getTag();
                         labels.get(state).add(new MethodHeaderLabel((CtMethod<?>) nodeTag.getAnchor()));
+                    } else if (SmPLMethodCFG.isUnsupportedElementNode(node)) {
+                        labels.get(state).add(new PropositionLabel("unsupported"));
                     } else {
                         labels.get(state).add(new StatementLabel(stmt));
                     }

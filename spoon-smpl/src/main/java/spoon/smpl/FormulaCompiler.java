@@ -197,52 +197,7 @@ public class FormulaCompiler {
      */
     private Formula compileStatementFormula(ControlFlowNode node) {
         if (SmPLJavaDSL.isStatementLevelDots(node.getStatement())) {
-            CtInvocation<?> dots = (CtInvocation<?>) node.getStatement();
-
-            Formula savedPreGuard = dotsPreGuard;
-            Formula innerFormula = compileFormulaInner(node.next().get(0));
-
-            Formula postGuard = findFirstCodeElementFormula(innerFormula);
-
-            Formula formula;
-
-            if (!SmPLJavaDSL.hasWhenAny(dots)) {
-                if (savedPreGuard != null) {
-                    formula = savedPreGuard;
-
-                    if (postGuard != null) {
-                        formula = new Or(formula, postGuard);
-                    }
-
-                    formula = new Not(formula);
-                } else {
-                    formula = (postGuard == null) ? new True() : new Not(postGuard);
-                }
-            } else {
-                formula = new True();
-            }
-
-            List<String> whenNotEquals = SmPLJavaDSL.getWhenNotEquals(dots);
-
-            if (whenNotEquals.size() > 0) {
-                Iterator<String> it = whenNotEquals.iterator();
-
-                formula = new Not(new VariableUsePredicate(it.next(), metavars));
-
-                while (it.hasNext()) {
-                    formula = new And(formula, new Not(new VariableUsePredicate(it.next(), metavars)));
-                }
-            }
-
-            if (innerFormula == null) {
-                return formula;
-            } else {
-                if (SmPLJavaDSL.hasWhenExists(dots)) {
-                    return new ExistsUntil(formula, innerFormula);
-                } else {
-                    return new AllUntil(formula, innerFormula);
-                }
-            }
+            return compileStatementLevelDotsFormula(node);
         } else {
             CtElement statement = node.getStatement();
             int line = statement.getPosition().getLine();
@@ -282,6 +237,61 @@ public class FormulaCompiler {
             }
 
             return formula;
+        }
+    }
+
+    private Formula compileStatementLevelDotsFormula(ControlFlowNode node) {
+        //Formula unsupported = new ExternalCodeElementPredicate("unsupported", UnsupportedElementSwapper::isUnsupportedElementMarker);
+
+        CtInvocation<?> dots = (CtInvocation<?>) node.getStatement();
+
+        Formula savedPreGuard = dotsPreGuard;
+        Formula innerFormula = compileFormulaInner(node.next().get(0));
+
+        Formula postGuard = findFirstCodeElementFormula(innerFormula);
+
+        Formula formula;
+
+        if (!SmPLJavaDSL.hasWhenAny(dots)) {
+            if (savedPreGuard != null) {
+                formula = savedPreGuard;
+
+                if (postGuard != null) {
+                    formula = new Or(formula, postGuard);
+                }
+            } else {
+                formula = (postGuard == null) ? new True() : postGuard;
+            }
+        } else {
+            formula = new True();
+        }
+
+        List<String> whenNotEquals = SmPLJavaDSL.getWhenNotEquals(dots);
+
+        if (whenNotEquals.size() > 0) {
+            Iterator<String> it = whenNotEquals.iterator();
+
+            formula = formula.equals(new True())
+                    ? new Proposition("unsupported")
+                    : new Or(formula, new Proposition("unsupported"));
+
+            while (it.hasNext()) {
+                formula = new Or(new VariableUsePredicate(it.next(), metavars), formula);
+            }
+        }
+
+        formula = formula.equals(new True())
+                ? formula
+                : new Not(formula);
+
+        if (innerFormula == null) {
+            return formula;
+        } else {
+            if (SmPLJavaDSL.hasWhenExists(dots)) {
+                return new ExistsUntil(formula, innerFormula);
+            } else {
+                return new AllUntil(formula, innerFormula);
+            }
         }
     }
 

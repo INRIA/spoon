@@ -42,6 +42,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -79,6 +80,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -120,6 +122,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -174,6 +177,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -252,6 +256,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -284,6 +289,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -886,6 +892,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -918,6 +925,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -970,6 +978,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1031,6 +1040,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1106,6 +1116,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1158,6 +1169,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1210,6 +1222,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1262,6 +1275,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1303,6 +1317,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1342,6 +1357,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1386,6 +1402,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1439,6 +1456,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1469,6 +1487,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1519,6 +1538,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1568,6 +1588,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1616,6 +1637,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1658,6 +1680,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1700,6 +1723,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1737,6 +1761,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1777,6 +1802,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1817,6 +1843,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1846,6 +1873,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1880,6 +1908,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1916,6 +1945,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1952,6 +1982,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -1992,6 +2023,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2037,6 +2069,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2083,6 +2116,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2130,6 +2164,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2178,6 +2213,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2225,6 +2261,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2272,6 +2309,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2309,6 +2347,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2350,6 +2389,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2446,6 +2486,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2501,6 +2542,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2570,6 +2612,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2636,6 +2679,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2687,6 +2731,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2728,6 +2773,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2781,6 +2827,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2838,6 +2885,7 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());
@@ -2895,6 +2943,86 @@ public class EndToEndTests {
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
             Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testUnsupportedElementsMatchSurrounding() {
+        // contract: should be able to match and transform things surrounding an unsupported element
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void foo() {\n" +
+                                               "        a();\n" +
+                                               "        while (loopsNotSupported) {\n" +
+                                               "          break;\n" +
+                                               "        }\n" +
+                                               "        b();\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void foo() {\n" +
+                                                  "        while (loopsNotSupported) {\n" +
+                                                  "            break;\n" +
+                                                  "        } \n" +
+                                                  "        b();\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "@@\n" +
+                                         "- a();\n" +
+                                         "...\n" +
+                                         "b();\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testUnsupportedElementsRejectDotsWhenNotEqual() {
+        // contract: a 'when != x' constraint on dots should not be allowed to traverse an unsupported element since we cannot know if x is used inside.
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void foo() {\n" +
+                                               "        a();\n" +
+                                               "        while (loopsNotSupported) {\n" +
+                                               "          break;\n" +
+                                               "        }\n" +
+                                               "        b();\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void foo() {\n" +
+                                                  "        a();\n" +
+                                                  "        while (loopsNotSupported) {\n" +
+                                                  "            break;\n" +
+                                                  "        } \n" +
+                                                  "        b();\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "@@\n" +
+                                         "- a();\n" +
+                                         "... when != x\n" +
+                                         "b();\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
         });
     
         assertEquals(expected.toString(), input.toString());

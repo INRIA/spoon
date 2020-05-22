@@ -1,0 +1,35 @@
+[name]
+UnsupportedElementsMatchSurrounding
+
+[contract]
+should be able to match and transform things surrounding an unsupported element
+
+[patch]
+@@
+@@
+- a();
+...
+b();
+
+
+[input]
+class A {
+    void foo() {
+        a();
+        while (loopsNotSupported) {
+          break;
+        }
+        b();
+    }
+}
+
+
+[expected]
+class A {
+    void foo() {
+        while (loopsNotSupported) {
+            break;
+        } 
+        b();
+    }
+}

@@ -1,18 +1,139 @@
 package spoon.smpl;
 
 import fr.inria.controlflow.*;
-import spoon.reflect.code.CtIf;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.visitor.CtScanner;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * An SmPLMethodCFG creates and adapts a ControlFlowGraph for a given method such as to make it
  * suitable for use in an SmPL context.
  */
 public class SmPLMethodCFG {
+    /**
+     * UnsupportedElementSwapper takes a CtMethod and replaces unsupported AST elements e with elements e'
+     * such that UnsupportedElementSwapper.isUnsupportedElementMarker(e') will hold true. The replacements
+     * can be reversed by calling the method restore().
+     */
+    public static class UnsupportedElementSwapper extends CtScanner {
+        /**
+         * Replace all unsupported elements of a given method with "unsupported element markers".
+         *
+         * @param ctMethod Method to process
+         */
+        public UnsupportedElementSwapper(CtMethod<?> ctMethod) {
+            this.ctMethod = ctMethod;
+
+            isRestoring = false;
+            swappedElements = new HashMap<>();
+            swapIndex = 0;
+
+            ctMethod.accept(this);
+        }
+
+        /**
+         * Check whether a given element is a marker substituting an unsupported element.
+         *
+         * @param e Element to check
+         * @return True if the element is a marker substituting an unsupported element
+         */
+        public static boolean isUnsupportedElementMarker(CtElement e) {
+            return (e instanceof CtInvocation
+                    && ((CtInvocation<?>) e).getTarget() == null
+                    && ((CtInvocation<?>) e).getExecutable().getSimpleName().equals(SmPLJavaDSL.getUnsupportedElementName()));
+        }
+
+        /**
+         * Restore all replacements.
+         */
+        public void restore() {
+            isRestoring = true;
+            ctMethod.accept(this);
+            isRestoring = false;
+        }
+
+        @Override
+        public void visitCtWhile(CtWhile whileLoop) {
+            replace(whileLoop);
+        }
+
+        @Override
+        public void visitCtBreak(CtBreak breakStatement) {
+            replace(breakStatement);
+        }
+
+        @Override
+        public <T> void visitCtInvocation(CtInvocation<T> invocation) {
+            if (!isRestoring) {
+                super.visitCtInvocation(invocation);
+            } else {
+                if (!isUnsupportedElementMarker(invocation)) {
+                    return;
+                }
+
+                int index = ((CtLiteral<Integer>) invocation.getArguments().get(0)).getValue();
+
+                invocation.replace(swappedElements.get(index));
+            }
+        }
+
+        /**
+         * Replace a single element.
+         *
+         * @param e Element to replace
+         */
+        private void replace(CtElement e) {
+            swappedElements.put(swapIndex, e);
+            e.replace(createReplacementInvocation(e.getFactory(), swapIndex));
+
+            swapIndex += 1;
+        }
+
+        /**
+         * Create a marker element for substituting a single unsupported element.
+         *
+         * @param factory Spoon Factory
+         * @param index Replacement index
+         * @return Marker element
+         */
+        private static CtInvocation<Void> createReplacementInvocation(Factory factory, int index) {
+            CtExecutableReference<Void> exe = factory.createExecutableReference();
+            exe.setType(factory.createCtTypeReference(Void.class));
+            exe.setSimpleName(SmPLJavaDSL.getUnsupportedElementName());
+            exe.setParameters(Arrays.asList(factory.createCtTypeReference(int.class)));
+
+            List<CtExpression<?>> args = Arrays.asList(factory.createLiteral(index));
+
+            return factory.createInvocation(null, exe, args);
+        }
+
+        /**
+         * Target method.
+         */
+        private CtMethod<?> ctMethod;
+
+        /**
+         * Instance state flag signalling whether or not we are currently in "restore" mode, which if true
+         * alters the behavior when scanning replacement marker elements.
+         */
+        private boolean isRestoring;
+
+        /**
+         * Replacement index counter.
+         */
+        private int swapIndex;
+
+        /**
+         * Replacement storage.
+         */
+        private Map<Integer, CtElement> swappedElements;
+    }
+
     /**
      * A NodeTag is a combination of a String label and an AST element anchor.
      *
@@ -69,6 +190,7 @@ public class SmPLMethodCFG {
      * @param method Method for which to generate an SmPL-adapted CFG
      */
     public SmPLMethodCFG(CtMethod<?> method) {
+        this.swapper = new UnsupportedElementSwapper(method);
         this.cfg = new ControlFlowBuilder().build(method.getBody());
 
         removeOutermostBlockBeginNode(cfg);
@@ -92,6 +214,13 @@ public class SmPLMethodCFG {
             // Connect CFG entry node -> method header node -> CFG entry successor
             cfg.addEdge(cfgEntryNode, methodHeaderNode);
             cfg.addEdge(methodHeaderNode, cfgEntryNodeSuccessor);
+        });
+
+        // Annotate markers for unsupported elements
+        cfg.findNodesOfKind(BranchKind.STATEMENT).forEach((node) -> {
+            if (UnsupportedElementSwapper.isUnsupportedElementMarker(node.getStatement())) {
+                node.setTag(new NodeTag("unsupported", node.getStatement()));
+            }
         });
 
         // Annotate branches
@@ -155,6 +284,10 @@ public class SmPLMethodCFG {
         }
     }
 
+    public void restoreUnsupportedElements() {
+        swapper.restore();
+    }
+
     /**
      * Check a given node for being the special method header node.
      *
@@ -164,6 +297,17 @@ public class SmPLMethodCFG {
     public static boolean isMethodHeaderNode(ControlFlowNode node) {
         return node.getTag() instanceof NodeTag
                && ((NodeTag) node.getTag()).getLabel().equals("methodHeader");
+    }
+
+    /**
+     * Check a given node for being a marker substituting an unsupported element.
+     *
+     * @param node Node to check
+     * @return True if given node is a marker substituting an unsupported element, false otherwise
+     */
+    public static boolean isUnsupportedElementNode(ControlFlowNode node) {
+        return node.getTag() instanceof NodeTag
+               && ((NodeTag) node.getTag()).getLabel().equals("unsupported");
     }
 
     /**
@@ -271,4 +415,9 @@ public class SmPLMethodCFG {
      * The adapted CFG.
      */
     private final ControlFlowGraph cfg;
+
+    /**
+     * Swapper for unsupported elements.
+     */
+    private UnsupportedElementSwapper swapper;
 }

@@ -130,6 +130,7 @@ def test_from_file(filename):
     output.append("        ModelChecker checker = new ModelChecker(model);")
     output.append("        rule.getFormula().accept(checker);")
     output.append("        Transformer.transform(model, checker.getResult().getAllWitnesses());")
+    output.append("        model.getCfg().restoreUnsupportedElements();")
     output.append("    });")
     output.append("")
     
