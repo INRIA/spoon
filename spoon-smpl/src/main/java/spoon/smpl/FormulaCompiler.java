@@ -241,8 +241,6 @@ public class FormulaCompiler {
     }
 
     private Formula compileStatementLevelDotsFormula(ControlFlowNode node) {
-        //Formula unsupported = new ExternalCodeElementPredicate("unsupported", UnsupportedElementSwapper::isUnsupportedElementMarker);
-
         CtInvocation<?> dots = (CtInvocation<?>) node.getStatement();
 
         Formula savedPreGuard = dotsPreGuard;
