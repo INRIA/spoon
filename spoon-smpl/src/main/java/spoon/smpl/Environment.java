@@ -1,9 +1,25 @@
 package spoon.smpl;
 
-
 import java.util.*;
 
+// TODO: documentation
 public class Environment extends HashMap<String, Object> {
+    /**
+     * A MultipleAlternativesPositiveBinding offers a way to store an entry with multiple alternative
+     * bindings in the environment that will produce a single NegativeBinding containing all the
+     * alternatives in a single environment.
+     *
+     * Using this class only makes sense when the result is guaranteed to be negated, as
+     * is currently the case in the context of VariableUsePredicates that will currently only
+     * ever appear in the form Not(Used(x)) and that often need to generate multiple possible
+     * bindings for x.
+     *
+     * Examples:    P[a,b,c] is a MultipleAlternativesPositiveBinding,   [a,b,c] is a NegativeBinding
+     *
+     *   input:          negation:
+     *    (x=P[a,b,c])     {(x=[a,b,c])}
+     *    (x=[a,b,c])      {(x=a),(x=b),(x=c)}        note that negation is not an inverse operation here
+     */
     public static class MultipleAlternativesPositiveBinding extends HashSet<Object> {
         public static MultipleAlternativesPositiveBinding create(Object ... xs) {
             MultipleAlternativesPositiveBinding result = new MultipleAlternativesPositiveBinding();

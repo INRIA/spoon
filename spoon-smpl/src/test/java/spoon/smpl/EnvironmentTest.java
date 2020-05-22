@@ -121,13 +121,22 @@ public class EnvironmentTest {
         e1.put("x", new Environment.NegativeBinding("y"));
         e2.put("x", new Environment.NegativeBinding("z"));
 
-        // TODO: use hashCodes
-        String e1str = e1.toString();
-        String e2str = e2.toString();
+        int e1hash = e1.hashCode();
+        int e2hash = e2.hashCode();
 
         Environment e3 = Environment.join(e1, e2);
 
-        assertEquals(e1str, e1.toString());
-        assertEquals(e2str, e2.toString());
+        assertEquals(e1hash, e1.hashCode());
+        assertEquals(e2hash, e2.hashCode());
+    }
+
+    @Test
+    public void testMMultipleAlternativesPositiveBinding() {
+
+        // contract: negating a MultipleAlternativesPositiveBinding should create a negative binding containing all the alternatives
+
+        Environment e = new Environment();
+        e.put("x", Environment.MultipleAlternativesPositiveBinding.create(1,2,3));
+        assertEquals(Environment.negate(e).iterator().next().get("x"), new Environment.NegativeBinding(1,2,3));
     }
 }
