@@ -153,6 +153,7 @@ public class CommandlineApplication {
                                 System.out.println(modelChecker.getResult());
                             } else if (action == Action.PATCH) {
                                 Transformer.transform(model, modelChecker.getResult().getAllWitnesses());
+                                model.getCfg().restoreUnsupportedElements();
                             }
                         }
                     }
