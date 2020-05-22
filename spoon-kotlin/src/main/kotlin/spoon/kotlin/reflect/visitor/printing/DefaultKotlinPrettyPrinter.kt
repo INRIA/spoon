@@ -439,9 +439,15 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <R : Any?> visitCtReturn(ctReturn: CtReturn<R>) {
-        if(ctReturn.isImplicit && ctReturn.returnedExpression != null)
+        if(ctReturn.isImplicit && ctReturn.returnedExpression != null) {
             ctReturn.returnedExpression.accept(this)
-        else adapter.write("UNIMPLEMENTED RETURN")
+        } else {
+            adapter write "return"
+            if(ctReturn.returnedExpression != null) {
+                adapter write SPACE
+                ctReturn.returnedExpression.accept(this)
+            }
+        }
     }
 
     override fun visitCtBreak(p0: CtBreak?) {
