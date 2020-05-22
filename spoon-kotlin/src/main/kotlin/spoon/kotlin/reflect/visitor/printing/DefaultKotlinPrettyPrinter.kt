@@ -309,25 +309,21 @@ class DefaultKotlinPrettyPrinter(
         }
 
         // Initializer or delegate
-        if(field.defaultExpression != null) {
+        visitDefaultExpr(field)
+        adapter.newline()
+    }
+
+    private fun visitDefaultExpr(variable : CtVariable<*>) {
+        if(variable.defaultExpression != null) {
             adapter write " = "
-            field.defaultExpression.accept(this)
+            variable.defaultExpression.accept(this)
         } else {
-            val delegate = field.getMetadata(KtMetadataKeys.PROPERTY_DELEGATE) as CtExpression<*>?
+            val delegate = variable.getMetadata(KtMetadataKeys.PROPERTY_DELEGATE) as CtExpression<*>?
             if(delegate != null) {
                 adapter write " by "
                 delegate.accept(this)
             }
         }
-        adapter.newline()
-    }
-
-    override fun <T : Any?, A : T> visitCtOperatorAssignment(p0: CtOperatorAssignment<T, A>?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun <S : Any?> visitCtCase(p0: CtCase<S>?) {
-        TODO("Not yet implemented")
     }
 
     override fun <T : Any?> visitCtLocalVariable(localVar: CtLocalVariable<T>) {
@@ -341,18 +337,17 @@ class DefaultKotlinPrettyPrinter(
         }
 
         // Initializer or delegate
-        if(localVar.defaultExpression != null) {
-            adapter write " = "
-            localVar.defaultExpression.accept(this)
-        } else {
-            val delegate = localVar.getMetadata(KtMetadataKeys.PROPERTY_DELEGATE) as CtExpression<*>?
-            if(delegate != null) {
-                adapter write " by "
-                delegate.accept(this)
-            }
-        }
+        visitDefaultExpr(localVar)
 
         adapter.newline()
+    }
+
+    override fun <T : Any?, A : T> visitCtOperatorAssignment(p0: CtOperatorAssignment<T, A>?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun <S : Any?> visitCtCase(p0: CtCase<S>?) {
+        TODO("Not yet implemented")
     }
 
     override fun <T : Any?> visitCtCodeSnippetExpression(p0: CtCodeSnippetExpression<T>?) {
@@ -395,9 +390,19 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtParameter(p0: CtParameter<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtParameter(param: CtParameter<T>) {
+        val modifierSet = getModifiersMetadata(param)
+        adapter writeModifiers modifierSet and param.simpleName
+        adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
+        adapter write getTypeName(param.type) // TODO visitType
+
+        val defaultValue = param.getMetadata(KtMetadataKeys.PARAMETER_DEFAULT_VALUE) as? CtExpression<*>?
+        if(defaultValue != null) {
+            adapter write " = "
+            defaultValue.accept(this)
+        }
     }
+
 
     override fun <T : Any?> visitCtFieldWrite(p0: CtFieldWrite<T>?) {
         TODO("Not yet implemented")
@@ -517,7 +522,14 @@ class DefaultKotlinPrettyPrinter(
 
         adapter writeModifiers modifiers and "fun " /* TODO Type params here */ and method.simpleName and LEFT_ROUND
 
-        method.parameters.forEach { it.accept(this) }
+        var commas = method.parameters.size-1
+        method.parameters.forEach {
+            it.accept(this)
+            if(commas > 0) {
+                commas--
+                adapter write ", "
+            }
+        }
 
         adapter write RIGHT_ROUND
 
