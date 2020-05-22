@@ -1,6 +1,7 @@
 package spoon.smpl.metavars;
 
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.smpl.formula.MetavariableConstraint;
 
@@ -14,7 +15,7 @@ public class TypeConstraint implements MetavariableConstraint {
      * @return The Object that is a valid binding under the constraint, or null if the value does not match the constraint
      */
     @Override
-    public Object apply(Object value) {
+    public CtElement apply(CtElement value) {
         if (value instanceof CtTypeReference) {
             return value;
         } else if (value instanceof CtTypeAccess) {

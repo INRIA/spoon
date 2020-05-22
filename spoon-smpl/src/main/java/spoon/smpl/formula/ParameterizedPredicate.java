@@ -1,5 +1,7 @@
 package spoon.smpl.formula;
 
+import spoon.reflect.declaration.CtElement;
+
 import java.util.Map;
 
 /**
@@ -34,7 +36,7 @@ abstract public class ParameterizedPredicate implements Predicate {
 
         for (String key : metavars.keySet()) {
             if (parameters.containsKey(key)) {
-                Object result = metavars.get(key).apply(parameters.get(key));
+                CtElement result = metavars.get(key).apply((CtElement) parameters.get(key));
 
                 if (result != null) {
                     parameters.put(key, result);

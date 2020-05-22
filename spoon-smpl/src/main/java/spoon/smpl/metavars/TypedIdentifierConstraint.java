@@ -1,5 +1,6 @@
 package spoon.smpl.metavars;
 
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.smpl.formula.MetavariableConstraint;
 
@@ -14,8 +15,8 @@ public class TypedIdentifierConstraint implements MetavariableConstraint {
     }
 
     @Override
-    public Object apply(Object value) {
-        Object validIdentifier = innerConstraint.apply(value);
+    public CtElement apply(CtElement value) {
+        CtElement validIdentifier = innerConstraint.apply(value);
 
         if (validIdentifier instanceof CtVariableReference
             && ((CtVariableReference<?>) validIdentifier).getType().getSimpleName().equals(requiredType)) {

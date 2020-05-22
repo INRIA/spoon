@@ -2,6 +2,7 @@ package spoon.smpl.metavars;
 
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.smpl.formula.MetavariableConstraint;
@@ -17,7 +18,7 @@ public class IdentifierConstraint implements MetavariableConstraint {
      * @return The Object that is a valid binding under the constraint, or null if the value does not match the constraint
      */
     @Override
-    public Object apply(Object value) {
+    public CtElement apply(CtElement value) {
         if (value instanceof CtVariableReference) {
             return value;
         } else if (value instanceof CtFieldAccess) {

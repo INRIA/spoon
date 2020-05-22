@@ -378,7 +378,7 @@ public class ModelCheckerTest {
     }
 
     static class AnyConstraint implements MetavariableConstraint {
-        public Object apply(Object value) {
+        public CtElement apply(CtElement value) {
             return value;
         }
     }
