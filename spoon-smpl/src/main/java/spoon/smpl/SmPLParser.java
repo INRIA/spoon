@@ -734,6 +734,7 @@ public class SmPLParser {
 
                         unanchoredCommitted.addAll(unanchored);
                         isAfterDots = true;
+                        elementAnchor = 0;
                     } else {
                         isAfterDots = false;
                         // TODO: if we used line+offset maybe we could support multiple anchorable statements per line in a patch

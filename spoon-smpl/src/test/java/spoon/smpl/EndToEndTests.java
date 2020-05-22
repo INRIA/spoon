@@ -9,6 +9,44 @@ import static spoon.smpl.TestUtils.*;
 
 public class EndToEndTests {
     @Test
+    public void testAnchorAfterDotsBug() {
+        // contract: an addition must not be anchored to an element on the opposite side of an intermediate dots operator
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "    void foo() {\n" +
+                                               "        a();\n" +
+                                               "        somethingElse();\n" +
+                                               "        b();\n" +
+                                               "    }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void foo() {\n" +
+                                                  "        a();\n" +
+                                                  "        somethingElse();\n" +
+                                                  "        c();\n" +
+                                                  "        b();\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "@@\n" +
+                                         "a();\n" +
+                                         "...\n" +
+                                         "+ c();\n" +
+                                         "b();\n" +
+                                         "´\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
     public void testAppendContextBranch() {
         // contract: a patch should be able to append elements below a context branch
 
