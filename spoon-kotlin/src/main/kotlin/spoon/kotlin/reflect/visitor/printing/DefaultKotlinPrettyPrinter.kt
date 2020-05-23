@@ -28,6 +28,21 @@ class DefaultKotlinPrettyPrinter(
     private inline fun <T> Set<T>.filterIf(condition : Boolean, filterPred : (T) -> Boolean) : Set<T> =
         if(!condition) this else this.filter(filterPred).toSet()
 
+    private fun CtConstructor<*>.isPrimary() : Boolean {
+        return (getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as? Boolean?) == true
+    }
+
+    private fun visitParameterList(paramList : List<CtParameter<*>>) {
+        var commas = paramList.size-1
+        paramList.forEach {
+            it.accept(this)
+            if(commas > 0) {
+                commas--
+                adapter write ", "
+            }
+        }
+    }
+
     @Suppress("UNCHECKED_CAST")
     private fun getModifiersMetadata(e : CtElement) : Set<KtModifierKind>? =
         e.getMetadata(KtMetadataKeys.KT_MODIFIERS) as? Set<KtModifierKind>
@@ -118,6 +133,11 @@ class DefaultKotlinPrettyPrinter(
 
         adapter write "class" and SPACE and ctClass.simpleName
 
+        val primaryConstructor = ctClass.constructors.firstOrNull { it.isPrimary() }
+        if(primaryConstructor != null) {
+            visitPrimaryConstructor(primaryConstructor)
+        }
+
         val inheritanceList = ArrayList<String>()
         if(ctClass.superclass != null && ctClass.superclass.qualifiedName != "kotlin.Any") {
             inheritanceList.add("${getTypeName(ctClass.superclass)}()") // TODO Primary constr call
@@ -132,10 +152,28 @@ class DefaultKotlinPrettyPrinter(
         adapter.newline()
         adapter.pushIndent()
 
-        ctClass.typeMembers.forEach { it.accept(this) }
+      //  ctClass.constructors.filterNot { it.isPrimary() }.forEach { it.accept(this) }
+        ctClass.typeMembers.filterNot { it is CtConstructor<*> && it.isPrimary() }.forEach { it.accept(this) }
 
         adapter.popIndent()
         adapter writeln RIGHT_CURL
+    }
+
+    override fun <T : Any?> visitCtConstructor(ctConstructor : CtConstructor<T>) {
+        val primary = ctConstructor.getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as? Boolean?
+        if(primary == true) return // This method should not be called to visit primary constructor
+
+    }
+
+    private fun visitPrimaryConstructor(ctConstructor: CtConstructor<*>) {
+        val modifierSet = getModifiersMetadata(ctConstructor)
+        if(modifierSet != null && modifierSet.isNotEmpty()) {
+            adapter writeModifiers modifierSet
+            adapter write " constructor"
+        }
+        adapter write LEFT_ROUND
+        visitParameterList(ctConstructor.parameters)
+        adapter write RIGHT_ROUND
     }
 
     // TODO Replace with visitTypeRef
@@ -212,10 +250,6 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtConstructor(p0: CtConstructor<T>?) {
-        TODO("Not yet implemented")
-    }
-
     override fun visitCtTypeMemberWildcardImportReference(p0: CtTypeMemberWildcardImportReference?) {
         TODO("Not yet implemented")
     }
@@ -285,7 +319,7 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtField(field: CtField<T>?) {
-        if(field == null) return
+        if(field == null || field.isImplicit) return
         // Annotations
         // Not implemented
 
@@ -522,14 +556,7 @@ class DefaultKotlinPrettyPrinter(
 
         adapter writeModifiers modifiers and "fun " /* TODO Type params here */ and method.simpleName and LEFT_ROUND
 
-        var commas = method.parameters.size-1
-        method.parameters.forEach {
-            it.accept(this)
-            if(commas > 0) {
-                commas--
-                adapter write ", "
-            }
-        }
+        visitParameterList(method.parameters)
 
         adapter write RIGHT_ROUND
 

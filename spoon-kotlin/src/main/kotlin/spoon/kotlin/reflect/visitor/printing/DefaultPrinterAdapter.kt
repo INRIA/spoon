@@ -11,7 +11,7 @@ open class DefaultPrinterAdapter(
     /**
     * Declaration type: fun foo(): Int, var bar: String
     * Of supertype: class A : B, fun <T : Number> foo()
-    * Constructor delegation: constructor(x : Int) : this(x)
+    * Constructor delegation: constructor(x: Int) : this(x)
     * Object declaration: val o = object : T
     */
     enum class ColonContext { DECLARATION_TYPE, OF_SUPERTYPE, CONSTRUCTOR_DELEGATION, OBJECT_DECLARATION }
@@ -73,7 +73,7 @@ open class DefaultPrinterAdapter(
      *
      * Declaration type: fun foo(): Int, var bar: String
      * Of supertype: class A : B, fun <T : Number> foo()
-     * Constructor delegation: constructor(x : Int) : this(x)
+     * Constructor delegation: constructor(x: Int) : this(x)
      * Object declaration: val o = object : T
      */
 
