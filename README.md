@@ -83,7 +83,7 @@ mvn test
 
 ### Download
 
-Latest version: <https://search.maven.org/remote_content?g=fr.inria.gforge.spoon&a=spoon-core&v=LATEST&c=jar-with-dependencies> - [Javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/spoon-core/apidocs/index.html)
+Latest version: <https://search.maven.org/remote_content?g=fr.inria.gforge.spoon&a=spoon-core&v=LATEST&c=jar-with-dependencies> - [Javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/index.html)
 
 Maven:
 
@@ -91,6 +91,7 @@ Maven:
 <dependency>
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-core</artifactId>
+    <!-- See rendered release value at http://spoon.gforge.inria.fr/ -->
     <version>{{site.spoon_release}}</version>
 </dependency>
 ```
