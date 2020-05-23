@@ -167,7 +167,7 @@ class DefaultKotlinPrettyPrinter(
 
     private fun visitPrimaryConstructor(ctConstructor: CtConstructor<*>) {
         val modifierSet = getModifiersMetadata(ctConstructor)
-        if(modifierSet != null && modifierSet.isNotEmpty()) {
+        if(modifierSet != null && modifierSet.filterNot { it == KtModifierKind.PUBLIC }.isNotEmpty()) {
             adapter writeModifiers modifierSet
             adapter write " constructor"
         }

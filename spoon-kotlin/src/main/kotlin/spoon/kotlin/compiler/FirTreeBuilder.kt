@@ -104,8 +104,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
     override fun visitConstructor(constructor: FirConstructor, data: Nothing?): CompositeTransformResult.Single<CtConstructor<*>> {
         val ctConstructor = factory.Core().createConstructor<Any>()
 
-        val modifierList = listOfNotNull(KtModifierKind.convertVisibility(constructor.visibility)).
-            filter { it != KtModifierKind.PUBLIC }
+        val modifierList = listOfNotNull(KtModifierKind.convertVisibility(constructor.visibility))
 
         ctConstructor.setImplicit<CtConstructor<Any>>(
             constructor.isPrimary &&
