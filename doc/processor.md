@@ -1,5 +1,5 @@
 ---
-title: Processor for elements
+title: More about Spoon Processors
 tags: [processor]
 keywords: processor, processing, elements
 ---
@@ -53,7 +53,19 @@ public class CatchProcessor extends AbstractProcessor<CtCatch> {
 	}
 }
 ```
-## Parallel Processor
+### Examples of Analysis Processors
+
+The [HelloWorldProcessor example](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/HelloWorldProcessor.java) prints hello world with compile-time reflection.
+
+The [CatchProcessor example](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/analysis/CatchProcessor.java) detects empty catch blocks.
+
+The [ReferenceProcessor example](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/analysis/ReferenceProcessor.java) detects circular references between packages.
+
+This [Factory example](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/analysis/FactoryProcessor.java) example detects wrong uses of the factory pattern.
+
+
+
+### Parallel Processor
 
 Lets assume you want to use multiple cores for your processor. Spoon provides a simple high-level API for this task.
 Using the CatchProcessor from before create a `AbstractParallelProcessor`. 

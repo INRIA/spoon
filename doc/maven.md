@@ -1,5 +1,5 @@
 ---
-title: Maven
+title: Using Spoon from Maven
 tags: [usage]
 keywords: maven, central, usage, java, plugin
 ---

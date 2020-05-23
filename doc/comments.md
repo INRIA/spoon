@@ -3,8 +3,6 @@ title: Comments and position
 keywords: comments position
 ---
 
-# Comment
-
 In Spoon there are four different kinds of comments:
 
 * File comments (comment at the begin of the file, generally licence) `CtComment.CommentType.FILE`
@@ -21,11 +19,11 @@ You can retrieve the comments of each `CtElement` via the API `CtElement.getComm
 
 The parsing of the comments can be enabled in the Environment via the option `Environment.setCommentEnabled(boolean)` or the command line argument `--enable-comments` (or `-c`).  
 
-## Javadoc Comments
+### Javadoc Comments
 
 The Javadoc comments are also available via the API `CtElement.getDocComment()` but this API returns directly the content of the Javadoc as `String`.
 
-## Comment Attribution
+### Comment Attribution
 
 * Each element can have multiple comments
 * Comments in the same line of a statement are attached to the statement
@@ -33,8 +31,6 @@ The Javadoc comments are also available via the API `CtElement.getDocComment()` 
 * Comments cannot be associated to other comments
 * Comments at the end of a block are considered as orphan comments
 * Comments before a class definition are attached to the class
-
-### Comment Examples
 
 Class comment
 
@@ -71,7 +67,7 @@ Multiple line comment
 int a;
 ```
 
-## Process Comments
+### Processing Comments
 
 You can process comments like every `CtElement`.
 
@@ -94,7 +90,7 @@ public class CtCommentProcessor extends AbstractProcessor<CtComment> {
 }
 ```
 
-# Source Position
+### Source Positions
 
 `SourcePosition` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/cu/SourcePosition.html)) defines the position of the `CtElement` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtElement.html)) in the original source file. 
 SourcePosition is extended by three specialized positions:

@@ -21,16 +21,16 @@ From Spoon 5.0.0, CtReference is a subclass of CtElement.
 
 ![References of the Spoon Java 8 metamodel]({{ "/images/references-elements.png" | prepend: site.baseurl }})
 
-##  How are references resolved? 
+###  How are references resolved? 
 
 References are resolved when the model is built, the resolved references are those 
 that point to classes for which the source code is available in the Spoon input path.
 
-## Do targets of references have to exist before you can reference them?
+### Do targets of references have to exist before you can reference them?
 
 Since the references are weak, the targets of references do not have to exist before one references them. 
 
-## How does this limit transforming code? 
+### How does this limit transforming code? 
 
 The price to pay for this low coupling is that to navigate from one code element to another, 
 one has to chain a navigation to the reference and then to the target. For instance, 
