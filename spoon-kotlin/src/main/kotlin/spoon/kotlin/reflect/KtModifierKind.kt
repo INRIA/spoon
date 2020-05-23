@@ -126,9 +126,10 @@ enum class KtModifierKind(val token : String) {
                 sort()
             }
 
+
         fun fromTypeVariable() : List<KtModifierKind> = TODO()
 
-        private fun convertModality(m : Modality?) : KtModifierKind? = when(m) {
+        fun convertModality(m : Modality?) : KtModifierKind? = when(m) {
             Modality.FINAL     -> FINAL
             Modality.SEALED    -> SEALED
             Modality.OPEN      -> OPEN
@@ -136,7 +137,7 @@ enum class KtModifierKind(val token : String) {
             null -> null
         }
 
-        private fun convertVisibility(v : Visibility?) : KtModifierKind? = when (v?.internalDisplayName) {
+        fun convertVisibility(v : Visibility?) : KtModifierKind? = when (v?.internalDisplayName) {
             "private" -> PRIVATE
             "protected" -> PROTECTED
             "internal" -> INTERNAL

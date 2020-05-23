@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.psi
+import org.jetbrains.kotlin.fir.references.impl.FirPropertyFromParameterResolvedNamedReference
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.visitors.CompositeTransformResult
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
@@ -39,9 +40,8 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
     }
 
     fun addModifiersAsMetadata(element: CtElement, modifierList: List<KtModifierKind>) {
-        element.putMetadata<CtElement>(KtMetadataKeys.KT_MODIFIERS, modifierList.toSet())
+        element.putMetadata<CtElement>(KtMetadataKeys.KT_MODIFIERS, modifierList.toMutableSet())
     }
-
 
     override fun visitFile(file: FirFile, data: Nothing?): CompositeTransformResult<CtElement> {
         val module = helper.getOrCreateModule(file, factory)
@@ -67,7 +67,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
 
     override fun visitRegularClass(regularClass: FirRegularClass, data: Nothing?): CompositeTransformResult<CtElement> {
         val module = helper.getOrCreateModule(file, factory)
-        val pkg = if(file.packageFqName.isRoot) module.rootPackage else
+        val pkg = if (file.packageFqName.isRoot) module.rootPackage else
             factory.Package().getOrCreate(file.packageFqName.shortName().identifier, module)
         val type = helper.createType(regularClass)
         pkg.addType<CtPackage>(type)
@@ -76,22 +76,83 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
         val modifierList = KtModifierKind.fromClass(regularClass)
         addModifiersAsMetadata(type, modifierList)
 
-        val decls = regularClass.declarations.map { it.accept(this,null).single.also { decl ->
+        val decls = regularClass.declarations.map {
+            it.accept(this, null).single.also { decl ->
                 decl.setParent(type)
-                when(decl) {
-                    is CtField<*> -> type.addField(decl)
+                when (decl) {
+                    is CtField<*> -> (type as CtClass<*>).addField(decl)
                     is CtMethod<*> -> {
-                        if(regularClass.isInterface() && decl.body != null) {
+                        if (regularClass.isInterface() && decl.body != null) {
                             decl.setDefaultMethod<Nothing>(true)
                         }
                         type.addMethod(decl)
                     }
+                    is CtConstructor<*> -> {
+                        if (type is CtClass<*>) {
+                            (type as CtClass<Any>).addConstructor<CtClass<Any>>(decl as CtConstructor<Any>)
+                        } else warn("Constructor without accompanying CtClass")
+                    }
                 }
-
             }
         }
 
         return type.compose()
+    }
+
+
+
+    override fun visitConstructor(constructor: FirConstructor, data: Nothing?): CompositeTransformResult.Single<CtConstructor<*>> {
+        val ctConstructor = factory.Core().createConstructor<Any>()
+
+        val modifierList = listOfNotNull(KtModifierKind.convertVisibility(constructor.visibility)).
+            filter { it != KtModifierKind.PUBLIC }
+
+        ctConstructor.setImplicit<CtConstructor<Any>>(
+            constructor.isPrimary &&
+            constructor.valueParameters.isEmpty() &&
+            constructor.body == null &&
+            modifierList.isEmpty()
+        )
+
+        addModifiersAsMetadata(ctConstructor, modifierList)
+
+        // Add body
+        val body = constructor.body?.accept(this, null)?.single as? CtStatement?
+        if(body != null) {
+            ctConstructor.addChildWith(body, ctConstructor::setBody)
+        }
+
+        // Add params
+        constructor.valueParameters.forEach {
+            val p = it.accept(this,null).single as CtParameter<*>
+            /*
+            * Primary constructor property declaration creates implicit properties in the class. An implicit property is the
+            * holder of the val/var modifier, not the parameter:
+            * ClassName(var x = 2) <translates to> ClassName(x = 2) { var x = x }
+            * To facilitate printing, we look in the PSI if the parameter has a val/var keyword and add it as a modifier.
+            *
+            * TODO: Perhaps add metadata mapping property <-> param?
+            *  */
+            if(constructor.isPrimary) {
+                val psiTokens = it.source.psi?.getChildrenOfType<LeafPsiElement>()
+                val pModifiers = p.getMetadata(KtMetadataKeys.KT_MODIFIERS) as MutableSet<KtModifierKind>?
+                if(psiTokens?.any { t -> t.elementType == KtTokens.VAL_KEYWORD } == true) {
+                    pModifiers?.add(KtModifierKind.VAL)
+                } else if(psiTokens?.any { t -> t.elementType == KtTokens.VAR_KEYWORD } == true) {
+                    pModifiers?.add(KtModifierKind.VAR)
+                }
+            }
+            ctConstructor.addChildWith(p, ctConstructor::addParameter)
+        }
+
+        ctConstructor.putMetadata<CtConstructor<*>>(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY, constructor.isPrimary)
+
+        return ctConstructor.compose()
+    }
+
+    private inline fun <ChildT : CtElement> CtElement.addChildWith(child: ChildT, action: (ChildT) -> CtElement) {
+        action(child)
+        child.setParent(this)
     }
 
     override fun visitWhenExpression(whenExpression: FirWhenExpression, data: Nothing?): CompositeTransformResult<CtElement> {
@@ -155,6 +216,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
         val modifiers = KtModifierKind.fromFunctionDeclaration(simpleFunction)
         addModifiersAsMetadata(ctMethod, modifiers)
 
+        // Add params
         simpleFunction.valueParameters.forEach {
             val p = it.accept(this,null).single
             if(p !is CtParameter<*>) {
@@ -191,7 +253,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
 
         // Default value
         val defaultValue = valueParameter.defaultValue?.accept(this, null)?.single
-        if(defaultValue != null) {
+        if(defaultValue != null) { // TODO Replace with setDefaultExpr
             ctParam.putMetadata<CtParameter<*>>(KtMetadataKeys.PARAMETER_DEFAULT_VALUE, defaultValue)
             defaultValue.setParent(ctParam)
         }
@@ -251,9 +313,14 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
         val explicitType = (returnType is FirResolvedTypeRef && returnType.delegatedTypeRef != null)
         ctProperty.putMetadata<CtField<*>>(KtMetadataKeys.VARIABLE_EXPLICIT_TYPE, explicitType)
 
-        // TODO getter/setter
+        // Check if property stems from primary constructor value parameter, in that case this property is implicit
+        val initializer = property.initializer
+        if(initializer is FirQualifiedAccessExpression &&
+            initializer.calleeReference is FirPropertyFromParameterResolvedNamedReference) {
+            ctProperty.setImplicit<CtField<*>>(true)
+        }
 
-        // TODO Comments
+        // TODO getter/setter
 
         return ctProperty.compose()
     }
@@ -370,9 +437,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
         }
         return ctReturn.compose()
     }
-
-
-    private fun Any?.notNullOrFalse() = this != null
+    
     private fun <T : CtElement> T.compose() = CompositeTransformResult.single(this)
     private fun <T : CtElement> List<CompositeTransformResult<T>>.composeManySingles() = CompositeTransformResult.many(this.map { it.single })
     private fun <T : CtElement> List<CompositeTransformResult<T>>.compose() = CompositeTransformResult.many(this)
