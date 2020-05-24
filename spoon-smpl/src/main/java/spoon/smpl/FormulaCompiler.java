@@ -374,6 +374,9 @@ public class FormulaCompiler {
             Formula optionalMatch = compileFormulaInner(bodyNode, convergenceNode);
             Formula tail = compileFormulaInner(convergenceNode.next().get(0), cutoffNode);
 
+            // TODO: is there a case where metavariables need to be quantified enclosing the AllUntil here?
+            //  maybe if the same unquantified metavariable is used in both the optional match and immediately
+            //  in the tail? e.g optionalMatch = ExistsVar(x, ...), tail = ExistsVar(x, ...)
             return new AllUntil(new Or(optionalMatch, new True()), tail);
         } catch (Exception e) {
             throw new IllegalArgumentException("malformed dots-with-optional-match node");
