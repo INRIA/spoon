@@ -379,6 +379,20 @@ public class SmPLParser {
         header_params.add(anycharCopy);
 
         // Method body context
+        body.add(new RewriteRule("optdots_begin", "(?s)^<\\.\\.\\.", // TODO: could add something like result.required += "optdots_end" for error detection
+                (ctx) -> { },
+                (result, match) -> {
+                    result.out.append("if (").append(SmPLJavaDSL.getDotsWithOptionalMatchName()).append(") {");
+                    return match.end();
+                }));
+
+        body.add(new RewriteRule("optdots_end", "(?s)^\\.\\.\\.>",
+                (ctx) -> { },
+                (result, match) -> {
+                    result.out.append("}");
+                    return match.end();
+                }));
+
         body.add(new RewriteRule("dots", "(?s)^\\.\\.\\.",
                 (ctx) -> { ctx.push(statementDots); },
                 (result, match) -> {

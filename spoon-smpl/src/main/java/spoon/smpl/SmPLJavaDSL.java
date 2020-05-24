@@ -1,6 +1,7 @@
 package spoon.smpl;
 
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
@@ -122,6 +123,15 @@ public class SmPLJavaDSL {
     }
 
     /**
+     * Check if a given element represents a deletion anchor in the SmPL Java DSL.
+     * @param e Element to check
+     * @return True if element represents a deletion anchor, false otherwise
+     */
+    public static boolean isDeletionAnchor(CtElement e) {
+        return isExecutableWithName(e, deletionAnchorName);
+    }
+
+    /**
      * Name for elements that indicate missing/unspecified information.
      */
     private static final String unspecifiedElementOrTypeName = "__SmPLUnspecified__";
@@ -150,12 +160,29 @@ public class SmPLJavaDSL {
     }
 
     /**
-     * Check if a given element represents a deletion anchor in the SmPL Java DSL.
-     * @param e Element to check
-     * @return True if element represents a deletion anchor, false otherwise
+     * Name for element indicating a dots-with-optional-match SmPL construct.
      */
-    public static boolean isDeletionAnchor(CtElement e) {
-        return isExecutableWithName(e, deletionAnchorName);
+    private static String dotsWithOptionalMatchName = "__SmPLDotsOptionalMatch__";
+
+    /**
+     * Get name for element indicating a dots-with-optional-match SmPL construct.
+     *
+     * @return Name for element indicating a dots-with-optional-match SmPL construct
+     */
+    public static String getDotsWithOptionalMatchName() {
+        return dotsWithOptionalMatchName;
+    }
+
+    /**
+     * Check if a given element represents a dots-with-optional-match SmPL construct.
+     *
+     * @param element Element to check
+     * @return True if element represents a dots-with-optional-match SmPL construct, false otherwise
+     */
+    public static boolean isDotsWithOptionalMatch(CtElement element) {
+        return element instanceof CtIf
+               && ((CtIf) element).getCondition() instanceof CtVariableRead
+               && ((CtVariableRead<?>) ((CtIf) element).getCondition()).getVariable().getSimpleName().equals(dotsWithOptionalMatchName);
     }
 
     /**

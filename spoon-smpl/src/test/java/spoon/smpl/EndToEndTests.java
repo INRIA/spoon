@@ -1363,6 +1363,63 @@ public class EndToEndTests {
         assertEquals(expected.toString(), input.toString());
     }
     @Test
+    public void testDotsWithOptionalMatchSingle() {
+        // contract: using the <... P ...> dots alternative to include an optional matching of P
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "  void m1() {\n" +
+                                               "    a();\n" +
+                                               "    b(x);\n" +
+                                               "    b(y);\n" +
+                                               "    b(z);\n" +
+                                               "    c();\n" +
+                                               "    d();\n" +
+                                               "  }\n" +
+                                               "  void m2() {\n" +
+                                               "    a();\n" +
+                                               "    c();\n" +
+                                               "    // call to c should be removed as patch should match even without the presence of any calls to b\n" +
+                                               "    d();\n" +
+                                               "  }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "  void m1() {\n" +
+                                                  "    a();\n" +
+                                                  "    log(x);\n" +
+                                                  "    log(y);\n" +
+                                                  "    log(z);\n" +
+                                                  "    d();\n" +
+                                                  "  }\n" +
+                                                  "  void m2() {\n" +
+                                                  "    a();\n" +
+                                                  "    // call to c should be removed as patch should match even without the presence of any calls to b\n" +
+                                                  "    d();\n" +
+                                                  "  }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "identifier x;\n" +
+                                         "@@\n" +
+                                         "a();\n" +
+                                         "<...\n" +
+                                         "- b(x);\n" +
+                                         "+ log(x);\n" +
+                                         "...>\n" +
+                                         "- c();\n" +
+                                         "d();\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
     public void testEncloseInBranch() {
         // contract: a patch should be able to add a branch statement enclosing context
 
