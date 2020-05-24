@@ -37,7 +37,8 @@ public class FormulaCompiler {
         quantifiedMetavars = new ArrayList<>();
         metavarsToQuantifyOutermost = new ArrayList<>();
 
-        Formula formula = FormulaOptimizer.optimizeFully(compileFormulaInner(cfg.findNodesOfKind(BranchKind.BEGIN).get(0).next().get(0)));
+        Formula formula = compileFormulaInner(cfg.findNodesOfKind(BranchKind.BEGIN).get(0).next().get(0));
+        formula = FormulaOptimizer.optimizeFully(formula);
 
         Collections.sort(metavarsToQuantifyOutermost);
         Collections.reverse(metavarsToQuantifyOutermost);
@@ -73,125 +74,100 @@ public class FormulaCompiler {
 
         if (node.getKind() == BranchKind.EXIT) {
             return new Proposition("end");
-        }
+        } else if (SmPLMethodCFG.isMethodHeaderNode(node)) {
+            return compileMethodHeaderFormula(node);
+        } else {
+            switch (node.next().size()) {
+                case 0:
+                    throw new IllegalArgumentException("Control flow node with no outgoing path");
 
-        if (SmPLMethodCFG.isMethodHeaderNode(node)) {
-            if (!(node.getTag() instanceof SmPLMethodCFG.NodeTag)) {
-                throw new IllegalArgumentException("invalid tag type for method header node");
-            }
+                case 1:
+                    switch (node.getKind()) {
+                        case STATEMENT:
+                            return compileStatementFormula(node);
 
-            SmPLMethodCFG.NodeTag tag = (SmPLMethodCFG.NodeTag) node.getTag();
+                        case BLOCK_BEGIN:
+                            if (!(node.getTag() instanceof SmPLMethodCFG.NodeTag)) {
+                                throw new IllegalArgumentException("invalid BLOCK_BEGIN tag for node " +
+                                                                   Integer.toString(node.getId()));
+                            }
 
-            if (!(tag.getAnchor() instanceof CtMethod)) {
-                throw new IllegalArgumentException("invalid anchor for method header node");
-            }
-
-            if (SmPLJavaDSL.isUnspecifiedMethodHeader(tag.getAnchor())) {
-                formula = new Proposition("methodHeader");
-            } else {
-                formula = new MethodHeaderPredicate((CtMethod<?>) tag.getAnchor(), metavars);
-                Set<String> metavarsUsed = ((MethodHeaderPredicate) formula).getMetavarsUsedInHeader();
-
-                quantifiedMetavars.addAll(metavarsUsed);
-                metavarsToQuantifyOutermost.addAll(metavarsUsed);
-            }
-
-            List<Operation> methodBodyOps = additions.getOperationsAnchoredToMethodBody();
-
-            if (methodBodyOps != null && methodBodyOps.size() > 0) {
-                formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", methodBodyOps)));
-            }
-
-            return new And(formula, new AllNext(compileFormulaInner(node.next().get(0))));
-        }
-
-        switch (node.next().size()) {
-            case 0:
-                throw new IllegalArgumentException("Control flow node with no outgoing path");
-
-            case 1:
-                switch (node.getKind()) {
-                    case STATEMENT:
-                        return compileStatementFormula(node);
-
-                    case BLOCK_BEGIN:
-                        if (!(node.getTag() instanceof SmPLMethodCFG.NodeTag)) {
-                            throw new IllegalArgumentException("invalid BLOCK_BEGIN tag for node " +
-                                                                Integer.toString(node.getId()));
-                        }
-
-                        formula = new And(new Proposition(((SmPLMethodCFG.NodeTag) node.getTag()).getLabel()),
-                                          new AllNext(compileFormulaInner(node.next().get(0))));
-                        return formula;
-
-                    case CONVERGE:
-                        formula = new Proposition("after");
-
-                        Formula innerFormula = compileFormulaInner(node.next().get(0));
-
-                        if (innerFormula == null) {
+                            formula = new And(new Proposition(((SmPLMethodCFG.NodeTag) node.getTag()).getLabel()),
+                                              new AllNext(compileFormulaInner(node.next().get(0))));
                             return formula;
-                        } else {
-                            return new And(formula, new AllNext(innerFormula));
-                        }
 
-                    default:
-                        throw new IllegalArgumentException("Unexpected control flow node kind for single successor: " + node.getKind().toString());
-                }
+                        case CONVERGE:
+                            formula = new Proposition("after");
 
-            default:
-                switch (node.getKind()) {
-                    case STATEMENT:
-                        // Will probably need this if adding support for exceptions
-                        throw new NotImplementedException("Not implemented");
+                            Formula innerFormula = compileFormulaInner(node.next().get(0));
 
-                    case BRANCH:
-                        CtElement statement = node.getStatement();
-                        int line = statement.getPosition().getLine();
+                            if (innerFormula == null) {
+                                return formula;
+                            } else {
+                                return new And(formula, new AllNext(innerFormula));
+                            }
 
-                        formula = new Branch(statement.getParent(), metavars);
-                        dotsPreGuard = formula;
+                        default:
+                            throw new IllegalArgumentException("Unexpected control flow node kind for single successor: " + node.getKind().toString());
+                    }
 
-                        ArrayList<Operation> ops = new ArrayList<>();
+                default:
+                    switch (node.getKind()) {
+                        case STATEMENT:
+                            // Will probably need this if adding support for exceptions
+                            throw new NotImplementedException("Not implemented");
 
-                        if (!commonLines.contains(line)) {
-                            ops.add(new DeleteOperation());
-                        }
+                        case BRANCH:
+                            return compileBranchFormula(node);
 
-                        if (additions.containsKey(line)) {
-                            ops.addAll(additions.get(line));
-                        }
-
-                        if (ops.size() > 0) {
-                            formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", ops)));
-                        }
-
-                        // Mark first occurences of metavars as quantified before compiling inner formulas
-                        List<String> newMetavars = getUnquantifiedMetavarsUsedIn(node.getStatement());
-                        quantifiedMetavars.addAll(newMetavars);
-
-                        Formula lhs = compileFormulaInner(node.next().get(0));
-                        Formula rhs = compileFormulaInner(node.next().get(1));
-
-                        formula = new And(formula, new AllNext(new Or(lhs, rhs)));
-
-                        // Actually quantify the new metavars
-                        Collections.reverse(newMetavars);
-
-                        for (String varname : newMetavars) {
-                            formula = new ExistsVar(varname, formula);
-                        }
-
-                        return formula;
-
-                    default:
-                        throw new IllegalArgumentException("Unexpected control flow node kind for multiple successors: " + node.getKind().toString());
-                }
+                        default:
+                            throw new IllegalArgumentException("Unexpected control flow node kind for multiple successors: " + node.getKind().toString());
+                    }
+            }
         }
     }
 
     /**
+     * Compile a formula for the special method header node.
+     *
+     * @param node Method header node
+     * @return CTL-VW Formula
+     */
+    private Formula compileMethodHeaderFormula(ControlFlowNode node) {
+        Formula formula;
+
+        if (!(node.getTag() instanceof SmPLMethodCFG.NodeTag)) {
+            throw new IllegalArgumentException("invalid tag type for method header node");
+        }
+
+        SmPLMethodCFG.NodeTag tag = (SmPLMethodCFG.NodeTag) node.getTag();
+
+        if (!(tag.getAnchor() instanceof CtMethod)) {
+            throw new IllegalArgumentException("invalid anchor for method header node");
+        }
+
+        if (SmPLJavaDSL.isUnspecifiedMethodHeader(tag.getAnchor())) {
+            formula = new Proposition("methodHeader");
+        } else {
+            formula = new MethodHeaderPredicate((CtMethod<?>) tag.getAnchor(), metavars);
+            Set<String> metavarsUsed = ((MethodHeaderPredicate) formula).getMetavarsUsedInHeader();
+
+            quantifiedMetavars.addAll(metavarsUsed);
+            metavarsToQuantifyOutermost.addAll(metavarsUsed);
+        }
+
+        List<Operation> methodBodyOps = additions.getOperationsAnchoredToMethodBody();
+
+        if (methodBodyOps != null && methodBodyOps.size() > 0) {
+            formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", methodBodyOps)));
+        }
+
+        return new And(formula, new AllNext(compileFormulaInner(node.next().get(0))));
+    }
+
+    /**
      * Compile a CTL-VW Formula for a given single-statement single-successor CFG node.
+     *
      * @param node A single-statement, single-successor CFG node
      * @return CTL-VW Formula
      */
@@ -240,6 +216,60 @@ public class FormulaCompiler {
         }
     }
 
+    /**
+     * Compile a CTL-VW Formula for a given branch statement multi-successor CFG node.
+     *
+     * @param node A branch statement, multi-successor CFG node
+     * @return CTL-VW Formula
+     */
+    private Formula compileBranchFormula(ControlFlowNode node) {
+        Formula formula;
+
+        CtElement statement = node.getStatement();
+        int line = statement.getPosition().getLine();
+
+        formula = new Branch(statement.getParent(), metavars);
+        dotsPreGuard = formula;
+
+        ArrayList<Operation> ops = new ArrayList<>();
+
+        if (!commonLines.contains(line)) {
+            ops.add(new DeleteOperation());
+        }
+
+        if (additions.containsKey(line)) {
+            ops.addAll(additions.get(line));
+        }
+
+        if (ops.size() > 0) {
+            formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", ops)));
+        }
+
+        // Mark first occurences of metavars as quantified before compiling inner formulas
+        List<String> newMetavars = getUnquantifiedMetavarsUsedIn(node.getStatement());
+        quantifiedMetavars.addAll(newMetavars);
+
+        Formula lhs = compileFormulaInner(node.next().get(0));
+        Formula rhs = compileFormulaInner(node.next().get(1));
+
+        formula = new And(formula, new AllNext(new Or(lhs, rhs)));
+
+        // Actually quantify the new metavars
+        Collections.reverse(newMetavars);
+
+        for (String varname : newMetavars) {
+            formula = new ExistsVar(varname, formula);
+        }
+
+        return formula;
+    }
+
+    /**
+     * Compile a CTL-VW formula for a statement-level dots operator.
+     *
+     * @param node Node representing a statement-level dots operator
+     * @return CTL-VW Formula
+     */
     private Formula compileStatementLevelDotsFormula(ControlFlowNode node) {
         CtInvocation<?> dots = (CtInvocation<?>) node.getStatement();
 
@@ -387,5 +417,9 @@ public class FormulaCompiler {
      */
     private Formula dotsPreGuard;
 
+    /**
+     * List of metavariables found during compilation of subformulas that must be quantified at the outermost
+     * nesting level of the formula, i.e enclosing the full formula.
+     */
     private List<String> metavarsToQuantifyOutermost;
 }
