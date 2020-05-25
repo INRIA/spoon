@@ -1,9 +1,10 @@
 ---
-title: Create elements with factories
+title: Creating AST elements
 tags: [meta-model]
 keywords: factories, elements, ast, meta, model
 ---
 
+### Create elements with factories
 When you design and implement transformations, with processors 
 or templates, you need to create new elements, fill their data and add 
 them in the AST built by Spoon.
@@ -45,9 +46,9 @@ All these factories contribute to facilitate the creation of elements.
 When you have created an element from a factory, set it in an existing element 
 to build a new AST.
 
-## SpoonifierVisitor
+### Generating Spoon code for an element
 
-It is possible to visit an existing Spoon AST to generate calls to the factory that recreates the same AST.
+With `SpoonifierVisitor`, it is possible to visit an existing Spoon AST to generate calls to the factory that recreates the same AST.
 
 Example:
 
