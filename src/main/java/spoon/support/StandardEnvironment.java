@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -110,6 +112,8 @@ public class StandardEnvironment implements Serializable, Environment {
 	private transient EncodingProvider encodingProvider;
 
 	private int complianceLevel = DEFAULT_CODE_COMPLIANCE_LEVEL;
+
+	private boolean previewFeaturesEnabled = false;
 
 	private transient OutputDestinationHandler outputDestinationHandler = new DefaultOutputDestinationHandler(new File(Launcher.OUTPUTDIR), this);
 
@@ -346,6 +350,16 @@ public class StandardEnvironment implements Serializable, Environment {
 	@Override
 	public void setComplianceLevel(int level) {
 		complianceLevel = level;
+	}
+
+	@Override
+	public boolean isPreviewFeaturesEnabled() {
+		return previewFeaturesEnabled;
+	}
+
+	@Override
+	public void setPreviewFeaturesEnabled(boolean previewFeaturesEnabled) {
+		this.previewFeaturesEnabled = previewFeaturesEnabled;
 	}
 
 	@Override

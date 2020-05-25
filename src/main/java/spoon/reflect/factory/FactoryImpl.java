@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -49,6 +51,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
@@ -60,6 +63,7 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
@@ -672,6 +676,11 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
+	public <T, S> CtSwitchExpression<T, S> createSwitchExpression() {
+		return Core().createSwitchExpression();
+	}
+
+	@Override
 	public <T extends Enum<?>> CtEnum<T> createEnum() {
 		return Core().createEnum();
 	}
@@ -1274,5 +1283,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public <T> CtTypeReference<T> createSimplyQualifiedReference(String qualifiedName) {
 		return Type().createSimplyQualifiedReference(qualifiedName);
+	}
+
+	@Override
+	public CtYieldStatement createYieldStatement(boolean isImplicit) {
+		return Core().createYieldStatement().setImplicit(isImplicit);
 	}
 }

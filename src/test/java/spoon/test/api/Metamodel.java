@@ -711,6 +711,18 @@ public class Metamodel {
 
 			));
 
+			types.add(new Type("CtSwitchExpression", spoon.reflect.code.CtSwitchExpression.class, spoon.support.reflect.code.CtSwitchExpressionImpl.class, fm -> fm
+				.field(CtRole.IS_IMPLICIT, false, false)
+				.field(CtRole.POSITION, false, false)
+				.field(CtRole.TYPE, false, false)
+				.field(CtRole.ANNOTATION, false, false)
+				.field(CtRole.EXPRESSION, false, false)
+				.field(CtRole.CASE, false, false)
+				.field(CtRole.COMMENT, false, false)
+				.field(CtRole.CAST, false, false)
+
+			));
+
 			types.add(new Type("CtTry", spoon.reflect.code.CtTry.class, spoon.support.reflect.code.CtTryImpl.class, fm -> fm
 				.field(CtRole.IS_IMPLICIT, false, false)
 				.field(CtRole.LABEL, false, false)
@@ -961,6 +973,7 @@ public class Metamodel {
 			types.add(new Type("CtCase", spoon.reflect.code.CtCase.class, spoon.support.reflect.code.CtCaseImpl.class, fm -> fm
 				.field(CtRole.IS_IMPLICIT, false, false)
 				.field(CtRole.LABEL, false, false)
+				.field(CtRole.CASE_KIND, false, false)
 				.field(CtRole.POSITION, false, false)
 				.field(CtRole.ANNOTATION, false, false)
 				.field(CtRole.EXPRESSION, false, false)
@@ -1302,5 +1315,11 @@ public class Metamodel {
 				.field(CtRole.TARGET, false, false)
 
 			));
+			types.add(new Type("CtYieldStatement", spoon.reflect.code.CtYieldStatement.class, spoon.support.reflect.code.CtYieldStatementImpl.class, fm -> fm
+			.field(CtRole.IS_IMPLICIT, false, false)
+			.field(CtRole.POSITION, false, false)
+			.field(CtRole.ANNOTATION, false, false)
+			.field(CtRole.EXPRESSION, false, false)
+			.field(CtRole.COMMENT, false, false)));
 	}
 }

@@ -476,7 +476,7 @@ public class CommentTest {
 				+ "// comment before parameters" + newLine
 				+ "// comment before type parameter" + newLine
 				+ "// comment before name parameter" + newLine
-				+ "int i) throws java.lang.Error, java.lang.Exception {" + newLine
+				+ "int i) throws java.lang.Exception, java.lang.Error {" + newLine
 				+ "}", m2.toString());
 	}
 
@@ -638,7 +638,7 @@ public class CommentTest {
 				+ "/* comment before parameters */" + newLine
 				+ "/* comment before type parameter */" + newLine
 				+ "/* comment before name parameter */" + newLine
-				+ "int i) throws java.lang.Error, java.lang.Exception {" + newLine
+				+ "int i) throws java.lang.Exception, java.lang.Error {" + newLine
 				+ "}", m2.toString());
 
 		// contract: one does not crash when setting a comment starting with '//' in a block comment
@@ -803,7 +803,8 @@ public class CommentTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
-		launcher.getEnvironment().setComplianceLevel(10);
+		launcher.getEnvironment().setComplianceLevel(13);
+		launcher.getEnvironment().setPreviewFeaturesEnabled(true);
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/");
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/");

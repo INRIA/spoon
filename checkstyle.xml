@@ -28,6 +28,14 @@
     <module name="AvoidStarImport"/>
     <module name="IllegalImport"/> <!-- defaults to sun.* packages -->
     <module name="RedundantImport"/>
+    <module name="IllegalImport">
+      <property name="regexp" value="true" />
+      <property name="illegalClasses" value="^(?!.*(spoon|jdt)).*internal.*$" />
+      <!--The regex looks for imports containing internal and not containing spoon or jdt. Some examples are:
+      import spoon.pattern.internal.node.ForEachNode; // allowed because internal package but from spoon.
+      import org.eclipse.jdt.internal.compiler.batch.CompilationUnit; //allowed because internal package but from jdt.
+      import org.apache.commons.jexl2.internal.introspection; //rejected because import of internal package -->
+    </module>
     <module name="UnusedImports">
       <property name="processJavadoc" value="true"/>
     </module>

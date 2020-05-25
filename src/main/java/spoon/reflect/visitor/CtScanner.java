@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -49,6 +51,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
@@ -59,6 +62,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -97,7 +101,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
-
 
 /**
  * This visitor implements a deep-search scan on the model.
@@ -140,6 +143,7 @@ public abstract class CtScanner implements CtVisitor {
 			}
 		}
 	}
+
 	/**
 	 * Generically scans a Map of meta-model elements.
 	 */
@@ -191,6 +195,7 @@ public abstract class CtScanner implements CtVisitor {
 	public void scan(Object o) {
 		scan(null, o);
 	}
+
 	/**
 	 * Generically scans an object that can be an element, a reference, or a
 	 * collection of those.
@@ -306,7 +311,7 @@ public abstract class CtScanner implements CtVisitor {
 	public <S> void visitCtCase(final CtCase<S> caseStatement) {
 		enter(caseStatement);
 		scan(CtRole.ANNOTATION, caseStatement.getAnnotations());
-		scan(CtRole.EXPRESSION, caseStatement.getCaseExpression());
+		scan(CtRole.EXPRESSION, caseStatement.getCaseExpressions());
 		scan(CtRole.STATEMENT, caseStatement.getStatements());
 		scan(CtRole.COMMENT, caseStatement.getComments());
 		exit(caseStatement);
@@ -689,6 +694,17 @@ public abstract class CtScanner implements CtVisitor {
 		exit(switchStatement);
 	}
 
+	public <T, S> void visitCtSwitchExpression(final CtSwitchExpression<T, S> switchExpression) {
+		enter(switchExpression);
+		scan(CtRole.ANNOTATION, switchExpression.getAnnotations());
+		scan(CtRole.EXPRESSION, switchExpression.getSelector());
+		scan(CtRole.CASE, switchExpression.getCases());
+		scan(CtRole.COMMENT, switchExpression.getComments());
+		scan(CtRole.TYPE, switchExpression.getType());
+		scan(CtRole.CAST, switchExpression.getTypeCasts());
+		exit(switchExpression);
+	}
+
 	public void visitCtSynchronized(final CtSynchronized synchro) {
 		enter(synchro);
 		scan(CtRole.ANNOTATION, synchro.getAnnotations());
@@ -988,5 +1004,14 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.TYPE_REF, wildcardReference.getTypeReference());
 		exit(wildcardReference);
 	}
+
+	@Override
+	public void visitCtYieldStatement(CtYieldStatement statement) {
+		enter(statement);
+		scan(CtRole.ANNOTATION, statement.getAnnotations());
+		scan(CtRole.EXPRESSION, statement.getExpression());
+		scan(CtRole.COMMENT, statement.getComments());
+		exit(statement);
+		}
 }
 

@@ -25,6 +25,7 @@ Here are some active projects already using Spoon:
 - [jmixer](https://github.com/seintur/jmixer) is an implementation of mixins for Java
 - [syringe](https://github.com/DIVERSIFY-project/syringe) defines high-level transformation events
 - [InspectorGuidget](https://github.com/diverse-project/InspectorGuidget) finds and repairs code smells in Java SWING/AWT/JavaFX GUI code 
+- [sourcegraph/lsif-java](https://github.com/sourcegraph/lsif-java) provides a [Language Server Index Format  (LSIF)](https://github.com/sourcegraph/lsif-java) implementation based on Spoon
 - [AutoJMH](https://github.com/DIVERSIFY-project/autojmh-source-code) generates code for microbenchmarking with [JMH](http://openjdk.java.net/projects/code-tools/jmh/)
 - [Java Call Hierarchy Printer](https://github.com/pbadenski/call-hierarchy-printer) prints a method call hierarchy in text format
 - Yours?
@@ -35,8 +36,6 @@ Here are some active projects already using Spoon:
 Old projects using Spoon
 ------------------------
 
-[SpoonJDT](https://gforge.inria.fr/scm/viewvc.php/spoon/trunk/spoon-jdt-core/) provided an Eclipse plugin that allows for tight integration of Spoon within the Eclipse environment. With SpoonJDT, a set of validations and transformations packaged as a Spoonlet can occur on the fly and the reports are well-integrated into the Eclipse JDT.
-
-[SpoonLoader](http://mir.cs.illinois.edu/~bdaniel3/spoonloader/) is A simple facade to load classes, modify their source code, recompile the changes, and execute the modified code at runtime (by Brett Daniel).
-
-A previous maven plugin to run spoon on a target maven project was made by David Bernard ([link to the project](http://alchim.sf.net/spoon-maven-plugin/)).
+* [SpoonJDT](https://gforge.inria.fr/scm/viewvc.php/spoon/trunk/spoon-jdt-core/) was an Eclipse plugin for Spoon based on Spoonlets.
+* [SpoonLoader](http://mir.cs.illinois.edu/~bdaniel3/spoonloader/) was simple facade to load and modify Java source code(by Brett Daniel).
+* Another maven plugin was made by David Bernard ([link to the project](http://alchim.sf.net/spoon-maven-plugin/)).

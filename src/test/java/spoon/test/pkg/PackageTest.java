@@ -22,7 +22,9 @@ import spoon.OutputType;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
@@ -289,6 +291,22 @@ public class PackageTest {
 				assertEquals("@GlobalAnnotation", s.trim());
 			}
 		}
+	}
+
+	@Test
+	public void testNoPackageAssumptionWithStarImportNoClasspath() {
+		// contract: The package of a type not on the classpath should not guessed if there is an unresolved star import
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/noclasspath/TypeAccessStarImport.java");
+		CtModel model = launcher.buildModel();
+
+		List<CtTypeAccess<?>> typeAccesses = model.getElements(e -> e.getAccessedType().getSimpleName().equals("SomeClass"));
+		assertEquals("There should only be a single type access in the test source code", 1, typeAccesses.size());
+		CtPackageReference pkgRef = typeAccesses.get(0).getAccessedType().getPackage();
+
+		assertTrue(pkgRef.getSimpleName().isEmpty());
+		assertTrue(pkgRef.isImplicit());
 	}
 
 	@Test

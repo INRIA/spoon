@@ -18,13 +18,6 @@ entries:
           product: all
           version: all
 
-        - title: Code Transformation
-          url: /first_transformation.html
-          audience: writers, designers
-          platform: all
-          product: all
-          version: all
-
         - title: Architecture Checking
           url: /architecture_test.html
           audience: writers, designers
@@ -39,8 +32,8 @@ entries:
           product: all
           version: all
 
-        - title: Examples
-          url: /examples.html
+        - title: Processor for elements
+          url: /processor.html
           audience: writers, designers
           platform: all
           product: all
@@ -60,6 +53,89 @@ entries:
           product: all
           version: all
 
+    - title: Querying source code elements
+      audience: writers, designers
+      platform: all
+      product: all
+      version: all
+
+      items:
+        - title: AST Traversing
+          url: /filter.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
+        - title: AST Paths and Roles
+          url: /path.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
+        - title: Matcher
+          url: /matcher.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
+        - title: Pattern
+          url: /pattern.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
+    - title: Code Transformation
+      audience: writers, designers
+      platform: all
+      product: all
+      version: all
+
+      items:
+        - title: Code Transformation
+          url: /first_transformation.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
+        - title: Transformation Examples
+          url: /examples.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
+        - title: Transformation with annotations
+          url: /processor_annotations.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+          
+        - title: Transformation with Templates
+          url: /template_definition.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
+        - title: Code Generation
+          url: '/pattern.html#generator'
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
+        - title: Testing transformations
+          url: /testing_quickstart.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
 
     - title: Usage
       audience: writers, designers
@@ -138,79 +214,3 @@ entries:
           product: all
           version: all
 
-    - title: Querying source code elements
-      audience: writers, designers
-      platform: all
-      product: all
-      version: all
-
-      items:
-        - title: AST Traversing
-          url: /filter.html
-          audience: writers, designers
-          platform: all
-          product: all
-          version: all
-
-        - title: AST Paths and Roles
-          url: /path.html
-          audience: writers, designers
-          platform: all
-          product: all
-          version: all
-
-        - title: Matcher
-          url: /matcher.html
-          audience: writers, designers
-          platform: all
-          product: all
-          version: all
-
-        - title: Pattern
-          url: /pattern.html
-          audience: writers, designers
-          platform: all
-          product: all
-          version: all
-
-    - title: Transforming source code
-      audience: writers, designers
-      platform: all
-      product: all
-      version: all
-
-      items:
-          - title: Processor for elements
-            url: /processor.html
-            audience: writers, designers
-            platform: all
-            product: all
-            version: all
-
-          - title: Processor for annotations
-            url: /processor_annotations.html
-            audience: writers, designers
-            platform: all
-            product: all
-            version: all
-            
-          - title: Transformation with Templates
-            url: /template_definition.html
-            audience: writers, designers
-            platform: all
-            product: all
-            version: all
-
-          - title: Code Generation
-            url: '/pattern.html#generator'
-            audience: writers, designers
-            platform: all
-            product: all
-            version: all
-
-          - title: Testing transformations
-            url: /testing_quickstart.html
-            audience: writers, designers
-            platform: all
-            product: all
-            version: all

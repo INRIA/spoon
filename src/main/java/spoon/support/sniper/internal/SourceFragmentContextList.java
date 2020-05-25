@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -28,13 +30,13 @@ public class SourceFragmentContextList extends AbstractSourceFragmentContextColl
 	}
 
 	@Override
-	protected int findIndexOfNextChildTokenOfEvent(PrinterEvent event) {
+	protected int findIFragmentIndexCorrespondingToEvent(PrinterEvent event) {
 		if (event instanceof ElementPrinterEvent) {
 			// in case of collection search for exact item of the collection
 			ElementPrinterEvent elementEvent = (ElementPrinterEvent) event;
 			return findIndexOfNextChildTokenOfElement(elementEvent.getElement());
 		}
-		return super.findIndexOfNextChildTokenOfEvent(event);
+		return super.findIFragmentIndexCorrespondingToEvent(event);
 	}
 
 	@Override

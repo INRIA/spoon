@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -389,6 +391,12 @@ public class PositionBuilder {
 			//build position with appropriate context
 			return buildPositionCtElement(e, (Argument) pair.node);
 		} else if (node instanceof TypeReference) {
+			TypeReference typeReference = (TypeReference) node;
+			if (typeReference.resolvedType.getTypeAnnotations() != null) {
+				for (int a = 0; a < typeReference.resolvedType.getTypeAnnotations().length; a++) {
+					sourceStart = findPrevAnnotations(contents, 0, sourceStart);
+				}
+			}
 			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
 		} else if (node instanceof AllocationExpression) {
 			AllocationExpression allocationExpression = (AllocationExpression) node;
@@ -405,7 +413,11 @@ public class PositionBuilder {
 				return handlePositionProblem("Unexpected end of file in CtCase on: " + sourceStart);
 			}
 			if (contents[sourceEnd] != ':') {
-				return handlePositionProblem("Unexpected character " + contents[sourceEnd] + " instead of \':\' in CtCase on: " + sourceEnd);
+				if (contents[sourceEnd] == '-' && contents.length > sourceEnd + 1 && contents[sourceEnd + 1] == '>') {
+					sourceEnd++;
+				} else {
+					return handlePositionProblem("Unexpected character " + contents[sourceEnd] + " instead of \':\' or \'->\' in CtCase on: " + sourceEnd);
+				}
 			}
 		} else if ((node instanceof AssertStatement)) {
 			AssertStatement assert_ = (AssertStatement) node;
@@ -672,6 +684,24 @@ public class PositionBuilder {
 			if (startOfCommentOff >= 0) {
 				off = startOfCommentOff;
 			} else if (Character.isWhitespace(c) == false) {
+				//non whitespace found.
+				return off;
+			}
+			off--;
+		}
+		return -1;
+	}
+
+	static int findPrevAnnotations(char[] content, int minOff, int off) {
+		minOff = Math.max(0, minOff);
+		while (off >= minOff) {
+			char c = content[off];
+			//first check a comment and then whitesapce
+			//because line comment "// ...  \n" ends with EOL, which would be eat by isWhitespace and the comment detection would fail then
+			int startOfCommentOff = getStartOfComment(content, minOff, off);
+			if (startOfCommentOff >= 0) {
+				off = startOfCommentOff;
+			} else if (c == '@') {
 				//non whitespace found.
 				return off;
 			}

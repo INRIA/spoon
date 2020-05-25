@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -35,7 +37,7 @@ import spoon.support.sniper.internal.SourceFragment;
 import spoon.support.sniper.internal.SourceFragmentPrinter;
 import spoon.support.sniper.internal.SourceFragmentContextList;
 import spoon.support.sniper.internal.SourceFragmentContextNormal;
-import spoon.support.sniper.internal.SourceFragmentContextPrettyPrint;
+import spoon.support.sniper.internal.DefaultSourceFragmentPrinter;
 import spoon.support.sniper.internal.SourceFragmentContextSet;
 import spoon.support.sniper.internal.TokenPrinterEvent;
 import spoon.support.sniper.internal.TokenType;
@@ -181,9 +183,9 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		sourceFragmentContextStack.push(listContext);
 	}
 
-
-	private static boolean hasImplicitAncestor(CtElement el) {
-		if (el == null) {
+	/** Warning, not in the API, public for testing purposes */
+	public static boolean hasImplicitAncestor(CtElement el) {
+		if (el == null || !el.isParentInitialized()) {
 			return false;
 		}
 		if (el == el.getFactory().getModel().getRootPackage()) {
@@ -196,12 +198,17 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	}
 
 	/**
-	 * Prints an element in sniper mode
+	 * The sniper mode only works from JavaOutputProcessor
 	 */
 	@Override
 	public String printElement(CtElement element) {
-		applyPreProcessors(element);
-		if (element != null && !hasImplicitAncestor(element)) {
+		return element.toStringDebug();
+	}
+
+	/** Warning: debug and test method only, not part of the public API */
+	public String printElementSniper(CtElement element) {
+		reset();
+		if (!hasImplicitAncestor(element)) {
 			CompilationUnit compilationUnit = element.getPosition().getCompilationUnit();
 			if (compilationUnit != null
 					&& !(compilationUnit instanceof NoSourcePosition.NullCompilationUnit)) {
@@ -243,7 +250,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		return new ElementPrinterEvent(role, element) {
 			@Override
 			public void print() {
-				superScanInContext(element, SourceFragmentContextPrettyPrint.INSTANCE);
+				superScanInContext(element, DefaultSourceFragmentPrinter.INSTANCE);
 			}
 
 			@Override

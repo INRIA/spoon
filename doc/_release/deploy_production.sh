@@ -1,183 +1,84 @@
 #!/bin/bash
 #
-# Deploys a new release of Spoon. This script uses the maven
-# release plugin to deploy the project or rollback if we got any
-# error during the deployment.
-# Note that this script doesn't make the git clone. Think to do it by yourself
-# or to execute this script in a Spoon repository.
+# Deploys the current Spoon website to the website server.
+# To test the site locally before deploying run `jekyll serve`
+# in the website branch.
+#
+# Copied in the config of job "website deployer" on Jenkins
+
+REPO="https://github.com/INRIA/spoon.git"
+DIR=temp-spoon-clone
+DIR_WEBSITE=${DIR}/doc/
 
 USER_SERVER="spoon-bot"
-SERVER="${USER_SERVER}@scm.gforge.inria.fr"
+WEBSITE_SERVER="${USER_SERVER}@scm.gforge.inria.fr"
+SOURCE="_site/"
 HOST_DESTINATION="/home/groups/spoon/"
-FOLDER_DESTINATION="spoon.git"
+FOLDER_DESTINATION="htdocs"
 DESTINATION="${HOST_DESTINATION}${FOLDER_DESTINATION}/"
 
-# Determine the type.
+# Delete any existing previous temps spoon clone.
+rm -rf $DIR
 
-MAJOR=0
-MINOR=1
-PATCH=2
-TYPES=('major' 'minor' 'patch')
-if [ -z "$TYPE" ]; then
-	TYPE='minor'
-fi
-if ! [[ ${TYPES[*]} =~ "$TYPE" ]]; then
-	echo "Error: type should be 'major', 'minor' or 'patch'!"
-	exit 1
-fi
-if [[ ${TYPES[$PATCH]} = $TYPE ]]; then
-	git checkout stable
-fi
+# Clone the current repo into temp folder.
+git clone $REPO $DIR
 
-# Save the current release version.
+# Move working directory into temp folder.
+cd $DIR_WEBSITE
+cp ../README.md doc_homepage.md
 
-RELEASE_TEXT=$(grep "^spoon_release:" doc/_jekyll/_config.yml | cut -d' ' -f2-)
-REGEX="^\"([0-9]+).([0-9]+).([0-9]+)\"$"
-if [[ $RELEASE_TEXT =~ $REGEX ]]; then
-	RVERSIONS[0]="${BASH_REMATCH[1]}"
-	RVERSIONS[1]="${BASH_REMATCH[2]}"
-	RVERSIONS[2]="${BASH_REMATCH[3]}"
-else
-	echo "Error: Can't get the last release version from jekyll config file."
-	exit 1
-fi
-
-# Save the next version.
-
-if [[ ${TYPES[$MAJOR]} = $TYPE ]]; then
-	NSVERSIONS[0]=$((RVERSIONS[0] + 1))
-	NSVERSIONS[1]=1
-	NSVERSIONS[2]=0
-	NRVERSIONS[0]=$((RVERSIONS[0] + 1))
-	NRVERSIONS[1]=0
-	NRVERSIONS[2]=0
-elif [[ ${TYPES[$MINOR]} = $TYPE ]]; then
-	NSVERSIONS[0]=${RVERSIONS[0]}
-	NSVERSIONS[1]=$((RVERSIONS[1] + 2))
-	NSVERSIONS[2]=0
-	NRVERSIONS[0]=${RVERSIONS[0]}
-	NRVERSIONS[1]=$((RVERSIONS[1] + 1))
-	NRVERSIONS[2]=0
-elif [[ ${TYPES[$PATCH]} = $TYPE ]]; then
-	NSVERSIONS[0]=${RVERSIONS[0]}
-	NSVERSIONS[1]=$((RVERSIONS[1] + 1))
-	NSVERSIONS[2]=0
-	NRVERSIONS[0]=${RVERSIONS[0]}
-	NRVERSIONS[1]=${RVERSIONS[1]}
-	NRVERSIONS[2]=$((RVERSIONS[2] + 1))
-fi
-
-OLD_RELEASE="${RVERSIONS[0]}.${RVERSIONS[1]}.${RVERSIONS[2]}"
-NEXT_SNAPSHOT="${NSVERSIONS[0]}.${NSVERSIONS[1]}.${NSVERSIONS[2]}-SNAPSHOT"
-NEXT_RELEASE="${NRVERSIONS[0]}.${NRVERSIONS[1]}.${NRVERSIONS[2]}"
-TAG="spoon-core-$NEXT_RELEASE"
-
-echo "You'll create a $TYPE version $NEXT_RELEASE and the next snapshot will be $NEXT_SNAPSHOT"
-
-# Release to Maven Central.
-
-mvn release:clean
+# Generate the website.
+LATESTVERSION=`curl -s "http://search.maven.org/solrsearch/select?q=g:%22fr.inria.gforge.spoon%22+AND+a:%22spoon-core%22&core=gav" | jq -r '.response.docs | map(select(.v | match("^[0-9.]+$")) | .v )| .[0]'`
+sed -i -e "s/^spoon_release: .*/spoon_release: $LATESTVERSION/" _config.yml
+SNAPSHOTVERSION=`xmlstarlet sel -t -v /_:project/_:version ../pom.xml`
+sed -i -e "s/^spoon_snapshot: .*/spoon_snapshot: \"$SNAPSHOTVERSION\"/" _config.yml
+jekyll build
 if [ "$?" -ne 0 ]; then
-    echo "Can't clean the project for the release!"
-    mvn release:rollback
-    if [ "$?" -ne 0 ]; then
-	    echo "Can't rollback at the clean step!"
-	fi
+    echo "Jekyll cannot build your site!"
     exit 1
 fi
 
-mvn release:prepare -DreleaseVersion=$NEXT_RELEASE -DdevelopmentVersion=$NEXT_SNAPSHOT -Dtag=$TAG
+# moving repositories before backup
+ssh $WEBSITE_SERVER "mv ${DESTINATION}/repositories ${HOST_DESTINATION}"
+
+# Back up the old website and create the folder for the new one.
+TIMESTAMP=$(date +%s)
+BACKUP_DESTINATION="${HOST_DESTINATION}${FOLDER_DESTINATION}-${TIMESTAMP}"
+ssh $WEBSITE_SERVER "mv ${DESTINATION} ${BACKUP_DESTINATION}"
 if [ "$?" -ne 0 ]; then
-    echo "Can't prepare the project for the release!"
-    mvn release:rollback
-    if [ "$?" -ne 0 ]; then
-	    echo "Can't rollback at the prepare step!"
-	fi
+    echo "Error when you tried to back up the old website!"
     exit 1
 fi
 
-mvn release:perform -Dusername=$USER_SERVER
+ssh $WEBSITE_SERVER "mkdir -p ${DESTINATION}"
 if [ "$?" -ne 0 ]; then
-    echo "Can't perform the project for the release!"
-    mvn release:rollback
-    if [ "$?" -ne 0 ]; then
-	    echo "Can't rollback at the perform step!"
-	fi
+    echo "Error when you tried to create the folder of the new website!"
     exit 1
 fi
 
-# Updates Jekyll documentation.
-
-sed -i -re "s/^spoon_release: \"[0-9]+.[0-9]+.[0-9]+\"/spoon_release: \"$NEXT_RELEASE\"/;s/^sidebar_version: version [0-9]+.[0-9]+.[0-9]+/sidebar_version: version $NEXT_RELEASE/;s/^spoon_snapshot: \"[0-9]+.[0-9]+.[0-9]+-SNAPSHOT\"/spoon_snapshot: \"$NEXT_SNAPSHOT\"/" doc/_config.yml
+# Copy the website on the server.
+scp -r $SOURCE* $WEBSITE_SERVER:$DESTINATION
 if [ "$?" -ne 0 ]; then
-	echo "Can't update new versions in the jekyll config file."
-	echo "rollback at the previous state..."
-	git checkout doc/_config.yml
-	exit 1
-fi
-
-DATE=$(date +"%B %d, %Y: Spoon $NEXT_RELEASE is released.")
-DATE="$(tr '[:lower:]' '[:upper:]' <<< ${DATE:0:1})${DATE:1}"
-DATE="- $DATE"
-awk -i inplace -v date="$DATE" '{print} /^<!-- .* Marker comment. -->$/ {print date}' doc/doc_homepage.md
-if [ "$?" -ne 0 ]; then
-	echo "Can't update news feed in the website."
-	echo "rollback at the previous state..."
-	git checkout doc/doc_homepage.md
-	exit 1
-fi
-
-# Updates Readme.
-
-sed -i -re "s/<version>$OLD_RELEASE<\/version>/<version>$NEXT_RELEASE<\/version>/;s/<version>[0-9]+.[0-9]+.[0-9]+-SNAPSHOT<\/version>/<version>$NEXT_SNAPSHOT<\/version>/" README.md
-if [ "$?" -ne 0 ]; then
-	echo "Can't update new versions in the README file."
-	echo "rollback at the previous state..."
-	git checkout README.md
-	exit 1
-fi
-
-# Commit changes.
-
-echo "What is changes?"
-
-git diff
-git add . --all
-git commit -m "docs(version): Updates documentation."
-if [[ ${TYPES[$PATCH]} = $TYPE ]]; then
-    git push origin stable
-else
-    git push origin master
-fi
-
-# Updates stable branch.
-
-if [[ ${TYPES[$PATCH]} != $TYPE ]]; then
-    git checkout master
-    git branch -D stable
-    git checkout -b stable
-    git push origin stable -f
-fi
-
-# Retrieves all commits and tag from GitHub repo to INRIA Forge.
-
-ssh -A $SERVER "cd ${DESTINATION} && git fetch origin master:master"
-if [ "$?" -ne 0 ]; then
-    echo "Error when you fetch sources from GitHub for the master branch!"
+    echo "Error when you tried to copy the new version on the server!"
     exit 1
 fi
 
-ssh -A $SERVER "cd ${DESTINATION} && git fetch origin stable:stable"
+# moving repositories before backup
+ssh $WEBSITE_SERVER "mv ${HOST_DESTINATION}/repositories ${DESTINATION}"
+
+# Remove backups older than 3 days.
+ssh $WEBSITE_SERVER "find ${HOST_DESTINATION}${FOLDER_DESTINATION}-* -mtime +3 -type d -exec rm -rf {} \;"
+
+# Come back at the root of the temp project.
+cd ..
+
+# Generate maven site and deploy it.
+# coming back into the main folder with pom.xml
+mvn site site:deploy
 if [ "$?" -ne 0 ]; then
-    echo "Error when you fetch sources from GitHub for the stable branch!"
+    echo "Error when you tried to build or deploy maven site!"
     exit 1
 fi
 
-ssh -A $SERVER "cd ${DESTINATION} && git fetch --tags"
-if [ "$?" -ne 0 ]; then
-    echo "Error when you fetch tags!"
-    exit 1
-fi
-
-echo RELEASE="$NEXT_RELEASE" > target/variables.properties
-echo SNAPSHOT="$NEXT_SNAPSHOT" >> target/variables.properties
+# Delete our temp folder.
+cd .. && rm -rf $DIR

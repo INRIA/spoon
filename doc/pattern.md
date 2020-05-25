@@ -4,51 +4,18 @@ title: Spoon Patterns
 
 Spoon patterns enables you to find code elements. A Spoon pattern is based on a one or several AST nodes, which represent the code to match, where some parts of the AST are pattern parameters. When a pattern is matched, one can access to the code matched in each pattern parameter.
 
-The unique feature of Spoon pattern matching is that we are matching on AST trees and not source code text. It means that:
-
-* source code formating is ignored. For example:
-
-```java
-void m() {}
-//matches with
-void	m(){
-}
-```
-* comments are ignored. For example:
-
-```java
-void m() {}
-//matches with
-/**
- javadoc is ignored
-*/
-/* was public before */ void m(/*this is ignored too*/) {
-	//and line comments are ignored too
-}
-```
-
-* implicit and explicit elements are considered the same. For example:
-
-```java
-if (something) 
-	list = (List<String>) new ArrayList<>(FIELD_COUNT);
-//matches with
-if (something) {
-	OuterType.this.list = (java.util.List<java.lang.String>) new java.util.ArrayList<java.lang.String>(Constants.FIELD_COUNT);
-}
-```
-
 The main classes of Spoon patterns are those in package `spoon.pattern`:
 
 * classes: PatternBuilder, Pattern, Match, PatternBuilderHelper, PatternParameterConfigurator, InlinedStatementConfigurator 
 * eums: ConflictResolutionMode, Quantifier
 
-Example usage:
+See also [examples in project `spoon-examples`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/analysis/PatternTest.java)
+
+### Example usage
 
 ```java
 Factory spoonFactory = ...
-//build a Spoon pattern
-Pattern pattern = ... build a spoon pattern. For example for an method ...
+Pattern pattern = PatternBuilder.create(mainClass.getMethodsByName("m1").get(0).getBody().clone()).configurePatternParameters().build();
 
 //search for all occurences of the method in the root package
 pattern.forEachMatch(spoonFactory.getRootPackage(), (Match match) -> {
@@ -59,42 +26,44 @@ pattern.forEachMatch(spoonFactory.getRootPackage(), (Match match) -> {
 });
 ```
 
-## PatternBuilder
+### PatternBuilder
 
-To create a Spoon pattern, one must use `PatternBuilder`, which takes AST nodes as input, and **pattern parameters** are defined.
-
+To create a Spoon pattern, one must use `PatternBuilder`, which takes AST nodes as input, and _pattern parameters_ can be defined.
 
 ```java
 // creates pattern from the body of method "matcher1"
-Pattern t = PatternBuilder.create(
-    new PatternBuilderHelper(fooClass).setBodyOfMethod("matcher1").getPatternElements())
-    .configurePatternParameters()
+elem = mainClass.getMethodsByName("matcher1").get(0).getBody().clone()
+Pattern t = PatternBuilder.create(elem)
     .build();
 ```
 
 
-This pattern matches all statements of the body of method `statement`, ie. a precondition to check that a list  is smaller than a certain size. 
-This pattern has  one single pattern parameter called `_col_`, which is automatically considered as a pattern parameter because it is declared outside of the AST node. This automatic configuration happens when `configurePatternParameters` is called.
+If you call `configurePatternParameters()`, all variables that are declared outside of the AST node are automatically declared a pattern parameter. 
+```
+Pattern t = PatternBuilder.create(elem)
+    .configurePatternParameters()
+    .build();
+```
 
-## Pattern 
+One can also create specific parameters with `.configureParameters(pb -> pb.parameter("name").byXXXX` (see below)
 
-The main methods of `Pattern` are `getMatches` and `forEachMatch`.
+### Pattern 
+
+Once a `PatternBuilder` returns a `Pattern`, the main methods of `Pattern` are `getMatches` and `forEachMatch`.
 
 ```
 List<Match> matches = pattern.getMatches(ctClass);
 ```
 
-## Match
+### Match
 
-A `Match` represent a match of a pattern on a code elements.
+A `Match` represent a match of a pattern on a code elements. The main methods are `getMatchingElement` and `getMatchingElements`.
 
-The main methods are `getMatchingElement` and `getMatchingElements`.
+### PatternBuilderHelper
 
-## PatternBuilderHelper
+`PatternBuilderHelper` is useful to select AST nodes that would act as pattern. See method to get the body (method `setBodyOfMethod`) or the return expression of a method (method `setReturnExpressionOfMethod`).
 
-`PatternBuilderHelper` is used to select AST nodes that would act as pattern. It is mainly used to get the body (method `setBodyOfMethod`) or the return expression of a method (method `setReturnExpressionOfMethod`) .
-
-## PatternParameterConfigurator
+### PatternParameterConfigurator
 
 To create pattern paramters, one uses a `PatternParameterConfigurator` as a lambda:
 
@@ -113,10 +82,7 @@ Pattern t = PatternBuilder.create(...select pattern model...)
 		pb.parameter("firstParamName")
 			//...select which AST nodes are parameters...
 			//e.g. using parameter selector
-			.bySimpleName("zeroOneOrMoreStatements")
-			//...modify behavior of parameters...
-			//e.g. using parameter modifier
-			.setMinOccurence(0);
+			.bySimpleName("stmt")
 			
 		//... you can define as many parameters as you need...
 		
@@ -178,7 +144,7 @@ The `setValueType(type)` is called internally too, so match condition assures bo
   * `ContainerKind#MAP` - The values are always stored as `Map`.
 
 
-## InlinedStatementConfigurator
+### InlinedStatementConfigurator
 
 It is possible to match inlined code, eg:
 
@@ -216,8 +182,50 @@ inline statements
 * `markAsInlined(CtForEach|CtIf)` - provided CtForEach or CtIf statement
 is understood as inline statement
 
-## Generator
+### Generator
 
 All patterns can be used for code generation. The idea is that one calls `#generator()` on a pattern object to get a `Generator`. This class contains methods that takes as input a map of string,objects where each string key points to a pattern parameter name and each map value contains the element to be put in place of the pattern parameter.
 
+### Notes on patterns
 
+The unique feature of Spoon pattern matching is that we are matching on AST trees and not source code text. It means that:
+
+* source code formating is ignored. For example:
+
+```java
+void m() {}
+//matches with
+void	m(){
+}
+```
+* comments are ignored. For example:
+
+```java
+void m() {}
+//matches with
+/**
+ javadoc is ignored
+*/
+/* was public before */ void m(/*this is ignored too*/) {
+	//and line comments are ignored too
+}
+```
+
+* implicit and explicit elements are considered the same. For example:
+
+```java
+if (something) 
+	list = (List<String>) new ArrayList<>(FIELD_COUNT);
+//matches with
+if (something) {
+	OuterType.this.list = (java.util.List<java.lang.String>) new java.util.ArrayList<java.lang.String>(Constants.FIELD_COUNT);
+}
+```
+
+* casts are skipped. For example:
+
+```java
+f(x);
+//matches with
+(Object) f(x);
+```

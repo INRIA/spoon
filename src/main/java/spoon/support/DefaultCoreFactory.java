@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -45,6 +47,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
@@ -55,6 +58,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
@@ -136,6 +140,7 @@ import spoon.support.reflect.code.CtOperatorAssignmentImpl;
 import spoon.support.reflect.code.CtReturnImpl;
 import spoon.support.reflect.code.CtStatementListImpl;
 import spoon.support.reflect.code.CtSuperAccessImpl;
+import spoon.support.reflect.code.CtSwitchExpressionImpl;
 import spoon.support.reflect.code.CtSwitchImpl;
 import spoon.support.reflect.code.CtSynchronizedImpl;
 import spoon.support.reflect.code.CtThisAccessImpl;
@@ -147,6 +152,7 @@ import spoon.support.reflect.code.CtUnaryOperatorImpl;
 import spoon.support.reflect.code.CtVariableReadImpl;
 import spoon.support.reflect.code.CtVariableWriteImpl;
 import spoon.support.reflect.code.CtWhileImpl;
+import spoon.support.reflect.code.CtYieldStatementImpl;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.position.BodyHolderSourcePositionImpl;
 import spoon.support.reflect.cu.position.CompoundSourcePositionImpl;
@@ -189,8 +195,6 @@ import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 import spoon.support.reflect.reference.CtWildcardReferenceImpl;
 import spoon.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl;
 import spoon.support.visitor.equals.CloneHelper;
-
-
 
 /**
  * This class implements a default core factory for Spoon's meta-model. This
@@ -596,6 +600,13 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	}
 
 	@Override
+	public <T, S> CtSwitchExpression<T, S> createSwitchExpression() {
+		CtSwitchExpression<T, S> e = new CtSwitchExpressionImpl<T, S>();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+
+	@Override
 	public CtSynchronized createSynchronized() {
 		CtSynchronized e = new CtSynchronizedImpl();
 		e.setFactory(getMainFactory());
@@ -918,6 +929,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.code.CtSwitch.class)) {
 			return createSwitch();
 		}
+		if (klass.equals(spoon.reflect.code.CtSwitchExpression.class)) {
+			return createSwitchExpression();
+		}
 		if (klass.equals(spoon.reflect.code.CtSynchronized.class)) {
 			return createSynchronized();
 		}
@@ -1056,6 +1070,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.declaration.CtPackageDeclaration.class)) {
 			return createPackageDeclaration();
 		}
+		if (klass.equals(spoon.reflect.code.CtYieldStatement.class)) {
+			return createYieldStatement();
+		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}
 
@@ -1107,6 +1124,13 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		CtUsedService ctUsedService = new CtUsedServiceImpl();
 		ctUsedService.setFactory(getMainFactory());
 		return ctUsedService;
+	}
+
+	@Override
+	public CtYieldStatement createYieldStatement() {
+		CtYieldStatement e = new CtYieldStatementImpl();
+		e.setFactory(getMainFactory());
+		return e;
 	}
 }
 

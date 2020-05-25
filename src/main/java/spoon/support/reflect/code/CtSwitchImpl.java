@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -6,6 +8,7 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.code.CtAbstractSwitch;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSwitch;
@@ -44,7 +47,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	}
 
 	@Override
-	public <T extends CtSwitch<S>> T setCases(List<CtCase<? super S>> cases) {
+	public <T extends CtAbstractSwitch<S>> T setCases(List<CtCase<? super S>> cases) {
 		if (cases == null || cases.isEmpty()) {
 			this.cases = CtElementImpl.emptyList();
 			return (T) this;
@@ -58,7 +61,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	}
 
 	@Override
-	public <T extends CtSwitch<S>> T setSelector(CtExpression<S> selector) {
+	public <T extends CtAbstractSwitch<S>> T setSelector(CtExpression<S> selector) {
 		if (selector != null) {
 			selector.setParent(this);
 		}
@@ -68,7 +71,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 	}
 
 	@Override
-	public <T extends CtSwitch<S>> T addCase(CtCase<? super S> c) {
+	public <T extends CtAbstractSwitch<S>> T addCase(CtCase<? super S> c) {
 		if (c == null) {
 			return (T) this;
 		}

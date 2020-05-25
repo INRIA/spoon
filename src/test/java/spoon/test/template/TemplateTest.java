@@ -53,6 +53,8 @@ import spoon.test.template.testclasses.AnotherFieldAccessTemplate;
 import spoon.test.template.testclasses.ArrayAccessTemplate;
 import spoon.test.template.testclasses.FieldAccessOfInnerClassTemplate;
 import spoon.test.template.testclasses.FieldAccessTemplate;
+import spoon.test.template.testclasses.Flow;
+import spoon.test.template.testclasses.FlowMatcher;
 import spoon.test.template.testclasses.InnerClassTemplate;
 import spoon.test.template.testclasses.InvocationTemplate;
 import spoon.test.template.testclasses.NtonCodeTemplate;
@@ -1175,5 +1177,25 @@ public class TemplateTest {
 		assertEquals("o = o instanceof spoon.test.template.TypeReferenceClassAccess.Example<?>", method.getBody().getStatement(4).toString());
 		assertEquals("java.util.function.Supplier<java.lang.Long> p = spoon.test.template.TypeReferenceClassAccess.Example::currentTimeMillis", method.getBody().getStatement(5).toString());
 	}
-	
+
+	@Test
+	public void testMethodCast() throws Exception {
+		//contract: matcher should match methods with cast too
+		//https://github.com/INRIA/spoon/issues/3026
+		Launcher spoon = new Launcher();
+		Factory factory = spoon.getFactory();
+		spoon.createCompiler(
+				factory,
+				SpoonResourceHelper.resources("./src/test/java/spoon/test/template/testclasses/Flow.java"),
+				SpoonResourceHelper.resources("./src/test/java/spoon/test/template/testclasses/FlowMatcher.java"))
+				.build();
+
+		CtClass<?> templateKlass = factory.Class().get(FlowMatcher.class);
+		CtClass<?> klass = factory.Class().get(Flow.class);
+
+		CtMethod<?> method = (CtMethod<?>) templateKlass.getElements(new NamedElementFilter(CtMethod.class, "subFlowMatcher")).get(0);
+		CtElement templateRoot = method.getBody().getStatement(0);
+		TemplateMatcher myMatcher = new TemplateMatcher(templateRoot);
+		assertEquals(2, myMatcher.find(klass).size());
+	}
 }

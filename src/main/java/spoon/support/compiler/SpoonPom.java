@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -101,6 +103,14 @@ public class SpoonPom implements SpoonResource {
 	}
 
 	/**
+	 * Get the list of modules defined in this POM
+	 * @return the list of modules
+	 */
+	public List<SpoonPom> getModules() {
+		return Collections.unmodifiableList(modules);
+	}
+
+	/**
 	 * Get the Project Object Model
 	 * @return the Project Object Model
 	 */
@@ -121,9 +131,10 @@ public class SpoonPom implements SpoonResource {
 			sourcePath = build.getSourceDirectory();
 		}
 		if (sourcePath == null) {
-			sourcePath = Paths.get(directory.getAbsolutePath(), "src", "main", "java").toString();
+			sourcePath = Paths.get("src/main/java").toString();
 		}
-		File source = new File(sourcePath);
+		String absoluteSourcePath = Paths.get(directory.getAbsolutePath(), sourcePath).toString();
+		File source = new File(absoluteSourcePath);
 		if (source.exists()) {
 			output.add(source);
 		}
@@ -150,9 +161,10 @@ public class SpoonPom implements SpoonResource {
 			sourcePath = build.getTestSourceDirectory();
 		}
 		if (sourcePath == null) {
-			sourcePath = Paths.get(directory.getAbsolutePath(), "src", "test", "java").toString();
+			sourcePath = Paths.get("src/test/java").toString();
 		}
-		File source = new File(sourcePath);
+		String absoluteSourcePath = Paths.get(directory.getAbsolutePath(), sourcePath).toString();
+		File source = new File(absoluteSourcePath);
 		if (source.exists()) {
 			output.add(source);
 		}
@@ -248,7 +260,7 @@ public class SpoonPom implements SpoonResource {
 			return correctJavaVersion(javaVersion);
 		}
 		for (Profile profile: model.getProfiles()) {
-			if (profile.getActivation() != null && profile.getActivation().isActiveByDefault()) {
+			if (profile.getActivation() != null && profile.getActivation().isActiveByDefault() && profile.getBuild() != null) {
 				javaVersion = getSourceVersion(profile.getBuild());
 			}
 		}

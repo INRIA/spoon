@@ -1,11 +1,11 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.clone;
-
-
 /**
  * Used to clone a given element.
  *
@@ -170,7 +170,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.code.CtCase<S> aCtCase = caseStatement.getFactory().Core().createCase();
 		this.builder.copy(caseStatement, aCtCase);
 		aCtCase.setAnnotations(this.cloneHelper.clone(caseStatement.getAnnotations()));
-		aCtCase.setCaseExpression(this.cloneHelper.clone(caseStatement.getCaseExpression()));
+		aCtCase.setCaseExpressions(this.cloneHelper.clone(caseStatement.getCaseExpressions()));
 		aCtCase.setStatements(this.cloneHelper.clone(caseStatement.getStatements()));
 		aCtCase.setComments(this.cloneHelper.clone(caseStatement.getComments()));
 		this.cloneHelper.tailor(caseStatement, aCtCase);
@@ -672,6 +672,20 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	public <T, S> void visitCtSwitchExpression(final spoon.reflect.code.CtSwitchExpression<T, S> switchExpression) {
+		spoon.reflect.code.CtSwitchExpression<T, S> aCtSwitchExpression = switchExpression.getFactory().Core().createSwitchExpression();
+		this.builder.copy(switchExpression, aCtSwitchExpression);
+		aCtSwitchExpression.setAnnotations(this.cloneHelper.clone(switchExpression.getAnnotations()));
+		aCtSwitchExpression.setSelector(this.cloneHelper.clone(switchExpression.getSelector()));
+		aCtSwitchExpression.setCases(this.cloneHelper.clone(switchExpression.getCases()));
+		aCtSwitchExpression.setComments(this.cloneHelper.clone(switchExpression.getComments()));
+		aCtSwitchExpression.setType(this.cloneHelper.clone(switchExpression.getType()));
+		aCtSwitchExpression.setTypeCasts(this.cloneHelper.clone(switchExpression.getTypeCasts()));
+		this.cloneHelper.tailor(switchExpression, aCtSwitchExpression);
+		this.other = aCtSwitchExpression;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public void visitCtSynchronized(final spoon.reflect.code.CtSynchronized synchro) {
 		spoon.reflect.code.CtSynchronized aCtSynchronized = synchro.getFactory().Core().createSynchronized();
 		this.builder.copy(synchro, aCtSynchronized);
@@ -1065,5 +1079,16 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		this.cloneHelper.tailor(wildcardReference, aCtTypeMemberWildcardImportReference);
 		this.other = aCtTypeMemberWildcardImportReference;
 	}
-}
 
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtYieldStatement(spoon.reflect.code.CtYieldStatement statement) {
+		spoon.reflect.code.CtYieldStatement aCtYieldStatement = statement.getFactory().Core().createYieldStatement();
+		this.builder.copy(statement, aCtYieldStatement);
+		aCtYieldStatement.setAnnotations(this.cloneHelper.clone(statement.getAnnotations()));
+		aCtYieldStatement.setExpression(this.cloneHelper.clone(statement.getExpression()));
+		aCtYieldStatement.setComments(this.cloneHelper.clone(statement.getComments()));
+		this.cloneHelper.tailor(statement, aCtYieldStatement);
+		this.other = aCtYieldStatement;
+	}
+}

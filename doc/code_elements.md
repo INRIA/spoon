@@ -324,6 +324,18 @@ switch(x) { // <-- switch statement
       System.out.println("foo");
 }
 ```
+### CtSwitchExpression
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtSwitchExpression.html)
+
+```java
+
+int i = 0;
+int x = switch(i) { // <-- switch expression
+    case 1 -> 10;
+    case 2 -> 20;
+    default -> 30;
+};
+```
 ### CtSynchronized
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtSynchronized.html)
 
@@ -445,6 +457,26 @@ switch(x) { // <-- switch statement
     int x = 0;
     while (x!=10) {
         x=x+1;
+    };
+
+```
+### CtYieldStatement
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtYieldStatement.html)
+
+```java
+
+    int x = 0;
+    x = switch ("foo") {
+        default -> {
+					x=x+1;
+					yield x; //<--- yield statement
+					}
+    };
+
+
+    int x = 0;
+    x = switch ("foo") {
+        default -> 4; //<---  implicit yield statement
     };
 
 ```

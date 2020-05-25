@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -6,7 +8,6 @@
 package spoon.testing.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.logging.log4j.Level;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.processing.Processor;
@@ -55,8 +56,10 @@ public final class ProcessorUtils {
 								throw new SpoonException("Error while assigning the value to " + f.getName(), e);
 							}
 						} else {
-							p.getFactory().getEnvironment().report(p, Level.WARN,
-									"No value found for property '" + f.getName() + "' in processor " + p.getClass().getName());
+								if (f.getAnnotation(Property.class).notNullable()) {
+										throw new SpoonException("No value found for property '" + f.getName()
+																							+ "' in processor " + p.getClass().getName());
+							}
 						}
 					}
 				}

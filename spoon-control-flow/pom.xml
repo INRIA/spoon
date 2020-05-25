@@ -37,7 +37,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.0</version>
                 <configuration>
                     <failsOnError>true</failsOnError>
                     <configLocation>../checkstyle.xml</configLocation>
@@ -81,7 +81,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>7.3.0-SNAPSHOT</version>
+            <version>8.1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>

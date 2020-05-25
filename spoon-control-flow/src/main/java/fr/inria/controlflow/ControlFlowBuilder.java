@@ -60,6 +60,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
@@ -70,6 +71,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -741,6 +743,11 @@ public class ControlFlowBuilder implements CtVisitor {
 	}
 
 	@Override
+	public <T, S> void visitCtSwitchExpression(CtSwitchExpression<T, S> switchExpression) {
+		//TODO: missing, implementation needed
+	}
+
+	@Override
 	public void visitCtSynchronized(CtSynchronized synchro) {
 
 	}
@@ -910,4 +917,11 @@ public class ControlFlowBuilder implements CtVisitor {
 	public void visitCtTypeMemberWildcardImportReference(CtTypeMemberWildcardImportReference wildcardReference) {
 
 	}
+
+	@Override
+	public void visitCtYieldStatement(CtYieldStatement statement) {
+		// TODO Auto-generated method stub
+		//add because java14 switches, stub because not implemented
+	}
+
 }

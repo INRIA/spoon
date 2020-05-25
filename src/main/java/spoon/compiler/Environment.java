@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -42,6 +44,17 @@ public interface Environment {
 	 * Sets the Java version compliance level.
 	 */
 	void setComplianceLevel(int level);
+
+	/**
+	 * Returns true if preview language features are enabled.
+	 */
+	boolean isPreviewFeaturesEnabled();
+
+	/**
+	 * Set to true to enable latest preview language features.
+	 * Note: compliance level should be set to the latest.
+	 */
+	void setPreviewFeaturesEnabled(boolean enabled);
 
 	/**
 	 * @return the kind of pretty-printing expected.

@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -11,7 +13,6 @@ import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
-import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
@@ -38,13 +39,13 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
-import spoon.support.compiler.SnippetCompilationError;
-import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.support.QueueProcessingManager;
 import spoon.support.comparator.FixedOrderBasedOnFileNameCompilationUnitComparator;
+import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.SpoonProgress;
 import spoon.support.compiler.VirtualFolder;
 import spoon.support.modelobs.SourceFragmentCreator;
+import spoon.support.sniper.SniperJavaPrettyPrinter;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -144,15 +145,21 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 		JDTBatchCompiler batchCompiler = createBatchCompiler(types);
 
-
-		final String[] args = new JDTBuilderImpl() //
-				.classpathOptions(new ClasspathOptions().encoding(this.getEnvironment().getEncoding().displayName()).classpath(getSourceClasspath()).binaries(getBinaryOutputDirectory())) //
-				.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
-				.annotationProcessingOptions(new AnnotationProcessingOptions().compileProcessors()) //
-				.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
-				.sources(new SourceOptions().sources(sources.getAllJavaFiles())) // no sources, handled by the JDTBatchCompiler
+		ClasspathOptions classpathOptions = new ClasspathOptions().encoding(this.getEnvironment().getEncoding().displayName()).classpath(getSourceClasspath()).binaries(getBinaryOutputDirectory());
+		ComplianceOptions complianceOptions = new ComplianceOptions().compliance(javaCompliance);
+		if (factory.getEnvironment().isPreviewFeaturesEnabled()) {
+			complianceOptions.enablePreview();
+		}
+		AnnotationProcessingOptions annotationProcessingOptions = new AnnotationProcessingOptions().compileProcessors();
+		AdvancedOptions advancedOptions = new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc();
+		SourceOptions sourceOptions = new SourceOptions().sources(this.sources.getAllJavaFiles());
+		final String[] args = new JDTBuilderImpl()
+				.classpathOptions(classpathOptions)
+				.complianceOptions(complianceOptions)
+				.annotationProcessingOptions(annotationProcessingOptions)
+				.advancedOptions(advancedOptions)
+				.sources(sourceOptions) // no sources, handled by the JDTBatchCompiler
 				.build();
-
 		getFactory().getEnvironment().debugMessage("compile args: " + Arrays.toString(args));
 		System.setProperty("jdt.compiler.useSingleThread", "true");
 		batchCompiler.compile(args);
@@ -387,11 +394,18 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 		String[] args;
 		if (jdtBuilder == null) {
-			args = new JDTBuilderImpl() //
-					.classpathOptions(new ClasspathOptions().encoding(this.getEnvironment().getEncoding().displayName()).classpath(classpath)) //
-					.complianceOptions(new ComplianceOptions().compliance(javaCompliance)) //
-					.advancedOptions(new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc()) //
-					.sources(new SourceOptions().sources(sourceFiles)) // no sources, handled by the JDTBatchCompiler
+			ClasspathOptions classpathOptions = new ClasspathOptions().encoding(this.getEnvironment().getEncoding().displayName()).classpath(classpath);
+			ComplianceOptions complianceOptions = new ComplianceOptions().compliance(javaCompliance);
+			if (factory.getEnvironment().isPreviewFeaturesEnabled()) {
+				complianceOptions.enablePreview();
+			}
+			AdvancedOptions advancedOptions = new AdvancedOptions().preserveUnusedVars().continueExecution().enableJavadoc();
+			SourceOptions sourceOptions = new SourceOptions().sources(sourceFiles);
+			args = new JDTBuilderImpl()
+					.classpathOptions(classpathOptions)
+					.complianceOptions(complianceOptions)
+					.advancedOptions(advancedOptions)
+					.sources(sourceOptions) // no sources, handled by the JDTBatchCompiler
 					.build();
 		} else {
 			args = jdtBuilder.build();
@@ -428,7 +442,11 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		});
 		if (getFactory().getEnvironment().isCommentsEnabled()) {
 			forEachCompilationUnit(unitList, SpoonProgress.Process.COMMENT_LINKING, unit -> {
-				new JDTCommentBuilder(unit, factory).build();
+				try {
+					new JDTCommentBuilder(unit, factory).build();
+				} catch (Exception e) {
+					getEnvironment().report(null, Level.ERROR, "JDTCommentBuilder crashed with the error, some comments may be missing in the model: " + e.toString());
+				}
 			});
 		}
 	}
@@ -549,7 +567,10 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 				}
 
 			} catch (Exception e) {
-				Launcher.LOGGER.error(e.getMessage(), e);
+				if (e instanceof RuntimeException) {
+					throw (RuntimeException) e;
+				}
+				throw new SpoonException(e);
 			}
 		}
 	}

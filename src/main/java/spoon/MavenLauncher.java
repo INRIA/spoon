@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -125,7 +127,7 @@ public class MavenLauncher extends Launcher {
 		}
 
 		if (classpath == null) {
-			classpath = model.buildClassPath(mvnHome, sourceType, LOGGER, false);
+			classpath = model.buildClassPath(mvnHome, sourceType, LOGGER, forceRefresh);
 		}
 
 		// dependencies
@@ -133,5 +135,13 @@ public class MavenLauncher extends Launcher {
 
 		// compliance level
 		this.getEnvironment().setComplianceLevel(model.getSourceVersion());
+	}
+
+	/**
+	 * Triggers regeneration of the classpath that is used for building the model, based on pom.xml
+	 */
+	public void rebuildClasspath() {
+		String[] classpath = model.buildClassPath(mvnHome, sourceType, LOGGER, true);
+		this.getModelBuilder().setSourceClasspath(classpath);
 	}
 }

@@ -33,12 +33,12 @@ function main() {
  */
 function parseCommitLog(version, callback) {
     var categorizedCommits = {
-        "feat": {
+        "feat": { // will also match "feature:"
             title:"New features",
             commits: []
         },
         "fix": {
-            title:"Bug Fixes",
+            title:"Bug fixes",
             commits: []
         },
         "doc": {
@@ -49,7 +49,7 @@ function parseCommitLog(version, callback) {
             title:"Code style",
             commits: []
         },
-        "refactor": {
+        "ref": { // will also match "refactor:"
             title:"Refactoring",
             commits: []
         },

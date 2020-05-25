@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -33,7 +35,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
  * then Spaces1 belongs to E1 and Spaces2 belongs to element E2.
  * </ul>
  */
-public class SourceFragmentContextNormal extends AbstractSourceFragmentContext {
+public class SourceFragmentContextNormal extends AbstractSourceFragmentPrinter {
 	/**
 	 * @param mutableTokenWriter {@link MutableTokenWriter}, which is used for printing
 	 * @param rootFragment the {@link ElementSourceFragment}, which represents whole elements. E.g. whole type or method

@@ -205,6 +205,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 		new CtScanner() {
 			private final List<String> excludesAST = Arrays.asList(//
 					"spoon.support.reflect.declaration.CtTypeInformationImpl", "spoon.support.reflect.code.CtAbstractInvocationImpl", //
+					"spoon.support.reflect.declaration.CtTypeInformationImpl", "spoon.support.reflect.code.CtAbstractSwitchImpl", //
 					"spoon.support.reflect.declaration.CtTypedElementImpl", "spoon.support.reflect.declaration.CtVariableImpl", //
 					"spoon.support.reflect.reference.CtActualTypeContainerImpl", "spoon.support.reflect.code.CtCFlowBreakImpl", "spoon.support.reflect.code.CtLabelledFlowBreakImpl", //
 					"spoon.support.reflect.declaration.CtCodeSnippetImpl", "spoon.support.reflect.declaration.CtFormalTypeDeclarerImpl", //

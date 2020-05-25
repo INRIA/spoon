@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -43,6 +45,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
@@ -53,6 +56,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -367,6 +371,11 @@ public interface CtVisitor {
 	<S> void visitCtSwitch(CtSwitch<S> switchStatement);
 
 	/**
+	 * Visits a <code>switch</code> expression.
+	 */
+	<T, S> void visitCtSwitchExpression(CtSwitchExpression<T, S> switchExpression);
+
+	/**
 	 * Visits a <code>synchronized</code> modifier.
 	 */
 	void visitCtSynchronized(CtSynchronized synchro);
@@ -515,4 +524,9 @@ public interface CtVisitor {
 	 * Visits an import wildcard static type member reference
 	 */
 	void visitCtTypeMemberWildcardImportReference(CtTypeMemberWildcardImportReference wildcardReference);
+
+	/**
+	 * Visits a yield statement.
+	 */
+	void visitCtYieldStatement(CtYieldStatement statement);
 }

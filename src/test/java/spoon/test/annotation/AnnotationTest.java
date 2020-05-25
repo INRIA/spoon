@@ -18,6 +18,7 @@ package spoon.test.annotation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
@@ -601,6 +602,8 @@ public class AnnotationTest {
 		assertEquals(CtAnnotatedElementType.TYPE_USE, typeAnnotations.get(0).getAnnotatedElementType());
 		assertEquals("Parameter type with an type annotation must be well printed", "java.lang.@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "String param", ctParameter.toString());
 	}
+
+
 
 	@Test
 	public void testUsageOfTypeAnnotationOnLocalVariableInMethod() {
@@ -1611,5 +1614,4 @@ public class AnnotationTest {
 		assertEquals("@spoon.test.annotation.testclasses.CustomAnnotation(something = \"annotation string\")", ctCatchVariable2.getAnnotations().get(0).toString());
 
 	}
-
 }

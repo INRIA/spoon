@@ -1,4 +1,6 @@
 /**
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
@@ -83,6 +85,7 @@ import org.eclipse.jdt.internal.compiler.ast.SingleTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.StringLiteral;
 import org.eclipse.jdt.internal.compiler.ast.StringLiteralConcatenation;
 import org.eclipse.jdt.internal.compiler.ast.SuperReference;
+import org.eclipse.jdt.internal.compiler.ast.SwitchExpression;
 import org.eclipse.jdt.internal.compiler.ast.SwitchStatement;
 import org.eclipse.jdt.internal.compiler.ast.SynchronizedStatement;
 import org.eclipse.jdt.internal.compiler.ast.ThisReference;
@@ -95,6 +98,7 @@ import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnaryExpression;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.WhileStatement;
+import org.eclipse.jdt.internal.compiler.ast.YieldStatement;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -714,6 +718,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
+	public void endVisit(SwitchExpression switchExpression, BlockScope scope) {
+		if (context.stack.peek().node instanceof CaseStatement) {
+			context.exit(context.stack.peek().node);
+		}
+		context.exit(switchExpression);
+	}
+
+	@Override
 	public void endVisit(SynchronizedStatement synchronizedStatement, BlockScope scope) {
 		context.exit(synchronizedStatement);
 	}
@@ -976,9 +988,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		context.enter(typeAccess, arrayQualifiedTypeReference);
 
-		final CtArrayTypeReference<Object> arrayType = (CtArrayTypeReference<Object>) references.getTypeReference(arrayQualifiedTypeReference.resolvedType);
-		arrayType.getArrayType().setAnnotations(this.references.buildTypeReference(arrayQualifiedTypeReference, scope).getAnnotations());
+		CtArrayTypeReference<Object> arrayType = (CtArrayTypeReference<Object>) references.getTypeReference(arrayQualifiedTypeReference.resolvedType);
 		typeAccess.setAccessedType(arrayType);
+
+		if (arrayType != null) {
+			arrayType.getArrayType().setAnnotations(this.references.buildTypeReference(arrayQualifiedTypeReference, scope).getAnnotations());
+		}
 
 		return true;
 	}
@@ -1661,6 +1676,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
+	public boolean visit(SwitchExpression switchExpression, BlockScope blockScope) {
+		context.enter(factory.Core().createSwitchExpression(), switchExpression);
+		return true;
+	}
+
+	@Override
 	public boolean visit(SynchronizedStatement synchronizedStatement, BlockScope scope) {
 		context.enter(factory.Core().createSynchronized(), synchronizedStatement);
 		return true;
@@ -1692,11 +1713,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration localTypeDeclaration, BlockScope scope) {
-		CtType<?> t;
 		if (localTypeDeclaration.binding == null) {
 			// no classpath mode but JDT returns nothing. We create an empty class.
-			t = factory.Core().createClass();
-			t.setSimpleName(CtType.NAME_UNKNOWN);
+			final CtType<?> t = factory.Core().createClass();
+			// we create a unique class name for this anonymous class
+			// see https://github.com/INRIA/spoon/issues/2974
+			t.setSimpleName(Integer.toString(localTypeDeclaration.sourceStart()));
 			((CtClass) t).setSuperclass(references.getTypeReference(null, localTypeDeclaration.allocation.type));
 			context.enter(t, localTypeDeclaration);
 		} else {
@@ -1758,6 +1780,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(ModuleDeclaration moduleDeclaration, CompilationUnitScope scope) {
 		CtModule module = getHelper().createModule(moduleDeclaration);
 		context.compilationUnitSpoon.setDeclaredModule(module);
+		return true;
+	}
+
+	@Override
+	public void endVisit(YieldStatement yieldStatement, BlockScope scope) {
+		context.exit(yieldStatement);
+	}
+	@Override
+	public boolean visit(YieldStatement yieldStatement, BlockScope scope) {
+		context.enter(factory.Core().createYieldStatement().setImplicit(yieldStatement.isImplicit), yieldStatement);
 		return true;
 	}
 }
