@@ -268,7 +268,7 @@ public class FormulaCompiler {
         Formula lhs = compileFormulaInner(node.next().get(0), cutoffNode);
         Formula rhs = compileFormulaInner(node.next().get(1), cutoffNode);
 
-        formula = new And(formula, new AllNext(new Or(lhs, rhs)));
+        formula = new And(formula, new And(new ExistsNext(lhs), new ExistsNext(rhs)));
 
         // Actually quantify the new metavars
         Collections.reverse(newMetavars);
