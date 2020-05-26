@@ -10,7 +10,9 @@ import java.util.List;
 import static org.junit.Assert.fail;
 
 public class ToStringBugTest {
-
+    
+	@Ignore("UnresolvedBug")
+	@GitHubIssue(issueNumber = 3381)
     @Test
     public void test1() {
         final Launcher launcher = new Launcher();
@@ -30,7 +32,9 @@ public class ToStringBugTest {
             fail();
         }
     }
-
+    
+	@Ignore("UnresolvedBug")
+	@GitHubIssue(issueNumber = 3381)
     @Test
     public void test2() {
         final Launcher launcher = new Launcher();
