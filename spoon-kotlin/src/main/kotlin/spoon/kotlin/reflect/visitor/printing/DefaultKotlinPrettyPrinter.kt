@@ -149,8 +149,14 @@ class DefaultKotlinPrettyPrinter(
         if(ctClass.superInterfaces.isNotEmpty()) {
             ctClass.superInterfaces.forEach { inheritanceList.add(getTypeName(it)) }
         }
-        if(inheritanceList.isNotEmpty())
-            adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE) and inheritanceList.joinToString()
+        if(inheritanceList.isNotEmpty()) {
+            var p = ""
+            if(ctClass.superclass == null) {
+                adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
+            }
+            else p = ", "
+            adapter write inheritanceList.joinToString(prefix = p)
+        }
 
         adapter write SPACE and LEFT_CURL
         adapter.newline()
