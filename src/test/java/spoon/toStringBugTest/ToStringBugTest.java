@@ -1,9 +1,12 @@
 package spoon.toStringBugTest;
 
+
+import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtType;
+import spoon.test.GitHubIssue;
 
 import java.util.List;
 
@@ -11,8 +14,8 @@ import static org.junit.Assert.fail;
 
 public class ToStringBugTest {
     
-	@Ignore("UnresolvedBug")
-	@GitHubIssue(issueNumber = 3381)
+    @Ignore("UnresolvedBug")
+    @GitHubIssue(issueNumber = 3381)
     @Test
     public void test1() {
         final Launcher launcher = new Launcher();
