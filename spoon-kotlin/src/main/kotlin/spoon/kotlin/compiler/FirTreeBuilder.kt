@@ -1,7 +1,5 @@
 package spoon.kotlin.compiler
 
-import spoon.kotlin.ktMetadata.KtMetadataKeys
-import spoon.kotlin.reflect.KtModifierKind
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.FirElement
@@ -15,11 +13,14 @@ import org.jetbrains.kotlin.fir.visitors.FirVisitor
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
+import spoon.kotlin.ktMetadata.KtMetadataKeys
+import spoon.kotlin.reflect.KtModifierKind
 import spoon.kotlin.reflect.KtStatementExpression
 import spoon.kotlin.reflect.KtStatementExpressionImpl
 import spoon.reflect.code.*
 import spoon.reflect.declaration.*
 import spoon.reflect.factory.Factory
+import spoon.reflect.reference.CtExecutableReference
 import spoon.reflect.reference.CtTypeReference
 import spoon.support.reflect.code.CtLiteralImpl
 
@@ -103,6 +104,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
 
     override fun visitConstructor(constructor: FirConstructor, data: Nothing?): CompositeTransformResult.Single<CtConstructor<*>> {
         val ctConstructor = factory.Core().createConstructor<Any>()
+        ctConstructor.setSimpleName<CtConstructor<*>>(constructor.name.asString())
 
         val modifierList = listOfNotNull(KtModifierKind.convertVisibility(constructor.visibility))
 
@@ -110,15 +112,17 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
             constructor.isPrimary &&
             constructor.valueParameters.isEmpty() &&
             constructor.body == null &&
-            modifierList.isEmpty()
+            modifierList.filterNot { it == KtModifierKind.PUBLIC }.isEmpty()
         )
+
+        ctConstructor.putMetadata<CtConstructor<*>>(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY, constructor.isPrimary)
 
         addModifiersAsMetadata(ctConstructor, modifierList)
 
         // Add body
         val body = constructor.body?.accept(this, null)?.single as? CtStatement?
         if(body != null) {
-            ctConstructor.addChildWith(body, ctConstructor::setBody)
+            ctConstructor.setBody<CtConstructor<*>>(body)
         }
 
         // Add params
@@ -127,7 +131,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
             /*
             * Primary constructor property declaration creates implicit properties in the class. An implicit property is the
             * holder of the val/var modifier, not the parameter:
-            * ClassName(var x = 2) <translates to> ClassName(x = 2) { var x = x }
+            * ClassName(var x = 2) >translates to> ClassName(x = 2) { var x = x }
             * To facilitate printing, we look in the PSI if the parameter has a val/var keyword and add it as a modifier.
             *
             * TODO: Perhaps add metadata mapping property <-> param?
@@ -141,13 +145,38 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
                     pModifiers?.add(KtModifierKind.VAR)
                 }
             }
-            ctConstructor.addChildWith(p, ctConstructor::addParameter)
+            ctConstructor.addParameter(p) // Sets parent
         }
 
-        ctConstructor.putMetadata<CtConstructor<*>>(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY, constructor.isPrimary)
+        // Add delegate call
+        val delegatedConstr = constructor.delegatedConstructor
+        if(delegatedConstr != null) {
+            val invocation = factory.Core().createInvocation<Any>()
+           // invocation.setExecutable<CtInvocation<Any>>(referenceBuilder.getNewExecutableReference(delegatedConstr,
+           // constructor.returnTypeRef))
+            invocation.setExecutable<CtInvocation<Any>>(ConstructorDelegateResolver.resolveSuperCallBug(
+                this, constructor)) // Sets parent
+
+            delegatedConstr.arguments.forEach {
+                val arg = it.accept(this,null).single as CtExpression<*>
+                invocation.addArgument(arg) // Sets parent
+            }
+            ctConstructor.putMetadata<CtConstructor<*>>(KtMetadataKeys.CONSTRUCTOR_DELEGATE_CALL, invocation)
+            invocation.setParent(ctConstructor)
+
+            if (invocation.executable.type.simpleName == "Any") {
+                invocation.setImplicit<CtInvocation<Any>>(true)
+                invocation.executable.setImplicit<CtExecutableReference<Any>>(true)
+            }
+        }
 
         return ctConstructor.compose()
     }
+
+
+
+
+
 
     private inline fun <ChildT : CtElement> CtElement.addChildWith(child: ChildT, action: (ChildT) -> CtElement) {
         action(child)
@@ -344,7 +373,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
             FirConstKind.String -> constExpression.value as String
             FirConstKind.Float -> constExpression.value as Float
             FirConstKind.Double -> constExpression.value as Double
-            FirConstKind.IntegerLiteral -> constExpression.value as Int
+            FirConstKind.IntegerLiteral -> (constExpression.value as Long).toInt()
         }
         val l : CtLiteral<T> = factory.Code().createLiteral(value as T)
 

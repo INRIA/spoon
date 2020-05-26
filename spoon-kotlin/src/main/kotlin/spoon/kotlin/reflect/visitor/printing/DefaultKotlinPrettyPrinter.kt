@@ -32,9 +32,9 @@ class DefaultKotlinPrettyPrinter(
         return (getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as? Boolean?) == true
     }
 
-    private fun visitParameterList(paramList : List<CtParameter<*>>) {
-        var commas = paramList.size-1
-        paramList.forEach {
+    private fun visitCommaSeparatedList(list : List<CtElement>) {
+        var commas = list.size-1
+        list.forEach {
             it.accept(this)
             if(commas > 0) {
                 commas--
@@ -42,6 +42,8 @@ class DefaultKotlinPrettyPrinter(
             }
         }
     }
+
+
 
     @Suppress("UNCHECKED_CAST")
     private fun getModifiersMetadata(e : CtElement) : Set<KtModifierKind>? =
@@ -99,8 +101,8 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtConstructorCall(p0: CtConstructorCall<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtConstructorCall(constrCall: CtConstructorCall<T>?) {
+        TODO()
     }
 
     override fun <T : Any?> visitCtUnaryOperator(p0: CtUnaryOperator<T>?) {
@@ -133,15 +135,17 @@ class DefaultKotlinPrettyPrinter(
 
         adapter write "class" and SPACE and ctClass.simpleName
 
+        val inheritanceList = ArrayList<String>()
+
         val primaryConstructor = ctClass.constructors.firstOrNull { it.isPrimary() }
         if(primaryConstructor != null) {
-            visitPrimaryConstructor(primaryConstructor)
+            visitCtConstructor(primaryConstructor)
+        } else {
+            inheritanceList.add(getTypeName(ctClass.superclass))
         }
-
-        val inheritanceList = ArrayList<String>()
-        if(ctClass.superclass != null && ctClass.superclass.qualifiedName != "kotlin.Any") {
-            inheritanceList.add("${getTypeName(ctClass.superclass)}()") // TODO Primary constr call
-        }
+       // if(ctClass.superclass != null && ctClass.superclass.qualifiedName != "kotlin.Any") {
+       //     inheritanceList.add("${getTypeName(ctClass.superclass)}()") // TODO Primary constr call
+       // }
         if(ctClass.superInterfaces.isNotEmpty()) {
             ctClass.superInterfaces.forEach { inheritanceList.add(getTypeName(it)) }
         }
@@ -160,21 +164,36 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtConstructor(ctConstructor : CtConstructor<T>) {
-        val primary = ctConstructor.getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as? Boolean?
-        if(primary == true) return // This method should not be called to visit primary constructor
 
-    }
+        // Annotations not implemented
 
-    private fun visitPrimaryConstructor(ctConstructor: CtConstructor<*>) {
+        val primary = ctConstructor.getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as? Boolean? ?: false
+        if(ctConstructor.isImplicit && !primary) return
+
         val modifierSet = getModifiersMetadata(ctConstructor)
-        if(modifierSet != null && modifierSet.filterNot { it == KtModifierKind.PUBLIC }.isNotEmpty()) {
-            adapter writeModifiers modifierSet
-            adapter write " constructor"
+        if(primary) {
+            if(modifierSet != null && modifierSet.filterNot { it == KtModifierKind.PUBLIC }.isNotEmpty()) {
+                adapter write SPACE
+                adapter writeModifiers modifierSet
+                adapter write "constructor"
+            }
+        } else {
+            adapter writeModifiers modifierSet and "constructor"
         }
         adapter write LEFT_ROUND
-        visitParameterList(ctConstructor.parameters)
+        visitCommaSeparatedList(ctConstructor.parameters)
         adapter write RIGHT_ROUND
+
+        val delegatedConstr = ctConstructor.getMetadata(KtMetadataKeys.CONSTRUCTOR_DELEGATE_CALL) as? CtInvocation<Any>?
+        visitCtInvocation(delegatedConstr)
+
+        if(!primary) {
+            adapter write SPACE
+            ctConstructor.body?.accept(this)
+            adapter.newline()
+        }
     }
+
 
     // TODO Replace with visitTypeRef
     private fun getTypeName(type : CtTypeReference<*>, fullyQualified : Boolean = true) : String {
@@ -478,7 +497,7 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <R : Any?> visitCtReturn(ctReturn: CtReturn<R>) {
-        if(ctReturn.isImplicit && ctReturn.returnedExpression != null) {
+        if(ctReturn.isImplicit && ctReturn.returnedExpression != null) { // FIXME Correct?
             ctReturn.returnedExpression.accept(this)
         } else {
             adapter write "return"
@@ -541,8 +560,36 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtInvocation(p0: CtInvocation<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtInvocation(invocation: CtInvocation<T>?) {
+        if(invocation == null || invocation.isImplicit) return
+
+        if(invocation.executable.isConstructor) {
+            val parentType = invocation.getParent(CtType::class.java)
+            adapter.writeColon(DefaultPrinterAdapter.ColonContext.CONSTRUCTOR_DELEGATION)
+            var pn = parentType.qualifiedName
+            var en = invocation.executable.declaringType.qualifiedName
+            if(parentType == null || parentType.qualifiedName == invocation.executable.declaringType.qualifiedName) {
+                adapter write "this"
+            } else {
+                val primary = invocation.parent.getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as? Boolean?
+                if(primary == true) {
+                        adapter write getTypeName(invocation.type) // TODO visitType
+                }
+                else {
+                    adapter write "super"
+                }
+            }
+        } else {
+            if(invocation.target != null && !invocation.target.isImplicit) {
+                invocation.target.accept(this)
+                adapter write '.'
+            }
+
+            adapter write invocation.executable.simpleName
+        }
+        adapter write LEFT_ROUND
+        visitCommaSeparatedList(invocation.arguments)
+        adapter write RIGHT_ROUND
     }
 
     override fun <T : Any?> visitCtMethod(method: CtMethod<T>?) {
@@ -556,7 +603,7 @@ class DefaultKotlinPrettyPrinter(
 
         adapter writeModifiers modifiers and "fun " /* TODO Type params here */ and method.simpleName and LEFT_ROUND
 
-        visitParameterList(method.parameters)
+        visitCommaSeparatedList(method.parameters)
 
         adapter write RIGHT_ROUND
 

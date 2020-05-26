@@ -1,12 +1,19 @@
 package spoon.kotlin.compiler
 
+import org.jetbrains.kotlin.codegen.inline.addFakeContinuationMarker
+import org.jetbrains.kotlin.fir.expressions.FirCall
+import org.jetbrains.kotlin.fir.expressions.FirDelegatedConstructorCall
+import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.expressions.FirResolvable
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import org.jetbrains.kotlin.fir.resolve.toSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
+import spoon.reflect.reference.CtExecutableReference
 import spoon.reflect.reference.CtPackageReference
 import spoon.reflect.reference.CtReference
 import spoon.reflect.reference.CtTypeReference
@@ -41,12 +48,40 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
         return ref
     }
 
+    fun <T> getNewTypeReference(symbol: FirCallableSymbol<*>) : CtTypeReference<T> {
+        val ref = firTreeBuilder.factory.Core().createTypeReference<T>()
+        ref.setSimpleName<CtTypeReference<T>>(symbol.callableId.callableName.identifier)
+        ref.setPackage<CtTypeReference<T>>(getPackageReference(symbol.callableId.packageName))
+        return ref
+    }
+
     fun <T> getNewTypeReference(symbol: FirClassLikeSymbol<*>, nullable : Boolean) : CtTypeReference<T> {
         val ref = firTreeBuilder.factory.Core().createTypeReference<T>()
         ref.setSimpleName<CtTypeReference<T>>(symbol.classId.shortClassName.identifier)
         ref.setPackage<CtTypeReference<T>>(getPackageReference(symbol.classId.packageFqName))
         ref.putMetadata<CtTypeReference<T>>(KtMetadataKeys.TYPE_REF_NULLABLE, nullable)
         return ref
+    }
+
+    fun <T> getNewExecutableReference(d : FirDelegatedConstructorCall): CtExecutableReference<T> {
+        val execRef = firTreeBuilder.factory.Core().createExecutableReference<T>()
+        execRef.setSimpleName<CtExecutableReference<T>>(CtExecutableReference.CONSTRUCTOR_NAME)
+        execRef.setType<CtExecutableReference<T>>(getNewTypeReference(d.constructedTypeRef))
+        execRef.setDeclaringType<CtExecutableReference<T>>(getNewTypeReference<CtTypeReference<T>>(d.constructedTypeRef))
+        return execRef
+    }
+
+    fun <T> getNewExecutableReference(d : FirDelegatedConstructorCall, declaringType : FirTypeRef): CtExecutableReference<T> {
+        val execRef = firTreeBuilder.factory.Core().createExecutableReference<T>()
+        execRef.setSimpleName<CtExecutableReference<T>>(CtExecutableReference.CONSTRUCTOR_NAME)
+        execRef.setType<CtExecutableReference<T>>(getNewTypeReference(declaringType))
+        execRef.setDeclaringType<CtExecutableReference<T>>(getNewTypeReference<CtTypeReference<T>>(declaringType))
+        return execRef
+    }
+
+    fun <T> getNewExecutableReference(c : FirFunctionCall) {
+        val execRef = firTreeBuilder.factory.Core().createExecutableReference<T>()
+
     }
 
     fun <T> getNewTypeReference(typeRef: FirTypeRef) : CtTypeReference<T> {
