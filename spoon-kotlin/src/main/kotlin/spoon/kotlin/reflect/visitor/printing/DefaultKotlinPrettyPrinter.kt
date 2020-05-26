@@ -151,7 +151,7 @@ class DefaultKotlinPrettyPrinter(
         }
         if(inheritanceList.isNotEmpty()) {
             var p = ""
-            if(ctClass.superclass == null) {
+            if(ctClass.superclass == null || ctClass.superclass.qualifiedName == "kotlin.Any") {
                 adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
             }
             else p = ", "
