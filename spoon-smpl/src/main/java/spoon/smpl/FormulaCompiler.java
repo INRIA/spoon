@@ -71,18 +71,24 @@ public class FormulaCompiler {
      * Compile a CTL-VW Formula.
      * 
      * @param node First node of control flow graph to generate formula for
-     * @param cutoffNode Node at which formula compilation should stop
+     * @param cutoffNodes Nodes at which formula compilation should stop
      * @return CTL-VW Formula
      */
-    private Formula compileFormulaInner(ControlFlowNode node, ControlFlowNode cutoffNode) {
+    private Formula compileFormulaInner(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
         Formula formula;
 
-        if (cutoffNode == node) {
-            return null;
-        } else if (node.getKind() == BranchKind.EXIT) {
+        if (cutoffNodes != null) {
+            for (ControlFlowNode someNode : cutoffNodes) {
+                if (someNode == node) {
+                    return null;
+                }
+            }
+        }
+
+        if (node.getKind() == BranchKind.EXIT) {
             return new Proposition("end");
         } else if (SmPLMethodCFG.isMethodHeaderNode(node)) {
-            return compileMethodHeaderFormula(node, cutoffNode);
+            return compileMethodHeaderFormula(node, cutoffNodes);
         } else {
             switch (node.next().size()) {
                 case 0:
@@ -91,7 +97,7 @@ public class FormulaCompiler {
                 case 1:
                     switch (node.getKind()) {
                         case STATEMENT:
-                            return compileStatementFormula(node, cutoffNode);
+                            return compileStatementFormula(node, cutoffNodes);
 
                         case BLOCK_BEGIN:
                             if (!(node.getTag() instanceof SmPLMethodCFG.NodeTag)) {
@@ -100,13 +106,13 @@ public class FormulaCompiler {
                             }
 
                             formula = new And(new Proposition(((SmPLMethodCFG.NodeTag) node.getTag()).getLabel()),
-                                              new AllNext(compileFormulaInner(node.next().get(0), cutoffNode)));
+                                              new AllNext(compileFormulaInner(node.next().get(0), cutoffNodes)));
                             return formula;
 
                         case CONVERGE:
                             formula = new Proposition("after");
 
-                            Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNode);
+                            Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
 
                             if (innerFormula == null) {
                                 return formula;
@@ -128,9 +134,9 @@ public class FormulaCompiler {
                             CtElement statement = node.getStatement();
 
                             if (SmPLJavaDSL.isDotsWithOptionalMatch(statement.getParent())) {
-                                return compileDotsWithOptionalMatchFormula(node, cutoffNode);
+                                return compileDotsWithOptionalMatchFormula(node, cutoffNodes);
                             } else {
-                                return compileBranchFormula(node, cutoffNode);
+                                return compileBranchFormula(node, cutoffNodes);
                             }
 
                         default:
@@ -144,10 +150,10 @@ public class FormulaCompiler {
      * Compile a formula for the special method header node.
      *
      * @param node Method header node
-     * @param cutoffNode Node at which formula compilation should stop
+     * @param cutoffNodes Nodes at which formula compilation should stop
      * @return CTL-VW Formula
      */
-    private Formula compileMethodHeaderFormula(ControlFlowNode node, ControlFlowNode cutoffNode) {
+    private Formula compileMethodHeaderFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
         Formula formula;
 
         if (!(node.getTag() instanceof SmPLMethodCFG.NodeTag)) {
@@ -176,19 +182,19 @@ public class FormulaCompiler {
             formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", methodBodyOps)));
         }
 
-        return new And(formula, new AllNext(compileFormulaInner(node.next().get(0), cutoffNode)));
+        return new And(formula, new AllNext(compileFormulaInner(node.next().get(0), cutoffNodes)));
     }
 
     /**
      * Compile a CTL-VW Formula for a given single-statement single-successor CFG node.
      *
      * @param node A single-statement, single-successor CFG node
-     * @param cutoffNode Node at which formula compilation should stop
+     * @param cutoffNodes Nodes at which formula compilation should stop
      * @return CTL-VW Formula
      */
-    private Formula compileStatementFormula(ControlFlowNode node, ControlFlowNode cutoffNode) {
+    private Formula compileStatementFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
         if (SmPLJavaDSL.isStatementLevelDots(node.getStatement())) {
-            return compileStatementLevelDotsFormula(node, cutoffNode);
+            return compileStatementLevelDotsFormula(node, cutoffNodes);
         } else {
             CtElement statement = node.getStatement();
             int line = statement.getPosition().getLine();
@@ -214,7 +220,7 @@ public class FormulaCompiler {
             List<String> newMetavars = getUnquantifiedMetavarsUsedIn(statement);
             quantifiedMetavars.addAll(newMetavars);
 
-            Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNode);
+            Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
 
             if (innerFormula != null) {
                 formula = new And(formula, new AllNext(innerFormula));
@@ -235,10 +241,10 @@ public class FormulaCompiler {
      * Compile a CTL-VW Formula for a given branch statement multi-successor CFG node.
      *
      * @param node A branch statement, multi-successor CFG node
-     * @param cutoffNode Node at which formula compilation should stop
+     * @param cutoffNodes Nodes at which formula compilation should stop
      * @return CTL-VW Formula
      */
-    private Formula compileBranchFormula(ControlFlowNode node, ControlFlowNode cutoffNode) {
+    private Formula compileBranchFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
         Formula formula;
 
         CtElement statement = node.getStatement();
@@ -265,8 +271,8 @@ public class FormulaCompiler {
         List<String> newMetavars = getUnquantifiedMetavarsUsedIn(node.getStatement());
         quantifiedMetavars.addAll(newMetavars);
 
-        Formula lhs = compileFormulaInner(node.next().get(0), cutoffNode);
-        Formula rhs = compileFormulaInner(node.next().get(1), cutoffNode);
+        Formula lhs = compileFormulaInner(node.next().get(0), cutoffNodes);
+        Formula rhs = compileFormulaInner(node.next().get(1), cutoffNodes);
 
         formula = new And(formula, new And(new ExistsNext(lhs), new ExistsNext(rhs)));
 
@@ -284,14 +290,14 @@ public class FormulaCompiler {
      * Compile a CTL-VW formula for a statement-level dots operator.
      *
      * @param node Node representing a statement-level dots operator
-     * @param cutoffNode Node at which formula compilation should stop
+     * @param cutoffNodes Nodes at which formula compilation should stop
      * @return CTL-VW Formula
      */
-    private Formula compileStatementLevelDotsFormula(ControlFlowNode node, ControlFlowNode cutoffNode) {
+    private Formula compileStatementLevelDotsFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
         CtInvocation<?> dots = (CtInvocation<?>) node.getStatement();
 
         Formula savedPreGuard = dotsPreGuard;
-        Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNode);
+        Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
 
         Formula postGuard = findFirstCodeElementFormula(innerFormula);
 
@@ -346,10 +352,10 @@ public class FormulaCompiler {
      *
      * @param node BRANCH node corresponding to the if-statement of the SmPL Java DSL representation of a
      *             dots-with-optional-match SmPL construct
-     * @param cutoffNode Node at which formula compilation should stop
+     * @param cutoffNodes Nodes at which formula compilation should stop
      * @return CTL-VW Formula
      */
-    private Formula compileDotsWithOptionalMatchFormula(ControlFlowNode node, ControlFlowNode cutoffNode) {
+    private Formula compileDotsWithOptionalMatchFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
         // TODO: shortest path guard
         // TODO: modifiers/constraints e.g whenAny
 
@@ -371,8 +377,8 @@ public class FormulaCompiler {
                                                   .filter(x -> x.getKind() == BranchKind.CONVERGE)
                                                   .findFirst().get();
 
-            Formula optionalMatch = compileFormulaInner(bodyNode, convergenceNode);
-            Formula tail = compileFormulaInner(convergenceNode.next().get(0), cutoffNode);
+            Formula optionalMatch = compileFormulaInner(bodyNode, Collections.singletonList(convergenceNode));
+            Formula tail = compileFormulaInner(convergenceNode.next().get(0), cutoffNodes);
 
             // TODO: is there a case where metavariables need to be quantified enclosing the AllUntil here?
             //  maybe if the same unquantified metavariable is used in both the optional match and immediately
