@@ -1,5 +1,5 @@
 ---
-title: Gradle
+title: Using Spoon from Gradle
 tags: [usage]
 keywords: gradle, usage, java, plugin
 ---

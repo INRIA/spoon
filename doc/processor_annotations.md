@@ -29,7 +29,7 @@ annotations on any arbitrary code elements (including within method bodies), and
 supports the modification of the existing code.
 
 
-## Annotation Processing with Spoon
+### Annotation Processing Example
 
 Spoon provides developers with a way to specify the analyses and transformations 
 associated with annotations. Annotations are metadata on code that start with `@` in Java.
@@ -62,7 +62,7 @@ The implementation of such an annotation would not be straightforward using Java
 since it would not allow us to just insert the NULL check in the body of the annotated method. 
 
 
-## The Annotation Processor Interface
+### The Annotation Processor Interface
 
 In Spoon, the full code model can be used  for compile-time annotation processing. To this end, 
 Spoon provides a special kind of processor called `AnnotationProcessor` whose interface is:

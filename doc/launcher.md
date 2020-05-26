@@ -1,10 +1,10 @@
 ---
-title: How to use Spoon in Java?
+title: Using Spoon as a Java library
 tags: [usage]
 keywords: usage, java
 ---
 
-## The Launcher class
+### The Launcher class
 
 The Spoon `Launcher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/Launcher.html)) is used to create the AST model of a project. It can be as short as:
 
@@ -53,7 +53,7 @@ launcher.getEnvironment().setPrettyPrinterCreator(() -> {
 ```
 **Comments** In addition, depending on the value of `Environment#getCommentEnabled`, the comments are removed or kept from the Java files saved to disk (call `Environment#setCommentEnabled(true)` to keep comments).
 
-## The MavenLauncher class
+### The MavenLauncher class
 
 The Spoon `MavenLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/MavenLauncher.html)) is used to create the AST model of a Maven project.
 It automatically infers the list of source folders and the dependencies from the `pom.xml` file.
@@ -89,14 +89,12 @@ CtModel model = launcher.getModel();
 ```
 To avoid invoking maven over and over to build a classpath that has not changed, it is stored in a file `spoon.classpath.tmp` (or depending on the scope `spoon.classpath-app.tmp` or `spoon.classpath-test.tmp`) in the same folder as the `pom.xml`. This classpath will be refreshed is the file is deleted or if it has not been modified since 1h.
 
-## Analyzing bytecode
+### Analyzing bytecode with JarLauncher
 
 There are two ways to analyze bytecode with spoon:
 
  * Bytecode resources can be added in the classpath, (some information will be extracted through reflection)
  * A decompiler may be used, and then, the analyzes will be performed on the decompiled sources.
-
-### The JarLauncher class
 
 The Spoon `JarLauncher` ([JavaDoc](https://github.com/INRIA/spoon/blob/master/spoon-decompiler/src/main/java/spoon/JarLauncher.java)) is used to create the AST model from a jar.
 It automatically decompiles class files contained in the jar and analyzes them.
@@ -144,7 +142,7 @@ launcher.addInputResource(
 
 **Warning** The `JarLauncher` feature (and all features relying on decompilation) are not included in `spoon-core` but in `spoon-decompiler`. If you want to use them you should declare a dependency to `spoon-decompiler`.
 
-## About the classpath
+### Resolution of elements and classpath
 
 Spoon analyzes source code. However, this source code may refer to libraries (as a field, parameter, or method return type). There are two cases:
 
@@ -178,7 +176,9 @@ compile 'fr.inria.gforge.spoon:spoon-core:{{site.spoon_release}}'
 ```
 
 
-## Incremental Launcher
+## Advanced launchers
+
+### Incremental Launcher
 
 `IncrementalLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/IncrementalLauncher.html)) allows cache AST and compiled classes. Any spoon analysis can then be restarted from where it stopped instead of restarting from scratch.
 
@@ -200,7 +200,7 @@ CtModel newModel = launcher.buildModel();
 launcher.saveCache();
 //Cache is now up to date
 ```
-## Fluent LauncherAPI
+### Fluent LauncherAPI
 
 `FluentLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/FluentLauncher.html)) allows simple, fluent launcher usage with setting most options directly.
 

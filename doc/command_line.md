@@ -1,5 +1,5 @@
 ---
-title: Command Line
+title: Using Spoon from the Command Line
 tags: [usage]
 keywords: command, line, usage, java, jar
 ---
@@ -52,7 +52,7 @@ Options :
         List of path to sources files.
 
   [(-p|--processors) <processors>]
-        List of processor's qualified name to be used.
+        List of processor qualified name to be used.
 
   [(-t|--template) <template>]
         List of path to templates java files.
@@ -106,6 +106,6 @@ Options :
         if multiple are given).
 
   [-a|--disable-model-self-checks]
-        Disables checks made on the AST (hashcode violation, method's signature
+        Disables checks made on the AST (hashcode violation, method signature
         violation and parent violation). Default: false.
 ```
