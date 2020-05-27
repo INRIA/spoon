@@ -210,6 +210,8 @@ public class SmPLParser {
         List<RewriteRule> body = new ArrayList<>();
         List<RewriteRule> argumentList = new ArrayList<>();
         List<RewriteRule> statementDots = new ArrayList<>();
+        List<RewriteRule> statementDotsParams = new ArrayList<>();
+        List<RewriteRule> optionalMatchDots = new ArrayList<>();
 
         RewriteRule eatWhitespace = new RewriteRule("whitespace", "(?s)^\\s+",
                 (ctx) -> {},
@@ -221,6 +223,14 @@ public class SmPLParser {
                     result.out.append(match.group());
                     return match.end();
                 });
+
+        RewriteRule newlinePopContext = new RewriteRule("newline", "(?s)^\n",
+                (ctx) -> { ctx.pop(); },
+                (result, match) -> { return 0; });
+
+        RewriteRule anycharPopContext = new RewriteRule("anychar", "(?s)^.",
+                (ctx) -> { ctx.pop(); },
+                (result, match) -> { return 0; });
 
         // TODO: escape character
         // TODO: strings
@@ -248,7 +258,7 @@ public class SmPLParser {
         // Metavars context
         metavars.add(eatWhitespace);
 
-        metavars.add(new RewriteRule("atat", "(?s)^@@([^\\S\n]*\n)?",
+        metavars.add(new RewriteRule("atat", "(?s)^@@",
                 (ctx) -> { ctx.pop(); ctx.push(code); },
                 (result, match) -> {
                     result.out.append("}\n");
@@ -300,10 +310,8 @@ public class SmPLParser {
             return match.end();
         }));
 
-        // Code context
-        code.add(eatWhitespace);
-
-        code.add(new RewriteRule("method_header", "(?s)^(public\\s+|private\\s+|protected\\s+|static\\s+)*[A-Za-z_][A-Za-z0-9_-]*\\s+[A-Za-z_][A-Za-z0-9_-]*\\s*\\(",
+        // Code context, meaning we're done with metavars and now expect either a method header or just a bunch of statements
+        code.add(new RewriteRule("method_header", "(?s)^\\s*(public\\s+|private\\s+|protected\\s+|static\\s+)*[A-Za-z_][A-Za-z0-9_-]*\\s+[A-Za-z_][A-Za-z0-9_-]*\\s*\\(",
                 (ctx) -> { ctx.pop(); ctx.push(header_modifiers); },
                 (result, match) -> {
                     result.hasMethodHeader = true;
@@ -311,7 +319,8 @@ public class SmPLParser {
                     return 0;
                 }));
 
-        code.add(new RewriteRule("anychar", "(?s)^.",
+        // any char, but requires there to be SOME non-whitespace content eventually
+        code.add(new RewriteRule("anychar", "(?s)^.(?=.*[^\\s])",
                 (ctx) -> { ctx.pop(); ctx.push(body); },
                 (result, match) -> {
                     result.hasMethodHeader = true;
@@ -322,6 +331,11 @@ public class SmPLParser {
                               .append("\n");
                     return 0;
                 }));
+
+        // any char, consuming all remaining input. this is here to support the "empty patch": "@@@@"
+        code.add(new RewriteRule("anychar", "(?s)^.*",
+                (ctx) -> { },
+                (result, match) -> { return match.end(); }));
 
         // Method header modifiers context
         header_modifiers.add(eatWhitespace);
@@ -379,27 +393,6 @@ public class SmPLParser {
         header_params.add(anycharCopy);
 
         // Method body context
-        body.add(new RewriteRule("optdots_begin", "(?s)^<\\.\\.\\.", // TODO: could add something like result.required += "optdots_end" for error detection
-                (ctx) -> { },
-                (result, match) -> {
-                    result.out.append("if (").append(SmPLJavaDSL.getDotsWithOptionalMatchName()).append(") {");
-                    return match.end();
-                }));
-
-        body.add(new RewriteRule("optdots_end", "(?s)^\\.\\.\\.>",
-                (ctx) -> { },
-                (result, match) -> {
-                    result.out.append("}");
-                    return match.end();
-                }));
-
-        body.add(new RewriteRule("dots", "(?s)^\\.\\.\\.",
-                (ctx) -> { ctx.push(statementDots); },
-                (result, match) -> {
-                    result.out.append(SmPLJavaDSL.getDotsStatementElementName()).append("(");
-                    return match.end();
-                }));
-
         body.add(new RewriteRule("open_paren", "(?s)^\\(",
                  (ctx) -> { ctx.push(argumentList); },
                  (result, match) -> {
@@ -407,7 +400,89 @@ public class SmPLParser {
                     return match.end();
                  }));
 
+        body.add(new RewriteRule("newline", "(?s)^\n",
+            (ctx) -> {
+                ctx.push(statementDots);
+                ctx.push(optionalMatchDots);
+            },
+
+            (result, match) -> {
+                result.out.append("\n");
+                return match.end();
+            }));
+
         body.add(anycharCopy);
+
+        // Context for statement dots
+        statementDots.add(new RewriteRule("dots", "(?s)^[^\\S\n]*\\.\\.\\.",
+                (ctx) -> { ctx.pop(); ctx.push(statementDotsParams); },
+                (result, match) -> {
+                    result.out.append(SmPLJavaDSL.getDotsStatementElementName()).append("(");
+                    return match.end();
+                }));
+
+        statementDots.add(anycharPopContext);
+
+        // Context for statement dots parameters (constraints)
+        statementDotsParams.add(eatWhitespace);
+
+        statementDotsParams.add(new RewriteRule("when_neq", "(?s)^when\\s*!=\\s*([a-z]+)",
+                (ctx) -> {},
+                (result, match) -> {
+                    if (result.out.charAt(result.out.length() - 1) == ')') {
+                        result.out.append(",");
+                    }
+
+                    result.out.append(SmPLJavaDSL.getDotsWhenNotEqualName()).append("(")
+                              .append(match.group(1)).append(")");
+                    return match.end();
+                }));
+
+        statementDotsParams.add(new RewriteRule("when_exists", "(?s)^when\\s+exists",
+                (ctx) -> {},
+                (result, match) -> {
+                    if (result.out.charAt(result.out.length() - 1) == ')') {
+                        result.out.append(",");
+                    }
+
+                    result.out.append(SmPLJavaDSL.getDotsWhenExistsName()).append("()");
+                    return match.end();
+                }));
+
+        statementDotsParams.add(new RewriteRule("when_any", "(?s)^when\\s+any",
+                (ctx) -> {},
+                (result, match) -> {
+                    if (result.out.charAt(result.out.length() - 1) == ')') {
+                        result.out.append(",");
+                    }
+
+                    result.out.append(SmPLJavaDSL.getDotsWhenAnyName()).append("()");
+                    return match.end();
+                }));
+
+        statementDotsParams.add(new RewriteRule("anychar", "(?s)^.",
+                (ctx) -> { ctx.pop(); },
+                (result, match) -> {
+                    result.out.append(");\n");
+                    return 0;
+                }));
+
+        // Context for dots with optional match <... P ...> microsyntax
+        optionalMatchDots.add(new RewriteRule("optdots_begin", "(?s)^<\\.\\.\\.", // TODO: could add something like result.required += "optdots_end" for error detection
+                (ctx) -> { },
+                (result, match) -> {
+                    result.out.append("if (").append(SmPLJavaDSL.getDotsWithOptionalMatchName()).append(") {");
+                    return match.end();
+                }));
+
+        optionalMatchDots.add(new RewriteRule("optdots_end", "(?s)^\\.\\.\\.>",
+                (ctx) -> { },
+                (result, match) -> {
+                    result.out.append("}");
+                    return match.end();
+                }));
+
+        optionalMatchDots.add(anycharPopContext);
 
         argumentList.add(new RewriteRule("dots", "(?s)^\\.\\.\\.",
                 (ctx) -> { },
@@ -432,50 +507,6 @@ public class SmPLParser {
                 }));
 
         argumentList.add(anycharCopy);
-
-        // Context for statement dots
-        statementDots.add(eatWhitespace);
-
-        statementDots.add(new RewriteRule("when_neq", "(?s)^when\\s*!=\\s*([a-z]+)",
-                (ctx) -> {},
-                (result, match) -> {
-                    if (result.out.charAt(result.out.length() - 1) == ')') {
-                        result.out.append(",");
-                    }
-
-                    result.out.append(SmPLJavaDSL.getDotsWhenNotEqualName()).append("(")
-                              .append(match.group(1)).append(")");
-                    return match.end();
-                }));
-
-        statementDots.add(new RewriteRule("when_exists", "(?s)^when\\s+exists",
-                (ctx) -> {},
-                (result, match) -> {
-                    if (result.out.charAt(result.out.length() - 1) == ')') {
-                        result.out.append(",");
-                    }
-
-                    result.out.append(SmPLJavaDSL.getDotsWhenExistsName()).append("()");
-                    return match.end();
-                }));
-
-        statementDots.add(new RewriteRule("when_any", "(?s)^when\\s+any",
-                (ctx) -> {},
-                (result, match) -> {
-                    if (result.out.charAt(result.out.length() - 1) == ')') {
-                        result.out.append(",");
-                    }
-
-                    result.out.append(SmPLJavaDSL.getDotsWhenAnyName()).append("()");
-                    return match.end();
-                }));
-
-        statementDots.add(new RewriteRule("anychar", "(?s)^.",
-                (ctx) -> { ctx.pop(); },
-                (result, match) -> {
-                    result.out.append(");\n").append(match.group());
-                    return match.end();
-                }));
 
         Result result = new Result();
 
@@ -546,7 +577,17 @@ public class SmPLParser {
         }
 
         result.out.append("}\n");
-        return result.out.toString();
+        return removeEmptyLines(result.out.toString()) + "\n";
+    }
+
+    /**
+     * Remove empty lines from a String.
+     *
+     * @param s String to process
+     * @return String with empty lines removed
+     */
+    private static String removeEmptyLines(String s) {
+        return String.join("\n", Arrays.stream(s.split("\n")).filter(ss -> !ss.isEmpty()).collect(Collectors.toList()));
     }
 
     /**
