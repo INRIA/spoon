@@ -54,20 +54,6 @@ public class FormulaCompiler {
     }
 
     /**
-     * Create a disjunction of a number of formula alternatives using the Sequential-Or connective.
-     *
-     * @param alternatives Formula alternatives to join in disjunction
-     * @return Formula containing sequential-or disjunction of all alternatives
-     */
-    public static Formula joinAlternatives(List<Formula> alternatives) {
-        if (alternatives.size() == 1) {
-            return FormulaOptimizer.optimizeFully(alternatives.get(0));
-        } else {
-            return FormulaOptimizer.optimizeFully(new SequentialOr(alternatives));
-        }
-    }
-
-    /**
      * Compile a CTL-VW Formula.
      * 
      * @param node First node of control flow graph to generate formula for
@@ -110,6 +96,10 @@ public class FormulaCompiler {
                             return formula;
 
                         case CONVERGE:
+                            if (isNodeForSmPLJavaDSLMetaElement(node)) {
+                                return compileFormulaInner(node.next().get(0), cutoffNodes);
+                            }
+
                             formula = new Proposition("after");
 
                             Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
@@ -135,6 +125,8 @@ public class FormulaCompiler {
 
                             if (SmPLJavaDSL.isDotsWithOptionalMatch(statement.getParent())) {
                                 return compileDotsWithOptionalMatchFormula(node, cutoffNodes);
+                            } else if (SmPLJavaDSL.isBeginDisjunction(statement.getParent())) {
+                                return compileDisjunction(node, cutoffNodes);
                             } else {
                                 return compileBranchFormula(node, cutoffNodes);
                             }
@@ -390,7 +382,43 @@ public class FormulaCompiler {
     }
 
     /**
+     * Compile a Formula for an SmPL pattern disjunction using the Sequential OR connective.
+     *
+     * @param node Node representing the start of a pattern disjunction
+     * @param cutoffNodes Node at which formula compilation should stop
+     * @return CTL-VW Formula
+     */
+    private Formula compileDisjunction(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
+        Deque<ControlFlowNode> workQueue = new ArrayDeque<>();
+        List<ControlFlowNode> clauseStartingNodes = new ArrayList<>();
+
+        workQueue.addAll(node.next());
+
+        // Find the starting nodes of each clause
+        while (!workQueue.isEmpty()) {
+            ControlFlowNode currentNode = workQueue.getFirst();
+            workQueue.removeFirst();
+
+            if (currentNode.getKind() == BranchKind.BLOCK_BEGIN || (currentNode.getKind() == BranchKind.BRANCH && SmPLJavaDSL.isContinueDisjunction(currentNode.getStatement().getParent()))) {
+                workQueue.addAll(currentNode.next());
+            } else if (currentNode.getKind() == BranchKind.STATEMENT || currentNode.getKind() == BranchKind.BRANCH){
+                clauseStartingNodes.add(currentNode);
+            }
+        }
+
+        SequentialOr formula = new SequentialOr();
+
+        // Compile each clause of the disjunction
+        for (ControlFlowNode clauseNode : clauseStartingNodes) {
+            formula.add(compileFormulaInner(clauseNode, cutoffNodes));
+        }
+
+        return formula;
+    }
+
+    /**
      * Get sorted list of metavariable names referenced in a given AST element.
+     *
      * @param e Element to scan
      * @return Sorted list of metavariable names
      */
@@ -406,6 +434,7 @@ public class FormulaCompiler {
 
     /**
      * Get sorted list of not-yet-quantified metavariable names referenced in a given AST element.
+     *
      * @param e Element to scan
      * @return Sorted list of not-yet-quantified metavariable names
      */
@@ -448,9 +477,40 @@ public class FormulaCompiler {
             return null;
         } else if (input instanceof VariableUsePredicate) {
             return null;
+        } else if (input instanceof SequentialOr) {
+            SequentialOr result = new SequentialOr();
+
+            for (Formula clause : (SequentialOr) input) {
+                Formula found = findFirstCodeElementFormula(clause);
+
+                if (found != null) {
+                    result.add(found);
+                }
+            }
+
+            return result;
         } else {
             throw new IllegalArgumentException("unhandled formula element " + input.getClass().toString());
         }
+    }
+
+    /**
+     * Check if a given node is associated with an SmPL Java DSL meta element as opposed to something that should
+     * be directly matched by the formula.
+     *
+     * @param node Node to check
+     * @return True if the node is associated with a meta element, false otherwise
+     */
+    private boolean isNodeForSmPLJavaDSLMetaElement(ControlFlowNode node) {
+        CtElement element = ((SmPLMethodCFG.NodeTag) node.getTag()).getAnchor();
+
+        if (element instanceof CtBlock<?>) {
+            element = element.getParent();
+        }
+
+        return SmPLJavaDSL.isBeginDisjunction(element)
+               || SmPLJavaDSL.isContinueDisjunction(element)
+               || SmPLJavaDSL.isDotsWithOptionalMatch(element);
     }
 
     /**

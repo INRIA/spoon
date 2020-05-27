@@ -6,7 +6,9 @@ matching of pattern disjunction including clause-order priority
 
 [patch]
 @@
+identifier fn;
 @@
+void fn() {
 (
 - a();
 |
@@ -14,6 +16,8 @@ matching of pattern disjunction including clause-order priority
 |
 - c();
 )
+...
+}
 
 [input]
 class A {
@@ -67,7 +71,7 @@ class A {
     }
     
     void m5() {
-        c();
         b();
+        a();
     }
 }

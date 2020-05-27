@@ -15,7 +15,6 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * SmPLParser contains methods for rewriting SmPL text input to an SmPL Java DSL (domain-specific language)
@@ -38,42 +37,29 @@ public class SmPLParser {
             }
         }
 
-        List<SmPLRule> ruleAlternatives = new ArrayList<>();
-        List<String> inputAlternatives = separateDisjunctions(smpl);
+        List<String> separated = separateAdditionsDeletions(rewrite(smpl));
 
-        for (String alternative : inputAlternatives) {
-            List<String> separated = separateAdditionsDeletions(rewrite(alternative));
+        CtClass<?> dels = Launcher.parseClass(separated.get(0));
+        CtClass<?> adds = Launcher.parseClass(separated.get(1));
 
-            CtClass<?> dels = Launcher.parseClass(separated.get(0));
-            CtClass<?> adds = Launcher.parseClass(separated.get(1));
+        // TODO: we probably want to keep legitimate this-accesses, only remove those associated with SmPLUnspecified
+        // part of hack to fix parsing of e.g "foo.x" with zero context for "foo"
+        nullifyThisAccessTargets(dels);
+        nullifyThisAccessTargets(adds);
 
-            // TODO: we probably want to keep legitimate this-accesses, only remove those associated with SmPLGeneralIdentifier
-            // part of hack to fix parsing of e.g "foo.x" with zero context for "foo"
-            nullifyThisAccessTargets(dels);
-            nullifyThisAccessTargets(adds);
+        Set<Integer> delsLines = collectStatementLines(dels);
+        Set<Integer> addsLines = collectStatementLines(adds);
 
-            Set<Integer> delsLines = collectStatementLines(dels);
-            Set<Integer> addsLines = collectStatementLines(adds);
+        Set<Integer> commonLines = new HashSet<>(delsLines);
+        commonLines.retainAll(addsLines);
 
-            Set<Integer> commonLines = new HashSet<>(delsLines);
-            commonLines.retainAll(addsLines);
+        AnchoredOperationsMap anchoredOperations = anchorAdditions(adds, commonLines);
 
-            AnchoredOperationsMap anchoredOperations = anchorAdditions(adds, commonLines);
+        Set<Integer> containedCommonLines = findContainedCommonLines(adds, commonLines);
+        commonLines.removeAll(containedCommonLines);
 
-            Set<Integer> containedCommonLines = findContainedCommonLines(adds, commonLines);
-            commonLines.removeAll(containedCommonLines);
-
-            new DeletionAnchorRemover().scan(adds);
-            ruleAlternatives.add(compile(dels, commonLines, anchoredOperations));
-        }
-
-        if (ruleAlternatives.size() == 1) {
-            return ruleAlternatives.get(0);
-        } else {
-            List<Formula> formulaAlternatives = new ArrayList<>();
-            ruleAlternatives.forEach((rule) -> formulaAlternatives.add(rule.getFormula()));
-            return new SmPLRuleImpl(FormulaCompiler.joinAlternatives(formulaAlternatives), ruleAlternatives.get(0).getMetavariableConstraints());
-        }
+        new DeletionAnchorRemover().scan(adds);
+        return compile(dels, commonLines, anchoredOperations);
     }
 
     /**
@@ -212,6 +198,7 @@ public class SmPLParser {
         List<RewriteRule> statementDots = new ArrayList<>();
         List<RewriteRule> statementDotsParams = new ArrayList<>();
         List<RewriteRule> optionalMatchDots = new ArrayList<>();
+        List<RewriteRule> disjunction = new ArrayList<>();
 
         RewriteRule eatWhitespace = new RewriteRule("whitespace", "(?s)^\\s+",
                 (ctx) -> {},
@@ -404,6 +391,7 @@ public class SmPLParser {
             (ctx) -> {
                 ctx.push(statementDots);
                 ctx.push(optionalMatchDots);
+                ctx.push(disjunction);
             },
 
             (result, match) -> {
@@ -484,6 +472,31 @@ public class SmPLParser {
 
         optionalMatchDots.add(anycharPopContext);
 
+        // Context for pattern disjunction microsyntax
+        disjunction.add(new RewriteRule("disjunction_begin", "(?s)^\\(",
+                (ctx) -> { ctx.pop(); },
+                (result, match) -> {
+                    result.out.append("if (").append(SmPLJavaDSL.getBeginDisjunctionName()).append(") {");
+                    return match.end();
+                }));
+
+        disjunction.add(new RewriteRule("disjunction_continue", "(?s)^\\|",
+                (ctx) -> { ctx.pop(); },
+                (result, match) -> {
+                    result.out.append("} else if (").append(SmPLJavaDSL.getContinueDisjunctionName()).append(") {");
+                    return match.end();
+                }));
+
+        disjunction.add(new RewriteRule("disjunction_end", "(?s)^\\)",
+                (ctx) -> { ctx.pop(); },
+                (result, match) -> {
+                    result.out.append("}");
+                    return match.end();
+                }));
+
+        disjunction.add(anycharPopContext);
+
+        // Context for method call argument lists
         argumentList.add(new RewriteRule("dots", "(?s)^\\.\\.\\.",
                 (ctx) -> { },
                 (result, match) -> {
@@ -588,113 +601,6 @@ public class SmPLParser {
      */
     private static String removeEmptyLines(String s) {
         return String.join("\n", Arrays.stream(s.split("\n")).filter(ss -> !ss.isEmpty()).collect(Collectors.toList()));
-    }
-
-    /**
-     * Given a String containing SmPL-like disjunction syntax, produce every possible combination eliminating all
-     * disjunctions.
-     *
-     * SmPL-like disjunction syntax:
-     * 1) The character '(' appearing in position 0 on a line denotes the start of a disjunction.
-     * 2) The character '|' appearing in position 0 on a line moves to the next clause of the enclosing disjunction.
-     * 3) The character ')' appearing in position 0 on a line denotes the end of a disjunction.
-     *
-     * @param input Input String
-     * @return List of Strings containing every possible combination obtainable by eliminating disjunctions
-     */
-    public static List<String> separateDisjunctions(String input) {
-        class Disjunction {
-            public Disjunction(int id) {
-                this.id = id;
-            }
-
-            public int id;
-            public int numClauses;
-            public int currentClause;
-            public int lineStart;
-            public int lineEnd;
-
-            //@Override
-            //public String toString() { return "Disjunction(" + id + "," + numClauses + "," + lineStart + "-" + lineEnd + ")"; }
-        }
-
-        List<String> results = new ArrayList<>();
-
-        // find and enumerate disjunctions and count their clauses
-        List<Disjunction> disjunctions = new ArrayList<>();
-        Stack<Integer> currentDisjunctionId = new Stack<>();
-        int disjunctionId = 0;
-        int lineNo = 0;
-
-        for (String str : input.split("\n")) {
-            if (str.length() > 0) {
-                if (str.charAt(0) == '(') {
-                    currentDisjunctionId.push(disjunctionId);
-                    disjunctions.add(new Disjunction(disjunctionId++));
-                    disjunctions.get(currentDisjunctionId.peek()).lineStart = lineNo;
-                    disjunctions.get(currentDisjunctionId.peek()).numClauses += 1;
-
-                } else if (str.charAt(0) == '|') {
-                    disjunctions.get(currentDisjunctionId.peek()).numClauses += 1;
-                } else if (str.charAt(0) == ')') {
-                    disjunctions.get(currentDisjunctionId.peek()).lineEnd = lineNo;
-                    currentDisjunctionId.pop();
-                }
-            }
-
-            ++lineNo;
-        }
-
-        // create combinations generator
-        CombinationsGenerator<Integer> combo = new CombinationsGenerator<>();
-
-        for (Disjunction disj : disjunctions) {
-            combo.addWheel(IntStream.range(0, disj.numClauses).boxed().collect(Collectors.toList()));
-        }
-
-        // produce every combination
-        while (combo.next()) {
-            List<Integer> currentCombo = combo.current();
-            StringBuilder sb = new StringBuilder();
-
-            currentDisjunctionId = new Stack<>();
-            disjunctionId = 0;
-            lineNo = 0;
-
-            for (String str : input.split("\n")) {
-                // keep track of which disjunction and which clause we are in
-                if (str.length() > 0) {
-                    if (str.charAt(0) == '(') {
-                        currentDisjunctionId.push(disjunctionId++);
-                        disjunctions.get(currentDisjunctionId.peek()).currentClause = 0;
-                        sb.append("\n");
-                    } else if (str.charAt(0) == '|') {
-                        disjunctions.get(currentDisjunctionId.peek()).currentClause += 1;
-                        sb.append("\n");
-                    } else if (str.charAt(0) == ')') {
-                        currentDisjunctionId.pop();
-                        sb.append("\n");
-                    } else {
-                        // handle actual content
-                        if (currentDisjunctionId.empty() || disjunctions.get(currentDisjunctionId.peek()).currentClause == currentCombo.get(currentDisjunctionId.peek())) {
-                            // this content either appears outside any disjunction or in a clause included by the current combination
-                            sb.append(str).append("\n");
-                        } else {
-                            // current combination does not include this clause
-                            sb.append("\n");
-                        }
-                    }
-                } else {
-                    sb.append("\n");
-                }
-
-                ++lineNo;
-            }
-
-            results.add(sb.toString());
-        }
-
-        return results;
     }
 
     /**

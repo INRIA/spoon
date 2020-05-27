@@ -173,6 +173,26 @@ public class SmPLJavaDSL {
         return dotsWithOptionalMatchName;
     }
 
+    private static String beginDisjunctionName = "__SmPLBeginDisjunction__";
+
+    public static String getBeginDisjunctionName() {
+        return beginDisjunctionName;
+    }
+
+    private static String continueDisjunctionName = "__SmPLContinueDisjunction__";
+
+    public static String getContinueDisjunctionName() {
+        return continueDisjunctionName;
+    }
+
+    public static boolean isBeginDisjunction(CtElement element) {
+        return isIfStatementWithNamedConditionVariable(element, beginDisjunctionName);
+    }
+
+    public static boolean isContinueDisjunction(CtElement element) {
+        return isIfStatementWithNamedConditionVariable(element, continueDisjunctionName);
+    }
+
     /**
      * Check if a given element represents a dots-with-optional-match SmPL construct.
      *
@@ -180,9 +200,7 @@ public class SmPLJavaDSL {
      * @return True if element represents a dots-with-optional-match SmPL construct, false otherwise
      */
     public static boolean isDotsWithOptionalMatch(CtElement element) {
-        return element instanceof CtIf
-               && ((CtIf) element).getCondition() instanceof CtVariableRead
-               && ((CtVariableRead<?>) ((CtIf) element).getCondition()).getVariable().getSimpleName().equals(dotsWithOptionalMatchName);
+        return isIfStatementWithNamedConditionVariable(element, dotsWithOptionalMatchName);
     }
 
     /**
@@ -338,5 +356,11 @@ public class SmPLJavaDSL {
     private static boolean isExecutableWithName(CtElement e, String name) {
         return e instanceof CtInvocation<?>
                && ((CtInvocation<?>) e).getExecutable().getSimpleName().equals(name);
+    }
+
+    private static boolean isIfStatementWithNamedConditionVariable(CtElement element, String name) {
+        return element instanceof CtIf
+               && ((CtIf) element).getCondition() instanceof CtVariableRead
+               && ((CtVariableRead<?>) ((CtIf) element).getCondition()).getVariable().getSimpleName().equals(name);
     }
 }

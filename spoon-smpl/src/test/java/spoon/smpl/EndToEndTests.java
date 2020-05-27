@@ -236,20 +236,24 @@ public class EndToEndTests {
                                                   "    }\n" +
                                                   "    \n" +
                                                   "    void m5() {\n" +
-                                                  "        c();\n" +
                                                   "        b();\n" +
+                                                  "        a();\n" +
                                                   "    }\n" +
                                                   "}\n");
     
         SmPLRule rule = SmPLParser.parse("@@\n" +
+                                         "identifier fn;\n" +
                                          "@@\n" +
+                                         "void fn() {\n" +
                                          "(\n" +
                                          "- a();\n" +
                                          "|\n" +
                                          "- b();\n" +
                                          "|\n" +
                                          "- c();\n" +
-                                         ")\n");
+                                         ")\n" +
+                                         "...\n" +
+                                         "}\n");
     
         input.getMethods().forEach((method) -> {
             CFGModel model = new CFGModel(methodCfg(method));
