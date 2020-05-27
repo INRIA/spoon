@@ -6,6 +6,8 @@ import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.psi
+import org.jetbrains.kotlin.fir.references.impl.FirExplicitThisReference
+import org.jetbrains.kotlin.fir.references.impl.FirImplicitThisReference
 import org.jetbrains.kotlin.fir.references.impl.FirPropertyFromParameterResolvedNamedReference
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.visitors.CompositeTransformResult
@@ -265,6 +267,24 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
 
         return ctMethod.compose()
     }
+
+    override fun visitThisReceiverExpression(
+        thisReceiverExpression: FirThisReceiverExpression,
+        data: Nothing?
+    ): CompositeTransformResult.Single<CtThisAccess<*>> {
+        val thisAccess = factory.Core().createThisAccess<Any>()
+        thisAccess.setType<CtThisAccess<*>>(referenceBuilder.getNewTypeReference(thisReceiverExpression.typeRef))
+        val implicit = when(thisReceiverExpression.calleeReference) {
+            is FirExplicitThisReference -> false
+            is FirImplicitThisReference -> true
+            else -> false
+        }
+        thisAccess.setImplicit<CtThisAccess<*>>(implicit)
+
+        return thisAccess.compose()
+    }
+
+
 
     override fun visitValueParameter(
         valueParameter: FirValueParameter,
