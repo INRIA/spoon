@@ -11,7 +11,7 @@ The main classes of Spoon patterns are those in package `spoon.pattern`:
 
 See also [examples in project `spoon-examples`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/analysis/PatternTest.java)
 
-## Example usage
+### Example usage
 
 ```java
 Factory spoonFactory = ...
@@ -26,7 +26,7 @@ pattern.forEachMatch(spoonFactory.getRootPackage(), (Match match) -> {
 });
 ```
 
-## PatternBuilder
+### PatternBuilder
 
 To create a Spoon pattern, one must use `PatternBuilder`, which takes AST nodes as input, and _pattern parameters_ can be defined.
 
@@ -47,7 +47,7 @@ Pattern t = PatternBuilder.create(elem)
 
 One can also create specific parameters with `.configureParameters(pb -> pb.parameter("name").byXXXX` (see below)
 
-## Pattern 
+### Pattern 
 
 Once a `PatternBuilder` returns a `Pattern`, the main methods of `Pattern` are `getMatches` and `forEachMatch`.
 
@@ -55,15 +55,15 @@ Once a `PatternBuilder` returns a `Pattern`, the main methods of `Pattern` are `
 List<Match> matches = pattern.getMatches(ctClass);
 ```
 
-## Match
+### Match
 
 A `Match` represent a match of a pattern on a code elements. The main methods are `getMatchingElement` and `getMatchingElements`.
 
-## PatternBuilderHelper
+### PatternBuilderHelper
 
 `PatternBuilderHelper` is useful to select AST nodes that would act as pattern. See method to get the body (method `setBodyOfMethod`) or the return expression of a method (method `setReturnExpressionOfMethod`).
 
-## PatternParameterConfigurator
+### PatternParameterConfigurator
 
 To create pattern paramters, one uses a `PatternParameterConfigurator` as a lambda:
 
@@ -144,7 +144,7 @@ The `setValueType(type)` is called internally too, so match condition assures bo
   * `ContainerKind#MAP` - The values are always stored as `Map`.
 
 
-## InlinedStatementConfigurator
+### InlinedStatementConfigurator
 
 It is possible to match inlined code, eg:
 
@@ -182,11 +182,11 @@ inline statements
 * `markAsInlined(CtForEach|CtIf)` - provided CtForEach or CtIf statement
 is understood as inline statement
 
-## Generator
+### Generator
 
 All patterns can be used for code generation. The idea is that one calls `#generator()` on a pattern object to get a `Generator`. This class contains methods that takes as input a map of string,objects where each string key points to a pattern parameter name and each map value contains the element to be put in place of the pattern parameter.
 
-## Notes
+### Notes on patterns
 
 The unique feature of Spoon pattern matching is that we are matching on AST trees and not source code text. It means that:
 

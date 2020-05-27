@@ -9,8 +9,7 @@ Since architectural rules must be automatically checked as often as possible, it
 
 To write an architectural rule in Spoon that is checked in CI, the idea is to write a standard Junit test case that loads the application code, express the rule and check it. Doing this only requires to depend on Spoon at testing time, ie `<scope>test</scope>` in Maven.
 
-Example rule: never use the TreeSet constructor
-----------------------------------
+### Example rule: never use the TreeSet constructor
 
 For instance, let's imagine that you want to forbid the usage of `TreeSet`'s constructor, in your code base, you would simply write a test case as follows:
 
@@ -35,8 +34,7 @@ That's it! Every time you run the tests, incl. on your continuous integration se
 For instance, you can check that you never return null, or always use an appropriate factory, or that all classes implementing an interface are in the same package.
 
 
-Example rule: all test classes must start or end with "Test"
-----------------------------
+### Example rule: all test classes must start or end with "Test"
 
 A common mistake is to forget to follow a naming convention. For instance, if you use Maven, all test classes must be named `Test*` or `*Test` in order to be run by Maven's standard test plugin `surefire` ([see doc](http://maven.apache.org/surefire/maven-surefire-plugin/examples/inclusion-exclusion.html)). This rule simply reads:
 
@@ -58,8 +56,7 @@ public void testGoodTestClassNames() throws Exception {
 }
 ```
 
-Example rule: all public methods must be documented
-----------------------------
+### Example rule: all public methods must be documented
 
 How to check that all public methods of the API contain proper Javadoc? One can also use Spoon to check documentation rules like this one.
 
@@ -87,8 +84,7 @@ public void testDocumentation() throws Exception {
 }
 ```
 
-Related work in architecture enforcement
-----------------------------------------
+### Related work in architecture enforcement
 
 * [Architecture enforcement with Checkstyle](https://saturnnetwork.wordpress.com/2012/11/26/ultimate-architecture-enforcement-prevent-code-violations-at-code-commit-time/)
 * [Sonar architecture rule engine](https://docs.sonarqube.org/display/SONARQUBE44/Architecture+Rule+Engine)

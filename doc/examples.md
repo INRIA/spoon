@@ -1,21 +1,9 @@
 ---
-title: Examples of Spoon Usages
+title: Examples of Spoon Transformation Usages
 keywords: examples
 ---
 
 We provide examples for learning and teaching Spoon in <https://github.com/SpoonLabs/spoon-examples/>. Don't hesitate to propose new examples as pull-request!
-
-The [HelloWorldProcessor example](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/HelloWorldProcessor.java) prints hello world with compile-time reflection.
-
-## Program Analysis
-
-The [CatchProcessor example](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/analysis/CatchProcessor.java) detects empty catch blocks.
-
-The [ReferenceProcessor example](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/analysis/ReferenceProcessor.java) detects circular references between packages.
-
-This [Factory example](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/analysis/FactoryProcessor.java) example detects wrong uses of the factory pattern.
-
-## Program Transformation
 
 ### Transformation with API
 
@@ -44,7 +32,5 @@ The [RetryTemplate example](https://github.com/SpoonLabs/spoon-examples/tree/mas
 ### Transformation with Patterns
 
 TBD, see <https://github.com/INRIA/spoon/issues/3140>
-
-## Miscelanous
 
 The [Distributed Calculus example](https://gforge.inria.fr/scm/viewvc.php/trunk/spoon-examples/src/main/java/spoon/examples/distcalc/?root=spoon) creates a fun new language for distributed computing using Java and Spoon.

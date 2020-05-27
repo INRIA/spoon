@@ -1,15 +1,18 @@
 ---
-title: First steps with Spoon
+title: Core concepts
 tags: [getting-started]
 keywords: start, begin, hello world, processor, spoon
 ---
 
-## Visualizing the Spoon AST of a Java file
+### Abstract Syntax Tree
 
-To get started with the metamodel, you can browse the model (ie the Spoon AST) of a java file (say `MyClass.java`) as follows:
+An [Abstract Syntax Tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree), also known as ASTs, is a a tree-based representation of source code. Spoon is a library to build and manipulates ASTs of Java source code.
+
+With Spoon, you can visualize the AST of a Java file, as follows:
 
 ```
-$ java -cp spoon-core-{{site.spoon_release}}-jar-with-dependencies.jar spoon.Launcher -i MyClass.java --gui
+$ java -cp spoon-core-{{site.spoon_release}}-jar-with-dependencies.jar spoon.Launcher \
+   -i MyClass.java --gui
 ```
 
 <img src="images/gui.png"/>
@@ -19,11 +22,11 @@ If you have Java 11 with Java FX, there is a new GUI, see <https://github.com/IN
 <img src="https://raw.githubusercontent.com/INRIA/spoon/master/spoon-visualisation/doc/appFeat.png"/>
 
 
-## Your first processor
+### Code Analysis
 
-In Spoon, a processor is a combination of query and analysis code.
-With this concept, developer can analyse all elements of a type given 
-and inspect each element of this type one per one.
+Spoon is a tool for doing [static code analysis](https://en.wikipedia.org/wiki/Static_program_analysis) at the source code level.
+
+In Spoon, the core concept for code analysis is a processor. A processor analyses all AST elements of a  given type, one per one.
 
 For a first processor, we'll analyze all catch blocks of a `try {...} catch {...}` 
 element to know how many empty catch blocks we have in a project. This kind of empty 
@@ -60,12 +63,11 @@ When the class `AbstractProcessor` ([javadoc](http://spoon.gforge.inria.fr/mvnsi
 is extended, we implement the method `void process(E element)`where `E` is a generic type for 
 any elements of the AST (all classes in the Spoon meta model which extends `CtElement` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtElement.html))). It is in this method that you can access all information you want of the the current `CtCatch` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtCatch.html)). 
 
-## Apply the processor
-
-First, compile your processor. You can use javac in command line to generate the `CatchProcessor.class` file. Then we execute Spoon as follows to analyze all catch blocks in Java files that are in `/path/to/src/of/your/project`:
+Next, you can compile your processor. You can use javac in command line to generate the `CatchProcessor.class` file. Then we execute Spoon as follows to analyze all catch blocks in Java files that are in `/path/to/src/of/your/project`:
 
 ```bash
-$ java -classpath /path/to/binary/of/your/processor.jar:spoon-core-{{site.spoon_release}}-jar-with-dependencies.jar spoon.Launcher -i /path/to/src/of/your/project -p processors.CatchProcessor
+$ java -classpath /path/to/processor.jar:spoon-core-{{site.spoon_release}}-jar-with-dependencies.jar \
+    spoon.Launcher -i /path/to/src/of/your/project -p processors.CatchProcessor
 ```
 
 {{site.data.alerts.important}} 
@@ -75,6 +77,6 @@ $ java -classpath /path/to/binary/of/your/processor.jar:spoon-core-{{site.spoon_
 
 There are many more examples of source code analysis in <https://github.com/SpoonLabs/spoon-examples>.
 
-## Bytecode analysis
+### Code Transformation
 
-Note that spoon also supports the analysis of bytecode through decompilation. See [javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/JarLauncher.html).
+An unique feature of Spoon is its ability to automatically transform source code, for instance for [instrumentation](https://en.wikipedia.org/wiki/Instrumentation_(computer_programming)) or refactoring, see section "Transformation" below.
