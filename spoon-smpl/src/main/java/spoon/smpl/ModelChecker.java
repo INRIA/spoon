@@ -1,6 +1,7 @@
 package spoon.smpl;
 
 import spoon.smpl.formula.*;
+import spoon.smpl.formula.Optional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -610,6 +611,26 @@ public class ModelChecker implements FormulaVisitor {
         }
 
         resultStack.push(result);
+    }
+
+    @Override
+    public void visit(Optional element) {
+        element.getInnerElement().accept(this);
+        ResultSet leftResults = resultStack.pop();
+
+        new True().accept(this);
+        ResultSet rightResults = resultStack.pop();
+
+        Set<Integer> resultsToCopy = rightResults.getIncludedStates();
+        resultsToCopy.removeAll(leftResults.getIncludedStates());
+
+        for (Result result : rightResults) {
+            if (resultsToCopy.contains(result.getState())) {
+                leftResults.add(result);
+            }
+        }
+
+        resultStack.push(leftResults);
     }
 
     /**

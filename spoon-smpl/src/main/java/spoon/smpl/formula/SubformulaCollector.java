@@ -89,4 +89,11 @@ public class SubformulaCollector implements FormulaVisitor {
             phi.accept(this);
         }
     }
+
+    @Override
+    public void visit(Optional element) {
+        subformulas.add(element);
+
+        element.getInnerElement().accept(this);
+    }
 }

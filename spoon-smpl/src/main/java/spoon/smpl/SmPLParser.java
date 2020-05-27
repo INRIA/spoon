@@ -182,10 +182,6 @@ public class SmPLParser {
             throw new RuntimeException("Empty input");
         }
 
-        String implicitDots = SmPLJavaDSL.getDotsStatementElementName() + "(" +
-                              SmPLJavaDSL.getDotsWhenExistsName() + "(), " +
-                              SmPLJavaDSL.getDotsWhenAnyName() + "());";
-
         List<RewriteRule> init = new ArrayList<>();
         List<RewriteRule> metavars = new ArrayList<>();
         List<RewriteRule> code = new ArrayList<>();
@@ -314,7 +310,7 @@ public class SmPLParser {
                     result.isUnspecifiedMethodHeader = true;
                     result.out.append(SmPLJavaDSL.createUnspecifiedMethodHeaderString())
                               .append(" {\n")
-                              .append(implicitDots)
+                              .append("if (").append(SmPLJavaDSL.getDotsWithOptionalMatchName()).append(") {")
                               .append("\n");
                     return 0;
                 }));
@@ -568,7 +564,8 @@ public class SmPLParser {
             }
 
             if (result.isUnspecifiedMethodHeader) {
-                result.out.append(implicitDots).append("\n");
+                // close implicit dots-with-optional-match
+                result.out.append("}\n");
             }
 
             result.out.append("}\n");

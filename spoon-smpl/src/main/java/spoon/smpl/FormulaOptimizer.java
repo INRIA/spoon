@@ -231,6 +231,12 @@ public class FormulaOptimizer implements FormulaVisitor {
         resultStack.push(result);
     }
 
+    @Override
+    public void visit(Optional element) {
+        element.getInnerElement().accept(this);
+        resultStack.push(new Optional(resultStack.pop()));
+    }
+
     /**
      * Internal stack of results.
      */

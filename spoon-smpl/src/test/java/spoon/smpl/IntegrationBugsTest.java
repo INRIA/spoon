@@ -75,4 +75,23 @@ public class IntegrationBugsTest {
 
         // Before bugfix was [(4, {v=y}), (4, {v=x})]
     }
+
+    @Test
+    public void testImplicitDotsProducingMultipleResultsBug() {
+
+        // contract: implicit dots should not generate empty duplicate results
+
+        String smpl = "@@ @@\n" +
+                      "- f();\n";
+
+        Model model = new CFGModel(methodCfg(parseMethod("void m() { f(); }")));
+
+        ModelChecker checker = new ModelChecker(model);
+        SmPLParser.parse(smpl).getFormula().accept(checker);
+
+        assertEquals(1, checker.getResult().size());
+
+        // Before bugfix was 2, one being correct and the other being an empty match (s, {}, []) for
+        //  the method header state s.
+    }
 }

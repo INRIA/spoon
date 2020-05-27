@@ -7,6 +7,7 @@ import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.formula.*;
+import spoon.smpl.formula.Optional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -375,7 +376,7 @@ public class FormulaCompiler {
             // TODO: is there a case where metavariables need to be quantified enclosing the AllUntil here?
             //  maybe if the same unquantified metavariable is used in both the optional match and immediately
             //  in the tail? e.g optionalMatch = ExistsVar(x, ...), tail = ExistsVar(x, ...)
-            return new AllUntil(new Or(optionalMatch, new True()), tail);
+            return new AllUntil(new Optional(optionalMatch), tail);
         } catch (Exception e) {
             throw new IllegalArgumentException("malformed dots-with-optional-match node");
         }

@@ -11,9 +11,8 @@ import static spoon.smpl.SmPLParser.parse;
 import static spoon.smpl.SmPLParser.rewrite;
 
 public class SmPLParserTest {
-    String implicitDots = SmPLJavaDSL.getDotsStatementElementName() + "(" +
-                          SmPLJavaDSL.getDotsWhenExistsName() + "(), " +
-                          SmPLJavaDSL.getDotsWhenAnyName() + "());";
+    String implicitDotsBegin = "if (" + SmPLJavaDSL.getDotsWithOptionalMatchName() + ") {";
+    String implicitDotsEnd = "}";
 
     @Test(expected = RuntimeException.class)
     public void testRewriteEmptyString() {
@@ -36,11 +35,11 @@ public class SmPLParserTest {
 
         // contract: SmPLParser can handle an empty rule, producing an empty Java DSL class.
 
-        String result = DebugUtils.prettify(rewrite("@@\n@@\n"));
-        assertEquals("class RewrittenSmPLRule {\n" +
-                "    void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
-                "    }\n" +
-                "}\n", result);
+        String result = DebugUtils.prettify(rewrite("@@@@\n"));
+        assertEquals(DebugUtils.prettify("class RewrittenSmPLRule {\n" +
+                                         "void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
+                                         "}\n" +
+                                         "}\n"), result);
     }
 
     @Test
@@ -55,18 +54,17 @@ public class SmPLParserTest {
                 "int x = 1;\n" +
                 "return x + 1;\n"));
 
-        assertEquals(
-                "class RewrittenSmPLRule {\n" +
-                "    void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
-                "        identifier(x);\n" +
-                "    }\n" +
-                "    " + SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
-                "        " + implicitDots + "\n" +
-                "        int x = 1;\n" +
-                "        return x + 1;\n" +
-                "        " + implicitDots + "\n" +
-                "    }\n" +
-                "}\n", result);
+        assertEquals(DebugUtils.prettify("class RewrittenSmPLRule {\n" +
+                                         "void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
+                                         "identifier(x);\n" +
+                                         "}\n" +
+                                         SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
+                                         implicitDotsBegin + "\n" +
+                                         "int x = 1;\n" +
+                                         "return x + 1;\n" +
+                                         implicitDotsEnd + "\n" +
+                                         "}\n" +
+                                         "}\n"), result);
     }
 
     @Test
@@ -82,20 +80,19 @@ public class SmPLParserTest {
                 "int y = 2;\n" +
                 "return x + y;\n"));
 
-        assertEquals(
-                "class RewrittenSmPLRule {\n" +
-                "    void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
-                "        identifier(x);\n" +
-                "        identifier(y);\n" +
-                "    }\n" +
-                "    " + SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
-                "        " + implicitDots + "\n" +
-                "        int x = 1;\n" +
-                "        int y = 2;\n" +
-                "        return x + y;\n" +
-                "        " + implicitDots + "\n" +
-                "    }\n" +
-                "}\n", result);
+        assertEquals(DebugUtils.prettify("class RewrittenSmPLRule {\n" +
+                                         "void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
+                                         "identifier(x);\n" +
+                                         "identifier(y);\n" +
+                                         "}\n" +
+                                         SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
+                                         implicitDotsBegin + "\n" +
+                                         "int x = 1;\n" +
+                                         "int y = 2;\n" +
+                                         "return x + y;\n" +
+                                         implicitDotsEnd + "\n" +
+                                         "}\n" +
+                                         "}\n"), result);
     }
 
     @Test
@@ -112,20 +109,19 @@ public class SmPLParserTest {
                 "int y = 2;\n" +
                 "return x + y;\n"));
 
-        assertEquals(
-                "class RewrittenSmPLRule {\n" +
-                "    void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
-                "        identifier(x);\n" +
-                "        identifier(y);\n" +
-                "    }\n" +
-                "    " + SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
-                "        " + implicitDots + "\n" +
-                "        int x = 1;\n" +
-                "        int y = 2;\n" +
-                "        return x + y;\n" +
-                "        " + implicitDots + "\n" +
-                "    }\n" +
-                "}\n", result);
+        assertEquals(DebugUtils.prettify("class RewrittenSmPLRule {\n" +
+                                         "void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
+                                         "identifier(x);\n" +
+                                         "identifier(y);\n" +
+                                         "}\n" +
+                                         SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
+                                         implicitDotsBegin + "\n" +
+                                         "int x = 1;\n" +
+                                         "int y = 2;\n" +
+                                         "return x + y;\n" +
+                                         implicitDotsEnd + "\n" +
+                                         "}\n" +
+                                         "}\n"), result);
     }
 
     @Test
@@ -141,19 +137,18 @@ public class SmPLParserTest {
                 "... when != x\n" +
                 "return x + 1;\n"));
 
-        assertEquals(
-                "class RewrittenSmPLRule {\n" +
-                "    void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
-                "        identifier(x);\n" +
-                "    }\n" +
-                "    " + SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
-                "        " + implicitDots + "\n" +
-                "        int x = 1;\n" +
-                "        __SmPLDots__(whenNotEqual(x));\n" +
-                "        return x + 1;\n" +
-                "        " + implicitDots + "\n" +
-                "    }\n" +
-                "}\n", result);
+        assertEquals(DebugUtils.prettify("class RewrittenSmPLRule {\n" +
+                                         "void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
+                                         "identifier(x);\n" +
+                                         "}\n" +
+                                         SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
+                                         implicitDotsBegin + "\n" +
+                                         "int x = 1;\n" +
+                                         "__SmPLDots__(whenNotEqual(x));\n" +
+                                         "return x + 1;\n" +
+                                         implicitDotsEnd + "\n" +
+                                         "}\n" +
+                                         "}\n"), result);
     }
 
     @Test
@@ -171,21 +166,20 @@ public class SmPLParserTest {
                 "... when != ret\n" +
                 "return ret;\n"));
 
-        assertEquals(
-                "class RewrittenSmPLRule {\n" +
-                "    void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
-                "        type(T);\n" +
-                "        identifier(ret);\n" +
-                "        constant(C);\n" +
-                "    }\n" +
-                "    " + SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
-                "        " + implicitDots + "\n" +
-                "        T ret = C;\n" +
-                "        __SmPLDots__(whenNotEqual(ret));\n" +
-                "        return ret;\n" +
-                "        " + implicitDots + "\n" +
-                "    }\n" +
-                "}\n", result);
+        assertEquals(DebugUtils.prettify("class RewrittenSmPLRule {\n" +
+                                         "void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
+                                         "type(T);\n" +
+                                         "identifier(ret);\n" +
+                                         "constant(C);\n" +
+                                         "}\n" +
+                                         SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
+                                         implicitDotsBegin + "\n" +
+                                         "T ret = C;\n" +
+                                         "__SmPLDots__(whenNotEqual(ret));\n" +
+                                         "return ret;\n" +
+                                         implicitDotsEnd + "\n" +
+                                         "}\n" +
+                                         "}\n"), result);
     }
 
     @Test
