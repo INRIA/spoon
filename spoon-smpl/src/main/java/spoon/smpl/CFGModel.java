@@ -64,11 +64,17 @@ public class CFGModel implements Model {
                         labels.get(state).add(new StatementLabel(stmt));
                     }
                     break;
-                case CONVERGE:
-                    labels.get(state).add(new PropositionLabel("after"));
-                    break;
                 case BLOCK_BEGIN:
-                    labels.get(state).add(new PropositionLabel(((SmPLMethodCFG.NodeTag) node.getTag()).getLabel()));
+                case CONVERGE:
+                    SmPLMethodCFG.NodeTag tag = (SmPLMethodCFG.NodeTag) node.getTag();
+
+                    if (tag != null) {
+                        labels.get(state).add(new PropositionLabel(tag.getLabel()));
+
+                        for (String key : tag.getMetadataKeys()) {
+                            labels.get(state).add(new MetadataLabel(key, tag.getMetadata(key)));
+                        }
+                    }
                     break;
                 case EXIT:
                     labels.get(state).add(new PropositionLabel("end"));

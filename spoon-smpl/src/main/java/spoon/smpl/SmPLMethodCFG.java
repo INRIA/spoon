@@ -151,6 +151,7 @@ public class SmPLMethodCFG {
         public NodeTag(String label, CtElement anchor) {
             this.label = label;
             this.anchor = anchor;
+            this.metadata = new HashMap<>();
         }
 
         /**
@@ -169,9 +170,22 @@ public class SmPLMethodCFG {
             return anchor;
         }
 
+        public List<String> getMetadataKeys() {
+            List<String> result = new ArrayList<>(metadata.keySet());
+            Collections.sort(result);
+            return result;
+        }
+        public void setMetadata(String key, Object value) {
+            metadata.put(key, value);
+        }
+
+        public Object getMetadata(String key) {
+            return metadata.getOrDefault(key, null);
+        }
+
         @Override
         public String toString() {
-            return "NodeTag(" + label + ", " + anchor.toString() + ")";
+            return "NodeTag(" + label + ", " + anchor.toString() + ", " + metadata.toString() + ")";
         }
 
         /**
@@ -183,6 +197,11 @@ public class SmPLMethodCFG {
          * Anchor element.
          */
         private final CtElement anchor;
+
+        /**
+         * Arbitrary metadata key-value store.
+         */
+        private final Map<String, Object> metadata;
     }
 
     /**
@@ -193,8 +212,10 @@ public class SmPLMethodCFG {
         this.swapper = new UnsupportedElementSwapper(method);
         this.cfg = new ControlFlowBuilder().build(method.getBody());
 
-        removeOutermostBlockBeginNode(cfg);
+        int branchId = 0;
+
         removeBlockEndNodes(cfg);
+        removeOutermostBlockBeginNode(cfg);
 
         // Add method header node and annotate method body BLOCK_BEGIN node
         cfg.findNodesOfKind(BranchKind.BEGIN).forEach((cfgEntryNode) -> {
@@ -224,12 +245,7 @@ public class SmPLMethodCFG {
         });
 
         // Annotate branches
-        for (ControlFlowNode node : cfg.vertexSet()) {
-            if (node.getKind() != BranchKind.BRANCH) {
-                // We're only looking for BRANCH nodes
-                continue;
-            }
-
+        for (ControlFlowNode node : cfg.findNodesOfKind(BranchKind.BRANCH)) {
             if (node.next().size() != 2) {
                 throw new IllegalStateException("branch node with invalid number of successors");
             }
@@ -237,19 +253,31 @@ public class SmPLMethodCFG {
             // If is the only supported branch statement at this time
             CtIf ifStm = (CtIf) node.getStatement().getParent();
 
-            node.setTag(new NodeTag("branch", ifStm));
+            int currentBranchId = branchId++;
+
+            NodeTag branchTag = new NodeTag("branch", ifStm);
+            branchTag.setMetadata("branchId", currentBranchId);
+            node.setTag(branchTag);
 
             ControlFlowNode afterNode = findConvergenceNode(node);
-            afterNode.setTag(new NodeTag("after", ifStm));
+            NodeTag afterTag = new NodeTag("after", ifStm);
+            afterTag.setMetadata("parent", currentBranchId);
+            afterNode.setTag(afterTag);
 
             ControlFlowNode n1 = node.next().get(0);
             ControlFlowNode n2 = node.next().get(1);
 
+            NodeTag trueTag = new NodeTag("trueBranch", ifStm.getThenStatement());
+            trueTag.setMetadata("parent", currentBranchId);
+
+            NodeTag falseTag = new NodeTag("falseBranch", ifStm.getElseStatement());
+            falseTag.setMetadata("parent", currentBranchId);
+
             // If only one successor is a BLOCK_BEGIN the branch is else-less.
             if (n1.getKind() == BranchKind.BLOCK_BEGIN && n2.getKind() == BranchKind.CONVERGE) {
-                n1.setTag(new NodeTag("trueBranch", ifStm.getThenStatement()));
+                n1.setTag(trueTag);
             } else if (n2.getKind() == BranchKind.BLOCK_BEGIN && n1.getKind() == BranchKind.CONVERGE) {
-                n2.setTag(new NodeTag("trueBranch", ifStm.getThenStatement()));
+                n2.setTag(trueTag);
             } else {
                 // Both successors are blocks
 
@@ -258,8 +286,8 @@ public class SmPLMethodCFG {
 
                 if (n1next.getKind() == BranchKind.CONVERGE && n2next.getKind() == BranchKind.CONVERGE) {
                     // Both blocks are empty, we can choose labels arbitrarily
-                    n1.setTag(new NodeTag("trueBranch", ifStm.getThenStatement()));
-                    n2.setTag(new NodeTag("falseBranch", ifStm.getElseStatement()));
+                    n1.setTag(trueTag);
+                    n2.setTag(falseTag);
                 } else {
                     // One or both blocks contains statements, must assign correct label
 
@@ -273,11 +301,11 @@ public class SmPLMethodCFG {
                     }
 
                     if (n1IsTrueBranch) {
-                        n1.setTag(new NodeTag("trueBranch", ifStm.getThenStatement()));
-                        n2.setTag(new NodeTag("falseBranch", ifStm.getElseStatement()));
+                        n1.setTag(trueTag);
+                        n2.setTag(falseTag);
                     } else {
-                        n1.setTag(new NodeTag("falseBranch", ifStm.getElseStatement()));
-                        n2.setTag(new NodeTag("trueBranch", ifStm.getThenStatement()));
+                        n1.setTag(falseTag);
+                        n2.setTag(trueTag);
                     }
                 }
             }
@@ -373,6 +401,7 @@ public class SmPLMethodCFG {
 
     /**
      * Remove a node from a CFG, adding edges to preserve paths.
+     *
      * @param cfg CFG to operate on
      * @param node Node to remove
      */
@@ -400,7 +429,8 @@ public class SmPLMethodCFG {
 
     /**
      * If the BEGIN node has a BLOCK_BEGIN as successor, remove the BLOCK_BEGIN. This BLOCK_BEGIN
-     * generally represents the block enclosing the full method body.
+     * generally represents the start of the block enclosing the full method body.
+     *
      * @param cfg CFG to operate on
      */
     private static void removeOutermostBlockBeginNode(ControlFlowGraph cfg) {

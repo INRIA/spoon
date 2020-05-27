@@ -266,6 +266,257 @@ public class EndToEndTests {
         assertEquals(expected.toString(), input.toString());
     }
     @Test
+    public void testDotsLeavingScopeBug01() {
+        // contract: dots should be prevented from traversing out of the enclosing scope (when forall version)
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "  void m1() {\n" +
+                                               "    if (true) {\n" +
+                                               "    }\n" +
+                                               "    a();\n" +
+                                               "    if (true) {\n" +
+                                               "    }\n" +
+                                               "  }\n" +
+                                               "  void m2() {\n" +
+                                               "    if (true) {\n" +
+                                               "      a();\n" +
+                                               "    }\n" +
+                                               "    a();\n" +
+                                               "    if (true) {\n" +
+                                               "    }\n" +
+                                               "  }\n" +
+                                               "  void m3() {\n" +
+                                               "    if (true) {\n" +
+                                               "    }\n" +
+                                               "    a();\n" +
+                                               "    if (true) {\n" +
+                                               "      a();\n" +
+                                               "    }\n" +
+                                               "  }\n" +
+                                               "  void m4() {\n" +
+                                               "    if (true) {\n" +
+                                               "      a();\n" +
+                                               "    }\n" +
+                                               "    a();\n" +
+                                               "    if (true) {\n" +
+                                               "      a();\n" +
+                                               "    }\n" +
+                                               "  }\n" +
+                                               "  void m5() {\n" +
+                                               "    if (true) {\n" +
+                                               "      if (true) {\n" +
+                                               "        a();\n" +
+                                               "      }\n" +
+                                               "    }\n" +
+                                               "    a();\n" +
+                                               "    if (true) {\n" +
+                                               "    }\n" +
+                                               "  }\n" +
+                                               "  void m6() {\n" +
+                                               "    if (true) {\n" +
+                                               "      if (whatever) {\n" +
+                                               "        a();\n" +
+                                               "      }\n" +
+                                               "    }\n" +
+                                               "    a();\n" +
+                                               "    if (true) {\n" +
+                                               "    }\n" +
+                                               "  }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "        a();\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "    void m2() {\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "        a();\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "    void m3() {\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "        a();\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "    void m4() {\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "        a();\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "    void m5() {\n" +
+                                                  "        if (true) {\n" +
+                                                  "            if (true) {\n" +
+                                                  "            }\n" +
+                                                  "        }\n" +
+                                                  "        a();\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "    void m6() {\n" +
+                                                  "        if (true) {\n" +
+                                                  "            if (whatever) {\n" +
+                                                  "                a();\n" +
+                                                  "            }\n" +
+                                                  "        }\n" +
+                                                  "        a();\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ @@\n" +
+                                         "if (true) {\n" +
+                                         "  ...\n" +
+                                         "- a();\n" +
+                                         "  ...\n" +
+                                         "}\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testDotsLeavingScopeBug02() {
+        // contract: dots should be prevented from traversing out of the enclosing scope (when exists version)
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "  void m1() {\n" +
+                                               "    if (true) {\n" +
+                                               "    }\n" +
+                                               "    a();\n" +
+                                               "    if (true) {\n" +
+                                               "    }\n" +
+                                               "  }\n" +
+                                               "  void m2() {\n" +
+                                               "    if (true) {\n" +
+                                               "      a();\n" +
+                                               "    }\n" +
+                                               "    a();\n" +
+                                               "    if (true) {\n" +
+                                               "    }\n" +
+                                               "  }\n" +
+                                               "  void m3() {\n" +
+                                               "    if (true) {\n" +
+                                               "    }\n" +
+                                               "    a();\n" +
+                                               "    if (true) {\n" +
+                                               "      a();\n" +
+                                               "    }\n" +
+                                               "  }\n" +
+                                               "  void m4() {\n" +
+                                               "    if (true) {\n" +
+                                               "      a();\n" +
+                                               "    }\n" +
+                                               "    a();\n" +
+                                               "    if (true) {\n" +
+                                               "      a();\n" +
+                                               "    }\n" +
+                                               "  }\n" +
+                                               "  void m5() {\n" +
+                                               "    if (true) {\n" +
+                                               "      if (true) {\n" +
+                                               "        a();\n" +
+                                               "      }\n" +
+                                               "    }\n" +
+                                               "    a();\n" +
+                                               "    if (true) {\n" +
+                                               "    }\n" +
+                                               "  }\n" +
+                                               "  void m6() {\n" +
+                                               "    if (true) {\n" +
+                                               "      if (whatever) {\n" +
+                                               "        a();\n" +
+                                               "      }\n" +
+                                               "    }\n" +
+                                               "    a();\n" +
+                                               "    if (true) {\n" +
+                                               "    }\n" +
+                                               "  }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "        a();\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "    void m2() {\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "        a();\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "    void m3() {\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "        a();\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "    void m4() {\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "        a();\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "    void m5() {\n" +
+                                                  "        if (true) {\n" +
+                                                  "            if (true) {\n" +
+                                                  "            }\n" +
+                                                  "        }\n" +
+                                                  "        a();\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "    void m6() {\n" +
+                                                  "        if (true) {\n" +
+                                                  "            if (whatever) {\n" +
+                                                  "            }\n" +
+                                                  "        }\n" +
+                                                  "        a();\n" +
+                                                  "        if (true) {\n" +
+                                                  "        }\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ @@\n" +
+                                         "if (true) {\n" +
+                                         "  ... when exists\n" +
+                                         "- a();\n" +
+                                         "  ...\n" +
+                                         "}\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
     public void testEnvironmentNegationBug() {
         // contract: the bug where the environments (Tv1=int, v1=x) and (Tv1=(int), v1=(y)) could not be joined should be fixed
 

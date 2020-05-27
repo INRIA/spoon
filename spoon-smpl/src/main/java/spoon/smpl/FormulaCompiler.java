@@ -102,13 +102,25 @@ public class FormulaCompiler {
                                                                    Integer.toString(node.getId()));
                             }
 
+                            String parentIdVar = "__parent" + Integer.toString((int) tag.getMetadata("parent")) + "__";
+
+                            boolean shouldQuantify = !quantifiedMetavars.contains(parentIdVar);
+
+                            quantifiedMetavars.add(parentIdVar);
+
                             innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
 
-                            formula = new Proposition(tag.getLabel());
+                            formula = new And(new Proposition(tag.getLabel()),
+                                              new MetadataPredicate(parentIdVar, "parent"));
 
                             if (innerFormula != null) {
                                 formula = new And(formula,
                                                   new AllNext(innerFormula));
+                            }
+
+                            if (shouldQuantify) {
+                                formula = new ExistsVar(parentIdVar, formula);
+                                quantifiedMetavars.remove(parentIdVar);
                             }
 
                             return formula;
@@ -405,6 +417,31 @@ public class FormulaCompiler {
     }
 
     /**
+     * Find the ID of the immediate parent branch for a given node.
+     *
+     * @param node Node for which to find the ID of the parent branch
+     * @return ID of parent branch, or -1 if the closest parent of the node is the method body
+     */
+    private int findParentBranchId(ControlFlowNode node) {
+        CtElement element = node.getStatement();
+        CtElement blockParent = element.getParent().getParent();
+
+        if (blockParent instanceof CtMethod) {
+            return -1;
+        }
+
+        for (ControlFlowNode otherNode : node.getParent().findNodesOfKind(BranchKind.BRANCH)) {
+            SmPLMethodCFG.NodeTag tag = (SmPLMethodCFG.NodeTag) otherNode.getTag();
+
+            if (tag.getAnchor() == blockParent) {
+                return (int) tag.getMetadata("branchId");
+            }
+        }
+
+        throw new IllegalStateException("impossible situation / malformed cfg");
+    }
+
+    /**
      * Compile a CTL-VW formula for a statement-level dots operator.
      *
      * @param node Node representing a statement-level dots operator
@@ -413,6 +450,11 @@ public class FormulaCompiler {
      */
     private Formula compileStatementLevelDotsFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
         CtInvocation<?> dots = (CtInvocation<?>) node.getStatement();
+
+        int branchId = findParentBranchId(node);
+        String parentIdVar = "__parent" + Integer.toString(branchId) + "__";
+
+        Formula guard = new And(new Proposition("after"), new MetadataPredicate(parentIdVar, "parent"));
 
         Formula contextPreGuard = null;
         Formula contextPostGuard = null;
@@ -431,13 +473,8 @@ public class FormulaCompiler {
             contextPostGuard = removeOperations(contextPostGuard);
         }
 
-        Formula guard = contextPreGuard;
-
-        if (guard != null) {
-            guard = Or.connectIfNotNull(guard, contextPostGuard);
-        } else {
-            guard = contextPostGuard;
-        }
+        guard = Or.connectIfNotNull(guard, contextPreGuard);
+        guard = Or.connectIfNotNull(guard, contextPostGuard);
 
         Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
 
@@ -453,7 +490,7 @@ public class FormulaCompiler {
             }
         }
 
-        Formula formula = (guard == null) ? new True() : new Not(guard);
+        Formula formula = new Not(guard);
 
         if (SmPLJavaDSL.hasWhenExists(dots)) {
             formula = new ExistsUntil(formula, innerFormula);

@@ -157,7 +157,7 @@ public class CFGModelTest {
                                                          "    }                \n" +
                                                          "}                    \n")));
 
-        assertEquals("CFGModel(states=[1, 4, 5, 6, 7, 9, 10, 13], successors={1->1, 4->6, 4->9, 5->1, 6->7, 7->1, 9->10, 10->1, 13->4}, labels={1: [end], 4: [if (n > 0)], 5: [after], 6: [trueBranch], 7: [return 1], 9: [falseBranch], 10: [return 0], 13: [methodHeader, int foo(int n)]})",
+        assertEquals("CFGModel(states=[1, 4, 5, 6, 7, 9, 10, 13], successors={1->1, 4->6, 4->9, 5->1, 6->7, 7->1, 9->10, 10->1, 13->4}, labels={1: [end], 4: [if (n > 0)], 5: [after, Metadata(parent:0)], 6: [trueBranch, Metadata(parent:0)], 7: [return 1], 9: [falseBranch, Metadata(parent:0)], 10: [return 0], 13: [methodHeader, int foo(int n)]})",
                      model.toString());
     }
 }
