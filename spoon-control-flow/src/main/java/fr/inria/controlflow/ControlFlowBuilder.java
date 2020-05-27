@@ -21,57 +21,8 @@
  */
 package fr.inria.controlflow;
 
-import spoon.reflect.code.CtAnnotationFieldAccess;
-import spoon.reflect.code.CtArrayRead;
-import spoon.reflect.code.CtArrayWrite;
-import spoon.reflect.code.CtAssert;
-import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtBreak;
-import spoon.reflect.code.CtCase;
-import spoon.reflect.code.CtCatch;
-import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtCodeSnippetExpression;
-import spoon.reflect.code.CtCodeSnippetStatement;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtConditional;
-import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtContinue;
-import spoon.reflect.code.CtDo;
-import spoon.reflect.code.CtExecutableReferenceExpression;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtFieldRead;
-import spoon.reflect.code.CtFieldWrite;
-import spoon.reflect.code.CtFor;
-import spoon.reflect.code.CtForEach;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtJavaDoc;
-import spoon.reflect.code.CtJavaDocTag;
-import spoon.reflect.code.CtLambda;
-import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtNewArray;
-import spoon.reflect.code.CtNewClass;
-import spoon.reflect.code.CtOperatorAssignment;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtStatementList;
-import spoon.reflect.code.CtSuperAccess;
-import spoon.reflect.code.CtSwitch;
-import spoon.reflect.code.CtSwitchExpression;
-import spoon.reflect.code.CtSynchronized;
-import spoon.reflect.code.CtThisAccess;
-import spoon.reflect.code.CtThrow;
-import spoon.reflect.code.CtTry;
-import spoon.reflect.code.CtTryWithResource;
-import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableRead;
-import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.code.CtWhile;
-import spoon.reflect.code.CtYieldStatement;
+import org.apache.commons.lang3.NotImplementedException;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -137,6 +88,23 @@ public class ControlFlowBuilder implements CtVisitor {
 	Stack<ControlFlowNode> breakingBad = new Stack<>();
 	//This stack pushes all the nodes to wich a continue statement may jump to.
 	Stack<ControlFlowNode> continueBad = new Stack<>();
+
+	//The top of this stack contains the current catch block node, if any
+	Stack<ControlFlowNode> catchNodeStack = new Stack<>();
+
+	/**
+	 * Try to peek at the top of the catch node stack, returning either the top element or null if
+	 * the stack is empty.
+	 *
+	 * @return Current catch block node, or null if there is none
+	 */
+	private ControlFlowNode currentCatchNode() {
+		if (catchNodeStack.isEmpty()) {
+			return null;
+		} else {
+			return catchNodeStack.peek();
+		}
+	}
 
 	public ControlFlowGraph getResult() {
 		return result;
@@ -270,6 +238,11 @@ public class ControlFlowBuilder implements CtVisitor {
 	 * @param breakDance indicates that the edge is a jump out of the block
 	 */
 	private void tryAddEdge(ControlFlowNode source, ControlFlowNode target, boolean isLooping, boolean breakDance) {
+
+		if (currentCatchNode() != null && source != null && target != null && target != currentCatchNode()
+			&& source.getStatement() != null) {
+			tryAddEdge(source, currentCatchNode());
+		}
 
 		boolean isBreak = source != null && source.getStatement() instanceof CtBreak;
 		boolean isContinue = source != null && source.getStatement() instanceof CtContinue;
@@ -759,7 +732,29 @@ public class ControlFlowBuilder implements CtVisitor {
 
 	@Override
 	public void visitCtTry(CtTry tryBlock) {
-		//TODO:implement this
+		if (tryBlock.getCatchers().size() != 1 || tryBlock.getFinalizer() != null) {
+			throw new NotImplementedException("not implemented");
+		}
+
+		ControlFlowNode tryNode = new ControlFlowNode(null, result, BranchKind.TRY);
+		ControlFlowNode catchNode = new ControlFlowNode(tryBlock.getCatchers().get(0).getParameter(), result, BranchKind.CATCH);
+		ControlFlowNode convergeNode = new ControlFlowNode(null, result, BranchKind.CONVERGE);
+
+		tryAddEdge(lastNode, tryNode);
+
+		lastNode = catchNode;
+		tryBlock.getCatchers().get(0).getBody().accept(this);
+		tryAddEdge(lastNode, convergeNode);
+
+		lastNode = tryNode;
+		catchNodeStack.push(catchNode);
+
+		tryBlock.getBody().accept(this);
+
+		catchNodeStack.pop();
+
+		tryAddEdge(lastNode, convergeNode);
+		lastNode = convergeNode;
 	}
 
 	@Override
@@ -919,9 +914,7 @@ public class ControlFlowBuilder implements CtVisitor {
 	}
 
 	@Override
-	public void visitCtYieldStatement(CtYieldStatement statement) {
-		// TODO Auto-generated method stub
-		//add because java14 switches, stub because not implemented
-	}
+	public void visitCtYieldStatement(CtYieldStatement ctYieldStatement) {
 
+	}
 }

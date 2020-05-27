@@ -25,6 +25,8 @@ package fr.inria.controlflow;
  * Branching for a node
  */
 public enum BranchKind {
+	TRY,
+	CATCH,
 	BRANCH,      // Represents a branch
 	STATEMENT,   // Represents an statement
 	BLOCK_BEGIN, // Represents the begining of a block
