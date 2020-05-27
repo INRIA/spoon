@@ -368,7 +368,9 @@ class DefaultKotlinPrettyPrinter(
         }
 
         // Initializer or delegate
+        adapter.pushIndent()
         visitDefaultExpr(field)
+        adapter.popIndent()
         adapter.newline()
     }
 
