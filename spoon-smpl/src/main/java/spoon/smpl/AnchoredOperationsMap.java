@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * An AnchoredOperationsMap is a Map from state IDs (integers) to Lists of Operations.
+ * An AnchoredOperationsMap is a Map from line numbers (integers) to Lists of Operations.
  */
 public class AnchoredOperationsMap extends HashMap<Integer, List<Operation>> {
     /**
