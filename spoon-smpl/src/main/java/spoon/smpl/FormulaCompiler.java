@@ -21,6 +21,8 @@ public class FormulaCompiler {
      *
      * @param cfg SmPL-adapted CFG to produce formula from
      * @param metavars Metavariable names and their constraints
+     * @param commonLines Set of line numbers of context statements common to both addition and deletion perspectives
+     * @param additions Map of line-anchored addition operations
      */
     public FormulaCompiler(SmPLMethodCFG cfg, Map<String, MetavariableConstraint> metavars, Set<Integer> commonLines, AnchoredOperationsMap additions) {
         this.cfg = cfg;

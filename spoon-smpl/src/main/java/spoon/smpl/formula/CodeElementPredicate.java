@@ -12,6 +12,11 @@ import java.util.Map;
  * parameterized match pattern for a code element.
  */
 abstract public class CodeElementPredicate extends ParameterizedPredicate {
+    /**
+     * Create a new CodeElementPredicate.
+     *
+     * @param codeElement Code element to use
+     */
     public CodeElementPredicate(CtElement codeElement) {
         this(codeElement, null);
     }
@@ -36,6 +41,11 @@ abstract public class CodeElementPredicate extends ParameterizedPredicate {
         return pattern;
     }
 
+    /**
+     * Set the contained code element to a given element.
+     *
+     * @param codeElement Element to set as code element
+     */
     protected void setCodeElement(CtElement codeElement) {
         if (codeElement == null) {
             return;

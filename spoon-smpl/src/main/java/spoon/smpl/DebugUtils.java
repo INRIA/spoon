@@ -192,6 +192,12 @@ public class DebugUtils {
         return sb.toString();
     }
 
+    /**
+     * Produce a pretty-printed String of a given Model.
+     *
+     * @param model Model to pretty-print
+     * @return Pretty-printed string of Model
+     */
     public static String prettifyModel(Model model) {
         StringBuilder sb = new StringBuilder();
 

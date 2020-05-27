@@ -30,6 +30,11 @@ import java.util.stream.IntStream;
  * [after]
  */
 public class MethodHeaderModel implements Model {
+    /**
+     * Create a new MethodHeaderModel for a given method.
+     *
+     * @param ctMethod Method from which to extract the header and create model for
+     */
     public MethodHeaderModel(CtMethod<?> ctMethod) {
         // type, name, args, exit
         int numstates = 3 + ctMethod.getParameters().size();

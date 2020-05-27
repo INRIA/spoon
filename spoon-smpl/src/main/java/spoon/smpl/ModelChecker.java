@@ -7,10 +7,22 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * ModelChecker implements the CTL model-checking algorithm.
+ * ModelChecker implements the CTL-VW (with additional extensions) model-checking algorithm.
  */
 public class ModelChecker implements FormulaVisitor {
+    /**
+     * A Witness is a record of a state and metavariable binding along with the set of all other Witness
+     * records (a Witness forest) that were already present when the new record was produced.
+     */
     public static class Witness {
+        /**
+         * Create a new Witness.
+         *
+         * @param state State in which the binding was recorded
+         * @param metavar Name of bound metavariable
+         * @param binding Value bound to metavariable
+         * @param witnesses Witness forest of previously established Witnesses
+         */
         public Witness(int state, String metavar, Object binding, Set<Witness> witnesses) {
             this.state = state;
             this.metavar = metavar;
@@ -57,38 +69,86 @@ public class ModelChecker implements FormulaVisitor {
             return result;
         }
 
+        /**
+         * State in which a binding was recorded.
+         */
         public final int state;
+
+        /**
+         * Name of bound metavariable.
+         */
         public final String metavar;
+
+        /**
+         * Value bound to metavariable.
+         */
         public final Object binding;
+
+        /**
+         * Previously established Witnesses.
+         */
         public final Set<Witness> witnesses;
     }
 
+    /**
+     * Create an empty Witness forest.
+     *
+     * @return Empty Witness forest
+     */
     public static Set<Witness> emptyWitnessForest() {
         return new HashSet<>();
     }
 
+    /**
+     * Create a new Witness forest containing a single Witness
+     *
+     * @param outermostWitness Witness to include in new Witness forest
+     * @return New Witness forest containing the given Witness
+     */
     public static Set<Witness> newWitnessForest(Witness outermostWitness) {
         return new HashSet<>(Arrays.asList(outermostWitness));
     }
 
     /**
-     * A Result is a state-environment pair in which some formula holds.
+     * A Result is a state-environment-witnessforest triple in which some Formula holds.
      */
     public static class Result {
+        /**
+         * Create a new Result.
+         *
+         * @param state State ID where Formula held true
+         * @param environment Environment required for Formula to hold true
+         * @param witnesses Witnesses established when Formula held true
+         */
         public Result(int state, Environment environment, Set<Witness> witnesses) {
             this.state = state;
             this.environment = environment;
             this.witnesses = witnesses;
         }
 
+        /**
+         * Get the state ID.
+         *
+         * @return State ID
+         */
         public int getState() {
             return state;
         }
 
+        /**
+         * Get the required Environment.
+         *
+         * @return Required Environment
+         */
         public Environment getEnvironment() {
             return environment;
         }
 
+        /**
+         * Get the established Witnesses.
+         *
+         * @return Witnesses
+         */
         public Set<Witness> getWitnesses() {
             return witnesses;
         }
@@ -126,18 +186,31 @@ public class ModelChecker implements FormulaVisitor {
             return result;
         }
 
+        /**
+         * State ID in which a Formula held true.
+         */
         private final int state;
+
+        /**
+         * Environment required for Formula to hold true.
+         */
         private final Environment environment;
+
+        /**
+         * Witnesses established when Formula held true.
+         */
         private final Set<Witness> witnesses;
     }
 
     /**
-     * A ResultSet is a set of state-environment pairs equipped with facilities for
+     * A ResultSet is a set of state-environment-witnessforest triples equipped with facilities for
      * intersection, union and negation.
      */
     public static class ResultSet extends HashSet<Result> {
         /**
-         * @return all states included in Results contained in the set
+         * Get the set of state IDs found in all the results in the set.
+         *
+         * @return all state IDs found in the result set
          */
         public Set<Integer> getIncludedStates() {
             Set<Integer> result = new HashSet<>();
@@ -149,6 +222,11 @@ public class ModelChecker implements FormulaVisitor {
             return result;
         }
 
+        /**
+         * Get the joint Witness forests of all results in the set
+         *
+         * @return Joint Witness forest of all results in the set
+         */
         public Set<Witness> getAllWitnesses() {
             Set<Witness> witnesses = new HashSet<>();
 
@@ -163,6 +241,7 @@ public class ModelChecker implements FormulaVisitor {
          * Compute the intersection of two ResultSets. This involves computing the greatest
          * lower bound of compatible environments, and rejecting the intersection for conflicting
          * environments.
+         *
          * @param s1 First set
          * @param s2 Second set
          * @return the intersection of the two sets
@@ -196,6 +275,7 @@ public class ModelChecker implements FormulaVisitor {
 
         /**
          * Compute the union/join of two ResultSets.
+         *
          * @param s1 First set
          * @param s2 Second set
          * @return the union of the two sets
@@ -214,6 +294,7 @@ public class ModelChecker implements FormulaVisitor {
          * an empty environment for every state NOT included in the given set, and one entry
          * with a negated environment for every state-environment pair included in the given
          * set.
+         *
          * @param model Model
          * @param resultSet ResultSet to negate
          * @return the negation of the given set
@@ -246,6 +327,7 @@ public class ModelChecker implements FormulaVisitor {
 
     /**
      * Create a new ModelChecker.
+     *
      * @param model The Model on which formulas should be checked
      */
     public ModelChecker(Model model) {
@@ -255,8 +337,9 @@ public class ModelChecker implements FormulaVisitor {
 
     /**
      * Retrieve the most recently computed result.
+     *
      * @return Set of states that satisfied the most recently given formula
-     * @throws java.util.EmptyStackException
+     * @throws java.util.EmptyStackException if called out of sequence
      */
     public ResultSet getResult() {
         return resultStack.pop();
@@ -266,7 +349,8 @@ public class ModelChecker implements FormulaVisitor {
 
     /**
      * Computes the set of states that satisfy True, i.e all states.
-     * @param element
+     *
+     * @param element TRUE Formula
      */
     @Override
     public void visit(True element) {
@@ -281,7 +365,8 @@ public class ModelChecker implements FormulaVisitor {
 
     /**
      * Computes the set of states that satisfy "p And q".
-     * @param element
+     *
+     * @param element AND Formula
      */
     @Override
     public void visit(And element) {
@@ -296,7 +381,8 @@ public class ModelChecker implements FormulaVisitor {
 
     /**
      * Computes the set of states that satisfy "p Or q".
-     * @param element
+     *
+     * @param element OR Formula
      */
     @Override
     public void visit(Or element) {
@@ -311,7 +397,8 @@ public class ModelChecker implements FormulaVisitor {
 
     /**
      * Computes the set of states that satisfy "not p".
-     * @param element
+     *
+     * @param element Formula
      */
     @Override
     public void visit(Not element) {
@@ -322,7 +409,8 @@ public class ModelChecker implements FormulaVisitor {
 
     /**
      * Computes the set of states that satisfy "p", for some predicate p.
-     * @param element
+     *
+     * @param element Predicate Formula
      */
     @Override
     public void visit(Predicate element) {
@@ -352,7 +440,8 @@ public class ModelChecker implements FormulaVisitor {
 
     /**
      * Computes the set of states that satisfy "EX p".
-     * @param element
+     *
+     * @param element EX Formula
      */
     @Override
     public void visit(ExistsNext element) {
@@ -378,7 +467,8 @@ public class ModelChecker implements FormulaVisitor {
 
     /**
      * Computes the set of states that satisfy "AX p".
-     * @param element
+     *
+     * @param element AX Formula
      */
     @Override
     public void visit(AllNext element) {
@@ -431,7 +521,8 @@ public class ModelChecker implements FormulaVisitor {
 
     /**
      * Computes the set of states that satisfy "E[p U q]".
-     * @param element
+     *
+     * @param element EU Formula
      */
     @Override
     public void visit(ExistsUntil element) {
@@ -475,7 +566,8 @@ public class ModelChecker implements FormulaVisitor {
 
     /**
      * Computes the set of states that satisfy "A[p U q]".
-     * @param element
+     *
+     * @param element AU Formula
      */
     @Override
     public void visit(AllUntil element) {
@@ -544,6 +636,11 @@ public class ModelChecker implements FormulaVisitor {
         resultStack.push(resultSet);
     }
 
+    /**
+     * Creates a Witness record for an Environment binding and drops the binding from the Environment.
+     *
+     * @param element ExVar Formula
+     */
     @Override
     public void visit(ExistsVar element) {
         element.getInnerElement().accept(this);
@@ -565,6 +662,11 @@ public class ModelChecker implements FormulaVisitor {
         resultStack.push(resultSet);
     }
 
+    /**
+     * Creates an Environment mapping for an arbitrary key-value pair.
+     *
+     * @param element SetEnv Formula
+     */
     @Override
     public void visit(SetEnv element) {
         ResultSet resultSet = new ResultSet();
@@ -581,9 +683,10 @@ public class ModelChecker implements FormulaVisitor {
     }
 
     /**
-     * Compute the set of states that satisfy a "sequential disjunction" of N clauses.
+     * Compute the set of states that satisfy a "sequential disjunction" of N clauses, where earlier clauses
+     * have priority over later clauses by the construction SeqOr(a, b) = Or(a, And(Not(a), b))
      *
-     * @param element Sequential disjunction of N clauses
+     * @param element SeqOr Formula
      */
     @Override
     public void visit(SequentialOr element) {
@@ -613,6 +716,11 @@ public class ModelChecker implements FormulaVisitor {
         resultStack.push(result);
     }
 
+    /**
+     * Compute the set of states that satisfy Or(p, Not(p)).
+     *
+     * @param element Optional Formula
+     */
     @Override
     public void visit(Optional element) {
         element.getInnerElement().accept(this);
@@ -636,6 +744,7 @@ public class ModelChecker implements FormulaVisitor {
     /**
      * Computes the set of states that have some successor in a given set of target states, i.e
      * the states that CAN transition into the set of target states.
+     *
      * @param model Model
      * @param targetStates Set of target states
      * @return Set of states with successor in target states
@@ -658,6 +767,7 @@ public class ModelChecker implements FormulaVisitor {
     /**
      * Computes the set of states that have ALL successors in a given set of target states, i.e
      * the states that can ONLY transition into the set of target states.
+     *
      * @param model Model
      * @param targetStates Set of target states
      * @return Set of states with all successors in target states

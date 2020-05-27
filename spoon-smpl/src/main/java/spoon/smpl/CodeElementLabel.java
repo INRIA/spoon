@@ -11,6 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * CodeElementLabel provides an abstract base class for labels over code elements that can be
+ * matched with generic code-matching predicates such as VariableUsePredicate.
+ */
 abstract public class CodeElementLabel implements Label {
     /**
      * Create a new CodeElementLabel using a given code element.

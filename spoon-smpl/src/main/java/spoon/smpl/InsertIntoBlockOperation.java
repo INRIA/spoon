@@ -13,8 +13,40 @@ import java.util.Map;
  * anchor statement.
  */
 public class InsertIntoBlockOperation implements Operation {
-    public enum BlockType { TRUEBRANCH, FALSEBRANCH, METHODBODY }
-    public enum Anchor { TOP, BOTTOM }
+    /**
+     * Type of targeted block.
+     */
+    public enum BlockType {
+        /**
+         * Target block is the then-statement of an if-statement.
+         */
+        TRUEBRANCH,
+
+        /**
+         * Target block is the else-statement of an if-statement.
+         */
+        FALSEBRANCH,
+
+        /**
+         * Target block is the method body.
+         */
+        METHODBODY
+    }
+
+    /**
+     * Anchor position in the block.
+     */
+    public enum Anchor {
+        /**
+         * Anchored to top of block.
+         */
+        TOP,
+
+        /**
+         * Anchored to bottom of block.
+         */
+        BOTTOM
+    }
 
     /**
      * Create a new InsertIntoBlockOperation given the targeted block type, position anchor

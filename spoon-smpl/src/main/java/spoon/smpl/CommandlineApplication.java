@@ -12,14 +12,28 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+/**
+ * CommandLineApplication offers a command line interface to some of the features of spoon-smpl.
+ */
 public class CommandlineApplication {
-    // https://stackoverflow.com/a/326440
+    /**
+     * Read all contents of a plain text file.
+     *
+     * @author https://stackoverflow.com/a/326440
+     * @param path Path to file
+     * @param encoding Character encoding of file
+     * @return Contents of file
+     * @throws IOException on IO errors
+     */
     static String readFile(String path, Charset encoding) throws IOException
     {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, encoding);
     }
 
+    /**
+     * Print usage.
+     */
     private static void usage() {
         System.out.println("usage:");
         System.out.println("smplcli ACTION [ARG [ARG ..]]");
@@ -49,9 +63,76 @@ public class CommandlineApplication {
         System.out.println();
     }
 
-    enum Action { CHECK, CHECKSUB, REWRITE, COMPILE, PATCH, CTL };
-    enum ArgumentState { BASE, FAIL, ACTION, FILENAME_SMPL, FILENAME_JAVA };
+    /**
+     * Enumeration of possible actions.
+     */
+    enum Action {
+        /**
+         * Run the model checker.
+         */
+        CHECK,
 
+        /**
+         * Run the model checker on every sub-formula.
+         */
+        CHECKSUB,
+
+        /**
+         * Have the SmPL parser rewrite an SmPL patch into the spoon-smpl Java SmPL DSL.
+         */
+        REWRITE,
+
+        /**
+         * Compile an SmPL patch and print the produced SmPLRule.
+         */
+        COMPILE,
+
+        /**
+         * Apply a given SmPL patch to each method in the single class defined in a given Java source file.
+         */
+        PATCH,
+
+        /**
+         * Compile an SmPL patch and pretty-print the resulting Formula.
+         */
+        CTL
+    };
+
+    /**
+     * Enumeration of possible states for the argument parser.
+     */
+    enum ArgumentState {
+        /**
+         * Initial state.
+         */
+        BASE,
+
+        /**
+         * Failure state.
+         */
+        FAIL,
+
+        /**
+         * Expecting action argument.
+         */
+        ACTION,
+
+        /**
+         * Expecting SmPL patch filename.
+         */
+        FILENAME_SMPL,
+
+        /**
+         * Expecting Java source filename.
+         */
+        FILENAME_JAVA
+    };
+
+    /**
+     * Main entry point.
+     *
+     * @param args Command line arguments
+     */
     public static void main(String[] args) {
         Action action = null;
         String smplFilename = null;

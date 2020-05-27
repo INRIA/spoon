@@ -2,12 +2,14 @@ package spoon.smpl;
 
 import java.util.*;
 
-// TODO: documentation
+/**
+ * An Environment is a key-value store for metavariable bindings in the CTL-VW model checking procedure.
+ */
 public class Environment extends HashMap<String, Object> {
     /**
      * A MultipleAlternativesPositiveBinding offers a way to store an entry with multiple alternative
-     * bindings in the environment that will produce a single NegativeBinding containing all the
-     * alternatives in a single environment.
+     * acceptable bindings in the environment that when negated will produce a single NegativeBinding
+     * containing all the alternatives in a single environment.
      *
      * Using this class only makes sense when the result is guaranteed to be negated, as
      * is currently the case in the context of VariableUsePredicates that will currently only
@@ -21,6 +23,12 @@ public class Environment extends HashMap<String, Object> {
      *    (x=[a,b,c])      {(x=a),(x=b),(x=c)}        note that negation is not an inverse operation here
      */
     public static class MultipleAlternativesPositiveBinding extends HashSet<Object> {
+        /**
+         * Create a new MultipleAlternativesPositiveBinding over a set of acceptable bindings.
+         *
+         * @param xs Values of acceptable bindings
+         * @return Instance of MultipleAlternativesPositiveBinding covering all given acceptable bindings
+         */
         public static MultipleAlternativesPositiveBinding create(Object ... xs) {
             MultipleAlternativesPositiveBinding result = new MultipleAlternativesPositiveBinding();
             result.addAll(Arrays.asList(xs));
@@ -43,7 +51,15 @@ public class Environment extends HashMap<String, Object> {
         }
     }
 
+    /**
+     * A NegativeBinding represents a set of unacceptable bindings for some metavariable.
+     */
     public static class NegativeBinding extends HashSet<Object> {
+        /**
+         * Create a new NegativeBinding over a set of unacceptable bindings.
+         *
+         * @param xs Values of unacceptable bindings
+         */
         public NegativeBinding(Object ... xs) {
             super();
             this.addAll(Arrays.asList(xs));
@@ -60,10 +76,18 @@ public class Environment extends HashMap<String, Object> {
         }
     }
 
+    /**
+     * Create a new Environment.
+     */
     public Environment() {
         super();
     }
 
+    /**
+     * Create a new Environment by copying all key-value pairs of an existing Environment.
+     *
+     * @param e Environment to copy
+     */
     public Environment(Environment e) {
         super();
         putAll(e);

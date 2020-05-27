@@ -9,6 +9,11 @@ import java.util.Map;
  * A Branch Predicate contains a parameterized match pattern for a branch statement.
  */
 public class Branch extends CodeElementPredicate {
+    /**
+     * Create a new Branc predicate.
+     *
+     * @param codeElement Branch statement element
+     */
     public Branch(CtElement codeElement) {
         this(codeElement, null);
     }
