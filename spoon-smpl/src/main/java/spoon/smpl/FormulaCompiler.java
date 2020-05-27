@@ -10,7 +10,6 @@ import spoon.smpl.formula.*;
 import spoon.smpl.formula.Optional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * FormulaCompiler compiles CTL-VW Formulas from a given SmPL-adapted CFG of a method body in
@@ -29,7 +28,6 @@ public class FormulaCompiler {
         this.metavars = metavars;
         this.commonLines = commonLines;
         this.additions = additions;
-        this.dotsPreGuard = null;
     }
 
     /**
@@ -63,6 +61,14 @@ public class FormulaCompiler {
      */
     private Formula compileFormulaInner(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
         Formula formula;
+        Formula innerFormula;
+        SmPLMethodCFG.NodeTag tag;
+
+        try {
+            tag = (SmPLMethodCFG.NodeTag) node.getTag();
+        } catch (ClassCastException e) {
+            tag = null;
+        }
 
         if (cutoffNodes != null) {
             for (ControlFlowNode someNode : cutoffNodes) {
@@ -87,13 +93,24 @@ public class FormulaCompiler {
                             return compileStatementFormula(node, cutoffNodes);
 
                         case BLOCK_BEGIN:
-                            if (!(node.getTag() instanceof SmPLMethodCFG.NodeTag)) {
-                                throw new IllegalArgumentException("invalid BLOCK_BEGIN tag for node " +
+                            if (isNodeForSmPLJavaDSLMetaElement(node)) {
+                                return compileFormulaInner(node.next().get(0), cutoffNodes);
+                            }
+
+                            if (tag == null) {
+                                throw new IllegalArgumentException("invalid tag for " + node.getKind().toString() + " node " +
                                                                    Integer.toString(node.getId()));
                             }
 
-                            formula = new And(new Proposition(((SmPLMethodCFG.NodeTag) node.getTag()).getLabel()),
-                                              new AllNext(compileFormulaInner(node.next().get(0), cutoffNodes)));
+                            innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
+
+                            formula = new Proposition(tag.getLabel());
+
+                            if (innerFormula != null) {
+                                formula = new And(formula,
+                                                  new AllNext(innerFormula));
+                            }
+
                             return formula;
 
                         case CONVERGE:
@@ -103,7 +120,7 @@ public class FormulaCompiler {
 
                             formula = new Proposition("after");
 
-                            Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
+                            innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
 
                             if (innerFormula == null) {
                                 return formula;
@@ -193,7 +210,6 @@ public class FormulaCompiler {
             int line = statement.getPosition().getLine();
 
             Formula formula = new Statement(statement, metavars);
-            dotsPreGuard = formula;
 
             ArrayList<Operation> ops = new ArrayList<>();
 
@@ -244,7 +260,6 @@ public class FormulaCompiler {
         int line = statement.getPosition().getLine();
 
         formula = new Branch(statement.getParent(), metavars);
-        dotsPreGuard = formula;
 
         ArrayList<Operation> ops = new ArrayList<>();
 
@@ -267,7 +282,13 @@ public class FormulaCompiler {
         Formula lhs = compileFormulaInner(node.next().get(0), cutoffNodes);
         Formula rhs = compileFormulaInner(node.next().get(1), cutoffNodes);
 
-        formula = new And(formula, new And(new ExistsNext(lhs), new ExistsNext(rhs)));
+        if (lhs != null && rhs != null) {
+            formula = new And(formula, new And(new ExistsNext(lhs), new ExistsNext(rhs)));
+        } else if (lhs != null) {
+            formula = new And(formula, new ExistsNext(lhs));
+        } else if (rhs != null) {
+            formula = new And(formula, new ExistsNext(rhs));
+        }
 
         // Actually quantify the new metavars
         Collections.reverse(newMetavars);
@@ -280,6 +301,110 @@ public class FormulaCompiler {
     }
 
     /**
+     * Get the (to-be-negated) shortest-path guard formula for the element preceding a given statement-level
+     * dots node.
+     *
+     * @param dotsNode Statement-level dots node
+     * @return Shortest-path guard formula for preceding element
+     */
+    private Formula getPreGuard(ControlFlowNode dotsNode) {
+        List<ControlFlowNode> prevNodes = dotsNode.prev();
+
+        switch (prevNodes.size()) {
+            case 1:
+                ControlFlowNode prevNode = prevNodes.get(0);
+
+                switch (prevNode.getKind()) {
+                    case STATEMENT:
+                        if (SmPLMethodCFG.isMethodHeaderNode(prevNode)) {
+                            return null;
+                        }
+
+                        return compileFormulaInner(prevNode, Collections.singletonList(dotsNode));
+
+                    case BLOCK_BEGIN:
+                        switch (prevNode.prev().size()) {
+                            case 1:
+                                return compileFormulaInner(prevNode.prev().get(0), prevNode.prev().get(0).next());
+
+                            default:
+                                throw new NotImplementedException("preGuard not implemented for BLOCK_BEGIN with " + Integer.toString(prevNode.prev().size()) + " predecessors");
+                        }
+
+
+                    case CONVERGE:
+                        // FIXME: relies on implementation details in spoon-control-flow
+                        ControlFlowNode branchNode = prevNode.getParent().findNodeById(prevNode.getId() - 1);
+
+                        if (SmPLJavaDSL.isBeginDisjunction(branchNode.getStatement().getParent())) {
+                            // TODO: figure out if a disjunction should generate a guard
+                            return null;
+                        } else {
+                            return compileFormulaInner(branchNode, branchNode.next());
+                        }
+                    default:
+                        throw new NotImplementedException("preGuard not implemented for " + prevNode.getKind().toString() + " single predecessor");
+                }
+
+            default:
+                throw new NotImplementedException("preGuard not implemented for " + prevNodes.size() + " predecessors");
+        }
+    }
+
+    /**
+     * Get the (to-be-negated) shortest-path guard formula for the element succeeding a given statement-level
+     * dots node.
+     *
+     * @param dotsNode Statement-level dots node
+     * @return Shortest-path guard formula for succeeding element
+     */
+    private Formula getPostGuard(ControlFlowNode dotsNode) {
+        List<ControlFlowNode> nextNodes = dotsNode.next();
+
+        switch (nextNodes.size()) {
+            case 1:
+                ControlFlowNode nextNode = nextNodes.get(0);
+
+                switch (nextNode.getKind()) {
+                    case STATEMENT:
+                        return compileFormulaInner(nextNode, nextNode.next());
+
+                    case CONVERGE:
+                        return null;
+
+                    case EXIT:
+                        return null;
+
+                    default:
+                        throw new NotImplementedException("postGuard not implemented for " + nextNode.getKind().toString() + " single successor");
+                }
+
+            default:
+                throw new NotImplementedException("postGuard not implemented for " + nextNodes.size() + " successors");
+        }
+    }
+
+    /**
+     * Remove all transformation operations from a given Formula.
+     *
+     * @param phi Formula to operate on
+     * @return Formula without transformation operations
+     */
+    private static Formula removeOperations(Formula phi) {
+        // TODO: might want to replace this with a full visitor that properly removes all ops regardless of nesting
+        if (phi == null) {
+            return null;
+        }
+
+        if (phi instanceof And && ((And) phi).getRhs() instanceof ExistsVar
+            && ((ExistsVar) ((And) phi).getRhs()).getVarName().equals("_v")) {
+            return ((And) phi).getLhs();
+        } else {
+            return phi;
+        }
+    }
+
+    /**
      * Compile a CTL-VW formula for a statement-level dots operator.
      *
      * @param node Node representing a statement-level dots operator
@@ -289,54 +414,54 @@ public class FormulaCompiler {
     private Formula compileStatementLevelDotsFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
         CtInvocation<?> dots = (CtInvocation<?>) node.getStatement();
 
-        Formula savedPreGuard = dotsPreGuard;
-        Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
-
-        Formula postGuard = findFirstCodeElementFormula(innerFormula);
-
-        Formula formula;
+        Formula contextPreGuard = null;
+        Formula contextPostGuard = null;
 
         if (!SmPLJavaDSL.hasWhenAny(dots)) {
-            if (savedPreGuard != null) {
-                formula = savedPreGuard;
+            contextPreGuard = getPreGuard(node);
+            contextPostGuard = getPostGuard(node);
 
-                if (postGuard != null) {
-                    formula = new Or(formula, postGuard);
-                }
-            } else {
-                formula = (postGuard == null) ? new True() : postGuard;
+            // Remove any metavars "accidentally" marked as being quantified by compiling the postguard formula
+            while (contextPostGuard instanceof ExistsVar) {
+                quantifiedMetavars.remove(((ExistsVar) contextPostGuard).getVarName());
+                contextPostGuard = ((ExistsVar) contextPostGuard).getInnerElement();
             }
-        } else {
-            formula = new True();
+
+            contextPreGuard = removeOperations(contextPreGuard);
+            contextPostGuard = removeOperations(contextPostGuard);
         }
+
+        Formula guard = contextPreGuard;
+
+        if (guard != null) {
+            guard = Or.connectIfNotNull(guard, contextPostGuard);
+        } else {
+            guard = contextPostGuard;
+        }
+
+        Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
 
         List<String> whenNotEquals = SmPLJavaDSL.getWhenNotEquals(dots);
 
         if (whenNotEquals.size() > 0) {
             Iterator<String> it = whenNotEquals.iterator();
 
-            formula = formula.equals(new True())
-                    ? new Proposition("unsupported")
-                    : new Or(formula, new Proposition("unsupported"));
+            guard = new Or(guard, new Proposition("unsupported"));
 
             while (it.hasNext()) {
-                formula = new Or(new VariableUsePredicate(it.next(), metavars), formula);
+                guard = new Or(new VariableUsePredicate(it.next(), metavars), guard);
             }
         }
 
-        formula = formula.equals(new True())
-                ? formula
-                : new Not(formula);
+        Formula formula = (guard == null) ? new True() : new Not(guard);
 
-        if (innerFormula == null) {
-            return formula;
+        if (SmPLJavaDSL.hasWhenExists(dots)) {
+            formula = new ExistsUntil(formula, innerFormula);
         } else {
-            if (SmPLJavaDSL.hasWhenExists(dots)) {
-                return new ExistsUntil(formula, innerFormula);
-            } else {
-                return new AllUntil(formula, innerFormula);
-            }
+            formula = new AllUntil(formula, innerFormula);
         }
+
+        return formula;
     }
 
     /**
@@ -443,56 +568,6 @@ public class FormulaCompiler {
         List<String> result = getMetavarsUsedIn(e);
         result.removeAll(quantifiedMetavars);
         return result;
-    }
-
-    // TODO: what about disjunctions, e.g Or(Statement1, Statement2)?
-    /**
-     * Find the first 'code element' predicate formula in a given formula tree.
-     *
-     * @param input Formula tree to search
-     */
-    private static Formula findFirstCodeElementFormula(Formula input) {
-        if (input == null) {
-            return null;
-        } else if (input instanceof UnaryConnective) {
-            return findFirstCodeElementFormula(((UnaryConnective) input).getInnerElement());
-        } else if (input instanceof BinaryConnective) {
-            if (input instanceof And && ((And) input).getLhs() instanceof Proposition) {
-                if (((Proposition) ((And) input).getLhs()).getProposition().equals("after")) {
-                    return null;
-                }
-            }
-            Formula lhs = findFirstCodeElementFormula(((BinaryConnective) input).getLhs());
-            return (lhs != null) ? lhs : findFirstCodeElementFormula(((BinaryConnective) input).getRhs());
-        } else if (input instanceof Branch) {
-            return input;
-        } else if (input instanceof ExistsVar) {
-            return findFirstCodeElementFormula(((ExistsVar) input).getInnerElement());
-        } else if (input instanceof Proposition) {
-            return null;
-        } else if (input instanceof SetEnv) {
-            return null;
-        } else if (input instanceof Statement) {
-            return input;
-        } else if (input instanceof True) {
-            return null;
-        } else if (input instanceof VariableUsePredicate) {
-            return null;
-        } else if (input instanceof SequentialOr) {
-            SequentialOr result = new SequentialOr();
-
-            for (Formula clause : (SequentialOr) input) {
-                Formula found = findFirstCodeElementFormula(clause);
-
-                if (found != null) {
-                    result.add(found);
-                }
-            }
-
-            return result;
-        } else {
-            throw new IllegalArgumentException("unhandled formula element " + input.getClass().toString());
-        }
     }
 
     /**

@@ -15,6 +15,25 @@ public class Or extends BinaryConnective {
     }
 
     /**
+     * Create an OR between two given formulae, but only if the second formula is not null.
+     *
+     * @param left Left Formula
+     * @param right Right Formula
+     * @return OR(Left, Right) if the right Formula is not null, otherwise the left Formula.
+     */
+    public static Formula connectIfNotNull(Formula left, Formula right) {
+        if (left == null) {
+            throw new IllegalArgumentException("left Formula must not be null");
+        }
+
+        if (right != null) {
+            return new Or(left, right);
+        } else {
+            return left;
+        }
+    }
+
+    /**
      * Implements the Visitor pattern.
      *
      * @param visitor Visitor to accept
