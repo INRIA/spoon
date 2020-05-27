@@ -20,12 +20,17 @@ import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.TokenWriter;
 import spoon.support.Experimental;
+import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.sniper.internal.ChangeResolver;
 import spoon.support.sniper.internal.CollectionSourceFragment;
@@ -42,6 +47,7 @@ import spoon.support.sniper.internal.SourceFragmentContextSet;
 import spoon.support.sniper.internal.TokenPrinterEvent;
 import spoon.support.sniper.internal.TokenType;
 import spoon.support.sniper.internal.TokenWriterProxy;
+import spoon.support.util.ModelList;
 
 /**
  * {@link PrettyPrinter} implementation, which copies as much as possible from the origin sources
@@ -442,4 +448,14 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		c.onFinished();
 		return c;
 	}
+
+	// fix #3267
+	// in sniper mode, we must visit the order in the same order
+	// as the source code
+	protected ModelList<CtImport> getImports(CtCompilationUnit compilationUnit) {
+		ModelList<CtImport> imports = super.getImports(compilationUnit);
+		imports.sort(new CtLineElementComparator());
+		return imports;
+	}
+
 }

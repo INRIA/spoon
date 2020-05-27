@@ -35,6 +35,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -105,11 +107,11 @@ public class ProcessingTest {
 
 	@Test
 	public void testRedundantImports() throws IOException {
+		// contract: there should not be duplicated imports
 		final Launcher l = new Launcher();
 		Environment e = l.getEnvironment();
 
 		e.setNoClasspath(true);
-		e.setAutoImports(true);
 		e.setPrettyPrinterCreator(() -> new SniperJavaPrettyPrinter(l.getEnvironment()));
 
 		RefactoringRule rule = (RefactoringRule) new DrawAllocationRefactoringRule(new IterationLogger());
@@ -124,15 +126,16 @@ public class ProcessingTest {
 		String packageName = model.getAllPackages().toArray()[model.getAllPackages().size() - 1].toString();
 		packageName = packageName.replaceAll("\\.", "/");
 		String producedFile = new String(Files.readAllBytes(Paths.get(tempDir + "/" + packageName + "/" + "A.java")));
-		//                                                togglePrints(true);
-		// Compare result with the sample
-		producedFile = producedFile.replaceAll("\t", "    ");
-		String outputSample = new String(Files.readAllBytes(Paths.get("src/test/resources/compilation6/B.java")));
-		assertEquals(outputSample, producedFile);
 
-		Path path = Files.createTempDirectory("emptydir");
+		Pattern pattern = Pattern.compile("import android.graphics.BitmapFactory");
+		Matcher matcher = pattern.matcher(producedFile);
 
-		l.setSourceOutputDirectory(path.toFile());
-		l.run();
+		int count = 0;
+		while (matcher.find())
+			count++;
+
+		// contract: there should be a single "import android.graphics.BitmapFactory"
+		assertEquals(1, count);
+
 	}
 }
