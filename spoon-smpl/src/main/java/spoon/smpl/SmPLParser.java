@@ -77,7 +77,7 @@ public class SmPLParser {
     }
 
     /**
-     * Compile a given AST in the SmPL Java DSL.
+     * Compile a given AST in the SmPL Java DSL, producing an SmPLRule containing a Formula.
      *
      * @param ast AST to compile
      * @return SmPLRule instance
@@ -208,10 +208,10 @@ public class SmPLParser {
         List<RewriteRule> header_name = new ArrayList<>();
         List<RewriteRule> header_params = new ArrayList<>();
         List<RewriteRule> body = new ArrayList<>();
-        List<RewriteRule> paramList = new ArrayList<>();
+        List<RewriteRule> argumentList = new ArrayList<>();
         List<RewriteRule> statementDots = new ArrayList<>();
 
-        RewriteRule whitespaceNoOp = new RewriteRule("whitespace", "(?s)^\\s+",
+        RewriteRule eatWhitespace = new RewriteRule("whitespace", "(?s)^\\s+",
                 (ctx) -> {},
                 (result, match) -> { return match.end(); });
 
@@ -226,7 +226,7 @@ public class SmPLParser {
         // TODO: strings
 
         // Initial context
-        init.add(whitespaceNoOp);
+        init.add(eatWhitespace);
 
         init.add(new RewriteRule("atat", "(?s)^@@",
                 (ctx) -> { ctx.pop(); ctx.push(metavars); },
@@ -246,7 +246,7 @@ public class SmPLParser {
 
         // TODO: replace hardcoded names with calls to SmPLJavaDSL.getWhatever
         // Metavars context
-        metavars.add(whitespaceNoOp);
+        metavars.add(eatWhitespace);
 
         metavars.add(new RewriteRule("atat", "(?s)^@@([^\\S\n]*\n)?",
                 (ctx) -> { ctx.pop(); ctx.push(code); },
@@ -301,7 +301,7 @@ public class SmPLParser {
         }));
 
         // Code context
-        code.add(whitespaceNoOp);
+        code.add(eatWhitespace);
 
         code.add(new RewriteRule("method_header", "(?s)^(public\\s+|private\\s+|protected\\s+|static\\s+)*[A-Za-z_][A-Za-z0-9_-]*\\s+[A-Za-z_][A-Za-z0-9_-]*\\s*\\(",
                 (ctx) -> { ctx.pop(); ctx.push(header_modifiers); },
@@ -324,7 +324,7 @@ public class SmPLParser {
                 }));
 
         // Method header modifiers context
-        header_modifiers.add(whitespaceNoOp);
+        header_modifiers.add(eatWhitespace);
 
         header_modifiers.add(new RewriteRule("modifiers", "(?s)^(public|private|protected|static)",
                 (ctx) -> {},
@@ -340,7 +340,7 @@ public class SmPLParser {
                 }));
 
         // Method header type context
-        header_type.add(whitespaceNoOp);
+        header_type.add(eatWhitespace);
 
         // TODO: support type parameters
         header_type.add(new RewriteRule("method_type", "(?s)^([A-Za-z_][A-Za-z0-9_]*)",
@@ -351,7 +351,7 @@ public class SmPLParser {
                 }));
 
         // Method header name context
-        header_name.add(whitespaceNoOp);
+        header_name.add(eatWhitespace);
 
         header_name.add(new RewriteRule("method_name", "(?s)^([A-Za-z_][A-Za-z0-9_]*)",
                 (ctx) -> { ctx.pop(); ctx.push(header_params); },
@@ -401,7 +401,7 @@ public class SmPLParser {
                 }));
 
         body.add(new RewriteRule("open_paren", "(?s)^\\(",
-                 (ctx) -> { ctx.push(paramList); },
+                 (ctx) -> { ctx.push(argumentList); },
                  (result, match) -> {
                     result.out.append("(");
                     return match.end();
@@ -409,7 +409,7 @@ public class SmPLParser {
 
         body.add(anycharCopy);
 
-        paramList.add(new RewriteRule("dots", "(?s)^\\.\\.\\.",
+        argumentList.add(new RewriteRule("dots", "(?s)^\\.\\.\\.",
                 (ctx) -> { },
                 (result, match) -> {
                     result.hasDotsArguments = true;
@@ -417,24 +417,24 @@ public class SmPLParser {
                     return match.end();
                 }));
 
-        paramList.add(new RewriteRule("open_paren", "(?s)^\\(",
-                (ctx) -> { ctx.push(paramList); },
+        argumentList.add(new RewriteRule("open_paren", "(?s)^\\(",
+                (ctx) -> { ctx.push(argumentList); },
                 (result, match) -> {
                     result.out.append("(");
                     return match.end();
                 }));
 
-        paramList.add(new RewriteRule("close_paren", "(?s)^\\)",
+        argumentList.add(new RewriteRule("close_paren", "(?s)^\\)",
                 (ctx) -> { ctx.pop(); },
                 (result, match) -> {
                     result.out.append(")");
                     return match.end();
                 }));
 
-        paramList.add(anycharCopy);
+        argumentList.add(anycharCopy);
 
         // Context for statement dots
-        statementDots.add(whitespaceNoOp);
+        statementDots.add(eatWhitespace);
 
         statementDots.add(new RewriteRule("when_neq", "(?s)^when\\s*!=\\s*([a-z]+)",
                 (ctx) -> {},
