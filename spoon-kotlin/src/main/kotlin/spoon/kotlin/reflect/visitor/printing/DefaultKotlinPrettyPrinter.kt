@@ -257,8 +257,8 @@ class DefaultKotlinPrettyPrinter(
         if(!adapter.onNewLine) adapter.newline()
     }
 
-    override fun <T : Any?> visitCtFieldReference(p0: CtFieldReference<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtFieldReference(fieldRef: CtFieldReference<T>) {
+        adapter write fieldRef.simpleName
     }
 
     override fun <T : Any?> visitCtVariableRead(p0: CtVariableRead<T>?) {
