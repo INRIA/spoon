@@ -42,6 +42,7 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
     fun <T> getNewTypeReference(symbol: FirClassSymbol<*>) : CtTypeReference<T> {
         val ref = firTreeBuilder.factory.Core().createTypeReference<T>()
         ref.setSimpleName<CtTypeReference<T>>(symbol.classId.shortClassName.identifier)
+        ref.setPackage<CtTypeReference<T>>(getPackageReference(symbol.classId.packageFqName))
         return ref
     }
 
