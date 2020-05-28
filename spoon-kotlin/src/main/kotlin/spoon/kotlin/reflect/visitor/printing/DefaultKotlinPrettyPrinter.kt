@@ -401,8 +401,6 @@ class DefaultKotlinPrettyPrinter(
 
         // Initializer or delegate
         visitDefaultExpr(localVar)
-
-        adapter.newline()
     }
 
     override fun <T : Any?, A : T> visitCtOperatorAssignment(p0: CtOperatorAssignment<T, A>?) {
