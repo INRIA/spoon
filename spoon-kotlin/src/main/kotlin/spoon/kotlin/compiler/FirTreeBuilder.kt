@@ -3,6 +3,7 @@ package spoon.kotlin.compiler
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.FirElement
+import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
@@ -27,13 +28,13 @@ import spoon.reflect.factory.Factory
 import spoon.reflect.reference.*
 import spoon.support.reflect.code.CtLiteralImpl
 
-class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<CompositeTransformResult<CtElement>, Nothing?>() {
+class FirTreeBuilder(val factory : Factory) : FirVisitor<CompositeTransformResult<CtElement>, Nothing?>() {
     internal val referenceBuilder = ReferenceBuilder(this)
     internal val helper = FirTreeBuilderHelper(this)
 
     // Temporary printing, remove later
     private var msgCollector: MsgCollector = PrintingMsgCollector()
-    internal constructor(factory : Factory, file : FirFile, m: MsgCollector) : this(factory, file) {
+    internal constructor(factory : Factory, m: MsgCollector) : this(factory) {
         msgCollector = m
     }
     fun report(m : Message) = msgCollector.report(m)
@@ -51,7 +52,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
     }
 
     override fun visitFile(file: FirFile, data: Nothing?): CompositeTransformResult<CtElement> {
-        val module = helper.getOrCreateModule(file, factory)
+        val module = helper.getOrCreateModule(file.session, factory)
         val compilationUnit = factory.CompilationUnit().getOrCreate(file.name)
 
         val pkg = if(file.packageFqName.isRoot) module.rootPackage else
@@ -73,9 +74,9 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
     }
 
     override fun visitRegularClass(regularClass: FirRegularClass, data: Nothing?): CompositeTransformResult<CtElement> {
-        val module = helper.getOrCreateModule(file, factory)
-        val pkg = if (file.packageFqName.isRoot) module.rootPackage else
-            factory.Package().getOrCreate(file.packageFqName.shortName().identifier, module)
+        val module = helper.getOrCreateModule(regularClass.session, factory)
+        val pkg = if (regularClass.classId.packageFqName.isRoot) module.rootPackage else
+            factory.Package().getOrCreate(regularClass.classId.packageFqName.shortName().identifier, module)
         val type = helper.createType(regularClass)
         pkg.addType<CtPackage>(type)
 

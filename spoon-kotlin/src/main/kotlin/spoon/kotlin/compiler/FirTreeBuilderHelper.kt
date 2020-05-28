@@ -2,6 +2,7 @@ package spoon.kotlin.compiler
 
 import spoon.kotlin.reflect.KtModifierKind
 import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.resolve.toSymbol
 import spoon.reflect.declaration.CtModule
@@ -26,7 +27,7 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
 
         firClass.superConeTypes.forEach {
             firTreeBuilder.referenceBuilder.buildTypeReference<Any>(it).apply {
-                val symbol = it.lookupTag.toSymbol(firTreeBuilder.file.session)?.fir
+                val symbol = it.lookupTag.toSymbol(firClass.session)?.fir
                 if(symbol != null && symbol is FirRegularClass) {
                     when (symbol.classKind) {
                         ClassKind.CLASS -> {
@@ -51,8 +52,8 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
         return type
     }
 
-    fun getOrCreateModule(file : FirFile, factory : Factory) : CtModule { // TODO use firBuilder file ref?
-        val mname = file.session.moduleInfo?.name?.asString() ?: return factory.Module().unnamedModule
+    fun getOrCreateModule(session: FirSession, factory : Factory) : CtModule {
+        val mname = session.moduleInfo?.name?.asString() ?: return factory.Module().unnamedModule
         return factory.Module().getOrCreate(mname)
     }
 
