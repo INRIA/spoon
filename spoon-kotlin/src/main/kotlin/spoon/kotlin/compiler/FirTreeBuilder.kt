@@ -84,7 +84,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
             it.accept(this, null).single.also { decl ->
                 decl.setParent(type)
                 when (decl) {
-                    is CtField<*> -> (type as CtClass<*>).addField(decl)
+                    is CtField<*> -> type.addField(decl)
                     is CtMethod<*> -> {
                         if (regularClass.isInterface() && decl.body != null) {
                             decl.setDefaultMethod<Nothing>(true)
