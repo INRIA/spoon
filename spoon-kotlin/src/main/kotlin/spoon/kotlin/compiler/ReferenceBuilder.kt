@@ -1,5 +1,6 @@
 package spoon.kotlin.compiler
 
+import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.expressions.FirDelegatedConstructorCall
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.resolve.toSymbol
@@ -10,10 +11,7 @@ import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import spoon.kotlin.ktMetadata.KtMetadataKeys
-import spoon.reflect.reference.CtExecutableReference
-import spoon.reflect.reference.CtPackageReference
-import spoon.reflect.reference.CtReference
-import spoon.reflect.reference.CtTypeReference
+import spoon.reflect.reference.*
 
 internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
     private val msgCollector = PrintingMsgCollector()
@@ -105,6 +103,16 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
             ref.setSimpleName<CtTypeReference<T>>("ErrorType")
         }
         return ref
+    }
+
+    fun <T> getNewVariableReference(property: FirProperty) : CtVariableReference<T> {
+        val varRef = if(property.isLocal) firTreeBuilder.factory.Core().createLocalVariableReference<T>()
+        else firTreeBuilder.factory.Core().createFieldReference<T>().also {
+            it.setDeclaringType<CtFieldReference<T>>(getNewTypeReference<CtFieldReference<T>>(property.symbol))
+        }
+        varRef.setSimpleName<CtVariableReference<T>>(property.name.identifier)
+        varRef.setType<CtVariableReference<T>>(getNewTypeReference(property.returnTypeRef))
+        return varRef
     }
 
     fun <T> getNewSimpleTypeReference(classId: ClassId) : CtTypeReference<T> {
