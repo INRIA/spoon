@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.psi
+import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.references.impl.FirExplicitThisReference
 import org.jetbrains.kotlin.fir.references.impl.FirImplicitThisReference
 import org.jetbrains.kotlin.fir.references.impl.FirPropertyFromParameterResolvedNamedReference
@@ -22,8 +23,7 @@ import spoon.kotlin.reflect.KtStatementExpressionImpl
 import spoon.reflect.code.*
 import spoon.reflect.declaration.*
 import spoon.reflect.factory.Factory
-import spoon.reflect.reference.CtExecutableReference
-import spoon.reflect.reference.CtTypeReference
+import spoon.reflect.reference.*
 import spoon.support.reflect.code.CtLiteralImpl
 
 class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<CompositeTransformResult<CtElement>, Nothing?>() {
@@ -284,7 +284,24 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
         return thisAccess.compose()
     }
 
-
+    override fun visitResolvedNamedReference(
+        resolvedNamedReference: FirResolvedNamedReference,
+        data: Nothing?
+    ): CompositeTransformResult<CtElement> {
+        val fir = resolvedNamedReference.resolvedSymbol.fir
+        val ctRef = when(fir) {
+            is FirProperty -> {
+                (if(fir.isLocal) factory.Core().createLocalVariableReference<Any>()
+                    else factory.Core().createFieldReference<Any>()).also {
+                    it.setSimpleName<CtVariableReference<*>>(fir.name.identifier)
+                    it.setType<CtVariableReference<Any>>(referenceBuilder.getNewTypeReference(fir.returnTypeRef))
+                }
+            }
+            else -> null
+        }
+        if(ctRef != null) return ctRef.compose()
+        return super.visitResolvedNamedReference(resolvedNamedReference, data)
+    }
 
     override fun visitValueParameter(
         valueParameter: FirValueParameter,
