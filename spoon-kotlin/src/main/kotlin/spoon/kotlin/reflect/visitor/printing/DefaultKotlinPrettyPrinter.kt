@@ -204,8 +204,10 @@ class DefaultKotlinPrettyPrinter(
     // TODO Replace with visitTypeRef
     private fun getTypeName(type : CtTypeReference<*>, fullyQualified : Boolean = true) : String {
         val prefix = type.`package`.qualifiedName
+        val nullable = type.getMetadata(KtMetadataKeys.TYPE_REF_NULLABLE) as? Boolean? ?: false
+        val suffix = if(nullable) "?" else ""
         return if(!fullyQualified || prefix.isEmpty()) type.simpleName
-        else "${prefix}.${type.simpleName}"
+        else "${prefix}.${type.simpleName}${suffix}"
     }
 
     override fun <T : Any?> visitCtInterface(p0: CtInterface<T>?) {
