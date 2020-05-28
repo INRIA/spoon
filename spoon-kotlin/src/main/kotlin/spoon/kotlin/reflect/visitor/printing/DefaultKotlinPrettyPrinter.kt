@@ -467,8 +467,13 @@ class DefaultKotlinPrettyPrinter(
     }
 
 
-    override fun <T : Any?> visitCtFieldWrite(p0: CtFieldWrite<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtFieldWrite(fieldWrite: CtFieldWrite<T>?) {
+        if(fieldWrite == null) return
+        if(fieldWrite.target != null && !fieldWrite.target.isImplicit) {
+            fieldWrite.target.accept(this)
+            adapter write '.'
+        }
+        fieldWrite.variable.accept(this)
     }
 
     override fun <T : Any?> visitCtAnnotationMethod(p0: CtAnnotationMethod<T>?) {
