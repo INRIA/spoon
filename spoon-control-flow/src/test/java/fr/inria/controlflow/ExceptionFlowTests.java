@@ -12,6 +12,10 @@ import static org.junit.Assert.assertFalse;
 public class ExceptionFlowTests {
     @Test
     public void testBasicSingle() {
+
+        // contract: NaiveExceptionControlFlowStrategy should result in every statement parented by a try
+        //           block having a path to the corresponding catch block.
+
         CtMethod<?> method = Launcher.parseClass("class A {\n" +
                                                  "  void m() {\n" +
                                                  "    try {\n" +
@@ -52,6 +56,10 @@ public class ExceptionFlowTests {
 
     @Test
     public void testBasicDouble() {
+
+        // contract: NaiveExceptionControlFlowStrategy should result in every statement parented by a try
+        //           block having a path to the corresponding catch block.
+
         CtMethod<?> method = Launcher.parseClass("class A {\n" +
                                                  "  void m() {\n" +
                                                  "    try {\n" +
@@ -94,6 +102,10 @@ public class ExceptionFlowTests {
 
     @Test
     public void testBasicNested() {
+
+        // contract: NaiveExceptionControlFlowStrategy should result in every statement parented by a try
+        //           block having a path to the corresponding catch block.
+
         CtMethod<?> method = Launcher.parseClass("class A {\n" +
                                                  "  void m() {\n" +
                                                  "    try {\n" +
@@ -132,6 +144,47 @@ public class ExceptionFlowTests {
         assertTrue(canReachNode(b, bang));
         assertFalse(canReachNode(c, boom));
         assertTrue(canReachNode(c, bang));
+    }
+
+    @Test
+    public void testFinalizer() {
+
+        // contract: NaiveExceptionControlFlowStrategy should result in every statement 1) guaranteed to
+        //           enter a try block equipped with a finalizer, or 2) parented by a try block equipped
+        //           with a finalizer, to unavoidably reach the finalizer block.
+        
+        CtMethod<?> method = Launcher.parseClass("class A {\n" +
+                                                 "  void m() {\n" +
+                                                 "    top();\n" +
+                                                 "    try {\n" +
+                                                 "      a();\n" +
+                                                 "    }\n" +
+                                                 "    catch (Exception e) {\n" +
+                                                 "      b();\n" +
+                                                 "    }\n" +
+                                                 "    finally {\n" +
+                                                 "      c();\n" +
+                                                 "    }\n" +
+                                                 "  }\n" +
+                                                 "}\n").getMethods().iterator().next();
+
+        ControlFlowBuilder builder = new ControlFlowBuilder();
+        builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
+        builder.build(method);
+        ControlFlowGraph cfg = builder.getResult();
+
+        ControlFlowNode top = findNodeByString(cfg, "top()");
+        ControlFlowNode a = findNodeByString(cfg, "a()");
+        ControlFlowNode b = findNodeByString(cfg, "b()");
+        ControlFlowNode c = findNodeByString(cfg, "c()");
+
+        assertFalse(canAvoidNode(top, c));
+        assertTrue(canReachNode(top, b));
+        assertTrue(canAvoidNode(top, b));
+        assertFalse(canAvoidNode(a, c));
+        assertTrue(canReachNode(a, b));
+        assertTrue(canAvoidNode(a, b));
+        assertFalse(canAvoidNode(b, c));
     }
 
     /**
@@ -222,6 +275,17 @@ public class ExceptionFlowTests {
      */
     private boolean canReachNode(ControlFlowNode source, ControlFlowNode target) {
         return paths(source).stream().anyMatch(xs -> xs.contains(target));
+    }
+
+    /**
+     * Check whether a node can reach the exit without crossing a certain node.
+     *
+     * @param source Starting node
+     * @param target Target node
+     * @return True if there exists a path between source and exit that does not include target, false otherwise
+     */
+    private boolean canAvoidNode(ControlFlowNode source, ControlFlowNode target) {
+        return !paths(source).stream().allMatch(xs -> xs.contains(target));
     }
 
     /**

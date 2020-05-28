@@ -21,7 +21,7 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
      */
     @Override
     public void handleTryBlock(ControlFlowBuilder builder, CtTry tryBlock) {
-        if (tryBlock.getCatchers().size() != 1 || tryBlock.getFinalizer() != null) {
+        if (tryBlock.getCatchers().size() != 1) {
             throw new NotImplementedException("not implemented");
         }
 
@@ -30,6 +30,7 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
 
         ControlFlowNode tryNode = new ControlFlowNode(null, graph, BranchKind.TRY);
         ControlFlowNode catchNode = new ControlFlowNode(tryBlock.getCatchers().get(0).getParameter(), graph, BranchKind.CATCH);
+        ControlFlowNode finallyNode = tryBlock.getFinalizer() == null ? null : new ControlFlowNode(null, graph, BranchKind.FINALLY);
         ControlFlowNode convergeNode = new ControlFlowNode(null, graph, BranchKind.CONVERGE);
 
         addEdge(builder, graph, lastNode, tryNode);
@@ -38,14 +39,20 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
         builder.pushCatchNodes(new HashSet<>(Collections.singletonList(catchNode)));
         tryBlock.getBody().accept(builder);
         builder.popCatchNodeStack();
-        addEdge(builder, graph, builder.getLastNode(), convergeNode);
+        addEdge(builder, graph, builder.getLastNode(), finallyNode != null ? finallyNode : convergeNode);
 
         builder.setLastNode(catchNode);
         tryBlock.getCatchers().get(0).getBody().accept(builder);
         lastNode = builder.getLastNode();
 
-        addEdge(builder, graph, lastNode, convergeNode);
-        builder.setLastNode(convergeNode);
+        addEdge(builder, graph, lastNode, finallyNode != null ? finallyNode : convergeNode);
+        builder.setLastNode(finallyNode != null ? finallyNode : convergeNode);
+
+        if (finallyNode != null) {
+            tryBlock.getFinalizer().accept(builder);
+            addEdge(builder, graph, builder.getLastNode(), convergeNode);
+            builder.setLastNode(convergeNode);
+        }
     }
 
     /**
