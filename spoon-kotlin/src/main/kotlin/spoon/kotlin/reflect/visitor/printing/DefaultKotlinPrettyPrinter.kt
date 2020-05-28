@@ -543,8 +543,11 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?, A : T> visitCtAssignment(p0: CtAssignment<T, A>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?, A : T> visitCtAssignment(ctAssignment: CtAssignment<T, A>?) {
+        if(ctAssignment == null) return
+        ctAssignment.assigned.accept(this)
+        adapter write " = "
+        ctAssignment.assignment.accept(this)
     }
 
     override fun visitCtJavaDocTag(p0: CtJavaDocTag?) {
