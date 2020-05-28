@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
+import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
 import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.references.impl.FirExplicitThisReference
@@ -319,11 +320,7 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
         val fir = resolvedNamedReference.resolvedSymbol.fir
         val ctRef = when(fir) {
             is FirProperty -> {
-                (if(fir.isLocal) factory.Core().createLocalVariableReference<Any>()
-                    else factory.Core().createFieldReference<Any>()).also {
-                    it.setSimpleName<CtVariableReference<*>>(fir.name.identifier)
-                    it.setType<CtVariableReference<Any>>(referenceBuilder.getNewTypeReference(fir.returnTypeRef))
-                }
+                referenceBuilder.getNewVariableReference<CtVariableReference<Any>>(fir)
             }
             else -> null
         }
