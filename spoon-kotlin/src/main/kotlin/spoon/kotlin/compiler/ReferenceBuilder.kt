@@ -76,9 +76,12 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
         return execRef
     }
 
-    fun <T> getNewExecutableReference(c : FirFunctionCall) {
+    fun <T> getNewExecutableReference(call : FirFunctionCall): CtExecutableReference<T> {
         val execRef = firTreeBuilder.factory.Core().createExecutableReference<T>()
-
+        val callee = call.calleeReference
+        execRef.setSimpleName<CtExecutableReference<T>>(callee.name.identifier)
+        execRef.setType<CtExecutableReference<T>>(getNewTypeReference(call.typeRef))
+        return execRef
     }
 
     fun <T> getNewTypeReference(typeRef: FirTypeRef) : CtTypeReference<T> {
