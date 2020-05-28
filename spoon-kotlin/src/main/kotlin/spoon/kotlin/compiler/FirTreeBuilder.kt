@@ -32,7 +32,10 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
     internal val helper = FirTreeBuilderHelper(this)
 
     // Temporary printing, remove later
-    private val msgCollector = PrintingMsgCollector()
+    private var msgCollector: MsgCollector = PrintingMsgCollector()
+    internal constructor(factory : Factory, file : FirFile, m: MsgCollector) : this(factory, file) {
+        msgCollector = m
+    }
     fun report(m : Message) = msgCollector.report(m)
     fun report(s : String) = report(Message(s, MessageType.COMMON))
     fun warn(s : String) = report(Message(s, MessageType.WARN))

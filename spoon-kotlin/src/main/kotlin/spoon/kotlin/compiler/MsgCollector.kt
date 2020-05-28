@@ -26,3 +26,5 @@ internal class PrintingMsgCollector : MsgCollector() {
 
     }
 }
+
+internal class SilentMsgCollector() : MsgCollector()
