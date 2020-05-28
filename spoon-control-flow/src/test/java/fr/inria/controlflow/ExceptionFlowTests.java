@@ -193,18 +193,45 @@ public class ExceptionFlowTests {
         }
     }
 
+    /**
+     * Check whether a path contains a catch block node.
+     *
+     * @param nodes Path to check
+     * @return True if path contains a catch block node, false otherwise
+     */
     private boolean containsCatchBlockNode(List<ControlFlowNode> nodes) {
         return nodes.stream().anyMatch(node -> node.getKind() == BranchKind.CATCH);
     }
 
+    /**
+     * Check whether a node has a path to the exit node that does not enter a catch block.
+     *
+     * @param node Node to check
+     * @return True if node has path to exit that does not enter any catch block, false otherwise
+     */
     private boolean canReachExitWithoutEnteringCatchBlock(ControlFlowNode node) {
         return paths(node).stream().anyMatch(xs -> !containsCatchBlockNode(xs));
     }
 
+    /**
+     * Check whether a node has a path to another node.
+     *
+     * @param source Starting node
+     * @param target Target node
+     * @return True if there is a path from source to target, false otherwise
+     */
     private boolean canReachNode(ControlFlowNode source, ControlFlowNode target) {
         return paths(source).stream().anyMatch(xs -> xs.contains(target));
     }
 
+    /**
+     * Find a node in a ControlFlowGraph by matching on the string representation of the statement
+     * stored in the node (if any).
+     *
+     * @param graph Graph to search
+     * @param s String to match against statement
+     * @return First mode found with statement matching string, or null if none was found
+     */
     private ControlFlowNode findNodeByString(ControlFlowGraph graph, String s) {
         for (ControlFlowNode node : graph.vertexSet()) {
             if (node.getStatement() != null && node.getStatement().toString().equals(s)) {
