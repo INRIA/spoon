@@ -555,8 +555,8 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtVariableWrite(p0: CtVariableWrite<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtVariableWrite(varWrite: CtVariableWrite<T>) {
+        adapter write varWrite.variable.simpleName
     }
 
     override fun <A : Annotation?> visitCtAnnotationType(p0: CtAnnotationType<A>?) {
