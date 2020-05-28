@@ -49,6 +49,9 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
         val ref = firTreeBuilder.factory.Core().createTypeReference<T>()
         ref.setSimpleName<CtTypeReference<T>>(symbol.callableId.callableName.identifier)
         ref.setPackage<CtTypeReference<T>>(getPackageReference(symbol.callableId.packageName))
+        ref.setDeclaringType<CtTypeReference<T>>(getNewTypeReference<CtTypeReference<T>>(symbol.fir.returnTypeRef))
+        ref.putMetadata<CtTypeReference<T>>(KtMetadataKeys.TYPE_REF_NULLABLE,
+            symbol.fir.returnTypeRef.coneTypeSafe<ConeClassLikeType>()?.nullability)
         return ref
     }
 
