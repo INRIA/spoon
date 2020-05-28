@@ -1,11 +1,7 @@
 package spoon.kotlin.compiler
 
-import org.jetbrains.kotlin.codegen.inline.addFakeContinuationMarker
-import org.jetbrains.kotlin.fir.expressions.FirCall
 import org.jetbrains.kotlin.fir.expressions.FirDelegatedConstructorCall
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
-import org.jetbrains.kotlin.fir.expressions.FirResolvable
-import spoon.kotlin.ktMetadata.KtMetadataKeys
 import org.jetbrains.kotlin.fir.resolve.toSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
@@ -13,6 +9,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
+import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.reflect.reference.CtExecutableReference
 import spoon.reflect.reference.CtPackageReference
 import spoon.reflect.reference.CtReference
@@ -103,7 +100,7 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
         return ref
     }
 
-    fun <T> getSimpleTypeReference(classId: ClassId) : CtTypeReference<T> {
+    fun <T> getNewSimpleTypeReference(classId: ClassId) : CtTypeReference<T> {
         return firTreeBuilder.factory.Core().createTypeReference<T>().apply {
             setSimpleName<CtTypeReference<T>>(classId.shortClassName.identifier)
             setPackage(getPackageReference(classId.packageFqName))
