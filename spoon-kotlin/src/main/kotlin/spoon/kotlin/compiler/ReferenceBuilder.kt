@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.expressions.FirDelegatedConstructorCall
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.resolve.toSymbol
+import org.jetbrains.kotlin.fir.symbols.CallableId
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
@@ -44,11 +45,19 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
         return ref
     }
 
+    fun <T> getNewDeclaringTypeReference(callableId: CallableId) : CtTypeReference<T>? {
+        val ref = firTreeBuilder.factory.Core().createTypeReference<T>()
+        if(callableId.className != null) return null
+        ref.setSimpleName<CtTypeReference<*>>(callableId.className!!.shortName().identifier)
+        ref.setPackage<CtTypeReference<T>>(getPackageReference(callableId.packageName))
+        return ref
+    }
+
     fun <T> getNewTypeReference(symbol: FirCallableSymbol<*>) : CtTypeReference<T> {
         val ref = firTreeBuilder.factory.Core().createTypeReference<T>()
         ref.setSimpleName<CtTypeReference<T>>(symbol.callableId.callableName.identifier)
         ref.setPackage<CtTypeReference<T>>(getPackageReference(symbol.callableId.packageName))
-        ref.setDeclaringType<CtTypeReference<T>>(getNewTypeReference<CtTypeReference<T>>(symbol.fir.returnTypeRef))
+        ref.setDeclaringType<CtTypeReference<T>>(getNewDeclaringTypeReference<CtTypeReference<T>>(symbol.callableId))
         ref.putMetadata<CtTypeReference<T>>(KtMetadataKeys.TYPE_REF_NULLABLE,
             symbol.fir.returnTypeRef.coneTypeSafe<ConeClassLikeType>()?.nullability)
         return ref
@@ -108,7 +117,7 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
     fun <T> getNewVariableReference(property: FirProperty) : CtVariableReference<T> {
         val varRef = if(property.isLocal) firTreeBuilder.factory.Core().createLocalVariableReference<T>()
         else firTreeBuilder.factory.Core().createFieldReference<T>().also {
-            it.setDeclaringType<CtFieldReference<T>>(getNewTypeReference<CtFieldReference<T>>(property.symbol))
+            it.setDeclaringType<CtFieldReference<T>>(getNewTypeReference<CtTypeReference<T>>(property.symbol))
         }
         varRef.setSimpleName<CtVariableReference<T>>(property.name.identifier)
         varRef.setType<CtVariableReference<T>>(getNewTypeReference(property.returnTypeRef))
