@@ -284,7 +284,35 @@ class FirTreeBuilder(val factory : Factory, val file : FirFile) : FirVisitor<Com
         return thisAccess.compose()
     }
 
-    override fun visitResolvedNamedReference(
+    override fun visitVariableAssignment(
+        variableAssignment: FirVariableAssignment,
+        data: Nothing?
+    ): CompositeTransformResult.Single<CtAssignment<*,*>> {
+
+        val ctAssignment = factory.createAssignment<Any, Any>()
+
+        val assignmentExpr = variableAssignment.rValue.accept(this, null).single
+        ctAssignment.setAssignment<CtAssignment<Any, Any>>(assignmentExpr as CtExpression<Any>)
+
+        val propertyRef = variableAssignment.lValue.accept(this, null).single as CtReference
+        val ctWrite = when (propertyRef) {
+            is CtLocalVariableReference<*> ->
+                factory.Core().createVariableWrite<Any>().also {
+                    it.setVariable<CtVariableAccess<Any>>(propertyRef as CtLocalVariableReference<Any>)
+                }
+            is CtFieldReference<*> -> {
+                factory.Core().createFieldWrite<Any>().also {
+                    it.setVariable<CtVariableAccess<Any>>(propertyRef as CtFieldReference<Any>)
+                }
+            }
+            else -> null
+        }
+        ctAssignment.setAssigned<CtAssignment<Any, Any>>(ctWrite)
+
+        return ctAssignment.compose()
+    }
+
+        override fun visitResolvedNamedReference(
         resolvedNamedReference: FirResolvedNamedReference,
         data: Nothing?
     ): CompositeTransformResult<CtElement> {
