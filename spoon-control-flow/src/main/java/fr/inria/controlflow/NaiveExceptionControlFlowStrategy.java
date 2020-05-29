@@ -1,6 +1,8 @@
 package fr.inria.controlflow;
 
 import org.apache.commons.lang3.NotImplementedException;
+import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtTry;
 
 import java.util.*;
@@ -23,31 +25,34 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
      */
     @Override
     public void handleTryBlock(ControlFlowBuilder builder, CtTry tryBlock) {
-        if (tryBlock.getCatchers().size() != 1) {
-            throw new NotImplementedException("not implemented");
-        }
-
         ControlFlowGraph graph = builder.getResult();
         ControlFlowNode lastNode = builder.getLastNode();
+        List<ControlFlowNode> catchNodes = new ArrayList<>();
 
         ControlFlowNode tryNode = new ControlFlowNode(null, graph, BranchKind.TRY);
-        ControlFlowNode catchNode = new ControlFlowNode(tryBlock.getCatchers().get(0).getParameter(), graph, BranchKind.CATCH);
+
+        for (CtCatch catchBlock : tryBlock.getCatchers()) {
+            catchNodes.add(new ControlFlowNode(catchBlock.getParameter(), graph, BranchKind.CATCH));
+        }
+
         ControlFlowNode finallyNode = tryBlock.getFinalizer() == null ? null : new ControlFlowNode(null, graph, BranchKind.FINALLY);
         ControlFlowNode convergeNode = new ControlFlowNode(null, graph, BranchKind.CONVERGE);
 
         addEdge(builder, graph, lastNode, tryNode);
         builder.setLastNode(tryNode);
 
-        catchNodeStack.push(Collections.singletonList(catchNode));
+        catchNodeStack.push(catchNodes);
         tryBlock.getBody().accept(builder);
         catchNodeStack.pop();
         addEdge(builder, graph, builder.getLastNode(), finallyNode != null ? finallyNode : convergeNode);
 
-        builder.setLastNode(catchNode);
-        tryBlock.getCatchers().get(0).getBody().accept(builder);
-        lastNode = builder.getLastNode();
+        for (ControlFlowNode catchNode : catchNodes) {
+            builder.setLastNode(catchNode);
+            ((CtCatch) catchNode.getStatement().getParent()).getBody().accept(builder);
+            lastNode = builder.getLastNode();
+            addEdge(builder, graph, lastNode, finallyNode != null ? finallyNode : convergeNode);
+        }
 
-        addEdge(builder, graph, lastNode, finallyNode != null ? finallyNode : convergeNode);
         builder.setLastNode(finallyNode != null ? finallyNode : convergeNode);
 
         if (finallyNode != null) {
