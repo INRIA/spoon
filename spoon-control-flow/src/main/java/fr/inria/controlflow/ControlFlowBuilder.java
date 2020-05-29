@@ -87,9 +87,6 @@ public class ControlFlowBuilder implements CtVisitor {
 	//This stack pushes all the nodes to wich a continue statement may jump to.
 	Stack<ControlFlowNode> continueBad = new Stack<>();
 
-	//The top of this stack contains the current catch block node, if any
-	Stack<Set<ControlFlowNode>> catchNodeStack = new Stack<>();
-
 	/**
 	 * Strategy for modeling exception control flow, if any.
 	 */
@@ -102,36 +99,6 @@ public class ControlFlowBuilder implements CtVisitor {
 	 */
 	public void setExceptionControlFlowStrategy(ExceptionControlFlowStrategy strategy) {
 		exceptionControlFlowStrategy = strategy;
-	}
-
-	/**
-	 * Try to peek at the top of the catch node stack, returning either the top element or null if
-	 * the stack is empty.
-	 *
-	 * @return Current catch block node, or null if there is none
-	 */
-	public Set<ControlFlowNode> getCurrentCatchNodes() {
-		if (catchNodeStack.isEmpty()) {
-			return null;
-		} else {
-			return catchNodeStack.peek();
-		}
-	}
-
-	/**
-	 * Push a new set of catch nodes onto the stack.
-	 *
-	 * @param nodes Set of catch nodes
-	 */
-	public void pushCatchNodes(Set<ControlFlowNode> nodes) {
-		catchNodeStack.push(nodes);
-	}
-
-	/**
-	 * Pop the top set of catch nodes off the stack.
-	 */
-	public void popCatchNodeStack() {
-		catchNodeStack.pop();
 	}
 
 	/**

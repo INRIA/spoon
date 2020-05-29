@@ -152,7 +152,7 @@ public class ExceptionFlowTests {
         // contract: NaiveExceptionControlFlowStrategy should result in every statement 1) guaranteed to
         //           enter a try block equipped with a finalizer, or 2) parented by a try block equipped
         //           with a finalizer, to unavoidably reach the finalizer block.
-        
+
         CtMethod<?> method = Launcher.parseClass("class A {\n" +
                                                  "  void m() {\n" +
                                                  "    top();\n" +

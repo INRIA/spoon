@@ -3,15 +3,17 @@ package fr.inria.controlflow;
 import org.apache.commons.lang3.NotImplementedException;
 import spoon.reflect.code.CtTry;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A naive over-approximating model of exception control flow in which every statement is treated as being
  * able to throw any exception, generating a path to every catcher associated with the parent try block.
  */
 public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowStrategy {
+    public NaiveExceptionControlFlowStrategy() {
+        catchNodeStack = new Stack<>();
+    }
+
     /**
      * Handle a CtTry by generating nodes for the try, associated catchers and finalizer, then have builder
      * process the contents of each block.
@@ -36,9 +38,9 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
         addEdge(builder, graph, lastNode, tryNode);
         builder.setLastNode(tryNode);
 
-        builder.pushCatchNodes(new HashSet<>(Collections.singletonList(catchNode)));
+        catchNodeStack.push(Collections.singletonList(catchNode));
         tryBlock.getBody().accept(builder);
-        builder.popCatchNodeStack();
+        catchNodeStack.pop();
         addEdge(builder, graph, builder.getLastNode(), finallyNode != null ? finallyNode : convergeNode);
 
         builder.setLastNode(catchNode);
@@ -63,7 +65,7 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
      */
     @Override
     public void handleStatement(ControlFlowBuilder builder, ControlFlowNode source) {
-        Set<ControlFlowNode> catchNodes = builder.getCurrentCatchNodes();
+        List<ControlFlowNode> catchNodes = currentCatchNodes();
 
         if (catchNodes != null) {
             ControlFlowGraph graph = builder.getResult();
@@ -88,4 +90,22 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
             handleStatement(builder, source);
         }
     }
+
+    /**
+     * Try peeking at the top of the catch node stack, returning null if the stack is empty.
+     *
+     * @return List of catch nodes, or null if the stack is empty
+     */
+    private List<ControlFlowNode> currentCatchNodes() {
+        if (catchNodeStack.isEmpty()) {
+            return null;
+        } else {
+            return catchNodeStack.peek();
+        }
+    }
+
+    /**
+     * Stack of catch nodes that statements parented by a try block may jump to.
+     */
+    private Stack<List<ControlFlowNode>> catchNodeStack;
 }
