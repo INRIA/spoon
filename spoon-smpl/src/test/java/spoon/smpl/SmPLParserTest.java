@@ -223,4 +223,20 @@ public class SmPLParserTest {
             fail(ctClass.toString() + " does not contain \"print(foo.x)\"");
         }
     }
+
+    @Test
+    public void testRewriteProducingExtraClosingBraceBug() {
+        String smpl = "@@ @@\n" +
+                      "void m() {\n" +
+                      "foo();\n" +
+                      "}\n";
+
+        assertEquals("class RewrittenSmPLRule {\n" +
+                     "void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
+                     "}\n" +
+                     "void m() {\n" +
+                     "foo();\n" +
+                     "}\n" +
+                     "}\n", SmPLParser.rewrite(smpl));
+    }
 }

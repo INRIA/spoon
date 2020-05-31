@@ -149,18 +149,12 @@ public class SmPLParser {
         class Result {
             public Result() {
                 out = new StringBuilder();
-                hasMethodHeader = false;
-
-                // Want to detect error state where hasMethodHeader is true but isUnspecifiedMethodHeader
-                //   has not been set to true or false.
-                isUnspecifiedMethodHeader = null;
-
+                hasUnspecifiedMethodHeader = false;
                 hasDotsArguments = false;
             }
 
             public StringBuilder out;
-            public boolean hasMethodHeader;
-            public Boolean isUnspecifiedMethodHeader;
+            public boolean hasUnspecifiedMethodHeader;
             public boolean hasDotsArguments;
         }
 
@@ -297,8 +291,7 @@ public class SmPLParser {
         code.add(new RewriteRule("method_header", "(?s)^\\s*(public\\s+|private\\s+|protected\\s+|static\\s+)*[A-Za-z_][A-Za-z0-9_-]*\\s+[A-Za-z_][A-Za-z0-9_-]*\\s*\\(",
                 (ctx) -> { ctx.pop(); ctx.push(header_modifiers); },
                 (result, match) -> {
-                    result.hasMethodHeader = true;
-                    result.isUnspecifiedMethodHeader = false;
+                    result.hasUnspecifiedMethodHeader = false;
                     return 0;
                 }));
 
@@ -306,8 +299,7 @@ public class SmPLParser {
         code.add(new RewriteRule("anychar", "(?s)^.(?=.*[^\\s])",
                 (ctx) -> { ctx.pop(); ctx.push(body); },
                 (result, match) -> {
-                    result.hasMethodHeader = true;
-                    result.isUnspecifiedMethodHeader = true;
+                    result.hasUnspecifiedMethodHeader = true;
                     result.out.append(SmPLJavaDSL.createUnspecifiedMethodHeaderString())
                               .append(" {\n")
                               .append("if (").append(SmPLJavaDSL.getDotsWithOptionalMatchName()).append(") {")
@@ -558,16 +550,11 @@ public class SmPLParser {
             }
         }
 
-        if (result.hasMethodHeader) {
-            if (result.isUnspecifiedMethodHeader == null) {
-                throw new IllegalStateException("isUnspecifiedMethodHeader is undefined");
-            }
+        if (result.hasUnspecifiedMethodHeader) {
+            // close implicit dots-with-optional-match
+            result.out.append("}\n");
 
-            if (result.isUnspecifiedMethodHeader) {
-                // close implicit dots-with-optional-match
-                result.out.append("}\n");
-            }
-
+            // close method
             result.out.append("}\n");
         }
 
