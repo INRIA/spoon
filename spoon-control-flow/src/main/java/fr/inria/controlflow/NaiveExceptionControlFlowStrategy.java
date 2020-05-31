@@ -1,8 +1,6 @@
 package fr.inria.controlflow;
 
-import org.apache.commons.lang3.NotImplementedException;
 import spoon.reflect.code.CtCatch;
-import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtTry;
 
 import java.util.*;
@@ -105,7 +103,17 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
         if (catchNodeStack.isEmpty()) {
             return null;
         } else {
-            return catchNodeStack.peek();
+            List<ControlFlowNode> result = new ArrayList<>();
+
+            for (List<ControlFlowNode> stackEntry : catchNodeStack) {
+                for (ControlFlowNode node : stackEntry) {
+                    if (!result.contains(node)) {
+                        result.add(node);
+                    }
+                }
+            }
+
+            return result;
         }
     }
 

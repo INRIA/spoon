@@ -5,6 +5,9 @@ import spoon.Launcher;
 import spoon.reflect.declaration.CtMethod;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -277,6 +280,47 @@ public class ExceptionFlowTests {
         assertFalse(canAvoidNode(c, breathe));
     }
 
+    @Test
+    public void testDirectPathToCatchersWhenNested() {
+
+        // contract: NaiveExceptionControlFlowStrategy should result in every statement parented by nested
+        //           try blocks to have direct paths to every catcher that is able to catch an exception thrown
+        //           at the control point of the statement
+
+        CtMethod<?> method = Launcher.parseClass("class A {\n" +
+                                                 "  void m() {\n" +
+                                                 "    try {\n" +
+                                                 "      try {\n" +
+                                                 "        try {\n" +
+                                                 "          a();\n" +
+                                                 "        }\n" +
+                                                 "        catch (Exception e3) {\n" +
+                                                 "          bang3();\n" +
+                                                 "        }" +
+                                                 "      } catch (Exception e2) {\n" +
+                                                 "        bang2();\n" +
+                                                 "      }\n" +
+                                                 "    } catch (Exception e1) {\n" +
+                                                 "      bang1();\n" +
+                                                 "    }\n" +
+                                                 "  }\n" +
+                                                 "}\n").getMethods().iterator().next();
+
+        ControlFlowBuilder builder = new ControlFlowBuilder();
+        builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
+        builder.build(method);
+        ControlFlowGraph cfg = builder.getResult();
+
+        ControlFlowNode a = findNodeByString(cfg, "a()");
+        ControlFlowNode bang1 = findNodeByString(cfg, "bang1()");
+        ControlFlowNode bang2 = findNodeByString(cfg, "bang2()");
+        ControlFlowNode bang3 = findNodeByString(cfg, "bang3()");
+
+        assertTrue(hasDirectStatementSuccessor(a, bang1));
+        assertTrue(hasDirectStatementSuccessor(a, bang2));
+        assertTrue(hasDirectStatementSuccessor(a, bang3));
+    }
+
     /**
      * Memoization of paths.
      */
@@ -376,6 +420,40 @@ public class ExceptionFlowTests {
      */
     private boolean canAvoidNode(ControlFlowNode source, ControlFlowNode target) {
         return !paths(source).stream().allMatch(xs -> xs.contains(target));
+    }
+
+    /**
+     * Filter a control flow path to only include statement nodes.
+     *
+     * @param path Path to filter
+     * @return Path containing only statement nodes
+     */
+    private List<ControlFlowNode> statementPath(List<ControlFlowNode> path) {
+        return path.stream().filter(x -> x.getKind() == BranchKind.STATEMENT).collect(Collectors.toList());
+    }
+
+    /**
+     * Check if a path (a list of nodes) contains a transition from source to target.
+     *
+     * @param path Path to check
+     * @param source Source node
+     * @param target Target node
+     * @return True if path contains a transition from source to target, false otherwise
+     */
+    private boolean hasTransition(List<ControlFlowNode> path, ControlFlowNode source, ControlFlowNode target) {
+        return IntStream.range(0, path.size() - 1).anyMatch(n -> path.get(n).equals(source) && path.get(n + 1).equals(target));
+    }
+
+    /**
+     * Check if a node 'source' has a direct path to a statement node 'target', meaning no other statement
+     * nodes are found in between 'source' and 'target'.
+     *
+     * @param source Node to check
+     * @param target Successor to find
+     * @return True if source has a direct path to target, false otherwise
+     */
+    private boolean hasDirectStatementSuccessor(ControlFlowNode source, ControlFlowNode target) {
+        return paths(source).stream().map(this::statementPath).anyMatch(path -> hasTransition(path, source, target));
     }
 
     /**
