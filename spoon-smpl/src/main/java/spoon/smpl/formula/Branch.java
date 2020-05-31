@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class Branch extends CodeElementPredicate {
     /**
-     * Create a new Branc predicate.
+     * Create a new Branch predicate.
      *
      * @param codeElement Branch statement element
      */
