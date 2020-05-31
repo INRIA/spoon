@@ -517,33 +517,27 @@ public class FormulaCompiler {
         // TODO: modifiers/constraints e.g whenAny
 
         // The SmPL Java DSL construct for dots-with-optional-match is an elseless if, so the branch
-        //   node must have exactly two successors where one is a convergence node and the other one
-        //   is a BLOCK_BEGIN
+        //   node must have exactly two successors where one is a BLOCK_BEGIN node and the other one
+        //   is a CONVERGE node
 
-        try {
-            ControlFlowNode bodyNode = node.next()
-                                           .stream()
-                                           .filter(x -> x.getKind() == BranchKind.BLOCK_BEGIN)
-                                           .findFirst().get();
+        ControlFlowNode bodyNode = node.next()
+                                       .stream()
+                                       .filter(x -> x.getKind() == BranchKind.BLOCK_BEGIN)
+                                       .findFirst().get()
+                                       .next().get(0); // Move past the BLOCK_BEGIN node
 
-            // Move past the BLOCK_BEGIN node
-            bodyNode = bodyNode.next().get(0);
+        ControlFlowNode convergenceNode = node.next()
+                                              .stream()
+                                              .filter(x -> x.getKind() == BranchKind.CONVERGE)
+                                              .findFirst().get();
 
-            ControlFlowNode convergenceNode = node.next()
-                                                  .stream()
-                                                  .filter(x -> x.getKind() == BranchKind.CONVERGE)
-                                                  .findFirst().get();
+        Formula optionalMatch = compileFormulaInner(bodyNode, Collections.singletonList(convergenceNode));
+        Formula tail = compileFormulaInner(convergenceNode.next().get(0), cutoffNodes);
 
-            Formula optionalMatch = compileFormulaInner(bodyNode, Collections.singletonList(convergenceNode));
-            Formula tail = compileFormulaInner(convergenceNode.next().get(0), cutoffNodes);
-
-            // TODO: is there a case where metavariables need to be quantified enclosing the AllUntil here?
-            //  maybe if the same unquantified metavariable is used in both the optional match and immediately
-            //  in the tail? e.g optionalMatch = ExistsVar(x, ...), tail = ExistsVar(x, ...)
-            return new AllUntil(new Optional(optionalMatch), tail);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("malformed dots-with-optional-match node");
-        }
+        // TODO: is there a case where metavariables need to be quantified enclosing the AllUntil here?
+        //  maybe if the same unquantified metavariable is used in both the optional match and immediately
+        //  in the tail? e.g optionalMatch = ExistsVar(x, ...), tail = ExistsVar(x, ...)
+        return new AllUntil(new Optional(optionalMatch), tail);
     }
 
     /**
