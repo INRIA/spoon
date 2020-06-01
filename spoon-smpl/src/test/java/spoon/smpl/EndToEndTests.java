@@ -1618,6 +1618,50 @@ public class EndToEndTests {
         assertEquals(expected.toString(), input.toString());
     }
     @Test
+    public void testDotsWithOptionalMatchShortestPath() {
+        // contract: optdots should match the shortest path between surrounding context elements
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "  void test() {\n" +
+                                               "    pre();\n" +
+                                               "    a();\n" +
+                                               "    pre();\n" +
+                                               "    a();\n" +
+                                               "    a();\n" +
+                                               "    post();\n" +
+                                               "  }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void test() {\n" +
+                                                  "        pre();\n" +
+                                                  "        a();\n" +
+                                                  "        pre();\n" +
+                                                  "        post();\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ @@\n" +
+                                         "void test() {\n" +
+                                         "  ... when any\n" +
+                                         "  pre();\n" +
+                                         "<...\n" +
+                                         "- a();\n" +
+                                         "...>\n" +
+                                         "  post();\n" +
+                                         "}\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            model.getCfg().restoreUnsupportedElements();
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
     public void testDotsWithOptionalMatchSingle() {
         // contract: using the <... P ...> dots alternative to include an optional matching of P
 

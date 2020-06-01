@@ -375,6 +375,12 @@ public class FormulaCompiler {
     private Formula getDotsPostGuard(ControlFlowNode dotsNode) {
         List<ControlFlowNode> nextNodes = dotsNode.next();
 
+        if (SmPLJavaDSL.isDotsWithOptionalMatch(dotsNode.getStatement().getParent())) {
+            // FIXME: relies on implementation details of ControlFlowBuilder / ControlFlowNode
+            // optdots are encoded as an elseless if-statement in the DSL, so pick nextNodes from the .next() of its post-branch convergence node
+            nextNodes = dotsNode.getParent().findNodeById(dotsNode.getId() + 1).next();
+        }
+
         switch (nextNodes.size()) {
             case 1:
                 ControlFlowNode nextNode = nextNodes.get(0);
@@ -429,7 +435,7 @@ public class FormulaCompiler {
         CtElement parent = element.getParent();
 
         // iteratively ascend the AST until we either find a branch statement or the method itself
-        while (parent instanceof CtBlock<?>) {
+        while (parent instanceof CtBlock<?> || SmPLJavaDSL.isDotsWithOptionalMatch(parent)) {
             parent = parent.getParent();
         }
 
@@ -563,7 +569,6 @@ public class FormulaCompiler {
      * @return CTL-VW Formula
      */
     private Formula compileDotsWithOptionalMatchFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
-        // TODO: shortest path guard
         // TODO: modifiers/constraints e.g whenAny
 
         // The SmPL Java DSL construct for dots-with-optional-match is an elseless if, so the branch
@@ -581,13 +586,18 @@ public class FormulaCompiler {
                                               .filter(x -> x.getKind() == BranchKind.CONVERGE)
                                               .findFirst().get();
 
+        Formula guard = getDotsGuard(node, true);
         Formula optionalMatch = compileFormulaInner(bodyNode, Collections.singletonList(convergenceNode));
         Formula tail = compileFormulaInner(convergenceNode.next().get(0), cutoffNodes);
+
+        if (tail == null) {
+            tail = new Proposition("end");
+        }
 
         // TODO: is there a case where metavariables need to be quantified enclosing the AllUntil here?
         //  maybe if the same unquantified metavariable is used in both the optional match and immediately
         //  in the tail? e.g optionalMatch = ExistsVar(x, ...), tail = ExistsVar(x, ...)
-        return new AllUntil(new Optional(optionalMatch), tail);
+        return new AllUntil(combine(finalizeDotsGuard(guard), new Optional(optionalMatch), And.class), tail);
     }
 
     /**
