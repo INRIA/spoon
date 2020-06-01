@@ -279,13 +279,13 @@ public class SmPLParser {
                 }));
 
         metavars.add(new RewriteRule("explicit_type", "(?s)^([A-Za-z_][A-Za-z0-9_]*)\\s+([^;]+);",
-        (ctx) -> {},
-        (result, match) -> {
-            for (String id : match.group(2).split("\\s*,\\s*")) {
-                result.out.append(match.group(1)).append(" ").append(id).append(";\n");
-            }
-            return match.end();
-        }));
+                (ctx) -> {},
+                (result, match) -> {
+                    for (String id : match.group(2).split("\\s*,\\s*")) {
+                        result.out.append(match.group(1)).append(" ").append(id).append(";\n");
+                    }
+                    return match.end();
+                }));
 
         // Code context, meaning we're done with metavars and now expect either a method header or just a bunch of statements
         code.add(new RewriteRule("method_header", "(?s)^\\s*(public\\s+|private\\s+|protected\\s+|static\\s+)*[A-Za-z_][A-Za-z0-9_-]*\\s+[A-Za-z_][A-Za-z0-9_-]*\\s*\\(",
@@ -315,7 +315,7 @@ public class SmPLParser {
         // Method header modifiers context
         header_modifiers.add(eatWhitespace);
 
-        header_modifiers.add(new RewriteRule("modifiers", "(?s)^(public|private|protected|static)",
+        header_modifiers.add(new RewriteRule("modifier", "(?s)^(public|private|protected|static)",
                 (ctx) -> {},
                 (result, match) -> {
                     result.out.append(match.group(1)).append(" ");
@@ -389,7 +389,7 @@ public class SmPLParser {
 
         body.add(anycharCopy);
 
-        // Context for statement dots
+        // Context for statement-level dots operators
         statementDots.add(new RewriteRule("dots", "(?s)^[^\\S\n]*\\.\\.\\.",
                 (ctx) -> { ctx.pop(); ctx.push(statementDotsParams); },
                 (result, match) -> {
@@ -399,7 +399,7 @@ public class SmPLParser {
 
         statementDots.add(anycharPopContext);
 
-        // Context for statement dots parameters (constraints)
+        // Context for statement-level dots parameters (constraints)
         statementDotsParams.add(eatWhitespace);
 
         statementDotsParams.add(new RewriteRule("when_neq", "(?s)^when\\s*!=\\s*([a-z]+)",
