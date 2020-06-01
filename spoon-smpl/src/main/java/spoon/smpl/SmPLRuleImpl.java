@@ -1,9 +1,12 @@
 package spoon.smpl;
 
 import org.apache.commons.lang3.NotImplementedException;
+import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.formula.Formula;
 import spoon.smpl.formula.MetavariableConstraint;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,6 +22,8 @@ public class SmPLRuleImpl implements SmPLRule {
         this.formula = formula;
         this.metavars = metavars;
         this.name = null;
+
+        methodsAdded = new ArrayList<>();
     }
 
     /**
@@ -73,6 +78,23 @@ public class SmPLRuleImpl implements SmPLRule {
         throw new NotImplementedException("Not implemented");
     }
 
+    /**
+     * Get methods added to parent class of a method matching the rule.
+     *
+     * @return Methods added to parent class of a method matching the rule
+     */
+    @Override
+    public List<CtMethod<?>> getMethodsAdded() {
+        return methodsAdded;
+    }
+
+    /**
+     * Add method that should be added to parent class of a method matching the rule.
+     */
+    public void addAddedMethod(CtMethod<?> method) {
+        methodsAdded.add(method);
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -102,4 +124,9 @@ public class SmPLRuleImpl implements SmPLRule {
      * Metavariable names and their respective constraints.
      */
     private final Map<String, MetavariableConstraint> metavars;
+
+    /**
+     * Methods that should be added to parent class of a method matching the rule.
+     */
+    private List<CtMethod<?>> methodsAdded;
 }

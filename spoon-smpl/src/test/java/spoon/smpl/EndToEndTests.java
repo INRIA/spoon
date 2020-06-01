@@ -41,7 +41,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -79,7 +83,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -121,7 +129,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -176,7 +188,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -259,7 +275,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -385,7 +405,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -510,7 +534,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -543,7 +571,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1146,7 +1178,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1179,7 +1215,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1232,7 +1272,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1294,7 +1338,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1370,7 +1418,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1423,7 +1475,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1476,7 +1532,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1529,7 +1589,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1571,7 +1635,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1611,7 +1679,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1655,7 +1727,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1712,7 +1788,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1757,7 +1837,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1811,7 +1895,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1842,7 +1930,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1893,7 +1985,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1943,7 +2039,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -1992,7 +2092,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2035,7 +2139,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2078,7 +2186,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2116,7 +2228,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2157,7 +2273,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2198,7 +2318,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2228,7 +2352,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2263,7 +2391,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2300,7 +2432,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2337,7 +2473,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2378,7 +2518,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2424,7 +2568,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2471,7 +2619,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2519,7 +2671,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2568,7 +2724,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2616,7 +2776,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2664,7 +2828,67 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
+            model.getCfg().restoreUnsupportedElements();
+        });
+    
+        assertEquals(expected.toString(), input.toString());
+    }
+    @Test
+    public void testMethodsAddedToClass() {
+        // contract: a patch should be able to add entire methods to the parent class of a patch-context-matching method
+
+        CtClass<?> input = Launcher.parseClass("class A {\n" +
+                                               "  void m1() {\n" +
+                                               "    a();\n" +
+                                               "  }\n" +
+                                               "  void m2() {\n" +
+                                               "    a();\n" +
+                                               "  }\n" +
+                                               "}\n");
+    
+        CtClass<?> expected = Launcher.parseClass("class A {\n" +
+                                                  "    void m1() {\n" +
+                                                  "        b();\n" +
+                                                  "    }\n" +
+                                                  "    void m2() {\n" +
+                                                  "        b();\n" +
+                                                  "    }\n" +
+                                                  "    void b() {\n" +
+                                                  "        System.out.println(\"Hello, World!\");\n" +
+                                                  "        logCallToB();\n" +
+                                                  "    }\n" +
+                                                  "    void logCallToB() {\n" +
+                                                  "        logger.log(\"b called\");\n" +
+                                                  "    }\n" +
+                                                  "}\n");
+    
+        SmPLRule rule = SmPLParser.parse("@@ identifier fn; @@\n" +
+                                         "+ void b() {\n" +
+                                         "+   System.out.println(\"Hello, World!\");\n" +
+                                         "+   logCallToB();\n" +
+                                         "+ }\n" +
+                                         "void fn() {\n" +
+                                         "- a();\n" +
+                                         "+ b();\n" +
+                                         "}\n" +
+                                         "+ void logCallToB() {\n" +
+                                         "+   logger.log(\"b called\");\n" +
+                                         "+ }\n");
+    
+        input.getMethods().forEach((method) -> {
+            CFGModel model = new CFGModel(methodCfg(method));
+            ModelChecker checker = new ModelChecker(model);
+            rule.getFormula().accept(checker);
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2702,7 +2926,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2744,7 +2972,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2841,7 +3073,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2897,7 +3133,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -2967,7 +3207,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -3034,7 +3278,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -3086,7 +3334,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -3128,7 +3380,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -3182,7 +3438,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -3240,7 +3500,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -3298,7 +3562,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -3337,7 +3605,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     
@@ -3377,7 +3649,11 @@ public class EndToEndTests {
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);
-            Transformer.transform(model, checker.getResult().getAllWitnesses());
+            ModelChecker.ResultSet results = checker.getResult();
+            Transformer.transform(model, results.getAllWitnesses());
+            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
+                Transformer.copyAddedMethods(model, rule);
+            }
             model.getCfg().restoreUnsupportedElements();
         });
     

@@ -42,24 +42,59 @@ public class SmPLParser {
         CtClass<?> dels = Launcher.parseClass(separated.get(0));
         CtClass<?> adds = Launcher.parseClass(separated.get(1));
 
+        if (dels.getMethods().size() > 2) {
+            throw new IllegalArgumentException("Referring to multiple methods in match context is not supported");
+        }
+
+        CtMethod<?> delsRuleMethod = SmPLJavaDSL.getRuleMethod(dels);
+        CtMethod<?> addsRuleMethod = null;
+
+        if (delsRuleMethod == null) {
+            throw new IllegalArgumentException("Empty match context");
+        }
+
+        for (CtMethod<?> method : adds.getMethods()) {
+            if (method.getSimpleName().equals(delsRuleMethod.getSimpleName())) {
+                addsRuleMethod = method;
+            }
+        }
+
+        if (addsRuleMethod == null) {
+            throw new IllegalStateException("impossible");
+        }
+
         // TODO: we probably want to keep legitimate this-accesses, only remove those associated with SmPLUnspecified
         // part of hack to fix parsing of e.g "foo.x" with zero context for "foo"
         nullifyThisAccessTargets(dels);
         nullifyThisAccessTargets(adds);
 
-        Set<Integer> delsLines = collectStatementLines(dels);
-        Set<Integer> addsLines = collectStatementLines(adds);
+        Set<Integer> delsLines = collectStatementLines(delsRuleMethod);
+        Set<Integer> addsLines = collectStatementLines(addsRuleMethod);
 
         Set<Integer> commonLines = new HashSet<>(delsLines);
         commonLines.retainAll(addsLines);
 
-        AnchoredOperationsMap anchoredOperations = anchorAdditions(adds, commonLines);
+        AnchoredOperationsMap anchoredOperations = anchorAdditions(addsRuleMethod, commonLines);
 
-        Set<Integer> containedCommonLines = findContainedCommonLines(adds, commonLines);
+        Set<Integer> containedCommonLines = findContainedCommonLines(addsRuleMethod, commonLines);
         commonLines.removeAll(containedCommonLines);
 
         new DeletionAnchorRemover().scan(adds);
-        return compile(dels, commonLines, anchoredOperations);
+        SmPLRuleImpl result = (SmPLRuleImpl) compile(dels, commonLines, anchoredOperations);
+
+        List<String> sigs = new ArrayList<>();
+
+        for (CtMethod<?> method : dels.getMethods()) {
+            sigs.add(method.getSignature());
+        }
+
+        for (CtMethod<?> method : adds.getMethods()) {
+            if (!sigs.contains(method.getSignature())) {
+                result.addAddedMethod(method);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -149,11 +184,13 @@ public class SmPLParser {
         class Result {
             public Result() {
                 out = new StringBuilder();
+                prebodyAdditions = new StringBuilder();
                 hasUnspecifiedMethodHeader = false;
                 hasDotsArguments = false;
             }
 
             public StringBuilder out;
+            public StringBuilder prebodyAdditions;
             public boolean hasUnspecifiedMethodHeader;
             public boolean hasDotsArguments;
         }
@@ -179,6 +216,7 @@ public class SmPLParser {
         List<RewriteRule> init = new ArrayList<>();
         List<RewriteRule> metavars = new ArrayList<>();
         List<RewriteRule> code = new ArrayList<>();
+        List<RewriteRule> prebodyAdditions = new ArrayList<>();
         List<RewriteRule> header_modifiers = new ArrayList<>();
         List<RewriteRule> header_type = new ArrayList<>();
         List<RewriteRule> header_name = new ArrayList<>();
@@ -287,23 +325,43 @@ public class SmPLParser {
                     return match.end();
                 }));
 
-        // Code context, meaning we're done with metavars and now expect either a method header or just a bunch of statements
-        code.add(new RewriteRule("method_header", "(?s)^\\s*(public\\s+|private\\s+|protected\\s+|static\\s+)*[A-Za-z_][A-Za-z0-9_-]*\\s+[A-Za-z_][A-Za-z0-9_-]*\\s*\\(",
+        // Code context, meaning we're done with metavars and now expect either 1) addition statements followed by 2) a
+        // method header, or 3) just a bunch of statements
+        code.add(new RewriteRule("whitespace", "(?s)^[^\\S\n]+",
+                (ctx) -> {},
+                (result, match) -> { return match.end(); }));
+
+        code.add(new RewriteRule("newline", "(?s)^\n",
+                (ctx) -> { ctx.push(prebodyAdditions); },
+                (result, match) -> {
+                    result.out.append(match.group());
+                    return match.end();
+                }));
+
+        code.add(new RewriteRule("method_header", "(?s)^(public\\s+|private\\s+|protected\\s+|static\\s+)*[A-Za-z_][A-Za-z0-9_-]*\\s+[A-Za-z_][A-Za-z0-9_-]*\\s*\\(",
                 (ctx) -> { ctx.pop(); ctx.push(header_modifiers); },
                 (result, match) -> {
                     result.hasUnspecifiedMethodHeader = false;
+                    result.out.append(result.prebodyAdditions).append("\n");
                     return 0;
                 }));
 
         // any char, but requires there to be SOME non-whitespace content eventually
         code.add(new RewriteRule("anychar", "(?s)^.(?=.*[^\\s])",
-                (ctx) -> { ctx.pop(); ctx.push(body); },
+                (ctx) -> {
+                    ctx.pop();
+                    ctx.push(body);
+                    ctx.push(statementDots);
+                    ctx.push(optionalMatchDots);
+                    ctx.push(disjunction);
+                },
                 (result, match) -> {
                     result.hasUnspecifiedMethodHeader = true;
                     result.out.append(SmPLJavaDSL.createUnspecifiedMethodHeaderString())
                               .append(" {\n")
                               .append("if (").append(SmPLJavaDSL.getDotsWithOptionalMatchName()).append(") {")
                               .append("\n");
+                    result.out.append(result.prebodyAdditions).append("\n");
                     return 0;
                 }));
 
@@ -311,6 +369,15 @@ public class SmPLParser {
         code.add(new RewriteRule("anychar", "(?s)^.*",
                 (ctx) -> { },
                 (result, match) -> { return match.end(); }));
+
+        prebodyAdditions.add(new RewriteRule("add_line", "(?s)^\\+[^\n]*",
+                (ctx) -> {},
+                (result, match) -> {
+                    result.prebodyAdditions.append(match.group()).append("\n");
+                    return match.end();
+                }));
+
+        prebodyAdditions.add(anycharPopContext);
 
         // Method header modifiers context
         header_modifiers.add(eatWhitespace);
@@ -627,13 +694,12 @@ public class SmPLParser {
     /**
      * Find appropriate anchors for all addition operations.
      *
-     * @param e SmPL rule class in the SmPL Java DSL
+     * @param method SmPL rule method in the SmPL Java DSL
      * @param commonLines Set of context lines common to both the deletions and the additions ASTs
      * @return Map of anchors to lists of operations
      */
-    private static AnchoredOperationsMap anchorAdditions(CtClass<?> e, Set<Integer> commonLines) {
-        CtMethod<?> ruleMethod = SmPLJavaDSL.getRuleMethod(e);
-        return anchorAdditions(ruleMethod.getBody(), commonLines, AnchoredOperationsMap.methodBodyAnchor, "methodBody");
+    private static AnchoredOperationsMap anchorAdditions(CtMethod<?> method, Set<Integer> commonLines) {
+        return anchorAdditions(method.getBody(), commonLines, AnchoredOperationsMap.methodBodyAnchor, "methodBody");
     }
 
     /**
@@ -755,13 +821,12 @@ public class SmPLParser {
     }
 
     /**
-     * Scan the rule method of a given class in the SmPL Java DSL and collect the line
-     * numbers associated with statements in the method body.
+     * Scan a given method in the SmPL Java DSL and collect the line numbers associated with statements in its body.
      *
-     * @param ctClass Class in SmPL Java DSL
+     * @param method Rule method in SmPL Java DSL
      * @return Set of line numbers at which statements occur in the rule method
      */
-    private static Set<Integer> collectStatementLines(CtClass<?> ctClass) {
+    private static Set<Integer> collectStatementLines(CtMethod<?> method) {
         class LineCollectingScanner extends CtScanner {
             public Set<Integer> result = new HashSet<>();
 
@@ -774,23 +839,22 @@ public class SmPLParser {
         }
 
         LineCollectingScanner lines = new LineCollectingScanner();
-        lines.scan(SmPLJavaDSL.getRuleMethod(ctClass).getBody().getStatements());
+        lines.scan(method.getBody().getStatements());
         return lines.result;
     }
 
     /**
-     * Scan the rule method of a given class in the SmPL Java DSL and find the set of
-     * statement-associated line numbers that are included in a given set of 'common' line
-     * numbers, but for which the parent element is a block belonging to a statement that
-     * does not occur on a line belonging to the set of 'common' line numbers.
+     * Scan the given rule method in the SmPL Java DSL and find the set of statement-associated line numbers that
+     * are included in a given set of 'common' line numbers, but for which the parent element is a block belonging
+     * to a statement that does not occur on a line belonging to the set of 'common' line numbers.
      *
      * i.e the set of context lines enclosed in non-context lines.
      *
-     * @param ctClass Class in SmPL Java DSL
+     * @param method Method in SmPL Java DSL
      * @param commonLines Set of 'common' line numbers
      * @return Set of line numbers enclosed by statements that are not associated with common lines
      */
-    private static Set<Integer> findContainedCommonLines(CtClass<?> ctClass, Set<Integer> commonLines) {
+    private static Set<Integer> findContainedCommonLines(CtMethod<?> method, Set<Integer> commonLines) {
         class ContainedCommonLineScanner extends CtScanner {
             public ContainedCommonLineScanner(int rootParent, Set<Integer> commonLines) {
                 this.rootParent = rootParent;
@@ -819,8 +883,8 @@ public class SmPLParser {
             }
         }
 
-        ContainedCommonLineScanner contained = new ContainedCommonLineScanner(SmPLJavaDSL.getRuleMethod(ctClass).getPosition().getLine(), commonLines);
-        contained.scan(SmPLJavaDSL.getRuleMethod(ctClass).getBody().getStatements());
+        ContainedCommonLineScanner contained = new ContainedCommonLineScanner(method.getPosition().getLine(), commonLines);
+        contained.scan(method.getBody().getStatements());
         return contained.result;
     }
 

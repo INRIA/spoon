@@ -2,7 +2,9 @@ package spoon.smpl;
 
 import fr.inria.controlflow.BranchKind;
 import fr.inria.controlflow.ControlFlowNode;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,6 +38,38 @@ public class Transformer {
 
         for (ModelChecker.Witness witness : witnesses) {
             transform(model, bindings, witness, done);
+        }
+    }
+
+    /**
+     * Copy method additions specified by a matching rule to the parent class of a matching method. Only missing
+     * methods are copied.
+     *
+     * @param model CFG Model of matching method
+     * @param rule Matching rule
+     */
+    public static void copyAddedMethods(CFGModel model, SmPLRule rule) {
+        copyAddedMethods(model.getCfg().findNodesOfKind(BranchKind.STATEMENT).get(0).getStatement().getParent(CtClass.class), rule);
+    }
+
+    /**
+     * Copy method additions specified by a matching rule to the parent class of a matching method. Only missing
+     * methods are copied.
+     *
+     * @param cls Parent class of matching method
+     * @param rule Matching rule
+     */
+    public static void copyAddedMethods(CtClass<?> cls, SmPLRule rule) {
+        List<String> sigs = new ArrayList<>();
+
+        for (CtMethod<?> method : cls.getMethods()) {
+            sigs.add(method.getSignature());
+        }
+
+        for (CtMethod<?> method : rule.getMethodsAdded()) {
+            if (!sigs.contains(method.getSignature())) {
+                cls.addMethod(method);
+            }
         }
     }
 

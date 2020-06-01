@@ -233,7 +233,13 @@ public class CommandlineApplication {
                                 System.out.println(model);
                                 System.out.println(modelChecker.getResult());
                             } else if (action == Action.PATCH) {
-                                Transformer.transform(model, modelChecker.getResult().getAllWitnesses());
+                                ModelChecker.ResultSet results = modelChecker.getResult();
+                                Transformer.transform(model, results.getAllWitnesses());
+
+                                if (results.size() > 0 && smplRule.getMethodsAdded().size() > 0) {
+                                    Transformer.copyAddedMethods(model, smplRule);
+                                }
+
                                 model.getCfg().restoreUnsupportedElements();
                             }
                         }

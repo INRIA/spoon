@@ -1,8 +1,10 @@
 package spoon.smpl;
 
+import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.formula.Formula;
 import spoon.smpl.formula.MetavariableConstraint;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -11,7 +13,6 @@ import java.util.Map;
  * from the most recently matched code.
  */
 public interface SmPLRule {
-    // public boolean matchesMethodHeader
     // public getMetavariableBindings
     // public reset
 
@@ -49,4 +50,11 @@ public interface SmPLRule {
      * Reset the metavariable bindings.
      */
     public void reset();
+
+    /**
+     * Get methods added to parent class of a method matching the rule.
+     *
+     * @return Methods added to parent class of a method matching the rule
+     */
+    public List<CtMethod<?>> getMethodsAdded();
 }
