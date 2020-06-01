@@ -16,6 +16,7 @@
  */
 package spoon.test.prettyprinter;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -45,6 +46,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
+import spoon.test.GitHubIssue;
+import spoon.test.prettyprinter.testclasses.OneLineMultipleVariableDeclaration;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
 
 import java.io.File;
@@ -71,6 +74,18 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestSniperPrinter {
+
+	@GitHubIssue(issueNumber = 3386)
+	@Ignore("UnresolvedBug")
+	@Test
+	public void testPrintOneLineMultipleVariableDeclaration() {
+		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
+			CtMethod<?> m = type.getMethodsByName("foo").get(0);
+			m.setBody(null);
+		}, (type, printed) -> {
+			assertIsPrintedWithExpectedChanges(type, printed, "\\Qvoid foo(int a) {\n\t\ta = a;\n\t}", "void foo(int a);");
+		});
+	}
 
 	@Test
 	public void testPrintUnchaged() {
