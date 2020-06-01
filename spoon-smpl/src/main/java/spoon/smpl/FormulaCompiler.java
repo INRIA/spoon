@@ -315,13 +315,13 @@ public class FormulaCompiler {
     }
 
     /**
-     * Get the (to-be-negated) shortest-path guard formula for the element preceding a given statement-level
-     * dots node.
+     * Get the (non-finalized) shortest path guard formula for the element preceding a given statement-level
+     * dots or dots-with-optional-match operator node.
      *
-     * @param dotsNode Statement-level dots node
-     * @return Shortest-path guard formula for preceding element
+     * @param dotsNode Node of statement-level dots or dots-with-optional-match operator
+     * @return Non-finalized shortest path guard formula for preceding element
      */
-    private Formula getPreGuard(ControlFlowNode dotsNode) {
+    private Formula getDotsPreGuard(ControlFlowNode dotsNode) {
         List<ControlFlowNode> prevNodes = dotsNode.prev();
 
         switch (prevNodes.size()) {
@@ -366,13 +366,13 @@ public class FormulaCompiler {
     }
 
     /**
-     * Get the (to-be-negated) shortest-path guard formula for the element succeeding a given statement-level
-     * dots node.
+     * Get the (non-finalized) shortest path guard formula for the element succeeding a given statement-level
+     * dots or dots-with-optional-match operator node.
      *
-     * @param dotsNode Statement-level dots node
-     * @return Shortest-path guard formula for succeeding element
+     * @param dotsNode Node of statement-level dots or dots-with-optional-match operator
+     * @return Non-finalized shortest path guard formula for succeeding element
      */
-    private Formula getPostGuard(ControlFlowNode dotsNode) {
+    private Formula getDotsPostGuard(ControlFlowNode dotsNode) {
         List<ControlFlowNode> nextNodes = dotsNode.next();
 
         switch (nextNodes.size()) {
@@ -426,21 +426,98 @@ public class FormulaCompiler {
      */
     private int findParentBranchId(ControlFlowNode node) {
         CtElement element = node.getStatement();
-        CtElement blockParent = element.getParent().getParent();
+        CtElement parent = element.getParent();
 
-        if (blockParent instanceof CtMethod) {
+        // iteratively ascend the AST until we either find a branch statement or the method itself
+        while (parent instanceof CtBlock<?>) {
+            parent = parent.getParent();
+        }
+
+        if (parent instanceof CtMethod) {
             return -1;
         }
 
         for (ControlFlowNode otherNode : node.getParent().findNodesOfKind(BranchKind.BRANCH)) {
             SmPLMethodCFG.NodeTag tag = (SmPLMethodCFG.NodeTag) otherNode.getTag();
 
-            if (tag.getAnchor() == blockParent) {
+            if (tag.getAnchor() == parent) {
                 return (int) tag.getMetadata("branchId");
             }
         }
 
         throw new IllegalStateException("impossible situation / malformed cfg");
+    }
+
+    /**
+     * Combine two Formulas using a given binary connective.
+     *
+     * @param phi First Formula
+     * @param psi Second Formula
+     * @param connective Binary connective
+     * @return A new instance of the binary connective connecting both Formulas, or first (or second) Formula if the second (or first) Formula is null.
+     */
+    private Formula combine(Formula phi, Formula psi, Class<? extends BinaryConnective> connective) {
+        try {
+            if (phi == null) {
+                return psi;
+            } else if (psi == null) {
+                return phi;
+            } else {
+                return connective.getConstructor(Formula.class, Formula.class).newInstance(phi, psi);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Get the guard Formula for a dots operator. The guard prohibits the operator from leaving its enclosing scope
+     * and optionally constrains the operator to match the shortest path between its surrounding context elements.
+     * The result is a non-finalized (non-negated) guard Formula which should be finalized with a call to
+     * finalizeDotsGuard().
+     *
+     * @param dotsNode Node representing a dots operator
+     * @param shortestPath Flag indicating whether the guard should enforce the shortest path constraint
+     * @return Non-finalized guard Formula
+     */
+    private Formula getDotsGuard(ControlFlowNode dotsNode, boolean shortestPath) {
+        int branchId = findParentBranchId(dotsNode);
+
+        Formula guard = null;
+
+        if (branchId != -1) {
+            String parentIdVar = "__parent" + Integer.toString(branchId) + "__";
+            guard = new And(new Proposition("after"), new MetadataPredicate(parentIdVar, "parent"));
+        }
+
+        if (shortestPath) {
+            Formula contextPreGuard = getDotsPreGuard(dotsNode);
+            Formula contextPostGuard = getDotsPostGuard(dotsNode);
+
+            // Remove any metavars "accidentally" marked as being quantified by compiling the postguard formula
+            while (contextPostGuard instanceof ExistsVar) {
+                quantifiedMetavars.remove(((ExistsVar) contextPostGuard).getVarName());
+                contextPostGuard = ((ExistsVar) contextPostGuard).getInnerElement();
+            }
+
+            contextPreGuard = removeOperations(contextPreGuard);
+            contextPostGuard = removeOperations(contextPostGuard);
+
+            guard = combine(guard, contextPreGuard, Or.class);
+            guard = combine(guard, contextPostGuard, Or.class);
+        }
+
+        return guard;
+    }
+
+    /**
+     * Finalize a dots guard by negating it (if non-null), or by replacing a null guard with True.
+     *
+     * @param input Non-finalized dots guard Formula
+     * @return Negated input if input is not null, otherwise a Formula "True"
+     */
+    private Formula finalizeDotsGuard(Formula input) {
+        return input != null ? new Not(input) : new True();
     }
 
     /**
@@ -453,54 +530,27 @@ public class FormulaCompiler {
     private Formula compileStatementLevelDotsFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
         CtInvocation<?> dots = (CtInvocation<?>) node.getStatement();
 
-        int branchId = findParentBranchId(node);
-        String parentIdVar = "__parent" + Integer.toString(branchId) + "__";
-
-        Formula guard = new And(new Proposition("after"), new MetadataPredicate(parentIdVar, "parent"));
-
-        Formula contextPreGuard = null;
-        Formula contextPostGuard = null;
-
-        if (!SmPLJavaDSL.hasWhenAny(dots)) {
-            contextPreGuard = getPreGuard(node);
-            contextPostGuard = getPostGuard(node);
-
-            // Remove any metavars "accidentally" marked as being quantified by compiling the postguard formula
-            while (contextPostGuard instanceof ExistsVar) {
-                quantifiedMetavars.remove(((ExistsVar) contextPostGuard).getVarName());
-                contextPostGuard = ((ExistsVar) contextPostGuard).getInnerElement();
-            }
-
-            contextPreGuard = removeOperations(contextPreGuard);
-            contextPostGuard = removeOperations(contextPostGuard);
-        }
-
-        guard = Or.connectIfNotNull(guard, contextPreGuard);
-        guard = Or.connectIfNotNull(guard, contextPostGuard);
-
+        Formula guard = getDotsGuard(node, false == SmPLJavaDSL.hasWhenAny(dots));
         Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
 
         List<String> whenNotEquals = SmPLJavaDSL.getWhenNotEquals(dots);
 
         if (whenNotEquals.size() > 0) {
             Iterator<String> it = whenNotEquals.iterator();
-
-            guard = new Or(guard, new Proposition("unsupported"));
+            guard = combine(guard, new Proposition("unsupported"), Or.class);
 
             while (it.hasNext()) {
-                guard = new Or(new VariableUsePredicate(it.next(), metavars), guard);
+                guard = combine(guard, new VariableUsePredicate(it.next(), metavars), Or.class);
             }
         }
 
-        Formula formula = new Not(guard);
+        guard = finalizeDotsGuard(guard);
 
         if (SmPLJavaDSL.hasWhenExists(dots)) {
-            formula = new ExistsUntil(formula, innerFormula);
+            return new ExistsUntil(guard, innerFormula);
         } else {
-            formula = new AllUntil(formula, innerFormula);
+            return new AllUntil(guard, innerFormula);
         }
-
-        return formula;
     }
 
     /**
