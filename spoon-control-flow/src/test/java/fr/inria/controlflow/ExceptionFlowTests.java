@@ -7,8 +7,8 @@ import spoon.reflect.declaration.CtMethod;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
@@ -321,6 +321,212 @@ public class ExceptionFlowTests {
         assertTrue(hasDirectStatementSuccessor(a, bang3));
     }
 
+    @Test
+    public void testCatchlessTry() {
+
+        // contract: NaiveExceptionControlFlowStrategy should result in every statement 1) from which control
+        //           flow is guaranteed to enter a try block equipped with a finalizer, or 2) parented by a try
+        //           block equipped with a finalizer, to unavoidably reach the finalizer block when no return
+        //           statements are used.
+
+        CtMethod<?> method = Launcher.parseClass("class A {\n" +
+                                                 "  void m() {\n" +
+                                                 "    top();\n" +
+                                                 "    try {\n" +
+                                                 "      a();\n" +
+                                                 "    }\n" +
+                                                 "    finally {\n" +
+                                                 "      b();\n" +
+                                                 "    }\n" +
+                                                 "  }\n" +
+                                                 "}\n").getMethods().iterator().next();
+
+        ControlFlowBuilder builder = new ControlFlowBuilder();
+        builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
+        builder.build(method);
+        ControlFlowGraph cfg = builder.getResult();
+
+        ControlFlowNode top = findNodeByString(cfg, "top()");
+        ControlFlowNode a = findNodeByString(cfg, "a()");
+        ControlFlowNode b = findNodeByString(cfg, "b()");
+
+        assertFalse(canAvoidNode(top, a));
+        assertFalse(canAvoidNode(top, b));
+        assertFalse(canAvoidNode(a, b));
+    }
+
+    @Test
+    public void testTryBlockReturnStatementExecutesFinalizers01() {
+        // contract: NaiveExceptionControlFlowStrategy should result in every return statement in a try or
+        //           catch block to execute all "in-scope" finalizers before jumping to the exit
+
+        CtMethod<?> method = Launcher.parseClass("class A {\n" +
+                                                 "  int m() {\n" +
+                                                 "    try {\n" +
+                                                 "      return 1;\n" +
+                                                 "    }\n" +
+                                                 "    finally {\n" +
+                                                 "      finalize();\n" +
+                                                 "    }\n" +
+                                                 "  }\n" +
+                                                 "}\n").getMethods().iterator().next();
+
+        ControlFlowBuilder builder = new ControlFlowBuilder();
+        builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
+        builder.build(method);
+        ControlFlowGraph cfg = builder.getResult();
+
+        Set<ControlFlowNode> finalize = findNodesByString(cfg, "finalize()");
+        ControlFlowNode ret1 = findNodeByString(cfg, "return 1");
+
+        assertFalse(canAvoidAllNodes(ret1, finalize));
+    }
+
+    @Test
+    public void testTryBlockReturnStatementExecutesFinalizers02() {
+        // contract: NaiveExceptionControlFlowStrategy should result in every return statement in a try or
+        //           catch block to execute all "in-scope" finalizers before jumping to the exit
+
+        CtMethod<?> method = Launcher.parseClass("class A {\n" +
+                                                 "  int m() {\n" +
+                                                 "    try {\n" +
+                                                 "      foo();\n" +
+                                                 "    }\n" +
+                                                 "    catch (Exception e) {\n" +
+                                                 "      return 1;\n" +
+                                                 "    }\n" +
+                                                 "    finally {\n" +
+                                                 "      finalize();\n" +
+                                                 "    }\n" +
+                                                 "  }\n" +
+                                                 "}\n").getMethods().iterator().next();
+
+        ControlFlowBuilder builder = new ControlFlowBuilder();
+        builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
+        builder.build(method);
+        ControlFlowGraph cfg = builder.getResult();
+
+        Set<ControlFlowNode> finalize = findNodesByString(cfg, "finalize()");
+        ControlFlowNode foo = findNodeByString(cfg, "foo()");
+        ControlFlowNode ret1 = findNodeByString(cfg, "return 1");
+
+        assertFalse(canAvoidAllNodes(foo, finalize));
+        assertFalse(canAvoidAllNodes(ret1, finalize));
+    }
+
+    @Test
+    public void testTryBlockReturnStatementExecutesFinalizers03() {
+        // contract: NaiveExceptionControlFlowStrategy should result in every return statement in a try or
+        //           catch block to execute all "in-scope" finalizers before jumping to the exit
+
+        CtMethod<?> method = Launcher.parseClass("class A {\n" +
+                                                 "  int m() {\n" +
+                                                 "    try {\n" +
+                                                 "      return 1;\n" +
+                                                 "    }\n" +
+                                                 "    catch (Exception e) {\n" +
+                                                 "      return 2;\n" +
+                                                 "    }\n" +
+                                                 "    finally {\n" +
+                                                 "      finalize();\n" +
+                                                 "    }\n" +
+                                                 "  }\n" +
+                                                 "}\n").getMethods().iterator().next();
+
+        ControlFlowBuilder builder = new ControlFlowBuilder();
+        builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
+        builder.build(method);
+        ControlFlowGraph cfg = builder.getResult();
+
+        Set<ControlFlowNode> finalize = findNodesByString(cfg, "finalize()");
+        ControlFlowNode ret1 = findNodeByString(cfg, "return 1");
+        ControlFlowNode ret2 = findNodeByString(cfg, "return 2");
+
+        assertFalse(canAvoidAllNodes(ret1, finalize));
+        assertFalse(canAvoidAllNodes(ret2, finalize));
+    }
+
+    @Test
+    public void testTryBlockReturnStatementExecutesFinalizers04() {
+        // contract: NaiveExceptionControlFlowStrategy should result in every return statement in a try or
+        //           catch block to execute all "in-scope" finalizers before jumping to the exit
+
+        CtMethod<?> method = Launcher.parseClass("class A {\n" +
+                                                 "  int m() {\n" +
+                                                 "    try {\n" +
+                                                 "      try {\n" +
+                                                 "        return 1;\n" +
+                                                 "      }\n" +
+                                                 "      finally {\n" +
+                                                 "        finalizeInner();\n" +
+                                                 "      }\n" +
+                                                 "    }\n" +
+                                                 "    finally {\n" +
+                                                 "      finalizeOuter();\n" +
+                                                 "    }\n" +
+                                                 "  }\n" +
+                                                 "}\n").getMethods().iterator().next();
+
+        ControlFlowBuilder builder = new ControlFlowBuilder();
+        builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
+        builder.build(method);
+        ControlFlowGraph cfg = builder.getResult();
+
+        Set<ControlFlowNode> finalizeInner = findNodesByString(cfg, "finalizeInner()");
+        Set<ControlFlowNode> finalizeOuter = findNodesByString(cfg, "finalizeOuter()");
+        ControlFlowNode ret1 = findNodeByString(cfg, "return 1");
+
+        assertEquals(1, paths(ret1).size());
+
+        assertFalse(canAvoidAllNodes(ret1, finalizeInner));
+        assertFalse(canAvoidAllNodes(ret1, finalizeOuter));
+    }
+
+    @Test
+    public void testTryBlockReturnStatementExecutesFinalizers05() {
+        // contract: NaiveExceptionControlFlowStrategy should result in every return statement in a try or
+        //           catch block to execute all "in-scope" finalizers before jumping to the exit
+
+        CtMethod<?> method = Launcher.parseClass("class A {\n" +
+                                                 "  int m() {\n" +
+                                                 "    try {\n" +
+                                                 "      try {\n" +
+                                                 "        if (random > 0.5f) {\n" +
+                                                 "          return 1;\n" +
+                                                 "        }\n" +
+                                                 "      }\n" +
+                                                 "      finally {\n" +
+                                                 "        finalizeInner();\n" +
+                                                 "      }\n" +
+                                                 "      \n" +
+                                                 "      a();\n" +
+                                                 "    }\n" +
+                                                 "    finally {\n" +
+                                                 "      finalizeOuter();\n" +
+                                                 "    }\n" +
+                                                 "  }\n" +
+                                                 "}\n").getMethods().iterator().next();
+
+        ControlFlowBuilder builder = new ControlFlowBuilder();
+        builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
+        builder.build(method);
+        ControlFlowGraph cfg = builder.getResult();
+
+        Set<ControlFlowNode> finalizeInner = findNodesByString(cfg, "finalizeInner()");
+        Set<ControlFlowNode> finalizeOuter = findNodesByString(cfg, "finalizeOuter()");
+        ControlFlowNode branch = findNodeByString(cfg, "random > 0.5F");
+        ControlFlowNode ret1 = findNodeByString(cfg, "return 1");
+        ControlFlowNode a = findNodeByString(cfg, "a()");
+
+        assertFalse(canAvoidAllNodes(ret1, finalizeInner));
+        assertFalse(canAvoidAllNodes(ret1, finalizeOuter));
+        assertFalse(canReachNode(ret1, a));
+
+        assertTrue(canReachNode(branch, a));
+        assertFalse(canAvoidAllNodes(branch, finalizeInner));
+        assertFalse(canAvoidAllNodes(branch, finalizeOuter));
+    }
+
     /**
      * Memoization of paths.
      */
@@ -423,6 +629,30 @@ public class ExceptionFlowTests {
     }
 
     /**
+     * Check whether a node can reach the exit without reaching any of a set of nodes.
+     *
+     * @param source Starting node
+     * @param targets Target nodes
+     * @return True if there exists a path between source and exit that does not include any node in target, false otherwise
+     */
+    private boolean canAvoidAllNodes(ControlFlowNode source, Set<ControlFlowNode> targets) {
+        return !paths(source).stream().allMatch(xs -> intersect(new HashSet<>(xs), targets).size() != 0);
+    }
+
+    /**
+     * Intersect two sets of nodes.
+     *
+     * @param a First set
+     * @param b Second set
+     * @return Intersection of the first and seconds sets
+     */
+    private Set<ControlFlowNode> intersect(Set<ControlFlowNode> a, Set<ControlFlowNode> b) {
+        Set<ControlFlowNode> result = new HashSet<>(a);
+        result.retainAll(b);
+        return result;
+    }
+
+    /**
      * Filter a control flow path to only include statement nodes.
      *
      * @param path Path to filter
@@ -462,7 +692,7 @@ public class ExceptionFlowTests {
      *
      * @param graph Graph to search
      * @param s String to match against statement
-     * @return First mode found with statement matching string, or null if none was found
+     * @return First node found with statement matching string, or null if none was found
      */
     private ControlFlowNode findNodeByString(ControlFlowGraph graph, String s) {
         for (ControlFlowNode node : graph.vertexSet()) {
@@ -472,5 +702,25 @@ public class ExceptionFlowTests {
         }
 
         return null;
+    }
+
+    /**
+     * Find a set of nodes in a ControlFlowGraph by matching on the string representation of the statement
+     * stored in the node (if any).
+     *
+     * @param graph Graph to search
+     * @param s String to match against statement
+     * @return Set of nodes found with statement matching string
+     */
+    private Set<ControlFlowNode> findNodesByString(ControlFlowGraph graph, String s) {
+        Set<ControlFlowNode> result = new HashSet<>();
+
+        for (ControlFlowNode node : graph.vertexSet()) {
+            if (node.getStatement() != null && node.getStatement().toString().equals(s)) {
+                result.add(node);
+            }
+        }
+
+        return result;
     }
 }

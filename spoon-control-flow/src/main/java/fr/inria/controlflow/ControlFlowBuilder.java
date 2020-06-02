@@ -185,6 +185,11 @@ public class ControlFlowBuilder implements CtVisitor {
 	public ControlFlowGraph build(CtElement s) {
 		s.accept(this);
 		tryAddEdge(lastNode, exitNode);
+
+		if (exceptionControlFlowStrategy != null) {
+			exceptionControlFlowStrategy.postProcess(result);
+		}
+
 		return result;
 	}
 
@@ -305,7 +310,9 @@ public class ControlFlowBuilder implements CtVisitor {
 	 */
 	private void tryAddEdge(ControlFlowNode source, ControlFlowNode target, boolean isLooping, boolean breakDance) {
 		if (source != null && source.getKind() != BranchKind.CATCH && source.getStatement() != null && exceptionControlFlowStrategy != null) {
-			exceptionControlFlowStrategy.handleStatement(this, source);
+			if (exceptionControlFlowStrategy.handleStatement(this, source)) {
+				return;
+			}
 		}
 
 		boolean isBreak = source != null && source.getStatement() instanceof CtBreak;
