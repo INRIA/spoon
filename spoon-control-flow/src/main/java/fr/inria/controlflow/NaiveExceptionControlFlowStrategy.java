@@ -31,13 +31,13 @@ public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowSt
 		List<ControlFlowNode> catchNodes = new ArrayList<>();
 
 		ControlFlowNode tryNode = new ControlFlowNode(null, graph, BranchKind.TRY);
+		ControlFlowNode convergeNode = new ControlFlowNode(null, graph, BranchKind.CONVERGE);
 
 		for (CtCatch catchBlock : tryBlock.getCatchers()) {
 			catchNodes.add(new ControlFlowNode(catchBlock.getParameter(), graph, BranchKind.CATCH));
 		}
 
 		ControlFlowNode finallyNode = tryBlock.getFinalizer() == null ? null : new ControlFlowNode(null, graph, BranchKind.FINALLY);
-		ControlFlowNode convergeNode = new ControlFlowNode(null, graph, BranchKind.CONVERGE);
 
 		addEdge(builder, graph, lastNode, tryNode);
 		builder.setLastNode(tryNode);
