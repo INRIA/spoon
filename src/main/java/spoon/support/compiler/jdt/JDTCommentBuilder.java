@@ -623,9 +623,6 @@ public class JDTCommentBuilder {
 			//append first line
 			ret.append(line);
 			while ((line = br.readLine()) != null) {
-				if (isLastLine) {
-					throw new SpoonException("Unexpected next line after last line");
-				}
 				if (line.endsWith("*/")) {
 					//it is last line
 					line = endCommentRE.matcher(line).replaceFirst("");
