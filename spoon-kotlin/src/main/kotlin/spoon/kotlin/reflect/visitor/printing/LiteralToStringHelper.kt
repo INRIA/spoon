@@ -33,6 +33,10 @@ internal object LiteralToStringHelper {
                 basedValue = value.toString(radix)
                 suffix = ""
             }
+            is Byte -> {
+                basedValue = value.toString(radix)
+                suffix = ""
+            }
             else -> {
                 basedValue = value.toString()
                 suffix = ""
