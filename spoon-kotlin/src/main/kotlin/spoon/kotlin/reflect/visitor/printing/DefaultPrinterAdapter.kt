@@ -5,7 +5,7 @@ import spoon.kotlin.reflect.KtModifierKind
 open class DefaultPrinterAdapter(
         private val ignoredModifiers : List<KtModifierKind> = listOf(
             KtModifierKind.PUBLIC, KtModifierKind.FINAL),
-        open val LINE_SEPARATOR : String = "\n" // System.getProperty("line.separator")
+        open val LINE_SEPARATOR : String = System.getProperty("line.separator")
 ) : AbstractPrinterAdapter(LINE_SEPARATOR) {
 
     /**
@@ -31,19 +31,35 @@ open class DefaultPrinterAdapter(
 
     private val sb : StringBuilder = StringBuilder()
 
+    private var lastCharWasCR = false
+
     override infix fun write(c: Char) : DefaultPrinterAdapter {
-        if(onNewLine && c != '\n') {
-            onNewLine = false
-            writeIndent()
+        when(c) {
+            '\r' -> {
+                lastCharWasCR = true
+                line++
+                column = 1
+                onNewLine = true
+            }
+            '\n' -> {
+                if(!lastCharWasCR) {
+                    column = 1
+                    line++
+                    onNewLine = true
+                }
+                lastCharWasCR = false
+            }
+            else -> {
+                lastCharWasCR = false
+                if(onNewLine) {
+                    onNewLine = false
+                    writeIndent()
+                } else {
+                    column++
+                }
+            }
         }
         sb.append(c)
-        if(c == '\n') {
-            column = 1
-            line++
-            onNewLine = true
-        }
-        else column++
-
         return this
     }
 
