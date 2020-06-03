@@ -174,14 +174,14 @@ public class ElementSourceFragment implements SourceFragment {
 				if (e instanceof CtCompilationUnit) {
 					return;
 				}
-				ElementSourceFragment newFragment = parents.peek().addChild(scannedRole, e);
-				if (newFragment != null) {
-					parents.push(newFragment);
+				ElementSourceFragment currentFragment = parents.peek().addChild(scannedRole, e);
+				if (currentFragment != null) {
+					parents.push(currentFragment);
 					if (e instanceof CtModifiable) {
 						CtModifiable modifiable = (CtModifiable) e;
 						Set<CtExtendedModifier> modifiers = modifiable.getExtendedModifiers();
 						for (CtExtendedModifier ctExtendedModifier : modifiers) {
-							newFragment.addChild(CtRole.MODIFIER, ctExtendedModifier);
+							currentFragment.addChild(CtRole.MODIFIER, ctExtendedModifier);
 						}
 					}
 				} else {
