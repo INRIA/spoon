@@ -127,6 +127,7 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtClass(ctClass: CtClass<T>?) {
         if(ctClass == null) return
+        adapter.ensureNEmptyLines(1)
         // Annotations
         // Not implemented
 
@@ -163,14 +164,14 @@ class DefaultKotlinPrettyPrinter(
         adapter.pushIndent()
 
       //  ctClass.constructors.filterNot { it.isPrimary() }.forEach { it.accept(this) }
-        ctClass.typeMembers.filterNot { it is CtConstructor<*> && it.isPrimary() }.forEach { it.accept(this) }
-
+        ctClass.typeMembers.filterNot { it is CtConstructor<*> && it.isPrimary() }.forEach {
+           if(!it.isImplicit) { it.accept(this) }
+        }
         adapter.popIndent()
         adapter writeln RIGHT_CURL
     }
 
     override fun <T : Any?> visitCtConstructor(ctConstructor : CtConstructor<T>) {
-
         // Annotations not implemented
 
         val primary = ctConstructor.getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as? Boolean? ?: false
@@ -184,6 +185,7 @@ class DefaultKotlinPrettyPrinter(
                 adapter write "constructor"
             }
         } else {
+            adapter.ensureNEmptyLines(1)
             adapter writeModifiers modifierSet and "constructor"
         }
         adapter write LEFT_ROUND
@@ -194,9 +196,10 @@ class DefaultKotlinPrettyPrinter(
         visitCtInvocation(delegatedConstr)
 
         if(!primary) {
-            adapter write SPACE
-            ctConstructor.body?.accept(this)
-            adapter.newline()
+            if(ctConstructor.body != null) {
+                adapter write SPACE
+                ctConstructor.body?.accept(this)
+            }
         }
     }
 
@@ -206,7 +209,7 @@ class DefaultKotlinPrettyPrinter(
         val prefix = type.`package`.qualifiedName
         val nullable = type.getMetadata(KtMetadataKeys.TYPE_REF_NULLABLE) as? Boolean? ?: false
         val suffix = if(nullable) "?" else ""
-        return if(!fullyQualified || prefix.isEmpty()) type.simpleName
+        return if(!fullyQualified || prefix.isEmpty()) "${type.simpleName}$suffix"
         else "${prefix}.${type.simpleName}${suffix}"
     }
 
@@ -251,10 +254,9 @@ class DefaultKotlinPrettyPrinter(
 
         val elseStmt = ctIf.getElseStatement<CtStatement>()
         if(elseStmt != null) {
-            adapter write SPACE and "else" and SPACE
+            adapter write " else "
             elseStmt.accept(this)
         }
-        if(!adapter.onNewLine) adapter.newline()
     }
 
     override fun <T : Any?> visitCtFieldReference(fieldRef: CtFieldReference<T>) {
@@ -347,6 +349,8 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtField(field: CtField<T>?) {
         if(field == null || field.isImplicit) return
+        adapter.ensureNEmptyLines(0)
+
         // Annotations
         // Not implemented
 
@@ -373,7 +377,6 @@ class DefaultKotlinPrettyPrinter(
         adapter.pushIndent()
         visitDefaultExpr(field)
         adapter.popIndent()
-        adapter.newline()
     }
 
     private fun visitDefaultExpr(variable : CtVariable<*>) {
@@ -582,8 +585,6 @@ class DefaultKotlinPrettyPrinter(
         if(invocation.executable.isConstructor) {
             val parentType = invocation.getParent(CtType::class.java)
             adapter.writeColon(DefaultPrinterAdapter.ColonContext.CONSTRUCTOR_DELEGATION)
-            var pn = parentType.qualifiedName
-            var en = invocation.executable.declaringType.qualifiedName
             if(parentType == null || parentType.qualifiedName == invocation.executable.declaringType.qualifiedName) {
                 adapter write "this"
             } else {
@@ -611,6 +612,8 @@ class DefaultKotlinPrettyPrinter(
     override fun <T : Any?> visitCtMethod(method: CtMethod<T>?) {
         if(method == null) return
         // Annotations not implemented
+
+        adapter.ensureNEmptyLines(1)
 
         // Modifiers
         val modifierSet = getModifiersMetadata(method)

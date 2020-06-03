@@ -26,18 +26,20 @@ open class DefaultPrinterAdapter(
     open val INDENT_UNIT = "    " // 4 spaces
     var indentCount = 0
 
-    var onNewLine = false
+    var onNewLine = true
         private set
 
     private val sb : StringBuilder = StringBuilder()
 
     private var lastCharWasCR = false
+    private var verticalSpace = 0
 
     override infix fun write(c: Char) : DefaultPrinterAdapter {
         when(c) {
             '\r' -> {
                 lastCharWasCR = true
                 line++
+                verticalSpace++
                 column = 1
                 onNewLine = true
             }
@@ -45,6 +47,7 @@ open class DefaultPrinterAdapter(
                 if(!lastCharWasCR) {
                     column = 1
                     line++
+                    verticalSpace++
                     onNewLine = true
                 }
                 lastCharWasCR = false
@@ -53,6 +56,7 @@ open class DefaultPrinterAdapter(
                 lastCharWasCR = false
                 if(onNewLine) {
                     onNewLine = false
+                    verticalSpace = 0
                     writeIndent()
                 } else {
                     column++
@@ -63,6 +67,17 @@ open class DefaultPrinterAdapter(
         return this
     }
 
+    /**
+     * Ensures that there are n empty lines (or equivalently, that there are n+1 linebreaks) since the last written character.
+     * Does nothing if the adapter is on the first character. (Line = 1, Column = 1)
+     *
+     * n = 0 ensures that the adapter is on a new line.
+     */
+    fun ensureNEmptyLines(n: Int) {
+        if(!(line == 1 && column == 1)) { // No vertical space for the first line
+            while (verticalSpace < n+1) write(LINE_SEPARATOR)
+        }
+    }
 
     private fun writeIndent() = repeat(indentCount) { write(INDENT_UNIT) }
 
