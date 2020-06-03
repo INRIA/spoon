@@ -54,7 +54,8 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
 
     fun getOrCreateModule(session: FirSession, factory : Factory) : CtModule {
         val mname = session.moduleInfo?.name?.asString() ?: return factory.Module().unnamedModule
-        return factory.Module().getOrCreate(mname)
+        return factory.Module().unnamedModule
+       // return factory.Module().getOrCreate(mname)
     }
 
 
