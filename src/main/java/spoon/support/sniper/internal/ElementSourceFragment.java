@@ -55,7 +55,11 @@ public class ElementSourceFragment implements SourceFragment {
 
 	private final SourcePositionHolder element;
 	private final RoleHandler roleHandlerInParent;
+
+	/** the next fragment, not related to this element, but useful for navigation **/
 	private ElementSourceFragment nextSibling;
+
+	/** the headof a linked list to the child fragments (part of pretty-printing of this element */
 	private ElementSourceFragment firstChild;
 
 	/**
@@ -170,14 +174,14 @@ public class ElementSourceFragment implements SourceFragment {
 				if (e instanceof CtCompilationUnit) {
 					return;
 				}
-				ElementSourceFragment newFragment = addChild(parents.peek(), scannedRole, e);
+				ElementSourceFragment newFragment = parents.peek().addChild(scannedRole, e);
 				if (newFragment != null) {
 					parents.push(newFragment);
 					if (e instanceof CtModifiable) {
 						CtModifiable modifiable = (CtModifiable) e;
 						Set<CtExtendedModifier> modifiers = modifiable.getExtendedModifiers();
 						for (CtExtendedModifier ctExtendedModifier : modifiers) {
-							addChild(newFragment, CtRole.MODIFIER, ctExtendedModifier);
+							newFragment.addChild(CtRole.MODIFIER, ctExtendedModifier);
 						}
 					}
 				} else {
@@ -206,16 +210,16 @@ public class ElementSourceFragment implements SourceFragment {
 	 * @param otherElement {@link SourcePositionHolder} whose {@link ElementSourceFragment} has to be added to `parentFragment`
 	 * @return new {@link ElementSourceFragment} created for `otherElement` or null if `otherElement` has no source position or doesn't belong to the same compilation unit
 	 */
-	private ElementSourceFragment addChild(ElementSourceFragment parentFragment, CtRole roleInParent, SourcePositionHolder otherElement) {
+	private ElementSourceFragment addChild(CtRole roleInParent, SourcePositionHolder otherElement) {
 		SourcePosition otherSourcePosition = otherElement.getPosition();
 		if (otherSourcePosition instanceof SourcePositionImpl && !(otherSourcePosition.getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
-			if (parentFragment.isFromSameSource(otherSourcePosition)) {
-				ElementSourceFragment otherFragment = new ElementSourceFragment(otherElement, parentFragment.getRoleHandler(roleInParent, otherElement));
+			if (this.isFromSameSource(otherSourcePosition)) {
+				ElementSourceFragment otherFragment = new ElementSourceFragment(otherElement, this.getRoleHandler(roleInParent, otherElement));
 				//parent and child are from the same file. So we can connect their positions into one tree
-				CMP cmp = parentFragment.compare(otherFragment);
+				CMP cmp = this.compare(otherFragment);
 				if (cmp == CMP.OTHER_IS_CHILD) {
 					//child belongs under parent - OK
-					parentFragment.addChild(otherFragment);
+					this.addChild(otherFragment);
 					return otherFragment;
 				} else {
 					if (cmp == CMP.OTHER_IS_AFTER || cmp == CMP.OTHER_IS_BEFORE) {
@@ -236,10 +240,10 @@ public class ElementSourceFragment implements SourceFragment {
 								return otherFragment;
 							}
 							//add this child into parent's source fragment and extend that parent source fragment
-							parentFragment.addChild(otherFragment);
+							this.addChild(otherFragment);
 							return otherFragment;
 						}
-						throw new SpoonException("otherFragment (" + otherElement.getPosition() + ") " + cmp.toString() + " of " + parentFragment.getSourcePosition());
+						throw new SpoonException("otherFragment (" + otherElement.getPosition() + ") " + cmp.toString() + " of " + this.getSourcePosition());
 
 					}
 					//the source position of child element is not included in source position of parent element
@@ -254,10 +258,10 @@ public class ElementSourceFragment implements SourceFragment {
 //						}
 					//It happened... See spoon.test.issue3321.SniperPrettyPrinterJavaxTest
 					//something is wrong ...
-					throw new SpoonException("The SourcePosition of elements are not consistent\nparentFragment: " + parentFragment + "\notherFragment: " + otherElement.getPosition());
+					throw new SpoonException("The SourcePosition of elements are not consistent\nparentFragment: " + this + "\notherFragment: " + otherElement.getPosition());
 				}
 			} else {
-				throw new SpoonException("SourcePosition from unexpected compilation unit: " + otherSourcePosition + " expected is: " + parentFragment.getSourcePosition());
+				throw new SpoonException("SourcePosition from unexpected compilation unit: " + otherSourcePosition + " expected is: " + this.getSourcePosition());
 			}
 		}
 		//do not connect that undefined source position
@@ -326,7 +330,7 @@ public class ElementSourceFragment implements SourceFragment {
 	 * then start/end of this fragment is moved
 	 * @param fragment to be added
 	 */
-	public void addChild(ElementSourceFragment fragment) {
+	private void addChild(ElementSourceFragment fragment) {
 		if (firstChild == null) {
 			firstChild = fragment;
 		} else {
