@@ -3,7 +3,7 @@ package spoon.kotlin.compiler
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.config.addKotlinSourceRoot
-import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.cli.common.modules.ModuleBuilder
 import org.jetbrains.kotlin.cli.common.modules.ModuleChunk
@@ -22,8 +22,10 @@ import org.jetbrains.kotlin.modules.Module
 import java.io.File
 
 class SpoonKtEnvironment(sourceFiles : List<File>, mName: String?, val args : K2JVMCompilerArguments) {
-    private val msgCollector = PrintingMsgCollector() // TODO Remove
-    private val collector = PrintingMessageCollector(System.err, MessageRenderer.PLAIN_RELATIVE_PATHS, true)
+    private val msgCollector: MsgCollector = SilentMsgCollector()// TODO Remove
+
+    private val collector = MessageCollector.NONE
+       // PrintingMessageCollector(System.err, MessageRenderer.PLAIN_RELATIVE_PATHS, true)
     private val languageVersion = LanguageVersionSettingsImpl.DEFAULT
     val config = CompilerConfiguration()
     val moduleChunk : ModuleChunk
@@ -33,7 +35,6 @@ class SpoonKtEnvironment(sourceFiles : List<File>, mName: String?, val args : K2
         config.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, collector)
         val moduleName : String = mName ?: JvmProtoBufUtil.DEFAULT_MODULE_NAME
         config.put(CommonConfigurationKeys.MODULE_NAME, moduleName)
-       // config.put(CLIConfigurationKeys.PHASE_CONFIG, createPhaseConfig(jvmPhases, args, collector))
         System.setProperty("idea.use.native.fs.for.win", "false")
 
         val destination = args.destination?.let { File(it) }
