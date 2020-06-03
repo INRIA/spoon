@@ -34,6 +34,16 @@ open class DefaultPrinterAdapter(
     private var lastCharWasCR = false
     private var verticalSpace = 0
 
+    fun reset() {
+        sb.clear()
+        onNewLine = true
+        lastCharWasCR = false
+        verticalSpace = 0
+        indentCount = 0
+        column = 1
+        line = 1
+    }
+
     override infix fun write(c: Char) : DefaultPrinterAdapter {
         when(c) {
             '\r' -> {

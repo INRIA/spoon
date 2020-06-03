@@ -53,8 +53,12 @@ class DefaultKotlinPrettyPrinter(
         return adapter.toString()
     }
 
-    override fun prettyprint(p0: CtElement?): String {
-        TODO("Not yet implemented")
+    override fun prettyprint(e: CtElement): String {
+        adapter.reset()
+        e.accept(this)
+        val s = adapter.toString()
+        adapter.reset()
+        return s
     }
 
     override fun printElement(p0: CtElement?): String {
