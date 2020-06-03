@@ -28,13 +28,13 @@ import spoon.reflect.factory.Factory
 import spoon.reflect.reference.*
 import spoon.support.reflect.code.CtLiteralImpl
 
-class FirTreeBuilder(val factory : Factory) : FirVisitor<CompositeTransformResult<CtElement>, Nothing?>() {
+class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisitor<CompositeTransformResult<CtElement>, Nothing?>() {
     internal val referenceBuilder = ReferenceBuilder(this)
     internal val helper = FirTreeBuilderHelper(this)
 
     // Temporary printing, remove later
     private var msgCollector: MsgCollector = PrintingMsgCollector()
-    internal constructor(factory : Factory, m: MsgCollector) : this(factory) {
+    internal constructor(factory : Factory, session: FirSession, m: MsgCollector) : this(factory, session) {
         msgCollector = m
     }
     fun report(m : Message) = msgCollector.report(m)
@@ -56,7 +56,8 @@ class FirTreeBuilder(val factory : Factory) : FirVisitor<CompositeTransformResul
         val compilationUnit = factory.CompilationUnit().getOrCreate(file.name)
 
         val pkg = if(file.packageFqName.isRoot) module.rootPackage else
-            factory.Package().getOrCreate(file.packageFqName.shortName().identifier, module)
+            factory.Package().getOrCreate(file.packageFqName.asString(), module)
+
         compilationUnit.declaredPackage = pkg
 
         val ktFile = file.psi
@@ -69,14 +70,23 @@ class FirTreeBuilder(val factory : Factory) : FirVisitor<CompositeTransformResul
         val transformedTopLvlDecl = file.declarations.map {
             it.accept(this, null)
         }
+        transformedTopLvlDecl.forEach {
+            val t = it.single
+            t.setParent(compilationUnit)
+            if(t is CtType<*>) {
+                pkg.addType<CtPackage>(t)
+                compilationUnit.addDeclaredType(t)
+            }
 
-        return transformedTopLvlDecl.composeManySingles()
+        }
+
+        return compilationUnit.compose()
     }
 
     override fun visitRegularClass(regularClass: FirRegularClass, data: Nothing?): CompositeTransformResult<CtElement> {
         val module = helper.getOrCreateModule(regularClass.session, factory)
         val pkg = if (regularClass.classId.packageFqName.isRoot) module.rootPackage else
-            factory.Package().getOrCreate(regularClass.classId.packageFqName.shortName().identifier, module)
+            factory.Package().getOrCreate(regularClass.classId.packageFqName.asString(), module)
         val type = helper.createType(regularClass)
         pkg.addType<CtPackage>(type)
 
@@ -433,7 +443,7 @@ class FirTreeBuilder(val factory : Factory) : FirVisitor<CompositeTransformResul
             FirConstKind.Null -> null
             FirConstKind.Boolean -> constExpression.value as Boolean
             FirConstKind.Char -> constExpression.value as Char
-            FirConstKind.Byte -> constExpression.value as Byte
+            FirConstKind.Byte -> (constExpression.value as Long).toByte()
             FirConstKind.Short -> constExpression.value as Short
             FirConstKind.Long -> constExpression.value as Long
             FirConstKind.String -> constExpression.value as String
