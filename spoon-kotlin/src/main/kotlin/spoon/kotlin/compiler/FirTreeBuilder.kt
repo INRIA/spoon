@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
 import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
+import org.jetbrains.kotlin.fir.references.FirSuperReference
 import org.jetbrains.kotlin.fir.references.impl.FirExplicitThisReference
 import org.jetbrains.kotlin.fir.references.impl.FirImplicitThisReference
 import org.jetbrains.kotlin.fir.references.impl.FirPropertyFromParameterResolvedNamedReference
@@ -298,6 +299,16 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return thisAccess.compose()
     }
 
+    override fun visitSuperReference(
+        superReference: FirSuperReference,
+        data: Nothing?
+    ): CompositeTransformResult.Single<CtSuperAccess<*>> {
+        val superAccess = factory.Core().createSuperAccess<Any>()
+        superAccess.setType<CtSuperAccess<Any>>(referenceBuilder.getNewTypeReference(superReference.superTypeRef))
+        superAccess.setImplicit<CtSuperAccess<*>>(false)
+        return superAccess.compose()
+    }
+
     override fun visitVariableAssignment(
         variableAssignment: FirVariableAssignment,
         data: Nothing?
@@ -551,20 +562,34 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         data: Nothing?
     ): CompositeTransformResult<CtElement> {
         val calleeRef = qualifiedAccessExpression.calleeReference.accept(this,null).single
-        val target = qualifiedAccessExpression.dispatchReceiver.accept(this,null).single
+        val explicitReciever = qualifiedAccessExpression.explicitReceiver
+        val dispatchReceiver = qualifiedAccessExpression.dispatchReceiver
+        val target: CtElement? = if(explicitReciever == null || explicitReciever is FirNoReceiverExpression) { // Prioritize explicit receiver
+            if(qualifiedAccessExpression.dispatchReceiver is FirNoReceiverExpression) null
+            else dispatchReceiver.accept(this,null).single
+        } else {
+            explicitReciever.accept(this,null).single
+        }
         val varAccess = when(calleeRef) {
             is CtFieldReference<*> -> {
-                factory.Core().createFieldRead<Any>()
+                factory.Core().createFieldRead<Any>().also {
+                    it.setVariable<CtVariableRead<Any>>(calleeRef as CtVariableReference<Any>)
+                }
             }
             is CtParameterReference<*> -> {
-                factory.Core().createVariableRead<Any>()
+                factory.Core().createVariableRead<Any>().also {
+                    it.setVariable<CtVariableRead<Any>>(calleeRef as CtVariableReference<Any>)
+                }
+            }
+            is CtSuperAccess<*> -> {
+                calleeRef
             }
             else -> null
-        }?.setVariable<CtVariableRead<Any>>(calleeRef as CtVariableReference<Any>)
+        }
         if(varAccess == null) {
             return super.visitQualifiedAccessExpression(qualifiedAccessExpression, data)
         }
-        if(varAccess is CtFieldRead<*>) {
+        if(target != null && varAccess is CtFieldRead<*>) {
             (varAccess as CtFieldRead<Any>).setTarget<CtFieldRead<Any>>(target as CtExpression<*>)
         }
 
