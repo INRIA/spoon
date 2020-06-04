@@ -448,7 +448,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             FirConstKind.Boolean -> constExpression.value as Boolean
             FirConstKind.Char -> constExpression.value as Char
             FirConstKind.Byte -> (constExpression.value as Long).toByte()
-            FirConstKind.Short -> constExpression.value as Short
+            FirConstKind.Short -> (constExpression.value as Long).toShort()
             FirConstKind.Long -> constExpression.value as Long
             FirConstKind.String -> constExpression.value as String
             FirConstKind.Float -> constExpression.value as Float

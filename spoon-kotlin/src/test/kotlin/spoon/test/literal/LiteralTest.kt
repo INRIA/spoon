@@ -89,6 +89,10 @@ class LiteralTest {
         literal = c.getLiteral("b3")
         assertEquals(3.toByte(), literal.value)
         assertEquals(c.createRef(Byte::class.java), literal.type)
+
+        literal = c.getLiteral("b4")
+        assertEquals(0x1f.toByte(), literal.value)
+        assertEquals(c.createRef(Byte::class.java), literal.type)
     }
 
     @Test
@@ -195,6 +199,21 @@ class LiteralTest {
     }
 
     @Test
+    fun testBuildShort() {
+        val c = util.buildClass("spoon.test.literal.testclasses","BasedLiteral")
+
+        val values = listOf<Short>(11,12,13)
+        val bases = listOf(dec,hex,bin)
+        var literal: CtLiteral<*>
+        for(i in 1..3) {
+            literal = c.getLiteral("sh$i")
+            assertEquals(values[i-1], literal.value)
+            assertEquals(c.createRef(Short::class.java), literal.type)
+            assertEquals(bases[i-1], literal.base)
+        }
+    }
+
+    @Test
     fun testLiteralBase() {
         val c = util.buildClass("spoon.test.literal.testclasses","BasedLiteral")
 
@@ -219,6 +238,10 @@ class LiteralTest {
         assertEquals(dec, c.getBase("b1"))
         assertEquals(hex, c.getBase("b2"))
         assertEquals(bin, c.getBase("b3"))
+
+        assertEquals(dec, c.getBase("sh1"))
+        assertEquals(hex, c.getBase("sh2"))
+        assertEquals(bin, c.getBase("sh3"))
     }
 
     @Test
@@ -254,9 +277,14 @@ class LiteralTest {
         assertEquals("'c'", pp.prettyprint(c.getLiteral("c1")))
         assertEquals("\"hello\"", pp.prettyprint(c.getLiteral("s1")))
 
-        valueStrings = listOf("1", "0x2", "0b11")
-        for(i in 1..3) {
+        valueStrings = listOf("1", "0x2", "0b11", "0x1f")
+        for(i in 1..4) {
             assertEquals(valueStrings[i-1], pp.prettyprint(c.getLiteral("b$i")))
+        }
+
+        valueStrings = listOf("11", "0xc", "0b1101")
+        for(i in 1..3) {
+            assertEquals(valueStrings[i-1], pp.prettyprint(c.getLiteral("sh$i")))
         }
     }
 

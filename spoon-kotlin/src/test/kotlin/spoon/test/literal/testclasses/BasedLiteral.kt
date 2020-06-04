@@ -31,4 +31,9 @@ class BasedLiteral {
     val b1: Byte = 1
     val b2: Byte = 0x2
     val b3: Byte = 0b11
+    val b4: Byte = 0x1f
+
+    val sh1: Short = 11
+    val sh2: Short = 0xc
+    val sh3: Short = 0b1101
 }

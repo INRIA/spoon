@@ -37,6 +37,10 @@ internal object LiteralToStringHelper {
                 basedValue = value.toString(radix)
                 suffix = ""
             }
+            is Short -> {
+                basedValue = value.toString(radix)
+                suffix = ""
+            }
             else -> {
                 basedValue = value.toString()
                 suffix = ""
