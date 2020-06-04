@@ -551,6 +551,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         data: Nothing?
     ): CompositeTransformResult<CtElement> {
         val calleeRef = qualifiedAccessExpression.calleeReference.accept(this,null).single
+        val target = qualifiedAccessExpression.dispatchReceiver.accept(this,null).single
         val varAccess = when(calleeRef) {
             is CtFieldReference<*> -> {
                 factory.Core().createFieldRead<Any>()
@@ -563,6 +564,10 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         if(varAccess == null) {
             return super.visitQualifiedAccessExpression(qualifiedAccessExpression, data)
         }
+        if(varAccess is CtFieldRead<*>) {
+            (varAccess as CtFieldRead<Any>).setTarget<CtFieldRead<Any>>(target as CtExpression<*>)
+        }
+
         return varAccess.compose()
     }
 
