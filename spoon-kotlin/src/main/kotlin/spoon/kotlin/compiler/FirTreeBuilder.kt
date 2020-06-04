@@ -190,16 +190,6 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctConstructor.compose()
     }
 
-
-
-
-
-
-    private inline fun <ChildT : CtElement> CtElement.addChildWith(child: ChildT, action: (ChildT) -> CtElement) {
-        action(child)
-        child.setParent(this)
-    }
-
     override fun visitWhenExpression(whenExpression: FirWhenExpression, data: Nothing?): CompositeTransformResult<CtElement> {
         if(whenExpression.isIf()) return visitIfExpression(whenExpression)
 
