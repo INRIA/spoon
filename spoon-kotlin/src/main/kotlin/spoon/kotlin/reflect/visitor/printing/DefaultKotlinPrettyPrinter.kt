@@ -122,7 +122,7 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtFieldRead(fieldRead: CtFieldRead<T>) {
-        if(fieldRead.target != null) {
+        if(fieldRead.target != null && !fieldRead.target.isImplicit) {
             fieldRead.target.accept(this)
             adapter write '.'
         }
