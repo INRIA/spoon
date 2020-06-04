@@ -1,6 +1,7 @@
 package spoon.kotlin.compiler
 
 import org.jetbrains.kotlin.fir.declarations.FirProperty
+import org.jetbrains.kotlin.fir.declarations.FirValueParameter
 import org.jetbrains.kotlin.fir.expressions.FirDelegatedConstructorCall
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.resolve.toSymbol
@@ -121,6 +122,13 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
         }
         varRef.setSimpleName<CtVariableReference<T>>(property.name.identifier)
         varRef.setType<CtVariableReference<T>>(getNewTypeReference(property.returnTypeRef))
+        return varRef
+    }
+
+    fun <T> getNewVariableReference(param: FirValueParameter) : CtVariableReference<T> {
+        val varRef = firTreeBuilder.factory.Core().createParameterReference<T>()
+        varRef.setSimpleName<CtVariableReference<T>>(param.name.identifier)
+        varRef.setType<CtVariableReference<T>>(getNewTypeReference(param.returnTypeRef))
         return varRef
     }
 
