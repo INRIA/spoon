@@ -81,6 +81,11 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 	}
 
 	@Override
+	public boolean isPartOfJointDeclaration() {
+		throw new UnsupportedOperationException("please open an issue :-)");
+	}
+
+	@Override
 	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.NAME, simpleName, this.name);
 		this.name = simpleName;
