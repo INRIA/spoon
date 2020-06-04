@@ -121,8 +121,12 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtFieldRead(p0: CtFieldRead<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtFieldRead(fieldRead: CtFieldRead<T>) {
+        if(fieldRead.target != null) {
+            fieldRead.target.accept(this)
+            adapter write '.'
+        }
+        fieldRead.variable.accept(this)
     }
 
     override fun visitCtJavaDoc(p0: CtJavaDoc?) {
@@ -267,8 +271,8 @@ class DefaultKotlinPrettyPrinter(
         adapter write fieldRef.simpleName
     }
 
-    override fun <T : Any?> visitCtVariableRead(p0: CtVariableRead<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtVariableRead(varRead: CtVariableRead<T>) {
+        adapter write varRead.variable.simpleName
     }
 
     override fun visitCtCatch(p0: CtCatch?) {
