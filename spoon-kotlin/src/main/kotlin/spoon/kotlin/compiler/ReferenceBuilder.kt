@@ -47,7 +47,7 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
 
     fun <T> getNewDeclaringTypeReference(callableId: CallableId) : CtTypeReference<T>? {
         val ref = firTreeBuilder.factory.Core().createTypeReference<T>()
-        if(callableId.className != null) return null
+        if(callableId.className == null) return null
         ref.setSimpleName<CtTypeReference<*>>(callableId.className!!.shortName().identifier)
         ref.setPackage<CtTypeReference<T>>(getPackageReference(callableId.packageName))
         return ref
@@ -117,7 +117,7 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
     fun <T> getNewVariableReference(property: FirProperty) : CtVariableReference<T> {
         val varRef = if(property.isLocal) firTreeBuilder.factory.Core().createLocalVariableReference<T>()
         else firTreeBuilder.factory.Core().createFieldReference<T>().also {
-            it.setDeclaringType<CtFieldReference<T>>(getNewTypeReference<CtTypeReference<T>>(property.symbol))
+            it.setDeclaringType<CtFieldReference<T>>(getNewDeclaringTypeReference<CtTypeReference<T>>(property.symbol.callableId))
         }
         varRef.setSimpleName<CtVariableReference<T>>(property.name.identifier)
         varRef.setType<CtVariableReference<T>>(getNewTypeReference(property.returnTypeRef))
