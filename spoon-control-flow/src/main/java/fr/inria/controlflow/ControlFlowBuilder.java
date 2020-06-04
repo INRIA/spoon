@@ -310,9 +310,7 @@ public class ControlFlowBuilder implements CtVisitor {
 	 */
 	private void tryAddEdge(ControlFlowNode source, ControlFlowNode target, boolean isLooping, boolean breakDance) {
 		if (source != null && source.getKind() != BranchKind.CATCH && source.getStatement() != null && exceptionControlFlowStrategy != null) {
-			if (exceptionControlFlowStrategy.handleStatement(this, source)) {
-				return;
-			}
+			exceptionControlFlowStrategy.handleStatement(this, source);
 		}
 
 		boolean isBreak = source != null && source.getStatement() instanceof CtBreak;
@@ -798,13 +796,15 @@ public class ControlFlowBuilder implements CtVisitor {
 
 	@Override
 	public void visitCtThrow(CtThrow throwStatement) {
-		//TODO:implement this
+		if (exceptionControlFlowStrategy != null) {
+			exceptionControlFlowStrategy.handleThrowStatement(this, throwStatement);
+		}
 	}
 
 	@Override
 	public void visitCtTry(CtTry tryBlock) {
 		if (exceptionControlFlowStrategy != null) {
-			exceptionControlFlowStrategy.handleTryBlock(this, tryBlock);
+			exceptionControlFlowStrategy.handleTryStatement(this, tryBlock);
 		}
 	}
 

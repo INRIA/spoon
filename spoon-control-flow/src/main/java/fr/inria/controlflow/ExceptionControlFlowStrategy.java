@@ -1,5 +1,6 @@
 package fr.inria.controlflow;
 
+import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 
 public interface ExceptionControlFlowStrategy {
@@ -9,16 +10,23 @@ public interface ExceptionControlFlowStrategy {
 	 * @param builder The builder
 	 * @param tryBlock A try statement
 	 */
-	void handleTryBlock(ControlFlowBuilder builder, CtTry tryBlock);
+	void handleTryStatement(ControlFlowBuilder builder, CtTry tryBlock);
+
+	/**
+	 * Handle a throw statement.
+	 *
+	 * @param builder The builder
+	 * @param throwStatement A throw statement
+	 */
+	void handleThrowStatement(ControlFlowBuilder builder, CtThrow throwStatement);
 
 	/**
 	 * Handle a statement node.
 	 *
 	 * @param builder The builder
 	 * @param source Statement node
-	 * @return True if the builder should abort processing the node, false otherwise
 	 */
-	boolean handleStatement(ControlFlowBuilder builder, ControlFlowNode source);
+	void handleStatement(ControlFlowBuilder builder, ControlFlowNode source);
 
 	/**
 	 * Apply any post-processing to the graph.

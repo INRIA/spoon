@@ -27,7 +27,6 @@ package fr.inria.controlflow;
 public enum BranchKind {
 	TRY,         // Represents the start of a try block
 	CATCH,       // Represents the start of a catch block
-	FINALLY,     // Represents the start of a finalizer block
 	BRANCH,      // Represents a branch
 	STATEMENT,   // Represents an statement
 	BLOCK_BEGIN, // Represents the begining of a block
