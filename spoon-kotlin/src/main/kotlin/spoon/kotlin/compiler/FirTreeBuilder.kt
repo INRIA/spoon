@@ -308,6 +308,8 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             is CtFieldReference<*> -> {
                 factory.Core().createFieldWrite<Any>().also {
                     it.setVariable<CtVariableAccess<Any>>(propertyRef as CtFieldReference<Any>)
+                    val target = variableAssignment.dispatchReceiver.accept(this,null).single as CtExpression<*>
+                    it.setTarget<CtTargetedExpression<Any,CtExpression<*>>>(target)
                 }
             }
             else -> null
