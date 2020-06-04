@@ -10,6 +10,7 @@ package spoon.support.reflect.declaration;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtRHSReceiver;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtShadowable;
@@ -208,5 +209,22 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 	@Override
 	public boolean isAbstract() {
 		return this.modifierHandler.isAbstract();
+	}
+
+	@Override
+	public boolean isPartOfJointDeclaration() {
+		if (this.getPosition() instanceof NoSourcePosition) {
+			return  false;
+		}
+		for (Object o : getParent(CtType.class).getFields()) {
+			CtField<?> f = (CtField<?>)o;
+			if (f == this) { continue; }
+			if (f.getPosition() == null || f.getPosition() instanceof NoSourcePosition) { continue; }
+			if (f.getPosition().getSourceStart() == this.getPosition().getSourceStart() &&
+					f.getPosition().getSourceEnd() == this.getPosition().getSourceEnd()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
