@@ -319,8 +319,10 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtSuperAccess(p0: CtSuperAccess<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtSuperAccess(superAccess: CtSuperAccess<T>) {
+        if(superAccess.isImplicit) return
+        // Super access as selector is illegal (x.super.y), so no target has to be checked
+        adapter write "super"
     }
 
     override fun visitCtPackageReference(p0: CtPackageReference?) {
