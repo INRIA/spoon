@@ -187,6 +187,18 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctConstructor.compose()
     }
 
+    override fun visitExpressionWithSmartcast(
+        expressionWithSmartcast: FirExpressionWithSmartcast,
+        data: Nothing?
+    ): CompositeTransformResult.Single<CtElement> {
+        val expr = expressionWithSmartcast.originalExpression.accept(this,null).single as CtTypedElement<*>
+        val smartType = referenceBuilder.getNewTypeReference<Any>(expressionWithSmartcast.typeRef)
+        if(expr.type != smartType)
+            (expr as CtTypedElement<Any>).setType<CtTypedElement<Any>>(smartType)
+
+        return expr.compose()
+    }
+
     override fun visitWhenExpression(whenExpression: FirWhenExpression, data: Nothing?): CompositeTransformResult<CtElement> {
         if(whenExpression.isIf()) return visitIfExpression(whenExpression)
 
