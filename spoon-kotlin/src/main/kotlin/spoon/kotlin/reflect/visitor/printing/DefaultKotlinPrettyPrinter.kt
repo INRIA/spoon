@@ -327,8 +327,9 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtThisAccess(p0: CtThisAccess<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtThisAccess(thisAccess: CtThisAccess<T>) {
+        if(thisAccess.isImplicit) return
+        adapter write "this"
     }
 
     override fun <T : Any?> visitCtAssert(p0: CtAssert<T>?) {
