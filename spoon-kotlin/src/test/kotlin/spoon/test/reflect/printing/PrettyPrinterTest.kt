@@ -11,7 +11,7 @@ class PrettyPrinterTest {
     private val util = TestBuildUtil()
 
     @Test
-    fun testStateResetsBetweenTwoInvocations() {
+    fun testPrettyPrintIdempotent() {
         val c1 = util.buildClass("spoon.test.reflect.printing.testclasses","SingleProperty")
         val c2 = util.buildClass("spoon.test.reflect.printing.testclasses","SingleProperty")
         val adapter = DefaultPrinterAdapter()
@@ -20,16 +20,30 @@ class PrettyPrinterTest {
         assertEquals(1, adapter.column)
         assertEquals(0, adapter.indentCount)
         assertTrue(adapter.onNewLine)
-        val s1 = pp.prettyprint(c1)
+
+        val first1 = pp.prettyprint(c1)
         assertEquals(1, adapter.line)
         assertEquals(1, adapter.column)
         assertEquals(0, adapter.indentCount)
         assertTrue(adapter.onNewLine)
-        val s2 = pp.prettyprint(c2)
+
+        val first2 = pp.prettyprint(c2)
         assertEquals(1, adapter.line)
         assertEquals(1, adapter.column)
         assertEquals(0, adapter.indentCount)
         assertTrue(adapter.onNewLine)
-        assertEquals(s1, s2)
+        assertEquals(first1, first2)
+
+        var s1 = pp.prettyprint(c1)
+        assertEquals(first1, s1)
+
+        var s2 = pp.prettyprint(c2)
+        assertEquals(first2, s2)
+
+        s1 = pp.prettyprint(c1)
+        assertEquals(first1, s1)
+
+        s2 = pp.prettyprint(c2)
+        assertEquals(first2, s2)
     }
 }
