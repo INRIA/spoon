@@ -10,7 +10,9 @@ package spoon.reflect.visitor.filter;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
 
-/** Finds the element given in parameter, useful for checking if an element is in an ancestor */
+/** Finds the element given in parameter, useful for checking if an element is in an ancestor.
+ * Here "same" refers to the Junit meaning: same object memory, equals with ==
+*/
 public class SameFilter implements Filter<CtElement> {
 	private final CtElement argument2;
 
