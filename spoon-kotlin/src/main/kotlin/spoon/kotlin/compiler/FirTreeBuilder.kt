@@ -42,7 +42,6 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     fun warn(s : String) = report(Message(s, MessageType.WARN))
 
     override fun visitElement(element: FirElement, data: Nothing?): CompositeTransformResult<CtElement> {
-        element.acceptChildren(this,null)
         //throw SpoonException("Element type not implemented $element")
         return CtLiteralImpl<String>().setValue<CtLiteral<String>>("Unimplemented element $element").compose()
     }
@@ -116,8 +115,6 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
         return type.compose()
     }
-
-
 
     override fun visitConstructor(constructor: FirConstructor, data: Nothing?): CompositeTransformResult.Single<CtConstructor<*>> {
         val ctConstructor = factory.Core().createConstructor<Any>()
@@ -319,13 +316,16 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctAssignment.compose()
     }
 
-        override fun visitResolvedNamedReference(
+    override fun visitResolvedNamedReference(
         resolvedNamedReference: FirResolvedNamedReference,
         data: Nothing?
     ): CompositeTransformResult<CtElement> {
         val fir = resolvedNamedReference.resolvedSymbol.fir
         val ctRef = when(fir) {
             is FirProperty -> {
+                referenceBuilder.getNewVariableReference<CtVariableReference<Any>>(fir)
+            }
+            is FirValueParameter -> {
                 referenceBuilder.getNewVariableReference<CtVariableReference<Any>>(fir)
             }
             else -> null
@@ -533,7 +533,27 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         }
         return ctReturn.compose()
     }
-    
+
+    override fun visitQualifiedAccessExpression(
+        qualifiedAccessExpression: FirQualifiedAccessExpression,
+        data: Nothing?
+    ): CompositeTransformResult<CtElement> {
+        val calleeRef = qualifiedAccessExpression.calleeReference.accept(this,null).single
+        val varAccess = when(calleeRef) {
+            is CtFieldReference<*> -> {
+                factory.Core().createFieldRead<Any>()
+            }
+            is CtParameterReference<*> -> {
+                factory.Core().createVariableRead<Any>()
+            }
+            else -> null
+        }?.setVariable<CtVariableRead<Any>>(calleeRef as CtVariableReference<Any>)
+        if(varAccess == null) {
+            return super.visitQualifiedAccessExpression(qualifiedAccessExpression, data)
+        }
+        return varAccess.compose()
+    }
+
     private fun <T : CtElement> T.compose() = CompositeTransformResult.single(this)
     private fun <T : CtElement> List<CompositeTransformResult<T>>.composeManySingles() = CompositeTransformResult.many(this.map { it.single })
     private fun <T : CtElement> List<CompositeTransformResult<T>>.compose() = CompositeTransformResult.many(this)
