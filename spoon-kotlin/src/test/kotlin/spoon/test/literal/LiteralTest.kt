@@ -259,4 +259,17 @@ class LiteralTest {
             assertEquals(valueStrings[i-1], pp.prettyprint(c.getLiteral("b$i")))
         }
     }
+
+    @Test
+    fun testEscapedLiteralChar() {
+        val c = util.buildClass("spoon.test.literal.testclasses","EscapedLiteral")
+
+        fun CtType<*>.getChar(s: String) = (this.getField(s).defaultExpression as CtLiteral<*>).value as Char
+
+        assertEquals('\u0001', c.getChar("c1"))
+        assertEquals('\u0002', c.getChar("c2"))
+        assertEquals('\t', c.getChar("c3"))
+        assertEquals('"', c.getChar("c4"))
+        assertEquals('$', c.getChar("c5"))
+    }
 }
