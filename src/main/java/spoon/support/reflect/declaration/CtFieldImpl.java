@@ -217,11 +217,15 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 			return  false;
 		}
 		for (Object o : getParent(CtType.class).getFields()) {
-			CtField<?> f = (CtField<?>)o;
-			if (f == this) { continue; }
-			if (f.getPosition() == null || f.getPosition() instanceof NoSourcePosition) { continue; }
-			if (f.getPosition().getSourceStart() == this.getPosition().getSourceStart() &&
-					f.getPosition().getSourceEnd() == this.getPosition().getSourceEnd()) {
+			CtField<?> f = (CtField<?>) o;
+			if (f == this) {
+				continue;
+			}
+			if (f.getPosition() == null || f.getPosition() instanceof NoSourcePosition) {
+				continue;
+			}
+			if (f.getPosition().getSourceStart() == this.getPosition().getSourceStart()
+					&& f.getPosition().getSourceEnd() == this.getPosition().getSourceEnd()) {
 				return true;
 			}
 		}
