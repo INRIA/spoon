@@ -117,4 +117,41 @@ class ConstructorTest {
         assertEquals(c.factory.Type().createReference(MixedThisAndSuperDelegation::class.java), constructors[4].type)
 
     }
+
+    @Test
+    fun testPropertyDeclaringPrimaryConstructor() {
+        // Contract
+        // WHEN: Properties are declared in primary constructor
+        // THEN: Parameters have the same modifiers, implicit fields are created with the same name
+        val c = util.buildClass("spoon.test.constructor.testclasses","PropertyDeclaringPrimaryConstructor") as CtClass<*>
+        val constructors = c.constructors.toList()
+        assertEquals(1, constructors.size)
+        val constructor = constructors[0]
+
+        assertEquals(4, c.allFields.size)
+        assertFalse(constructor.isImplicit)
+        assertTrue(constructor.isPrimary())
+        assertEquals(c.factory.Type().createReference(PropertyDeclaringPrimaryConstructor::class.java), constructor.type)
+
+        val p1 = c.getField("p1")
+        val p2 = c.getField("p2")
+        val p3 = c.getField("p3")
+        val p4 = c.getField("p4")
+        assertTrue(listOf(p1,p2,p3,p4).all { it.isImplicit })
+
+        assertEquals("private var p1: kotlin.Int", pp.prettyprint(constructor.parameters[0]))
+        assertEquals("internal val p2: kotlin.String", pp.prettyprint(constructor.parameters[1]))
+        assertEquals("open val p3: kotlin.Byte", pp.prettyprint(constructor.parameters[2]))
+        assertEquals("protected var p4: kotlin.Double", pp.prettyprint(constructor.parameters[3]))
+
+        // Look at FQ name. because createReference(Int::class.java) will point to primitive JVM int, not kotlin.Int
+        assertEquals("kotlin.Int", constructor.parameters[0].type.qualifiedName)
+        assertEquals("kotlin.Int", p1.type.qualifiedName)
+        assertEquals("kotlin.String", constructor.parameters[1].type.qualifiedName)
+        assertEquals("kotlin.String", p2.type.qualifiedName)
+        assertEquals("kotlin.Byte", constructor.parameters[2].type.qualifiedName)
+        assertEquals("kotlin.Byte", p3.type.qualifiedName)
+        assertEquals("kotlin.Double", constructor.parameters[3].type.qualifiedName)
+        assertEquals("kotlin.Double", p4.type.qualifiedName)
+    }
 }
