@@ -75,15 +75,21 @@ import static org.junit.Assert.fail;
 
 public class TestSniperPrinter {
 
-	@GitHubIssue(issueNumber = 3386)
-	@Ignore("UnresolvedBug")
 	@Test
 	public void testPrintOneLineMultipleVariableDeclaration() {
+		// contract: files with joint field declarations can be recompiled after sniper
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
-			CtMethod<?> m = type.getMethodsByName("foo").get(0);
-			m.setBody(null);
+			// we change something (anything would work)
+			type.getMethodsByName("foo").get(0).delete();
 		}, (type, printed) -> {
-			assertIsPrintedWithExpectedChanges(type, printed, "\\Qvoid foo(int a) {\n\t\ta = a;\n\t}", "void foo(int a);");
+			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
+					"\n" +
+					"public class OneLineMultipleVariableDeclaration {\n" +
+					"\n" +
+					"\tint a;\n" +
+					"\n" +
+					"\tint c;\n" +
+					"}", printed);
 		});
 	}
 

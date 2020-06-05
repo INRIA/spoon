@@ -16,6 +16,7 @@ import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
@@ -160,6 +161,19 @@ public class ElementSourceFragment implements SourceFragment {
 				scan(CtRole.DECLARING_TYPE, reference.getDeclaringType());
 				scan(CtRole.ANNOTATION, reference.getAnnotations());
 				exit(reference);
+			}
+
+
+			@Override
+			public <T> void visitCtField(CtField<T> f) {
+				// bug #3386: we cannot handle joint declaration yet
+				//so we ignore them, meaning that fields in joint declarations
+				// will be reprinted normally
+				if (f.isPartOfJointDeclaration()) {
+					return;
+				}
+
+				super.visitCtField(f);
 			}
 
 			@Override
