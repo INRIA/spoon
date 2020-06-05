@@ -34,4 +34,19 @@ class ExampleTests {
         assertEquals(File("./src/test/resources/ExamplesPPOutput/Example1.txt").
         readText().normalizeLineBreaks().replace("\n","\r\n"), pp.result)
     }
+
+    @Test
+    fun testExample2() {
+        val c = util.buildClass("spoon.test.examples.testclasses","Example2")
+        pp.visitCtClass(c as CtClass<*>)
+
+        assertEquals(File("./src/test/resources/ExamplesPPOutput/Example2.txt").
+        readText().normalizeLineBreaks(), pp.result)
+
+        pp = DefaultKotlinPrettyPrinter(DefaultPrinterAdapter(LINE_SEPARATOR = "\r\n"))
+        pp.visitCtClass(c)
+
+        assertEquals(File("./src/test/resources/ExamplesPPOutput/Example2.txt").
+        readText().normalizeLineBreaks().replace("\n","\r\n"), pp.result)
+    }
 }
