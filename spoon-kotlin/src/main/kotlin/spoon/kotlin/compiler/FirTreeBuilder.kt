@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
 import org.jetbrains.kotlin.fir.psi
+import org.jetbrains.kotlin.fir.references.FirErrorNamedReference
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.references.FirSuperReference
 import org.jetbrains.kotlin.fir.references.impl.FirExplicitThisReference
@@ -18,6 +19,8 @@ import org.jetbrains.kotlin.fir.visitors.CompositeTransformResult
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtModifierList
+import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
@@ -45,6 +48,13 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     override fun visitElement(element: FirElement, data: Nothing?): CompositeTransformResult<CtElement> {
         //throw SpoonException("Element type not implemented $element")
         return CtLiteralImpl<String>().setValue<CtLiteral<String>>("Unimplemented element $element").compose()
+    }
+
+    override fun visitErrorNamedReference(
+        errorNamedReference: FirErrorNamedReference,
+        data: Nothing?
+    ): CompositeTransformResult<CtElement> {
+        throw RuntimeException("Error, file contains compile errors: ${errorNamedReference.diagnostic.reason}")
     }
 
     fun addModifiersAsMetadata(element: CtElement, modifierList: List<KtModifierKind>) {
@@ -122,12 +132,11 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         ctConstructor.setSimpleName<CtConstructor<*>>(constructor.name.asString())
 
         val modifierList = listOfNotNull(KtModifierKind.convertVisibility(constructor.visibility))
-
-        ctConstructor.setImplicit<CtConstructor<Any>>(
-            constructor.isPrimary &&
-            constructor.valueParameters.isEmpty() &&
-            constructor.body == null &&
-            modifierList.filterNot { it == KtModifierKind.PUBLIC }.isEmpty()
+        ctConstructor.setImplicit<CtConstructor<Any>>(constructor.isPrimary &&
+                constructor.valueParameters.isEmpty() &&
+                constructor.body == null &&
+                modifierList.filterNot { it == KtModifierKind.PUBLIC }.isEmpty() &&
+                constructor.source?.psi !is KtPrimaryConstructor
         )
 
         ctConstructor.putMetadata<CtConstructor<*>>(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY, constructor.isPrimary)
@@ -147,18 +156,27 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             * Primary constructor property declaration creates implicit properties in the class. An implicit property is the
             * holder of the val/var modifier, not the parameter:
             * ClassName(var x = 2) >translates to> ClassName(x = 2) { var x = x }
-            * To facilitate printing, we look in the PSI if the parameter has a val/var keyword and add it as a modifier.
+            * To facilitate printing, we look in the PSI if the parameter has modifiers and add them to metadata.
             *
             * TODO: Perhaps add metadata mapping property <-> param?
             *  */
             if(constructor.isPrimary) {
+                val pModifiers = (p.getMetadata(KtMetadataKeys.KT_MODIFIERS) as? MutableSet<KtModifierKind>?) ?:
+                        mutableSetOf<KtModifierKind>()
+                val qqq = it.source.psi?.getChildrenOfType<KtModifierList>()
+                val psiModifiersList = it.source.psi?.getChildrenOfType<KtModifierList>()?.let { lists ->
+                    if(lists.isNotEmpty()) { KtModifierKind.fromPsiModifierList(lists[0]) }
+                    else emptyList()
+                } ?: emptyList()
+                pModifiers.addAll(psiModifiersList)
+                // Var/val might be outside of modifier list
                 val psiTokens = it.source.psi?.getChildrenOfType<LeafPsiElement>()
-                val pModifiers = p.getMetadata(KtMetadataKeys.KT_MODIFIERS) as MutableSet<KtModifierKind>?
                 if(psiTokens?.any { t -> t.elementType == KtTokens.VAL_KEYWORD } == true) {
-                    pModifiers?.add(KtModifierKind.VAL)
+                    pModifiers.add(KtModifierKind.VAL)
                 } else if(psiTokens?.any { t -> t.elementType == KtTokens.VAR_KEYWORD } == true) {
-                    pModifiers?.add(KtModifierKind.VAR)
+                    pModifiers.add(KtModifierKind.VAR)
                 }
+                p.putMetadata<CtParameter<*>>(KtMetadataKeys.KT_MODIFIERS, pModifiers)
             }
             ctConstructor.addParameter(p) // Sets parent
         }

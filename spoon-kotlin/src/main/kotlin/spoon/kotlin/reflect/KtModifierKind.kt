@@ -4,6 +4,9 @@ import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.fir.declarations.*
+import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.psi.KtModifierList
+import org.jetbrains.kotlin.psi.psiUtil.allChildren
 import org.jetbrains.kotlin.utils.addIfNotNull
 
 
@@ -146,6 +149,46 @@ enum class KtModifierKind(val token : String) {
             "private/*private to this*/" -> PRIVATE
             else -> null
         }
+
+        fun fromPsiModifierList(modifierList: KtModifierList): List<KtModifierKind> =
+            ArrayList<KtModifierKind>().apply {
+                modifierList.allChildren.forEach {
+                    when (it.node.elementType) {
+                        KtTokens.PRIVATE_KEYWORD -> add(PRIVATE)
+                        KtTokens.PROTECTED_KEYWORD -> add(PROTECTED)
+                        KtTokens.INTERNAL_KEYWORD -> add(INTERNAL)
+                        KtTokens.PUBLIC_KEYWORD -> add(PUBLIC)
+                        KtTokens.FINAL_KEYWORD -> add(FINAL)
+                        KtTokens.OPEN_KEYWORD -> add(OPEN)
+                        KtTokens.ABSTRACT_KEYWORD -> add(ABSTRACT)
+                        KtTokens.SEALED_KEYWORD -> add(SEALED)
+                        KtTokens.CONST_KEYWORD -> add(CONST)
+                        KtTokens.OVERRIDE_KEYWORD -> add(OVERRIDE)
+                        KtTokens.LATEINIT_KEYWORD -> add(LATEINIT)
+                        KtTokens.TAILREC_KEYWORD -> add(TAILREC)
+                        KtTokens.VARARG_KEYWORD -> add(VARARG)
+                        KtTokens.SUSPEND_KEYWORD -> add(SUSPEND)
+                        KtTokens.INNER_KEYWORD -> add(INNER)
+                        // Enum
+                        KtTokens.ANNOTATION_KEYWORD -> add(ANNOTATION)
+                        KtTokens.COMPANION_KEYWORD -> add(COMPANION)
+                        KtTokens.INLINE_KEYWORD -> add(INLINE)
+                        KtTokens.INFIX_KEYWORD -> add(INFIX)
+                        KtTokens.OPERATOR_KEYWORD -> add(OPERATOR)
+                        KtTokens.DATA_KEYWORD -> add(DATA)
+                        KtTokens.VAR_KEYWORD -> add(VAR)
+                        KtTokens.VAL_KEYWORD -> add(VAL)
+                        /* Type param/type arg list. Keep for when generics are implemented
+                            KtTokens.NOINLINE_KEYWORD   -> add(NOINLINE)
+                            KtTokens.CROSSINLINE_KEYWORD -> add(CROSSINLINE)
+                            KtTokens.IN_KEYWORD         -> add(TYPE_PROJECTION_IN)
+                            KtTokens.OUT_KEYWORD        -> add(TYPE_PROJECTION_OUT)
+                            KtTokens.MUL                -> add(STAR_PROJECTION)
+                            KtTokens.REIFIED_KEYWORD    -> add(REIFIED)
+                        */
+                    }
+                }
+            }
     }
 }
 
