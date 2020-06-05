@@ -522,7 +522,12 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             FirConstKind.Double -> constExpression.value as Double
             FirConstKind.IntegerLiteral -> (constExpression.value as Long).toInt()
         }
-        val l : CtLiteral<T> = factory.Code().createLiteral(value as T)
+        val l : CtLiteral<T> = factory.Core().createLiteral()
+        l.setValue<CtLiteral<T>>(value as T)
+        if(value == null)
+            l.setType<CtLiteral<T>>(factory.Type().nullType() as CtTypeReference<T>)
+        else
+            l.setType<CtLiteral<T>>(referenceBuilder.getNewTypeReference(constExpression.typeRef))
 
         if(value is Number) {
             l.setBase<CtLiteral<T>>(getBaseOfConst(constExpression as FirConstExpression<Number>))

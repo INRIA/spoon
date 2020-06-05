@@ -31,31 +31,31 @@ class LiteralTest {
 
         var literal = ctType.getLiteral("a")
         assertEquals(0, literal.value)
-        assertEquals(ctType.createRef(Int::class.java), literal.type)
+        assertEquals("kotlin.Int", literal.type.qualifiedName)
 
         literal = ctType.getLiteral("b")
         assertEquals(0x1.toByte(), literal.value)
-        assertEquals(ctType.createRef(Byte::class.java), literal.type)
+        assertEquals("kotlin.Byte", literal.type.qualifiedName)
 
         literal = ctType.getLiteral("c")
         assertEquals(2f, literal.value)
-        assertEquals(ctType.createRef(Float::class.java), literal.type)
+        assertEquals("kotlin.Float", literal.type.qualifiedName)
 
         literal = ctType.getLiteral("d")
         assertEquals(3L, literal.value)
-        assertEquals(ctType.createRef(Long::class.java), literal.type)
+        assertEquals("kotlin.Long", literal.type.qualifiedName)
 
         literal = ctType.getLiteral("e")
         assertEquals(4.0, literal.value)
-        assertEquals(ctType.createRef(Double::class.java), literal.type)
+        assertEquals("kotlin.Double", literal.type.qualifiedName)
 
         literal = ctType.getLiteral("f")
         assertEquals('5', literal.value)
-        assertEquals(ctType.createRef(Char::class.java), literal.type)
+        assertEquals("kotlin.Char", literal.type.qualifiedName)
 
         literal = ctType.getLiteral("g")
         assertEquals("6", literal.value)
-        assertEquals(ctType.createRef(String::class.java), literal.type)
+        assertEquals("kotlin.String", literal.type.qualifiedName)
 
         literal = ctType.getLiteral("h")
         assertEquals(null, literal.value)
@@ -63,15 +63,15 @@ class LiteralTest {
 
         literal = ctType.getLiteral("i")
         assertEquals(true, literal.value)
-        assertEquals(ctType.createRef(Boolean::class.java), literal.type)
+        assertEquals("kotlin.Boolean", literal.type.qualifiedName)
 
         literal = ctType.getLiteral("j")
         assertEquals(false, literal.value)
-        assertEquals(ctType.createRef(Boolean::class.java), literal.type)
+        assertEquals("kotlin.Boolean", literal.type.qualifiedName)
 
         literal = ctType.getLiteral("k")
         assertEquals(6, literal.value)
-        assertEquals(ctType.createRef(Int::class.java), literal.type)
+        assertEquals("kotlin.Int", literal.type.qualifiedName)
     }
 
     @Test
@@ -80,19 +80,19 @@ class LiteralTest {
 
         var literal = c.getLiteral("b1")
         assertEquals(1.toByte(), literal.value)
-        assertEquals(c.createRef(Byte::class.java), literal.type)
+        assertEquals("kotlin.Byte", literal.type.qualifiedName)
 
         literal = c.getLiteral("b2")
         assertEquals(2.toByte(), literal.value)
-        assertEquals(c.createRef(Byte::class.java), literal.type)
+        assertEquals("kotlin.Byte", literal.type.qualifiedName)
 
         literal = c.getLiteral("b3")
         assertEquals(3.toByte(), literal.value)
-        assertEquals(c.createRef(Byte::class.java), literal.type)
+        assertEquals("kotlin.Byte", literal.type.qualifiedName)
 
         literal = c.getLiteral("b4")
         assertEquals(0x1f.toByte(), literal.value)
-        assertEquals(c.createRef(Byte::class.java), literal.type)
+        assertEquals("kotlin.Byte", literal.type.qualifiedName)
     }
 
     @Test
@@ -101,37 +101,37 @@ class LiteralTest {
 
         var literal = c.getLiteral("i1")
         assertEquals(42, literal.value)
-        assertEquals(c.createRef(Int::class.java), literal.type)
+        assertEquals("kotlin.Int", literal.type.qualifiedName)
         assertEquals(dec, literal.base)
 
         literal = c.getLiteral("i2")
         assertEquals(0, literal.value)
-        assertEquals(c.createRef(Int::class.java), literal.type)
+        assertEquals("kotlin.Int", literal.type.qualifiedName)
         assertEquals(dec, literal.base)
 
         literal = c.getLiteral("i3")
         assertEquals(0x42, literal.value)
-        assertEquals(c.createRef(Int::class.java), literal.type)
+        assertEquals("kotlin.Int", literal.type.qualifiedName)
         assertEquals(hex, literal.base)
 
         literal = c.getLiteral("i4")
         assertEquals(0x43, literal.value)
-        assertEquals(c.createRef(Int::class.java), literal.type)
+        assertEquals("kotlin.Int", literal.type.qualifiedName)
         assertEquals(hex, literal.base)
 
         literal = c.getLiteral("i5")
         assertEquals(142, literal.value)
-        assertEquals(c.createRef(Int::class.java), literal.type)
+        assertEquals("kotlin.Int", literal.type.qualifiedName)
         assertEquals(dec, literal.base)
 
         literal = c.getLiteral("i6")
         assertEquals(1, literal.value)
-        assertEquals(c.createRef(Int::class.java), literal.type)
+        assertEquals("kotlin.Int", literal.type.qualifiedName)
         assertEquals(bin, literal.base)
 
         literal = c.getLiteral("i7")
         assertEquals(0b1010, literal.value)
-        assertEquals(c.createRef(Int::class.java), literal.type)
+        assertEquals("kotlin.Int", literal.type.qualifiedName)
         assertEquals(bin, literal.base)
     }
 
@@ -144,7 +144,7 @@ class LiteralTest {
         for(i in 1..7) {
             literal = c.getLiteral("l$i")
             assertEquals(values[i-1], literal.value)
-            assertEquals(c.createRef(Long::class.java), literal.type)
+            assertEquals("kotlin.Long", literal.type.qualifiedName)
             assertEquals(bases[i-1], literal.base)
         }
     }
@@ -158,7 +158,7 @@ class LiteralTest {
         for(i in 1..3) {
             literal = c.getLiteral("f$i")
             assertEquals(values[i-1], literal.value)
-            assertEquals(c.createRef(Float::class.java), literal.type)
+            assertEquals("kotlin.Float", literal.type.qualifiedName)
             assertEquals(dec, literal.base)
         }
     }
@@ -169,12 +169,12 @@ class LiteralTest {
 
         var literal: CtLiteral<*> = c.getLiteral("d1")
         assertEquals(0.6, literal.value)
-        assertEquals(c.createRef(Double::class.java), literal.type)
+        assertEquals("kotlin.Double", literal.type.qualifiedName)
         assertEquals(dec, literal.base)
 
         literal= c.getLiteral("d2")
         assertEquals(0.3, literal.value)
-        assertEquals(c.createRef(Double::class.java), literal.type)
+        assertEquals("kotlin.Double", literal.type.qualifiedName)
         assertEquals(dec, literal.base)
     }
 
@@ -184,7 +184,7 @@ class LiteralTest {
 
         val literal: CtLiteral<*> = c.getLiteral("c1")
         assertEquals('c', literal.value)
-        assertEquals(c.createRef(Char::class.java), literal.type)
+        assertEquals("kotlin.Char", literal.type.qualifiedName)
         assertNull(literal.base)
     }
 
@@ -194,7 +194,7 @@ class LiteralTest {
 
         val literal: CtLiteral<*> = c.getLiteral("s1")
         assertEquals("hello", literal.value)
-        assertEquals(c.createRef(String::class.java), literal.type)
+        assertEquals("kotlin.String", literal.type.qualifiedName)
         assertNull(literal.base)
     }
 
@@ -208,7 +208,7 @@ class LiteralTest {
         for(i in 1..3) {
             literal = c.getLiteral("sh$i")
             assertEquals(values[i-1], literal.value)
-            assertEquals(c.createRef(Short::class.java), literal.type)
+            assertEquals("kotlin.Short", literal.type.qualifiedName)
             assertEquals(bases[i-1], literal.base)
         }
     }
