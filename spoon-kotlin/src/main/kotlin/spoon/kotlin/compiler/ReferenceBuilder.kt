@@ -93,6 +93,10 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
         val callee = call.calleeReference
         execRef.setSimpleName<CtExecutableReference<T>>(callee.name.identifier)
         execRef.setType<CtExecutableReference<T>>(getNewTypeReference(call.typeRef))
+
+        if(call.arguments.isNotEmpty()) {
+            execRef.setParameters<CtExecutableReference<T>>(call.arguments.map { getNewTypeReference<Any>(it.typeRef) })
+        }
         return execRef
     }
 

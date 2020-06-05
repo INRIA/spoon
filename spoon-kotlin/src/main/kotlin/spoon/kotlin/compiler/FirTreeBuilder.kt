@@ -188,6 +188,44 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctConstructor.compose()
     }
 
+    private fun getReceiver(qa: FirQualifiedAccessExpression): CtElement? {
+        val explicitReceiver = qa.explicitReceiver
+        val dispatchReceiver = qa.dispatchReceiver
+        return if(explicitReceiver == null || explicitReceiver == FirNoReceiverExpression) {
+            if(dispatchReceiver == FirNoReceiverExpression) null
+            else dispatchReceiver.accept(this,null).single
+        } else {
+            explicitReceiver.accept(this,null).single
+        }
+    }
+
+    override fun visitFunctionCall(functionCall: FirFunctionCall, data: Nothing?): CompositeTransformResult<CtElement> {
+        val invocation = factory.Core().createInvocation<Any>()
+        invocation.setExecutable<CtInvocation<Any>>(referenceBuilder.getNewExecutableReference(functionCall))
+
+        val target = getReceiver(functionCall)
+        if(target is CtExpression<*>) {
+            invocation.setTarget<CtInvocation<Any>>(target)
+        } else if(target != null) {
+            throw RuntimeException("Function call target not CtExpression")
+        }
+
+        if(functionCall.arguments.isNotEmpty()) {
+            invocation.setArguments<CtInvocation<Any>>(functionCall.arguments.map {
+                when(val e = it.accept(this,null).single) {
+                    is CtExpression<*> -> e
+                    is CtIf -> {
+                        val typeRef = e.getMetadata(KtMetadataKeys.KT_IF_TYPE) as CtTypeReference<Any>
+                        val statementExpression = e.wrapInStatementExpression(typeRef)
+                        statementExpression.setImplicit(true)
+                    }
+                    else -> throw RuntimeException("Function call argument not expression or 'if''")
+                }
+            })
+        }
+        return invocation.compose()
+    }
+
     override fun visitExpressionWithSmartcast(
         expressionWithSmartcast: FirExpressionWithSmartcast,
         data: Nothing?
@@ -557,19 +595,13 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctReturn.compose()
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun visitQualifiedAccessExpression(
         qualifiedAccessExpression: FirQualifiedAccessExpression,
         data: Nothing?
     ): CompositeTransformResult<CtElement> {
         val calleeRef = qualifiedAccessExpression.calleeReference.accept(this,null).single
-        val explicitReciever = qualifiedAccessExpression.explicitReceiver
-        val dispatchReceiver = qualifiedAccessExpression.dispatchReceiver
-        val target: CtElement? = if(explicitReciever == null || explicitReciever is FirNoReceiverExpression) { // Prioritize explicit receiver
-            if(qualifiedAccessExpression.dispatchReceiver is FirNoReceiverExpression) null
-            else dispatchReceiver.accept(this,null).single
-        } else {
-            explicitReciever.accept(this,null).single
-        }
+        val target: CtElement? = getReceiver(qualifiedAccessExpression)
         val varAccess = when(calleeRef) {
             is CtFieldReference<*> -> {
                 factory.Core().createFieldRead<Any>().also {
