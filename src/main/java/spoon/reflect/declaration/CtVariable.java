@@ -41,4 +41,12 @@ public interface CtVariable<T> extends CtNamedElement, CtTypedElement<T>, CtModi
 	 */
 	@PropertySetter(role = DEFAULT_EXPRESSION)
 	<C extends CtVariable<T>> C setDefaultExpression(CtExpression<T> assignedExpression);
+
+	/**
+	 * Returns true it the variable (field, localvariable) is jointly declared with a share type
+	 * Eg int a,b;
+	 * Warning: is computed on demand
+	 */
+	@DerivedProperty
+	boolean isPartOfJointDeclaration();
 }
