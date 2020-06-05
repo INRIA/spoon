@@ -1,0 +1,21 @@
+class Example2(val n: kotlin.Int, val i: spoon.test.examples.testclasses.AnInterface) : spoon.test.examples.testclasses.Base2() {
+    val b: spoon.test.examples.testclasses.Base2 = Base2()
+    var q = 0
+    var y = 0
+
+    fun f(x: kotlin.Int, y: kotlin.Int) {
+        this.x = x
+        this.y = y
+    }
+
+    fun aFunction(q: kotlin.Int?): kotlin.Int? {
+        this.q = 1
+        i.ival = 2
+        b.x = 3
+        x = 4
+        super.x = 5
+        f(x, 2)
+        super.bfunc("hello")
+        return null
+    }
+}
