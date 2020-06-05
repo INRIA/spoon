@@ -5,6 +5,9 @@ package spoon.test.field.testclasses;
  */
 public class A {
 
+    int i,j;
+    int k;
+    public static int l,m = 1;
 
     public class ClassB {
         public final static String PREFIX = BaseClass.PREFIX + ".b";

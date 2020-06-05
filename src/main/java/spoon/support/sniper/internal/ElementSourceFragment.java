@@ -59,7 +59,7 @@ public class ElementSourceFragment implements SourceFragment {
 	/** the next fragment, not related to this element, but useful for navigation **/
 	private ElementSourceFragment nextSibling;
 
-	/** the headof a linked list to the child fragments (part of pretty-printing of this element */
+	/** the head of a linked list to the child fragments (part of pretty-printing of this element */
 	private ElementSourceFragment firstChild;
 
 	/**
