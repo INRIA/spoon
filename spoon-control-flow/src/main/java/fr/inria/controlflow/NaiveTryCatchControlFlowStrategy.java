@@ -5,11 +5,12 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 
 /**
  * A naive over-approximating model of exception control flow without support for finalizers.
@@ -19,9 +20,40 @@ import java.util.stream.Collectors;
  *   1) All try-statements have at least one catcher and there are no finalizers.
  *   2) Any statement can potentially throw any exception.
  *   3) All exceptions thrown inside a try block are caught by the catchers immediately associated with the block.
+ *
+ * The model offers a choice (default: disabled) of whether to add paths between empty try {} blocks and their
+ * catchers. This is because expressions of the form "try { } catch(Exception e) { foo(); }" (i.e empty try blocks)
+ * are legal in Java, despite the statement "foo()" trivially being unreachable. In some use cases, excluding such
+ * unreachable statements from the control flow graph may be desirable, while in other cases the information loss
+ * may be undesirable. The default choice of not adding these paths was chosen due to how the produced graph more
+ * accurately models the actual control flow of an execution, while the other option produces a graph that can be
+ * said to show what the Java compiler considers to be reachable.
  */
 public class NaiveTryCatchControlFlowStrategy implements ExceptionControlFlowStrategy {
+	/**
+	 * Per-instance option flags for NaiveTryCatchControlFlowStrategy
+	 */
+	public enum Options {
+		/**
+		 * Add paths between the end of an empty try {} block and its catchers.
+		 */
+		AddPathsForEmptyTryBlocks;
+	}
+
+	/**
+	 * Create a new NaiveTryCatchControlFlowStrategy using the default set of options.
+	 */
 	public NaiveTryCatchControlFlowStrategy() {
+		this(EnumSet.noneOf(Options.class));
+	}
+
+	/**
+	 * Create a new NaiveTryCatchControlFlowStrategy using the given set of options.
+	 *
+	 * @param options Options to use
+	 */
+	public NaiveTryCatchControlFlowStrategy(EnumSet<Options> options) {
+		instanceOptions = options;
 		catchNodeStack = new Stack<>();
 	}
 
@@ -65,6 +97,10 @@ public class NaiveTryCatchControlFlowStrategy implements ExceptionControlFlowStr
 		graph.addEdge(builder.getLastNode(), convergeNode);
 
 		for (ControlFlowNode catchNode : catchNodes) {
+			if (tryBlock.getBody().getStatements().size() == 0 && instanceOptions.contains(Options.AddPathsForEmptyTryBlocks)) {
+				graph.addEdge(tryNode.next().get(0).next().get(0), catchNode);
+			}
+
 			builder.setLastNode(catchNode);
 			((CtCatch) catchNode.getStatement().getParent()).getBody().accept(builder);
 			lastNode = builder.getLastNode();
@@ -121,14 +157,14 @@ public class NaiveTryCatchControlFlowStrategy implements ExceptionControlFlowStr
 
 	/**
 	 * Post-process the graph by removing non-catch successors from throw statements and then removing all
-	 * unreachable nodes.
+	 * unreachable catch nodes.
 	 *
 	 * @param graph Graph to process
 	 */
 	@Override
 	public void postProcess(ControlFlowGraph graph) {
 		removeNonCatchSuccessorsFromThrowStatements(graph);
-		removeUnreachableNodes(graph);
+		removeUnreachableCatchNodes(graph);
 	}
 
 	/**
@@ -142,25 +178,35 @@ public class NaiveTryCatchControlFlowStrategy implements ExceptionControlFlowStr
 				return;
 			}
 
-			node.next().stream().filter(x -> x.getKind() != BranchKind.CATCH).forEach(nextNode -> graph.removeEdge(node, nextNode));
+			node.next().stream().filter(x -> x.getKind() != BranchKind.CATCH).forEach(nextNode -> {
+				graph.removeEdge(node, nextNode);
+				removePathWhileUnreachable(nextNode);
+			});
 		});
 	}
 
 	/**
-	 * Remove all unreachable nodes from a graph.
+	 * Remove all unreachable catch nodes from a graph.
 	 *
 	 * @param graph Graph to process
 	 */
-	private void removeUnreachableNodes(ControlFlowGraph graph) {
-		List<ControlFlowNode> nodesToRemove;
-		Function<ControlFlowGraph, List<ControlFlowNode>> fn;
+	private void removeUnreachableCatchNodes(ControlFlowGraph graph) {
+		nodesWithoutPredecessors(graph).stream().filter(node -> node.getKind() == BranchKind.CATCH).forEach(this::removePathWhileUnreachable);
+	}
 
-		fn = g -> nodesWithoutPredecessors(g).stream().filter(node -> !(node.getKind() == BranchKind.BEGIN)).collect(Collectors.toList());
-		nodesToRemove = fn.apply(graph);
+	/**
+	 * Given a starting node, remove it and iteratively remove any successors that were made unreachable by a
+	 * removal until such removals did not cause any new nodes to become unreachable.
+	 *
+	 * @param start Starting node
+	 */
+	private void removePathWhileUnreachable(ControlFlowNode start) {
+		Deque<ControlFlowNode> nodesToRemove = new LinkedList<ControlFlowNode>(Collections.singletonList(start));
 
 		while (!nodesToRemove.isEmpty()) {
-			nodesToRemove.forEach(node -> node.getParent().removeVertex(node));
-			nodesToRemove = fn.apply(graph);
+			ControlFlowNode node = nodesToRemove.removeFirst();
+			node.next().stream().filter(x -> x.prev().size() == 1).forEach(nodesToRemove::addLast);
+			node.getParent().removeVertex(node);
 		}
 	}
 
@@ -186,4 +232,9 @@ public class NaiveTryCatchControlFlowStrategy implements ExceptionControlFlowStr
 	 * Stack of catch nodes that statements parented by a try block may jump to.
 	 */
 	private Stack<List<ControlFlowNode>> catchNodeStack;
+
+	/**
+	 * Flag indicating whether paths should be added between an empty try {} block and its catchers.
+	 */
+	private EnumSet<Options> instanceOptions;
 }

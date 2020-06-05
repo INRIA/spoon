@@ -6,6 +6,7 @@ import spoon.reflect.declaration.CtMethod;
 
 import java.util.*;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -229,6 +230,55 @@ public class ExceptionFlowTests {
         assertTrue(canReachNode(throwstmt, bang));
 
         assertFalse(canReachExitWithoutEnteringCatchBlock(throwstmt));
+    }
+
+    @Test
+    public void testAddPathsForEmptyTryBlocksDisabled() {
+        // contract: NaiveTryCatchControlFlowStrategy should by default not add paths from an empty try block to
+        //           any of its catchers, preventing unreachable statements in catch blocks from appearing in
+        //           the CFG.
+
+        CtMethod<?> method = Launcher.parseClass("class A {\n" +
+                                                 "  void m() {\n" +
+                                                 "    try {\n" +
+                                                 "    }\n" +
+                                                 "    catch (Exception e) {\n" +
+                                                 "      bang();\n" +
+                                                 "    }\n" +
+                                                 "  }\n" +
+                                                 "}\n").getMethods().iterator().next();
+
+        ControlFlowBuilder builder = new ControlFlowBuilder();
+        builder.setExceptionControlFlowStrategy(new NaiveTryCatchControlFlowStrategy());
+        builder.build(method);
+        ControlFlowGraph cfg = builder.getResult();
+
+        assertNull(findNodeByString(cfg, "bang()"));
+    }
+
+    @Test
+    public void testAddPathsForEmptyTryBlocksEnabled() {
+        // contract: NaiveTryCatchControlFlowStrategy should, when configured with the option to do, add paths from
+        //           an empty try block to each of its catchers, causing unreachable statements in catch blocks to
+        //           be included in the CFG.
+
+        CtMethod<?> method = Launcher.parseClass("class A {\n" +
+                                                 "  void m() {\n" +
+                                                 "    try {\n" +
+                                                 "    }\n" +
+                                                 "    catch (Exception e) {\n" +
+                                                 "      bang();\n" +
+                                                 "    }\n" +
+                                                 "  }\n" +
+                                                 "}\n").getMethods().iterator().next();
+
+        ControlFlowBuilder builder = new ControlFlowBuilder();
+        EnumSet<NaiveTryCatchControlFlowStrategy.Options> options = EnumSet.of(NaiveTryCatchControlFlowStrategy.Options.AddPathsForEmptyTryBlocks);
+        builder.setExceptionControlFlowStrategy(new NaiveTryCatchControlFlowStrategy(options));
+        builder.build(method);
+        ControlFlowGraph cfg = builder.getResult();
+
+        assertNotNull(findNodeByString(cfg, "bang()"));
     }
 
     /**
