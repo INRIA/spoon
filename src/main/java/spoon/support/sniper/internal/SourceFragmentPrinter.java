@@ -42,4 +42,26 @@ public interface SourceFragmentPrinter {
 	 */
 	boolean knowsHowToPrint(PrinterEvent event);
 
+	enum ModificationStatus {
+		UNKNOWN,
+		MODIFIED,
+		NOT_MODIFIED;
+
+		public static ModificationStatus fromBoolean(Boolean b) {
+			if (b) {
+				return MODIFIED;
+			}
+			return NOT_MODIFIED;
+		}
+
+		public boolean toBoolean() {
+			if (this == MODIFIED) {
+				return true;
+			}
+			if (this == NOT_MODIFIED) {
+				return false;
+			}
+			throw new IllegalStateException();
+		}
+	}
 }

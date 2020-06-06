@@ -133,29 +133,29 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 	 * 	false if whole `fragment` is not modified.
 	 * 	null if it is not possible to detect it here. Then it will be detected later.
 	 */
-	protected Boolean isFragmentModified(SourceFragment fragment) {
+	protected ModificationStatus isFragmentModified(SourceFragment fragment) {
 		if (fragment instanceof TokenSourceFragment) {
 			switch (((TokenSourceFragment) fragment).getType()) {
 			//we do not know the role of the identifier token, so we do not know whether it is modified or not
 			case IDENTIFIER:
-				return null;
+				return ModificationStatus.UNKNOWN;
 			case COMMENT:
-				return null;
+				return ModificationStatus.UNKNOWN;
 			default:
 				//all others are constant tokens, which cannot be modified
-				return Boolean.FALSE;
+				return ModificationStatus.NOT_MODIFIED;
 			}
 		} else if (fragment instanceof ElementSourceFragment) {
-			return changeResolver.isRoleModified(((ElementSourceFragment) fragment).getRoleInParent());
+			return ModificationStatus.fromBoolean(changeResolver.isRoleModified(((ElementSourceFragment) fragment).getRoleInParent()));
 		} else if (fragment instanceof CollectionSourceFragment) {
 			CollectionSourceFragment csf = (CollectionSourceFragment) fragment;
 			for (SourceFragment sourceFragment : csf.getItems()) {
-				Boolean modified = isFragmentModified(sourceFragment);
-				if (!Boolean.FALSE.equals(modified)) {
+				ModificationStatus modified = isFragmentModified(sourceFragment);
+				if (!ModificationStatus.NOT_MODIFIED.equals(modified)) {
 					return modified;
 				}
 			}
-			return Boolean.FALSE;
+			return ModificationStatus.NOT_MODIFIED;
 		} else {
 			throw new SpoonException("Unexpected SourceFragment type " + fragment.getClass());
 		}

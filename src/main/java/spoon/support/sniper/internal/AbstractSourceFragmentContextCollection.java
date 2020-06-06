@@ -69,10 +69,10 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 	}
 
 	@Override
-	protected Boolean isFragmentModified(SourceFragment fragment) {
+	protected ModificationStatus isFragmentModified(SourceFragment fragment) {
 		//we cannot fast detect if it is modified using our changeResolver.
 		//So return null. The code later will detect it including modified roles.
-		return null;
+		return ModificationStatus.UNKNOWN;
 	}
 
 	/**
