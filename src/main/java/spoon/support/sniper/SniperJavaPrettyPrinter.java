@@ -33,6 +33,7 @@ import spoon.support.sniper.internal.ChangeResolver;
 import spoon.support.sniper.internal.CollectionSourceFragment;
 import spoon.support.sniper.internal.ElementPrinterEvent;
 import spoon.support.sniper.internal.ElementSourceFragment;
+import spoon.support.sniper.internal.ModificationStatus;
 import spoon.support.sniper.internal.MutableTokenWriter;
 import spoon.support.sniper.internal.PrinterEvent;
 import spoon.support.sniper.internal.SourceFragment;
@@ -162,8 +163,8 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 				printAction.run();
 			}
 			@Override
-			public void printSourceFragment(SourceFragment fragment, SourceFragmentPrinter.ModificationStatus isModified) {
-				if (isModified == SourceFragmentPrinter.ModificationStatus.UNKNOWN || isModified == SourceFragmentPrinter.ModificationStatus.MODIFIED) {
+			public void printSourceFragment(SourceFragment fragment, ModificationStatus isModified) {
+				if (isModified == ModificationStatus.UNKNOWN || isModified == ModificationStatus.MODIFIED) {
 					printAction.run();
 					return;
 				} else {
@@ -257,7 +258,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 			}
 
 			@Override
-			public void printSourceFragment(SourceFragment fragment, SourceFragmentPrinter.ModificationStatus isModified) {
+			public void printSourceFragment(SourceFragment fragment, ModificationStatus isModified) {
 				scanInternal(role, element, fragment, isModified);
 			}
 		};
@@ -311,7 +312,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	 * @param fragment origin source fragment of element
 	 * @param isFragmentModified true if any part of `fragment` is modified, false if whole fragment is not modified, null if caller doesn't know
 	 */
-	private void scanInternal(CtRole role, CtElement element, SourceFragment fragment, SourceFragmentPrinter.ModificationStatus isFragmentModified) {
+	private void scanInternal(CtRole role, CtElement element, SourceFragment fragment, ModificationStatus isFragmentModified) {
 		if (mutableTokenWriter.isMuted()) {
 			throw new SpoonException("Unexpected state of sniper pretty printer. TokenWriter is muted.");
 		}
@@ -330,7 +331,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 
 
 			//and scan first element of that collection again in new context of that collection
-			if (SourceFragmentPrinter.ModificationStatus.NOT_MODIFIED.equals(isFragmentModified)) {
+			if (ModificationStatus.NOT_MODIFIED.equals(isFragmentModified)) {
 				// we print the original source code
 				mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
 			} else {
@@ -341,11 +342,11 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 			ElementSourceFragment sourceFragment = (ElementSourceFragment) fragment;
 			//it is fragment with single value
 			ChangeResolver changeResolver = null;
-			if (isFragmentModified == SourceFragmentPrinter.ModificationStatus.UNKNOWN) {
+			if (isFragmentModified == ModificationStatus.UNKNOWN) {
 				changeResolver = new ChangeResolver(getChangeCollector(), element);
-				isFragmentModified = SourceFragmentPrinter.ModificationStatus.fromBoolean(changeResolver.hasChangedRole());
+				isFragmentModified = ModificationStatus.fromBoolean(changeResolver.hasChangedRole());
 			}
-			if (isFragmentModified == SourceFragmentPrinter.ModificationStatus.NOT_MODIFIED) {
+			if (isFragmentModified == ModificationStatus.NOT_MODIFIED) {
 				//nothing is changed, we can print origin sources of this element
 				mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
 				return;

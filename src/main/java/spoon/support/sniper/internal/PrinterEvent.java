@@ -37,7 +37,7 @@ public interface PrinterEvent  {
 	 * @param fragment
 	 * @param isModified true if at least some part of `SourceFragment` is modified.
 	 */
-	void printSourceFragment(SourceFragment fragment, SourceFragmentPrinter.ModificationStatus isModified);
+	void printSourceFragment(SourceFragment fragment, ModificationStatus isModified);
 
 	/**
 	 * @return printed element or null if printing a primitive token
