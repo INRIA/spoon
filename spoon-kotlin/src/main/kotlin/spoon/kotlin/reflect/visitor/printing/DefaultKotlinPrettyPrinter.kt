@@ -101,8 +101,13 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun visitCtForEach(p0: CtForEach?) {
-        TODO("Not yet implemented")
+    override fun visitCtForEach(forEach: CtForEach) {
+        adapter write "for" and LEFT_ROUND
+        forEach.variable.accept(this)
+        adapter write " in "
+        forEach.expression.accept(this)
+        adapter write RIGHT_ROUND
+        forEach.body.accept(this)
     }
 
     override fun <T : Any?> visitCtConstructorCall(constrCall: CtConstructorCall<T>?) {
