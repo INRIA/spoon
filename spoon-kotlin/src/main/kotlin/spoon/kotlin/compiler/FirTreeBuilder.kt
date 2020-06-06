@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.fir.visitors.CompositeTransformResult
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtForExpression
 import org.jetbrains.kotlin.psi.KtModifierList
 import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
@@ -31,6 +32,8 @@ import spoon.reflect.declaration.*
 import spoon.reflect.factory.Factory
 import spoon.reflect.reference.*
 import spoon.support.reflect.code.CtLiteralImpl
+import java.util.*
+import kotlin.collections.ArrayList
 
 class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisitor<CompositeTransformResult<CtElement>, Nothing?>() {
     internal val referenceBuilder = ReferenceBuilder(this)
@@ -209,12 +212,14 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     private fun getReceiver(qa: FirQualifiedAccessExpression): CtElement? {
         val explicitReceiver = qa.explicitReceiver
         val dispatchReceiver = qa.dispatchReceiver
-        return if(explicitReceiver == null || explicitReceiver == FirNoReceiverExpression) {
+        val receiver = if(explicitReceiver == null || explicitReceiver == FirNoReceiverExpression) {
             if(dispatchReceiver == FirNoReceiverExpression) null
-            else dispatchReceiver.accept(this,null).single
+            else dispatchReceiver.accept(this,null)
         } else {
-            explicitReceiver.accept(this,null).single
+            explicitReceiver.accept(this,null)
         }
+        if(receiver != null && receiver.isSingle) return receiver.single
+        return null
     }
 
     override fun visitFunctionCall(functionCall: FirFunctionCall, data: Nothing?): CompositeTransformResult<CtElement> {
@@ -294,20 +299,69 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctIf.compose()
     }
 
+    /*
+       for(x in y) { ... }
+
+       >is translated to>
+
+       val <range> = y
+       val <iterator> = <range>.iterator
+       while(<iterator>.hasNext()) {
+        val i = <iterator>.next()
+        ...
+       }
+     */
     override fun visitBlock(block: FirBlock, data: Nothing?): CompositeTransformResult.Single<CtBlock<*>> {
         val ktBlock = factory.Core().createBlock<Any>()
-        val statements = block.statements.map { it.accept(this, null).single.let { s ->
-            s.setParent(ktBlock)
-            if(s is CtExpression<*> && s !is CtStatement) {
-                s.wrapInImplicitReturn()
+        val statements = ArrayList<CtStatement>()
+        val loopIterableStack = Stack<CtExpression<*>>()
+        for(firStatement in block.statements) {
+            if(firStatement is FirProperty && firStatement.isLocal && firStatement.name.isSpecial) {
+                if(firStatement.name.asString() == "<range>")
+                    loopIterableStack.push(firStatement.initializer!!.accept(this,null).single as CtExpression<*>)
+                continue
+            }
+            val ctElement = firStatement.accept(this, null).single
+            if(ctElement is CtForEach) {
+                ctElement.setExpression<CtForEach>(loopIterableStack.pop())
+            }
+
+            statements.add(if(ctElement is CtExpression<*> && ctElement !is CtStatement) {
+                ctElement.wrapInImplicitReturn()
             } else {
-                s
-            }
-            }
-        } as List<CtStatement>
+                ctElement as CtStatement
+            })
+
+        }
         ktBlock.setStatements<CtBlock<*>>(statements)
         return ktBlock.compose()
     }
+
+    override fun visitWhileLoop(whileLoop: FirWhileLoop, data: Nothing?): CompositeTransformResult<CtElement> {
+        when(whileLoop.source?.psi) {
+            null -> throw RuntimeException("Unknown source of while loop")
+            is KtForExpression -> return visitForLoop(whileLoop,null)
+        }
+
+
+        return super.visitWhileLoop(whileLoop, data)
+    }
+
+    fun visitForLoop(forLoop: FirWhileLoop, data: Nothing?): CompositeTransformResult<CtElement> {
+        val ctForEach = factory.Core().createForEach()
+        val variable = forLoop.block.statements[0].accept(this,null).single as CtLocalVariable<*>
+        // Remove initializer ( = next() )
+        (variable as CtLocalVariable<Any>).setDefaultExpression<CtLocalVariable<Any>>(null)
+        // Loop initialized local vars have no modifiers
+        variable.putMetadata<CtLocalVariable<*>>(KtMetadataKeys.KT_MODIFIERS, null)
+        ctForEach.setVariable<CtForEach>(variable)
+        // Local loop variable has already been handled, remove before visiting
+        (forLoop.block.statements as MutableList<FirStatement>).removeAt(0)
+        val body = forLoop.block.accept(this,null).single as CtStatement
+        ctForEach.setBody<CtForEach>(body)
+        return ctForEach.compose()
+    }
+
 
     override fun visitSimpleFunction(simpleFunction: FirSimpleFunction, data: Nothing?): CompositeTransformResult.Single<CtMethod<*>> {
         val ctMethod = factory.Core().createMethod<Any>()
@@ -384,8 +438,9 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             is CtFieldReference<*> -> {
                 factory.Core().createFieldWrite<Any>().also {
                     it.setVariable<CtVariableAccess<Any>>(propertyRef as CtFieldReference<Any>)
-                    val target = variableAssignment.dispatchReceiver.accept(this,null).single as CtExpression<*>
-                    it.setTarget<CtTargetedExpression<Any,CtExpression<*>>>(target)
+                    val target = if(variableAssignment.dispatchReceiver == FirNoReceiverExpression) null else
+                        variableAssignment.dispatchReceiver.accept(this,null).single as CtExpression<*>
+                    target?.let { t -> it.setTarget<CtTargetedExpression<Any,CtExpression<*>>>(t) }
                 }
             }
             else -> null
@@ -402,6 +457,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         val fir = resolvedNamedReference.resolvedSymbol.fir
         val ctRef = when(fir) {
             is FirProperty -> {
+                if(fir.name.isSpecial) return CompositeTransformResult.empty()
                 referenceBuilder.getNewVariableReference<CtVariableReference<Any>>(fir)
             }
             is FirValueParameter -> {
@@ -551,7 +607,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         }
 
         val transformedExpression = property.initializer?.accept(this,null)
-        if(transformedExpression != null) {
+        if(transformedExpression != null && transformedExpression.isSingle) {
             when(val initializer = transformedExpression.single) {
                 is CtExpression<*> -> {
                     localVar.setDefaultExpression<CtLocalVariable<Any>>(initializer as CtExpression<Any>)
@@ -623,7 +679,9 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         qualifiedAccessExpression: FirQualifiedAccessExpression,
         data: Nothing?
     ): CompositeTransformResult<CtElement> {
-        val calleeRef = qualifiedAccessExpression.calleeReference.accept(this,null).single
+        val calleeRefRes = qualifiedAccessExpression.calleeReference.accept(this,null)
+        if(calleeRefRes.isEmpty) return CompositeTransformResult.empty()
+        val calleeRef = calleeRefRes.single
         val target: CtElement? = getReceiver(qualifiedAccessExpression)
         val varAccess = when(calleeRef) {
             is CtFieldReference<*> -> {
@@ -632,6 +690,11 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
                 }
             }
             is CtParameterReference<*> -> {
+                factory.Core().createVariableRead<Any>().also {
+                    it.setVariable<CtVariableRead<Any>>(calleeRef as CtVariableReference<Any>)
+                }
+            }
+            is CtLocalVariableReference<*> -> {
                 factory.Core().createVariableRead<Any>().also {
                     it.setVariable<CtVariableRead<Any>>(calleeRef as CtVariableReference<Any>)
                 }
