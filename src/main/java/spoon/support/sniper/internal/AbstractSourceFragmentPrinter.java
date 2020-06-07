@@ -131,7 +131,7 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 	 * @param fragment
 	 * @return true if at least part of `fragment` is modified.
 	 * 	false if whole `fragment` is not modified.
-	 * 	null if it is not possible to detect it here. Then it will be detected later.
+	 * 	ModificationStatus.UNKNOWN if it is not possible to detect it here. Then it will be detected later.
 	 */
 	protected ModificationStatus isFragmentModified(SourceFragment fragment) {
 		if (fragment instanceof TokenSourceFragment) {
