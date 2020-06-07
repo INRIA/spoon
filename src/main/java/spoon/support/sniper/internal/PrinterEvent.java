@@ -22,16 +22,6 @@ public interface PrinterEvent  {
 	CtRole getRole();
 
 	/**
-	 * Prints source code by {@link DefaultJavaPrettyPrinter} ignoring origin {@link SourceFragment}s
-	 * @param muted
-	 * 		true if origin sources are already printed and we are just calling {@link DefaultJavaPrettyPrinter}
-	 * 			to keep it's state consistent.
-	 *  	false if {@link DefaultJavaPrettyPrinter} will really print into output.
-	 *  	null if `muted` status should be kept as it is
-	 */
-	void print();
-
-	/**
 	 * We have a source fragment of to be printed element.
 	 * Print unmodified parts of this source `fragment`
 	 * @param fragment

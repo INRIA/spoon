@@ -75,12 +75,12 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 				//but may be it is not good idea
 
 				//send all inc/dec tab to printer helper to have configured expected indentation
-				event.print();
+				event.printSourceFragment(null, ModificationStatus.UNKNOWN);
 				return -1;
 			}
 			if (tpe.getType().isWhiteSpace()) {
 				//collect all DJPP separators for future use or ignore
-				separatorActions.add(() -> event.print());
+				separatorActions.add(() -> event.printSourceFragment(null, ModificationStatus.UNKNOWN));
 				return -1;
 			}
 		}
@@ -91,7 +91,7 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 			 * It can happen e.g. when type parameter like &lt;T&gt; was added. Then bracket tokens are not in origin sources
 			 */
 			printSpaces(-1);
-			event.print();
+			event.printSourceFragment(null, ModificationStatus.UNKNOWN);
 			return -1;
 		}
 		// case 2: it's an element printer

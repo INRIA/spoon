@@ -159,10 +159,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	public void onTokenWriterWrite(TokenType tokenType, String token, CtComment comment, Runnable printAction) {
 		executePrintEventInContext(new TokenPrinterEvent(tokenType, token, comment) {
 			@Override
-			public void print() {
-				printAction.run();
-			}
-			@Override
 			public void printSourceFragment(SourceFragment fragment, ModificationStatus isModified) {
 				if (isModified == ModificationStatus.UNKNOWN || isModified == ModificationStatus.MODIFIED) {
 					printAction.run();
@@ -252,10 +248,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 
 	private PrinterEvent createPrinterEvent(CtElement element, CtRole role) {
 		return new ElementPrinterEvent(role, element) {
-			@Override
-			public void print() {
-				superScanInContext(element, DefaultSourceFragmentPrinter.INSTANCE);
-			}
 
 			@Override
 			public void printSourceFragment(SourceFragment fragment, ModificationStatus isModified) {
@@ -320,7 +312,8 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 
 		//it is not muted yet, so this element or any sibling is modified
 		if (fragment == null) {
-			throw new SpoonException("Missing source fragment. Call PrintEvent#print instead.");
+			superScanInContext(element, DefaultSourceFragmentPrinter.INSTANCE);
+			return;
 		}
 		//we have sources of fragment
 		if (fragment instanceof CollectionSourceFragment) {
