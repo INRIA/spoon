@@ -250,7 +250,55 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 
 			@Override
 			public void printSourceFragment(SourceFragment fragment, ModificationStatus isModified) {
-				scanInternal(this.element, fragment, isModified);
+				if (mutableTokenWriter.isMuted()) {
+					throw new SpoonException("Unexpected state of sniper pretty printer. TokenWriter is muted.");
+				}
+
+
+				//it is not muted yet, so this element or any sibling is modified
+				if (fragment == null) {
+					superScanInContext(this.element, DefaultSourceFragmentPrinter.INSTANCE);
+					return;
+				}
+				//we have sources of fragment
+				if (fragment instanceof CollectionSourceFragment) {
+					//we started scanning of collection of elements
+					SourceFragmentPrinter listContext = getCollectionContext(this.element, (CollectionSourceFragment) fragment, isModified.toBoolean());
+					//push the context of this collection
+					pushContext(listContext);
+
+
+					//and scan first element of that collection again in new context of that collection
+					if (ModificationStatus.NOT_MODIFIED.equals(isModified)) {
+						// we print the original source code
+						mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
+					} else {
+						// we print with the new context
+						listContext.print(this);
+					}
+				} else if (fragment instanceof ElementSourceFragment) {
+					ElementSourceFragment sourceFragment = (ElementSourceFragment) fragment;
+					//it is fragment with single value
+					ChangeResolver changeResolver1 = null;
+					if (isModified == ModificationStatus.UNKNOWN) {
+						changeResolver1 = new ChangeResolver(getChangeCollector(), this.element);
+						isModified = ModificationStatus.fromBoolean(changeResolver1.hasChangedRole());
+					}
+					if (isModified == ModificationStatus.NOT_MODIFIED) {
+						//nothing is changed, we can print origin sources of this element
+						mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
+						return;
+					}
+					//check what roles of this element are changed
+					if (changeResolver1 == null) {
+						changeResolver1 = new ChangeResolver(getChangeCollector(), this.element);
+					}
+					//changeResolver.hasChangedRole() is false when element is added
+					//something is changed in this element
+					superScanInContext(this.element, new SourceFragmentContextNormal(mutableTokenWriter, sourceFragment, changeResolver1));
+				} else {
+					throw new SpoonException("Unsupported fragment type: " + fragment.getClass());
+				}
 			}
 		};
 	}
@@ -294,64 +342,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 			sfc = popSourceFragmentContext();
 		}
 		return sfc;
-	}
-
-	/**
-	 * scans the `element` which exist on `role` in its parent
-	 * @param element a scanned element
-	 * @param fragment origin source fragment of element
-	 * @param isFragmentModified true if any part of `fragment` is modified, false if whole fragment is not modified, null if caller doesn't know
-	 */
-	private void scanInternal(CtElement element, SourceFragment fragment, ModificationStatus isFragmentModified) {
-		if (mutableTokenWriter.isMuted()) {
-			throw new SpoonException("Unexpected state of sniper pretty printer. TokenWriter is muted.");
-		}
-
-
-		//it is not muted yet, so this element or any sibling is modified
-		if (fragment == null) {
-			superScanInContext(element, DefaultSourceFragmentPrinter.INSTANCE);
-			return;
-		}
-		//we have sources of fragment
-		if (fragment instanceof CollectionSourceFragment) {
-			//we started scanning of collection of elements
-			SourceFragmentPrinter listContext = getCollectionContext(element, (CollectionSourceFragment) fragment, isFragmentModified.toBoolean());
-			//push the context of this collection
-			pushContext(listContext);
-
-
-			//and scan first element of that collection again in new context of that collection
-			if (ModificationStatus.NOT_MODIFIED.equals(isFragmentModified)) {
-				// we print the original source code
-				mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
-			} else {
-				// we print it normally
-				scan(element);
-			}
-		} else if (fragment instanceof ElementSourceFragment) {
-			ElementSourceFragment sourceFragment = (ElementSourceFragment) fragment;
-			//it is fragment with single value
-			ChangeResolver changeResolver = null;
-			if (isFragmentModified == ModificationStatus.UNKNOWN) {
-				changeResolver = new ChangeResolver(getChangeCollector(), element);
-				isFragmentModified = ModificationStatus.fromBoolean(changeResolver.hasChangedRole());
-			}
-			if (isFragmentModified == ModificationStatus.NOT_MODIFIED) {
-				//nothing is changed, we can print origin sources of this element
-				mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
-				return;
-			}
-			//check what roles of this element are changed
-			if (changeResolver == null) {
-				changeResolver = new ChangeResolver(getChangeCollector(), element);
-			}
-			//changeResolver.hasChangedRole() is false when element is added
-			//something is changed in this element
-			superScanInContext(element, new SourceFragmentContextNormal(mutableTokenWriter, sourceFragment, changeResolver));
-		} else {
-			throw new SpoonException("Unsupported fragment type: " + fragment.getClass());
-		}
 	}
 
 	private SourceFragmentPrinter getCollectionContext(CtElement element, CollectionSourceFragment csf, boolean isModified) {
