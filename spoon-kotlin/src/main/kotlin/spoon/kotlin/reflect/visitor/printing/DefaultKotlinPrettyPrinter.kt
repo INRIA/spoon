@@ -362,8 +362,12 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtBinaryOperator(binOp: CtBinaryOperator<T>) {
         binOp.leftHandOperand.accept(this)
-        val operator = binOp.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND) as KtBinaryOperatorKind
-        adapter write operator.asToken()
+        val operator = binOp.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND) as? KtBinaryOperatorKind
+        if(operator == null) {
+            adapter write KtBinaryOperatorKind.fromJavaOperatorKind(binOp.kind).asToken()
+        } else {
+            adapter write operator.asToken()
+        }
         binOp.rightHandOperand.accept(this)
     }
 
@@ -428,7 +432,7 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?, A : T> visitCtOperatorAssignment(opAssignment: CtOperatorAssignment<T, A>) {
         opAssignment.assigned.accept(this)
-        adapter write " ${KtBinaryOperatorKind.fromJavaAssignmentOperatorKind(opAssignment.kind).asString}= "
+        adapter write " ${KtBinaryOperatorKind.fromJavaOperatorKind(opAssignment.kind).asString}= "
         opAssignment.assignment.accept(this)
     }
 

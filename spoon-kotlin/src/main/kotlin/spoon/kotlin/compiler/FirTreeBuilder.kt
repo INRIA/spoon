@@ -237,12 +237,16 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     }
 
     private fun visitNormalFunctionCall(call: InvocationType.NORMAL_CALL):
-            CompositeTransformResult.Single<CtInvocation<*>> {
+            CompositeTransformResult<CtInvocation<*>> {
         val (firReceiver, functionCall) = call
         val invocation = factory.Core().createInvocation<Any>()
         invocation.setExecutable<CtInvocation<Any>>(referenceBuilder.getNewExecutableReference(functionCall))
 
-        val target = firReceiver?.accept(this,null)?.single
+        val nonSpecialTarget = firReceiver?.accept(this,null)
+        if(nonSpecialTarget?.isEmpty == true) {
+            return CompositeTransformResult.empty()
+        }
+        val target = nonSpecialTarget?.single
         if(target is CtExpression<*>) {
             invocation.setTarget<CtInvocation<Any>>(target)
         } else if(target != null) {

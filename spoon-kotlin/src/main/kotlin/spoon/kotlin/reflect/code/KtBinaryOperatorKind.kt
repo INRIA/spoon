@@ -109,12 +109,14 @@ enum class KtBinaryOperatorKind(val asString: String) {
     }
 
     companion object {
-        fun fromJavaAssignmentOperatorKind(j: BinaryOperatorKind): KtBinaryOperatorKind = when(j) {
+        fun fromJavaOperatorKind(j: BinaryOperatorKind): KtBinaryOperatorKind = when(j) {
             BinaryOperatorKind.PLUS -> PLUS
             BinaryOperatorKind.MINUS -> MINUS
             BinaryOperatorKind.MOD -> MOD
             BinaryOperatorKind.MUL -> MUL
             BinaryOperatorKind.DIV -> DIV
+            BinaryOperatorKind.AND -> AND
+            BinaryOperatorKind.OR -> OR
             else -> throw RuntimeException("Invalid assignment operator: $this")
         }
 
