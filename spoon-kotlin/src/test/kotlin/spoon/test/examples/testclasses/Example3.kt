@@ -6,10 +6,10 @@ class Example3() {
 
     fun f() {
         for(i in 1..10) {
-            x += i
+            x += i%3
             for(j in l) {
                 if(x.n != 0 && x.n < 10) {
-                    x /= j
+                    x /= j/i
                     x *= j+1
                 }
                 if(x.n == 1 || x.n !in l) {
