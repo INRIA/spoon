@@ -9,7 +9,6 @@ package spoon.support.sniper.internal;
 
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
 /**
  * Represents an action of PrettyPrinter
