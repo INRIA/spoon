@@ -41,7 +41,6 @@ import spoon.support.sniper.internal.SourceFragmentPrinter;
 import spoon.support.sniper.internal.SourceFragmentContextList;
 import spoon.support.sniper.internal.SourceFragmentContextNormal;
 import spoon.support.sniper.internal.DefaultSourceFragmentPrinter;
-import spoon.support.sniper.internal.SourceFragmentContextSet;
 import spoon.support.sniper.internal.TokenPrinterEvent;
 import spoon.support.sniper.internal.TokenType;
 import spoon.support.sniper.internal.TokenWriterProxy;
@@ -273,7 +272,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 						// we print the original source code
 						mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
 					} else {
-						// we print with the new context
+						// we print with the new list context
 						listContext.print(this);
 					}
 				} else if (fragment instanceof ElementSourceFragment) {
@@ -345,8 +344,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	}
 
 	private SourceFragmentPrinter getCollectionContext(CtElement element, CollectionSourceFragment csf, boolean isModified) {
-		return csf.isOrdered()
-				? new SourceFragmentContextList(mutableTokenWriter, element, csf.getItems(), getChangeResolver()) {
+		return new SourceFragmentContextList(mutableTokenWriter, element, csf.getItems(), getChangeResolver()) {
 			@Override
 			public void onPush() {
 				super.onPush();
@@ -363,23 +361,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 				}
 			}
 
-		}
-				: new SourceFragmentContextSet(mutableTokenWriter, element, csf.getItems(), getChangeResolver()) {
-			@Override
-			public void onPush() {
-				super.onPush();
-				if (!isModified) {
-					mutableTokenWriter.setMuted(true);
-				}
-			}
-
-			@Override
-			public void onFinished() {
-				super.onFinished();
-				if (!isModified) {
-					mutableTokenWriter.setMuted(false);
-				}
-			}
 		};
 	}
 
