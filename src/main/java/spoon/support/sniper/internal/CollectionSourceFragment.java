@@ -7,11 +7,9 @@
  */
 package spoon.support.sniper.internal;
 
-import java.util.List;
-
-import spoon.reflect.meta.ContainerKind;
-import spoon.reflect.path.CtRole;
 import spoon.support.Experimental;
+
+import java.util.List;
 
 /**
  * {@link SourceFragment} of List or Set of {@link ElementSourceFragment}s which belong to collection role.
