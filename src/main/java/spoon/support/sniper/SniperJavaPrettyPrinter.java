@@ -216,7 +216,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 				//use line separator of origin source file
 				setLineSeparator(detectLineSeparator(compilationUnit.getOriginalSourceCode()));
 
-				CtRole role = getRoleInCompilationUnit(element);
 				ElementSourceFragment esf = element.getOriginalSourceFragment();
 
 				runInContext(
@@ -224,7 +223,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 						element,
 						Collections.singletonList(esf),
 						new ChangeResolver(getChangeCollector(), element)),
-					() -> executePrintEventInContext(createPrinterEvent(element, role))
+					() -> executePrintEventInContext(createPrinterEvent(element))
 				);
 			}
 		}
@@ -240,18 +239,18 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	@Override
 	public SniperJavaPrettyPrinter scan(CtElement element) {
 		if (element != null) {
-			CtRole role = getRoleInCompilationUnit(element);
-			executePrintEventInContext(createPrinterEvent(element, role));
+			executePrintEventInContext(createPrinterEvent(element));
 		}
 		return this;
 	}
 
-	private PrinterEvent createPrinterEvent(CtElement element, CtRole role) {
+	private PrinterEvent createPrinterEvent(CtElement element) {
+		CtRole role = getRoleInCompilationUnit(element);
 		return new ElementPrinterEvent(role, element) {
 
 			@Override
 			public void printSourceFragment(SourceFragment fragment, ModificationStatus isModified) {
-				scanInternal(role, element, fragment, isModified);
+				scanInternal(this.element, fragment, isModified);
 			}
 		};
 	}
@@ -299,12 +298,11 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 
 	/**
 	 * scans the `element` which exist on `role` in its parent
-	 * @param role {@link CtRole} of `element` in scope of it's parent
 	 * @param element a scanned element
 	 * @param fragment origin source fragment of element
 	 * @param isFragmentModified true if any part of `fragment` is modified, false if whole fragment is not modified, null if caller doesn't know
 	 */
-	private void scanInternal(CtRole role, CtElement element, SourceFragment fragment, ModificationStatus isFragmentModified) {
+	private void scanInternal(CtElement element, SourceFragment fragment, ModificationStatus isFragmentModified) {
 		if (mutableTokenWriter.isMuted()) {
 			throw new SpoonException("Unexpected state of sniper pretty printer. TokenWriter is muted.");
 		}
