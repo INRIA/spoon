@@ -21,5 +21,7 @@ object KtMetadataKeys {
     const val FLOAT_LITERAL_SCIENTIFIC = "skt_key float literal scientific : Boolean"
     const val STRING_LITERAL_MULTILINE = "skt_key string literal multiline : Boolean"
 
+    const val KT_BINARY_OPERATOR_KIND = "skt_key kt binary operator kind : KtBinaryOperatorKind"
+    const val INVOCATION_IS_INFIX = "skt_key invocation is infix : Boolean"
 }
 

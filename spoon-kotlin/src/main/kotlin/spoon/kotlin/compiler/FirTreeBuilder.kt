@@ -27,6 +27,7 @@ import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.kotlin.reflect.KtStatementExpression
 import spoon.kotlin.reflect.KtStatementExpressionImpl
+import spoon.kotlin.reflect.code.KtBinaryOperatorKind
 import spoon.reflect.code.*
 import spoon.reflect.declaration.*
 import spoon.reflect.factory.Factory
@@ -223,10 +224,25 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     }
 
     override fun visitFunctionCall(functionCall: FirFunctionCall, data: Nothing?): CompositeTransformResult<CtElement> {
+        val invocationType = helper.resolveIfOperatorOrInvocation(functionCall)
+        return when(invocationType) {
+            is InvocationType.NORMAL_CALL -> visitNormalFunctionCall(invocationType)
+            is InvocationType.INFIX_CALL -> visitInfixFunctionCall(invocationType)
+            is InvocationType.BINARY_OPERATOR -> visitBinaryOperatorViaFunctionCall(invocationType)
+            is InvocationType.ASSIGNMENT_OPERATOR -> visitAssignmentOperatorViaFunctionCall(invocationType)
+            is InvocationType.POSTFIX_OPERATOR -> TODO()
+            is InvocationType.PREFIX_OPERATOR -> visitUnaryOperatorViaFunctionCall(invocationType)
+            is InvocationType.UNKNOWN -> throw RuntimeException("Unknown invocation type ${functionCall.calleeReference.name.asString()}")
+        }
+    }
+
+    private fun visitNormalFunctionCall(call: InvocationType.NORMAL_CALL):
+            CompositeTransformResult.Single<CtInvocation<*>> {
+        val (firReceiver, functionCall) = call
         val invocation = factory.Core().createInvocation<Any>()
         invocation.setExecutable<CtInvocation<Any>>(referenceBuilder.getNewExecutableReference(functionCall))
 
-        val target = getReceiver(functionCall)
+        val target = firReceiver?.accept(this,null)?.single
         if(target is CtExpression<*>) {
             invocation.setTarget<CtInvocation<Any>>(target)
         } else if(target != null) {
@@ -247,6 +263,58 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             })
         }
         return invocation.compose()
+    }
+
+    private fun visitAssignmentOperatorViaFunctionCall(assignmentType: InvocationType.ASSIGNMENT_OPERATOR):
+            CompositeTransformResult<CtOperatorAssignment<*,*>> {
+        val (firLhs, kind, firRhs, opFunc) = assignmentType
+        val ctAssignmentOp = factory.createOperatorAssignment<Any,Any>()
+        ctAssignmentOp.setKind<CtOperatorAssignment<Any,Any>>(kind.toJavaAssignmentOperatorKind())
+        val lhs = firLhs.accept(this,null).single as CtExpression<Any>
+        val rhs = firRhs.accept(this,null).single as CtExpression<Any>
+        ctAssignmentOp.setAssigned<CtOperatorAssignment<Any,Any>>(lhs)
+        ctAssignmentOp.setAssignment<CtOperatorAssignment<Any,Any>>(rhs)
+        ctAssignmentOp.setType<CtOperatorAssignment<Any,Any>>(referenceBuilder.getNewTypeReference(opFunc.typeRef))
+        return ctAssignmentOp.compose()
+    }
+
+    private fun visitInfixFunctionCall(invocationType: InvocationType.INFIX_CALL):
+        CompositeTransformResult.Single<CtInvocation<*>> {
+        val (firLhs, originalFunc, firRhs) = invocationType
+        val invocation = factory.Core().createInvocation<Any>()
+        invocation.setExecutable<CtInvocation<Any>>(referenceBuilder.getNewExecutableReference(originalFunc))
+        val lhs = firLhs.accept(this,null).single as CtExpression<*>
+        val rhs = expressionOrWrappedInStatementExpression(firRhs.accept(this,null).single)
+        invocation.setTarget<CtInvocation<Any>>(lhs)
+        invocation.setArguments<CtInvocation<Any>>(listOf(rhs))
+        invocation.putMetadata<CtInvocation<Any>>(KtMetadataKeys.INVOCATION_IS_INFIX, true)
+        return invocation.compose()
+    }
+
+    private fun visitBinaryOperatorViaFunctionCall(binType: InvocationType.BINARY_OPERATOR):
+            CompositeTransformResult.Single<CtBinaryOperator<*>> {
+        val (firLhs, kind, firRhs, opFunc) = binType
+        val ktOp = factory.Core().createBinaryOperator<Any>()
+        val lhs = firLhs.accept(this,null).single
+        val rhs = firRhs.accept(this,null).single
+        ktOp.setLeftHandOperand<CtBinaryOperator<Any>>(lhs as CtExpression<*>)
+        ktOp.setRightHandOperand<CtBinaryOperator<Any>>(rhs as CtExpression<*>)
+        if(opFunc is FirResolvedNamedReference) {
+            ktOp.setType<CtBinaryOperator<Any>>(referenceBuilder.getNewTypeReference(opFunc.typeRef))
+        }
+        ktOp.putMetadata<CtBinaryOperator<Any>>(KtMetadataKeys.KT_BINARY_OPERATOR_KIND, kind)
+        return ktOp.compose()
+    }
+
+    private fun visitUnaryOperatorViaFunctionCall(invocationType: InvocationType.PREFIX_OPERATOR):
+            CompositeTransformResult.Single<CtUnaryOperator<*>> {
+        val (kind, operand, opFunc) = invocationType
+        val ctOp = factory.Core().createUnaryOperator<Any>()
+        val ctOperand = operand.accept(this,null).single as CtExpression<Any>
+        ctOp.setOperand<CtUnaryOperator<*>>(ctOperand)
+        ctOp.setKind<CtUnaryOperator<*>>(kind)
+        ctOp.setType<CtUnaryOperator<*>>(referenceBuilder.getNewTypeReference(opFunc.typeRef))
+        return ctOp.compose()
     }
 
     override fun visitExpressionWithSmartcast(
@@ -362,6 +430,37 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctForEach.compose()
     }
 
+    override fun visitOperatorCall(operatorCall: FirOperatorCall, data: Nothing?): CompositeTransformResult<CtElement> {
+        val op = factory.Core().createBinaryOperator<Any>()
+        val kind = KtBinaryOperatorKind.fromFirOperation(operatorCall.operation)
+        op.putMetadata<CtBinaryOperator<Any>>(KtMetadataKeys.KT_BINARY_OPERATOR_KIND, kind)
+
+        if(operatorCall.arguments.size != 2) throw RuntimeException("Binary operator has ${operatorCall.arguments.size} argument(s)")
+        val lhs = operatorCall.arguments[0].accept(this,null).single
+        val rhs = operatorCall.arguments[1].accept(this,null).single
+
+        op.setLeftHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(lhs))
+        op.setRightHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(rhs))
+        op.setType<CtBinaryOperator<Any>>(referenceBuilder.getNewTypeReference(operatorCall.typeRef))
+        return op.compose()
+    }
+
+    override fun visitBinaryLogicExpression(
+        binaryLogicExpression: FirBinaryLogicExpression,
+        data: Nothing?
+    ): CompositeTransformResult<CtElement> {
+        val op = factory.Core().createBinaryOperator<Boolean>()
+        val kind = KtBinaryOperatorKind.firLogicOperationToJavaBinOp(binaryLogicExpression.kind)
+        op.setKind<CtBinaryOperator<Boolean>>(kind)
+
+        val lhs = binaryLogicExpression.leftOperand.accept(this,null).single
+        val rhs = binaryLogicExpression.rightOperand.accept(this,null).single
+
+        op.setLeftHandOperand<CtBinaryOperator<Boolean>>(expressionOrWrappedInStatementExpression(lhs))
+        op.setRightHandOperand<CtBinaryOperator<Boolean>>(expressionOrWrappedInStatementExpression(rhs))
+        op.setType<CtBinaryOperator<Boolean>>(referenceBuilder.getNewTypeReference(binaryLogicExpression.typeRef))
+        return op.compose()
+    }
 
     override fun visitSimpleFunction(simpleFunction: FirSimpleFunction, data: Nothing?): CompositeTransformResult.Single<CtMethod<*>> {
         val ctMethod = factory.Core().createMethod<Any>()
@@ -733,5 +832,15 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         val se = KtStatementExpressionImpl<T>(this)
         se.setType<KtStatementExpression<T>>(type)
         return se
+    }
+
+    private fun expressionOrWrappedInStatementExpression(e: CtElement): CtExpression<*> = when(e) {
+        is CtExpression<*> -> e
+        is CtIf -> {
+            val typeRef = e.getMetadata(KtMetadataKeys.KT_IF_TYPE) as CtTypeReference<Any>
+            val statementExpression = e.wrapInStatementExpression(typeRef)
+            statementExpression.setImplicit(true)
+        }
+        else -> throw RuntimeException("Can't wrap ${e::class} in StatementExpression")
     }
 }
