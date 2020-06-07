@@ -2,6 +2,7 @@ package spoon.kotlin.reflect.visitor.printing
 
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
+import spoon.kotlin.reflect.code.KtBinaryOperatorKind
 import spoon.reflect.code.*
 import spoon.reflect.declaration.*
 import spoon.reflect.reference.*
@@ -359,8 +360,11 @@ class DefaultKotlinPrettyPrinter(
         adapter write (LiteralToStringHelper.getLiteralToken(literal))
     }
 
-    override fun <T : Any?> visitCtBinaryOperator(p0: CtBinaryOperator<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtBinaryOperator(binOp: CtBinaryOperator<T>) {
+        binOp.leftHandOperand.accept(this)
+        val operator = binOp.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND) as KtBinaryOperatorKind
+        adapter write operator.asToken()
+        binOp.rightHandOperand.accept(this)
     }
 
     override fun <T : Any?> visitCtField(field: CtField<T>?) {
@@ -422,8 +426,10 @@ class DefaultKotlinPrettyPrinter(
         visitDefaultExpr(localVar)
     }
 
-    override fun <T : Any?, A : T> visitCtOperatorAssignment(p0: CtOperatorAssignment<T, A>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?, A : T> visitCtOperatorAssignment(opAssignment: CtOperatorAssignment<T, A>) {
+        opAssignment.assigned.accept(this)
+        adapter write " ${KtBinaryOperatorKind.fromJavaAssignmentOperatorKind(opAssignment.kind).asString}= "
+        opAssignment.assignment.accept(this)
     }
 
     override fun <S : Any?> visitCtCase(p0: CtCase<S>?) {
