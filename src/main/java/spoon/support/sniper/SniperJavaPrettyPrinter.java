@@ -254,13 +254,11 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 				}
 
 
-				//it is not muted yet, so this element or any sibling is modified
+				// we don't have any source fragment for this element, so we simply pretty-print it normally
 				if (fragment == null) {
 					superScanInContext(this.element, DefaultSourceFragmentPrinter.INSTANCE);
 					return;
-				}
-				//we have sources of fragment
-				if (fragment instanceof CollectionSourceFragment) {
+				} else if (fragment instanceof CollectionSourceFragment) {
 					//we started scanning of collection of elements
 					SourceFragmentPrinter listContext = getCollectionContext(this.element, (CollectionSourceFragment) fragment, isModified.toBoolean());
 					//push the context of this collection
