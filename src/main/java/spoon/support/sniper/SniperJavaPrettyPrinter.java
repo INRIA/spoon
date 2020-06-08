@@ -277,7 +277,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 						return;
 					}
 
-					//something is changed in this element
+					//something is changed in this element, so we pretty-print it normally
 					superScanInContext(this.element, new SourceFragmentContextNormal(mutableTokenWriter, sourceFragment, new ChangeResolver(getChangeCollector(), this.element)));
 				} else {
 					throw new SpoonException("Unsupported fragment type: " + fragment.getClass());
