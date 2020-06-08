@@ -115,8 +115,19 @@ class DefaultKotlinPrettyPrinter(
         TODO()
     }
 
-    override fun <T : Any?> visitCtUnaryOperator(p0: CtUnaryOperator<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtUnaryOperator(unaryOperator: CtUnaryOperator<T>?) {
+        val kind = unaryOperator!!.kind
+        when(kind) {
+            UnaryOperatorKind.POSTDEC,
+            UnaryOperatorKind.POSTINC -> {
+                unaryOperator.operand.accept(this)
+                adapter write UnaryOperatorStringHelper.asToken(kind)
+            }
+            else -> {
+                adapter write UnaryOperatorStringHelper.asToken(kind)
+                unaryOperator.operand.accept(this)
+            }
+        }
     }
 
     override fun <T : Any?> visitCtTypeAccess(p0: CtTypeAccess<T>?) {
