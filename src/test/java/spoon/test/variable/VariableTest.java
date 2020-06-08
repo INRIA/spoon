@@ -35,9 +35,27 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class InferredVariableTest {
+public class VariableTest {
+
 
     @Test
+    public void testJointDeclVariables() {
+        // contract: we can get the information of the jointly declared local variables
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setComplianceLevel(10);
+        launcher.addInputResource("./src/test/resources/spoon/test/var/Main.java");
+
+        CtModel model = launcher.buildModel();
+        List<CtLocalVariable> localVariables = model.getElements(new TypeFilter<>(CtLocalVariable.class));
+        for (int i=0; i <= 7; i++) {
+            assertEquals(false, localVariables.get(i).isPartOfJointDeclaration());
+        }
+        assertEquals(true, localVariables.get(8).isPartOfJointDeclaration());
+        assertEquals(true, localVariables.get(9).isPartOfJointDeclaration());
+
+    }
+
+        @Test
     public void testInferredVariableAreMarked() {
         // contract: if a variable is declared with 'var' keyword, it must be marked as inferred in the model
         Launcher launcher = new Launcher();
@@ -46,7 +64,7 @@ public class InferredVariableTest {
 
         CtModel model = launcher.buildModel();
         List<CtLocalVariable> localVariables = model.getElements(new TypeFilter<>(CtLocalVariable.class));
-        assertEquals(8, localVariables.size());
+        assertEquals(10, localVariables.size());
 
         TypeFactory typeFactory = launcher.getFactory().Type();
 

@@ -44,6 +44,8 @@ public class Main {
             }
         }
 
+        int i,j=1;
+
         return mySubstring;
     }
 }
