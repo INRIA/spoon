@@ -590,10 +590,10 @@ public class PositionBuilder {
 				// we remove the "..." from the source position
 				// hence from the fragment
 				if (contents[sourceEnd] == '.'
-						&& contents[sourceEnd-1] == '.'
-						&& contents[sourceEnd-2] == '.'
+						&& contents[sourceEnd - 1] == '.'
+						&& contents[sourceEnd - 2] == '.'
 				) {
-					sourceEnd = sourceEnd -3;
+					sourceEnd = sourceEnd - 3;
 				}
 			} else {
 				//SomeType<>
