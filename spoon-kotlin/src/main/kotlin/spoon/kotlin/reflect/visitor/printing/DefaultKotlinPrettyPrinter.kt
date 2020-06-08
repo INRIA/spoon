@@ -618,6 +618,9 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtInvocation(invocation: CtInvocation<T>?) {
         if(invocation == null || invocation.isImplicit) return
+        if(invocation.getMetadata(KtMetadataKeys.INVOCATION_IS_INFIX) as? Boolean == true) {
+            return visitInfixInvocation(invocation)
+        }
 
         if(invocation.executable.isConstructor) {
             val parentType = invocation.getParent(CtType::class.java)
@@ -644,6 +647,12 @@ class DefaultKotlinPrettyPrinter(
         adapter write LEFT_ROUND
         visitCommaSeparatedList(invocation.arguments)
         adapter write RIGHT_ROUND
+    }
+
+    private fun <T> visitInfixInvocation(ctInvocation: CtInvocation<T>) {
+        ctInvocation.target.accept(this)
+        adapter write " ${ctInvocation.executable.simpleName} "
+        ctInvocation.arguments[0].accept(this)
     }
 
     override fun <T : Any?> visitCtMethod(method: CtMethod<T>?) {
