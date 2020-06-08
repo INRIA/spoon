@@ -82,42 +82,28 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
         }
     }
 
-    private val binaryTokenSet = setOf(
-        IN_KEYWORD, NOT_IN, RANGE, MUL, PLUS, MINUS, DIV, PERC, // These are always function calls
-        MULTEQ, DIVEQ, PERCEQ, PLUSEQ, MINUSEQ // These can be in variable assignment or function call depending on existence of opAssign
-    )
-    private val unaryTokenSet = setOf(PLUS, MINUS, EXCL)
-
-    /*
-     unhandled tokens: // Should be handled in other visits than function call
-
-        IS_KEYWORD, NOT_IS, AS_KEYWORD, AS_SAFE, // TypeOperatorCall
-        ANDAND, OROR, // BinaryLogicExpression
-        PLUSPLUS, MINUSMINUS, // Handled in blocks (code already generated: { a++ => a0 = a; a0.inc(); a0})
-        EQEQ, EXCLEQ, EXCLEXCL, EQEQEQ, EXCLEQEQEQ, LT, GT, LTEQ, GTEQ, // OperatorCall
-        ELVIS,  // Handled in WhenExpression
-        DOT, EQ, SAFE_ACCESS // N/A, safe access is handled in normal function call logic
-
-     */
     fun resolveIfOperatorOrInvocation(firCall: FirFunctionCall): InvocationType {
         val source = firCall.source?.psi
         val receiver = getReceiver(firCall)
 
-        val opToken = when (source) {
-            is KtBinaryExpression -> source.operationToken
-            is KtPrefixExpression -> source.operationToken
-            is KtPostfixExpression -> source.operationToken
-            else -> return InvocationType.NORMAL_CALL(receiver, firCall)
-        }
-        // Now in binary or unary call
-
-        if (receiver == null) throw SpoonException("Infix/operator call without receiver")
-
-        return when (opToken) {
-            IDENTIFIER -> InvocationType.INFIX_CALL(receiver, firCall, firCall.arguments[0])
-            in binaryTokenSet -> orderBinaryOperands(opToken, receiver, firCall)
-            in unaryTokenSet -> InvocationType.PREFIX_OPERATOR(tokenToUnaryOperatorKind(opToken), receiver, firCall)
-            else -> throw SpoonException("Unexpected operator for function call $opToken")
+        return when (source) {
+            is KtBinaryExpression -> {
+                val opToken = source.operationToken
+                if (receiver == null) throw SpoonException("Infix operator/function call without receiver")
+                if (opToken == IDENTIFIER) InvocationType.INFIX_CALL(receiver, firCall, firCall.arguments[0])
+                else orderBinaryOperands(opToken, receiver, firCall)
+            }
+            is KtPrefixExpression -> {
+                val opToken = source.operationToken
+                if (receiver == null) throw SpoonException("Prefix operator without receiver")
+                InvocationType.PREFIX_OPERATOR(tokenToUnaryOperatorKind(opToken), receiver, firCall)
+            }
+            is KtPostfixExpression -> {
+                val opToken = source.operationToken
+                if (receiver == null) throw SpoonException("Postfix operator without receiver")
+                InvocationType.PREFIX_OPERATOR(tokenToUnaryOperatorKind(opToken), receiver, firCall)
+            }
+            else -> InvocationType.NORMAL_CALL(receiver, firCall)
         }
     }
 
