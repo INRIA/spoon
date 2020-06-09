@@ -137,7 +137,7 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
         }
     }
 
-    private fun tokenToAssignmentOperatorKind(token: IElementType) = when (token) {
+    fun tokenToAssignmentOperatorKind(token: IElementType) = when (token) {
         MULTEQ -> KtOp.MUL
         DIVEQ -> KtOp.DIV
         PERCEQ -> KtOp.MOD

@@ -6,9 +6,7 @@ import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.code.KtBinaryOperatorKind
 import spoon.kotlin.reflect.visitor.printing.DefaultKotlinPrettyPrinter
 import spoon.kotlin.reflect.visitor.printing.DefaultPrinterAdapter
-import spoon.reflect.code.CtBinaryOperator
-import spoon.reflect.code.CtInvocation
-import spoon.reflect.code.CtReturn
+import spoon.reflect.code.*
 import spoon.test.TestBuildUtil
 
 class BinaryOperatorTest {
@@ -52,5 +50,59 @@ class BinaryOperatorTest {
 
         // Explicit "l.contains(x)" should not be translated to "x in l"
         assertEquals("l.contains(3)", pp.prettyprint(statements[2]))
+    }
+
+    @Test
+    fun testExplicitAssignments() {
+        /*
+        * Assignment operators are used on classes with explicit opAssign functions (ex. plusAssign for +=)
+        * Reason for this test is that FIR has generated code that differs depending on if target class has plusAssign()
+        * or just plus() member functions.
+        *
+        * a has plusAssign: a += other >translates to> { a.plusAssign(other) } (this test)
+        * a has plus: a += other >translates to> { a = a.plus(other) } (testImplicitAssignments)
+         */
+        val c = util.buildClass("spoon.test.binaryoperator.testclasses","ExplicitAssignmentOperators")
+
+        val statements = (c.methods.toList()[0].body.statements)
+        assertEquals(6, statements.size)
+
+        val expectedOperators = listOf(BinaryOperatorKind.PLUS, BinaryOperatorKind.MINUS, BinaryOperatorKind.MUL, BinaryOperatorKind.DIV,
+            BinaryOperatorKind.MOD)
+        val expectedStrings = listOf("x += 1", "x -= 2", "x *= 3", "x /= 4", "x %= 5", "x == HasOnlyAssignOperators(6)")
+
+        for(i in 0..4) {
+            assertEquals(expectedOperators[i], (statements[i] as CtOperatorAssignment<*,*>).kind)
+            assertEquals(expectedStrings[i], pp.prettyprint(statements[i]))
+        }
+        assertEquals(KtBinaryOperatorKind.EQ, ((statements[5] as CtReturn<*>).returnedExpression as CtBinaryOperator<*>).ktKind())
+        assertEquals(expectedStrings[5], pp.prettyprint(statements[5]))
+    }
+
+    @Test
+    fun testImplicitAssignments() {
+        /*
+        * Assignment operators are used on classes with implicit opAssign functions (ex. plusAssign for +=)
+        * Reason for this test is that FIR has generated code that differs depending on if target class has plusAssign()
+        * or just plus() member functions.
+        *
+        * a has plusAssign: a += other >translates to> { a.plusAssign(other) } (testExplicitAssignments)
+        * a has plus: a += other >translates to> { a = a.plus(other) } (this test)
+         */
+        val c = util.buildClass("spoon.test.binaryoperator.testclasses","ImplicitAssignmentOperators")
+
+        val statements = (c.methods.toList()[0].body.statements)
+        assertEquals(6, statements.size)
+
+        val expectedOperators = listOf(BinaryOperatorKind.PLUS, BinaryOperatorKind.MINUS, BinaryOperatorKind.MUL, BinaryOperatorKind.DIV,
+            BinaryOperatorKind.MOD)
+        val expectedStrings = listOf("x += 1", "x -= 2", "x *= 3", "x /= 4", "x %= 5", "x == HasOnlyNormalOperators(6)")
+
+        for(i in 0..4) {
+            assertEquals(expectedOperators[i], (statements[i] as CtOperatorAssignment<*,*>).kind)
+            assertEquals(expectedStrings[i], pp.prettyprint(statements[i]))
+        }
+        assertEquals(KtBinaryOperatorKind.EQ, ((statements[5] as CtReturn<*>).returnedExpression as CtBinaryOperator<*>).ktKind())
+        assertEquals(expectedStrings[5], pp.prettyprint(statements[5]))
     }
 }

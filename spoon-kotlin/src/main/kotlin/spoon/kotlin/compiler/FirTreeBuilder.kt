@@ -18,11 +18,9 @@ import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.visitors.CompositeTransformResult
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
 import org.jetbrains.kotlin.lexer.KtTokens
-import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.psi.KtForExpression
-import org.jetbrains.kotlin.psi.KtModifierList
-import org.jetbrains.kotlin.psi.KtPrimaryConstructor
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
+import spoon.SpoonException
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.kotlin.reflect.KtStatementExpression
@@ -270,7 +268,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     }
 
     private fun visitAssignmentOperatorViaFunctionCall(assignmentType: InvocationType.ASSIGNMENT_OPERATOR):
-            CompositeTransformResult<CtOperatorAssignment<*,*>> {
+            CompositeTransformResult.Single<CtOperatorAssignment<*,*>> {
         val (firLhs, kind, firRhs, opFunc) = assignmentType
         val ctAssignmentOp = factory.createOperatorAssignment<Any,Any>()
         ctAssignmentOp.setKind<CtOperatorAssignment<Any,Any>>(kind.toJavaAssignmentOperatorKind())
@@ -525,9 +523,17 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     override fun visitVariableAssignment(
         variableAssignment: FirVariableAssignment,
         data: Nothing?
-    ): CompositeTransformResult.Single<CtAssignment<*,*>> {
+    ): CompositeTransformResult.Single<CtExpression<*>> {
 
         val ctAssignment = factory.createAssignment<Any, Any>()
+
+        val psiExp = (variableAssignment.source?.psi as? KtBinaryExpression) ?: throw SpoonException("No PSI for variable assignment")
+        val opToken = psiExp.operationToken
+        if(opToken != KtTokens.EQ)
+            return visitAssignmentOperatorViaFunctionCall(
+                helper.resolveIfOperatorOrInvocation(variableAssignment.rValue as FirFunctionCall) as InvocationType.ASSIGNMENT_OPERATOR
+            )
+
 
         val assignmentExpr = variableAssignment.rValue.accept(this, null).single
         ctAssignment.setAssignment<CtAssignment<Any, Any>>(assignmentExpr as CtExpression<Any>)
