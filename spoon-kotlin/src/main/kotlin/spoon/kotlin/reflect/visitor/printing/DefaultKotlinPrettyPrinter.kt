@@ -44,6 +44,34 @@ class DefaultKotlinPrettyPrinter(
         }
     }
 
+    internal fun exitCtExpression(e: CtExpression<*>) {
+        if(e.typeCasts.isNotEmpty()) {
+            adapter write " as "
+            e.typeCasts[0].accept(this)
+            adapter write ')'
+        }
+    }
+
+    internal fun enterCtExpression(e: CtExpression<*>) {
+        if(shouldAddPar(e)) {
+            adapter write '('
+        }
+    }
+
+    private fun shouldAddPar(e: CtExpression<*>): Boolean {
+        if(e.typeCasts.isNotEmpty()) return true
+        return when(e.parent) {
+            null -> false
+            is CtBinaryOperator<*>, is CtUnaryOperator<*> ->
+                e is CtAssignment<*,*> || e is CtUnaryOperator<*> || e is CtBinaryOperator<*>
+            is CtTargetedExpression<*,*> -> {
+                e.parent.target == e && (e is CtBinaryOperator<*> || e is CtAssignment<*,*> || e is CtUnaryOperator<*>)
+            }
+            else -> false
+        }
+    }
+
+
 
 
     @Suppress("UNCHECKED_CAST")
@@ -130,8 +158,9 @@ class DefaultKotlinPrettyPrinter(
         }
     }
 
-    override fun <T : Any?> visitCtTypeAccess(p0: CtTypeAccess<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtTypeAccess(typeAccess: CtTypeAccess<T>) {
+        if(typeAccess.isImplicit) return
+        typeAccess.accessedType.accept(this)
     }
 
     override fun <R : Any?> visitCtStatementList(p0: CtStatementList?) {
@@ -372,6 +401,7 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtBinaryOperator(binOp: CtBinaryOperator<T>) {
+
         binOp.leftHandOperand.accept(this)
         val operator = binOp.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND) as? KtBinaryOperatorKind
         if(operator == null) {
@@ -592,8 +622,13 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtTypeReference(p0: CtTypeReference<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtTypeReference(typeRef: CtTypeReference<T>) {
+        if(typeRef.isImplicit) return
+        val prefix = typeRef.`package`.qualifiedName
+        val nullable = typeRef.getMetadata(KtMetadataKeys.TYPE_REF_NULLABLE) as? Boolean? ?: false
+        val suffix = if(nullable) "?" else ""
+        if(prefix.isNotEmpty()) adapter write "${prefix}."
+        adapter write "${typeRef.simpleName}$suffix"
     }
 
     override fun <T : Any?> visitCtVariableWrite(varWrite: CtVariableWrite<T>) {
