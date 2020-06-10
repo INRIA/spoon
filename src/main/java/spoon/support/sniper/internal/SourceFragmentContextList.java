@@ -7,11 +7,9 @@
  */
 package spoon.support.sniper.internal;
 
-import java.util.List;
-
 import spoon.reflect.declaration.CtElement;
 
-import static spoon.support.sniper.internal.ElementSourceFragment.isSpaceFragment;
+import java.util.List;
 
 /**
  * Handles printing of changes of the ordered list of elements.
