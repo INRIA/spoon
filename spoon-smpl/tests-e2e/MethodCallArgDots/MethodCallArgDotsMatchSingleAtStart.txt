@@ -10,6 +10,8 @@ the expression 'f(E, ...)' should match any method call to 'f' where the express
 
 [input]
 class A {
+    /* skip */ int f(int ... xs) { return 0; }
+
     void m1() {
         f();
         f(1);
@@ -22,6 +24,8 @@ class A {
 
 [expected]
 class A {
+    /* skip */ int f(int ... xs) { return 0; }
+
     void m1() {
         f();
         f(2, 3);

@@ -14,6 +14,10 @@ b();
 
 [input]
 class A {
+    void a() {}
+    void b() {}
+    boolean loopsNotSupported;
+    
     void foo() {
         a();
         while (loopsNotSupported) {
@@ -26,6 +30,10 @@ class A {
 
 [expected]
 class A {
+    void a() {}
+    void b() {}
+    boolean loopsNotSupported;
+    
     void foo() {
         a();
         while (loopsNotSupported) {

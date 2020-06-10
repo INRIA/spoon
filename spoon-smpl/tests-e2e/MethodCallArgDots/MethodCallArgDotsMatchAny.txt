@@ -10,6 +10,15 @@ the expression 'f(...)' should match any method call to 'f' regardless of argume
 
 [input]
 class A {
+    // Skip
+    int f() { return 0; }
+    
+    // Skip
+    int f(int x) { return 0; }
+    
+    // Skip
+    int f(int x, int y) { return 0; }
+    
     void m1() {
         f();
         f(1);
@@ -19,6 +28,15 @@ class A {
 
 [expected]
 class A {
+    // Skip
+    int f() { return 0; }
+    
+    // Skip
+    int f(int x) { return 0; }
+    
+    // Skip
+    int f(int x, int y) { return 0; }
+    
     void m1() {
     }
 }

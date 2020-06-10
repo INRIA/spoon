@@ -17,10 +17,17 @@ identifier fn, pt;
 
 [input]
 class A {
+    static class Point {
+        public Integer x;
+        public Integer y;
+    }
+
+    /* skip */ void log(String message) {}
+
     void drawCircle(Point origin, float radius) {
         log("Coordinates: " + origin.x.toString() + ", " + origin.y.toString());
     }
-    
+
     void drawRectangle(float width, float height, Point topLeftCorner) {
         log("Coordinates: " + topLeftCorner.x.toString() + ", " + topLeftCorner.y.toString());
     }
@@ -28,6 +35,13 @@ class A {
 
 [expected]
 class A {
+    static class Point {
+        public Integer x;
+        public Integer y;
+    }
+
+    /* skip */ void log(String message) {}
+
     void drawCircle(Point origin, float radius) {
         log("Point: " + origin.toString());
     }

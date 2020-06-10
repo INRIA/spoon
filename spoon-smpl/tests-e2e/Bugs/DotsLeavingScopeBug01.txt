@@ -15,6 +15,9 @@ if (true) {
 
 [input]
 class A {
+  void a() {}
+  boolean whatever;
+  
   void m1() {
     if (true) {
     }
@@ -76,6 +79,9 @@ class A {
 
 [expected]
 class A {
+    void a() {}
+    boolean whatever;
+
     void m1() {
         if (true) {
         }

@@ -15,6 +15,9 @@ void fn() {
 
 [input]
 class A {
+    // Skip
+    void a() {}
+
     void m1() {
     }
 
@@ -25,6 +28,9 @@ class A {
 
 [expected]
 class A {
+    // Skip
+    void a() {}
+    
     void m1() {
         foo();
         bar();
@@ -36,4 +42,3 @@ class A {
         a();
     }
 }
-

@@ -18,6 +18,10 @@ void test() {
 
 [input]
 class A {
+  void pre() {}
+  void post() {}
+  void a() {}
+  
   void test() {
     pre();
     a();
@@ -30,6 +34,10 @@ class A {
 
 [expected]
 class A {
+    void pre() {}
+    void post() {}
+    void a() {}
+    
     void test() {
         pre();
         a();

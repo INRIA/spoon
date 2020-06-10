@@ -26,7 +26,7 @@ class A {
         return x*x;
     }
 
-    int square(double x) {
+    double square(Float x) {
         return x*x;
     }
 }
@@ -43,7 +43,7 @@ class A {
         return x*x;
     }
 
-    int square(double x) {
+    double square(Float x) {
         return x*x;
     }
 }

@@ -10,6 +10,9 @@ the expression 'f(..., g(..., 1), ...)' should match any method call to 'f' with
 
 [input]
 class A {
+    int f(int ... xs) { return 0; }
+    int g(int ... xs) { return 0; }
+    
     void m1() {
         f();
         f(1);
@@ -27,6 +30,9 @@ class A {
 
 [expected]
 class A {
+    int f(int ... xs) { return 0; }
+    int g(int ... xs) { return 0; }
+    
     void m1() {
         f();
         f(1);

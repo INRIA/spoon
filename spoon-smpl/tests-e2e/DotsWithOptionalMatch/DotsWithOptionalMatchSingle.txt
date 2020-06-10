@@ -18,6 +18,15 @@ d();
 
 [input]
 class A {
+  /* skip */ void a(Object ... xs) {}
+  /* skip */ void b(Object ... xs) {}
+  /* skip */ void c(Object ... xs) {}
+  /* skip */ void d(Object ... xs) {}
+
+  Object x;
+  Object y;
+  Object z;
+
   void m1() {
     a();
     b(x);
@@ -26,6 +35,7 @@ class A {
     c();
     d();
   }
+
   void m2() {
     a();
     c();
@@ -37,6 +47,15 @@ class A {
 
 [expected]
 class A {
+  /* skip */ void a(Object ... xs) {}
+  /* skip */ void b(Object ... xs) {}
+  /* skip */ void c(Object ... xs) {}
+  /* skip */ void d(Object ... xs) {}
+
+  Object x;
+  Object y;
+  Object z;
+
   void m1() {
     a();
     log(x);
@@ -44,6 +63,7 @@ class A {
     log(z);
     d();
   }
+
   void m2() {
     a();
     // call to c should be removed as patch should match even without the presence of any calls to b

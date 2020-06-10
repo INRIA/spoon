@@ -38,6 +38,10 @@ public class EndToEndTests {
         // contract: an addition must not be anchored to an element on the opposite side of an intermediate dots operator
 
         String inputCode = "class A {\n" +
+                           "    void a() {}\n" +
+                           "    void b() {}\n" +
+                           "    void somethingElse() {}\n" +
+                           "    \n" +
                            "    void foo() {\n" +
                            "        a();\n" +
                            "        somethingElse();\n" +
@@ -46,6 +50,10 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    void a() {}\n" +
+                              "    void b() {}\n" +
+                              "    void somethingElse() {}\n" +
+                              "    \n" +
                               "    void foo() {\n" +
                               "        a();\n" +
                               "        somethingElse();\n" +
@@ -255,6 +263,9 @@ public class EndToEndTests {
         // contract: dots should be prevented from traversing out of the enclosing scope (when forall version)
 
         String inputCode = "class A {\n" +
+                           "  void a() {}\n" +
+                           "  boolean whatever;\n" +
+                           "  \n" +
                            "  void m1() {\n" +
                            "    if (true) {\n" +
                            "    }\n" +
@@ -310,6 +321,8 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    void a() {}\n" +
+                              "    boolean whatever;\n" +
                               "    void m1() {\n" +
                               "        if (true) {\n" +
                               "        }\n" +
@@ -373,6 +386,9 @@ public class EndToEndTests {
         // contract: dots should be prevented from traversing out of the enclosing scope (when exists version)
 
         String inputCode = "class A {\n" +
+                           "  void a() {}\n" +
+                           "  boolean whatever;\n" +
+                           "  \n" +
                            "  void m1() {\n" +
                            "    if (true) {\n" +
                            "    }\n" +
@@ -428,6 +444,8 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    void a() {}\n" +
+                              "    boolean whatever;\n" +
                               "    void m1() {\n" +
                               "        if (true) {\n" +
                               "        }\n" +
@@ -490,12 +508,16 @@ public class EndToEndTests {
         // contract: the bug where the environments (Tv1=int, v1=x) and (Tv1=(int), v1=(y)) could not be joined should be fixed
 
         String inputCode = "class A {\n" +
+                           "    /* skip */ void a(int x) {}\n" +
+                           "    /* skip */ int f(int x, int y) { return 1; }\n" +
                            "    int m1(int x, int y) {\n" +
                            "        return f(x, y);\n" +
                            "    }\n" +
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    /* skip */ void a(int x) {}\n" +
+                              "    /* skip */ int f(int x, int y) { return 1; }\n" +
                               "    int m1(int x, int y) {\n" +
                               "        a(x);\n" +
                               "        return f(x, y);\n" +
@@ -507,601 +529,6 @@ public class EndToEndTests {
                       "+ a(v1);\n" +
                       "...\n" +
                       "}\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
-    }
-    @Test
-    public void testSendStickyBroadcast() {
-        // contract: correct application of the \"sticky_broadcasts\" patch from the c4j paper
-
-        String inputCode = "public class VariousMethods {\n" +
-                           "    void dontTouchThese() {\n" +
-                           "        int x = 0;\n" +
-                           "        sendStickyBroadcast(x);\n" +
-                           "        removeStickyBroadcast(x);\n" +
-                           "    }\n" +
-                           "    private void sendBroadcastUploadsAdded() {\n" +
-                           "        Intent start = new Intent(getUploadsAddedMessage());\n" +
-                           "        start.setPackage(getPackageName());\n" +
-                           "        sendStickyBroadcast(start);\n" +
-                           "    }\n" +
-                           "    private void sendBroadcastUploadStarted(UploadFileOperation upload) {\n" +
-                           "        Intent start = new Intent(getUploadStartMessage());\n" +
-                           "        start.putExtra(EXTRA_REMOTE_PATH, upload.getRemotePath());\n" +
-                           "        start.putExtra(EXTRA_OLD_FILE_PATH, upload.getOriginalStoragePath());\n" +
-                           "        start.putExtra(ACCOUNT_NAME, upload.getAccount().name);\n" +
-                           "        start.setPackage(getPackageName());\n" +
-                           "        sendStickyBroadcast(start);\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    private void sendBroadcastUploadFinished(\n" +
-                           "            UploadFileOperation upload,\n" +
-                           "            RemoteOperationResult uploadResult,\n" +
-                           "            String unlinkedFromRemotePath) {\n" +
-                           "        Intent end = new Intent(getUploadFinishMessage());\n" +
-                           "        end.putExtra(EXTRA_REMOTE_PATH, upload.getRemotePath());\n" +
-                           "        if (upload.wasRenamed()) {\n" +
-                           "            end.putExtra(EXTRA_OLD_REMOTE_PATH, upload.getOldFile().getRemotePath());\n" +
-                           "        }\n" +
-                           "        end.putExtra(EXTRA_OLD_FILE_PATH, upload.getOriginalStoragePath());\n" +
-                           "        end.putExtra(ACCOUNT_NAME, upload.getAccount().name);\n" +
-                           "        end.putExtra(EXTRA_UPLOAD_RESULT, uploadResult.isSuccess());\n" +
-                           "        if (unlinkedFromRemotePath != null) {\n" +
-                           "            end.putExtra(EXTRA_LINKED_TO_PATH, unlinkedFromRemotePath);\n" +
-                           "        }\n" +
-                           "        end.setPackage(getPackageName());\n" +
-                           "        sendStickyBroadcast(end);\n" +
-                           "    }\n" +
-                           "    private void sendBroadcastDownloadFinished(\n" +
-                           "            DownloadFileOperation download,\n" +
-                           "            RemoteOperationResult downloadResult,\n" +
-                           "            String unlinkedFromRemotePath) {\n" +
-                           "        Intent end = new Intent(getDownloadFinishMessage());\n" +
-                           "        end.putExtra(EXTRA_DOWNLOAD_RESULT, downloadResult.isSuccess());\n" +
-                           "        end.putExtra(ACCOUNT_NAME, download.getAccount().name);\n" +
-                           "        end.putExtra(EXTRA_REMOTE_PATH, download.getRemotePath());\n" +
-                           "        end.putExtra(EXTRA_FILE_PATH, download.getSavePath());\n" +
-                           "        end.putExtra(OCFileListFragment.DOWNLOAD_BEHAVIOUR, download.getBehaviour());\n" +
-                           "        end.putExtra(SendShareDialog.ACTIVITY_NAME, download.getActivityName());\n" +
-                           "        end.putExtra(SendShareDialog.PACKAGE_NAME, download.getPackageName());\n" +
-                           "        if (unlinkedFromRemotePath != null) {\n" +
-                           "            end.putExtra(EXTRA_LINKED_TO_PATH, unlinkedFromRemotePath);\n" +
-                           "        }\n" +
-                           "        end.setPackage(getPackageName());\n" +
-                           "        sendStickyBroadcast(end);\n" +
-                           "    }\n" +
-                           "    private void sendBroadcastNewDownload(DownloadFileOperation download,\n" +
-                           "                                          String linkedToRemotePath) {\n" +
-                           "        Intent added = new Intent(getDownloadAddedMessage());\n" +
-                           "        added.putExtra(ACCOUNT_NAME, download.getAccount().name);\n" +
-                           "        added.putExtra(EXTRA_REMOTE_PATH, download.getRemotePath());\n" +
-                           "        added.putExtra(EXTRA_FILE_PATH, download.getSavePath());\n" +
-                           "        added.putExtra(EXTRA_LINKED_TO_PATH, linkedToRemotePath);\n" +
-                           "        added.setPackage(getPackageName());\n" +
-                           "        sendStickyBroadcast(added);\n" +
-                           "    }\n" +
-                           "    public void onReceive1(Context context, Intent intent) {\n" +
-                           "        String accountName = intent.getStringExtra(FileDownloader.ACCOUNT_NAME);\n" +
-                           "        String downloadedRemotePath = intent.getStringExtra(FileDownloader.EXTRA_REMOTE_PATH);\n" +
-                           "        if (getAccount().name.equals(accountName) && \n" +
-                           "                downloadedRemotePath != null) {\n" +
-                           "            OCFile file = getStorageManager().getFileByPath(downloadedRemotePath);\n" +
-                           "            int position = mPreviewImagePagerAdapter.getFilePosition(file);\n" +
-                           "            boolean downloadWasFine = intent.getBooleanExtra(\n" +
-                           "                    FileDownloader.EXTRA_DOWNLOAD_RESULT, false);\n" +
-                           "            \n" +
-                           "            if (position >= 0 &&\n" +
-                           "                    intent.getAction().equals(FileDownloader.getDownloadFinishMessage())) {\n" +
-                           "                if (downloadWasFine) {\n" +
-                           "                    mPreviewImagePagerAdapter.updateFile(position, file);   \n" +
-                           "                    \n" +
-                           "                } else {\n" +
-                           "                    mPreviewImagePagerAdapter.updateWithDownloadError(position);\n" +
-                           "                }\n" +
-                           "                mPreviewImagePagerAdapter.notifyDataSetChanged();\n" +
-                           "            } else {\n" +
-                           "                Log_OC.d(TAG, \"Download finished, but the fragment is offscreen\");\n" +
-                           "            }\n" +
-                           "        }\n" +
-                           "        removeStickyBroadcast(intent);\n" +
-                           "    }\n" +
-                           "    /*public void onReceive2(Context context, Intent intent) {\n" +
-                           "        try {\n" +
-                           "            String event = intent.getAction();\n" +
-                           "            Log_OC.d(TAG, \"Received broadcast \" + event);\n" +
-                           "            String accountName = intent.getStringExtra(FileSyncAdapter.EXTRA_ACCOUNT_NAME);\n" +
-                           "            String synchFolderRemotePath =\n" +
-                           "                    intent.getStringExtra(FileSyncAdapter.EXTRA_FOLDER_PATH);\n" +
-                           "            RemoteOperationResult synchResult = (RemoteOperationResult)\n" +
-                           "                    DataHolderUtil.getInstance().retrieve(intent.getStringExtra(FileSyncAdapter.EXTRA_RESULT));\n" +
-                           "            boolean sameAccount = getAccount() != null &&\n" +
-                           "                    accountName.equals(getAccount().name) && getStorageManager() != null;\n" +
-                           "            if (sameAccount) {\n" +
-                           "                if (FileSyncAdapter.EVENT_FULL_SYNC_START.equals(event)) {\n" +
-                           "                    mSyncInProgress = true;\n" +
-                           "                } else {\n" +
-                           "                    OCFile currentFile = (getFile() == null) ? null :\n" +
-                           "                            getStorageManager().getFileByPath(getFile().getRemotePath());\n" +
-                           "                    OCFile currentDir = (getCurrentDir() == null) ? null :\n" +
-                           "                            getStorageManager().getFileByPath(getCurrentDir().getRemotePath());\n" +
-                           "                    if (currentDir == null) {\n" +
-                           "                        DisplayUtils.showSnackMessage(\n" +
-                           "                                getActivity(),\n" +
-                           "                                R.string.sync_current_folder_was_removed,\n" +
-                           "                                synchFolderRemotePath\n" +
-                           "                        );\n" +
-                           "                        browseToRoot();\n" +
-                           "                    } else {\n" +
-                           "                        if (currentFile == null && !getFile().isFolder()) {\n" +
-                           "                            cleanSecondFragment();\n" +
-                           "                            currentFile = currentDir;\n" +
-                           "                        }\n" +
-                           "                        if (currentDir.getRemotePath().equals(synchFolderRemotePath)) {\n" +
-                           "                            OCFileListFragment fileListFragment = getListOfFilesFragment();\n" +
-                           "                            if (fileListFragment != null) {\n" +
-                           "                                fileListFragment.listDirectory(currentDir, MainApp.isOnlyOnDevice(), false);\n" +
-                           "                            }\n" +
-                           "                        }\n" +
-                           "                        setFile(currentFile);\n" +
-                           "                    }\n" +
-                           "                    mSyncInProgress = !FileSyncAdapter.EVENT_FULL_SYNC_END.equals(event) &&\n" +
-                           "                            !RefreshFolderOperation.EVENT_SINGLE_FOLDER_SHARES_SYNCED.equals(event);\n" +
-                           "                    if (RefreshFolderOperation.EVENT_SINGLE_FOLDER_CONTENTS_SYNCED.equals(event) &&\n" +
-                           "                            synchResult != null) {\n" +
-                           "                        if (synchResult.isSuccess()) {\n" +
-                           "                            hideInfoBox();\n" +
-                           "                        } else {\n" +
-                           "                            if (checkForRemoteOperationError(synchResult)) {\n" +
-                           "                                requestCredentialsUpdate(context);\n" +
-                           "                            } else if (RemoteOperationResult.ResultCode.SSL_RECOVERABLE_PEER_UNVERIFIED.equals(\n" +
-                           "                                    synchResult.getCode())) {\n" +
-                           "                                showUntrustedCertDialog(synchResult);\n" +
-                           "                            } else if (ResultCode.MAINTENANCE_MODE.equals(synchResult.getCode())) {\n" +
-                           "                                showInfoBox(R.string.maintenance_mode);\n" +
-                           "                            } else if (ResultCode.NO_NETWORK_CONNECTION.equals(synchResult.getCode()) ||\n" +
-                           "                                    ResultCode.HOST_NOT_AVAILABLE.equals(synchResult.getCode())) {\n" +
-                           "                                showInfoBox(R.string.offline_mode);\n" +
-                           "                            }\n" +
-                           "                        }\n" +
-                           "                    }\n" +
-                           "                    removeStickyBroadcast(intent);\n" +
-                           "                    DataHolderUtil.getInstance().delete(intent.getStringExtra(FileSyncAdapter.EXTRA_RESULT));\n" +
-                           "                    Log_OC.d(TAG, \"Setting progress visibility to \" + mSyncInProgress);\n" +
-                           "                    setIndeterminate(mSyncInProgress);\n" +
-                           "                    setBackgroundText();\n" +
-                           "                }\n" +
-                           "            }\n" +
-                           "            if (synchResult != null && synchResult.getCode().equals(\n" +
-                           "                    RemoteOperationResult.ResultCode.SSL_RECOVERABLE_PEER_UNVERIFIED)) {\n" +
-                           "                mLastSslUntrustedServerResult = synchResult;\n" +
-                           "            }\n" +
-                           "        } catch (RuntimeException e) {\n" +
-                           "            removeStickyBroadcast(intent);\n" +
-                           "            try {\n" +
-                           "                DataHolderUtil.getInstance().delete(intent.getStringExtra(FileSyncAdapter.EXTRA_RESULT));\n" +
-                           "            } catch (RuntimeException re) {\n" +
-                           "                Log_OC.i(TAG, \"Ignoring error deleting data\");\n" +
-                           "            }\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "    public void onReceive3(Context context, Intent intent) {\n" +
-                           "        try {\n" +
-                           "            String uploadedRemotePath = intent.getStringExtra(FileUploader.EXTRA_REMOTE_PATH);\n" +
-                           "            String accountName = intent.getStringExtra(FileUploader.ACCOUNT_NAME);\n" +
-                           "            boolean sameAccount = getAccount() != null && accountName.equals(getAccount().name);\n" +
-                           "            OCFile currentDir = getCurrentDir();\n" +
-                           "            boolean isDescendant = currentDir != null && uploadedRemotePath != null &&\n" +
-                           "                    uploadedRemotePath.startsWith(currentDir.getRemotePath());\n" +
-                           "            if (sameAccount && isDescendant) {\n" +
-                           "                String linkedToRemotePath =\n" +
-                           "                        intent.getStringExtra(FileUploader.EXTRA_LINKED_TO_PATH);\n" +
-                           "                if (linkedToRemotePath == null || isAscendant(linkedToRemotePath)) {\n" +
-                           "                    refreshListOfFilesFragment(false);\n" +
-                           "                }\n" +
-                           "            }\n" +
-                           "            boolean uploadWasFine = intent.getBooleanExtra(\n" +
-                           "                    FileUploader.EXTRA_UPLOAD_RESULT,\n" +
-                           "                    false);\n" +
-                           "            boolean renamedInUpload = getFile().getRemotePath().\n" +
-                           "                    equals(intent.getStringExtra(FileUploader.EXTRA_OLD_REMOTE_PATH));\n" +
-                           "            boolean sameFile = getFile().getRemotePath().equals(uploadedRemotePath) ||\n" +
-                           "                    renamedInUpload;\n" +
-                           "            FileFragment details = getSecondFragment();\n" +
-                           "            if (sameAccount && sameFile && details instanceof FileDetailFragment) {\n" +
-                           "                if (uploadWasFine) {\n" +
-                           "                    setFile(getStorageManager().getFileByPath(uploadedRemotePath));\n" +
-                           "                } else {\n" +
-                           "                    Log_OC.d(TAG, \"Remove upload progress bar after upload failed\");\n" +
-                           "                }\n" +
-                           "                if (renamedInUpload) {\n" +
-                           "                    String newName = new File(uploadedRemotePath).getName();\n" +
-                           "                    DisplayUtils.showSnackMessage(\n" +
-                           "                            getActivity(),\n" +
-                           "                            R.string.filedetails_renamed_in_upload_msg,\n" +
-                           "                            newName\n" +
-                           "                    );\n" +
-                           "                }\n" +
-                           "                if (uploadWasFine || getFile().fileExists()) {\n" +
-                           "                    ((FileDetailFragment) details).updateFileDetails(false, true);\n" +
-                           "                } else {\n" +
-                           "                    cleanSecondFragment();\n" +
-                           "                }\n" +
-                           "                if (uploadWasFine) {\n" +
-                           "                    OCFile ocFile = getFile();\n" +
-                           "                    if (PreviewImageFragment.canBePreviewed(ocFile)) {\n" +
-                           "                        startImagePreview(getFile(), true);\n" +
-                           "                    } else if (PreviewTextFragment.canBePreviewed(ocFile)) {\n" +
-                           "                        startTextPreview(ocFile, true);\n" +
-                           "                    }\n" +
-                           "                }\n" +
-                           "            }\n" +
-                           "            setIndeterminate(false);\n" +
-                           "        } finally {\n" +
-                           "            if (intent != null) {\n" +
-                           "                removeStickyBroadcast(intent);\n" +
-                           "            }\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "    public void onReceive4(Context context, Intent intent) {\n" +
-                           "        try {\n" +
-                           "            String event = intent.getAction();\n" +
-                           "            Log_OC.d(TAG, \"Received broadcast \" + event);\n" +
-                           "            String accountName = intent.getStringExtra(FileSyncAdapter.EXTRA_ACCOUNT_NAME);\n" +
-                           "            String syncFolderRemotePath = intent.getStringExtra(FileSyncAdapter.EXTRA_FOLDER_PATH);\n" +
-                           "            RemoteOperationResult syncResult = (RemoteOperationResult)\n" +
-                           "                    DataHolderUtil.getInstance().retrieve(intent.getStringExtra(FileSyncAdapter.EXTRA_RESULT));\n" +
-                           "            boolean sameAccount = getAccount() != null && accountName.equals(getAccount().name)\n" +
-                           "                    && getStorageManager() != null;\n" +
-                           "            if (sameAccount) {\n" +
-                           "                if (FileSyncAdapter.EVENT_FULL_SYNC_START.equals(event)) {\n" +
-                           "                    mSyncInProgress = true;\n" +
-                           "                } else {\n" +
-                           "                    OCFile currentFile = (getFile() == null) ? null :\n" +
-                           "                            getStorageManager().getFileByPath(getFile().getRemotePath());\n" +
-                           "                    OCFile currentDir = (getCurrentFolder() == null) ? null : \n" +
-                           "                        getStorageManager().getFileByPath(getCurrentFolder().getRemotePath());\n" +
-                           "                    if (currentDir == null) {\n" +
-                           "                        DisplayUtils.showSnackMessage(getActivity(), R.string.sync_current_folder_was_removed,\n" +
-                           "                                getCurrentFolder().getFileName());\n" +
-                           "                        browseToRoot();\n" +
-                           "                    } else {\n" +
-                           "                        if (currentFile == null && !getFile().isFolder()) {\n" +
-                           "                            currentFile = currentDir;\n" +
-                           "                        }\n" +
-                           "                        if (currentDir.getRemotePath().equals(syncFolderRemotePath)) {\n" +
-                           "                            OCFileListFragment fileListFragment = getListOfFilesFragment();\n" +
-                           "                            if (fileListFragment != null) {\n" +
-                           "                                fileListFragment.listDirectory(currentDir, false, false);\n" +
-                           "                            }\n" +
-                           "                        }\n" +
-                           "                        setFile(currentFile);\n" +
-                           "                    }\n" +
-                           "                    \n" +
-                           "                    mSyncInProgress = (!FileSyncAdapter.EVENT_FULL_SYNC_END.equals(event) && \n" +
-                           "                            !RefreshFolderOperation.EVENT_SINGLE_FOLDER_SHARES_SYNCED.equals(event));\n" +
-                           "                    if (RefreshFolderOperation.EVENT_SINGLE_FOLDER_CONTENTS_SYNCED.equals(event) &&\n" +
-                           "                            syncResult != null && !syncResult.isSuccess()) {\n" +
-                           "                        if (ResultCode.UNAUTHORIZED.equals(syncResult.getCode()) || (syncResult.isException()\n" +
-                           "                                && syncResult.getException() instanceof AuthenticatorException)) {\n" +
-                           "                            requestCredentialsUpdate(context);\n" +
-                           "                        } else if (RemoteOperationResult.ResultCode.SSL_RECOVERABLE_PEER_UNVERIFIED\n" +
-                           "                                .equals(syncResult.getCode())) {\n" +
-                           "                            showUntrustedCertDialog(syncResult);\n" +
-                           "                        }\n" +
-                           "                    }\n" +
-                           "                }\n" +
-                           "                removeStickyBroadcast(intent);\n" +
-                           "                DataHolderUtil.getInstance().delete(intent.getStringExtra(FileSyncAdapter.EXTRA_RESULT));\n" +
-                           "                Log_OC.d(TAG, \"Setting progress visibility to \" + mSyncInProgress);\n" +
-                           "                setIndeterminate(mSyncInProgress);\n" +
-                           "                setBackgroundText();\n" +
-                           "            }\n" +
-                           "            \n" +
-                           "        } catch (RuntimeException e) {\n" +
-                           "            removeStickyBroadcast(intent);\n" +
-                           "            DataHolderUtil.getInstance().delete(intent.getStringExtra(FileSyncAdapter.EXTRA_RESULT));\n" +
-                           "        }\n" +
-                           "    }*/\n" +
-                           "}\n";
-    
-        String expectedCode = "public class VariousMethods {\n" +
-                              "    void dontTouchThese() {\n" +
-                              "        int x = 0;\n" +
-                              "        sendStickyBroadcast(x);\n" +
-                              "        removeStickyBroadcast(x);\n" +
-                              "    }\n" +
-                              "    private void sendBroadcastUploadsAdded() {\n" +
-                              "        Intent start = new Intent(getUploadsAddedMessage());\n" +
-                              "        start.setPackage(getPackageName());\n" +
-                              "        sendBroadcast(start);\n" +
-                              "    }\n" +
-                              "    private void sendBroadcastUploadStarted(UploadFileOperation upload) {\n" +
-                              "        Intent start = new Intent(getUploadStartMessage());\n" +
-                              "        start.putExtra(EXTRA_REMOTE_PATH, upload.getRemotePath());\n" +
-                              "        start.putExtra(EXTRA_OLD_FILE_PATH, upload.getOriginalStoragePath());\n" +
-                              "        start.putExtra(ACCOUNT_NAME, upload.getAccount().name);\n" +
-                              "        start.setPackage(getPackageName());\n" +
-                              "        sendBroadcast(start);\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    private void sendBroadcastUploadFinished(\n" +
-                              "            UploadFileOperation upload,\n" +
-                              "            RemoteOperationResult uploadResult,\n" +
-                              "            String unlinkedFromRemotePath) {\n" +
-                              "        Intent end = new Intent(getUploadFinishMessage());\n" +
-                              "        end.putExtra(EXTRA_REMOTE_PATH, upload.getRemotePath());\n" +
-                              "        if (upload.wasRenamed()) {\n" +
-                              "            end.putExtra(EXTRA_OLD_REMOTE_PATH, upload.getOldFile().getRemotePath());\n" +
-                              "        }\n" +
-                              "        end.putExtra(EXTRA_OLD_FILE_PATH, upload.getOriginalStoragePath());\n" +
-                              "        end.putExtra(ACCOUNT_NAME, upload.getAccount().name);\n" +
-                              "        end.putExtra(EXTRA_UPLOAD_RESULT, uploadResult.isSuccess());\n" +
-                              "        if (unlinkedFromRemotePath != null) {\n" +
-                              "            end.putExtra(EXTRA_LINKED_TO_PATH, unlinkedFromRemotePath);\n" +
-                              "        }\n" +
-                              "        end.setPackage(getPackageName());\n" +
-                              "        sendBroadcast(end);\n" +
-                              "    }\n" +
-                              "    private void sendBroadcastDownloadFinished(\n" +
-                              "            DownloadFileOperation download,\n" +
-                              "            RemoteOperationResult downloadResult,\n" +
-                              "            String unlinkedFromRemotePath) {\n" +
-                              "        Intent end = new Intent(getDownloadFinishMessage());\n" +
-                              "        end.putExtra(EXTRA_DOWNLOAD_RESULT, downloadResult.isSuccess());\n" +
-                              "        end.putExtra(ACCOUNT_NAME, download.getAccount().name);\n" +
-                              "        end.putExtra(EXTRA_REMOTE_PATH, download.getRemotePath());\n" +
-                              "        end.putExtra(EXTRA_FILE_PATH, download.getSavePath());\n" +
-                              "        end.putExtra(OCFileListFragment.DOWNLOAD_BEHAVIOUR, download.getBehaviour());\n" +
-                              "        end.putExtra(SendShareDialog.ACTIVITY_NAME, download.getActivityName());\n" +
-                              "        end.putExtra(SendShareDialog.PACKAGE_NAME, download.getPackageName());\n" +
-                              "        if (unlinkedFromRemotePath != null) {\n" +
-                              "            end.putExtra(EXTRA_LINKED_TO_PATH, unlinkedFromRemotePath);\n" +
-                              "        }\n" +
-                              "        end.setPackage(getPackageName());\n" +
-                              "        sendBroadcast(end);\n" +
-                              "    }\n" +
-                              "    private void sendBroadcastNewDownload(DownloadFileOperation download,\n" +
-                              "                                          String linkedToRemotePath) {\n" +
-                              "        Intent added = new Intent(getDownloadAddedMessage());\n" +
-                              "        added.putExtra(ACCOUNT_NAME, download.getAccount().name);\n" +
-                              "        added.putExtra(EXTRA_REMOTE_PATH, download.getRemotePath());\n" +
-                              "        added.putExtra(EXTRA_FILE_PATH, download.getSavePath());\n" +
-                              "        added.putExtra(EXTRA_LINKED_TO_PATH, linkedToRemotePath);\n" +
-                              "        added.setPackage(getPackageName());\n" +
-                              "        sendBroadcast(added);\n" +
-                              "    }\n" +
-                              "    public void onReceive1(Context context, Intent intent) {\n" +
-                              "        String accountName = intent.getStringExtra(FileDownloader.ACCOUNT_NAME);\n" +
-                              "        String downloadedRemotePath = intent.getStringExtra(FileDownloader.EXTRA_REMOTE_PATH);\n" +
-                              "        if (getAccount().name.equals(accountName) && \n" +
-                              "                downloadedRemotePath != null) {\n" +
-                              "            OCFile file = getStorageManager().getFileByPath(downloadedRemotePath);\n" +
-                              "            int position = mPreviewImagePagerAdapter.getFilePosition(file);\n" +
-                              "            boolean downloadWasFine = intent.getBooleanExtra(\n" +
-                              "                    FileDownloader.EXTRA_DOWNLOAD_RESULT, false);\n" +
-                              "            \n" +
-                              "            if (position >= 0 &&\n" +
-                              "                    intent.getAction().equals(FileDownloader.getDownloadFinishMessage())) {\n" +
-                              "                if (downloadWasFine) {\n" +
-                              "                    mPreviewImagePagerAdapter.updateFile(position, file);   \n" +
-                              "                    \n" +
-                              "                } else {\n" +
-                              "                    mPreviewImagePagerAdapter.updateWithDownloadError(position);\n" +
-                              "                }\n" +
-                              "                mPreviewImagePagerAdapter.notifyDataSetChanged();\n" +
-                              "            } else {\n" +
-                              "                Log_OC.d(TAG, \"Download finished, but the fragment is offscreen\");\n" +
-                              "            }\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    /*public void onReceive2(Context context, Intent intent) {\n" +
-                              "        try {\n" +
-                              "            String event = intent.getAction();\n" +
-                              "            Log_OC.d(TAG, \"Received broadcast \" + event);\n" +
-                              "            String accountName = intent.getStringExtra(FileSyncAdapter.EXTRA_ACCOUNT_NAME);\n" +
-                              "            String synchFolderRemotePath =\n" +
-                              "                    intent.getStringExtra(FileSyncAdapter.EXTRA_FOLDER_PATH);\n" +
-                              "            RemoteOperationResult synchResult = (RemoteOperationResult)\n" +
-                              "                    DataHolderUtil.getInstance().retrieve(intent.getStringExtra(FileSyncAdapter.EXTRA_RESULT));\n" +
-                              "            boolean sameAccount = getAccount() != null &&\n" +
-                              "                    accountName.equals(getAccount().name) && getStorageManager() != null;\n" +
-                              "            if (sameAccount) {\n" +
-                              "                if (FileSyncAdapter.EVENT_FULL_SYNC_START.equals(event)) {\n" +
-                              "                    mSyncInProgress = true;\n" +
-                              "                } else {\n" +
-                              "                    OCFile currentFile = (getFile() == null) ? null :\n" +
-                              "                            getStorageManager().getFileByPath(getFile().getRemotePath());\n" +
-                              "                    OCFile currentDir = (getCurrentDir() == null) ? null :\n" +
-                              "                            getStorageManager().getFileByPath(getCurrentDir().getRemotePath());\n" +
-                              "                    if (currentDir == null) {\n" +
-                              "                        DisplayUtils.showSnackMessage(\n" +
-                              "                                getActivity(),\n" +
-                              "                                R.string.sync_current_folder_was_removed,\n" +
-                              "                                synchFolderRemotePath\n" +
-                              "                        );\n" +
-                              "                        browseToRoot();\n" +
-                              "                    } else {\n" +
-                              "                        if (currentFile == null && !getFile().isFolder()) {\n" +
-                              "                            cleanSecondFragment();\n" +
-                              "                            currentFile = currentDir;\n" +
-                              "                        }\n" +
-                              "                        if (currentDir.getRemotePath().equals(synchFolderRemotePath)) {\n" +
-                              "                            OCFileListFragment fileListFragment = getListOfFilesFragment();\n" +
-                              "                            if (fileListFragment != null) {\n" +
-                              "                                fileListFragment.listDirectory(currentDir, MainApp.isOnlyOnDevice(), false);\n" +
-                              "                            }\n" +
-                              "                        }\n" +
-                              "                        setFile(currentFile);\n" +
-                              "                    }\n" +
-                              "                    mSyncInProgress = !FileSyncAdapter.EVENT_FULL_SYNC_END.equals(event) &&\n" +
-                              "                            !RefreshFolderOperation.EVENT_SINGLE_FOLDER_SHARES_SYNCED.equals(event);\n" +
-                              "                    if (RefreshFolderOperation.EVENT_SINGLE_FOLDER_CONTENTS_SYNCED.equals(event) &&\n" +
-                              "                            synchResult != null) {\n" +
-                              "                        if (synchResult.isSuccess()) {\n" +
-                              "                            hideInfoBox();\n" +
-                              "                        } else {\n" +
-                              "                            if (checkForRemoteOperationError(synchResult)) {\n" +
-                              "                                requestCredentialsUpdate(context);\n" +
-                              "                            } else if (RemoteOperationResult.ResultCode.SSL_RECOVERABLE_PEER_UNVERIFIED.equals(\n" +
-                              "                                    synchResult.getCode())) {\n" +
-                              "                                showUntrustedCertDialog(synchResult);\n" +
-                              "                            } else if (ResultCode.MAINTENANCE_MODE.equals(synchResult.getCode())) {\n" +
-                              "                                showInfoBox(R.string.maintenance_mode);\n" +
-                              "                            } else if (ResultCode.NO_NETWORK_CONNECTION.equals(synchResult.getCode()) ||\n" +
-                              "                                    ResultCode.HOST_NOT_AVAILABLE.equals(synchResult.getCode())) {\n" +
-                              "                                showInfoBox(R.string.offline_mode);\n" +
-                              "                            }\n" +
-                              "                        }\n" +
-                              "                    }\n" +
-                              "                    removeStickyBroadcast(intent);\n" +
-                              "                    DataHolderUtil.getInstance().delete(intent.getStringExtra(FileSyncAdapter.EXTRA_RESULT));\n" +
-                              "                    Log_OC.d(TAG, \"Setting progress visibility to \" + mSyncInProgress);\n" +
-                              "                    setIndeterminate(mSyncInProgress);\n" +
-                              "                    setBackgroundText();\n" +
-                              "                }\n" +
-                              "            }\n" +
-                              "            if (synchResult != null && synchResult.getCode().equals(\n" +
-                              "                    RemoteOperationResult.ResultCode.SSL_RECOVERABLE_PEER_UNVERIFIED)) {\n" +
-                              "                mLastSslUntrustedServerResult = synchResult;\n" +
-                              "            }\n" +
-                              "        } catch (RuntimeException e) {\n" +
-                              "            removeStickyBroadcast(intent);\n" +
-                              "            try {\n" +
-                              "                DataHolderUtil.getInstance().delete(intent.getStringExtra(FileSyncAdapter.EXTRA_RESULT));\n" +
-                              "            } catch (RuntimeException re) {\n" +
-                              "                Log_OC.i(TAG, \"Ignoring error deleting data\");\n" +
-                              "            }\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    public void onReceive3(Context context, Intent intent) {\n" +
-                              "        try {\n" +
-                              "            String uploadedRemotePath = intent.getStringExtra(FileUploader.EXTRA_REMOTE_PATH);\n" +
-                              "            String accountName = intent.getStringExtra(FileUploader.ACCOUNT_NAME);\n" +
-                              "            boolean sameAccount = getAccount() != null && accountName.equals(getAccount().name);\n" +
-                              "            OCFile currentDir = getCurrentDir();\n" +
-                              "            boolean isDescendant = currentDir != null && uploadedRemotePath != null &&\n" +
-                              "                    uploadedRemotePath.startsWith(currentDir.getRemotePath());\n" +
-                              "            if (sameAccount && isDescendant) {\n" +
-                              "                String linkedToRemotePath =\n" +
-                              "                        intent.getStringExtra(FileUploader.EXTRA_LINKED_TO_PATH);\n" +
-                              "                if (linkedToRemotePath == null || isAscendant(linkedToRemotePath)) {\n" +
-                              "                    refreshListOfFilesFragment(false);\n" +
-                              "                }\n" +
-                              "            }\n" +
-                              "            boolean uploadWasFine = intent.getBooleanExtra(\n" +
-                              "                    FileUploader.EXTRA_UPLOAD_RESULT,\n" +
-                              "                    false);\n" +
-                              "            boolean renamedInUpload = getFile().getRemotePath().\n" +
-                              "                    equals(intent.getStringExtra(FileUploader.EXTRA_OLD_REMOTE_PATH));\n" +
-                              "            boolean sameFile = getFile().getRemotePath().equals(uploadedRemotePath) ||\n" +
-                              "                    renamedInUpload;\n" +
-                              "            FileFragment details = getSecondFragment();\n" +
-                              "            if (sameAccount && sameFile && details instanceof FileDetailFragment) {\n" +
-                              "                if (uploadWasFine) {\n" +
-                              "                    setFile(getStorageManager().getFileByPath(uploadedRemotePath));\n" +
-                              "                } else {\n" +
-                              "                    Log_OC.d(TAG, \"Remove upload progress bar after upload failed\");\n" +
-                              "                }\n" +
-                              "                if (renamedInUpload) {\n" +
-                              "                    String newName = new File(uploadedRemotePath).getName();\n" +
-                              "                    DisplayUtils.showSnackMessage(\n" +
-                              "                            getActivity(),\n" +
-                              "                            R.string.filedetails_renamed_in_upload_msg,\n" +
-                              "                            newName\n" +
-                              "                    );\n" +
-                              "                }\n" +
-                              "                if (uploadWasFine || getFile().fileExists()) {\n" +
-                              "                    ((FileDetailFragment) details).updateFileDetails(false, true);\n" +
-                              "                } else {\n" +
-                              "                    cleanSecondFragment();\n" +
-                              "                }\n" +
-                              "                if (uploadWasFine) {\n" +
-                              "                    OCFile ocFile = getFile();\n" +
-                              "                    if (PreviewImageFragment.canBePreviewed(ocFile)) {\n" +
-                              "                        startImagePreview(getFile(), true);\n" +
-                              "                    } else if (PreviewTextFragment.canBePreviewed(ocFile)) {\n" +
-                              "                        startTextPreview(ocFile, true);\n" +
-                              "                    }\n" +
-                              "                }\n" +
-                              "            }\n" +
-                              "            setIndeterminate(false);\n" +
-                              "        } finally {\n" +
-                              "            if (intent != null) {\n" +
-                              "                removeStickyBroadcast(intent);\n" +
-                              "            }\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    public void onReceive4(Context context, Intent intent) {\n" +
-                              "        try {\n" +
-                              "            String event = intent.getAction();\n" +
-                              "            Log_OC.d(TAG, \"Received broadcast \" + event);\n" +
-                              "            String accountName = intent.getStringExtra(FileSyncAdapter.EXTRA_ACCOUNT_NAME);\n" +
-                              "            String syncFolderRemotePath = intent.getStringExtra(FileSyncAdapter.EXTRA_FOLDER_PATH);\n" +
-                              "            RemoteOperationResult syncResult = (RemoteOperationResult)\n" +
-                              "                    DataHolderUtil.getInstance().retrieve(intent.getStringExtra(FileSyncAdapter.EXTRA_RESULT));\n" +
-                              "            boolean sameAccount = getAccount() != null && accountName.equals(getAccount().name)\n" +
-                              "                    && getStorageManager() != null;\n" +
-                              "            if (sameAccount) {\n" +
-                              "                if (FileSyncAdapter.EVENT_FULL_SYNC_START.equals(event)) {\n" +
-                              "                    mSyncInProgress = true;\n" +
-                              "                } else {\n" +
-                              "                    OCFile currentFile = (getFile() == null) ? null :\n" +
-                              "                            getStorageManager().getFileByPath(getFile().getRemotePath());\n" +
-                              "                    OCFile currentDir = (getCurrentFolder() == null) ? null : \n" +
-                              "                        getStorageManager().getFileByPath(getCurrentFolder().getRemotePath());\n" +
-                              "                    if (currentDir == null) {\n" +
-                              "                        DisplayUtils.showSnackMessage(getActivity(), R.string.sync_current_folder_was_removed,\n" +
-                              "                                getCurrentFolder().getFileName());\n" +
-                              "                        browseToRoot();\n" +
-                              "                    } else {\n" +
-                              "                        if (currentFile == null && !getFile().isFolder()) {\n" +
-                              "                            currentFile = currentDir;\n" +
-                              "                        }\n" +
-                              "                        if (currentDir.getRemotePath().equals(syncFolderRemotePath)) {\n" +
-                              "                            OCFileListFragment fileListFragment = getListOfFilesFragment();\n" +
-                              "                            if (fileListFragment != null) {\n" +
-                              "                                fileListFragment.listDirectory(currentDir, false, false);\n" +
-                              "                            }\n" +
-                              "                        }\n" +
-                              "                        setFile(currentFile);\n" +
-                              "                    }\n" +
-                              "                    \n" +
-                              "                    mSyncInProgress = (!FileSyncAdapter.EVENT_FULL_SYNC_END.equals(event) && \n" +
-                              "                            !RefreshFolderOperation.EVENT_SINGLE_FOLDER_SHARES_SYNCED.equals(event));\n" +
-                              "                    if (RefreshFolderOperation.EVENT_SINGLE_FOLDER_CONTENTS_SYNCED.equals(event) &&\n" +
-                              "                            syncResult != null && !syncResult.isSuccess()) {\n" +
-                              "                        if (ResultCode.UNAUTHORIZED.equals(syncResult.getCode()) || (syncResult.isException()\n" +
-                              "                                && syncResult.getException() instanceof AuthenticatorException)) {\n" +
-                              "                            requestCredentialsUpdate(context);\n" +
-                              "                        } else if (RemoteOperationResult.ResultCode.SSL_RECOVERABLE_PEER_UNVERIFIED\n" +
-                              "                                .equals(syncResult.getCode())) {\n" +
-                              "                            showUntrustedCertDialog(syncResult);\n" +
-                              "                        }\n" +
-                              "                    }\n" +
-                              "                }\n" +
-                              "                removeStickyBroadcast(intent);\n" +
-                              "                DataHolderUtil.getInstance().delete(intent.getStringExtra(FileSyncAdapter.EXTRA_RESULT));\n" +
-                              "                Log_OC.d(TAG, \"Setting progress visibility to \" + mSyncInProgress);\n" +
-                              "                setIndeterminate(mSyncInProgress);\n" +
-                              "                setBackgroundText();\n" +
-                              "            }\n" +
-                              "            \n" +
-                              "        } catch (RuntimeException e) {\n" +
-                              "            removeStickyBroadcast(intent);\n" +
-                              "            DataHolderUtil.getInstance().delete(intent.getStringExtra(FileSyncAdapter.EXTRA_RESULT));\n" +
-                              "        }\n" +
-                              "    }*/\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "Intent intent;\n" +
-                      "@@\n" +
-                      "(\n" +
-                      "- sendStickyBroadcast(intent);\n" +
-                      "+ sendBroadcast(intent);\n" +
-                      "|\n" +
-                      "- removeStickyBroadcast(intent);\n" +
-                      ")\n";
     
         runSingleTest(smpl, inputCode, expectedCode);
     }
@@ -1503,6 +930,10 @@ public class EndToEndTests {
         // contract: optdots should match the shortest path between surrounding context elements
 
         String inputCode = "class A {\n" +
+                           "  void pre() {}\n" +
+                           "  void post() {}\n" +
+                           "  void a() {}\n" +
+                           "  \n" +
                            "  void test() {\n" +
                            "    pre();\n" +
                            "    a();\n" +
@@ -1514,6 +945,10 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    void pre() {}\n" +
+                              "    void post() {}\n" +
+                              "    void a() {}\n" +
+                              "    \n" +
                               "    void test() {\n" +
                               "        pre();\n" +
                               "        a();\n" +
@@ -1539,6 +974,13 @@ public class EndToEndTests {
         // contract: using the <... P ...> dots alternative to include an optional matching of P
 
         String inputCode = "class A {\n" +
+                           "  /* skip */ void a(Object ... xs) {}\n" +
+                           "  /* skip */ void b(Object ... xs) {}\n" +
+                           "  /* skip */ void c(Object ... xs) {}\n" +
+                           "  /* skip */ void d(Object ... xs) {}\n" +
+                           "  Object x;\n" +
+                           "  Object y;\n" +
+                           "  Object z;\n" +
                            "  void m1() {\n" +
                            "    a();\n" +
                            "    b(x);\n" +
@@ -1556,6 +998,13 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "  /* skip */ void a(Object ... xs) {}\n" +
+                              "  /* skip */ void b(Object ... xs) {}\n" +
+                              "  /* skip */ void c(Object ... xs) {}\n" +
+                              "  /* skip */ void d(Object ... xs) {}\n" +
+                              "  Object x;\n" +
+                              "  Object y;\n" +
+                              "  Object z;\n" +
                               "  void m1() {\n" +
                               "    a();\n" +
                               "    log(x);\n" +
@@ -1785,7 +1234,7 @@ public class EndToEndTests {
                            "    float square(float x) {\n" +
                            "        return x*x;\n" +
                            "    }\n" +
-                           "    int square(double x) {\n" +
+                           "    double square(Float x) {\n" +
                            "        return x*x;\n" +
                            "    }\n" +
                            "}\n";
@@ -1799,7 +1248,7 @@ public class EndToEndTests {
                               "        float y = 0;\n" +
                               "        return x*x;\n" +
                               "    }\n" +
-                              "    int square(double x) {\n" +
+                              "    double square(Float x) {\n" +
                               "        return x*x;\n" +
                               "    }\n" +
                               "}\n";
@@ -1820,16 +1269,25 @@ public class EndToEndTests {
         // contract: using dots to match arbitrary sequences of parameters in method header
 
         String inputCode = "class A {\n" +
+                           "    static class Point {\n" +
+                           "        public Integer x;\n" +
+                           "        public Integer y;\n" +
+                           "    }\n" +
+                           "    /* skip */ void log(String message) {}\n" +
                            "    void drawCircle(Point origin, float radius) {\n" +
                            "        log(\"Coordinates: \" + origin.x.toString() + \", \" + origin.y.toString());\n" +
                            "    }\n" +
-                           "    \n" +
                            "    void drawRectangle(float width, float height, Point topLeftCorner) {\n" +
                            "        log(\"Coordinates: \" + topLeftCorner.x.toString() + \", \" + topLeftCorner.y.toString());\n" +
                            "    }\n" +
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    static class Point {\n" +
+                              "        public Integer x;\n" +
+                              "        public Integer y;\n" +
+                              "    }\n" +
+                              "    /* skip */ void log(String message) {}\n" +
                               "    void drawCircle(Point origin, float radius) {\n" +
                               "        log(\"Point: \" + origin.toString());\n" +
                               "    }\n" +
@@ -1890,6 +1348,8 @@ public class EndToEndTests {
         // contract: a patch should be able to add statements to an empty method body
 
         String inputCode = "class A {\n" +
+                           "    /* skip */ void a() {}\n" +
+                           "    \n" +
                            "    void m1() {\n" +
                            "    }\n" +
                            "    void m2() {\n" +
@@ -1898,6 +1358,8 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    /* skip */ void a() {}\n" +
+                              "    \n" +
                               "    void m1() {\n" +
                               "        foo();\n" +
                               "        bar();\n" +
@@ -1920,6 +1382,8 @@ public class EndToEndTests {
         // contract: a patch should be able to add statements at the bottom of methods
 
         String inputCode = "class A {\n" +
+                           "    /* skip */ void a() {}\n" +
+                           "    \n" +
                            "    void m1() {\n" +
                            "    }\n" +
                            "    void m2() {\n" +
@@ -1928,6 +1392,8 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    /* skip */ void a() {}\n" +
+                              "    \n" +
                               "    void m1() {\n" +
                               "        foo();\n" +
                               "        bar();\n" +
@@ -1953,6 +1419,8 @@ public class EndToEndTests {
         // contract: a patch should be able to add statements at the top of methods
 
         String inputCode = "class A {\n" +
+                           "    // Skip\n" +
+                           "    void a() {}\n" +
                            "    void m1() {\n" +
                            "    }\n" +
                            "    void m2() {\n" +
@@ -1961,6 +1429,9 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    // Skip\n" +
+                              "    void a() {}\n" +
+                              "    \n" +
                               "    void m1() {\n" +
                               "        foo();\n" +
                               "        bar();\n" +
@@ -1986,6 +1457,15 @@ public class EndToEndTests {
         // contract: the expression 'f(...)' should match any method call to 'f' regardless of argument list
 
         String inputCode = "class A {\n" +
+                           "    // Skip\n" +
+                           "    int f() { return 0; }\n" +
+                           "    \n" +
+                           "    // Skip\n" +
+                           "    int f(int x) { return 0; }\n" +
+                           "    \n" +
+                           "    // Skip\n" +
+                           "    int f(int x, int y) { return 0; }\n" +
+                           "    \n" +
                            "    void m1() {\n" +
                            "        f();\n" +
                            "        f(1);\n" +
@@ -1994,6 +1474,15 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    // Skip\n" +
+                              "    int f() { return 0; }\n" +
+                              "    \n" +
+                              "    // Skip\n" +
+                              "    int f(int x) { return 0; }\n" +
+                              "    \n" +
+                              "    // Skip\n" +
+                              "    int f(int x, int y) { return 0; }\n" +
+                              "    \n" +
                               "    void m1() {\n" +
                               "    }\n" +
                               "}\n";
@@ -2008,6 +1497,8 @@ public class EndToEndTests {
         // contract: the expression 'f(..., E, ...)' should match any method call to 'f' where the expression E appears anywhere in the argument list
 
         String inputCode = "class A {\n" +
+                           "    int f(int ... xs) { return 0; }\n" +
+                           "    \n" +
                            "    void m1() {\n" +
                            "        f();\n" +
                            "        f(1);\n" +
@@ -2019,6 +1510,8 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    int f(int ... xs) { return 0; }\n" +
+                              "    \n" +
                               "    void m1() {\n" +
                               "        f();\n" +
                               "        f(2, 3);\n" +
@@ -2035,6 +1528,8 @@ public class EndToEndTests {
         // contract: the expression 'f(..., E)' should match any method call to 'f' where the expression E appears as the last argument
 
         String inputCode = "class A {\n" +
+                           "    int f(int ... xs) { return 0; }\n" +
+                           "    \n" +
                            "    void m1() {\n" +
                            "        f();\n" +
                            "        f(1);\n" +
@@ -2046,6 +1541,8 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    int f(int ... xs) { return 0; }\n" +
+                              "    \n" +
                               "    void m1() {\n" +
                               "        f();\n" +
                               "        f(2, 3);\n" +
@@ -2064,6 +1561,7 @@ public class EndToEndTests {
         // contract: the expression 'f(E, ...)' should match any method call to 'f' where the expression E appears as the first argument
 
         String inputCode = "class A {\n" +
+                           "    /* skip */ int f(int ... xs) { return 0; }\n" +
                            "    void m1() {\n" +
                            "        f();\n" +
                            "        f(1);\n" +
@@ -2075,6 +1573,7 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    /* skip */ int f(int ... xs) { return 0; }\n" +
                               "    void m1() {\n" +
                               "        f();\n" +
                               "        f(2, 3);\n" +
@@ -2093,6 +1592,9 @@ public class EndToEndTests {
         // contract: the expression 'f(..., g(...), ...)' should match any method call to 'f' with any argument list where a call to 'g' occurs (with any argument list for 'g')
 
         String inputCode = "class A {\n" +
+                           "    int f(int ... xs) { return 0; }\n" +
+                           "    int g(int ... xs) { return 0; }\n" +
+                           "    \n" +
                            "    void m1() {\n" +
                            "        f();\n" +
                            "        f(1);\n" +
@@ -2109,6 +1611,9 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    int f(int ... xs) { return 0; }\n" +
+                              "    int g(int ... xs) { return 0; }\n" +
+                              "    \n" +
                               "    void m1() {\n" +
                               "        f();\n" +
                               "        f(1);\n" +
@@ -2126,6 +1631,9 @@ public class EndToEndTests {
         // contract: the expression 'f(..., g(..., 1, ...), ...)' should match any method call to 'f' with any argument list where a call to 'g' occurs containing the argument 1 in its argument list
 
         String inputCode = "class A {\n" +
+                           "    int f(int ... xs) { return 0; }\n" +
+                           "    int g(int ... xs) { return 0; }\n" +
+                           "    \n" +
                            "    void m1() {\n" +
                            "        f();\n" +
                            "        f(1);\n" +
@@ -2142,6 +1650,9 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    int f(int ... xs) { return 0; }\n" +
+                              "    int g(int ... xs) { return 0; }\n" +
+                              "    \n" +
                               "    void m1() {\n" +
                               "        f();\n" +
                               "        f(1);\n" +
@@ -2164,6 +1675,9 @@ public class EndToEndTests {
         // contract: the expression 'f(..., g(1, ...), ...)' should match any method call to 'f' with any argument list where a call to 'g' occurs containing the argument 1 as its first argument
 
         String inputCode = "class A {\n" +
+                           "    int f(int ... xs) { return 0; }\n" +
+                           "    int g(int ... xs) { return 0; }\n" +
+                           "    \n" +
                            "    void m1() {\n" +
                            "        f();\n" +
                            "        f(1);\n" +
@@ -2180,6 +1694,9 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    int f(int ... xs) { return 0; }\n" +
+                              "    int g(int ... xs) { return 0; }\n" +
+                              "    \n" +
                               "    void m1() {\n" +
                               "        f();\n" +
                               "        f(1);\n" +
@@ -2203,6 +1720,9 @@ public class EndToEndTests {
         // contract: the expression 'f(..., g(..., 1), ...)' should match any method call to 'f' with any argument list where a call to 'g' occurs containing the argument 1 as its last argument
 
         String inputCode = "class A {\n" +
+                           "    int f(int ... xs) { return 0; }\n" +
+                           "    int g(int ... xs) { return 0; }\n" +
+                           "    \n" +
                            "    void m1() {\n" +
                            "        f();\n" +
                            "        f(1);\n" +
@@ -2219,6 +1739,9 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    int f(int ... xs) { return 0; }\n" +
+                              "    int g(int ... xs) { return 0; }\n" +
+                              "    \n" +
                               "    void m1() {\n" +
                               "        f();\n" +
                               "        f(1);\n" +
@@ -2243,6 +1766,9 @@ public class EndToEndTests {
         // contract: the expression 'f(..., g(..., 1))' should match any method call to 'f' with last argument a call to 'g' containing the argument 1 as its last argument
 
         String inputCode = "class A {\n" +
+                           "    int f(int ... xs) { return 0; }\n" +
+                           "    int g(int ... xs) { return 0; }\n" +
+                           "    \n" +
                            "    void m1() {\n" +
                            "        f();\n" +
                            "        f(1);\n" +
@@ -2259,6 +1785,9 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    int f(int ... xs) { return 0; }\n" +
+                              "    int g(int ... xs) { return 0; }\n" +
+                              "    \n" +
                               "    void m1() {\n" +
                               "        f();\n" +
                               "        f(1);\n" +
@@ -2284,6 +1813,9 @@ public class EndToEndTests {
         // contract: the expression 'f(..., g(1, ...))' should match any method call to 'f' with last argument a call to 'g' containing the argument 1 as its first argument
 
         String inputCode = "class A {\n" +
+                           "    int f(int ... xs) { return 0; }\n" +
+                           "    int g(int ... xs) { return 0; }\n" +
+                           "    \n" +
                            "    void m1() {\n" +
                            "        f();\n" +
                            "        f(1);\n" +
@@ -2300,6 +1832,9 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    int f(int ... xs) { return 0; }\n" +
+                              "    int g(int ... xs) { return 0; }\n" +
+                              "    \n" +
                               "    void m1() {\n" +
                               "        f();\n" +
                               "        f(1);\n" +
@@ -2324,6 +1859,9 @@ public class EndToEndTests {
         // contract: the expression 'f(1, ..., g(..., 3))' should match any method call to 'f' with first argument 1 and last argument a call to 'g' containing the argument 3 as its last argument
 
         String inputCode = "class A {\n" +
+                           "    int f(int ... xs) { return 0; }\n" +
+                           "    int g(int ... xs) { return 0; }\n" +
+                           "    \n" +
                            "    void m1() {\n" +
                            "        f();\n" +
                            "        f(1);\n" +
@@ -2340,6 +1878,9 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    int f(int ... xs) { return 0; }\n" +
+                              "    int g(int ... xs) { return 0; }\n" +
+                              "    \n" +
                               "    void m1() {\n" +
                               "        f();\n" +
                               "        f(1);\n" +
@@ -2364,6 +1905,8 @@ public class EndToEndTests {
         // contract: a patch should be able to add entire methods to the parent class of a patch-context-matching method
 
         String inputCode = "class A {\n" +
+                           "  void a() {}\n" +
+                           "  \n" +
                            "  void m1() {\n" +
                            "    a();\n" +
                            "  }\n" +
@@ -2373,6 +1916,8 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    void a() {}\n" +
+                              "    \n" +
                               "    void m1() {\n" +
                               "        b();\n" +
                               "    }\n" +
@@ -2954,6 +2499,10 @@ public class EndToEndTests {
         // contract: should be able to match and transform things surrounding an unsupported element
 
         String inputCode = "class A {\n" +
+                           "    void a() {}\n" +
+                           "    void b() {}\n" +
+                           "    boolean loopsNotSupported;\n" +
+                           "    \n" +
                            "    void foo() {\n" +
                            "        a();\n" +
                            "        while (loopsNotSupported) {\n" +
@@ -2964,6 +2513,10 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    void a() {}\n" +
+                              "    void b() {}\n" +
+                              "    boolean loopsNotSupported;\n" +
+                              "    \n" +
                               "    void foo() {\n" +
                               "        while (loopsNotSupported) {\n" +
                               "            break;\n" +
@@ -2985,6 +2538,10 @@ public class EndToEndTests {
         // contract: a 'when != x' constraint on dots should not be allowed to traverse an unsupported element since we cannot know if x is used inside.
 
         String inputCode = "class A {\n" +
+                           "    void a() {}\n" +
+                           "    void b() {}\n" +
+                           "    boolean loopsNotSupported;\n" +
+                           "    \n" +
                            "    void foo() {\n" +
                            "        a();\n" +
                            "        while (loopsNotSupported) {\n" +
@@ -2995,6 +2552,10 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
+                              "    void a() {}\n" +
+                              "    void b() {}\n" +
+                              "    boolean loopsNotSupported;\n" +
+                              "    \n" +
                               "    void foo() {\n" +
                               "        a();\n" +
                               "        while (loopsNotSupported) {\n" +

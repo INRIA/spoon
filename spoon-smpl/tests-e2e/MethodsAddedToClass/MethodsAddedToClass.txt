@@ -23,6 +23,8 @@ void fn() {
 
 [input]
 class A {
+  void a() {}
+  
   void m1() {
     a();
   }
@@ -33,6 +35,8 @@ class A {
 
 [expected]
 class A {
+    void a() {}
+    
     void m1() {
         b();
     }
