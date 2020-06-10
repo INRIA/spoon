@@ -21,11 +21,13 @@ import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.processing.Processor;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtThrow;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
@@ -44,6 +46,7 @@ import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.prettyprinter.testclasses.OneLineMultipleVariableDeclaration;
+import spoon.test.prettyprinter.testclasses.Throw;
 import spoon.test.prettyprinter.testclasses.InvocationReplacement;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
 
@@ -71,6 +74,23 @@ import static org.junit.Assert.fail;
 public class TestSniperPrinter {
 
 	@Test
+	public void testPrintInsertedThrow() {
+		testSniper(Throw.class.getName(), type -> {
+			CtConstructorCall ctConstructorCall = (CtConstructorCall) type.getMethodsByName("foo").get(0).getBody().getStatements().get(0);
+			CtThrow ctThrow = type.getFactory().createCtThrow(ctConstructorCall.toString());
+			ctConstructorCall.replace(ctThrow);
+		}, (type, printed) -> {
+			assertIsPrintedWithExpectedChanges(type, printed,
+					"\\Qvoid foo(int x) {\n" +
+					"\t\tnew IllegalArgumentException(\"x must be nonnegative\");\n" +
+					"\t}",
+					"void foo(int x) {\n" +
+					"\t\tthrow new java.lang.IllegalArgumentException(\"x must be nonnegative\");\n" +
+					"\t}");
+		});
+	}
+
+  @Test
 	public void testPrintReplacementOfInvocation() {
 		testSniper(InvocationReplacement.class.getName(), type -> {
 			CtLocalVariable localVariable = (CtLocalVariable) type.getMethodsByName("main").get(0).getBody().getStatements().get(0);
