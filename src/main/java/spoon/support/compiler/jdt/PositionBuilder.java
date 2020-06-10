@@ -586,6 +586,15 @@ public class PositionBuilder {
 					//TODO handle comments correctly here. E.g. List<T /*ccc*/ >
 					sourceEnd = findNextNonWhitespace(contents, contents.length - 1, getSourceEndOfTypeReference(contents, tr, tr.sourceEnd) + 1);
 				}
+				// hack to get sniper of varargs right
+				// we remove the "..." from the source position
+				// hence from the fragment
+				if (contents[sourceEnd] == '.'
+						&& contents[sourceEnd - 1] == '.'
+						&& contents[sourceEnd - 2] == '.'
+				) {
+					sourceEnd = sourceEnd - 3;
+				}
 			} else {
 				//SomeType<>
 				int startIdx = findNextNonWhitespace(contents, contents.length - 1, sourceEnd + 1);
