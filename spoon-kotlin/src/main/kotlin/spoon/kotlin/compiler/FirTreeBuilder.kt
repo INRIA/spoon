@@ -221,6 +221,49 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return null
     }
 
+    override fun visitTypeOperatorCall(
+        typeOperatorCall: FirTypeOperatorCall,
+        data: Nothing?
+    ): CompositeTransformResult<CtElement> {
+        return when(typeOperatorCall.operation) {
+            FirOperation.IS, FirOperation.NOT_IS -> visitIsTypeOperation(typeOperatorCall)
+            FirOperation.AS, FirOperation.SAFE_AS -> visitTypeCast(typeOperatorCall)
+            else -> throw SpoonException("${typeOperatorCall.operation} is not a type operator")
+        }
+    }
+
+    override fun visitResolvedTypeRef(
+        resolvedTypeRef: FirResolvedTypeRef,
+        data: Nothing?
+    ): CompositeTransformResult<CtElement> {
+        val typeAccess = factory.Core().createTypeAccess<Any>()
+        typeAccess.setAccessedType<CtTypeAccess<Any>>(referenceBuilder.getNewTypeReference(resolvedTypeRef))
+        return typeAccess.compose()
+    }
+
+    private fun visitIsTypeOperation(typeOperatorCall: FirTypeOperatorCall):
+            CompositeTransformResult.Single<CtBinaryOperator<*>> {
+        val ctBinaryOperator = factory.Core().createBinaryOperator<Boolean>()
+        ctBinaryOperator.putMetadata<CtBinaryOperator<*>>(
+            KtMetadataKeys.KT_BINARY_OPERATOR_KIND, KtBinaryOperatorKind.fromFirOperation(typeOperatorCall.operation))
+        ctBinaryOperator.setType<CtBinaryOperator<Boolean>>(referenceBuilder.getNewTypeReference(typeOperatorCall.typeRef))
+        val lhs = typeOperatorCall.argument.accept(this,null).single as CtExpression<*>
+        val rhs = typeOperatorCall.conversionTypeRef.accept(this,null).single as CtExpression<*>
+        ctBinaryOperator.setLeftHandOperand<CtBinaryOperator<Boolean>>(lhs)
+        ctBinaryOperator.setRightHandOperand<CtBinaryOperator<Boolean>>(rhs)
+        return ctBinaryOperator.compose()
+    }
+
+    private fun visitTypeCast(typeOperatorCall: FirTypeOperatorCall): CompositeTransformResult.Single<CtExpression<*>> {
+        val castedExpr = typeOperatorCall.argument.accept(this,null).single as CtExpression<Any>
+        val conversionTypeRef = referenceBuilder.getNewTypeReference<Any>(typeOperatorCall.conversionTypeRef)
+        castedExpr.addTypeCast<CtExpression<Any>>(conversionTypeRef)
+
+        val safe = typeOperatorCall.operation == FirOperation.SAFE_AS
+        conversionTypeRef.putMetadata<CtTypeReference<*>>(KtMetadataKeys.TYPE_CAST_AS_SAFE, safe)
+        return castedExpr.compose()
+    }
+
     override fun visitFunctionCall(functionCall: FirFunctionCall, data: Nothing?): CompositeTransformResult<CtElement> {
         val invocationType = helper.resolveIfOperatorOrInvocation(functionCall)
         return when(invocationType) {

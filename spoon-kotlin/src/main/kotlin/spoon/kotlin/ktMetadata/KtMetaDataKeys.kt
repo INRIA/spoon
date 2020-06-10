@@ -23,5 +23,7 @@ object KtMetadataKeys {
 
     const val KT_BINARY_OPERATOR_KIND = "skt_key kt binary operator kind : KtBinaryOperatorKind"
     const val INVOCATION_IS_INFIX = "skt_key invocation is infix : Boolean"
+
+    const val TYPE_CAST_AS_SAFE = "skt_key type cast AS_SAFE : Boolean"
 }
 

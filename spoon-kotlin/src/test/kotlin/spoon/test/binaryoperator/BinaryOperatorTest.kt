@@ -7,6 +7,7 @@ import spoon.kotlin.reflect.code.KtBinaryOperatorKind
 import spoon.kotlin.reflect.visitor.printing.DefaultKotlinPrettyPrinter
 import spoon.kotlin.reflect.visitor.printing.DefaultPrinterAdapter
 import spoon.reflect.code.*
+import spoon.reflect.declaration.CtType
 import spoon.test.TestBuildUtil
 
 class BinaryOperatorTest {
@@ -104,5 +105,56 @@ class BinaryOperatorTest {
         }
         assertEquals(KtBinaryOperatorKind.EQ, ((statements[5] as CtReturn<*>).returnedExpression as CtBinaryOperator<*>).ktKind())
         assertEquals(expectedStrings[5], pp.prettyprint(statements[5]))
+    }
+
+    @Test
+    fun testTypeOperators() {
+        val c = util.buildClass("spoon.test.binaryoperator.testclasses","TypeOperators")
+
+        fun CtType<*>.getInitializer(s: String): CtExpression<*> = (c.getField(s).defaultExpression )
+
+        assertEquals(8, c.fields.size)
+
+        val pkg = "spoon.test.binaryoperator.testclasses"
+
+        var propertyInitializer = c.getInitializer("y")
+        assertEquals("${pkg}.Derived", pp.prettyprint(propertyInitializer.type))
+        assertEquals(1, propertyInitializer.typeCasts.size)
+        assertEquals("${pkg}.Base?", pp.prettyprint(propertyInitializer.typeCasts[0]))
+        assertEquals("(x as $pkg.Base?)", pp.prettyprint(propertyInitializer))
+
+        propertyInitializer = c.getInitializer("ySafe")
+        assertEquals("${pkg}.Derived", pp.prettyprint(propertyInitializer.type))
+        assertEquals(1, propertyInitializer.typeCasts.size)
+        assertEquals("$pkg.Base", pp.prettyprint(propertyInitializer.typeCasts[0]))
+        assertEquals("(x as? $pkg.Base)", pp.prettyprint(propertyInitializer))
+
+        propertyInitializer = c.getInitializer("z")
+        assertEquals("${pkg}.Derived", pp.prettyprint(propertyInitializer.type))
+        assertEquals(2, propertyInitializer.typeCasts.size)
+        assertEquals("$pkg.Base", pp.prettyprint(propertyInitializer.typeCasts[0]))
+        assertEquals("$pkg.Derived", pp.prettyprint(propertyInitializer.typeCasts[1]))
+        assertEquals("(x as $pkg.Base as $pkg.Derived)", pp.prettyprint(propertyInitializer))
+
+        propertyInitializer = c.getInitializer("zSafe")
+        assertEquals("${pkg}.Derived", pp.prettyprint(propertyInitializer.type))
+        assertEquals(2, propertyInitializer.typeCasts.size)
+        assertEquals("$pkg.Base", pp.prettyprint(propertyInitializer.typeCasts[0]))
+        assertEquals("$pkg.Derived", pp.prettyprint(propertyInitializer.typeCasts[1]))
+        assertEquals( "(x as? $pkg.Base as? $pkg.Derived)", pp.prettyprint(propertyInitializer))
+
+        propertyInitializer = c.getInitializer("base")
+        assertEquals("${pkg}.Derived", propertyInitializer.type.qualifiedName)
+        assertEquals( "x", pp.prettyprint(propertyInitializer))
+
+        var isOperator = c.getInitializer("i") as CtBinaryOperator<*>
+        assertEquals("kotlin.Boolean", isOperator.type.qualifiedName)
+        assertEquals("$pkg.Base", pp.prettyprint((isOperator.rightHandOperand as CtTypeAccess<*>).accessedType))
+        assertEquals( "x is $pkg.Base", pp.prettyprint(isOperator))
+
+        isOperator = c.getInitializer("i2") as CtBinaryOperator<*>
+        assertEquals("kotlin.Boolean", isOperator.type.qualifiedName)
+        assertEquals("$pkg.Base?", pp.prettyprint((isOperator.rightHandOperand as CtTypeAccess<*>).accessedType))
+        assertEquals( "x !is $pkg.Base?", pp.prettyprint(isOperator))
     }
 }
