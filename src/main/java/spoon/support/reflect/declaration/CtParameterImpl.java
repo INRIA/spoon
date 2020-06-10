@@ -79,6 +79,12 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	}
 
 	@Override
+	public boolean isPartOfJointDeclaration() {
+		// a parameter can never be part of a joint declaration
+		return false;
+	}
+
+	@Override
 	public boolean isInferred() {
 		return this.inferred;
 	}

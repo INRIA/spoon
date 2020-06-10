@@ -116,6 +116,7 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.printer.CommentOffset;
+import spoon.support.util.ModelList;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -1083,7 +1084,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			break;
 		case TYPE_DECLARATION:
 				scan(compilationUnit.getPackageDeclaration());
-				for (CtImport imprt : compilationUnit.getImports()) {
+				for (CtImport imprt : getImports(compilationUnit)) {
 					scan(imprt);
 					printer.writeln();
 				}
@@ -1098,6 +1099,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} finally {
 			this.sourceCompilationUnit = outerCompilationUnit;
 		}
+	}
+
+	protected ModelList<CtImport> getImports(CtCompilationUnit compilationUnit) {
+		return compilationUnit.getImports();
 	}
 
 	@Override
@@ -1615,7 +1620,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!ctPackage.isUnnamedPackage()) {
 			elementPrinterHelper.writePackageLine(ctPackage.getQualifiedName());
 		}
-		elementPrinterHelper.writeImports(ctPackage.getPosition().getCompilationUnit().getImports());
+		elementPrinterHelper.writeImports(getImports(ctPackage.getPosition().getCompilationUnit()));
 	}
 
 	@Override

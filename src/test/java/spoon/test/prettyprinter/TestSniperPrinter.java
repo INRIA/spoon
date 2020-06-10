@@ -16,6 +16,7 @@
  */
 package spoon.test.prettyprinter;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -45,6 +46,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
+import spoon.test.GitHubIssue;
+import spoon.test.prettyprinter.testclasses.OneLineMultipleVariableDeclaration;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
 
 import java.io.File;
@@ -71,6 +74,24 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestSniperPrinter {
+
+	@Test
+	public void testPrintOneLineMultipleVariableDeclaration() {
+		// contract: files with joint field declarations can be recompiled after sniper
+		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
+			// we change something (anything would work)
+			type.getMethodsByName("foo").get(0).delete();
+		}, (type, printed) -> {
+			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
+					"\n" +
+					"public class OneLineMultipleVariableDeclaration {\n" +
+					"\n" +
+					"\tint a;\n" +
+					"\n" +
+					"\tint c;\n" +
+					"}", printed);
+		});
+	}
 
 	@Test
 	public void testPrintUnchaged() {

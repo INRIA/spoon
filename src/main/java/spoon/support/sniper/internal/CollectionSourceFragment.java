@@ -7,11 +7,9 @@
  */
 package spoon.support.sniper.internal;
 
-import java.util.List;
-
-import spoon.reflect.meta.ContainerKind;
-import spoon.reflect.path.CtRole;
 import spoon.support.Experimental;
+
+import java.util.List;
 
 /**
  * {@link SourceFragment} of List or Set of {@link ElementSourceFragment}s which belong to collection role.
@@ -48,30 +46,4 @@ public class CollectionSourceFragment implements SourceFragment {
 		return items.toString();
 	}
 
-	/**
-	 * @return true if collection contains only children of one role handler with container kind LIST
-	 */
-	public boolean isOrdered() {
-		CtRole role = null;
-		for (SourceFragment childSourceFragment : items) {
-			if (childSourceFragment instanceof ElementSourceFragment) {
-				ElementSourceFragment esf = (ElementSourceFragment) childSourceFragment;
-				if (role == null) {
-					role = esf.getRoleInParent();
-					ContainerKind kind = esf.getContainerKindInParent();
-					if (kind != ContainerKind.LIST) {
-						return false;
-					}
-				} else {
-					if (role != esf.getRoleInParent()) {
-						//the collection contains elements of different roles. It cannot be ordered
-						return false;
-					}
-					//else there is another element of the same role - ok
-				}
-			}
-		}
-		//there are only elements of one role of container kind LIST
-		return true;
-	}
 }

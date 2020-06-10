@@ -38,7 +38,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.CtVisitable;
-import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.filter.SameFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -174,12 +174,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 			argument.replace(argument2);
 
 			// the new element is indeed now in this AST
-			assertTrue(receiver.getClass().getSimpleName() + " failed for " + mmField, receiver.getElements(new Filter<CtElement>() {
-				@Override
-				public boolean matches(CtElement element) {
-					return element == argument2;
-				}
-			}).size() == 1);
+			assertTrue(receiver.getClass().getSimpleName() + " failed for " + mmField, receiver.getElements(new SameFilter(argument2)).size() == 1);
 		}
 		if (!problems.isEmpty()) {
 			fail(getReport(problems));
