@@ -86,7 +86,7 @@ def parse_e2e(text):
     returns a dict {section1: "content1", section2: "content2" ...}
     """
     return valid_e2e(dict(list(map(lambda x: (x[0], x[1].strip() + "\n"),
-                                   re.findall(r"(?s)\[([^\]]+)\](.+?)(?=\[|$)", text)))))
+                                   re.findall(r"(?s)\[([^\]]+)\](.+?)(?=\[[a-z]|$)", text)))))
 
 
 
@@ -113,33 +113,19 @@ def test_from_file(filename):
     output.append("public void test{}() {{".format(re.sub(r"[^A-Za-z0-9_]", "", stuff["name"].strip())))
     output.append("    // contract: {}".format(stuff["contract"]))
     
-    output += indent_multiline_str("    CtClass<?> input = Launcher.parseClass({});"
+    output += indent_multiline_str("    String inputCode = {};"
                                         .format(multiline_str(stuff["input"])).split("\n"))
     output.append("")
     
-    output += indent_multiline_str("    CtClass<?> expected = Launcher.parseClass({});"
+    output += indent_multiline_str("    String expectedCode = {};"
                                         .format(multiline_str(stuff["expected"])).split("\n"))
     output.append("")
     
-    output += indent_multiline_str("    SmPLRule rule = SmPLParser.parse({});"
+    output += indent_multiline_str("    String smpl = {};"
                                         .format(multiline_str(stuff["patch"])).split("\n"))
     output.append("")
     
-    output.append("    input.getMethods().forEach((method) -> {")
-    output.append("        CFGModel model = new CFGModel(methodCfg(method));")
-    output.append("        ModelChecker checker = new ModelChecker(model);")
-    output.append("        rule.getFormula().accept(checker);")
-    output.append("        ModelChecker.ResultSet results = checker.getResult();")
-    output.append("        Transformer.transform(model, results.getAllWitnesses());")
-    output.append("        if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {")
-    output.append("            Transformer.copyAddedMethods(model, rule);")
-    output.append("        }")
-    output.append("        model.getCfg().restoreUnsupportedElements();")
-    output.append("    });")
-    output.append("")
-    
-    output.append("    assertEquals(expected.toString(), input.toString());")
-    
+    output.append("    runSingleTest(smpl, inputCode, expectedCode);")
     output.append("}")
     
     return output
@@ -185,6 +171,32 @@ def gen_suite(suitename, dirname, recursive=True):
     
     output.append("public class {} {{".format(suitename))
     
+    output.append("    private void runSingleTest(String smpl, String inputCode, String expectedCode) {")
+    output.append("        SmPLRule rule = SmPLParser.parse(smpl);")
+    output.append("        CtClass<?> input = Launcher.parseClass(inputCode);")
+    output.append("        CtClass<?> expected = Launcher.parseClass(expectedCode);")
+    output.append("")
+    output.append("        input.getMethods().forEach((method) -> {")
+    output.append("            if (method.getComments().stream().anyMatch(x -> x.getContent().toLowerCase().equals(\"skip\"))) {")
+    output.append("                return;")
+    output.append("            }")
+    output.append("")
+    output.append("            CFGModel model = new CFGModel(methodCfg(method));")
+    output.append("            ModelChecker checker = new ModelChecker(model);")
+    output.append("            rule.getFormula().accept(checker);")
+    output.append("")
+    output.append("            ModelChecker.ResultSet results = checker.getResult();")
+    output.append("            Transformer.transform(model, results.getAllWitnesses());")
+    output.append("")
+    output.append("            if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {")
+    output.append("                Transformer.copyAddedMethods(model, rule);")
+    output.append("            }")
+    output.append("            model.getCfg().restoreUnsupportedElements();")
+    output.append("        });")
+    output.append("")
+    output.append("        assertEquals(expected.toString(), input.toString());")
+    output.append("    }")
+    
     output += indent(4, gen_suite_tests(dirname, recursive))
     
     output.append("}")
@@ -201,3 +213,4 @@ if __name__ == "__main__":
         quit()
     
     print(gen_suite(sys.argv[1], sys.argv[2]))
+    sys.stderr.write("dont forget to validate the tests!\n")
