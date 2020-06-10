@@ -15,8 +15,8 @@ import spoon.reflect.path.CtRole;
  * Represents an action of Printer, which prints whole element
  */
 public abstract class ElementPrinterEvent implements PrinterEvent {
-	private final CtRole role;
-	private final CtElement element;
+	protected final CtRole role;
+	protected final CtElement element;
 
 	public ElementPrinterEvent(CtRole role, CtElement element) {
 		this.role = role;

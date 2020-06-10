@@ -7,11 +7,9 @@
  */
 package spoon.support.sniper.internal;
 
-import java.util.List;
-
 import spoon.reflect.declaration.CtElement;
 
-import static spoon.support.sniper.internal.ElementSourceFragment.isSpaceFragment;
+import java.util.List;
 
 /**
  * Handles printing of changes of the ordered list of elements.
@@ -39,22 +37,4 @@ public class SourceFragmentContextList extends AbstractSourceFragmentContextColl
 		return super.findIFragmentIndexCorrespondingToEvent(event);
 	}
 
-	@Override
-	protected void printOriginSpacesUntilFragmentIndex(int index) {
-		super.printOriginSpacesUntilFragmentIndex(getLastWhiteSpaceBefore(index), index);
-	}
-
-	/**
-	 * @return index of last child fragment which contains space, which is before `index`
-	 */
-	private int getLastWhiteSpaceBefore(int index) {
-		for (int i = index - 1; i >= 0; i--) {
-			SourceFragment fragment = childFragments.get(i);
-			if (isSpaceFragment(fragment)) {
-				continue;
-			}
-			return i + 1;
-		}
-		return 0;
-	}
 }
