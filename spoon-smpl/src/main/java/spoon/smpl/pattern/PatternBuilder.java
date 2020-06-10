@@ -73,7 +73,15 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> ctArrayTypeReference) {
-        throw new NotImplementedException("Not implemented");
+        String typename = ctArrayTypeReference.getSimpleName();
+
+        if (params.contains(typename)) {
+            resultStack.push(new ParamNode(typename));
+        } else {
+            ElemNode result = new ElemNode(ctArrayTypeReference);
+            result.sub.put("typename", new ValueNode(ctArrayTypeReference.getSimpleName(), ctArrayTypeReference));
+            resultStack.push(result);
+        }
     }
 
     @Override
