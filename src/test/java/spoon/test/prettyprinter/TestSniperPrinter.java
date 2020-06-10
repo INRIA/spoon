@@ -21,7 +21,6 @@ import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.processing.Processor;
 import spoon.reflect.CtModel;
-import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
@@ -46,7 +45,6 @@ import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.prettyprinter.testclasses.OneLineMultipleVariableDeclaration;
-import spoon.test.prettyprinter.testclasses.Throw;
 import spoon.test.prettyprinter.testclasses.InvocationReplacement;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
 
@@ -74,23 +72,6 @@ import static org.junit.Assert.fail;
 public class TestSniperPrinter {
 
 	@Test
-	public void testPrintInsertedThrow() {
-		testSniper(Throw.class.getName(), type -> {
-			CtConstructorCall ctConstructorCall = (CtConstructorCall) type.getMethodsByName("foo").get(0).getBody().getStatements().get(0);
-			CtThrow ctThrow = type.getFactory().createCtThrow(ctConstructorCall.toString());
-			ctConstructorCall.replace(ctThrow);
-		}, (type, printed) -> {
-			assertIsPrintedWithExpectedChanges(type, printed,
-					"\\Qvoid foo(int x) {\n" +
-					"\t\tnew IllegalArgumentException(\"x must be nonnegative\");\n" +
-					"\t}",
-					"void foo(int x) {\n" +
-					"\t\tthrow new java.lang.IllegalArgumentException(\"x must be nonnegative\");\n" +
-					"\t}");
-		});
-	}
-
-  @Test
 	public void testPrintReplacementOfInvocation() {
 		testSniper(InvocationReplacement.class.getName(), type -> {
 			CtLocalVariable localVariable = (CtLocalVariable) type.getMethodsByName("main").get(0).getBody().getStatements().get(0);
@@ -104,43 +85,6 @@ public class TestSniperPrinter {
 			invocation.replace(newInvocation);
 		}, (type, printed) -> {
 			assertIsPrintedWithExpectedChanges(type, printed, "\\QString argStr = args.toString();", "String argStr = Arrays.toString(args);");
-		});
-	}
-
-	@Test
-	public void testPrintLocalVariableDeclaration() {
-		// contract: joint local declarations can be sniper-printed in whole unmodified method
-		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
-			type.getFields().stream().forEach(x -> {x.delete();});
-		}, (type, printed) -> {
-			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
-					"\n" +
-					"public class OneLineMultipleVariableDeclaration {\n" +
-					"\n" +
-					"\tvoid foo(int a) {\n" +
-					"\t\tint b = 0, e = 1;\n" +
-					"\t\ta = a;\n" +
-					"\t}\n" +
-					"}", printed);
-		});
-	}
-
-	@Test
-	public void testPrintLocalVariableDeclaration2() {
-		// contract: joint local declarations can be sniper-printed
-		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
-			type.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0).delete();
-		}, (type, printed) -> {
-			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
-					"\n" +
-					"public class OneLineMultipleVariableDeclaration {int a;\n" +
-					"\n" +
-					"\tint c;\n" +
-					"\n" +
-					"\tvoid foo(int a) {int e = 1;\n" +
-					"\t\ta = a;\n" +
-					"\t}\n" +
-					"}", printed);
 		});
 	}
 
