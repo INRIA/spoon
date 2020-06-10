@@ -189,11 +189,11 @@ public class PatternBuilder implements CtVisitor {
     public <T> void visitCtExecutableReference(CtExecutableReference<T> ctExecutableReference) {
         ElemNode result = new ElemNode(ctExecutableReference);
 
-        CtTypeReference<?> declType = ctExecutableReference.getDeclaringType();
+        /*CtTypeReference<?> declType = ctExecutableReference.getDeclaringType();
 
         if (declType != null && !declType.getSimpleName().equals(SmPLJavaDSL.getUnspecifiedElementOrTypeName())) {
             result.sub.put("declaringtype", new ValueNode(ctExecutableReference.getDeclaringType().getSimpleName(), ctExecutableReference.getDeclaringType()));
-        }
+        }*/
 
         result.sub.put("name", new ValueNode(ctExecutableReference.getSimpleName(), ctExecutableReference.getSimpleName()));
 
