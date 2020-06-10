@@ -96,9 +96,7 @@ public class TestSniperPrinter {
 		}, (type, printed) -> {
 			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
 					"\n" +
-					"public class OneLineMultipleVariableDeclaration {\n" +
-					"\n" +
-					"\tint a;\n" +
+					"public class OneLineMultipleVariableDeclaration {int a;\n" +
 					"\n" +
 					"\tint c;\n" +
 					"}", printed);
@@ -185,7 +183,7 @@ public class TestSniperPrinter {
 			//delete last parameter of method `andSomeOtherMethod`
 			type.getMethodsByName("andSomeOtherMethod").get(0).getParameters().get(2).delete();
 		}, (type, printed) -> {
-			assertIsPrintedWithExpectedChanges(type, printed, "\\s*, \\QList<?>[][] ... twoDArrayOfLists\\E", "");
+			assertIsPrintedWithExpectedChanges(type, printed, "\\s*, \\QList<?>[][]... twoDArrayOfLists\\E", "");
 		});
 	}
 

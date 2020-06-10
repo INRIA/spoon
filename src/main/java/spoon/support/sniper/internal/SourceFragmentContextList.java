@@ -39,22 +39,4 @@ public class SourceFragmentContextList extends AbstractSourceFragmentContextColl
 		return super.findIFragmentIndexCorrespondingToEvent(event);
 	}
 
-	@Override
-	protected void printOriginSpacesUntilFragmentIndex(int index) {
-		super.printOriginSpacesUntilFragmentIndex(getLastWhiteSpaceBefore(index), index);
-	}
-
-	/**
-	 * @return index of last child fragment which contains space, which is before `index`
-	 */
-	private int getLastWhiteSpaceBefore(int index) {
-		for (int i = index - 1; i >= 0; i--) {
-			SourceFragment fragment = childFragments.get(i);
-			if (isSpaceFragment(fragment)) {
-				continue;
-			}
-			return i + 1;
-		}
-		return 0;
-	}
 }
