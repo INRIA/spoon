@@ -935,4 +935,12 @@ public class ElementSourceFragment implements SourceFragment {
 	static boolean isSpaceFragment(SourceFragment fragment) {
 		return fragment instanceof TokenSourceFragment && ((TokenSourceFragment) fragment).getType() == TokenType.SPACE;
 	}
+
+	/**
+	 * @return true if {@link SourceFragment} represents a comment
+	 */
+	static boolean isCommentFragment(SourceFragment fragment) {
+		return fragment instanceof ElementSourceFragment && ((ElementSourceFragment) fragment).getElement() instanceof CtComment;
+	}
+
 }
