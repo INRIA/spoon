@@ -10,6 +10,7 @@ package spoon.support.sniper.internal;
 import spoon.SpoonException;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.SourcePositionHolder;
@@ -174,6 +175,16 @@ public class ElementSourceFragment implements SourceFragment {
 				}
 
 				super.visitCtField(f);
+			}
+
+			@Override
+			public <T> void visitCtLocalVariable(CtLocalVariable<T> localVar) {
+				// bug #3386: we cannot handle joint declaration
+				if (localVar.isPartOfJointDeclaration()) {
+					return;
+				}
+
+				super.visitCtLocalVariable(localVar);
 			}
 
 			@Override

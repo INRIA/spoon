@@ -75,12 +75,12 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 				//but may be it is not good idea
 
 				//send all inc/dec tab to printer helper to have configured expected indentation
-				event.print();
+				event.printSourceFragment(null, ModificationStatus.UNKNOWN);
 				return -1;
 			}
 			if (tpe.getType().isWhiteSpace()) {
 				//collect all DJPP separators for future use or ignore
-				separatorActions.add(() -> event.print());
+				separatorActions.add(() -> event.printSourceFragment(null, ModificationStatus.UNKNOWN));
 				return -1;
 			}
 		}
@@ -91,7 +91,7 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 			 * It can happen e.g. when type parameter like &lt;T&gt; was added. Then bracket tokens are not in origin sources
 			 */
 			printSpaces(-1);
-			event.print();
+			event.printSourceFragment(null, ModificationStatus.UNKNOWN);
 			return -1;
 		}
 		// case 2: it's an element printer
@@ -131,31 +131,31 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 	 * @param fragment
 	 * @return true if at least part of `fragment` is modified.
 	 * 	false if whole `fragment` is not modified.
-	 * 	null if it is not possible to detect it here. Then it will be detected later.
+	 * 	ModificationStatus.UNKNOWN if it is not possible to detect it here. Then it will be detected later.
 	 */
-	protected Boolean isFragmentModified(SourceFragment fragment) {
+	protected ModificationStatus isFragmentModified(SourceFragment fragment) {
 		if (fragment instanceof TokenSourceFragment) {
 			switch (((TokenSourceFragment) fragment).getType()) {
 			//we do not know the role of the identifier token, so we do not know whether it is modified or not
 			case IDENTIFIER:
-				return null;
+				return ModificationStatus.UNKNOWN;
 			case COMMENT:
-				return null;
+				return ModificationStatus.UNKNOWN;
 			default:
 				//all others are constant tokens, which cannot be modified
-				return Boolean.FALSE;
+				return ModificationStatus.NOT_MODIFIED;
 			}
 		} else if (fragment instanceof ElementSourceFragment) {
-			return changeResolver.isRoleModified(((ElementSourceFragment) fragment).getRoleInParent());
+			return ModificationStatus.fromBoolean(changeResolver.isRoleModified(((ElementSourceFragment) fragment).getRoleInParent()));
 		} else if (fragment instanceof CollectionSourceFragment) {
 			CollectionSourceFragment csf = (CollectionSourceFragment) fragment;
 			for (SourceFragment sourceFragment : csf.getItems()) {
-				Boolean modified = isFragmentModified(sourceFragment);
-				if (!Boolean.FALSE.equals(modified)) {
+				ModificationStatus modified = isFragmentModified(sourceFragment);
+				if (!ModificationStatus.NOT_MODIFIED.equals(modified)) {
 					return modified;
 				}
 			}
-			return Boolean.FALSE;
+			return ModificationStatus.NOT_MODIFIED;
 		} else {
 			throw new SpoonException("Unexpected SourceFragment type " + fragment.getClass());
 		}

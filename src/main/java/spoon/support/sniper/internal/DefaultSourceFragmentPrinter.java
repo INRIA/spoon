@@ -22,7 +22,7 @@ public class DefaultSourceFragmentPrinter implements SourceFragmentPrinter {
 
 	@Override
 	public void print(PrinterEvent event) {
-		event.print();
+		event.printSourceFragment(null, ModificationStatus.UNKNOWN);
 	}
 
 	@Override

@@ -9,7 +9,6 @@ package spoon.support.sniper.internal;
 
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.path.CtRole;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 
 /**
  * Represents an action of PrettyPrinter
@@ -22,23 +21,12 @@ public interface PrinterEvent  {
 	CtRole getRole();
 
 	/**
-	 * Prints source code by {@link DefaultJavaPrettyPrinter} ignoring origin {@link SourceFragment}s
-	 * @param muted
-	 * 		true if origin sources are already printed and we are just calling {@link DefaultJavaPrettyPrinter}
-	 * 			to keep it's state consistent.
-	 *  	false if {@link DefaultJavaPrettyPrinter} will really print into output.
-	 *  	null if `muted` status should be kept as it is
-	 */
-	void print();
-
-	/**
 	 * We have a source fragment of to be printed element.
 	 * Print unmodified parts of this source `fragment`
 	 * @param fragment
 	 * @param isModified true if at least some part of `SourceFragment` is modified.
-	 * 	false if whole `SourceFragment` including all children is not modified.
 	 */
-	void printSourceFragment(SourceFragment fragment, Boolean isModified);
+	void printSourceFragment(SourceFragment fragment, ModificationStatus isModified);
 
 	/**
 	 * @return printed element or null if printing a primitive token
