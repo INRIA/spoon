@@ -44,15 +44,21 @@ class DefaultKotlinPrettyPrinter(
         }
     }
 
-    internal fun exitCtExpression(e: CtExpression<*>) {
+    private fun exitCtExpression(e: CtExpression<*>) {
         if(e.typeCasts.isNotEmpty()) {
-            adapter write " as "
-            e.typeCasts[0].accept(this)
+            e.typeCasts.forEach {
+                val token = if(it.getMetadata(KtMetadataKeys.TYPE_CAST_AS_SAFE) as Boolean) "as?"
+                else "as"
+                adapter write " $token "
+                it.accept(this)
+            }
+            adapter write ')'
+        } else if(shouldAddPar(e)) {
             adapter write ')'
         }
     }
 
-    internal fun enterCtExpression(e: CtExpression<*>) {
+    private fun enterCtExpression(e: CtExpression<*>) {
         if(shouldAddPar(e)) {
             adapter write '('
         }
@@ -143,8 +149,9 @@ class DefaultKotlinPrettyPrinter(
         TODO()
     }
 
-    override fun <T : Any?> visitCtUnaryOperator(unaryOperator: CtUnaryOperator<T>?) {
-        val kind = unaryOperator!!.kind
+    override fun <T : Any?> visitCtUnaryOperator(unaryOperator: CtUnaryOperator<T>) {
+        enterCtExpression(unaryOperator)
+        val kind = unaryOperator.kind
         when(kind) {
             UnaryOperatorKind.POSTDEC,
             UnaryOperatorKind.POSTINC -> {
@@ -156,11 +163,14 @@ class DefaultKotlinPrettyPrinter(
                 unaryOperator.operand.accept(this)
             }
         }
+        exitCtExpression(unaryOperator)
     }
 
     override fun <T : Any?> visitCtTypeAccess(typeAccess: CtTypeAccess<T>) {
         if(typeAccess.isImplicit) return
+        enterCtExpression(typeAccess)
         typeAccess.accessedType.accept(this)
+        exitCtExpression(typeAccess)
     }
 
     override fun <R : Any?> visitCtStatementList(p0: CtStatementList?) {
@@ -168,11 +178,13 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtFieldRead(fieldRead: CtFieldRead<T>) {
+        enterCtExpression(fieldRead)
         if(fieldRead.target != null && !fieldRead.target.isImplicit) {
             fieldRead.target.accept(this)
             adapter write '.'
         }
         fieldRead.variable.accept(this)
+        exitCtExpression(fieldRead)
     }
 
     override fun visitCtJavaDoc(p0: CtJavaDoc?) {
@@ -367,8 +379,10 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtSuperAccess(superAccess: CtSuperAccess<T>) {
         if(superAccess.isImplicit) return
+        enterCtExpression(superAccess)
         // Super access as selector is illegal (x.super.y), so no target has to be checked
         adapter write "super"
+        exitCtExpression(superAccess)
     }
 
     override fun visitCtPackageReference(p0: CtPackageReference?) {
@@ -381,7 +395,9 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtThisAccess(thisAccess: CtThisAccess<T>) {
         if(thisAccess.isImplicit) return
+        enterCtExpression(thisAccess)
         adapter write "this"
+        exitCtExpression(thisAccess)
     }
 
     override fun <T : Any?> visitCtAssert(p0: CtAssert<T>?) {
@@ -397,11 +413,13 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtLiteral(literal: CtLiteral<T>) {
+        enterCtExpression(literal)
         adapter write (LiteralToStringHelper.getLiteralToken(literal))
+        exitCtExpression(literal)
     }
 
     override fun <T : Any?> visitCtBinaryOperator(binOp: CtBinaryOperator<T>) {
-
+        enterCtExpression(binOp)
         binOp.leftHandOperand.accept(this)
         val operator = binOp.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND) as? KtBinaryOperatorKind
         if(operator == null) {
@@ -410,6 +428,7 @@ class DefaultKotlinPrettyPrinter(
             adapter write operator.asToken()
         }
         binOp.rightHandOperand.accept(this)
+        exitCtExpression(binOp)
     }
 
     override fun <T : Any?> visitCtField(field: CtField<T>?) {
@@ -656,7 +675,7 @@ class DefaultKotlinPrettyPrinter(
         if(invocation.getMetadata(KtMetadataKeys.INVOCATION_IS_INFIX) as? Boolean == true) {
             return visitInfixInvocation(invocation)
         }
-
+        enterCtExpression(invocation)
         if(invocation.executable.isConstructor) {
             val parentType = invocation.getParent(CtType::class.java)
             adapter.writeColon(DefaultPrinterAdapter.ColonContext.CONSTRUCTOR_DELEGATION)
@@ -682,12 +701,15 @@ class DefaultKotlinPrettyPrinter(
         adapter write LEFT_ROUND
         visitCommaSeparatedList(invocation.arguments)
         adapter write RIGHT_ROUND
+        exitCtExpression(invocation)
     }
 
     private fun <T> visitInfixInvocation(ctInvocation: CtInvocation<T>) {
+        enterCtExpression(ctInvocation)
         ctInvocation.target.accept(this)
         adapter write " ${ctInvocation.executable.simpleName} "
         ctInvocation.arguments[0].accept(this)
+        exitCtExpression(ctInvocation)
     }
 
     override fun <T : Any?> visitCtMethod(method: CtMethod<T>?) {
