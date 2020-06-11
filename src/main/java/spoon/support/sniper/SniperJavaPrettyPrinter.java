@@ -249,10 +249,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 
 			@Override
 			public void printSourceFragment(SourceFragment fragment, ModificationStatus isModified) {
-				if (mutableTokenWriter.isMuted()) {
-					throw new SpoonException("Unexpected state of sniper pretty printer. TokenWriter is muted.");
-				}
-
 
 				// we don't have any source fragment for this element, so we simply pretty-print it normally
 				if (fragment == null) {
@@ -275,24 +271,14 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 					}
 				} else if (fragment instanceof ElementSourceFragment) {
 					ElementSourceFragment sourceFragment = (ElementSourceFragment) fragment;
-					//it is fragment with single value
-					ChangeResolver changeResolver1 = null;
-					if (isModified == ModificationStatus.UNKNOWN) {
-						changeResolver1 = new ChangeResolver(getChangeCollector(), this.element);
-						isModified = ModificationStatus.fromBoolean(changeResolver1.hasChangedRole());
-					}
 					if (isModified == ModificationStatus.NOT_MODIFIED) {
 						//nothing is changed, we can print origin sources of this element
 						mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
 						return;
 					}
-					//check what roles of this element are changed
-					if (changeResolver1 == null) {
-						changeResolver1 = new ChangeResolver(getChangeCollector(), this.element);
-					}
-					//changeResolver.hasChangedRole() is false when element is added
-					//something is changed in this element
-					superScanInContext(this.element, new SourceFragmentContextNormal(mutableTokenWriter, sourceFragment, changeResolver1));
+
+					//something is changed in this element, so we pretty-print it normally
+					superScanInContext(this.element, new SourceFragmentContextNormal(mutableTokenWriter, sourceFragment, new ChangeResolver(getChangeCollector(), this.element)));
 				} else {
 					throw new SpoonException("Unsupported fragment type: " + fragment.getClass());
 				}

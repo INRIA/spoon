@@ -16,38 +16,38 @@
  */
 package spoon.test.prettyprinter;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
-import spoon.compiler.Environment;
-import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
-import spoon.processing.ProcessorProperties;
-import spoon.processing.TraversalStrategy;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtCodeSnippetExpression;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtThrow;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtPackageReference;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.ImportCleaner;
 import spoon.reflect.visitor.ImportConflictDetector;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
-import spoon.test.GitHubIssue;
 import spoon.test.prettyprinter.testclasses.OneLineMultipleVariableDeclaration;
+import spoon.test.prettyprinter.testclasses.Throw;
+import spoon.test.prettyprinter.testclasses.InvocationReplacement;
 import spoon.test.prettyprinter.testclasses.ToBeChanged;
 
 import java.io.File;
@@ -61,9 +61,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -76,6 +74,40 @@ import static org.junit.Assert.fail;
 public class TestSniperPrinter {
 
 	@Test
+	public void testPrintInsertedThrow() {
+		testSniper(Throw.class.getName(), type -> {
+			CtConstructorCall ctConstructorCall = (CtConstructorCall) type.getMethodsByName("foo").get(0).getBody().getStatements().get(0);
+			CtThrow ctThrow = type.getFactory().createCtThrow(ctConstructorCall.toString());
+			ctConstructorCall.replace(ctThrow);
+		}, (type, printed) -> {
+			assertIsPrintedWithExpectedChanges(type, printed,
+					"\\Qvoid foo(int x) {\n" +
+					"\t\tnew IllegalArgumentException(\"x must be nonnegative\");\n" +
+					"\t}",
+					"void foo(int x) {\n" +
+					"\t\tthrow new java.lang.IllegalArgumentException(\"x must be nonnegative\");\n" +
+					"\t}");
+		});
+	}
+
+  @Test
+	public void testPrintReplacementOfInvocation() {
+		testSniper(InvocationReplacement.class.getName(), type -> {
+			CtLocalVariable localVariable = (CtLocalVariable) type.getMethodsByName("main").get(0).getBody().getStatements().get(0);
+			CtInvocation invocation = (CtInvocation) localVariable.getAssignment();
+			CtExpression prevTarget = invocation.getTarget();
+			CtCodeSnippetExpression newTarget = type.getFactory().Code().createCodeSnippetExpression("Arrays");
+			CtType arraysClass = type.getFactory().Class().get(Arrays.class);
+			CtMethod method = (CtMethod) arraysClass.getMethodsByName("toString").get(0);
+			CtExecutableReference refToMethod = type.getFactory().Executable().createReference(method);
+			CtInvocation newInvocation = type.getFactory().Code().createInvocation(newTarget, refToMethod, prevTarget);
+			invocation.replace(newInvocation);
+		}, (type, printed) -> {
+			assertIsPrintedWithExpectedChanges(type, printed, "\\QString argStr = args.toString();", "String argStr = Arrays.toString(args);");
+		});
+	}
+
+	@Test
 	public void testPrintOneLineMultipleVariableDeclaration() {
 		// contract: files with joint field declarations can be recompiled after sniper
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
@@ -84,9 +116,7 @@ public class TestSniperPrinter {
 		}, (type, printed) -> {
 			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
 					"\n" +
-					"public class OneLineMultipleVariableDeclaration {\n" +
-					"\n" +
-					"\tint a;\n" +
+					"public class OneLineMultipleVariableDeclaration {int a;\n" +
 					"\n" +
 					"\tint c;\n" +
 					"}", printed);
@@ -173,7 +203,7 @@ public class TestSniperPrinter {
 			//delete last parameter of method `andSomeOtherMethod`
 			type.getMethodsByName("andSomeOtherMethod").get(0).getParameters().get(2).delete();
 		}, (type, printed) -> {
-			assertIsPrintedWithExpectedChanges(type, printed, "\\s*, \\QList<?>[][] ... twoDArrayOfLists\\E", "");
+			assertIsPrintedWithExpectedChanges(type, printed, "\\s*, \\QList<?>[][]... twoDArrayOfLists\\E", "");
 		});
 	}
 
