@@ -28,6 +28,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
@@ -62,6 +63,8 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -72,6 +75,47 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestSniperPrinter {
+
+	@Test
+	public void testClassRename() {
+		// contract: sniper supports class rename
+		String testClass = ToBeChanged.class.getName();
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(getResourcePath(testClass));
+		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
+			SniperJavaPrettyPrinter printer = new SniperJavaPrettyPrinter(launcher.getEnvironment());
+			return printer;
+		});
+		launcher.buildModel();
+		Factory f = launcher.getFactory();
+
+		final CtClass<?> ctClass = f.Class().get(testClass);
+
+		Map<String, CompilationUnit> map = f.CompilationUnit().getMap();
+		CompilationUnit x = map.entrySet().stream().findFirst().get().getValue();
+
+		// changing the type
+		CtType<?> type = x.getDeclaredTypes().get(0);
+		x.setFile(new File("/tmp/Bar.java"));
+		type.setSimpleName("Bar");
+
+		CtTypeReference<?> ref = x.getDeclaredTypeReferences().get(0);
+		ref.setSimpleName("Bar");
+
+		map.clear();
+
+		map.put("xxx", x);
+
+		System.out.println(f.CompilationUnit().getMap());
+		//print the changed model
+		launcher.prettyprint();
+
+		String contentOfPrettyPrintedClassFromDisk = getContentOfPrettyPrintedClassFromDisk(type);
+		System.out.println(contentOfPrettyPrintedClassFromDisk);
+		assertTrue(contentOfPrettyPrintedClassFromDisk, contentOfPrettyPrintedClassFromDisk.contains("class Foo/*"));
+
+	}
+
 
 	@Test
 	public void testPrintInsertedThrow() {
