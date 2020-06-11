@@ -23,13 +23,33 @@ public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
 	private int modifierSourceEnd;
 	private int modifierSourceStart;
 
-	public DeclarationSourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd,
+	/** int i=0, j=1 -> would end at the comma */
+	private int endDefaultValueDeclaration = -1;
+
+	@Override
+	public int getDefaultValueEnd() {
+		return endDefaultValueDeclaration;
+	}
+
+	@Override
+	public DeclarationSourcePosition setDefaultValueEnd(int endDefaultValueDeclaration) {
+		// JDT initializes to 0
+		// so 0 means nothing interesting
+		// we prefer the -1 convention here
+		if (endDefaultValueDeclaration == 0) {
+			return this;
+		}
+		this.endDefaultValueDeclaration = endDefaultValueDeclaration;
+		return this;
+	}
+
+	public DeclarationSourcePositionImpl(CompilationUnit compilationUnit, int nameStart, int nameEnd,
 			int modifierSourceStart, int modifierSourceEnd, int declarationSourceStart, int declarationSourceEnd,
 			int[] lineSeparatorPositions) {
 		super(compilationUnit,
-				sourceStart, sourceEnd, declarationSourceStart, declarationSourceEnd,
+				nameStart, nameEnd, declarationSourceStart, declarationSourceEnd,
 				lineSeparatorPositions);
-		checkArgsAreAscending(declarationSourceStart, modifierSourceStart, modifierSourceEnd + 1, sourceStart, sourceEnd + 1, declarationSourceEnd + 1);
+		checkArgsAreAscending(declarationSourceStart, modifierSourceStart, modifierSourceEnd + 1, nameStart, nameEnd + 1, declarationSourceEnd + 1);
 		this.modifierSourceStart = modifierSourceStart;
 		if (this.modifierSourceStart == 0) {
 			this.modifierSourceStart = declarationSourceStart;
@@ -57,5 +77,14 @@ public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
 				+ "\nmodifier = " + getFragment(getModifierSourceStart(), getModifierSourceEnd())
 				+ "\nname = " + getFragment(getNameStart(), getNameEnd());
 	}
+
+	@Override
+	public int getSourceEnd() {
+		if (endDefaultValueDeclaration != -1) {
+			return endDefaultValueDeclaration;
+		}
+		return declarationSourceEnd;
+	}
+
 
 }

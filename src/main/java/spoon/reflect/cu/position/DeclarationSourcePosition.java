@@ -15,8 +15,18 @@ package spoon.reflect.cu.position;
  */
 public interface DeclarationSourcePosition extends CompoundSourcePosition {
 
+	/** returns the first char of the first modifier */
 	int getModifierSourceStart();
 
+	/** returns the last char of the last modifier */
 	int getModifierSourceEnd();
+
+	/** returns the end of the default value
+	 * int i = 0, j =1 => returns the comma
+	 */
+	int getDefaultValueEnd();
+
+	/** sets the position of the end of the default value declaration */
+	DeclarationSourcePosition setDefaultValueEnd(int endDefaultValueDeclaration);
 
 }
