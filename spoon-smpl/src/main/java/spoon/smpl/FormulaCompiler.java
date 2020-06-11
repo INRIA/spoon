@@ -117,7 +117,7 @@ public class FormulaCompiler {
 
                             if (innerFormula != null) {
                                 formula = new And(formula,
-                                                  new AllNext(innerFormula));
+                                                  connectTail(innerFormula));
                             }
 
                             if (shouldQuantify) {
@@ -139,9 +139,19 @@ public class FormulaCompiler {
                             if (innerFormula == null) {
                                 return formula;
                             } else {
-                                return new And(formula, new AllNext(innerFormula));
+                                return new And(formula, connectTail(innerFormula));
                             }
 
+                        case TRY:
+                        case CATCH:
+                            if (tag == null) {
+                                throw new IllegalArgumentException("invalid tag for " + node.toString());
+                            }
+
+                            formula = new Proposition(tag.getLabel());
+                            innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
+
+                            return combine(formula, connectTail(innerFormula), And.class);
                         default:
                             throw new IllegalArgumentException("Unexpected control flow node kind for single successor: " + node.getKind().toString());
                     }
@@ -206,7 +216,7 @@ public class FormulaCompiler {
             formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", methodBodyOps)));
         }
 
-        return new And(formula, new AllNext(compileFormulaInner(node.next().get(0), cutoffNodes)));
+        return new And(formula, connectTail(compileFormulaInner(node.next().get(0), cutoffNodes)));
     }
 
     /**
@@ -246,7 +256,7 @@ public class FormulaCompiler {
             Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
 
             if (innerFormula != null) {
-                formula = new And(formula, new AllNext(innerFormula));
+                formula = new And(formula, connectTail(innerFormula));
             }
 
             // Actually quantify the new metavars
@@ -312,6 +322,32 @@ public class FormulaCompiler {
         }
 
         return formula;
+    }
+
+    /**
+     * Given a Formula compiled starting from a node S different from the CFG start node (i.e one possible tail of some
+     * path starting in some immediate predecessor to S), wrap the Formula in a connector appropriate for connecting it
+     * to the Formula element compiled for said predecessor.
+     *
+     * Essentially, for a given Formula Psi this boils down to choosing from X in {AllNext(Psi), ExistsNext(Psi)}
+     * such that the construction And(Phi, X) is semantically correct in the SmPL context, with Phi being the Formula
+     * element compiled for a predecessor to Psi.
+     *
+     * In the SmPL context the only case where an ExistsUntil appears is for dots using the "when exists" constraint
+     * relaxation, the semantics of which requires the use of the ExistsNext connector rather than the AllNext
+     * connector.
+     *
+     * @param tail Formula tail
+     * @return Tail wrapped in appropriate connector
+     */
+    private Formula connectTail(Formula tail) {
+        if (tail == null) {
+            return null;
+        } else if (tail instanceof ExistsUntil) {
+            return new ExistsNext(tail);
+        } else {
+            return new AllNext(tail);
+        }
     }
 
     /**
@@ -430,7 +466,7 @@ public class FormulaCompiler {
      * @param node Node for which to find the ID of the parent branch
      * @return ID of parent branch, or -1 if the closest parent of the node is the method body
      */
-    private int findParentBranchId(ControlFlowNode node) {
+    private int findParentId(ControlFlowNode node) {
         CtElement element = node.getStatement();
         CtElement parent = element.getParent();
 
@@ -447,7 +483,7 @@ public class FormulaCompiler {
             SmPLMethodCFG.NodeTag tag = (SmPLMethodCFG.NodeTag) otherNode.getTag();
 
             if (tag.getAnchor() == parent) {
-                return (int) tag.getMetadata("branchId");
+                return (int) tag.getMetadata("parentId");
             }
         }
 
@@ -487,12 +523,12 @@ public class FormulaCompiler {
      * @return Non-finalized guard Formula
      */
     private Formula getDotsGuard(ControlFlowNode dotsNode, boolean shortestPath) {
-        int branchId = findParentBranchId(dotsNode);
+        int parentId = findParentId(dotsNode);
 
         Formula guard = null;
 
-        if (branchId != -1) {
-            String parentIdVar = "__parent" + Integer.toString(branchId) + "__";
+        if (parentId != -1) {
+            String parentIdVar = "__parent" + Integer.toString(parentId) + "__";
             guard = new And(new Proposition("after"), new MetadataPredicate(parentIdVar, "parent"));
         }
 

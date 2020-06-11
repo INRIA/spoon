@@ -504,6 +504,42 @@ public class EndToEndTests {
         runSingleTest(smpl, inputCode, expectedCode);
     }
     @Test
+    public void testDotsWhenExistsBug() {
+        // contract: the when-exists dots modifier should successfully match in the following example
+
+        String inputCode = "class A {\n" +
+                           "  void a() {}\n" +
+                           "  void b() {}\n" +
+                           "  \n" +
+                           "  void m() {\n" +
+                           "    try {\n" +
+                           "      a();\n" +
+                           "    }\n" +
+                           "    catch (Exception e) {\n" +
+                           "      b();\n" +
+                           "    }\n" +
+                           "  }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    void a() {}\n" +
+                              "    void b() {}\n" +
+                              "    void m() {\n" +
+                              "        try {\n" +
+                              "            a();\n" +
+                              "        } catch (Exception e) {\n" +
+                              "        }\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "  a();\n" +
+                      "  ... when exists\n" +
+                      "- b();\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
     public void testEnvironmentNegationBug() {
         // contract: the bug where the environments (Tv1=int, v1=x) and (Tv1=(int), v1=(y)) could not be joined should be fixed
 
@@ -1066,6 +1102,187 @@ public class EndToEndTests {
                       "+ if (debug) {\n" +
                       "      foo();\n" +
                       "+ }\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testDotsEnteringTryBlock() {
+        // contract: dots should be able to traverse into try blocks
+
+        String inputCode = "class A {\n" +
+                           "  void a() {}\n" +
+                           "  void b() {}\n" +
+                           "  void c() {}\n" +
+                           "  void d() {}\n" +
+                           "  \n" +
+                           "  void m() {\n" +
+                           "    a();\n" +
+                           "    try {\n" +
+                           "      b();\n" +
+                           "    }\n" +
+                           "    catch (Exception e) {\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "    d();\n" +
+                           "  }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    void a() {}\n" +
+                              "    void b() {}\n" +
+                              "    void c() {}\n" +
+                              "    void d() {}\n" +
+                              "    \n" +
+                              "    void m() {\n" +
+                              "        a();\n" +
+                              "        try {\n" +
+                              "        } catch (Exception e) {\n" +
+                              "            c();\n" +
+                              "        }\n" +
+                              "        d();\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "  a();\n" +
+                      "  ...\n" +
+                      "- b();\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testDotsTraversingTryCatch() {
+        // contract: dots should be able to traverse over a try-catch
+
+        String inputCode = "class A {\n" +
+                           "  void a() {}\n" +
+                           "  void b() {}\n" +
+                           "  void c() {}\n" +
+                           "  void d() {}\n" +
+                           "  \n" +
+                           "  void m() {\n" +
+                           "    a();\n" +
+                           "    try {\n" +
+                           "      b();\n" +
+                           "    }\n" +
+                           "    catch (Exception e) {\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "    d();\n" +
+                           "  }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    void a() {}\n" +
+                              "    void b() {}\n" +
+                              "    void c() {}\n" +
+                              "    void d() {}\n" +
+                              "    \n" +
+                              "    void m() {\n" +
+                              "        a();\n" +
+                              "        try {\n" +
+                              "            b();\n" +
+                              "        } catch (Exception e) {\n" +
+                              "            c();\n" +
+                              "        }\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "  a();\n" +
+                      "  ...\n" +
+                      "- d();\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testExistsDotsPatchingCatchBlock() {
+        // contract: dots in exists mode should patch a statement only found in the catch block
+
+        String inputCode = "class A {\n" +
+                           "  void a() {}\n" +
+                           "  void b() {}\n" +
+                           "  void c() {}\n" +
+                           "  void d() {}\n" +
+                           "  \n" +
+                           "  void m() {\n" +
+                           "    a();\n" +
+                           "    try {\n" +
+                           "      b();\n" +
+                           "    }\n" +
+                           "    catch (Exception e) {\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "    d();\n" +
+                           "  }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    void a() {}\n" +
+                              "    void b() {}\n" +
+                              "    void c() {}\n" +
+                              "    void d() {}\n" +
+                              "    \n" +
+                              "    void m() {\n" +
+                              "        a();\n" +
+                              "        try {\n" +
+                              "            b();\n" +
+                              "        } catch (Exception e) {\n" +
+                              "        }\n" +
+                              "        d();\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "  a();\n" +
+                      "  ... when exists\n" +
+                      "- c();\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testForallDotsNotPatchingCatchBlock() {
+        // contract: dots in forall mode should not patch a statement only found in the catch block
+
+        String inputCode = "class A {\n" +
+                           "  void a() {}\n" +
+                           "  void b() {}\n" +
+                           "  void c() {}\n" +
+                           "  void d() {}\n" +
+                           "  \n" +
+                           "  void m() {\n" +
+                           "    a();\n" +
+                           "    try {\n" +
+                           "      b();\n" +
+                           "    }\n" +
+                           "    catch (Exception e) {\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "    d();\n" +
+                           "  }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    void a() {}\n" +
+                              "    void b() {}\n" +
+                              "    void c() {}\n" +
+                              "    void d() {}\n" +
+                              "    \n" +
+                              "    void m() {\n" +
+                              "        a();\n" +
+                              "        try {\n" +
+                              "            b();\n" +
+                              "        } catch (Exception e) {\n" +
+                              "            c();\n" +
+                              "        }\n" +
+                              "        d();\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "  a();\n" +
+                      "  ...\n" +
+                      "- c();\n";
     
         runSingleTest(smpl, inputCode, expectedCode);
     }

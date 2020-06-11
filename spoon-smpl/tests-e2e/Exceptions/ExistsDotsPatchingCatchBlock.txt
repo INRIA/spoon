@@ -1,0 +1,49 @@
+[name]
+ExistsDotsPatchingCatchBlock
+
+[contract]
+dots in exists mode should patch a statement only found in the catch block
+
+[patch]
+@@ @@
+  a();
+  ... when exists
+- c();
+
+
+[input]
+class A {
+  void a() {}
+  void b() {}
+  void c() {}
+  void d() {}
+  
+  void m() {
+    a();
+    try {
+      b();
+    }
+    catch (Exception e) {
+      c();
+    }
+    d();
+  }
+}
+
+
+[expected]
+class A {
+    void a() {}
+    void b() {}
+    void c() {}
+    void d() {}
+    
+    void m() {
+        a();
+        try {
+            b();
+        } catch (Exception e) {
+        }
+        d();
+    }
+}

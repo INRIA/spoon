@@ -1,0 +1,41 @@
+[name]
+DotsWhenExistsBug
+
+[contract]
+the when-exists dots modifier should successfully match in the following example
+
+[patch]
+@@ @@
+  a();
+  ... when exists
+- b();
+
+
+[input]
+class A {
+  void a() {}
+  void b() {}
+  
+  void m() {
+    try {
+      a();
+    }
+    catch (Exception e) {
+      b();
+    }
+  }
+}
+
+
+[expected]
+class A {
+    void a() {}
+    void b() {}
+
+    void m() {
+        try {
+            a();
+        } catch (Exception e) {
+        }
+    }
+}

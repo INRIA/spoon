@@ -4,9 +4,12 @@ import fr.inria.controlflow.*;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtScanner;
+
+import static fr.inria.controlflow.NaiveExceptionControlFlowStrategy.Options.*;
 
 import java.util.*;
 
@@ -210,14 +213,21 @@ public class SmPLMethodCFG {
      */
     public SmPLMethodCFG(CtMethod<?> method) {
         this.swapper = new UnsupportedElementSwapper(method);
-        this.cfg = new ControlFlowBuilder().build(method.getBody());
 
-        int branchId = 0;
+        ControlFlowBuilder builder = new ControlFlowBuilder();
+        ExceptionControlFlowStrategy strategy = new NaiveExceptionControlFlowStrategy(EnumSet.of(AddPathsForEmptyTryBlocks,
+                                                                                                 ReturnWithoutFinalizers));
+        builder.setExceptionControlFlowStrategy(strategy);
+
+        this.cfg = builder.build(method.getBody());
+
+        int parentId = 0;
 
         removeBlockEndNodes(cfg);
         removeOutermostBlockBeginNode(cfg);
+        removeExceptionBlockBeginNodes(cfg);
 
-        // Add method header node and annotate method body BLOCK_BEGIN node
+        // Add method header node
         cfg.findNodesOfKind(BranchKind.BEGIN).forEach((cfgEntryNode) -> {
             if (cfgEntryNode.next().size() != 1) {
                 throw new IllegalArgumentException("invalid BEGIN node in CFG");
@@ -246,32 +256,43 @@ public class SmPLMethodCFG {
 
         // Annotate branches
         for (ControlFlowNode node : cfg.findNodesOfKind(BranchKind.BRANCH)) {
-            if (node.next().size() != 2) {
-                throw new IllegalStateException("branch node with invalid number of successors");
-            }
-
             // If is the only supported branch statement at this time
             CtIf ifStm = (CtIf) node.getStatement().getParent();
 
-            int currentBranchId = branchId++;
+            int currentParentId = parentId++;
 
             NodeTag branchTag = new NodeTag("branch", ifStm);
-            branchTag.setMetadata("branchId", currentBranchId);
+            branchTag.setMetadata("parentId", currentParentId);
             node.setTag(branchTag);
 
-            ControlFlowNode afterNode = findConvergenceNode(node);
-            NodeTag afterTag = new NodeTag("after", ifStm);
-            afterTag.setMetadata("parent", currentBranchId);
-            afterNode.setTag(afterTag);
+            ControlFlowNode afterNode = findPostBranchConvergenceNode(node);
 
-            ControlFlowNode n1 = node.next().get(0);
-            ControlFlowNode n2 = node.next().get(1);
+            if (afterNode != null) {
+                NodeTag afterTag = new NodeTag("after", ifStm);
+                afterTag.setMetadata("parent", currentParentId);
+                afterNode.setTag(afterTag);
+            }
+
+            List<ControlFlowNode> branchNodes = new ArrayList<>();
+
+            for (ControlFlowNode innerNode : node.next()) {
+                if (innerNode.getKind() != BranchKind.CATCH) {
+                    branchNodes.add(innerNode);
+                }
+            }
+
+            if (branchNodes.size() != 2) {
+                throw new IllegalStateException("branch node with invalid successors");
+            }
+
+            ControlFlowNode n1 = branchNodes.get(0);
+            ControlFlowNode n2 = branchNodes.get(1);
 
             NodeTag trueTag = new NodeTag("trueBranch", ifStm.getThenStatement());
-            trueTag.setMetadata("parent", currentBranchId);
+            trueTag.setMetadata("parent", currentParentId);
 
             NodeTag falseTag = new NodeTag("falseBranch", ifStm.getElseStatement());
-            falseTag.setMetadata("parent", currentBranchId);
+            falseTag.setMetadata("parent", currentParentId);
 
             // If only one successor is a BLOCK_BEGIN the branch is else-less.
             if (n1.getKind() == BranchKind.BLOCK_BEGIN && n2.getKind() == BranchKind.CONVERGE) {
@@ -308,6 +329,52 @@ public class SmPLMethodCFG {
                         n2.setTag(trueTag);
                     }
                 }
+            }
+        }
+
+        // Annotate exception control flow
+        for (ControlFlowNode node : cfg.findNodesOfKind(BranchKind.TRY)) {
+            CtTry tryStmt = (CtTry) node.getStatement();
+            int currentParentId = parentId++;
+
+            NodeTag tryTag = new NodeTag("tryBlock", tryStmt);
+            tryTag.setMetadata("parentId", currentParentId);
+            node.setTag(tryTag);
+
+            NodeTag catchTag = new NodeTag("catchBlock", tryStmt);
+            catchTag.setMetadata("parentId", currentParentId);
+
+            NodeTag finallyTag = new NodeTag("finallyBlock", tryStmt);
+            finallyTag.setMetadata("parentId", currentParentId);
+
+            NodeTag convergeTag = new NodeTag("after", tryStmt);
+            convergeTag.setMetadata("parentId", currentParentId);
+
+            int nextNodeId = node.getId() + 1;
+            ControlFlowNode nextNode = cfg.findNodeById(nextNodeId);
+
+            Set<BranchKind> wantedKinds = new HashSet<>(Arrays.asList(BranchKind.CATCH, BranchKind.FINALLY, BranchKind.CONVERGE));
+
+            while (nextNode != null && wantedKinds.contains(nextNode.getKind())) {
+                switch (nextNode.getKind()) {
+                    case CATCH:
+                        nextNode.setTag(catchTag);
+                        break;
+
+                    case FINALLY:
+                        nextNode.setTag(finallyTag);
+                        break;
+
+                    case CONVERGE:
+                        nextNode.setTag(convergeTag);
+                        break;
+
+                    default:
+                        throw new IllegalStateException("unreachable");
+                }
+
+                nextNodeId += 1;
+                nextNode = cfg.findNodeById(nextNodeId);
             }
         }
     }
@@ -391,11 +458,22 @@ public class SmPLMethodCFG {
      * @param node Branch node to find convergence node for
      * @return Convergence node corresponding to given branch node
      */
-    private static ControlFlowNode findConvergenceNode(ControlFlowNode node) {
+    private static ControlFlowNode findPostBranchConvergenceNode(ControlFlowNode node) {
         // FIXME: this relies on implementation details of ControlFlowBuilder::visitCtIf and ControlFlowNode.count
         // A good fix would be adding this info explicitly to spoon-control-flow, e.g by having
         // ControlFlowNodes have a field .postBranchConverge that was set to the specific
         // convergence node created for the branch, and having a method ControlFlowNode::getPostBranchConvergenceNode
+        return node.getParent().findNodeById(node.getId() + 1);
+    }
+
+    /**
+     * Find the post-trycatch convergence node corresponding to a TRY node.
+     *
+     * @param node TRY node to find convergence node for
+     * @return Convergence node corresponding to given TRY node
+     */
+    private static ControlFlowNode findPostTryConvergenceNode(ControlFlowNode node) {
+        // FIXME: same issue as findPostBranchConvergenceNode
         return node.getParent().findNodeById(node.getId() + 1);
     }
 
@@ -437,6 +515,21 @@ public class SmPLMethodCFG {
         cfg.findNodesOfKind(BranchKind.BEGIN).forEach((node) -> {
             if (node.next().get(0).getKind() == BranchKind.BLOCK_BEGIN) {
                 removeNode(cfg, node.next().get(0));
+            }
+        });
+    }
+
+    /**
+     * Remove any BLOCK_BEGIN nodes that are successors to TRY or CATCH nodes.
+     *
+     * @param cfg CFG to operate on
+     */
+    private static void removeExceptionBlockBeginNodes(ControlFlowGraph cfg) {
+        Set<BranchKind> wantedKinds = new HashSet<>(Arrays.asList(BranchKind.TRY, BranchKind.CATCH));
+
+        cfg.findNodesOfKind(BranchKind.BLOCK_BEGIN).forEach(node -> {
+            if (node.prev().size() == 1 && wantedKinds.contains(node.prev().get(0).getKind())) {
+                removeNode(cfg, node);
             }
         });
     }

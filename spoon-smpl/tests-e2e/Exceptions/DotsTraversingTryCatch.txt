@@ -1,0 +1,49 @@
+[name]
+DotsTraversingTryCatch
+
+[contract]
+dots should be able to traverse over a try-catch
+
+[patch]
+@@ @@
+  a();
+  ...
+- d();
+
+
+[input]
+class A {
+  void a() {}
+  void b() {}
+  void c() {}
+  void d() {}
+  
+  void m() {
+    a();
+    try {
+      b();
+    }
+    catch (Exception e) {
+      c();
+    }
+    d();
+  }
+}
+
+
+[expected]
+class A {
+    void a() {}
+    void b() {}
+    void c() {}
+    void d() {}
+    
+    void m() {
+        a();
+        try {
+            b();
+        } catch (Exception e) {
+            c();
+        }
+    }
+}

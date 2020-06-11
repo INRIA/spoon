@@ -65,6 +65,9 @@ public class CFGModel implements Model {
                     }
                     break;
                 case BLOCK_BEGIN:
+                case TRY:
+                case CATCH:
+                case FINALLY:
                 case CONVERGE:
                     SmPLMethodCFG.NodeTag tag = (SmPLMethodCFG.NodeTag) node.getTag();
 
