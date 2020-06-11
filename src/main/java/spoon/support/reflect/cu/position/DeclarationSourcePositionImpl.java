@@ -24,7 +24,7 @@ public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
 	private int modifierSourceEnd;
 	private int modifierSourceStart;
 
-	/** for "int i=0, j=1", this would end at the comma separating i and j */
+	/** int i=0, j=1 -> would end at the comma */
 	private int endDefaultValueDeclaration = -1;
 
 	@Override
@@ -33,21 +33,15 @@ public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
 	}
 
 	@Override
-	public DeclarationSourcePosition addDefaultValueEnd(int endDefaultValueDeclaration) {
+	public DeclarationSourcePosition setDefaultValueEnd(int endDefaultValueDeclaration) {
 		// JDT initializes to 0
 		// so 0 means nothing interesting
 		// we prefer the -1 convention here
 		if (endDefaultValueDeclaration == 0) {
 			return this;
 		}
-
-		try {
-			DeclarationSourcePositionImpl newPos = (DeclarationSourcePositionImpl) this.clone();
-			newPos.endDefaultValueDeclaration = endDefaultValueDeclaration;
-			return newPos;
-		} catch (CloneNotSupportedException e) {
-			throw new SpoonException(e);
-		}
+		this.endDefaultValueDeclaration = endDefaultValueDeclaration;
+		return this;
 	}
 
 	public DeclarationSourcePositionImpl(CompilationUnit compilationUnit, int nameStart, int nameEnd,
@@ -90,7 +84,7 @@ public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
 		if (endDefaultValueDeclaration != -1) {
 			return endDefaultValueDeclaration;
 		}
-		return getDeclarationEnd();
+		return declarationSourceEnd;
 	}
 
 

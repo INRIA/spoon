@@ -22,11 +22,11 @@ public interface DeclarationSourcePosition extends CompoundSourcePosition {
 	int getModifierSourceEnd();
 
 	/** returns the end of the default value
-	 * int i = 0, j =1 ➡ returns the comma
+	 * int i = 0, j =1 => returns the comma
 	 */
 	int getDefaultValueEnd();
 
-	/** returns a new position object enriched a default value declaration (immutability pattern) */
-	DeclarationSourcePosition addDefaultValueEnd(int endDefaultValueDeclaration);
+	/** sets the position of the end of the default value declaration */
+	DeclarationSourcePosition setDefaultValueEnd(int endDefaultValueDeclaration);
 
 }
