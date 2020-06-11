@@ -8,7 +8,7 @@
 package spoon.reflect.cu.position;
 
 /**
- * This interface represents the position of a program element in a source file.
+ * Represents the position of a program element in a source file in an immutable manner.
  * The start/end represents range of whole program element including children element and comments
  * The nameStart/End represents range of name of program element.
  * The modifierSourceStart/End represents range of modifiers and annotations of the element
@@ -26,7 +26,7 @@ public interface DeclarationSourcePosition extends CompoundSourcePosition {
 	 */
 	int getDefaultValueEnd();
 
-	/** sets the position of the end of the default value declaration */
-	DeclarationSourcePosition setDefaultValueEnd(int endDefaultValueDeclaration);
+	/** returns a new position object enriched a default value declaration (immutability pattern) */
+	DeclarationSourcePosition addDefaultValueEnd(int endDefaultValueDeclaration);
 
 }
