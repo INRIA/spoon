@@ -2612,6 +2612,31 @@ public class EndToEndTests {
         runSingleTest(smpl, inputCode, expectedCode);
     }
     @Test
+    public void testTernaryExpression() {
+        // contract: patches should be able to match on ternary expressions
+
+        String inputCode = "class A {\n" +
+                           "    int sgn(int x) {\n" +
+                           "        int result = (x > 0) ? 1 : 0;\n" +
+                           "        return result;\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    int sgn(int x) {\n" +
+                              "        int result = (x > 0) ? 1 : 0;\n" +
+                              "        log(result);\n" +
+                              "        return result;\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "+ log(result);\n" +
+                      "  return result;\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
     public void testTypedIdentifierMetavariables1() {
         // contract: correct bindings of explicitly typed identifier metavariables
 

@@ -162,7 +162,18 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtConditional(CtConditional<T> ctConditional) {
-        throw new NotImplementedException("Not implemented");
+        ElemNode result = new ElemNode(ctConditional);
+
+        ctConditional.getCondition().accept(this);
+        result.sub.put("cond", resultStack.pop());
+
+        ctConditional.getThenExpression().accept(this);
+        result.sub.put("then", resultStack.pop());
+
+        ctConditional.getElseExpression().accept(this);
+        result.sub.put("else", resultStack.pop());
+
+        resultStack.push(result);
     }
 
     @Override
