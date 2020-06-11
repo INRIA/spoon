@@ -5,9 +5,7 @@ import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.superConeTypes
-import org.jetbrains.kotlin.fir.expressions.FirExpression
-import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
-import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
+import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
 import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.resolve.toSymbol
@@ -71,7 +69,8 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
         // return factory.Module().getOrCreate(mname)
     }
 
-    private fun getReceiver(qa: FirQualifiedAccessExpression): FirExpression? {
+    fun getReceiver(qa: FirQualifiedAccess?): FirExpression? {
+        if(qa == null) return null
         val explicitReceiver = qa.explicitReceiver
         val dispatchReceiver = qa.dispatchReceiver
         return if (explicitReceiver == null || explicitReceiver == FirNoReceiverExpression) {

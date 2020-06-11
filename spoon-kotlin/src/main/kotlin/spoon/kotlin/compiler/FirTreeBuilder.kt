@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.fir.references.impl.FirPropertyFromParameterResolved
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.visitors.CompositeTransformResult
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
+import org.jetbrains.kotlin.lexer.KtToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
@@ -365,7 +366,8 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     override fun visitExpressionWithSmartcast(
         expressionWithSmartcast: FirExpressionWithSmartcast,
         data: Nothing?
-    ): CompositeTransformResult.Single<CtElement> {
+    ): CompositeTransformResult<CtElement> {
+        if(expressionWithSmartcast.originalExpression.source?.psi is KtUnaryExpression) return CompositeTransformResult.empty()
         val expr = expressionWithSmartcast.originalExpression.accept(this,null).single as CtTypedElement<*>
         val smartType = referenceBuilder.getNewTypeReference<Any>(expressionWithSmartcast.typeRef)
         if(expr.type != smartType)
@@ -434,7 +436,10 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
                     loopIterableStack.push(firStatement.initializer!!.accept(this,null).single as CtExpression<*>)
                 continue
             }
-            val ctElement = firStatement.accept(this, null).single
+            val ctElementResult = firStatement.accept(this, null)
+            if(ctElementResult.isEmpty) continue
+            val ctElement = ctElementResult.single
+
             if(ctElement is CtForEach) {
                 ctElement.setExpression<CtForEach>(loopIterableStack.pop())
             }
@@ -563,11 +568,45 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return superAccess.compose()
     }
 
+    private fun visitUnaryExpression(assignment: FirVariableAssignment): CompositeTransformResult.Single<CtUnaryOperator<*>> {
+        val ctUnaryOp = factory.Core().createUnaryOperator<Any>()
+        val functionCall = assignment.rValue as FirFunctionCall
+        val inc = functionCall.calleeReference.name.identifier == "inc"
+        val kind = when(assignment.source?.psi) {
+            is KtPostfixExpression -> if(inc) UnaryOperatorKind.POSTINC else UnaryOperatorKind.POSTDEC
+            is KtPrefixExpression -> if(inc) UnaryOperatorKind.PREINC else UnaryOperatorKind.PREDEC
+            else -> null
+        }
+        ctUnaryOp.setKind<CtUnaryOperator<*>>(kind)
+        val target = helper.getReceiver(assignment)?.accept(this, null)?.single as CtExpression<*>?
+        val lvalue = assignment.lValue.accept(this,null).single as CtReference
+        val operand = createVariableWrite(target, lvalue)
+        ctUnaryOp.setOperand<CtUnaryOperator<*>>(operand)
+        ctUnaryOp.setType<CtUnaryOperator<*>>(referenceBuilder.getNewTypeReference(assignment.rValue.typeRef))
+        return ctUnaryOp.compose()
+    }
+
+    private fun createVariableWrite(receiver: CtExpression<*>?, lvalue: CtReference) = when (lvalue) {
+        is CtLocalVariableReference<*> ->
+            factory.Core().createVariableWrite<Any>().also {
+                it.setVariable<CtVariableAccess<Any>>(lvalue as CtLocalVariableReference<Any>)
+            }
+        is CtFieldReference<*> -> {
+            factory.Core().createFieldWrite<Any>().also {
+                it.setVariable<CtVariableAccess<Any>>(lvalue as CtFieldReference<Any>)
+                it.setTarget<CtTargetedExpression<Any, CtExpression<*>>>(receiver)
+            }
+        }
+        else -> throw SpoonException("Unexpected expression ${lvalue::class.simpleName}")
+    }
+
     override fun visitVariableAssignment(
         variableAssignment: FirVariableAssignment,
         data: Nothing?
     ): CompositeTransformResult.Single<CtExpression<*>> {
 
+        if(variableAssignment.source?.psi is KtUnaryExpression)
+            return visitUnaryExpression(variableAssignment)
         val ctAssignment = factory.createAssignment<Any, Any>()
 
         val psiExp = (variableAssignment.source?.psi as? KtBinaryExpression) ?: throw SpoonException("No PSI for variable assignment")
@@ -581,22 +620,9 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         val assignmentExpr = variableAssignment.rValue.accept(this, null).single
         ctAssignment.setAssignment<CtAssignment<Any, Any>>(assignmentExpr as CtExpression<Any>)
 
-        val propertyRef = variableAssignment.lValue.accept(this, null).single as CtReference
-        val ctWrite = when (propertyRef) {
-            is CtLocalVariableReference<*> ->
-                factory.Core().createVariableWrite<Any>().also {
-                    it.setVariable<CtVariableAccess<Any>>(propertyRef as CtLocalVariableReference<Any>)
-                }
-            is CtFieldReference<*> -> {
-                factory.Core().createFieldWrite<Any>().also {
-                    it.setVariable<CtVariableAccess<Any>>(propertyRef as CtFieldReference<Any>)
-                    val target = if(variableAssignment.dispatchReceiver == FirNoReceiverExpression) null else
-                        variableAssignment.dispatchReceiver.accept(this,null).single as CtExpression<*>
-                    target?.let { t -> it.setTarget<CtTargetedExpression<Any,CtExpression<*>>>(t) }
-                }
-            }
-            else -> null
-        }
+        val lvalue = variableAssignment.lValue.accept(this, null).single as CtReference
+        val target = helper.getReceiver(variableAssignment)?.accept(this,null)?.single as CtExpression<*>
+        val ctWrite = createVariableWrite(target, lvalue)
         ctAssignment.setAssigned<CtAssignment<Any, Any>>(ctWrite)
 
         return ctAssignment.compose()
@@ -647,8 +673,18 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctParam.compose()
     }
 
-    override fun visitProperty(property: FirProperty, data: Nothing?): CompositeTransformResult.Single<CtVariable<*>> {
-        if(property.isLocal) return visitLocalVariable(property, data)
+    override fun visitProperty(property: FirProperty, data: Nothing?): CompositeTransformResult<CtVariable<*>> {
+        /*
+            a++
+            >translates to>
+            <unary> = a     // check if we're here, then unary operator will be created in the next visit
+            a = <unary>.inc()
+            a
+         */
+        if(property.source?.psi is KtUnaryExpression)
+            return CompositeTransformResult.empty()  // Context is responsible for handling this case
+        if(property.isLocal)
+            return visitLocalVariable(property, data)
 
         val ctProperty = factory.Core().createField<Any>()
         ctProperty.setSimpleName<CtField<*>>(property.name.identifier)
