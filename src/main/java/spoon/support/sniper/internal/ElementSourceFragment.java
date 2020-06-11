@@ -143,12 +143,13 @@ public class ElementSourceFragment implements SourceFragment {
 	}
 
 	/**
-	 * Builds tree of {@link SourcePosition}s of `element` and all it's children
+	 * Builds a tree of source fragments for `element` and all its children, based on the source positions of each element
 	 * @param element the root element of the tree
 	 */
-	public void addTreeOfSourceFragmentsOfElement(CtElement element) {
+	public static ElementSourceFragment createSourceFragmentsFrom(CtElement element) {
+		ElementSourceFragment rootFragment = new ElementSourceFragment(element, null);
 		Deque<ElementSourceFragment> parents = new ArrayDeque<>();
-		parents.push(this);
+		parents.push(rootFragment);
 		/*
 		 * scan all children of `element` and build tree of SourceFragments
 		 * Note: we cannot skip implicit elements,
@@ -228,6 +229,7 @@ public class ElementSourceFragment implements SourceFragment {
 		}
 		.setVisitCompilationUnitContent(true)
 		.scan(element.getRoleInParent(), element);
+		return rootFragment;
 	}
 	/**
 	 * @param parentFragment the parent {@link ElementSourceFragment}, which will receive {@link ElementSourceFragment} made for `otherElement`
