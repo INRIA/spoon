@@ -6,7 +6,9 @@ import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
+import org.jetbrains.kotlin.fir.expressions.impl.FirElseIfTrueCondition
 import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
+import org.jetbrains.kotlin.fir.expressions.impl.FirSingleExpressionBlock
 import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.references.FirErrorNamedReference
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
@@ -15,6 +17,7 @@ import org.jetbrains.kotlin.fir.references.impl.FirExplicitThisReference
 import org.jetbrains.kotlin.fir.references.impl.FirImplicitThisReference
 import org.jetbrains.kotlin.fir.references.impl.FirPropertyFromParameterResolvedNamedReference
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
+import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.visitors.CompositeTransformResult
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
 import org.jetbrains.kotlin.lexer.KtToken
@@ -300,7 +303,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
                 when(val e = it.accept(this,null).single) {
                     is CtExpression<*> -> e
                     is CtIf -> {
-                        val typeRef = e.getMetadata(KtMetadataKeys.KT_IF_TYPE) as CtTypeReference<Any>
+                        val typeRef = e.getMetadata(KtMetadataKeys.KT_STATEMENT_TYPE) as CtTypeReference<Any>
                         val statementExpression = e.wrapInStatementExpression(typeRef)
                         statementExpression.setImplicit(true)
                     }
@@ -409,7 +412,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
         // Add type
         val type = referenceBuilder.getNewTypeReference<CtType<Any>>(ifExpression.typeRef)
-        ctIf.putMetadata<CtIf>(KtMetadataKeys.KT_IF_TYPE, type)
+        ctIf.putMetadata<CtIf>(KtMetadataKeys.KT_STATEMENT_TYPE, type)
 
         return ctIf.compose()
     }
@@ -449,7 +452,6 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             } else {
                 ctElement as CtStatement
             })
-
         }
         ktBlock.setStatements<CtBlock<*>>(statements)
         return ktBlock.compose()
@@ -699,7 +701,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
                     initializer.setParent(ctProperty)
                 }
                 is CtIf -> {
-                    val typeRef = initializer.getMetadata(KtMetadataKeys.KT_IF_TYPE) as CtTypeReference<Any>
+                    val typeRef = initializer.getMetadata(KtMetadataKeys.KT_STATEMENT_TYPE) as CtTypeReference<Any>
                     val statementExpression = initializer.wrapInStatementExpression(typeRef)
                     statementExpression.setImplicit<CtStatement>(true)
                     ctProperty.setDefaultExpression<CtField<Any>>(statementExpression)
@@ -802,7 +804,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
                     initializer.setParent(localVar)
                 }
                 is CtIf -> {
-                    val typeRef = initializer.getMetadata(KtMetadataKeys.KT_IF_TYPE) as CtTypeReference<Any>
+                    val typeRef = initializer.getMetadata(KtMetadataKeys.KT_STATEMENT_TYPE) as CtTypeReference<Any>
                     val statementExpression = initializer.wrapInStatementExpression(typeRef)
                     statementExpression.setImplicit<CtStatement>(true)
                     localVar.setDefaultExpression<CtLocalVariable<Any>>(statementExpression)
@@ -851,7 +853,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
                 ctExpr.setParent(ctReturn)
             }
             is CtIf -> {
-                val typeRef = ctExpr.getMetadata(KtMetadataKeys.KT_IF_TYPE) as CtTypeReference<Any>
+                val typeRef = ctExpr.getMetadata(KtMetadataKeys.KT_STATEMENT_TYPE) as CtTypeReference<Any>
                 val statementExpression = ctExpr.wrapInStatementExpression(typeRef)
                 statementExpression.setImplicit<CtStatement>(true)
                 ctReturn.setReturnedExpression<CtReturn<Any>>(statementExpression)
@@ -926,7 +928,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     private fun expressionOrWrappedInStatementExpression(e: CtElement): CtExpression<*> = when(e) {
         is CtExpression<*> -> e
         is CtIf -> {
-            val typeRef = e.getMetadata(KtMetadataKeys.KT_IF_TYPE) as CtTypeReference<Any>
+            val typeRef = e.getMetadata(KtMetadataKeys.KT_STATEMENT_TYPE) as CtTypeReference<Any>
             val statementExpression = e.wrapInStatementExpression(typeRef)
             statementExpression.setImplicit(true)
         }
