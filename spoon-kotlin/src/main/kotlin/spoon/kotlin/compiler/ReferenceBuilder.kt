@@ -17,13 +17,6 @@ import spoon.reflect.reference.*
 
 internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
     private val msgCollector = PrintingMsgCollector()
-    fun <T> buildTypeReference(typeRef: FirResolvedTypeRef) : CtTypeReference<T> {
-        val ctRef = firTreeBuilder.factory.Core().createTypeReference<T>()
-        typeRef.type.classId?.packageFqName?.let<FqName,CtTypeReference<T>> {
-            ctRef.setPackage(getPackageReference(it))
-        }
-        return ctRef
-    }
 
     fun <T> buildTypeReference(typeRef: ConeClassLikeType) : CtTypeReference<T> {
         val ctRef = firTreeBuilder.factory.Core().createTypeReference<T>()
@@ -39,45 +32,12 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
         TODO()
     }
 
-    fun <T> getNewTypeReference(symbol: FirClassSymbol<*>) : CtTypeReference<T> {
-        val ref = firTreeBuilder.factory.Core().createTypeReference<T>()
-        ref.setSimpleName<CtTypeReference<T>>(symbol.classId.shortClassName.identifier)
-        ref.setPackage<CtTypeReference<T>>(getPackageReference(symbol.classId.packageFqName))
-        return ref
-    }
-
     fun <T> getNewDeclaringTypeReference(callableId: CallableId) : CtTypeReference<T>? {
         val ref = firTreeBuilder.factory.Core().createTypeReference<T>()
         if(callableId.className == null) return null
         ref.setSimpleName<CtTypeReference<*>>(callableId.className!!.shortName().identifier)
         ref.setPackage<CtTypeReference<T>>(getPackageReference(callableId.packageName))
         return ref
-    }
-
-    fun <T> getNewTypeReference(symbol: FirCallableSymbol<*>) : CtTypeReference<T> {
-        val ref = firTreeBuilder.factory.Core().createTypeReference<T>()
-        ref.setSimpleName<CtTypeReference<T>>(symbol.callableId.callableName.identifier)
-        ref.setPackage<CtTypeReference<T>>(getPackageReference(symbol.callableId.packageName))
-        ref.setDeclaringType<CtTypeReference<T>>(getNewDeclaringTypeReference<CtTypeReference<T>>(symbol.callableId))
-        ref.putMetadata<CtTypeReference<T>>(KtMetadataKeys.TYPE_REF_NULLABLE,
-            symbol.fir.returnTypeRef.coneTypeSafe<ConeClassLikeType>()?.nullability)
-        return ref
-    }
-
-    fun <T> getNewTypeReference(symbol: FirClassLikeSymbol<*>, nullable : Boolean) : CtTypeReference<T> {
-        val ref = firTreeBuilder.factory.Core().createTypeReference<T>()
-        ref.setSimpleName<CtTypeReference<T>>(symbol.classId.shortClassName.identifier)
-        ref.setPackage<CtTypeReference<T>>(getPackageReference(symbol.classId.packageFqName))
-        ref.putMetadata<CtTypeReference<T>>(KtMetadataKeys.TYPE_REF_NULLABLE, nullable)
-        return ref
-    }
-
-    fun <T> getNewExecutableReference(d : FirDelegatedConstructorCall): CtExecutableReference<T> {
-        val execRef = firTreeBuilder.factory.Core().createExecutableReference<T>()
-        execRef.setSimpleName<CtExecutableReference<T>>(CtExecutableReference.CONSTRUCTOR_NAME)
-        execRef.setType<CtExecutableReference<T>>(getNewTypeReference(d.constructedTypeRef))
-        execRef.setDeclaringType<CtExecutableReference<T>>(getNewTypeReference<CtTypeReference<T>>(d.constructedTypeRef))
-        return execRef
     }
 
     fun <T> getNewExecutableReference(d : FirDelegatedConstructorCall, declaringType : FirTypeRef): CtExecutableReference<T> {
