@@ -11,6 +11,9 @@ import spoon.SpoonException;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
@@ -33,15 +36,21 @@ public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
 	}
 
 	@Override
-	public DeclarationSourcePosition setDefaultValueEnd(int endDefaultValueDeclaration) {
+	public DeclarationSourcePosition addDefaultValueEnd(int endDefaultValueDeclaration) {
 		// JDT initializes to 0
 		// so 0 means nothing interesting
 		// we prefer the -1 convention here
 		if (endDefaultValueDeclaration == 0) {
 			return this;
 		}
-		this.endDefaultValueDeclaration = endDefaultValueDeclaration;
-		return this;
+
+		try {
+			DeclarationSourcePositionImpl newPos = (DeclarationSourcePositionImpl) this.clone();
+			newPos.endDefaultValueDeclaration = endDefaultValueDeclaration;
+			return newPos;
+		} catch (CloneNotSupportedException e) {
+			throw new SpoonException(e);
+		}
 	}
 
 	public DeclarationSourcePositionImpl(CompilationUnit compilationUnit, int nameStart, int nameEnd,

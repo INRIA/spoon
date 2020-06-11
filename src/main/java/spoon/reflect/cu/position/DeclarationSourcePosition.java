@@ -26,7 +26,7 @@ public interface DeclarationSourcePosition extends CompoundSourcePosition {
 	 */
 	int getDefaultValueEnd();
 
-	/** sets the position of the end of the default value declaration */
-	DeclarationSourcePosition setDefaultValueEnd(int endDefaultValueDeclaration);
+	/** returns a new position object enriched a default value declaration (immutability pattern) */
+	DeclarationSourcePosition addDefaultValueEnd(int endDefaultValueDeclaration);
 
 }
