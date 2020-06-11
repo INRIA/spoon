@@ -74,14 +74,19 @@ public class FormulaOptimizer implements FormulaVisitor {
      * Optimize Formula elements of type True.
      *
      * Direct optimizations:
-     * 1) Operation-capturing formulas "And(LHS, ExistsVar("_v", SetEnv("_v", List<Operation>)))"
+     * 1) (And(T, phi) | And(phi, T)) -> phi
+     * 2) Operation-capturing formulas "And(LHS, ExistsVar("_v", SetEnv("_v", List<Operation>)))"
      *    with empty operation lists are replaced by LHS.
      *
      * @param element Formula to optimize
      */
     @Override
     public void visit(And element) {
-        if (element.getRhs() instanceof ExistsVar
+        if (element.getLhs() instanceof True) {
+            resultStack.push(element.getRhs());
+        } else if (element.getRhs() instanceof True) {
+            resultStack.push(element.getLhs());
+        } else if (element.getRhs() instanceof ExistsVar
             && ((ExistsVar) element.getRhs()).getVarName().equals("_v")
             && ((ExistsVar) element.getRhs()).getInnerElement() instanceof SetEnv
             && ((SetEnv) ((ExistsVar) element.getRhs()).getInnerElement()).getValue() instanceof List
