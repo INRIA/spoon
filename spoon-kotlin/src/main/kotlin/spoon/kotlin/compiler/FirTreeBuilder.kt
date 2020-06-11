@@ -381,10 +381,36 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitWhenExpression(whenExpression: FirWhenExpression, data: Nothing?): CompositeTransformResult<CtElement> {
         if(whenExpression.isIf()) return visitIfExpression(whenExpression)
-
+        val subjectVariable = whenExpression.subjectVariable
+        if(subjectVariable?.name?.isSpecial == true) {
+            if(subjectVariable.name.asString() == "<elvis>")
+                return visitElvisOperator(whenExpression)
+            else throw SpoonException(
+                "Unexpected special in subject variable of when-expression: ${subjectVariable.name.asString()}")
+        }
 
 
         return super.visitWhenExpression(whenExpression, data)
+    }
+
+    override fun visitWhenSubjectExpression(
+        whenSubjectExpression: FirWhenSubjectExpression,
+        data: Nothing?
+    ): CompositeTransformResult<CtElement> {
+        return whenSubjectExpression.whenSubject.whenExpression.subject!!.accept(this,null)
+    }
+
+    private fun visitElvisOperator(whenExpression: FirWhenExpression): CompositeTransformResult<CtBinaryOperator<*>> {
+        val lhs = whenExpression.subjectVariable!!.initializer!!.accept(this,null).single as CtExpression<*>
+        val rhs = whenExpression.branches.first { it.condition !is FirElseIfTrueCondition }.
+            result.accept(this,null).single
+        val ctOperator = factory.Core().createBinaryOperator<Any>()
+        return ctOperator.apply {
+            setLeftHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(lhs))
+            setRightHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(rhs))
+            putMetadata<CtBinaryOperator<*>>(KtMetadataKeys.KT_BINARY_OPERATOR_KIND, KtBinaryOperatorKind.ELVIS)
+            setType<CtBinaryOperator<*>>(referenceBuilder.getNewTypeReference(whenExpression.typeRef))
+        }.compose()
     }
 
     fun visitIfExpression(ifExpression : FirWhenExpression) : CompositeTransformResult.Single<CtIf> {
@@ -429,7 +455,8 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         ...
        }
      */
-    override fun visitBlock(block: FirBlock, data: Nothing?): CompositeTransformResult.Single<CtBlock<*>> {
+    override fun visitBlock(block: FirBlock, data: Nothing?): CompositeTransformResult<CtElement> {
+        if(block is FirSingleExpressionBlock) return visitSingleExpressionBlock(block)
         val ktBlock = factory.Core().createBlock<Any>()
         val statements = ArrayList<CtStatement>()
         val loopIterableStack = Stack<CtExpression<*>>()
@@ -454,7 +481,21 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             })
         }
         ktBlock.setStatements<CtBlock<*>>(statements)
+
+        ktBlock.putMetadata<CtBlock<*>>(KtMetadataKeys.KT_STATEMENT_TYPE,
+            referenceBuilder.getNewTypeReference<CtBlock<*>>(block.typeRef))
         return ktBlock.compose()
+    }
+
+    private fun visitSingleExpressionBlock(firBlock: FirSingleExpressionBlock):
+        CompositeTransformResult.Single<CtBlock<*>> {
+        val ctBlock = factory.Core().createBlock<Any>()
+        val ctStatement = statementOrWrappedInImplicitReturn(firBlock.statement.accept(this,null).single)
+        ctBlock.setStatements<CtBlock<*>>(listOf(ctStatement))
+        ctBlock.putMetadata<CtBlock<*>>(KtMetadataKeys.KT_STATEMENT_TYPE,
+            referenceBuilder.getNewTypeReference<CtBlock<*>>(firBlock.typeRef))
+        ctBlock.setImplicit<CtBlock<*>>(true)
+        return ctBlock.compose()
     }
 
     override fun visitWhileLoop(whileLoop: FirWhileLoop, data: Nothing?): CompositeTransformResult<CtElement> {
@@ -925,6 +966,11 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return se
     }
 
+    private fun statementOrWrappedInImplicitReturn(e: CtElement): CtStatement = when(e) {
+        is CtStatement -> e
+        is CtExpression<*> -> e.wrapInImplicitReturn()
+        else -> throw RuntimeException("Can't wrap ${e::class} in StatementExpression")
+    }
     private fun expressionOrWrappedInStatementExpression(e: CtElement): CtExpression<*> = when(e) {
         is CtExpression<*> -> e
         is CtIf -> {
@@ -932,6 +978,11 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             val statementExpression = e.wrapInStatementExpression(typeRef)
             statementExpression.setImplicit(true)
         }
-        else -> throw RuntimeException("Can't wrap ${e::class} in StatementExpression")
+        is CtBlock<*> -> {
+            val typeRef = e.getMetadata(KtMetadataKeys.KT_STATEMENT_TYPE) as CtTypeReference<Any>
+            val statementExpression = e.wrapInStatementExpression(typeRef)
+            statementExpression.setImplicit(true)
+        }
+        else -> throw RuntimeException("Can't wrap ${e::class.simpleName} in StatementExpression")
     }
 }
