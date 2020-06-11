@@ -333,6 +333,7 @@ public class TryCatchTest {
 	    assertEquals("There should only be one catch statement, check the resource", 1, catchers.size());
 	    CtTypeReference<?> caughtType = catchers.get(0).getParameter().getType();
 
-	    assertEquals("some.neat.pkg.CustomException", caughtType.getQualifiedName());
+           assertEquals("CustomException", caughtType.getSimpleName());
+           assertEquals("some.neat.pkg.CustomException", caughtType.getQualifiedName());
 	}
 }
