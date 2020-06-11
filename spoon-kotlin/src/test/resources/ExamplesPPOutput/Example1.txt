@@ -1,18 +1,12 @@
 abstract class Example1 internal constructor(val n: kotlin.Int) : spoon.test.examples.testclasses.Base(9) {
     val s: kotlin.String = "s"
-    val i = if (true) {
-            1
-        } else {
+    val i = if (true) 1 else {
             0xabc123
         }
 
     constructor() : this(4)
 
     fun aFunction(n: kotlin.Int): kotlin.Long {
-        return if (false) {
-            0b1101
-        } else {
-            3L
-        }
+        return if (false) 0b1101 else 3L
     }
 }
