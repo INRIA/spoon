@@ -489,8 +489,12 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     private fun visitSingleExpressionBlock(firBlock: FirSingleExpressionBlock):
         CompositeTransformResult.Single<CtBlock<*>> {
-        val ctBlock = factory.Core().createBlock<Any>()
         val ctStatement = statementOrWrappedInImplicitReturn(firBlock.statement.accept(this,null).single)
+        if(ctStatement is CtBlock<*> && ctStatement.statements.size == 1) {
+            ctStatement.setImplicit<CtBlock<*>>(true)
+            return ctStatement.compose()
+        }
+        val ctBlock = factory.Core().createBlock<Any>()
         ctBlock.setStatements<CtBlock<*>>(listOf(ctStatement))
         ctBlock.putMetadata<CtBlock<*>>(KtMetadataKeys.KT_STATEMENT_TYPE,
             referenceBuilder.getNewTypeReference<CtBlock<*>>(firBlock.typeRef))
@@ -902,6 +906,8 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
                 statementExpression.setParent(ctReturn)
             }
         }
+        if(returnExpression.source == null)
+            ctReturn.setImplicit<CtReturn<*>>(true)
         return ctReturn.compose()
     }
 

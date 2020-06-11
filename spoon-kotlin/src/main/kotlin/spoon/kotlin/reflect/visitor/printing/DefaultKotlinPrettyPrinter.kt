@@ -740,6 +740,9 @@ class DefaultKotlinPrettyPrinter(
             adapter write getTypeName(method.type)
         }
         adapter write SPACE
+        if(method.body.isImplicit) {
+            adapter write "= "
+        }
         method.body.accept(this)
 
         adapter.newline()
