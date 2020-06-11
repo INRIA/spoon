@@ -71,6 +71,11 @@ public class SmPLMethodCFG {
         }
 
         @Override
+        public <S> void visitCtSwitch(CtSwitch<S> switchStatement) {
+            replace(switchStatement);
+        }
+
+        @Override
         public <T> void visitCtInvocation(CtInvocation<T> invocation) {
             if (!isRestoring) {
                 super.visitCtInvocation(invocation);
