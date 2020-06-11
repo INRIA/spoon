@@ -21,7 +21,7 @@ public class CompoundSourcePositionImpl extends SourcePositionImpl
 
 	private static final long serialVersionUID = 1L;
 	private int declarationSourceStart;
-	private int declarationSourceEnd;
+	protected int declarationSourceEnd;
 
 	public CompoundSourcePositionImpl(CompilationUnit compilationUnit, int nameStart, int nameEnd,
 			int declarationSourceStart, int declarationSourceEnd,
@@ -33,7 +33,7 @@ public class CompoundSourcePositionImpl extends SourcePositionImpl
 				lineSeparatorPositions);
 		checkArgsAreAscending(declarationSourceStart, declarationSourceEnd);
 		if (nameStart != 0) {
-			checkArgsAreAscending(declarationSourceStart, nameStart, nameEnd + 1, declarationSourceEnd + 1);
+			checkArgsAreAscending(declarationSourceStart, nameStart, nameEnd, declarationSourceEnd);
 		}
 		this.declarationSourceStart = declarationSourceStart;
 		this.declarationSourceEnd = declarationSourceEnd;
