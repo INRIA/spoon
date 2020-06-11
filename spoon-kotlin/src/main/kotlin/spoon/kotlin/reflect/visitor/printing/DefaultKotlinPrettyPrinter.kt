@@ -580,6 +580,10 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <R : Any?> visitCtBlock(block: CtBlock<R>) {
+        if(block.isImplicit && block.statements.size == 1) {
+            block.statements[0].accept(this)
+            return
+        }
         adapter write LEFT_CURL
         adapter.pushIndent()
         adapter.newline()
