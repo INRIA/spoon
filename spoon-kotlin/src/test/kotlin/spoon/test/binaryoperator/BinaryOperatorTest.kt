@@ -8,6 +8,7 @@ import spoon.kotlin.reflect.visitor.printing.DefaultKotlinPrettyPrinter
 import spoon.kotlin.reflect.visitor.printing.DefaultPrinterAdapter
 import spoon.reflect.code.*
 import spoon.reflect.declaration.CtType
+import spoon.reflect.reference.CtTypeReference
 import spoon.test.TestBuildUtil
 
 class BinaryOperatorTest {
@@ -15,6 +16,7 @@ class BinaryOperatorTest {
     private val pp = DefaultKotlinPrettyPrinter(DefaultPrinterAdapter())
 
     private fun CtBinaryOperator<*>.ktKind() = getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND)
+    private fun CtType<*>.getInitializer(s: String): CtExpression<*> = getField(s).defaultExpression
 
     @Test
     fun basicComparisonsTest() {
@@ -111,8 +113,6 @@ class BinaryOperatorTest {
     fun testTypeOperators() {
         val c = util.buildClass("spoon.test.binaryoperator.testclasses","TypeOperators")
 
-        fun CtType<*>.getInitializer(s: String): CtExpression<*> = (c.getField(s).defaultExpression )
-
         assertEquals(8, c.fields.size)
 
         val pkg = "spoon.test.binaryoperator.testclasses"
@@ -156,5 +156,20 @@ class BinaryOperatorTest {
         assertEquals("kotlin.Boolean", isOperator.type.qualifiedName)
         assertEquals("$pkg.Base?", pp.prettyprint((isOperator.rightHandOperand as CtTypeAccess<*>).accessedType))
         assertEquals( "x !is $pkg.Base?", pp.prettyprint(isOperator))
+    }
+
+    @Test
+    fun testElvisOperator() {
+        val c = util.buildClass("spoon.test.binaryoperator.testclasses","ElvisOperator")
+
+        var op = c.getInitializer("b1") as CtBinaryOperator<*>
+        assertEquals(c.factory.Type().createReference<CtTypeReference<Int>>("kotlin.Int"), op.type)
+        assertEquals(KtBinaryOperatorKind.ELVIS, op.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND))
+        assertEquals("b ?: 0", pp.prettyprint(op))
+
+        op = c.getInitializer("b2") as CtBinaryOperator<*>
+        assertEquals(c.factory.Type().createReference<CtTypeReference<Int>>("kotlin.Int"), op.type)
+        assertEquals(KtBinaryOperatorKind.ELVIS, op.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND))
+        assertEquals("b ?: if (b == null) 1 else b1", pp.prettyprint(op))
     }
 }
