@@ -21,17 +21,32 @@ public class CompoundSourcePositionImpl extends SourcePositionImpl
 
 	private static final long serialVersionUID = 1L;
 	private int declarationSourceStart;
-	private int declarationSourceEnd;
+	protected int declarationSourceEnd;
 
-	public CompoundSourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd,
+	public CompoundSourcePositionImpl(CompilationUnit compilationUnit, int nameStart, int nameEnd,
 			int declarationSourceStart, int declarationSourceEnd,
 			int[] lineSeparatorPositions) {
+		// by convention, the default start and end fields
+		// are used for the name position
 		super(compilationUnit,
-				sourceStart, sourceEnd,
+				nameStart, nameEnd,
 				lineSeparatorPositions);
-		checkArgsAreAscending(declarationSourceStart, sourceStart, sourceEnd + 1, declarationSourceEnd + 1);
+		checkArgsAreAscending(declarationSourceStart, declarationSourceEnd);
+		if (nameStart != 0) {
+			checkArgsAreAscending(declarationSourceStart, nameStart, nameEnd, declarationSourceEnd);
+		}
 		this.declarationSourceStart = declarationSourceStart;
 		this.declarationSourceEnd = declarationSourceEnd;
+	}
+
+	@Override
+	public int getDeclarationEnd() {
+		return declarationSourceEnd;
+	}
+
+	@Override
+	public int getDeclarationStart() {
+		return declarationSourceStart;
 	}
 
 	@Override
