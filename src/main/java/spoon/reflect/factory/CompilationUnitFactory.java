@@ -116,6 +116,9 @@ public class CompilationUnitFactory extends SubFactory {
 
 	}
 
+	/**
+	 * Returns the compilation unit corresponding to this type. Creates one on-the-fly if needed.
+	 */
 	public CompilationUnit getOrCreate(CtType type) {
 		if (type == null) {
 			return null;
