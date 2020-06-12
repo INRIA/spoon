@@ -22,7 +22,7 @@ public interface DeclarationSourcePosition extends CompoundSourcePosition {
 	int getModifierSourceEnd();
 
 	/** returns the end of the default value
-	 * int i = 0, j =1 => returns the comma
+	 * int i = 0, j =1 ➡ returns the comma
 	 */
 	int getDefaultValueEnd();
 
