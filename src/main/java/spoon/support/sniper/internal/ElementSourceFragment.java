@@ -720,13 +720,14 @@ public class ElementSourceFragment implements SourceFragment {
 		StringBuilder buff = new StringBuilder();
 		CharType lastType = null;
 		int off = start;
+		// basic tokenization based on spaces
 		while (off < end) {
 			char c = sourceCode.charAt(off);
 			CharType type = CharType.fromChar(c);
 			if (type != lastType) {
 				if (lastType != null) {
 					onCharSequence(lastType, buff, consumer);
-					buff.setLength(0);
+					buff.setLength(0); // reset
 				}
 				lastType = type;
 			}
@@ -766,8 +767,10 @@ public class ElementSourceFragment implements SourceFragment {
 					longestMatcher = strMatcher.getLonger(longestMatcher);
 				}
 			}
+			// nothing has matched, best effort token
 			if (longestMatcher == null) {
-				throw new SpoonException("Unexpected source text: " + buff.toString());
+				consumer.accept(new TokenSourceFragment(str.toString(), TokenType.CODE_SNIPPET));
+				return;
 			}
 			consumer.accept(new TokenSourceFragment(longestMatcher.toString(), longestMatcher.getType()));
 			off += longestMatcher.getLength();

@@ -108,6 +108,43 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	public void testPrintLocalVariableDeclaration() {
+		// contract: joint local declarations can be sniper-printed in whole unmodified method
+		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
+			type.getFields().stream().forEach(x -> {x.delete();});
+		}, (type, printed) -> {
+			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
+					"\n" +
+					"public class OneLineMultipleVariableDeclaration {\n" +
+					"\n" +
+					"\tvoid foo(int a) {\n" +
+					"\t\tint b = 0, e = 1;\n" +
+					"\t\ta = a;\n" +
+					"\t}\n" +
+					"}", printed);
+		});
+	}
+
+	@Test
+	public void testPrintLocalVariableDeclaration2() {
+		// contract: joint local declarations can be sniper-printed
+		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
+			type.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0).delete();
+		}, (type, printed) -> {
+			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
+					"\n" +
+					"public class OneLineMultipleVariableDeclaration {int a;\n" +
+					"\n" +
+					"\tint c;\n" +
+					"\n" +
+					"\tvoid foo(int a) {int e = 1;\n" +
+					"\t\ta = a;\n" +
+					"\t}\n" +
+					"}", printed);
+		});
+	}
+
+	@Test
 	public void testPrintOneLineMultipleVariableDeclaration() {
 		// contract: files with joint field declarations can be recompiled after sniper
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
