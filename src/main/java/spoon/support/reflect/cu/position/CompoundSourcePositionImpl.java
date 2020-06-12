@@ -33,7 +33,7 @@ public class CompoundSourcePositionImpl extends SourcePositionImpl
 				lineSeparatorPositions);
 		checkArgsAreAscending(declarationSourceStart, declarationSourceEnd);
 		if (nameStart != 0) {
-			checkArgsAreAscending(declarationSourceStart, nameStart, nameEnd, declarationSourceEnd);
+			checkArgsAreAscending(declarationSourceStart, nameStart, nameEnd + 1, declarationSourceEnd);
 		}
 		this.declarationSourceStart = declarationSourceStart;
 		this.declarationSourceEnd = declarationSourceEnd;
