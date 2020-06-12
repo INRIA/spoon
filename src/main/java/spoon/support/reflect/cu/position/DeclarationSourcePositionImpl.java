@@ -11,9 +11,6 @@ import spoon.SpoonException;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
@@ -93,7 +90,7 @@ public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
 		if (endDefaultValueDeclaration != -1) {
 			return endDefaultValueDeclaration;
 		}
-		return declarationSourceEnd;
+		return getDeclarationEnd();
 	}
 
 
