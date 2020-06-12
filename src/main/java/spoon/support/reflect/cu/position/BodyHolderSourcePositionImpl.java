@@ -25,18 +25,18 @@ public class BodyHolderSourcePositionImpl extends DeclarationSourcePositionImpl
 
 	public BodyHolderSourcePositionImpl(
 			CompilationUnit compilationUnit,
-			int sourceStart, int sourceEnd,
+			int nameStart, int nameEnd,
 			int modifierSourceStart, int modifierSourceEnd,
 			int declarationSourceStart, int declarationSourceEnd,
 			int bodyStart,
 			int bodyEnd,
 			int[] lineSeparatorPositions) {
 		super(compilationUnit,
-				sourceStart, sourceEnd,
+				nameStart, nameEnd,
 				modifierSourceStart, modifierSourceEnd,
 				declarationSourceStart, declarationSourceEnd,
 				lineSeparatorPositions);
-		checkArgsAreAscending(declarationSourceStart, modifierSourceStart, modifierSourceEnd + 1, sourceStart, sourceEnd + 1, bodyStart, bodyEnd + 1, declarationSourceEnd + 1);
+		checkArgsAreAscending(declarationSourceStart, modifierSourceStart, modifierSourceEnd + 1, nameStart, nameEnd + 1, bodyStart, bodyEnd + 1, declarationSourceEnd + 1);
 		this.bodyStart = bodyStart;
 		this.bodyEnd = bodyEnd;
 	}

@@ -16,8 +16,16 @@ import spoon.reflect.cu.SourcePosition;
  */
 public interface CompoundSourcePosition extends SourcePosition {
 
+	/** returns the start of everything incl. type, name and default value */
+	int getDeclarationStart();
+
+	/** returns the end of everything incl. type, name and default value */
+	int getDeclarationEnd();
+
+	/** returns the start of name (int foo = 0 ➡ pos('f')) */
 	int getNameStart();
 
+	/** returns the end of name (int bar = 0 ➡ pos('r')) */
 	int getNameEnd();
 
 }
