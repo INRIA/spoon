@@ -34,16 +34,27 @@ public class CompilationUnitFactory extends SubFactory {
 		super(factory);
 	}
 
+	/**
+	 *
+	 * A map file path -&gt unit.
+	 *
+	 * Core contract: key == unit.getFile().getPath()
+	 *
+	 * contract maintained by method addType.
+	 */
 	private transient Map<String, CompilationUnit> cachedCompilationUnits = new TreeMap<>();
 
 	/**
-	 * Gets the compilation unit map.
+	 * Gets an immutable compilation unit map.
+	 *
+	 * If you want to add a type to be pretty-printed, use {@link #addType(CtType)}.
 	 *
 	 * @return a map (path -&gt; {@link CompilationUnit})
 	 */
 	public Map<String, CompilationUnit> getMap() {
 		// strong encapsulation
-		// the map is an internal data structure
+		// the map is an internal data structure not meant
+		// to be directly manipulated
 		return Collections.unmodifiableMap(cachedCompilationUnits);
 	}
 
