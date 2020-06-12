@@ -18,6 +18,8 @@ import spoon.support.compiler.jdt.JDTSnippetCompiler;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -41,7 +43,9 @@ public class CompilationUnitFactory extends SubFactory {
 	 * @return a map (path -&gt; {@link CompilationUnit})
 	 */
 	public Map<String, CompilationUnit> getMap() {
-		return cachedCompilationUnits;
+		// strong encapsulation
+		// the map is an internal data structure
+		return Collections.unmodifiableMap(cachedCompilationUnits);
 	}
 
 	/**
@@ -75,14 +79,10 @@ public class CompilationUnitFactory extends SubFactory {
 		}
 	}
 
-	public CompilationUnit getOrCreate(CtType type) {
-		if (type == null) {
-			return null;
-		}
-		if (!(type.getPosition().getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
-			return type.getPosition().getCompilationUnit();
-		}
-
+	/**
+	 * add a new type to be pretty-printed
+	 */
+	public CompilationUnit addType(CtType type) {
 		if (type.isTopLevel()) {
 			CtModule module;
 			if (type.getPackage() != null && factory.getEnvironment().getComplianceLevel() > 8) {
@@ -93,7 +93,7 @@ public class CompilationUnitFactory extends SubFactory {
 			File file = this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, type.getPackage(), type).toFile();
 			try {
 				String path = file.getCanonicalPath();
-				CompilationUnit result = this.getOrCreate(path);
+				CompilationUnit result = this.create(path);
 				result.addDeclaredType(type);
 				type.setPosition(this.factory.createPartialSourcePosition(result));
 				return result;
@@ -103,6 +103,17 @@ public class CompilationUnitFactory extends SubFactory {
 		} else {
 			return getOrCreate(type.getTopLevelType());
 		}
+
+	}
+
+	public CompilationUnit getOrCreate(CtType type) {
+		if (type == null) {
+			return null;
+		}
+		if (!(type.getPosition().getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
+			return type.getPosition().getCompilationUnit();
+		}
+		return addType(type);
 	}
 
 	public CompilationUnit getOrCreate(CtModule module) {
@@ -127,21 +138,27 @@ public class CompilationUnitFactory extends SubFactory {
 	 */
 	public CompilationUnit getOrCreate(String filePath) {
 		CompilationUnit cu = cachedCompilationUnits.get(filePath);
-		if (cu == null) {
-			if (filePath.startsWith(JDTSnippetCompiler.SNIPPET_FILENAME_PREFIX)) {
-				cu = factory.Core().createCompilationUnit();
-				//put the virtual compilation unit of code snippet into cache too, so the JDTCommentBuilder can found it
-				cachedCompilationUnits.put(filePath, cu);
-				return cu;
-			}
-			cu = factory.Core().createCompilationUnit();
-
-			if (!filePath.equals(VirtualFile.VIRTUAL_FILE_NAME)) {
-				cu.setFile(new File(filePath));
-			}
-
-			cachedCompilationUnits.put(filePath, cu);
+		if (cu != null) {
+			return cu;
 		}
+		return create(filePath);
+	}
+
+	public CompilationUnit create(String filePath) {
+		CompilationUnit cu;
+		if (filePath.startsWith(JDTSnippetCompiler.SNIPPET_FILENAME_PREFIX)) {
+			cu = factory.Core().createCompilationUnit();
+			//put the virtual compilation unit of code snippet into cache too, so the JDTCommentBuilder can found it
+			cachedCompilationUnits.put(filePath, cu);
+			return cu;
+		}
+		cu = factory.Core().createCompilationUnit();
+
+		if (!filePath.equals(VirtualFile.VIRTUAL_FILE_NAME)) {
+			cu.setFile(new File(filePath));
+		}
+
+		cachedCompilationUnits.put(filePath, cu);
 		return cu;
 	}
 
