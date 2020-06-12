@@ -111,7 +111,6 @@ public class TestSniperPrinter {
 	public void testPrintLocalVariableDeclaration() {
 		// contract: joint local declarations can be sniper-printed in whole unmodified method
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
-			// we change something (anything would work)
 			type.getFields().stream().forEach(x -> {x.delete();});
 		}, (type, printed) -> {
 			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
@@ -130,7 +129,6 @@ public class TestSniperPrinter {
 	public void testPrintLocalVariableDeclaration2() {
 		// contract: joint local declarations can be sniper-printed
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
-			// we change something (anything would work)
 			type.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0).delete();
 		}, (type, printed) -> {
 			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
