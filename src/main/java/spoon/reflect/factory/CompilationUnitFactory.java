@@ -18,7 +18,6 @@ import spoon.support.compiler.jdt.JDTSnippetCompiler;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
@@ -93,7 +92,7 @@ public class CompilationUnitFactory extends SubFactory {
 			File file = this.factory.getEnvironment().getOutputDestinationHandler().getOutputPath(module, type.getPackage(), type).toFile();
 			try {
 				String path = file.getCanonicalPath();
-				CompilationUnit result = this.create(path);
+				CompilationUnit result = this._create(path);
 				result.addDeclaredType(type);
 				type.setPosition(this.factory.createPartialSourcePosition(result));
 				return result;
@@ -141,10 +140,10 @@ public class CompilationUnitFactory extends SubFactory {
 		if (cu != null) {
 			return cu;
 		}
-		return create(filePath);
+		return _create(filePath);
 	}
 
-	public CompilationUnit create(String filePath) {
+	private CompilationUnit _create(String filePath) {
 		CompilationUnit cu;
 		if (filePath.startsWith(JDTSnippetCompiler.SNIPPET_FILENAME_PREFIX)) {
 			cu = factory.Core().createCompilationUnit();
