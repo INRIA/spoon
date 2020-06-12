@@ -21,7 +21,7 @@ public class CompoundSourcePositionImpl extends SourcePositionImpl
 
 	private static final long serialVersionUID = 1L;
 	private int declarationSourceStart;
-	protected int declarationSourceEnd;
+	private int declarationSourceEnd;
 
 	public CompoundSourcePositionImpl(CompilationUnit compilationUnit, int nameStart, int nameEnd,
 			int declarationSourceStart, int declarationSourceEnd,
