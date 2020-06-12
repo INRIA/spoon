@@ -556,7 +556,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 				file.createNewFile();
 
 				// the path must be given relatively to to the working directory
-				try (InputStream is = getCompilationUnitInputStream(cu.getFile().getPath());
+				try (InputStream is = getCompilationUnitInputStream(cu);
 					FileOutputStream outFile = new FileOutputStream(file)) {
 
 					IOUtils.copy(is, outFile);
@@ -669,9 +669,8 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		return templates;
 	}
 
-	protected InputStream getCompilationUnitInputStream(String path) {
+	protected InputStream getCompilationUnitInputStream(spoon.reflect.cu.CompilationUnit cu) {
 		Environment env = factory.getEnvironment();
-		spoon.reflect.cu.CompilationUnit cu = factory.CompilationUnit().getMap().get(path);
 		List<CtType<?>> toBePrinted = cu.getDeclaredTypes();
 
 		PrettyPrinter printer = env.createPrettyPrinter();
