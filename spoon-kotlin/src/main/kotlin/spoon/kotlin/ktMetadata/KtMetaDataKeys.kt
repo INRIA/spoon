@@ -25,6 +25,7 @@ object KtMetadataKeys {
     const val INVOCATION_IS_INFIX = "skt_key invocation is infix : Boolean"
 
     const val TYPE_CAST_AS_SAFE = "skt_key type cast AS_SAFE : Boolean"
+    const val INVOCATION_IS_SAFE = "skt_key invocation is safe : Boolean"
 
     const val EXTENSION_TYPE_REF = "skt_key function extension typeref : CtTypeReference<*>?"
 }

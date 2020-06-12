@@ -676,7 +676,7 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtInvocation(invocation: CtInvocation<T>?) {
         if(invocation == null || invocation.isImplicit) return
-        if(invocation.getMetadata(KtMetadataKeys.INVOCATION_IS_INFIX) as? Boolean == true) {
+        if(invocation.getMetadata(KtMetadataKeys.INVOCATION_IS_INFIX) as Boolean? == true) {
             return visitInfixInvocation(invocation)
         }
         enterCtExpression(invocation)
@@ -697,7 +697,9 @@ class DefaultKotlinPrettyPrinter(
         } else {
             if(invocation.target != null && !invocation.target.isImplicit) {
                 invocation.target.accept(this)
-                adapter write '.'
+                val isSafe = invocation.getMetadata(KtMetadataKeys.INVOCATION_IS_SAFE) as Boolean?
+                val separator = if(isSafe == true) "?." else "."
+                adapter write separator
             }
 
             adapter write invocation.executable.simpleName

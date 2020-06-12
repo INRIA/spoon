@@ -303,6 +303,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
                 expressionOrWrappedInStatementExpression(it.accept(this,null).single)
             })
         }
+        invocation.putMetadata<CtInvocation<*>>(KtMetadataKeys.INVOCATION_IS_SAFE, functionCall.safe)
         return invocation.compose()
     }
 
