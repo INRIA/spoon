@@ -300,15 +300,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
         if(functionCall.arguments.isNotEmpty()) {
             invocation.setArguments<CtInvocation<Any>>(functionCall.arguments.map {
-                when(val e = it.accept(this,null).single) {
-                    is CtExpression<*> -> e
-                    is CtIf -> {
-                        val typeRef = e.getMetadata(KtMetadataKeys.KT_STATEMENT_TYPE) as CtTypeReference<Any>
-                        val statementExpression = e.wrapInStatementExpression(typeRef)
-                        statementExpression.setImplicit(true)
-                    }
-                    else -> throw RuntimeException("Function call argument not expression or 'if''")
-                }
+                expressionOrWrappedInStatementExpression(it.accept(this,null).single)
             })
         }
         return invocation.compose()
@@ -319,10 +311,10 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         val (firLhs, kind, firRhs, opFunc) = assignmentType
         val ctAssignmentOp = factory.createOperatorAssignment<Any,Any>()
         ctAssignmentOp.setKind<CtOperatorAssignment<Any,Any>>(kind.toJavaAssignmentOperatorKind())
-        val lhs = firLhs.accept(this,null).single as CtExpression<Any>
-        val rhs = firRhs.accept(this,null).single as CtExpression<Any>
-        ctAssignmentOp.setAssigned<CtOperatorAssignment<Any,Any>>(lhs)
-        ctAssignmentOp.setAssignment<CtOperatorAssignment<Any,Any>>(rhs)
+        val lhs = expressionOrWrappedInStatementExpression(firLhs.accept(this,null).single)
+        val rhs = expressionOrWrappedInStatementExpression(firRhs.accept(this,null).single)
+        ctAssignmentOp.setAssigned<CtOperatorAssignment<Any,Any>>(lhs as CtExpression<Any>)
+        ctAssignmentOp.setAssignment<CtOperatorAssignment<Any,Any>>(rhs as CtExpression<Any>)
         ctAssignmentOp.setType<CtOperatorAssignment<Any,Any>>(referenceBuilder.getNewTypeReference(opFunc.typeRef))
         return ctAssignmentOp.compose()
     }
