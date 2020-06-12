@@ -38,6 +38,12 @@ public final class Refactoring {
 	 */
 	public static void changeTypeName(final CtType<?> type, String name) {
 
+		// first we remove the type from the list of types
+		// to be pretty-printed
+		if (type.isTopLevel()) {
+			type.getFactory().CompilationUnit().removeType(type);
+		}
+
 		final String typeQFN = type.getQualifiedName();
 		final List<CtTypeReference<?>> references = Query.getElements(type.getFactory(), new TypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
 			@Override
