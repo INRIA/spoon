@@ -57,6 +57,12 @@ public final class Refactoring {
 		for (CtTypeReference<?> reference : references) {
 			reference.setSimpleName(name);
 		}
+
+		// adding the new type
+		if (type.isTopLevel()) {
+			type.getFactory().CompilationUnit().addType(type);
+		}
+
 	}
 
 	/**
