@@ -269,16 +269,6 @@ class DefaultKotlinPrettyPrinter(
         }
     }
 
-
-    // TODO Replace with visitTypeRef
-    private fun getTypeName(type : CtTypeReference<*>, fullyQualified : Boolean = true) : String {
-        val prefix = type.`package`.qualifiedName
-        val nullable = type.getMetadata(KtMetadataKeys.TYPE_REF_NULLABLE) as? Boolean? ?: false
-        val suffix = if(nullable) "?" else ""
-        return if(!fullyQualified || prefix.isEmpty()) "${type.simpleName}$suffix"
-        else "${prefix}.${type.simpleName}${suffix}"
-    }
-
     override fun <T : Any?> visitCtInterface(p0: CtInterface<T>?) {
 
     }
@@ -453,8 +443,7 @@ class DefaultKotlinPrettyPrinter(
         val explicitType = (field.getMetadata(KtMetadataKeys.VARIABLE_EXPLICIT_TYPE) as? Boolean?) ?: true
         if(explicitType || forceExplicitTypes) {
             adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
-            //visitCtTypeReference(field.type) //TODO
-            adapter write getTypeName(field.type)
+            visitCtTypeReference(field.type)
         }
 
         // Initializer or delegate
@@ -482,8 +471,7 @@ class DefaultKotlinPrettyPrinter(
 
         if(!localVar.isInferred || forceExplicitTypes) {
             adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
-            //visitCtTypeReference(localVar.type) //TODO
-            adapter write getTypeName(localVar.type)
+            visitCtTypeReference(localVar.type)
         }
 
         // Initializer or delegate
@@ -544,7 +532,7 @@ class DefaultKotlinPrettyPrinter(
         val modifierSet = getModifiersMetadata(param)
         adapter writeModifiers modifierSet and param.simpleName
         adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
-        adapter write getTypeName(param.type) // TODO visitType
+        param.type.accept(this)
 
         val defaultValue = param.getMetadata(KtMetadataKeys.PARAMETER_DEFAULT_VALUE) as? CtExpression<*>?
         if(defaultValue != null) {
@@ -645,13 +633,17 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
+    private fun getTypeName(type : CtTypeReference<*>, fullyQualified : Boolean = true) : String {
+        val prefix = type.`package`.qualifiedName
+        val nullable = type.getMetadata(KtMetadataKeys.TYPE_REF_NULLABLE) as? Boolean? ?: false
+        val suffix = if(nullable) "?" else ""
+        return if(!fullyQualified || prefix.isEmpty()) "${type.simpleName}$suffix"
+        else "${prefix}.${type.simpleName}${suffix}"
+    }
+
     override fun <T : Any?> visitCtTypeReference(typeRef: CtTypeReference<T>) {
         if(typeRef.isImplicit) return
-        val prefix = typeRef.`package`.qualifiedName
-        val nullable = typeRef.getMetadata(KtMetadataKeys.TYPE_REF_NULLABLE) as? Boolean? ?: false
-        val suffix = if(nullable) "?" else ""
-        if(prefix.isNotEmpty()) adapter write "${prefix}."
-        adapter write "${typeRef.simpleName}$suffix"
+        adapter write getTypeName(typeRef)
     }
 
     override fun <T : Any?> visitCtVariableWrite(varWrite: CtVariableWrite<T>) {
@@ -688,7 +680,7 @@ class DefaultKotlinPrettyPrinter(
             } else {
                 val primary = invocation.parent.getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as? Boolean?
                 if(primary == true) {
-                        adapter write getTypeName(invocation.type) // TODO visitType
+                        invocation.type.accept(this)
                 }
                 else {
                     adapter write "super"
@@ -741,11 +733,9 @@ class DefaultKotlinPrettyPrinter(
         visitCommaSeparatedList(method.parameters)
         adapter write RIGHT_ROUND
 
-        // TODO If single block explicit type could be absent
         if(method.type.qualifiedName != "kotlin.Unit") {
             adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
-           // method.type.accept(this) // TODO
-            adapter write getTypeName(method.type)
+            method.type.accept(this)
         }
         adapter write SPACE
         if(method.body.isImplicit) {
