@@ -727,10 +727,16 @@ class DefaultKotlinPrettyPrinter(
         val modifiers = modifierSet?.filterIf(KtModifierKind.OVERRIDE in modifierSet) { it != KtModifierKind.OPEN }
             ?: emptySet<KtModifierKind>()
 
-        adapter writeModifiers modifiers and "fun " /* TODO Type params here */ and method.simpleName and LEFT_ROUND
+        adapter writeModifiers modifiers and "fun " /* TODO Type params here */
 
+        val extensionTypeRef = method.getMetadata(KtMetadataKeys.EXTENSION_TYPE_REF) as CtTypeAccess<*>?
+        if(extensionTypeRef != null) {
+            extensionTypeRef.accept(this)
+            adapter write '.'
+        }
+
+        adapter write method.simpleName and LEFT_ROUND
         visitCommaSeparatedList(method.parameters)
-
         adapter write RIGHT_ROUND
 
         // TODO If single block explicit type could be absent

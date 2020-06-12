@@ -577,7 +577,9 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
         // Set (return) type
         ctMethod.setType<CtMethod<*>>(referenceBuilder.getNewTypeReference<Any>(simpleFunction.returnTypeRef))
-
+        val receiver = simpleFunction.receiverTypeRef?.accept(this,null)?.single
+        receiver?.setParent<CtElement>(ctMethod)
+        ctMethod.putMetadata<CtMethod<*>>(KtMetadataKeys.EXTENSION_TYPE_REF, receiver)
         return ctMethod.compose()
     }
 
