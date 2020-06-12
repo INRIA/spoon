@@ -24,7 +24,7 @@ public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
 	private int modifierSourceEnd;
 	private int modifierSourceStart;
 
-	/** int i=0, j=1 -> would end at the comma */
+	/** for "int i=0, j=1", this would end at the comma separating i and j */
 	private int endDefaultValueDeclaration = -1;
 
 	@Override
