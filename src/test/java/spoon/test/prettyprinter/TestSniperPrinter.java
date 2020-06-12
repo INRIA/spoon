@@ -20,6 +20,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.processing.Processor;
+import spoon.refactoring.Refactoring;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -89,24 +90,19 @@ public class TestSniperPrinter {
 		launcher.buildModel();
 		Factory f = launcher.getFactory();
 
-		final CtClass<?> ctClass = f.Class().get(testClass);
+		final CtClass<?> type = f.Class().get(testClass);
 
-		Map<String, CompilationUnit> map = f.CompilationUnit().getMap();
-		CompilationUnit x = map.entrySet().stream().findFirst().get().getValue();
-
-		// changing the type
-		CtType<?> type = x.getDeclaredTypes().get(0);
-		x.setFile(new File("/tmp/Bar.java"));
+		Refactoring.changeTypeName(type, "Bar");
+		/*
+		System.out.println(getFileForType(type));
+		getFileForType(type).delete();
+		// removing the old type
+		type.getFactory().CompilationUnit().removeType(type);
 		type.setSimpleName("Bar");
+		// adding the new type
+		type.getFactory().CompilationUnit().addType(type);
+		*/
 
-		CtTypeReference<?> ref = x.getDeclaredTypeReferences().get(0);
-		ref.setSimpleName("Bar");
-
-		map.clear();
-
-		map.put("xxx", x);
-
-		System.out.println(f.CompilationUnit().getMap());
 		//print the changed model
 		launcher.prettyprint();
 
@@ -372,8 +368,7 @@ public class TestSniperPrinter {
 
 	private String getContentOfPrettyPrintedClassFromDisk(CtType<?> type) {
 		Factory f = type.getFactory();
-		File outputDir = f.getEnvironment().getSourceOutputDirectory();
-		File outputFile = new File(outputDir, type.getQualifiedName().replace('.', '/') + ".java");
+		File outputFile = getFileForType(type);
 
 		byte[] content = new byte[(int) outputFile.length()];
 		try (InputStream is = new FileInputStream(outputFile)) {
@@ -386,6 +381,11 @@ public class TestSniperPrinter {
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private File getFileForType(CtType<?> type) {
+		File outputDir = type.getFactory().getEnvironment().getSourceOutputDirectory();
+		return new File(outputDir, type.getQualifiedName().replace('.', '/') + ".java");
 	}
 
 	private static String getResourcePath(String className) {
