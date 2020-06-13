@@ -771,7 +771,14 @@ public class Launcher implements SpoonAPI {
 		try {
 			modelBuilder.generateProcessedSourceFiles(getEnvironment().getOutputType(), typeFilter);
 		} catch (Exception e) {
-			throw new SpoonException(e);
+			if (! (e instanceof SpoonException)) {
+				// contract: we encapuslate all Spoon exceptions into
+				// a single type
+				throw new SpoonException(e);
+			} else {
+				// don't wrap a SpoonException into another useless one
+				throw e;
+			}
 		}
 
 		if (!getEnvironment().getOutputType().equals(OutputType.NO_OUTPUT) && getEnvironment().isCopyResources()) {
