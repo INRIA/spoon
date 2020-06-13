@@ -136,13 +136,6 @@ public class ElementSourceFragment implements SourceFragment {
 	}
 
 	/**
-	 * @return true if position points to same compilation unit (source file) as this SourceFragment
-	 */
-	private boolean isFromSameSource(SourcePosition position) {
-		return getSourcePosition().getCompilationUnit().equals(position.getCompilationUnit());
-	}
-
-	/**
 	 * Builds a tree of source fragments for `element` and all its children, based on the source positions of each element
 	 * @param element the root element of the tree
 	 */
