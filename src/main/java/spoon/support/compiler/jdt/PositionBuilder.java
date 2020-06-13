@@ -38,8 +38,6 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
-import spoon.reflect.cu.position.NoSourcePosition;
-import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
@@ -256,8 +254,7 @@ public class PositionBuilder {
 			}
 
 			if (variableDeclaration instanceof FieldDeclaration
-			&& ! (variableDeclaration instanceof Initializer)) // in JDT Initializer is a subclass of FieldDeclaration WTF!
-			{
+			&& !(variableDeclaration instanceof Initializer)) /* in JDT Initializer is a subclass of FieldDeclaration WTF!*/ {
 				// in JDT, for fields
 				// variableDeclaration.declarationEnd is the ";"
 				// while variableDeclaration.declarationSourceEnd contains the line comment afterwards, we don't want the comment

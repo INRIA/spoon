@@ -217,11 +217,12 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 		if (this.getPosition() instanceof NoSourcePosition) {
 			return  false;
 		}
-		if (! (this.getPosition() instanceof DeclarationSourcePosition)) {
+		if (!(this.getPosition() instanceof DeclarationSourcePosition)) {
 			return  false;
 		}
 
 		DeclarationSourcePosition dsp  = (DeclarationSourcePosition) this.getPosition();
+		// this means there is another field coming after the coma
 		return dsp.getDefaultValueEnd() < dsp.getDeclarationEnd();
 	}
 }
