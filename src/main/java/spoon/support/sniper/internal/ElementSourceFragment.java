@@ -240,13 +240,13 @@ public class ElementSourceFragment implements SourceFragment {
 	private ElementSourceFragment addChild(CtRole roleInParent, SourcePositionHolder otherElement) {
 		SourcePosition otherSourcePosition = otherElement.getPosition();
 		if (otherSourcePosition instanceof SourcePositionImpl && !(otherSourcePosition.getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
-				ElementSourceFragment otherFragment = new ElementSourceFragment(otherElement, parentFragment.getRoleHandler(roleInParent, otherElement));
+				ElementSourceFragment otherFragment = new ElementSourceFragment(otherElement, this.getRoleHandler(roleInParent, otherElement));
 				//parent and child are from the same file. So we can connect their positions into one tree
 				CMP cmp = this.compare(otherFragment);
 				if (cmp == CMP.OTHER_IS_CHILD) {
 					// core contract:
 					// the position of children fragments must be included inside the positions of the paernt fragment
-					parentFragment.addChild(otherFragment);
+					this.addChild(otherFragment);
 					return otherFragment;
 				} else {
 					// one exception
@@ -266,7 +266,7 @@ public class ElementSourceFragment implements SourceFragment {
 							return otherFragment;
 						}
 					else {
-						throw new SpoonException("The SourcePosition of elements are not consistent\nparentFragment: " + parentFragment + "\notherFragment: " + otherFragment);
+						throw new SpoonException("The SourcePosition of elements are not consistent\nparentFragment: " + this + "\notherFragment: " + otherFragment);
 					}
 				}
 		}
