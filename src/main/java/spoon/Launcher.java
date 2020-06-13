@@ -770,7 +770,7 @@ public class Launcher implements SpoonAPI {
 		long tstart = System.currentTimeMillis();
 		try {
 			modelBuilder.generateProcessedSourceFiles(getEnvironment().getOutputType(), typeFilter);
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
 			if (! (e instanceof SpoonException)) {
 				// contract: we encapuslate all Spoon exceptions into
 				// a single type
