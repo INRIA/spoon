@@ -194,53 +194,35 @@ public class ElementSourceFragment implements SourceFragment {
 	private ElementSourceFragment addChild(ElementSourceFragment parentFragment, CtRole roleInParent, SourcePositionHolder otherElement) {
 		SourcePosition otherSourcePosition = otherElement.getPosition();
 		if (otherSourcePosition instanceof SourcePositionImpl && !(otherSourcePosition.getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
-			if (parentFragment.isFromSameSource(otherSourcePosition)) {
 				ElementSourceFragment otherFragment = new ElementSourceFragment(otherElement, parentFragment.getRoleHandler(roleInParent, otherElement));
 				//parent and child are from the same file. So we can connect their positions into one tree
 				CMP cmp = parentFragment.compare(otherFragment);
 				if (cmp == CMP.OTHER_IS_CHILD) {
-					//child belongs under parent - OK
+					// core contract:
+					// the position of children fragments must be included inside the positions of the paernt fragment
 					parentFragment.addChild(otherFragment);
 					return otherFragment;
 				} else {
-					if (cmp == CMP.OTHER_IS_AFTER || cmp == CMP.OTHER_IS_BEFORE) {
-						if (otherElement instanceof CtComment) {
+					// one exception
+					// comment positions have the right to not be part of the parent fragment in some cases
+					if (otherElement instanceof CtComment) {
 							/*
 							 * comments of elements are sometime not included in source position of element.
-							 * because comments are ignored tokens for java compiler, which computes start/end of elements
+							 * because comments are ignored tokens for JDT, which computes start/end of elements
 							 * Example:
 							 *
 							 * 		//a comment
 							 * 		aStatement();
 							 *
 							 */
-							if (otherFragment.getStart() == 0) {
-								//it is CompilationUnit comment, which is before package and imports, so it doesn't belong to class
-								//No problem. Simply add comment at correct position into SourceFragment tree, starting from ROOT
-								addChild(otherFragment);
-								return otherFragment;
-							}
 							//add this child into parent's source fragment and extend that parent source fragment
 							parentFragment.addChild(otherFragment);
 							return otherFragment;
 						}
+					else {
+						throw new SpoonException("The SourcePosition of elements are not consistent\nparentFragment: " + parentFragment + "\notherFragment: " + otherFragment);
 					}
-					//the source position of child element is not included in source position of parent element
-					//I (Pavel) am not sure how to handle it, so let's wait until it happens...
-//						if (otherElement instanceof CtAnnotation<?>) {
-//							/*
-//							 * it can happen for annotations of type TYPE_USE and FIELD
-//							 * In such case the annotation belongs to 2 elements
-//							 * And one of them cannot have matching source position - OK
-//							 */
-//							return null;
-//						}
-					//something is wrong ...
-					throw new SpoonException("The SourcePosition of elements are not consistent\nparentFragment: " + parentFragment + "\notherFragment: " + otherFragment);
 				}
-			} else {
-				throw new SpoonException("SourcePosition from unexpected compilation unit: " + otherSourcePosition + " expected is: " + parentFragment.getSourcePosition());
-			}
 		}
 		//do not connect that undefined source position
 		return null;
