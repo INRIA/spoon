@@ -257,8 +257,7 @@ public class ElementSourceFragment implements SourceFragment {
 							//add this child into parent's source fragment and extend that parent source fragment
 							this.addChild(otherFragment);
 							return otherFragment;
-						}
-					else {
+					} else {
 						throw new SpoonException("The SourcePosition of elements are not consistent\nparentFragment: " + this + "\notherFragment: " + otherFragment);
 					}
 				}
