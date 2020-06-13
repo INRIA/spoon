@@ -225,10 +225,10 @@ public class ElementSourceFragment implements SourceFragment {
 		return rootFragment;
 	}
 	/**
-	 * @param parentFragment the parent {@link ElementSourceFragment}, which will receive {@link ElementSourceFragment} made for `otherElement`
+	 * Add a new child in this fragment.
 	 * @param roleInParent the {@link CtRole} of `otherElement` in scope of element of `parentFragment`
 	 * @param otherElement {@link SourcePositionHolder} whose {@link ElementSourceFragment} has to be added to `parentFragment`
-	 * @return new {@link ElementSourceFragment} created for `otherElement` or null if `otherElement` has no source position or doesn't belong to the same compilation unit
+	 * @return new {@link ElementSourceFragment} created for `otherElement` or null if `otherElement` cannot be included
 	 */
 	private ElementSourceFragment addChild(CtRole roleInParent, SourcePositionHolder otherElement) {
 		SourcePosition otherSourcePosition = otherElement.getPosition();
