@@ -323,17 +323,17 @@ public class TryCatchTest {
 
 	@Test
 	public void testCatchQualifiedReferenceNoClasspath() {
-	    Launcher launcher = new Launcher();
-	    launcher.getEnvironment().setNoClasspath(true);
-	    launcher.addInputResource("./src/test/resources/noclasspath/CatchQualifiedReference.java");
-	    CtModel model = launcher.buildModel();
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/noclasspath/CatchQualifiedReference.java");
+		CtModel model = launcher.buildModel();
 
-	    List<CtCatch> catchers = model.getElements(e -> true);
+		List<CtCatch> catchers = model.getElements(e -> true);
 
-	    assertEquals("There should only be one catch statement, check the resource", 1, catchers.size());
-	    CtTypeReference<?> caughtType = catchers.get(0).getParameter().getType();
+		assertEquals("There should only be one catch statement, check the resource", 1, catchers.size());
+		CtTypeReference<?> caughtType = catchers.get(0).getParameter().getType();
 
-           assertEquals("CustomException", caughtType.getSimpleName());
-           assertEquals("some.neat.pkg.CustomException", caughtType.getQualifiedName());
+		assertEquals("CustomException", caughtType.getSimpleName());
+		assertEquals("some.neat.pkg.CustomException", caughtType.getQualifiedName());
 	}
 }
