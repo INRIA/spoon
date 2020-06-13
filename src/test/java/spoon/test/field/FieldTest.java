@@ -106,7 +106,7 @@ public class FieldTest {
 		// For now, DefaultJavaPrettyPrinter sorts elements according to their position.
 		assertEquals(generated2, aClass.getTypeMembers().get(0));
 		assertEquals(generated, aClass.getTypeMembers().get(1));
-		assertEquals(aClass.getAnonymousExecutables().get(0), aClass.getTypeMembers().get(3));
+		assertEquals(aClass.getAnonymousExecutables().get(0), aClass.getTypeMembers().get(aClass.getTypeMembers().size() - 1));
 	}
 
 	@Test

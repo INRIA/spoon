@@ -255,10 +255,12 @@ public class PositionBuilder {
 				setModifiersPosition((CtModifiable) e, modifiersSourceStart, modifiersSourceEnd);
 			}
 
-			if (variableDeclaration instanceof FieldDeclaration) {
+			if (variableDeclaration instanceof FieldDeclaration
+			&& ! (variableDeclaration instanceof Initializer)) // in JDT Initializer is a subclass of FieldDeclaration WTF!
+			{
 				// in JDT, for fields
 				// variableDeclaration.declarationEnd is the ";"
-				// while variableDeclaration.declarationSourceEnd contains the line comment afterwards
+				// while variableDeclaration.declarationSourceEnd contains the line comment afterwards, we don't want the comment
 				declarationSourceEnd = 	variableDeclaration.declarationEnd;
 			}
 
