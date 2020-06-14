@@ -20,6 +20,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.processing.Processor;
+import spoon.refactoring.Refactoring;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -72,6 +73,55 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestSniperPrinter {
+
+	@Test
+	public void testClassRename1() throws Exception {
+		// contract: one can sniper aftet setSimpleName
+		// with the necessary tweaks
+		testClassRename(type -> {
+			Refactoring.changeTypeName(type, "Bar");
+		});
+	}
+
+	@Test
+	public void testClassRename2() throws Exception {
+		// contract: one can sniper aftet setSimpleName
+		// with the necessary tweaks
+		testClassRename(type -> {
+			type.setSimpleName("Bar");
+			type.getFactory().CompilationUnit().addType(type);
+		});
+
+	}
+
+	public void testClassRename(Consumer<CtType> renameTransfo) throws Exception {
+		// contract: sniper supports class rename
+
+		// clean the output dir
+		Runtime.getRuntime().exec(new String[]{"bash","-c", "rm -rf spooned"});
+		String testClass = ToBeChanged.class.getName();
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(getResourcePath(testClass));
+		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
+			SniperJavaPrettyPrinter printer = new SniperJavaPrettyPrinter(launcher.getEnvironment());
+			return printer;
+		});
+		launcher.buildModel();
+		Factory f = launcher.getFactory();
+
+		final CtClass<?> type = f.Class().get(testClass);
+		
+		// performing the type rename
+		renameTransfo.accept(type);
+		//print the changed model
+		launcher.prettyprint();
+
+
+		String contentOfPrettyPrintedClassFromDisk = getContentOfPrettyPrintedClassFromDisk(type);
+		assertTrue(contentOfPrettyPrintedClassFromDisk, contentOfPrettyPrintedClassFromDisk.contains("EOLs*/ Bar<T, K>"));
+
+	}
+
 
 	@Test
 	public void testPrintInsertedThrow() {

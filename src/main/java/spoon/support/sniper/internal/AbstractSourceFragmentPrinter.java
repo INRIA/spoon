@@ -282,7 +282,7 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 			}
 			return findIndexOfNextChildTokenByValue(tpe.getToken());
 		} else {
-			throw new SpoonException("Unexpected PrintEvent: " + event.getClass());
+			return -1;
 		}
 	}
 
