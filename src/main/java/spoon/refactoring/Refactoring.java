@@ -60,8 +60,7 @@ public final class Refactoring {
 		}
 
 		// adding the new type
-		if (type.isTopLevel())
-		{
+		if (type.isTopLevel()) {
 			type.getFactory().CompilationUnit().addType(type);
 		}
 
