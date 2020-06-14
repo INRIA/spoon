@@ -144,6 +144,7 @@ public class FieldTest {
 		assertEquals(false,aClass.getField("alone2").isPartOfJointDeclaration());
 		assertEquals(false,aClass.getField("alone3").isPartOfJointDeclaration());
 		assertEquals(true,aClass.getField("i").isPartOfJointDeclaration());
+		assertEquals(true,aClass.getField("k").isPartOfJointDeclaration());
 		assertEquals(true,aClass.getField("n").isPartOfJointDeclaration());
 		assertEquals(true,aClass.getField("l").isPartOfJointDeclaration());
 		assertEquals(true,aClass.getField("m").isPartOfJointDeclaration());

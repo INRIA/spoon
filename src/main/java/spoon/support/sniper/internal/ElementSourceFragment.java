@@ -190,6 +190,10 @@ public class ElementSourceFragment implements SourceFragment {
 
 			@Override
 			protected void enter(CtElement e) {
+				if (parents.peek().getElement() == e) {
+					// needed to bootstrap
+					return;
+				}
 				if (e instanceof CtCompilationUnit) {
 					return;
 				}
