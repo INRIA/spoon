@@ -79,8 +79,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testClassRename1() throws Exception {
-		// contract: one can sniper aftet setSimpleName
-		// with the necessary tweaks
+		// contract: one can sniper out of the box after Refactoring.changeTypeName
 		testClassRename(type -> {
 			Refactoring.changeTypeName(type, "Bar");
 		});
@@ -88,7 +87,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testClassRename2() throws Exception {
-		// contract: one can sniper aftet setSimpleName
+		// contract: one can sniper after setSimpleName
 		// with the necessary tweaks
 		testClassRename(type -> {
 			type.setSimpleName("Bar");

@@ -9,6 +9,7 @@ package spoon.refactoring;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -59,7 +60,8 @@ public final class Refactoring {
 		}
 
 		// adding the new type
-		if (type.isTopLevel()) {
+		if (type.isTopLevel())
+		{
 			type.getFactory().CompilationUnit().addType(type);
 		}
 
