@@ -1316,7 +1316,7 @@ public class PositionTest {
 			assertTrue(cl.getSimpleName().equals("A"));
 			assertTrue(cl.getMethods().size() == 1);
 		} catch(Exception e) {
-			fail("Error while parsing incomplete class declaration");
+			fail("Error while parsing incomplete class declaration "+e);
 		}
 	}
 
