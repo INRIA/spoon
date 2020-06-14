@@ -10,7 +10,6 @@ package spoon.support.reflect.declaration;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtRHSReceiver;
-import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtModifiable;
@@ -217,12 +216,18 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 		if (this.getPosition() instanceof NoSourcePosition) {
 			return  false;
 		}
-		if (!(this.getPosition() instanceof DeclarationSourcePosition)) {
-			return  false;
+		for (Object o : getParent(CtType.class).getFields()) {
+			CtField<?> f = (CtField<?>) o;
+			if (f == this) {
+				continue;
+			}
+			if (f.getPosition() == null || f.getPosition() instanceof NoSourcePosition) {
+				continue;
+			}
+			if (f.getPosition().getSourceStart() == this.getPosition().getSourceStart()) {
+				return true;
+			}
 		}
-
-		DeclarationSourcePosition dsp  = (DeclarationSourcePosition) this.getPosition();
-		// this means there is another field coming after the coma
-		return dsp.getDefaultValueEnd() < dsp.getDeclarationEnd();
+		return false;
 	}
 }
