@@ -78,8 +78,30 @@ import static org.junit.Assert.fail;
 public class TestSniperPrinter {
 
 	@Test
-	public void testClassRename() {
+	public void testClassRename1() throws Exception {
+		// contract: one can sniper aftet setSimpleName
+		// with the necessary tweaks
+		testClassRename(type -> {
+			Refactoring.changeTypeName(type, "Bar");
+		});
+	}
+
+	@Test
+	public void testClassRename2() throws Exception {
+		// contract: one can sniper aftet setSimpleName
+		// with the necessary tweaks
+		testClassRename(type -> {
+			type.setSimpleName("Bar");
+			type.getFactory().CompilationUnit().addType(type);
+		});
+
+	}
+
+	public void testClassRename(Consumer<CtType> renameTransfo) throws Exception {
 		// contract: sniper supports class rename
+
+		// clean the output dir
+		Runtime.getRuntime().exec(new String[]{"bash","-c", "rm -rf spooned"});
 		String testClass = ToBeChanged.class.getName();
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(getResourcePath(testClass));
@@ -91,29 +113,15 @@ public class TestSniperPrinter {
 		Factory f = launcher.getFactory();
 
 		final CtClass<?> type = f.Class().get(testClass);
-
-		// with that spoon.SpoonException: Inconsistent sourceFragmentContextStack
-		type.setSimpleName("Bar");
-
-		// with that child does not work
-		//Refactoring.changeTypeName(type, "Bar");
-
-		/*
-		System.out.println(getFileForType(type));
-		getFileForType(type).delete();
-		// removing the old type
-		type.getFactory().CompilationUnit().removeType(type);
-		type.setSimpleName("Bar");
-		// adding the new type
-		type.getFactory().CompilationUnit().addType(type);
-		*/
-
+		
+		// performing the type rename
+		renameTransfo.accept(type);
 		//print the changed model
 		launcher.prettyprint();
 
+
 		String contentOfPrettyPrintedClassFromDisk = getContentOfPrettyPrintedClassFromDisk(type);
-		System.out.println(contentOfPrettyPrintedClassFromDisk);
-		assertTrue(contentOfPrettyPrintedClassFromDisk, contentOfPrettyPrintedClassFromDisk.contains("class Foo/*"));
+		assertTrue(contentOfPrettyPrintedClassFromDisk, contentOfPrettyPrintedClassFromDisk.contains("EOLs*/ Bar<T, K>"));
 
 	}
 
