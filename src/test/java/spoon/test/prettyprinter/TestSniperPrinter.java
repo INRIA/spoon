@@ -92,7 +92,12 @@ public class TestSniperPrinter {
 
 		final CtClass<?> type = f.Class().get(testClass);
 
-		Refactoring.changeTypeName(type, "Bar");
+		// with that spoon.SpoonException: Inconsistent sourceFragmentContextStack
+		type.setSimpleName("Bar");
+
+		// with that child does not work
+		//Refactoring.changeTypeName(type, "Bar");
+
 		/*
 		System.out.println(getFileForType(type));
 		getFileForType(type).delete();
