@@ -134,7 +134,9 @@ public class CompilationUnitFactory extends SubFactory {
 		if (!(type.getPosition().getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
 			return type.getPosition().getCompilationUnit();
 		}
-		return addType(type);
+		CompilationUnit compilationUnit = addType(type);
+		type.setPosition(this.factory.createPartialSourcePosition(compilationUnit));
+		return compilationUnit;
 	}
 
 	public CompilationUnit getOrCreate(CtModule module) {
