@@ -43,6 +43,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.cu.position.DeclarationSourcePositionImpl;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.field.testclasses.A;
 import spoon.test.field.testclasses.AddFieldAtTop;
@@ -139,9 +140,11 @@ public class FieldTest {
 		final CtClass<A> aClass = spoon.getFactory().Class().get(A.class);
 
 		// contract: isPartOfJointDeclaration works per the specification in the javadoc
+		assertEquals(false,aClass.getField("alone1").isPartOfJointDeclaration());
+		assertEquals(false,aClass.getField("alone2").isPartOfJointDeclaration());
+		assertEquals(false,aClass.getField("alone3").isPartOfJointDeclaration());
 		assertEquals(true,aClass.getField("i").isPartOfJointDeclaration());
-		assertEquals(true,aClass.getField("j").isPartOfJointDeclaration());
-		assertEquals(false,aClass.getField("k").isPartOfJointDeclaration());
+		assertEquals(true,aClass.getField("n").isPartOfJointDeclaration());
 		assertEquals(true,aClass.getField("l").isPartOfJointDeclaration());
 		assertEquals(true,aClass.getField("m").isPartOfJointDeclaration());
 
