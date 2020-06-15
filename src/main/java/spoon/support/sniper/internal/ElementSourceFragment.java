@@ -238,6 +238,11 @@ public class ElementSourceFragment implements SourceFragment {
 		SourcePosition otherSourcePosition = otherElement.getPosition();
 		if (otherSourcePosition instanceof SourcePositionImpl && !(otherSourcePosition.getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
 				ElementSourceFragment otherFragment = new ElementSourceFragment(otherElement, this.getRoleHandler(roleInParent, otherElement));
+				if (this.getElement() instanceof CtCompilationUnit) {
+					addChild(otherFragment);
+					return otherFragment;
+				}
+
 				CMP cmp = this.compare(otherFragment);
 				if (cmp == CMP.OTHER_IS_CHILD) {
 					// core contract:
@@ -691,6 +696,9 @@ public class ElementSourceFragment implements SourceFragment {
 			throw new SpoonException("Inconsistent start/end. Start=" + start + " is greater then End=" + end);
 		}
 		String sourceCode = getOriginalSourceCode();
+		if (sourceCode.length() == 0) {
+			return;
+		}
 		StringBuilder buff = new StringBuilder();
 		CharType lastType = null;
 		int off = start;
