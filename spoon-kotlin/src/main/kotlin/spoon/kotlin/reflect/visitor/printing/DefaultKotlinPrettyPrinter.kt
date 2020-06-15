@@ -394,8 +394,10 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun visitCtAnonymousExecutable(p0: CtAnonymousExecutable?) {
-        TODO("Not yet implemented")
+    override fun visitCtAnonymousExecutable(ctAnonExec: CtAnonymousExecutable) {
+        adapter.ensureNEmptyLines(1)
+        adapter write "init "
+        ctAnonExec.body.accept(this)
     }
 
     override fun visitCtDo(p0: CtDo?) {

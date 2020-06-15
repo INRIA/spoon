@@ -126,6 +126,9 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
                             (type as CtClass<Any>).addConstructor<CtClass<Any>>(decl as CtConstructor<Any>)
                         } else warn("Constructor without accompanying CtClass")
                     }
+                    is CtAnonymousExecutable -> {
+                        type.addTypeMember(decl)
+                    }
                 }
             }
         }
@@ -243,6 +246,16 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         val typeAccess = factory.Core().createTypeAccess<Any>()
         typeAccess.setAccessedType<CtTypeAccess<Any>>(referenceBuilder.getNewTypeReference(resolvedTypeRef))
         return typeAccess.compose()
+    }
+
+    override fun visitAnonymousInitializer(
+        anonymousInitializer: FirAnonymousInitializer,
+        data: Nothing?
+    ): CompositeTransformResult<CtElement> {
+        val ctAnonExec = factory.Core().createAnonymousExecutable()
+        val body = anonymousInitializer.body?.accept(this,null)?.single as CtStatement?
+        ctAnonExec.setBody<CtAnonymousExecutable>(body)
+        return ctAnonExec.compose()
     }
 
     private fun visitIsTypeOperation(typeOperatorCall: FirTypeOperatorCall):
