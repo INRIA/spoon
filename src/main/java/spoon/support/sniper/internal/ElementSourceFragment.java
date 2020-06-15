@@ -655,6 +655,9 @@ public class ElementSourceFragment implements SourceFragment {
 			throw new SpoonException("Inconsistent start/end. Start=" + start + " is greater then End=" + end);
 		}
 		String sourceCode = getOriginalSourceCode();
+		if (sourceCode.length() == 0) {
+			return;
+		}
 		StringBuilder buff = new StringBuilder();
 		CharType lastType = null;
 		int off = start;

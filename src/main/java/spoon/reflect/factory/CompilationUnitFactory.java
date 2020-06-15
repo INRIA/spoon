@@ -94,7 +94,6 @@ public class CompilationUnitFactory extends SubFactory {
 	 */
 	public void removeType(CtType type) {
 		cachedCompilationUnits.remove(type.getPosition().getCompilationUnit().getFile().getAbsolutePath());
-		type.setPosition(NoSourcePosition.NOPOSITION);
 	}
 
 	/**
@@ -113,7 +112,8 @@ public class CompilationUnitFactory extends SubFactory {
 				String path = file.getCanonicalPath();
 				CompilationUnit result = this._create(path);
 				result.addDeclaredType(type);
-				type.setPosition(this.factory.createPartialSourcePosition(result));
+				// for sniper, we need to keep the link to original source code
+				// type.setPosition(this.factory.createPartialSourcePosition(result));
 				return result;
 			} catch (IOException e) {
 				throw new SpoonException("Cannot get path for file: " + file.getAbsolutePath(), e);
@@ -134,7 +134,9 @@ public class CompilationUnitFactory extends SubFactory {
 		if (!(type.getPosition().getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
 			return type.getPosition().getCompilationUnit();
 		}
-		return addType(type);
+		CompilationUnit compilationUnit = addType(type);
+		type.setPosition(this.factory.createPartialSourcePosition(compilationUnit));
+		return compilationUnit;
 	}
 
 	public CompilationUnit getOrCreate(CtModule module) {

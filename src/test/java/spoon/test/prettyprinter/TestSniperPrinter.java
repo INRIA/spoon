@@ -20,6 +20,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.processing.Processor;
+import spoon.refactoring.Refactoring;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -28,6 +29,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
+import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
@@ -62,6 +64,8 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -72,6 +76,54 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestSniperPrinter {
+
+	@Test
+	public void testClassRename1() throws Exception {
+		// contract: one can sniper out of the box after Refactoring.changeTypeName
+		testClassRename(type -> {
+			Refactoring.changeTypeName(type, "Bar");
+		});
+	}
+
+	@Test
+	public void testClassRename2() throws Exception {
+		// contract: one can sniper after setSimpleName
+		// with the necessary tweaks
+		testClassRename(type -> {
+			type.setSimpleName("Bar");
+			type.getFactory().CompilationUnit().addType(type);
+		});
+
+	}
+
+	public void testClassRename(Consumer<CtType> renameTransfo) throws Exception {
+		// contract: sniper supports class rename
+
+		// clean the output dir
+		Runtime.getRuntime().exec(new String[]{"bash","-c", "rm -rf spooned"});
+		String testClass = ToBeChanged.class.getName();
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(getResourcePath(testClass));
+		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
+			SniperJavaPrettyPrinter printer = new SniperJavaPrettyPrinter(launcher.getEnvironment());
+			return printer;
+		});
+		launcher.buildModel();
+		Factory f = launcher.getFactory();
+
+		final CtClass<?> type = f.Class().get(testClass);
+		
+		// performing the type rename
+		renameTransfo.accept(type);
+		//print the changed model
+		launcher.prettyprint();
+
+
+		String contentOfPrettyPrintedClassFromDisk = getContentOfPrettyPrintedClassFromDisk(type);
+		assertTrue(contentOfPrettyPrintedClassFromDisk, contentOfPrettyPrintedClassFromDisk.contains("EOLs*/ Bar<T, K>"));
+
+	}
+
 
 	@Test
 	public void testPrintInsertedThrow() {
@@ -328,8 +380,7 @@ public class TestSniperPrinter {
 
 	private String getContentOfPrettyPrintedClassFromDisk(CtType<?> type) {
 		Factory f = type.getFactory();
-		File outputDir = f.getEnvironment().getSourceOutputDirectory();
-		File outputFile = new File(outputDir, type.getQualifiedName().replace('.', '/') + ".java");
+		File outputFile = getFileForType(type);
 
 		byte[] content = new byte[(int) outputFile.length()];
 		try (InputStream is = new FileInputStream(outputFile)) {
@@ -342,6 +393,11 @@ public class TestSniperPrinter {
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private File getFileForType(CtType<?> type) {
+		File outputDir = type.getFactory().getEnvironment().getSourceOutputDirectory();
+		return new File(outputDir, type.getQualifiedName().replace('.', '/') + ".java");
 	}
 
 	private static String getResourcePath(String className) {
