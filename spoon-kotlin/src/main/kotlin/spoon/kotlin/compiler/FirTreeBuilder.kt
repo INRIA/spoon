@@ -964,6 +964,16 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctReturn.compose()
     }
 
+    override fun visitCheckNotNullCall( // a!!
+        checkNotNullCall: FirCheckNotNullCall,
+        data: Nothing?
+    ): CompositeTransformResult<CtElement> {
+        val qa = checkNotNullCall.arguments[0].accept(this,null)
+        return qa.apply {
+            this.single.putMetadata<CtElement>(KtMetadataKeys.ACCESS_IS_CHECK_NOT_NULL, true)
+        }
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun visitQualifiedAccessExpression(
         qualifiedAccessExpression: FirQualifiedAccessExpression,

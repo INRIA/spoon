@@ -29,6 +29,8 @@ object KtMetadataKeys {
 
     const val INVOKE_AS_OPERATOR = "skt_key invoke as operator : Boolean"
 
+    const val ACCESS_IS_CHECK_NOT_NULL = "skt_key access is assert not null : Boolean"
+
     const val EXTENSION_TYPE_REF = "skt_key function extension typeref : CtTypeReference<*>?"
 
     const val ARRAY_ACCESS_INDEX_ARGS = "skt_key array access args : List<CtExpression>"
