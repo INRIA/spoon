@@ -57,9 +57,9 @@ import java.util.regex.Pattern;
 /**
  * A scanner that calculates the imports for a given model.
  *
- * This class is not used anymore, it has been replace by all subclasses of {@link ImportAnalyzer}.
+ * This class is not used anymore, it has been replaced by all subclasses of {@link ImportAnalyzer}.
  *
- * We keep ImportScannerImpl because it is used by some clients.
+ * Still, we keep ImportScannerImpl for backward compatibility because it is used by some clients.
  */
 public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
