@@ -25,6 +25,7 @@ import spoon.ContractVerifier;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.visitor.ImportScannerImpl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -133,6 +134,9 @@ public class MainTest {
 				"--level", "OFF"
 		});
 
+		// contract: ImportScannerImpl does not throw an exception on a large and complex model (OK, it's a smoke test)
+		// Update: I found a nasty NPE bug :-), smoke tests can be useful
+		new ImportScannerImpl().scan(launcher.getFactory().Package().getRootPackage());
 
 		new ContractVerifier(launcher.getFactory().Package().getRootPackage()).checkGenericContracts();
 
