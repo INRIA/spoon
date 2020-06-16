@@ -56,6 +56,9 @@ class DefaultKotlinPrettyPrinter(
         } else if(shouldAddPar(e)) {
             adapter write ')'
         }
+        if((e.getMetadata(KtMetadataKeys.ACCESS_IS_CHECK_NOT_NULL) as? Boolean?) == true) {
+            adapter write "!!"
+        }
     }
 
     private fun enterCtExpression(e: CtExpression<*>) {
@@ -66,6 +69,7 @@ class DefaultKotlinPrettyPrinter(
 
     private fun shouldAddPar(e: CtExpression<*>): Boolean {
         if(e.typeCasts.isNotEmpty()) return true
+        if((e.getMetadata(KtMetadataKeys.ACCESS_IS_CHECK_NOT_NULL) as? Boolean?) == true) return true
         return when(e.parent) {
             null -> false
             is CtBinaryOperator<*>, is CtUnaryOperator<*> ->
@@ -320,7 +324,9 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtVariableRead(varRead: CtVariableRead<T>) {
+        enterCtExpression(varRead)
         adapter write varRead.variable.simpleName
+        exitCtExpression(varRead)
     }
 
     override fun visitCtCatch(p0: CtCatch?) {
