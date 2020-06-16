@@ -285,7 +285,10 @@ public class ElementSourceFragment implements SourceFragment {
 			addChild(other);
 			return this;
 		case OTHER_IS_PARENT:
-			throw new SpoonException("inconsistent state");
+			// sometimes the scanning order is not the position order
+			// so we have to switch the fragments to have the first in first position
+			other.addChild(this);
+			return other;
 		}
 		throw new SpoonException("Unexpected compare result: " + cmp);
 	}

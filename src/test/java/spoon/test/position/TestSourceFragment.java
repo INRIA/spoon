@@ -164,7 +164,6 @@ public class TestSourceFragment {
 		assertSame(childA, childWrapper.getFirstChild());
 		assertSame(child, childA.getNextSibling());
 		assertSame(childB, child.getFirstChild());
-		assertSame(childC, child.getNextSibling());
 		assertSame(childD, childC.getNextSibling());
 	}
 
