@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
 import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.resolve.toSymbol
 import org.jetbrains.kotlin.lexer.KtTokens.*
+import org.jetbrains.kotlin.psi.KtArrayAccessExpression
 import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtPostfixExpression
 import org.jetbrains.kotlin.psi.KtPrefixExpression
@@ -101,6 +102,15 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
                 val opToken = source.operationToken
                 if (receiver == null) throw SpoonException("Postfix operator without receiver")
                 InvocationType.PREFIX_OPERATOR(tokenToUnaryOperatorKind(opToken), receiver, firCall)
+            }
+            is KtArrayAccessExpression -> {
+                val name = firCall.calleeReference.name.identifier
+                if (receiver == null) throw SpoonException("Array access operator without receiver")
+                when(name) {
+                    "get" -> InvocationType.GET_OPERATOR(receiver, firCall.arguments, firCall)
+                    "set" -> InvocationType.SET_OPERATOR(receiver, firCall.arguments.dropLast(1), firCall.arguments.last(), firCall)
+                    else -> throw SpoonException("Array access operator doesn't call get or set")
+                }
             }
             else -> InvocationType.NORMAL_CALL(receiver, firCall)
         }

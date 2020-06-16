@@ -288,8 +288,34 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             is InvocationType.ASSIGNMENT_OPERATOR -> visitAssignmentOperatorViaFunctionCall(invocationType)
             is InvocationType.POSTFIX_OPERATOR -> TODO()
             is InvocationType.PREFIX_OPERATOR -> visitUnaryOperatorViaFunctionCall(invocationType)
+            is InvocationType.GET_OPERATOR -> visitGetOperator(invocationType)
+            is InvocationType.SET_OPERATOR -> visitSetOperator(invocationType)
             is InvocationType.UNKNOWN -> throw RuntimeException("Unknown invocation type ${functionCall.calleeReference.name.asString()}")
         }
+    }
+
+    private fun visitGetOperator(invocationType: InvocationType.GET_OPERATOR): CompositeTransformResult.Single<CtArrayRead<*>> {
+        // Temporarily use CtArrayAccess, will prob need its own class (or make normal call with is operator call in metadata)
+        val receiver = invocationType.receiver.accept(this,null).single as CtExpression<*>
+        val ctArrAccess = factory.Core().createArrayRead<Any>()
+        ctArrAccess.setTarget<CtArrayRead<Any>>(receiver)
+        val args = invocationType.args.map { it.accept(this,null).single.apply { setParent(ctArrAccess) } }
+        ctArrAccess.putMetadata<CtArrayRead<*>>(KtMetadataKeys.ARRAY_ACCESS_INDEX_ARGS, args)
+        return ctArrAccess.compose()
+    }
+
+    private fun visitSetOperator(invocationType: InvocationType.SET_OPERATOR): CompositeTransformResult.Single<CtAssignment<*,*>>  {
+        // Temporarily use CtArrayAccess, will prob need its own class (or make normal call with is_operator_call in metadata)
+        val receiver = invocationType.receiver.accept(this,null).single as CtExpression<*>
+        val rhs = invocationType.rhs.accept(this,null).single as CtExpression<Any>
+        val ctAssignment = factory.Core().createAssignment<Any, Any>()
+        val ctArrayWrite = factory.Core().createArrayWrite<Any>()
+        val args = invocationType.args.map { it.accept(this,null).single.apply { setParent(ctArrayWrite) } }
+        ctArrayWrite.setTarget<CtArrayWrite<Any>>(receiver)
+        ctAssignment.setAssigned<CtAssignment<Any,Any>>(ctArrayWrite)
+        ctAssignment.setAssignment<CtAssignment<Any,Any>>(rhs)
+        ctArrayWrite.putMetadata<CtArrayWrite<*>>(KtMetadataKeys.ARRAY_ACCESS_INDEX_ARGS, args)
+        return ctAssignment.compose()
     }
 
     private fun visitNormalFunctionCall(call: InvocationType.NORMAL_CALL):

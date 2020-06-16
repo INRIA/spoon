@@ -28,5 +28,7 @@ object KtMetadataKeys {
     const val INVOCATION_IS_SAFE = "skt_key invocation is safe : Boolean"
 
     const val EXTENSION_TYPE_REF = "skt_key function extension typeref : CtTypeReference<*>?"
+
+    const val ARRAY_ACCESS_INDEX_ARGS = "skt_key array access args : List<CtExpression>"
 }
 
