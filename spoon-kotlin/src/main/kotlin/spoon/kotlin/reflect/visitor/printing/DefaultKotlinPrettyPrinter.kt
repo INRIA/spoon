@@ -667,12 +667,15 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtArrayWrite(p0: CtArrayWrite<T>?) {
-        TODO("Not yet implemented")
-    }
+    override fun <T : Any?> visitCtArrayWrite(arrayWrite: CtArrayWrite<T>) = visitCtArrayAccess(arrayWrite)
 
-    override fun <T : Any?> visitCtArrayRead(p0: CtArrayRead<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtArrayRead(arrayRead: CtArrayRead<T>) = visitCtArrayAccess(arrayRead)
+
+    private fun visitCtArrayAccess(arrayAccess: CtArrayAccess<*,*>) {
+        arrayAccess.target.accept(this)
+        adapter write LEFT_SQUARE
+        visitCommaSeparatedList(arrayAccess.getMetadata(KtMetadataKeys.ARRAY_ACCESS_INDEX_ARGS) as List<CtElement>)
+        adapter write RIGHT_SQUARE
     }
 
     override fun <T : Any?> visitCtInvocation(invocation: CtInvocation<T>?) {
