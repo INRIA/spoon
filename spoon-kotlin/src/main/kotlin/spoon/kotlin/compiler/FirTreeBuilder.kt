@@ -17,10 +17,8 @@ import org.jetbrains.kotlin.fir.references.impl.FirExplicitThisReference
 import org.jetbrains.kotlin.fir.references.impl.FirImplicitThisReference
 import org.jetbrains.kotlin.fir.references.impl.FirPropertyFromParameterResolvedNamedReference
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
-import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.visitors.CompositeTransformResult
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
-import org.jetbrains.kotlin.lexer.KtToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
@@ -513,9 +511,25 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             null -> throw RuntimeException("Unknown source of while loop")
             is KtForExpression -> return visitForLoop(whileLoop,null)
         }
+        val ctWhile = factory.Core().createWhile()
+        val condition = whileLoop.condition.accept(this,null).single as CtExpression<Boolean>
+        val body = whileLoop.block.accept(this,null).single as CtStatement
+        return ctWhile.apply {
+            setLoopingExpression<CtWhile>(condition)
+            setBody<CtWhile>(body)
+        }.compose()
 
+    }
 
-        return super.visitWhileLoop(whileLoop, data)
+    override fun visitDoWhileLoop(doWhileLoop: FirDoWhileLoop, data: Nothing?): CompositeTransformResult<CtElement> {
+        val ctDo = factory.Core().createDo()
+        val condition = doWhileLoop.condition.accept(this,null).single as CtExpression<Boolean>
+        val body = doWhileLoop.block.accept(this,null).single as CtStatement
+        return ctDo.apply {
+            setLoopingExpression<CtDo>(condition)
+            setBody<CtDo>(body)
+        }.compose()
+
     }
 
     fun visitForLoop(forLoop: FirWhileLoop, data: Nothing?): CompositeTransformResult<CtElement> {
