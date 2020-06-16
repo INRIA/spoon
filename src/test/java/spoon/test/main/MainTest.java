@@ -25,7 +25,6 @@ import spoon.ContractVerifier;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.visitor.ImportScannerImpl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -133,6 +132,7 @@ public class MainTest {
 				"--compliance", "8",
 				"--level", "OFF"
 		});
+
 
 		new ContractVerifier(launcher.getFactory().Package().getRootPackage()).checkGenericContracts();
 
