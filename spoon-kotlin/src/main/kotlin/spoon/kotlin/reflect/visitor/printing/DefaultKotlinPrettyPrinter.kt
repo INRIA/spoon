@@ -699,19 +699,29 @@ class DefaultKotlinPrettyPrinter(
                 }
             }
         } else {
+            var separator = ""
             if(invocation.target != null && !invocation.target.isImplicit) {
                 invocation.target.accept(this)
                 val isSafe = invocation.getMetadata(KtMetadataKeys.INVOCATION_IS_SAFE) as Boolean?
-                val separator = if(isSafe == true) "?." else "."
-                adapter write separator
+                separator = if(isSafe == true) "?." else "."
             }
-
-            adapter write invocation.executable.simpleName
+            if(!shouldIgnoreIdentifier(invocation)) {
+                adapter write separator
+                adapter write invocation.executable.simpleName
+            }
         }
         adapter write LEFT_ROUND
         visitCommaSeparatedList(invocation.arguments)
         adapter write RIGHT_ROUND
         exitCtExpression(invocation)
+    }
+
+    private fun shouldIgnoreIdentifier(invocation: CtInvocation<*>): Boolean {
+        if(invocation.executable.simpleName == "invoke") {
+            val asOperator = invocation.getMetadata(KtMetadataKeys.INVOKE_AS_OPERATOR) as Boolean?
+            return asOperator == true
+        }
+        return false
     }
 
     private fun <T> visitInfixInvocation(ctInvocation: CtInvocation<T>) {
