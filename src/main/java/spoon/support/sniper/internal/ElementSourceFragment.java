@@ -238,37 +238,8 @@ public class ElementSourceFragment implements SourceFragment {
 		SourcePosition otherSourcePosition = otherElement.getPosition();
 		if (otherSourcePosition instanceof SourcePositionImpl && !(otherSourcePosition.getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
 				ElementSourceFragment otherFragment = new ElementSourceFragment(otherElement, this.getRoleHandler(roleInParent, otherElement));
-				if (this.getElement() instanceof CtCompilationUnit) {
-					addChild(otherFragment);
-					return otherFragment;
-				}
-
-				CMP cmp = this.compare(otherFragment);
-				if (cmp == CMP.OTHER_IS_CHILD) {
-					// core contract:
-					// the position of children fragments must be included inside the positions of the paernt fragment
-					this.addChild(otherFragment);
-					return otherFragment;
-				} else {
-					// one exception
-					// comment positions have the right to not be part of the parent fragment in some cases
-					if (otherElement instanceof CtComment) {
-							/*
-							 * comments of elements are sometime not included in source position of element.
-							 * because comments are ignored tokens for JDT, which computes start/end of elements
-							 * Example:
-							 *
-							 * 		//a comment
-							 * 		aStatement();
-							 *
-							 */
-							//add this child into parent's source fragment and extend that parent source fragment
-							this.addChild(otherFragment);
-							return otherFragment;
-					} else {
-						throw new SpoonException("The SourcePosition of elements are not consistent\nparentFragment: " + this + "\notherFragment: " + otherFragment);
-					}
-				}
+			this.addChild(otherFragment);
+			return otherFragment;
 		}
 		//do not connect that undefined source position
 		return null;
@@ -314,21 +285,12 @@ public class ElementSourceFragment implements SourceFragment {
 			addChild(other);
 			return this;
 		case OTHER_IS_PARENT:
-			//other is parent of this, merge this and all siblings of `this` as children and siblings of `other`
-			other.merge(this);
+			// sometimes the scanning order is not the position order
+			// so we have to switch the fragments to have the first in first position
+			other.addChild(this);
 			return other;
 		}
 		throw new SpoonException("Unexpected compare result: " + cmp);
-	}
-
-	private void merge(ElementSourceFragment tobeMerged) {
-		while (tobeMerged != null) {
-			ElementSourceFragment nextTobeMerged = tobeMerged.getNextSibling();
-			//disconnect tobeMerged from nextSiblings before we add it. So it is added individually and not with wrong siblings too
-			tobeMerged.nextSibling = null;
-			add(tobeMerged);
-			tobeMerged = nextTobeMerged;
-		}
 	}
 
 	/**
