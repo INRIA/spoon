@@ -134,10 +134,6 @@ public class MainTest {
 				"--level", "OFF"
 		});
 
-		// contract: ImportScannerImpl does not throw an exception on a large and complex model (OK, it's a smoke test)
-		// Update: I found a nasty NPE bug :-), smoke tests can be useful
-		new ImportScannerImpl().scan(launcher.getFactory().Package().getRootPackage());
-
 		new ContractVerifier(launcher.getFactory().Package().getRootPackage()).checkGenericContracts();
 
 		// contract: all test classes, as well as template/processors/etc used in tests have "test" in their fully qualified name
