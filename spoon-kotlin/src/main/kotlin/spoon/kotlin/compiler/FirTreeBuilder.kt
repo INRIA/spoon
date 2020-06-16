@@ -970,7 +970,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     ): CompositeTransformResult<CtElement> {
         val qa = checkNotNullCall.arguments[0].accept(this,null)
         return qa.apply {
-            this.single.putMetadata<CtElement>(KtMetadataKeys.ACCESS_IS_CHECK_NOT_NULL, true)
+            this.single.putMetadata<CtElement>(KtMetadataKeys.ACCESS_IS_CHECK_NOT_NULL, true) // TODO Make unary operator?
         }
     }
 
