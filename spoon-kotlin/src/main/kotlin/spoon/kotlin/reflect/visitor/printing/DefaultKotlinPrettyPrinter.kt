@@ -400,8 +400,12 @@ class DefaultKotlinPrettyPrinter(
         ctAnonExec.body.accept(this)
     }
 
-    override fun visitCtDo(p0: CtDo?) {
-        TODO("Not yet implemented")
+    override fun visitCtDo(ctDo: CtDo) {
+        adapter write "do "
+        ctDo.body.accept(this)
+        adapter write " while " and LEFT_ROUND
+        ctDo.loopingExpression.accept(this)
+        adapter write RIGHT_ROUND
     }
 
     override fun <T : Any?> visitCtLiteral(literal: CtLiteral<T>) {
@@ -608,8 +612,11 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun visitCtWhile(p0: CtWhile?) {
-        TODO("Not yet implemented")
+    override fun visitCtWhile(ctWhile: CtWhile) {
+        adapter write "while" and SPACE and LEFT_ROUND
+        ctWhile.loopingExpression.accept(this)
+        adapter write RIGHT_ROUND and SPACE
+        ctWhile.body.accept(this)
     }
 
     override fun visitCtWildcardReference(p0: CtWildcardReference?) {
