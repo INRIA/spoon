@@ -154,15 +154,28 @@ public class MutableTokenWriter implements TokenWriter {
 		return delegate.toString();
 	}
 
-	/** prints a piece of text regardless of muted */
+	/**
+	 * Prints a piece of text regardless of mute status
+	 * Don't call this, this is dangerous and irregular design.
+	 */
 	public void directPrint(String text) {
 		int len = text.length();
-
+		// we do it char by char because there is no write(String) in PrinterHelper
 		for (int i = 0; i < len; i++) {
 			char c = text.charAt(i);
-			//avoid automatic writing of tabs in the middle of text
+			//avoid automatic writing of tabs in the middle of text, because write(char) keeps putting it back to true
 			getPrinterHelper().setShouldWriteTabs(false);
 			getPrinterHelper().write(c);
 		}
 	}
+
+	/** writes the piece of text if not muted */
+	public TokenWriter write(String text) {
+		if (isMuted()) {
+			return this;
+		}
+		directPrint(text);
+		return this;
+	}
+
 }
