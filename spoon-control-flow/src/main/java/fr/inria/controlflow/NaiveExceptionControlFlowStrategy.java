@@ -1,8 +1,10 @@
 package fr.inria.controlflow;
 
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.declaration.CtElement;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,46 +15,65 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * A naive over-approximating model of exception control flow without support for finalizers.
+ * A naive over-approximating model of exception control flow with limited support for finalizers.
  *
  * The model uses the following assumptions:
  *
- *   1) All try-statements have at least one catcher and there are no finalizers.
- *   2) Any statement can potentially throw any exception.
- *   3) All exceptions thrown inside a try block are caught by the catchers immediately associated with the block.
+ *   1) Any statement can potentially throw any exception.
+ *   2) All exceptions thrown inside a try block are caught by the catchers immediately associated with the block.
  *
- * The model offers a choice (default: disabled) of whether to add paths between empty try {} blocks and their
- * catchers. This is because expressions of the form "try { } catch(Exception e) { foo(); }" (i.e empty try blocks)
- * are legal in Java, despite the statement "foo()" trivially being unreachable. In some use cases, excluding such
- * unreachable statements from the control flow graph may be desirable, while in other cases the information loss
- * may be undesirable. The default choice of not adding these paths was chosen due to how the produced graph more
- * accurately models the actual control flow of an execution, while the other option produces a graph that can be
- * said to show what the Java compiler considers to be reachable.
+ * Support for finalizers is limited by the lack of modeling for the semantics of return statements in regards to
+ * executing finalizers before actually returning. Because of this limitation, by default the model will refuse to
+ * model the flow of a try-(catch-)finally construct that contains return statements. An option is available to allow
+ * the model to produce a partially incorrect graph where return statements jump directly to the exit without executing
+ * finalizers.
  */
-public class NaiveTryCatchControlFlowStrategy implements ExceptionControlFlowStrategy {
+public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowStrategy {
 	/**
-	 * Per-instance option flags for NaiveTryCatchControlFlowStrategy
+	 * Per-instance option flags for NaiveExceptionControlFlowStrategy
 	 */
 	public enum Options {
 		/**
 		 * Add paths between the end of an empty try {} block and its catchers.
+		 *
+		 * Default: disabled.
+		 *
+		 * This option exists because expressions of the form "try { } catch(Exception e) { foo(); }" (i.e empty try
+		 * blocks) are legal in Java, despite the statement "foo()" trivially being unreachable. In some use cases,
+		 * excluding such unreachable statements from the control flow graph may be desirable, while in other cases the
+		 * information loss may be undesirable. The default choice of not adding these paths was chosen due to how the
+		 * produced graph more accurately models the actual control flow of an execution. Enabling the option produces
+		 * a graph that can be said to show what the Java compiler considers to be reachable code.
 		 */
-		AddPathsForEmptyTryBlocks;
+		AddPathsForEmptyTryBlocks,
+
+		/**
+		 * Model (incorrectly) return statements as jumping directly to the exit node without executing any "in-scope"
+		 * finalizers.
+		 *
+		 * Default: disabled.
+		 *
+		 * This option exists to provide a limited form of support for return statements in try-(catch-)finally
+		 * constructs despite the lack of complete modeling for the semantics of return statements when finalizers are
+		 * present. Depending on the use case, the incorrect aspects of the produced graph may be an acceptable
+		 * tradeoff versus having return statements be completely unsupported when finalizers are used.
+		 */
+		ReturnWithoutFinalizers
 	}
 
 	/**
-	 * Create a new NaiveTryCatchControlFlowStrategy using the default set of options.
+	 * Create a new NaiveExceptionControlFlowStrategy using the default set of options.
 	 */
-	public NaiveTryCatchControlFlowStrategy() {
+	public NaiveExceptionControlFlowStrategy() {
 		this(EnumSet.noneOf(Options.class));
 	}
 
 	/**
-	 * Create a new NaiveTryCatchControlFlowStrategy using the given set of options.
+	 * Create a new NaiveExceptionControlFlowStrategy using the given set of options.
 	 *
 	 * @param options Options to use
 	 */
-	public NaiveTryCatchControlFlowStrategy(EnumSet<Options> options) {
+	public NaiveExceptionControlFlowStrategy(EnumSet<Options> options) {
 		instanceOptions = options;
 		catchNodeStack = new Stack<>();
 	}
@@ -66,12 +87,12 @@ public class NaiveTryCatchControlFlowStrategy implements ExceptionControlFlowStr
 	 */
 	@Override
 	public void handleTryStatement(ControlFlowBuilder builder, CtTry tryBlock) {
-		if (tryBlock.getCatchers().size() < 1) {
-			throw new IllegalArgumentException("try without catch is not supported");
-		}
-
-		if (tryBlock.getFinalizer() != null) {
-			throw new IllegalArgumentException("finalizers are not supported");
+		if (!instanceOptions.contains(Options.ReturnWithoutFinalizers) && tryBlock.getFinalizer() != null) {
+			for (CtElement element : tryBlock.asIterable()) {
+				if (element instanceof CtReturn) {
+					throw new IllegalArgumentException("return statements in try-(catch-)finally constructs are not supported");
+				}
+			}
 		}
 
 		ControlFlowGraph graph = builder.getResult();
@@ -85,6 +106,12 @@ public class NaiveTryCatchControlFlowStrategy implements ExceptionControlFlowStr
 			catchNodes.add(new ControlFlowNode(catchBlock.getParameter(), graph, BranchKind.CATCH));
 		}
 
+		ControlFlowNode finallyNode = null;
+
+		if (tryBlock.getFinalizer() != null) {
+			finallyNode = new ControlFlowNode(null, graph, BranchKind.FINALLY);
+		}
+
 		graph.addEdge(lastNode, tryNode);
 		builder.setLastNode(tryNode);
 
@@ -94,7 +121,7 @@ public class NaiveTryCatchControlFlowStrategy implements ExceptionControlFlowStr
 
 		catchNodeStack.pop();
 
-		graph.addEdge(builder.getLastNode(), convergeNode);
+		graph.addEdge(builder.getLastNode(), finallyNode != null ? finallyNode : convergeNode);
 
 		for (ControlFlowNode catchNode : catchNodes) {
 			if (tryBlock.getBody().getStatements().size() == 0 && instanceOptions.contains(Options.AddPathsForEmptyTryBlocks)) {
@@ -104,10 +131,16 @@ public class NaiveTryCatchControlFlowStrategy implements ExceptionControlFlowStr
 			builder.setLastNode(catchNode);
 			((CtCatch) catchNode.getStatement().getParent()).getBody().accept(builder);
 			lastNode = builder.getLastNode();
-			graph.addEdge(lastNode, convergeNode);
+			graph.addEdge(lastNode, finallyNode != null ? finallyNode : convergeNode);
 		}
 
-		builder.setLastNode(convergeNode);
+		builder.setLastNode(finallyNode != null ? finallyNode : convergeNode);
+
+		if (finallyNode != null) {
+			tryBlock.getFinalizer().accept(builder);
+			graph.addEdge(builder.getLastNode(), convergeNode);
+			builder.setLastNode(convergeNode);
+		}
 	}
 
 	/**
@@ -165,6 +198,7 @@ public class NaiveTryCatchControlFlowStrategy implements ExceptionControlFlowStr
 	public void postProcess(ControlFlowGraph graph) {
 		removeNonCatchSuccessorsFromThrowStatements(graph);
 		removeUnreachableCatchNodes(graph);
+		removeUnreachableFinalizerNodeBlockEndPredecessors(graph);
 	}
 
 	/**
@@ -192,6 +226,12 @@ public class NaiveTryCatchControlFlowStrategy implements ExceptionControlFlowStr
 	 */
 	private void removeUnreachableCatchNodes(ControlFlowGraph graph) {
 		nodesWithoutPredecessors(graph).stream().filter(node -> node.getKind() == BranchKind.CATCH).forEach(this::removePathWhileUnreachable);
+	}
+
+	private void removeUnreachableFinalizerNodeBlockEndPredecessors(ControlFlowGraph graph) {
+		graph.findNodesOfKind(BranchKind.FINALLY).forEach(node -> {
+			node.prev().stream().filter(prevNode -> prevNode.prev().size() == 0).forEach(graph::removeVertex);
+		});
 	}
 
 	/**
