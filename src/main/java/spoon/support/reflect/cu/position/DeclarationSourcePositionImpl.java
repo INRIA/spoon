@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.cu.position;
 
+import spoon.SpoonException;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 
@@ -17,19 +18,45 @@ import java.io.Serializable;
  * file.
  */
 public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
-		implements DeclarationSourcePosition, Serializable {
+		implements DeclarationSourcePosition, Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1L;
 	private int modifierSourceEnd;
 	private int modifierSourceStart;
 
-	public DeclarationSourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd,
+	/** for "int i=0, j=1", this would end at the comma separating i and j */
+	private int endDefaultValueDeclaration = -1;
+
+	@Override
+	public int getDefaultValueEnd() {
+		return endDefaultValueDeclaration;
+	}
+
+	@Override
+	public DeclarationSourcePosition addDefaultValueEnd(int endDefaultValueDeclaration) {
+		// JDT initializes to 0
+		// so 0 means nothing interesting
+		// we prefer the -1 convention here
+		if (endDefaultValueDeclaration == 0) {
+			return this;
+		}
+
+		try {
+			DeclarationSourcePositionImpl newPos = (DeclarationSourcePositionImpl) this.clone();
+			newPos.endDefaultValueDeclaration = endDefaultValueDeclaration;
+			return newPos;
+		} catch (CloneNotSupportedException e) {
+			throw new SpoonException(e);
+		}
+	}
+
+	public DeclarationSourcePositionImpl(CompilationUnit compilationUnit, int nameStart, int nameEnd,
 			int modifierSourceStart, int modifierSourceEnd, int declarationSourceStart, int declarationSourceEnd,
 			int[] lineSeparatorPositions) {
 		super(compilationUnit,
-				sourceStart, sourceEnd, declarationSourceStart, declarationSourceEnd,
+				nameStart, nameEnd, declarationSourceStart, declarationSourceEnd,
 				lineSeparatorPositions);
-		checkArgsAreAscending(declarationSourceStart, modifierSourceStart, modifierSourceEnd + 1, sourceStart, sourceEnd + 1, declarationSourceEnd + 1);
+		checkArgsAreAscending(declarationSourceStart, modifierSourceStart, modifierSourceEnd + 1, nameStart, nameEnd + 1, declarationSourceEnd + 1);
 		this.modifierSourceStart = modifierSourceStart;
 		if (this.modifierSourceStart == 0) {
 			this.modifierSourceStart = declarationSourceStart;
@@ -57,5 +84,14 @@ public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
 				+ "\nmodifier = " + getFragment(getModifierSourceStart(), getModifierSourceEnd())
 				+ "\nname = " + getFragment(getNameStart(), getNameEnd());
 	}
+
+	@Override
+	public int getSourceEnd() {
+		if (endDefaultValueDeclaration != -1) {
+			return endDefaultValueDeclaration;
+		}
+		return getDeclarationEnd();
+	}
+
 
 }

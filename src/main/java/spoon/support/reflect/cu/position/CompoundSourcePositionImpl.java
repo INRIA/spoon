@@ -13,7 +13,7 @@ import spoon.reflect.cu.position.CompoundSourcePosition;
 import java.io.Serializable;
 
 /**
- * This class represents the position of a Java program element in a source
+ * This class represents the position of a named Java program element in a source
  * file.
  */
 public class CompoundSourcePositionImpl extends SourcePositionImpl
@@ -23,15 +23,30 @@ public class CompoundSourcePositionImpl extends SourcePositionImpl
 	private int declarationSourceStart;
 	private int declarationSourceEnd;
 
-	public CompoundSourcePositionImpl(CompilationUnit compilationUnit, int sourceStart, int sourceEnd,
+	public CompoundSourcePositionImpl(CompilationUnit compilationUnit, int nameStart, int nameEnd,
 			int declarationSourceStart, int declarationSourceEnd,
 			int[] lineSeparatorPositions) {
+		// by convention, the default start and end fields
+		// are used for the name position
 		super(compilationUnit,
-				sourceStart, sourceEnd,
+				nameStart, nameEnd,
 				lineSeparatorPositions);
-		checkArgsAreAscending(declarationSourceStart, sourceStart, sourceEnd + 1, declarationSourceEnd + 1);
+		checkArgsAreAscending(declarationSourceStart, declarationSourceEnd);
+		if (nameStart != 0) {
+			checkArgsAreAscending(declarationSourceStart, nameStart, nameEnd + 1, declarationSourceEnd + 1);
+		}
 		this.declarationSourceStart = declarationSourceStart;
 		this.declarationSourceEnd = declarationSourceEnd;
+	}
+
+	@Override
+	public int getDeclarationEnd() {
+		return declarationSourceEnd;
+	}
+
+	@Override
+	public int getDeclarationStart() {
+		return declarationSourceStart;
 	}
 
 	@Override

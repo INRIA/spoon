@@ -172,7 +172,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 		typeMembers.clear();
 		for (CtTypeMember typeMember : members) {
-			addTypeMember(typeMember);
+			addTypeMemberAt(typeMembers.size(), typeMember);
 		}
 		return (C) this;
 	}

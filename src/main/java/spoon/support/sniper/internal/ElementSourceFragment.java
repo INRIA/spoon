@@ -10,6 +10,7 @@ package spoon.support.sniper.internal;
 import spoon.SpoonException;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.SourcePositionHolder;
@@ -135,19 +136,13 @@ public class ElementSourceFragment implements SourceFragment {
 	}
 
 	/**
-	 * @return true if position points to same compilation unit (source file) as this SourceFragment
-	 */
-	private boolean isFromSameSource(SourcePosition position) {
-		return getSourcePosition().getCompilationUnit().equals(position.getCompilationUnit());
-	}
-
-	/**
-	 * Builds tree of {@link SourcePosition}s of `element` and all it's children
+	 * Builds a tree of source fragments for `element` and all its children, based on the source positions of each element
 	 * @param element the root element of the tree
 	 */
-	public void addTreeOfSourceFragmentsOfElement(CtElement element) {
+	public static ElementSourceFragment createSourceFragmentsFrom(CtElement element) {
+		ElementSourceFragment rootFragment = new ElementSourceFragment(element, null);
 		Deque<ElementSourceFragment> parents = new ArrayDeque<>();
-		parents.push(this);
+		parents.push(rootFragment);
 		/*
 		 * scan all children of `element` and build tree of SourceFragments
 		 * Note: we cannot skip implicit elements,
@@ -177,6 +172,16 @@ public class ElementSourceFragment implements SourceFragment {
 			}
 
 			@Override
+			public <T> void visitCtLocalVariable(CtLocalVariable<T> localVar) {
+				// bug #3386: we cannot handle joint declaration
+				if (localVar.isPartOfJointDeclaration()) {
+					return;
+				}
+
+				super.visitCtLocalVariable(localVar);
+			}
+
+			@Override
 			public <T> void visitCtLocalVariableReference(final CtLocalVariableReference<T> reference) {
 				// bug 3154: we must must not visit the type of a local var reference
 				enter(reference);
@@ -185,6 +190,10 @@ public class ElementSourceFragment implements SourceFragment {
 
 			@Override
 			protected void enter(CtElement e) {
+				if (parents.peek().getElement() == e) {
+					// needed to bootstrap
+					return;
+				}
 				if (e instanceof CtCompilationUnit) {
 					return;
 				}
@@ -217,66 +226,20 @@ public class ElementSourceFragment implements SourceFragment {
 		}
 		.setVisitCompilationUnitContent(true)
 		.scan(element.getRoleInParent(), element);
+		return rootFragment;
 	}
 	/**
-	 * @param parentFragment the parent {@link ElementSourceFragment}, which will receive {@link ElementSourceFragment} made for `otherElement`
+	 * Add a new child in this fragment.
 	 * @param roleInParent the {@link CtRole} of `otherElement` in scope of element of `parentFragment`
 	 * @param otherElement {@link SourcePositionHolder} whose {@link ElementSourceFragment} has to be added to `parentFragment`
-	 * @return new {@link ElementSourceFragment} created for `otherElement` or null if `otherElement` has no source position or doesn't belong to the same compilation unit
+	 * @return new {@link ElementSourceFragment} created for `otherElement` or null if `otherElement` cannot be included
 	 */
 	private ElementSourceFragment addChild(CtRole roleInParent, SourcePositionHolder otherElement) {
 		SourcePosition otherSourcePosition = otherElement.getPosition();
 		if (otherSourcePosition instanceof SourcePositionImpl && !(otherSourcePosition.getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
-			if (this.isFromSameSource(otherSourcePosition)) {
 				ElementSourceFragment otherFragment = new ElementSourceFragment(otherElement, this.getRoleHandler(roleInParent, otherElement));
-				//parent and child are from the same file. So we can connect their positions into one tree
-				CMP cmp = this.compare(otherFragment);
-				if (cmp == CMP.OTHER_IS_CHILD) {
-					//child belongs under parent - OK
-					this.addChild(otherFragment);
-					return otherFragment;
-				} else {
-					if (cmp == CMP.OTHER_IS_AFTER || cmp == CMP.OTHER_IS_BEFORE) {
-						if (otherElement instanceof CtComment) {
-							/*
-							 * comments of elements are sometime not included in source position of element.
-							 * because comments are ignored tokens for java compiler, which computes start/end of elements
-							 * Example:
-							 *
-							 * 		//a comment
-							 * 		aStatement();
-							 *
-							 */
-							if (otherFragment.getStart() == 0) {
-								//it is CompilationUnit comment, which is before package and imports, so it doesn't belong to class
-								//No problem. Simply add comment at correct position into SourceFragment tree, starting from ROOT
-								addChild(otherFragment);
-								return otherFragment;
-							}
-							//add this child into parent's source fragment and extend that parent source fragment
-							this.addChild(otherFragment);
-							return otherFragment;
-						}
-						throw new SpoonException("otherFragment (" + otherElement.getPosition() + ") " + cmp.toString() + " of " + this.getSourcePosition());
-
-					}
-					//the source position of child element is not included in source position of parent element
-					//I (Pavel) am not sure how to handle it, so let's wait until it happens...
-//						if (otherElement instanceof CtAnnotation<?>) {
-//							/*
-//							 * it can happen for annotations of type TYPE_USE and FIELD
-//							 * In such case the annotation belongs to 2 elements
-//							 * And one of them cannot have matching source position - OK
-//							 */
-//							return null;
-//						}
-					//It happened... See spoon.test.issue3321.SniperPrettyPrinterJavaxTest
-					//something is wrong ...
-					throw new SpoonException("The SourcePosition of elements are not consistent\nparentFragment: " + this + "\notherFragment: " + otherElement.getPosition());
-				}
-			} else {
-				throw new SpoonException("SourcePosition from unexpected compilation unit: " + otherSourcePosition + " expected is: " + this.getSourcePosition());
-			}
+			this.addChild(otherFragment);
+			return otherFragment;
 		}
 		//do not connect that undefined source position
 		return null;
@@ -322,21 +285,12 @@ public class ElementSourceFragment implements SourceFragment {
 			addChild(other);
 			return this;
 		case OTHER_IS_PARENT:
-			//other is parent of this, merge this and all siblings of `this` as children and siblings of `other`
-			other.merge(this);
+			// sometimes the scanning order is not the position order
+			// so we have to switch the fragments to have the first in first position
+			other.addChild(this);
 			return other;
 		}
 		throw new SpoonException("Unexpected compare result: " + cmp);
-	}
-
-	private void merge(ElementSourceFragment tobeMerged) {
-		while (tobeMerged != null) {
-			ElementSourceFragment nextTobeMerged = tobeMerged.getNextSibling();
-			//disconnect tobeMerged from nextSiblings before we add it. So it is added individually and not with wrong siblings too
-			tobeMerged.nextSibling = null;
-			add(tobeMerged);
-			tobeMerged = nextTobeMerged;
-		}
 	}
 
 	/**
@@ -704,16 +658,20 @@ public class ElementSourceFragment implements SourceFragment {
 			throw new SpoonException("Inconsistent start/end. Start=" + start + " is greater then End=" + end);
 		}
 		String sourceCode = getOriginalSourceCode();
+		if (sourceCode.length() == 0) {
+			return;
+		}
 		StringBuilder buff = new StringBuilder();
 		CharType lastType = null;
 		int off = start;
+		// basic tokenization based on spaces
 		while (off < end) {
 			char c = sourceCode.charAt(off);
 			CharType type = CharType.fromChar(c);
 			if (type != lastType) {
 				if (lastType != null) {
 					onCharSequence(lastType, buff, consumer);
-					buff.setLength(0);
+					buff.setLength(0); // reset
 				}
 				lastType = type;
 			}
@@ -753,8 +711,10 @@ public class ElementSourceFragment implements SourceFragment {
 					longestMatcher = strMatcher.getLonger(longestMatcher);
 				}
 			}
+			// nothing has matched, best effort token
 			if (longestMatcher == null) {
-				throw new SpoonException("Unexpected source text: " + buff.toString());
+				consumer.accept(new TokenSourceFragment(str.toString(), TokenType.CODE_SNIPPET));
+				return;
 			}
 			consumer.accept(new TokenSourceFragment(longestMatcher.toString(), longestMatcher.getType()));
 			off += longestMatcher.getLength();
@@ -924,4 +884,12 @@ public class ElementSourceFragment implements SourceFragment {
 	static boolean isSpaceFragment(SourceFragment fragment) {
 		return fragment instanceof TokenSourceFragment && ((TokenSourceFragment) fragment).getType() == TokenType.SPACE;
 	}
+
+	/**
+	 * @return true if {@link SourceFragment} represents a comment
+	 */
+	static boolean isCommentFragment(SourceFragment fragment) {
+		return fragment instanceof ElementSourceFragment && ((ElementSourceFragment) fragment).getElement() instanceof CtComment;
+	}
+
 }
