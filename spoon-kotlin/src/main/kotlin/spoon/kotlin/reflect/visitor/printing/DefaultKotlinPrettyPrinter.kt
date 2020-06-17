@@ -556,10 +556,6 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun visitCtContinue(p0: CtContinue?) {
-        TODO("Not yet implemented")
-    }
-
     override fun visitCtFor(p0: CtFor?) {
         TODO("Not yet implemented")
     }
@@ -644,8 +640,22 @@ class DefaultKotlinPrettyPrinter(
         }
     }
 
-    override fun visitCtBreak(p0: CtBreak?) {
-        TODO("Not yet implemented")
+    override fun visitCtBreak(ctBreak: CtBreak) {
+        enterCtStatement(ctBreak)
+        adapter write "break"
+        if(ctBreak.targetLabel != null) {
+            adapter write '@' and ctBreak.targetLabel
+        }
+        exitCtStatement(ctBreak)
+    }
+
+    override fun visitCtContinue(ctContinue: CtContinue) {
+        enterCtStatement(ctContinue)
+        adapter write "continue"
+        if(ctContinue.targetLabel != null) {
+            adapter write '@' and ctContinue.targetLabel
+        }
+        exitCtStatement(ctContinue)
     }
 
     override fun visitCtWhile(ctWhile: CtWhile) {

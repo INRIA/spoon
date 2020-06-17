@@ -1041,6 +1041,30 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         }.compose()
     }
 
+    override fun visitBreakExpression(
+        breakExpression: FirBreakExpression,
+        data: Nothing?
+    ): CompositeTransformResult.Single<CtBreak> {
+        val ctBreak = factory.Core().createBreak()
+        val label = breakExpression.target.labelName
+        if(label != null) {
+            ctBreak.setTargetLabel<CtBreak>(label)
+        }
+        return ctBreak.compose()
+    }
+
+    override fun visitContinueExpression(
+        continueExpression: FirContinueExpression,
+        data: Nothing?
+    ): CompositeTransformResult.Single<CtContinue> {
+        val ctContinue = factory.Core().createContinue()
+        val label = continueExpression.target.labelName
+        if(label != null) {
+            ctContinue.setTargetLabel<CtContinue>(label)
+        }
+        return ctContinue.compose()
+    }
+
     private fun <T : CtElement> T.compose() = CompositeTransformResult.single(this)
     private fun <T : CtElement> List<CompositeTransformResult<T>>.composeManySingles() = CompositeTransformResult.many(this.map { it.single })
     private fun <T : CtElement> List<CompositeTransformResult<T>>.compose() = CompositeTransformResult.many(this)
