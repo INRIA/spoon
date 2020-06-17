@@ -1014,6 +1014,25 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return varAccess.compose()
     }
 
+    override fun visitTryExpression(
+        tryExpression: FirTryExpression,
+        data: Nothing?
+    ): CompositeTransformResult<CtElement> {
+        return factory.Core().createTry().apply {
+            setBody<CtTry>(tryExpression.tryBlock.accept(this@FirTreeBuilder,null).single as CtStatement)
+            setCatchers<CtTry>(tryExpression.catches.map { it.accept(this@FirTreeBuilder,null).single as CtCatch })
+            (tryExpression.finallyBlock?.accept(this@FirTreeBuilder,null)?.single as CtBlock<*>?)?.let { setFinalizer<CtTry>(it) }
+        }.compose()
+    }
+
+    override fun visitCatch(catch: FirCatch, data: Nothing?): CompositeTransformResult<CtElement> {
+        val block = catch.block.accept(this,null).single as CtStatement
+        return factory.Core().createCatch().apply {
+            setParameter<CtCatch>(helper.createCatchVariable(catch.parameter))
+            setBody<CtCatch>(block)
+        }.compose()
+    }
+
     private fun <T : CtElement> T.compose() = CompositeTransformResult.single(this)
     private fun <T : CtElement> List<CompositeTransformResult<T>>.composeManySingles() = CompositeTransformResult.many(this.map { it.single })
     private fun <T : CtElement> List<CompositeTransformResult<T>>.compose() = CompositeTransformResult.many(this)

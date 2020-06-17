@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.declarations.FirValueParameter
 import org.jetbrains.kotlin.fir.declarations.superConeTypes
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
@@ -16,6 +17,7 @@ import org.jetbrains.kotlin.psi.KtPostfixExpression
 import org.jetbrains.kotlin.psi.KtPrefixExpression
 import spoon.SpoonException
 import spoon.kotlin.reflect.KtModifierKind
+import spoon.reflect.code.CtCatchVariable
 import spoon.reflect.code.UnaryOperatorKind
 import spoon.kotlin.reflect.code.KtBinaryOperatorKind as KtOp
 import spoon.reflect.declaration.CtModule
@@ -63,6 +65,13 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
         }
         return type
     }
+
+    fun createCatchVariable(valueParam: FirValueParameter): CtCatchVariable<Throwable> =
+        firTreeBuilder.factory.Core().createCatchVariable<Throwable>().apply {
+            setSimpleName<CtCatchVariable<Throwable>>(valueParam.name.identifier)
+            setType<CtCatchVariable<Throwable>>(firTreeBuilder.referenceBuilder.getNewTypeReference<Throwable>(valueParam.returnTypeRef))
+        }
+
 
     fun getOrCreateModule(session: FirSession, factory: Factory): CtModule {
         val mname = session.moduleInfo?.name?.asString() ?: return factory.Module().unnamedModule
