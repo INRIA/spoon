@@ -2938,46 +2938,6 @@ public class EndToEndTests {
         runSingleTest(smpl, inputCode, expectedCode);
     }
     @Test
-    public void testUnsupportedElementsRejectDotsWhenNotEqual() {
-        // contract: a 'when != x' constraint on dots should not be allowed to traverse an unsupported element since we cannot know if x is used inside.
-
-        String inputCode = "class A {\n" +
-                           "    void a() {}\n" +
-                           "    void b() {}\n" +
-                           "    boolean loopsNotSupported;\n" +
-                           "    \n" +
-                           "    void foo() {\n" +
-                           "        a();\n" +
-                           "        while (loopsNotSupported) {\n" +
-                           "          break;\n" +
-                           "        }\n" +
-                           "        b();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void a() {}\n" +
-                              "    void b() {}\n" +
-                              "    boolean loopsNotSupported;\n" +
-                              "    \n" +
-                              "    void foo() {\n" +
-                              "        a();\n" +
-                              "        while (loopsNotSupported) {\n" +
-                              "            break;\n" +
-                              "        } \n" +
-                              "        b();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "- a();\n" +
-                      "... when != x\n" +
-                      "b();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
-    }
-    @Test
     public void testUnsupportedElementsRejectDotsWhenNotEquals() {
         // contract: dots constrained by \"when != x\" should not be allowed to traverse across unsupported elements even if there is no post-context
 
