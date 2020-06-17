@@ -67,8 +67,7 @@ public class EndToEndTests {
                       "a();\n" +
                       "...\n" +
                       "+ c();\n" +
-                      "b();\n" +
-                      "´\n";
+                      "b();\n";
     
         runSingleTest(smpl, inputCode, expectedCode);
     }
