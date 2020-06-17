@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirElseIfTrueCondition
 import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
 import org.jetbrains.kotlin.fir.expressions.impl.FirSingleExpressionBlock
+import org.jetbrains.kotlin.fir.expressions.impl.FirUnitExpression
 import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.references.FirErrorNamedReference
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
@@ -51,6 +52,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitElement(element: FirElement, data: Nothing?): CompositeTransformResult<CtElement> {
         //throw SpoonException("Element type not implemented $element")
+        if(element is FirUnitExpression) return CompositeTransformResult.empty()
         return CtLiteralImpl<String>().setValue<CtLiteral<String>>("Unimplemented element $element").compose()
     }
 
@@ -512,6 +514,8 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
             statements.add(if(ctElement is CtExpression<*> && ctElement !is CtStatement) {
                 ctElement.wrapInImplicitReturn()
+            } else if(ctElement is CtBlock<*> && ctElement.statements.size == 1 && ctElement.isImplicit) {
+                ctElement.statements[0]
             } else {
                 ctElement as CtStatement
             })
@@ -618,16 +622,11 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return op.compose()
     }
 
-    override fun visitSimpleFunction(simpleFunction: FirSimpleFunction, data: Nothing?): CompositeTransformResult.Single<CtMethod<*>> {
+    private fun createUnnamedFunction(function: FirFunction<*>): CtMethod<Any> {
         val ctMethod = factory.Core().createMethod<Any>()
-        ctMethod.setSimpleName<CtMethod<Any>>(simpleFunction.name.identifier)
-
-        // Add modifiers
-        val modifiers = KtModifierKind.fromFunctionDeclaration(simpleFunction)
-        addModifiersAsMetadata(ctMethod, modifiers)
 
         // Add params
-        simpleFunction.valueParameters.forEach {
+        function.valueParameters.forEach {
             val p = it.accept(this,null).single
             if(p !is CtParameter<*>) {
                 warn("Transformed parameter is not CtParameter")
@@ -636,17 +635,28 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         }
 
         // Add body
-        val body = simpleFunction.body
+        val body = function.body
         if(body != null) {
             val ctBody = body.accept(this, null).single
             ctMethod.setBody<CtMethod<Any>>(ctBody as CtStatement)
         }
 
         // Set (return) type
-        ctMethod.setType<CtMethod<*>>(referenceBuilder.getNewTypeReference<Any>(simpleFunction.returnTypeRef))
-        val receiver = simpleFunction.receiverTypeRef?.accept(this,null)?.single
+        ctMethod.setType<CtMethod<*>>(referenceBuilder.getNewTypeReference<Any>(function.returnTypeRef))
+        val receiver = function.receiverTypeRef?.accept(this,null)?.single
         receiver?.setParent<CtElement>(ctMethod)
         ctMethod.putMetadata<CtMethod<*>>(KtMetadataKeys.EXTENSION_TYPE_REF, receiver)
+        return ctMethod
+    }
+
+    override fun visitSimpleFunction(simpleFunction: FirSimpleFunction, data: Nothing?): CompositeTransformResult.Single<CtMethod<*>> {
+        val ctMethod = createUnnamedFunction(simpleFunction)
+        ctMethod.setSimpleName<CtMethod<Any>>(simpleFunction.name.identifier)
+
+        // Add modifiers
+        val modifiers = KtModifierKind.fromFunctionDeclaration(simpleFunction)
+        addModifiersAsMetadata(ctMethod, modifiers)
+
         return ctMethod.compose()
     }
 
@@ -703,6 +713,11 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             factory.Core().createFieldWrite<Any>().also {
                 it.setVariable<CtVariableAccess<Any>>(lvalue as CtFieldReference<Any>)
                 it.setTarget<CtTargetedExpression<Any, CtExpression<*>>>(receiver)
+            }
+        }
+        is CtParameterReference<*> -> {
+            factory.Core().createVariableWrite<Any>().also {
+                it.setVariable<CtVariableAccess<Any>>(lvalue as CtParameterReference<Any>)
             }
         }
         else -> throw SpoonException("Unexpected expression ${lvalue::class.simpleName}")
@@ -777,6 +792,9 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
         // Type
         ctParam.setType<CtParameter<Any>>(referenceBuilder.getNewTypeReference<Any>(valueParameter.returnTypeRef))
+
+        // Implicit? "it" in lambda
+        ctParam.setImplicit<CtParameter<*>>(valueParameter.psi == null)
 
         return ctParam.compose()
     }
@@ -946,31 +964,41 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return localVar.compose()
     }
 
+    override fun visitAnonymousFunction(
+        anonymousFunction: FirAnonymousFunction,
+        data: Nothing?
+    ): CompositeTransformResult<CtExecutable<*>> {
+        val ctLambda = factory.Core().createLambda<Any>()
+        val params = anonymousFunction.valueParameters.map { it.accept(this,null).single } as List<CtParameter<*>>
+        val body = anonymousFunction.body?.accept(this,null)?.single as CtStatement
+        return ctLambda.apply {
+            setParameters<CtLambda<Any>>(params)
+            setBody<CtLambda<Any>>(body)
+            setType<CtLambda<*>>(referenceBuilder.getNewTypeReference(anonymousFunction.returnTypeRef))
+            putMetadata<CtLambda<*>>(KtMetadataKeys.LAMBDA_AS_ANONYMOUS_FUNCTION, !anonymousFunction.isLambda)
+        }.compose()
+    }
+
+    override fun visitLambdaArgumentExpression(
+        lambdaArgumentExpression: FirLambdaArgumentExpression,
+        data: Nothing?
+    ): CompositeTransformResult<CtElement> = lambdaArgumentExpression.expression.accept(this,null)
+
     override fun visitReturnExpression(
         returnExpression: FirReturnExpression,
         data: Nothing?
-    ): CompositeTransformResult.Single<CtReturn<*>> {
+    ): CompositeTransformResult<CtElement> {
+        if(returnExpression.source == null) {
+            return returnExpression.result.accept(this,null)
+        }
+
         val ctReturn = factory.Core().createReturn<Any>()
         val ctExpr = returnExpression.result.accept(this,null).single
         if(returnExpression.target.labelName != null) {
             ctReturn.setLabel<CtReturn<*>>(returnExpression.target.labelName)
         }
-        when(ctExpr) {
-            is CtExpression<*> -> {
-                ctReturn.setReturnedExpression<CtReturn<Any>>(ctExpr as CtExpression<Any>)
-                ctExpr.setParent(ctReturn)
-            }
-            is CtIf -> {
-                val typeRef = ctExpr.getMetadata(KtMetadataKeys.KT_STATEMENT_TYPE) as CtTypeReference<Any>
-                val statementExpression = ctExpr.wrapInStatementExpression(typeRef)
-                statementExpression.setImplicit<CtStatement>(true)
-                ctReturn.setReturnedExpression<CtReturn<Any>>(statementExpression)
-                ctExpr.setParent(ctReturn)
-                statementExpression.setParent(ctReturn)
-            }
-        }
-        if(returnExpression.source == null)
-            ctReturn.setImplicit<CtReturn<*>>(true)
+        ctReturn.setReturnedExpression<CtReturn<Any>>(expressionOrWrappedInStatementExpression(ctExpr) as CtExpression<Any>)
+
         return ctReturn.compose()
     }
 
@@ -1084,6 +1112,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     private fun <T> CtStatement.wrapInStatementExpression(type : CtTypeReference<T>) : KtStatementExpression<T> {
         val se = KtStatementExpressionImpl<T>(this)
         se.setType<KtStatementExpression<T>>(type)
+        this.setParent(se)
         return se
     }
 
@@ -1102,6 +1131,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         is CtBlock<*> -> {
             val typeRef = e.getMetadata(KtMetadataKeys.KT_STATEMENT_TYPE) as CtTypeReference<Any>
             val statementExpression = e.wrapInStatementExpression(typeRef)
+            if(e.statements.size == 1) e.setImplicit<CtBlock<*>>(true)
             statementExpression.setImplicit(true)
         }
         else -> throw RuntimeException("Can't wrap ${e::class.simpleName} in StatementExpression")

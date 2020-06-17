@@ -46,6 +46,31 @@ class DefaultKotlinPrettyPrinter(
         }
     }
 
+    private fun visitArgumentList(list: List<CtExpression<*>>) {
+        if(list.isEmpty()) {
+            adapter write LEFT_ROUND and RIGHT_ROUND
+            return
+        }
+        if(list.size == 1 && list[0] is CtLambda<*>) {
+            adapter write SPACE
+            list[0].accept(this)
+            return
+        }
+        adapter write LEFT_ROUND
+        for(i in 0 until list.size-1) {
+            list[i].accept(this)
+            adapter write ", "
+        }
+        val closeParBefore = list.last() is CtLambda<*>
+        if(closeParBefore) {
+            adapter write RIGHT_ROUND and SPACE
+        }
+        list.last().accept(this)
+        if(!closeParBefore) {
+            adapter write RIGHT_ROUND
+        }
+    }
+
     private fun exitCtExpression(e: CtExpression<*>) {
         if(e.typeCasts.isNotEmpty()) {
             e.typeCasts.forEach {
@@ -146,8 +171,16 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtLambda(p0: CtLambda<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtLambda(ctLambda: CtLambda<T>) {
+        adapter write LEFT_CURL and SPACE
+        val params = ctLambda.parameters.filterNot { it.isImplicit }
+        if(params.isNotEmpty()) {
+            visitCommaSeparatedList(params)
+            adapter write " -> "
+        }
+
+        ctLambda.body?.let { visitStatementList(it.statements, inlineSingleStatement = true) }
+        adapter write RIGHT_CURL
     }
 
     override fun visitCtForEach(forEach: CtForEach) {
@@ -565,6 +598,7 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtParameter(param: CtParameter<T>) {
+        if(param.isImplicit) return
         val modifierSet = getModifiersMetadata(param)
         adapter writeModifiers modifierSet and param.simpleName
         adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
@@ -610,14 +644,25 @@ class DefaultKotlinPrettyPrinter(
             return
         }
         adapter write LEFT_CURL
-        adapter.pushIndent()
-        adapter.newline()
 
-        block.statements.forEach { it.accept(this); adapter.newline() }
+        visitStatementList(block.statements)
 
-        adapter.popIndent()
         adapter write RIGHT_CURL
         exitCtStatement(block)
+    }
+
+    private fun visitStatementList(statements: List<CtStatement>,
+                           inlineSingleStatement: Boolean = false
+    ) {
+        if(statements.size <= 1 && inlineSingleStatement) {
+            statements.getOrNull(0)?.accept(this)
+            adapter write SPACE
+        } else {
+            adapter.pushIndent()
+            adapter.newline()
+            statements.forEach { it.accept(this); adapter.newline() }
+            adapter.popIndent()
+        }
     }
 
     override fun <T : Any?> visitCtUnboundVariableReference(p0: CtUnboundVariableReference<T>?) {
@@ -761,9 +806,9 @@ class DefaultKotlinPrettyPrinter(
                 adapter write invocation.executable.simpleName
             }
         }
-        adapter write LEFT_ROUND
-        visitCommaSeparatedList(invocation.arguments)
-        adapter write RIGHT_ROUND
+
+        visitArgumentList(invocation.arguments) // Paren handled in call
+
         exitCtExpression(invocation)
     }
 
