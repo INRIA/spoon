@@ -83,7 +83,15 @@ class DefaultKotlinPrettyPrinter(
         }
     }
 
+    private fun enterCtStatement(s: CtStatement) {
+        if(s.label != null) {
+            adapter write s.label and '@' and SPACE
+        }
+    }
 
+    private fun exitCtStatement(s: CtStatement) {
+        // Do nothing
+    }
 
 
     @Suppress("UNCHECKED_CAST")
