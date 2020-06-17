@@ -33,6 +33,8 @@ class DefaultKotlinPrettyPrinter(
         return (getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as? Boolean?) == true
     }
 
+    private fun CtElement.getBooleanMetadata(key: String) = getMetadata(key) as Boolean?
+
     private fun visitCommaSeparatedList(list : List<CtElement>) {
         var commas = list.size-1
         list.forEach {
@@ -414,7 +416,8 @@ class DefaultKotlinPrettyPrinter(
 
     override fun visitCtAnonymousExecutable(ctAnonExec: CtAnonymousExecutable) {
         adapter.ensureNEmptyLines(1)
-        adapter write "init "
+        if(ctAnonExec.getBooleanMetadata(KtMetadataKeys.ANONYMOUS_EXECUTABLE_IS_INITIALIZER) == true)
+            adapter write "init "
         ctAnonExec.body.accept(this)
     }
 
