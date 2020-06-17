@@ -11,7 +11,7 @@ import static spoon.smpl.SmPLParser.parse;
 import static spoon.smpl.SmPLParser.rewrite;
 
 public class SmPLParserTest {
-    String implicitDotsBegin = "if (" + SmPLJavaDSL.getDotsWithOptionalMatchName() + "()) {";
+    String implicitDotsBegin = "if (" + SmPLJavaDSL.getDotsWithOptionalMatchName() + "(" + SmPLJavaDSL.getDotsWhenExistsName() + "())) {";
     String implicitDotsEnd = "}";
 
     @Test(expected = RuntimeException.class)
@@ -38,6 +38,10 @@ public class SmPLParserTest {
         String result = DebugUtils.prettifyCLike(rewrite("@@@@\n"));
         assertEquals(DebugUtils.prettifyCLike("class RewrittenSmPLRule {\n" +
                                               "void " + SmPLJavaDSL.getMetavarsMethodName() + "() {\n" +
+                                              "}\n" +
+                                              SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
+                                              "if (" + SmPLJavaDSL.createImplicitDotsCall() + ") {\n" +
+                                              "}\n" +
                                               "}\n" +
                                               "}\n"), result);
     }

@@ -10,8 +10,6 @@ import spoon.smpl.formula.*;
 import spoon.smpl.metavars.*;
 
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
@@ -163,6 +161,7 @@ public class SmPLParser {
         CtMethod<?> ruleMethod = SmPLJavaDSL.getRuleMethod(ast);
 
         if (ruleMethod == null) {
+            // TODO: does the new lexer-parser approach ever reach here? does it ever produce a class without a rule method?
             // A completely empty rule matches nothing
             return new SmPLRuleImpl(new Not(new True()), metavars);
         }
@@ -181,453 +180,154 @@ public class SmPLParser {
      * @return Plain text Java code in SmPL Java DSL
      */
     public static String rewrite(String text) {
-        class Result {
-            public Result() {
-                out = new StringBuilder();
-                prebodyAdditions = new StringBuilder();
-                hasUnspecifiedMethodHeader = false;
-                hasDotsArguments = false;
-            }
-
-            public StringBuilder out;
-            public StringBuilder prebodyAdditions;
-            public boolean hasUnspecifiedMethodHeader;
-            public boolean hasDotsArguments;
-        }
-
-        class RewriteRule {
-            public RewriteRule(String name, String regex, Consumer<Stack<List<RewriteRule>>> contextOp, BiFunction<Result, Matcher, Integer> outputOp) {
-                this.name = name;
-                this.pattern = Pattern.compile(regex);
-                this.contextOp = contextOp;
-                this.outputOp = outputOp;
-            }
-
-            public final String name;
-            public final Pattern pattern;
-            public final Consumer<Stack<List<RewriteRule>>> contextOp;
-            public final BiFunction<Result, Matcher, Integer> outputOp;
-        }
-
-        if (text.length() < 1) {
-            throw new RuntimeException("Empty input");
-        }
-
-        List<RewriteRule> init = new ArrayList<>();
-        List<RewriteRule> metavars = new ArrayList<>();
-        List<RewriteRule> code = new ArrayList<>();
-        List<RewriteRule> prebodyAdditions = new ArrayList<>();
-        List<RewriteRule> header_modifiers = new ArrayList<>();
-        List<RewriteRule> header_type = new ArrayList<>();
-        List<RewriteRule> header_name = new ArrayList<>();
-        List<RewriteRule> header_params = new ArrayList<>();
-        List<RewriteRule> body = new ArrayList<>();
-        List<RewriteRule> argumentList = new ArrayList<>();
-        List<RewriteRule> statementDots = new ArrayList<>();
-        List<RewriteRule> statementDotsParams = new ArrayList<>();
-        List<RewriteRule> optionalMatchDots = new ArrayList<>();
-        List<RewriteRule> disjunction = new ArrayList<>();
-
-        RewriteRule eatWhitespace = new RewriteRule("whitespace", "(?s)^\\s+",
-                (ctx) -> {},
-                (result, match) -> { return match.end(); });
-
-        RewriteRule anycharCopy = new RewriteRule("anychar", "(?s)^.",
-                (ctx) -> {},
-                (result, match) -> {
-                    result.out.append(match.group());
-                    return match.end();
-                });
-
-        RewriteRule newlinePopContext = new RewriteRule("newline", "(?s)^\n",
-                (ctx) -> { ctx.pop(); },
-                (result, match) -> { return 0; });
-
-        RewriteRule anycharPopContext = new RewriteRule("anychar", "(?s)^.",
-                (ctx) -> { ctx.pop(); },
-                (result, match) -> { return 0; });
-
-        // TODO: escape character
-        // TODO: strings
-
-        // Initial context
-        init.add(eatWhitespace);
-
-        init.add(new RewriteRule("atat", "(?s)^@@",
-                (ctx) -> { ctx.pop(); ctx.push(metavars); },
-                (result, match) -> {
-                    result.out.append("void ").append(SmPLJavaDSL.getMetavarsMethodName()).append("() {\n");
-                    return match.end();
-                }));
-
-        init.add(new RewriteRule("atat_rulename", "(?s)^@\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*@",
-                (ctx) -> { ctx.pop(); ctx.push(metavars); },
-                (result, match) -> {
-                    result.out.append("String ").append(SmPLJavaDSL.getRuleNameFieldName())
-                              .append(" = \"").append(match.group(1)).append("\";\n")
-                              .append("void ").append(SmPLJavaDSL.getMetavarsMethodName()).append("() {\n");
-                    return match.end();
-                }));
-
-        // TODO: replace hardcoded names with calls to SmPLJavaDSL.getWhatever
-        // Metavars context
-        metavars.add(eatWhitespace);
-
-        metavars.add(new RewriteRule("atat", "(?s)^@@",
-                (ctx) -> { ctx.pop(); ctx.push(code); },
-                (result, match) -> {
-                    result.out.append("}\n");
-                    return match.end();
-                }));
-
-        metavars.add(new RewriteRule("identifier", "(?s)^identifier\\s+([^;]+);",
-                (ctx) -> {},
-                (result, match) -> {
-                    for (String id : match.group(1).split("\\s*,\\s*")) {
-                        result.out.append("identifier(").append(id).append(");\n");
-                    }
-                    return match.end();
-                }));
-
-        metavars.add(new RewriteRule("type", "(?s)^type\\s+([^;]+);",
-                (ctx) -> {},
-                (result, match) -> {
-                    for (String id : match.group(1).split("\\s*,\\s*")) {
-                        result.out.append("type(").append(id).append(");\n");
-                    }
-                    return match.end();
-                }));
-
-        metavars.add(new RewriteRule("constant", "(?s)^constant\\s+([^;]+);",
-                (ctx) -> {},
-                (result, match) -> {
-                    for (String id : match.group(1).split("\\s*,\\s*")) {
-                        result.out.append("constant(").append(id).append(");\n");
-                    }
-                    return match.end();
-                }));
-
-        metavars.add(new RewriteRule("expression", "(?s)^expression\\s+([^;]+);",
-                (ctx) -> {},
-                (result, match) -> {
-                    for (String id : match.group(1).split("\\s*,\\s*")) {
-                        result.out.append("expression(").append(id).append(");\n");
-                    }
-                    return match.end();
-                }));
-
-        metavars.add(new RewriteRule("explicit_type", "(?s)^([A-Za-z_][A-Za-z0-9_]*)\\s+([^;]+);",
-                (ctx) -> {},
-                (result, match) -> {
-                    for (String id : match.group(2).split("\\s*,\\s*")) {
-                        result.out.append(match.group(1)).append(" ").append(id).append(";\n");
-                    }
-                    return match.end();
-                }));
-
-        // Code context, meaning we're done with metavars and now expect either 1) addition statements followed by 2) a
-        // method header, or 3) just a bunch of statements
-        code.add(new RewriteRule("whitespace", "(?s)^[^\\S\n]+",
-                (ctx) -> {},
-                (result, match) -> { return match.end(); }));
-
-        code.add(new RewriteRule("newline", "(?s)^\n",
-                (ctx) -> { ctx.push(prebodyAdditions); },
-                (result, match) -> {
-                    result.out.append(match.group());
-                    return match.end();
-                }));
-
-        code.add(new RewriteRule("method_header", "(?s)^(public\\s+|private\\s+|protected\\s+|static\\s+)*[A-Za-z_][A-Za-z0-9_-]*\\s+[A-Za-z_][A-Za-z0-9_-]*\\s*\\(",
-                (ctx) -> { ctx.pop(); ctx.push(header_modifiers); },
-                (result, match) -> {
-                    result.hasUnspecifiedMethodHeader = false;
-                    result.out.append(result.prebodyAdditions).append("\n");
-                    return 0;
-                }));
-
-        // any char, but requires there to be SOME non-whitespace content eventually
-        code.add(new RewriteRule("anychar", "(?s)^.(?=.*[^\\s])",
-                (ctx) -> {
-                    ctx.pop();
-                    ctx.push(body);
-                    ctx.push(statementDots);
-                    ctx.push(optionalMatchDots);
-                    ctx.push(disjunction);
-                },
-                (result, match) -> {
-                    result.hasUnspecifiedMethodHeader = true;
-                    result.out.append(SmPLJavaDSL.createUnspecifiedMethodHeaderString())
-                              .append(" {\n")
-                              .append("if (").append(SmPLJavaDSL.getDotsWithOptionalMatchName()).append("()) {")
-                              .append("\n");
-                    result.out.append(result.prebodyAdditions).append("\n");
-                    return 0;
-                }));
-
-        // any char, consuming all remaining input. this is here to support the "empty patch": "@@@@"
-        code.add(new RewriteRule("anychar", "(?s)^.*",
-                (ctx) -> { },
-                (result, match) -> { return match.end(); }));
-
-        prebodyAdditions.add(new RewriteRule("add_line", "(?s)^\\+[^\n]*",
-                (ctx) -> {},
-                (result, match) -> {
-                    result.prebodyAdditions.append(match.group()).append("\n");
-                    return match.end();
-                }));
-
-        prebodyAdditions.add(anycharPopContext);
-
-        // Method header modifiers context
-        header_modifiers.add(eatWhitespace);
-
-        header_modifiers.add(new RewriteRule("modifier", "(?s)^(public|private|protected|static)",
-                (ctx) -> {},
-                (result, match) -> {
-                    result.out.append(match.group(1)).append(" ");
-                    return match.end();
-                }));
-
-        header_modifiers.add(new RewriteRule("anychar", "(?s)^.",
-                (ctx) -> { ctx.pop(); ctx.push(header_type); },
-                (result, match) -> {
-                    return 0;
-                }));
-
-        // Method header type context
-        header_type.add(eatWhitespace);
-
-        // TODO: support type parameters
-        header_type.add(new RewriteRule("method_type", "(?s)^([A-Za-z_][A-Za-z0-9_]*)",
-                (ctx) -> { ctx.pop(); ctx.push(header_name); },
-                (result, match) -> {
-                    result.out.append(match.group(1)).append(" ");
-                    return match.end();
-                }));
-
-        // Method header name context
-        header_name.add(eatWhitespace);
-
-        header_name.add(new RewriteRule("method_name", "(?s)^([A-Za-z_][A-Za-z0-9_]*)",
-                (ctx) -> { ctx.pop(); ctx.push(header_params); },
-                (result, match) -> {
-                    result.out.append(match.group(1));
-                    return match.end();
-                }));
-
-        // Method header params context
-        header_params.add(new RewriteRule("opening_brace", "(?s)^\\{",
-                (ctx) -> { ctx.pop(); ctx.push(body); },
-                (result, match) -> {
-                    result.out.append("{");
-                    return match.end();
-                }));
-
-        header_params.add(new RewriteRule("dots", "(?s)^\\.\\.\\.",
-                (ctx) -> {},
-                (result, match) -> {
-            // TODO: give each dots parameter a fresh identifier?
-                    result.out.append(SmPLJavaDSL.createDotsParameterString());
-                    return match.end();
-                }));
-
-        header_params.add(anycharCopy);
-
-        // Method body context
-        body.add(new RewriteRule("open_paren", "(?s)^\\(",
-                 (ctx) -> { ctx.push(argumentList); },
-                 (result, match) -> {
-                    result.out.append("(");
-                    return match.end();
-                 }));
-
-        body.add(new RewriteRule("newline", "(?s)^\n",
-            (ctx) -> {
-                ctx.push(statementDots);
-                ctx.push(optionalMatchDots);
-                ctx.push(disjunction);
-            },
-
-            (result, match) -> {
-                result.out.append("\n");
-                return match.end();
-            }));
-
-        body.add(anycharCopy);
-
-        // Context for statement-level dots operators
-        statementDots.add(new RewriteRule("dots", "(?s)^[^\\S\n]*\\.\\.\\.",
-                (ctx) -> { ctx.pop(); ctx.push(statementDotsParams); },
-                (result, match) -> {
-                    result.out.append(SmPLJavaDSL.getDotsStatementElementName()).append("(");
-                    return match.end();
-                }));
-
-        statementDots.add(anycharPopContext);
-
-        // Context for statement-level dots parameters (constraints)
-        statementDotsParams.add(eatWhitespace);
-
-        statementDotsParams.add(new RewriteRule("when_neq", "(?s)^when\\s*!=\\s*([a-z]+)",
-                (ctx) -> {},
-                (result, match) -> {
-                    if (result.out.charAt(result.out.length() - 1) == ')') {
-                        result.out.append(",");
-                    }
-
-                    result.out.append(SmPLJavaDSL.getDotsWhenNotEqualName()).append("(")
-                              .append(match.group(1)).append(")");
-                    return match.end();
-                }));
-
-        statementDotsParams.add(new RewriteRule("when_exists", "(?s)^when\\s+exists",
-                (ctx) -> {},
-                (result, match) -> {
-                    if (result.out.charAt(result.out.length() - 1) == ')') {
-                        result.out.append(",");
-                    }
-
-                    result.out.append(SmPLJavaDSL.getDotsWhenExistsName()).append("()");
-                    return match.end();
-                }));
-
-        statementDotsParams.add(new RewriteRule("when_any", "(?s)^when\\s+any",
-                (ctx) -> {},
-                (result, match) -> {
-                    if (result.out.charAt(result.out.length() - 1) == ')') {
-                        result.out.append(",");
-                    }
-
-                    result.out.append(SmPLJavaDSL.getDotsWhenAnyName()).append("()");
-                    return match.end();
-                }));
-
-        statementDotsParams.add(new RewriteRule("anychar", "(?s)^.",
-                (ctx) -> { ctx.pop(); },
-                (result, match) -> {
-                    result.out.append(");\n");
-                    return 0;
-                }));
-
-        // Context for dots with optional match <... P ...> microsyntax
-        optionalMatchDots.add(new RewriteRule("optdots_begin", "(?s)^<\\.\\.\\.", // TODO: could add something like result.required += "optdots_end" for error detection
-                (ctx) -> { },
-                (result, match) -> {
-                    result.out.append("if (").append(SmPLJavaDSL.getDotsWithOptionalMatchName()).append("()) {");
-                    return match.end();
-                }));
-
-        optionalMatchDots.add(new RewriteRule("optdots_end", "(?s)^\\.\\.\\.>",
-                (ctx) -> { },
-                (result, match) -> {
-                    result.out.append("}");
-                    return match.end();
-                }));
-
-        optionalMatchDots.add(anycharPopContext);
-
-        // Context for pattern disjunction microsyntax
-        disjunction.add(new RewriteRule("disjunction_begin", "(?s)^\\(",
-                (ctx) -> { ctx.pop(); },
-                (result, match) -> {
-                    result.out.append("if (").append(SmPLJavaDSL.getBeginDisjunctionName()).append(") {");
-                    return match.end();
-                }));
-
-        disjunction.add(new RewriteRule("disjunction_continue", "(?s)^\\|",
-                (ctx) -> { ctx.pop(); },
-                (result, match) -> {
-                    result.out.append("} else if (").append(SmPLJavaDSL.getContinueDisjunctionName()).append(") {");
-                    return match.end();
-                }));
-
-        disjunction.add(new RewriteRule("disjunction_end", "(?s)^\\)",
-                (ctx) -> { ctx.pop(); },
-                (result, match) -> {
-                    result.out.append("}");
-                    return match.end();
-                }));
-
-        disjunction.add(anycharPopContext);
-
-        // Context for method call argument lists
-        argumentList.add(new RewriteRule("dots", "(?s)^\\.\\.\\.",
-                (ctx) -> { },
-                (result, match) -> {
-                    result.hasDotsArguments = true;
-                    result.out.append(SmPLJavaDSL.getDotsParameterOrArgumentElementName());
-                    return match.end();
-                }));
-
-        argumentList.add(new RewriteRule("open_paren", "(?s)^\\(",
-                (ctx) -> { ctx.push(argumentList); },
-                (result, match) -> {
-                    result.out.append("(");
-                    return match.end();
-                }));
-
-        argumentList.add(new RewriteRule("close_paren", "(?s)^\\)",
-                (ctx) -> { ctx.pop(); },
-                (result, match) -> {
-                    result.out.append(")");
-                    return match.end();
-                }));
-
-        argumentList.add(anycharCopy);
-
-        Result result = new Result();
-
-        // TODO: standardize class name in SmPLJavaDSL?
-        result.out.append("class RewrittenSmPLRule {\n");
-
-        if (result.hasDotsArguments) {
-            result.out.append("Object ")
-                      .append(SmPLJavaDSL.getDotsParameterOrArgumentElementName())
-                      .append(" = null;\n");
-        }
-
-        Stack<List<RewriteRule>> context = new Stack<>();
-        context.push(init);
+        List<SmPLLexer.Token> tokens = SmPLLexer.lex(text);
+        //System.out.println(tokens);
+        StringBuilder output = new StringBuilder();
+        StringBuilder bodyOutput = new StringBuilder();
+
+        String tokenText;
 
         int pos = 0;
+        int end = tokens.size();
 
-        while (pos < text.length()) {
-            List<String> expected = new ArrayList<>();
-            boolean foundSomething = false;
-            String texthere = text.substring(pos);
+        boolean isAddition = false;
+        boolean isDeletion = false;
+        boolean isMethodHeader = false;
+        boolean matchesOnMethodHeader = false;
+        boolean dotsWouldBeStatement = true;
 
-            List<RewriteRule> rules = context.peek();
+        java.util.function.Predicate<String> methodHeader;
+        methodHeader = Pattern.compile("(?s)^(public\\s+|private\\s+|protected\\s+|static\\s+)*" +
+                                       "[A-Za-z_][A-Za-z0-9_-]*\\s+[A-Za-z_][A-Za-z0-9_-]*\\s*\\(.*").asMatchPredicate();
 
-            for (RewriteRule rule : rules) {
-                expected.add(rule.name);
-                Matcher matcher = rule.pattern.matcher(texthere);
+        List<String> genericMetavarTypes = Arrays.asList("identifier", "type", "constant", "expression");
 
-                if (matcher.find()) {
-                    rule.contextOp.accept(context);
-                    pos += rule.outputOp.apply(result, matcher);
+        // Open class
+        output.append("class RewrittenSmPLRule {\n");
 
-                    foundSomething = true;
-                    break;
+        // Set value of rule name field
+        if (tokens.get(pos).getType() == SmPLLexer.TokenType.Rulename) {
+            // Add rule name field
+            output.append("String ").append(SmPLJavaDSL.getRuleNameFieldName()).append(" = ").append("\"")
+                  .append(tokens.get(pos).getText().strip()).append("\";\n");
+            ++pos;
+        }
+
+        // Create metavar declarations method
+        output.append("void ").append(SmPLJavaDSL.getMetavarsMethodName()).append("() {\n");
+
+        // Add metavar declarations
+        while (tokens.get(pos).getType() == SmPLLexer.TokenType.MetavarType) {
+            String metavarType = tokens.get(pos).getText().strip();
+            ++pos;
+
+            while (tokens.get(pos).getType() == SmPLLexer.TokenType.MetavarIdentifier) {
+                if (genericMetavarTypes.contains(metavarType)) {
+                    output.append(metavarType).append("(").append(tokens.get(pos).getText().strip()).append(");\n");
+                } else {
+                    output.append(metavarType).append(" ").append(tokens.get(pos).getText().strip()).append(";\n");
                 }
-            }
-
-            if (!foundSomething) {
-                throw new RuntimeException("Parse error at offset " + Integer.toString(pos) + ", expected one of " + expected.toString());
+                ++pos;
             }
         }
 
-        if (result.hasUnspecifiedMethodHeader) {
-            // close implicit dots-with-optional-match
-            result.out.append("}\n");
+        // Close metavar declarations method
+        output.append("}\n");
 
-            // close method
-            result.out.append("}\n");
+        // Process rest of tokens, i.e the rule body
+        while (pos < end) {
+            SmPLLexer.Token token = tokens.get(pos);
+
+            switch (token.getType()) {
+                case Newline:
+                    isAddition = false;
+                    dotsWouldBeStatement = true;
+                    isMethodHeader = false;
+                    bodyOutput.append("\n");
+                    break;
+
+                case Addition:
+                    isAddition = true;
+                    bodyOutput.append("+ ");
+                    break;
+
+                case Deletion:
+                    isDeletion = true;
+                    bodyOutput.append("- ");
+                    break;
+
+                case Code:
+                    tokenText = token.getText().strip();
+
+                    if (tokenText.length() > 0) {
+                        dotsWouldBeStatement = false;
+                    }
+
+                    if (!isAddition && methodHeader.test(tokenText)) {
+                        isMethodHeader = true;
+                        matchesOnMethodHeader = true;
+                    }
+
+                    bodyOutput.append(tokenText);
+                    break;
+
+                case Dots:
+                    if (dotsWouldBeStatement) {
+                        bodyOutput.append(SmPLJavaDSL.getDotsStatementElementName()).append("(");
+                        pos = parseDotsConstraints(tokens, pos, bodyOutput);
+                        bodyOutput.append(");\n");
+                    } else if (isMethodHeader) {
+                        bodyOutput.append(SmPLJavaDSL.createDotsParameterString());
+                    } else {
+                        bodyOutput.append(SmPLJavaDSL.getDotsParameterOrArgumentElementName());
+                    }
+                    break;
+
+                case OptDotsBegin:
+                    bodyOutput.append("if (");
+                    bodyOutput.append(SmPLJavaDSL.getDotsWithOptionalMatchName()).append("(");
+                    pos = parseDotsConstraints(tokens, pos, bodyOutput);
+                    bodyOutput.append(")");
+                    bodyOutput.append(") {\n");
+                    break;
+
+                case OptDotsEnd:
+                    bodyOutput.append("}\n");
+                    break;
+
+                case DisjunctionBegin:
+                    bodyOutput.append("if (").append(SmPLJavaDSL.getBeginDisjunctionName()).append(") {\n");
+                    break;
+
+                case DisjunctionContinue:
+                    bodyOutput.append("} else if (").append(SmPLJavaDSL.getContinueDisjunctionName()).append(") {\n");
+                    break;
+
+                case DisjunctionEnd:
+                    bodyOutput.append("}\n");
+                    break;
+
+                default:
+                    throw new IllegalStateException("unhandled token " + token.getType().toString());
+            }
+
+            ++pos;
+        }
+
+        if (!matchesOnMethodHeader) {
+            // Wrap rule body code in "unspecified" method header and implicit dots
+            output.append(SmPLJavaDSL.createUnspecifiedMethodHeaderString()).append(" {\n");
+            output.append("if (").append(SmPLJavaDSL.createImplicitDotsCall()).append(") {\n");
+            output.append(bodyOutput);
+            output.append("}\n");
+            output.append("}\n");
+        } else {
+            output.append(bodyOutput);
         }
 
         // hack to fix parsing of e.g "foo.x" with zero context for "foo"
         List<String> addedMembers = new ArrayList<>();
-        Matcher m = Pattern.compile("(?s)([$A-Za-z_][$A-Za-z0-9_]*)(\\s*\\.\\s*([$A-Za-z_][$A-Za-z0-9_]*))+").matcher(result.out.toString());
+        Matcher m = Pattern.compile("(?s)([$A-Za-z_][$A-Za-z0-9_]*)(\\s*\\.\\s*([$A-Za-z_][$A-Za-z0-9_]*))+").matcher(output.toString());
 
         while (m.find()) {
             String memberName = m.group(1);
@@ -636,12 +336,14 @@ public class SmPLParser {
                 continue;
             }
 
-            result.out.append(SmPLJavaDSL.getUnspecifiedElementOrTypeName()).append(" ").append(memberName).append(";\n");
+            output.append(SmPLJavaDSL.getUnspecifiedElementOrTypeName()).append(" ").append(memberName).append(";\n");
             addedMembers.add(memberName);
         }
 
-        result.out.append("}\n");
-        return removeEmptyLines(result.out.toString()) + "\n";
+        // Close class
+        output.append("}\n");
+
+        return removeEmptyLines(output.toString()) + "\n";
     }
 
     /**
@@ -652,6 +354,78 @@ public class SmPLParser {
      */
     private static String removeEmptyLines(String s) {
         return String.join("\n", Arrays.stream(s.split("\n")).filter(ss -> !ss.isEmpty()).collect(Collectors.toList()));
+    }
+
+    /**
+     * Parse tokens following a dots operator, collecting all constraints and producing the relevant DSL code.
+     *
+     * @param tokens Token stream
+     * @param pos Position of dots operator in token stream
+     * @param output Output receiver
+     * @return Position of first unconsumed token in token stream
+     */
+    private static int parseDotsConstraints(List<SmPLLexer.Token> tokens, int pos, StringBuilder output) {
+        int end = tokens.size();
+        int finalPos = pos;
+        String comma = "";
+
+        pos += 1;
+
+        while (pos < end) {
+            SmPLLexer.Token token = tokens.get(pos);
+            SmPLLexer.TokenType tpe = token.getType();
+
+            if (tpe == SmPLLexer.TokenType.Newline) {
+                pos += 1;
+            } else if (tpe == SmPLLexer.TokenType.WhenAny || tpe == SmPLLexer.TokenType.WhenExists || tpe == SmPLLexer.TokenType.WhenNotEqual) {
+
+                if (tpe == SmPLLexer.TokenType.WhenAny) {
+                    output.append(comma).append(SmPLJavaDSL.getDotsWhenAnyName()).append("()");
+                } else if (tpe == SmPLLexer.TokenType.WhenExists) {
+                    output.append(comma).append(SmPLJavaDSL.getDotsWhenExistsName()).append("()");
+                } else {
+                    output.append(comma).append(SmPLJavaDSL.getDotsWhenNotEqualName()).append("(").append(tokens.get(pos).getText().strip()).append(")");
+                }
+
+                finalPos = ++pos;
+                comma = ",";
+            } else {
+                break;
+            }
+        }
+
+        return finalPos;
+    }
+
+    /**
+     * Get the last line of a given String potentially containing newlines.
+     *
+     * @param str String input
+     * @return String of characters following the rightmost newline character in input, or full input if input contains no newline characters
+     */
+    private static String getLastLine(String str) {
+        return str.contains("\n") ? str.substring(str.lastIndexOf('\n') + 1) : str;
+    }
+
+    /**
+     * Determine if a line of patch code refers to an expression rather than a full statement, and if so produce the
+     * exact code of the expression.
+     *
+     * @param str Single line of patch code
+     * @return String of expression source code, or null if input is determined to be a non-expression.
+     */
+    private static String getExpressionMatch(String str) {
+        if (str.startsWith("-")) {
+            str = str.substring(1);
+        }
+
+        str = str.strip();
+
+        if (str.equals("") || str.equals("{") || str.equals("}") || str.startsWith("if") || str.endsWith("{") || str.endsWith(";")) {
+            return null;
+        }
+
+        return str;
     }
 
     /**
