@@ -224,8 +224,7 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
 			if (f.getPosition() == null || f.getPosition() instanceof NoSourcePosition) {
 				continue;
 			}
-			if (f.getPosition().getSourceStart() == this.getPosition().getSourceStart()
-					&& f.getPosition().getSourceEnd() == this.getPosition().getSourceEnd()) {
+			if (f.getPosition().getSourceStart() == this.getPosition().getSourceStart()) {
 				return true;
 			}
 		}

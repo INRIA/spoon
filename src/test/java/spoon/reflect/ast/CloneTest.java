@@ -20,9 +20,11 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
 import spoon.refactoring.Refactoring;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -236,5 +238,31 @@ public class CloneTest {
 				fail();
 			}
 		}
+	}
+
+	@Test
+	public void testIssue3389() {
+		// test case for https://github.com/INRIA/spoon/issues/3389
+		Launcher launcher = new Launcher();
+		launcher.addInputResource( "./src/test/resources/JavaCode.java" );
+		launcher.buildModel();
+		CtModel model = launcher.getModel();
+
+		CtType<?> c = launcher.getFactory().Type().get("HelloWorld");
+
+		// sanity check: the field is at the end as in the source
+		assertEquals(c.getFields().get(0), c.getTypeMembers().get(2));
+
+		List<CtField<?>> fields = c.getFields();
+		for(CtField<?> field : fields) {
+			c.removeField(field);
+			c.addFieldAtTop(field);
+		}
+
+		// sanity check: the field is now at the top after the implicit constructor
+		assertEquals(c.getFields().get(0), c.getTypeMembers().get(0));
+
+		// contract: clone preserves the order
+		assertEquals(c.getFields().get(0), c.clone().getTypeMembers().get(0));
 	}
 }

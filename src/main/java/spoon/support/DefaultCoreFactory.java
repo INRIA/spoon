@@ -786,9 +786,14 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	}
 
 	@Override
-	public BodyHolderSourcePosition createBodyHolderSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int bodyStart, int bodyEnd, int[] lineSeparatorPositions) {
+	public BodyHolderSourcePosition createBodyHolderSourcePosition(
+			CompilationUnit compilationUnit,
+			int nameStart, int nameEnd,
+			int modifierStart, int modifierEnd,
+			int declarationStart, int declarationEnd,
+			int bodyStart, int bodyEnd, int[] lineSeparatorPositions) {
 		return new BodyHolderSourcePositionImpl(compilationUnit,
-				startSource, end,
+				nameStart, nameEnd,
 				modifierStart, modifierEnd,
 				declarationStart, declarationEnd,
 				bodyStart, bodyEnd,
@@ -1133,4 +1138,3 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		return e;
 	}
 }
-

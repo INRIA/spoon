@@ -12,7 +12,7 @@ import java.util.List;
  */
 public
 @Deprecated
-abstract class /* even this comment stays here together with all SPACES and EOLs*/ ToBeChanged<T, K> /*before extends*/ 
+abstract class /* even this comment stays here together with all SPACES and EOLs*/ ToBeChanged<T, K> /*before extends*/
 	extends ArrayList<T /* let's confuse > it */ > implements List<T>,
 	Cloneable
 {
@@ -29,7 +29,7 @@ abstract class /* even this comment stays here together with all SPACES and EOLs
 	
 	public <T, K> void andSomeOtherMethod(
 			int param1,
-			String param2         , List<?>[][] ... twoDArrayOfLists)
+			String param2         , List<?>[][]... twoDArrayOfLists)
 	{/**/
 		System.out.println("aaa"
 				+ "xyz");

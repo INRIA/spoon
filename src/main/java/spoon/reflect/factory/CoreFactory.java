@@ -423,7 +423,7 @@ public interface CoreFactory {
 	 */
 	BodyHolderSourcePosition createBodyHolderSourcePosition(
 			CompilationUnit compilationUnit,
-			int startSource, int end,
+			int nameSource, int nameEnd,
 			int modifierStart, int modifierEnd,
 			int declarationStart, int declarationEnd,
 			int bodyStart, int bodyEnd, int[] lineSeparatorPositions);
