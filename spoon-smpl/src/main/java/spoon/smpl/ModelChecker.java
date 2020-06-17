@@ -370,6 +370,14 @@ public class ModelChecker implements FormulaVisitor {
      */
     @Override
     public void visit(And element) {
+        boolean isPredicateOperationPair = element.getLhs() instanceof Predicate
+                                           && element.getRhs() instanceof ExistsVar
+                                           && ((ExistsVar) element.getRhs()).getVarName().equals("_v");
+
+        if (isPredicateOperationPair) {
+            recordMatchedElements = true;
+        }
+
         element.getLhs().accept(this);
         element.getRhs().accept(this);
 
@@ -377,6 +385,24 @@ public class ModelChecker implements FormulaVisitor {
         ResultSet leftResult = resultStack.pop();
 
         resultStack.push(ResultSet.intersect(leftResult, rightResult));
+
+        if (isPredicateOperationPair) {
+            ResultSet results = resultStack.pop();
+
+            ResultSet finalResult = new ResultSet();
+
+            for (Result result : results) {
+                if (isMatchedElementOperationWitnessPair(result.witnesses)) {
+                    finalResult.add(new Result(result.state,
+                                               result.environment,
+                                               newWitnessForest(chainMatchedElementOperationWitnessPair(result.getWitnesses()))));
+                } else {
+                    finalResult.add(result);
+                }
+            }
+
+            resultStack.push(finalResult);
+        }
     }
 
     /**
@@ -421,21 +447,27 @@ public class ModelChecker implements FormulaVisitor {
                 if (label.matches(element)) {
                     Map<String, Object> bindings = label.getMetavariableBindings();
 
-                    if (bindings == null) {
-                        resultSet.add(new Result(s, new Environment(), emptyWitnessForest()));
-                    } else {
-                        Environment environment = new Environment();
+                    Environment environment = new Environment();
+
+                    if (bindings != null) {
                         environment.putAll(bindings);
+                    }
+
+                    if (recordMatchedElements && element.hasMatchedElement()) {
+                        resultSet.add(new Result(s, environment, newWitnessForest(new Witness(s, "_e", element.getMatchedElement(), emptyWitnessForest()))));
+                    } else {
                         resultSet.add(new Result(s, environment, emptyWitnessForest()));
                     }
 
                     label.reset();
+
                     break;
                 }
             }
         }
 
         resultStack.push(resultSet);
+        recordMatchedElements = false;
     }
 
     /**
@@ -821,6 +853,48 @@ public class ModelChecker implements FormulaVisitor {
     }
 
     /**
+     * Replace a specifically structured pair (two branches) of witnesses (one "matched-element" witness and one
+     * "transformation" witness) with a single witness branch nesting one of the two witnesses inside the other.
+     *
+     * @param witnesses Matched-element - transformation witness pair
+     * @return Single witness branch nesting the transformation witness inside the matched-element witness
+     */
+    private Witness chainMatchedElementOperationWitnessPair(Set<Witness> witnesses) {
+        List<Witness> witnessList = new ArrayList<>(witnesses);
+
+        Witness w1 = witnessList.get(0);
+        Witness w2 = witnessList.get(1);
+
+        if (w1.metavar.equals("_e")) {
+            return new Witness(w1.state, "_e", w1.binding, newWitnessForest(w2));
+        } else {
+            return new Witness(w2.state, "_e", w2.binding, newWitnessForest(w1));
+        }
+    }
+
+    /**
+     * Check if a given witness set is a pair (two branches) of one "matched-element" witness and one "transformation"
+     * witness.
+     *
+     * @param witnesses Witness set to inspect
+     * @return True if witness set is a pair of one "matched-element" witness and one "transformation" witness, false otherwise
+     */
+    private boolean isMatchedElementOperationWitnessPair(Set<Witness> witnesses) {
+        if (witnesses.size() != 2) {
+            return false;
+        }
+
+        List<Witness> witnessList = new ArrayList<>(witnesses);
+
+        Witness w1 = witnessList.get(0);
+        Witness w2 = witnessList.get(1);
+
+        return w1.state == w2.state
+               && ((witnessList.get(0).metavar.equals("_e") && witnessList.get(1).metavar.equals("_v"))
+                   || (witnessList.get(0).metavar.equals("_v") && witnessList.get(1).metavar.equals("_e")));
+    }
+
+    /**
      * The Model to check formulas on.
      */
     private Model model;
@@ -829,4 +903,9 @@ public class ModelChecker implements FormulaVisitor {
      * The stack of results.
      */
     private Stack<ResultSet> resultStack;
+
+    /**
+     * Flag specifying whether "matched-element" witnesses should be created and recorded.
+     */
+    private boolean recordMatchedElements;
 }

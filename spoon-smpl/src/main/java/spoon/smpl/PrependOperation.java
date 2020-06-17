@@ -19,7 +19,9 @@ public class PrependOperation implements Operation {
 
     /**
      * Prepend the contained element to a given target element (by means of insertBefore).
-     * @param targetElement Target element to append to
+     *
+     * @param category Operation is applied when category is APPEND
+     * @param targetElement AST element targeted by operation
      * @param bindings Metavariable bindings to use
      */
     @Override

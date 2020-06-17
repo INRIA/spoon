@@ -64,7 +64,7 @@ public class InsertIntoBlockOperation implements Operation {
     /**
      * Insert the contained statement to the appropriate block of a given target element.
      * @param category Operation is only applied in appropriate categories
-     * @param targetElement Target element to append to
+     * @param targetElement AST element targeted by operation
      * @param bindings Metavariable bindings to use
      */
     @Override

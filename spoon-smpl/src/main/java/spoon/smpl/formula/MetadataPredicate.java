@@ -1,5 +1,7 @@
 package spoon.smpl.formula;
 
+import spoon.reflect.declaration.CtElement;
+
 import java.util.Map;
 
 /**
@@ -62,6 +64,34 @@ public class MetadataPredicate implements Predicate {
     @Override
     public boolean processMetavariableBindings(Map<String, Object> parameters) {
         return true;
+    }
+
+    /**
+     * Metadata Predicates cannot match specific elements.
+     *
+     * @param element Irrelevant
+     */
+    @Override
+    public void setMatchedElement(CtElement element) { }
+
+    /**
+     * Metadata Predicates cannot match specific elements.
+     *
+     * @return false
+     */
+    @Override
+    public boolean hasMatchedElement() {
+        return false;
+    }
+
+    /**
+     * Metadata Predicates cannot match specific elements.
+     *
+     * @return null
+     */
+    @Override
+    public CtElement getMatchedElement() {
+        return null;
     }
 
     /**

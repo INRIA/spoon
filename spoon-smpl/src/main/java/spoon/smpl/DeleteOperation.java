@@ -14,8 +14,9 @@ import java.util.Map;
 public class DeleteOperation implements Operation {
     /**
      * Delete the target element from its surrounding AST context.
+     *
      * @param category Operation is applied when category is DELETE
-     * @param targetElement Element to delete
+     * @param targetElement AST element targeted by operation
      * @param bindings Irrelevant
      */
     @Override

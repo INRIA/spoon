@@ -24,18 +24,18 @@ public class StatementLabel extends CodeElementLabel {
 
     /**
      * Test whether the label matches the given predicate.
-     * @param obj Predicate to test
+     * @param predicate Predicate to test
      * @return True if the predicate is a Statement element whose Pattern matches the code, false otherwise.
      */
-    public boolean matches(Predicate obj) {
-        if (obj instanceof Statement) {
-            Statement sp = (Statement) obj;
+    public boolean matches(Predicate predicate) {
+        if (predicate instanceof Statement) {
+            Statement sp = (Statement) predicate;
             PatternMatcher matcher = new DotsExtPatternMatcher(sp.getPattern());
             codePattern.accept(matcher);
             metavarBindings = matcher.getParameters();
             return matcher.getResult() && sp.processMetavariableBindings(metavarBindings);
         } else {
-            return super.matches(obj);
+            return super.matches(predicate);
         }
     }
 }

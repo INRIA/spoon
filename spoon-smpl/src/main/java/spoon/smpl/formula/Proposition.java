@@ -1,5 +1,7 @@
 package spoon.smpl.formula;
 
+import spoon.reflect.declaration.CtElement;
+
 import java.util.Map;
 
 /**
@@ -44,6 +46,36 @@ public class Proposition implements Predicate {
     @Override
     public boolean processMetavariableBindings(Map<String, Object> parameters) {
         return true;
+    }
+
+    /**
+     * Propositions cannot match specific elements.
+     *
+     * @param element Irrelevant
+     */
+    @Override
+    public void setMatchedElement(CtElement element) {
+
+    }
+
+    /**
+     * Propositions cannot match specific elements.
+     *
+     * @return false
+     */
+    @Override
+    public boolean hasMatchedElement() {
+        return false;
+    }
+
+    /**
+     * Propositions cannot match specific elements.
+     *
+     * @return null
+     */
+    @Override
+    public CtElement getMatchedElement() {
+        return null;
     }
 
     /**

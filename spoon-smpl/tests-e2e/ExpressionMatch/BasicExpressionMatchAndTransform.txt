@@ -1,0 +1,53 @@
+[name]
+BasicExpressionMatchAndTransform
+
+[contract]
+correct application of patch specifying transformation on sub-element expression part of statement
+
+[patch]
+@@ @@
+- b()
++ c()
+
+
+[input]
+class A {
+    /* skip */ void a(int x) { }
+    /* skip */ int b() { return 0; }
+    void m1() {
+        a(b());
+    }
+
+    void m2() {
+        System.out.println(b());
+    }
+
+    int m3() {
+        return b();
+    }
+}
+
+
+[expected]
+class A {
+    /* skip */
+    void a(int x) {
+    }
+
+    /* skip */
+    int b() {
+        return 0;
+    }
+
+    void m1() {
+        a(c());
+    }
+
+    void m2() {
+        System.out.println(c());
+    }
+
+    int m3() {
+        return c();
+    }
+}

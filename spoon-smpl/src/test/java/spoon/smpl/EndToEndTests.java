@@ -1286,6 +1286,49 @@ public class EndToEndTests {
         runSingleTest(smpl, inputCode, expectedCode);
     }
     @Test
+    public void testBasicExpressionMatchAndTransform() {
+        // contract: correct application of patch specifying transformation on sub-element expression part of statement
+
+        String inputCode = "class A {\n" +
+                           "    /* skip */ void a(int x) { }\n" +
+                           "    /* skip */ int b() { return 0; }\n" +
+                           "    void m1() {\n" +
+                           "        a(b());\n" +
+                           "    }\n" +
+                           "    void m2() {\n" +
+                           "        System.out.println(b());\n" +
+                           "    }\n" +
+                           "    int m3() {\n" +
+                           "        return b();\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    /* skip */\n" +
+                              "    void a(int x) {\n" +
+                              "    }\n" +
+                              "    /* skip */\n" +
+                              "    int b() {\n" +
+                              "        return 0;\n" +
+                              "    }\n" +
+                              "    void m1() {\n" +
+                              "        a(c());\n" +
+                              "    }\n" +
+                              "    void m2() {\n" +
+                              "        System.out.println(c());\n" +
+                              "    }\n" +
+                              "    int m3() {\n" +
+                              "        return c();\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- b()\n" +
+                      "+ c()\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
     public void testFieldReads() {
         // contract: correct matching of field reads
 

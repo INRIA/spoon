@@ -96,12 +96,16 @@ public class Transformer {
 
             CtElement targetElement;
 
-            if (kind == BranchKind.STATEMENT) {
-                targetElement = node.getStatement();
-            } else if (kind == BranchKind.BRANCH || kind == BranchKind.BLOCK_BEGIN) {
-                targetElement = ((SmPLMethodCFG.NodeTag) node.getTag()).getAnchor();
+            if (bindings.containsKey("_e")) {
+                targetElement = (CtElement) bindings.get("_e");
             } else {
-                throw new IllegalArgumentException("unexpected node kind " + kind);
+                if (kind == BranchKind.STATEMENT) {
+                    targetElement = node.getStatement();
+                } else if (kind == BranchKind.BRANCH || kind == BranchKind.BLOCK_BEGIN) {
+                    targetElement = ((SmPLMethodCFG.NodeTag) node.getTag()).getAnchor();
+                } else {
+                    throw new IllegalArgumentException("unexpected node kind " + kind);
+                }
             }
 
             // Process any prepend operations in the list

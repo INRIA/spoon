@@ -1,10 +1,12 @@
 package spoon.smpl;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.smpl.formula.Expression;
 import spoon.smpl.formula.Predicate;
 import spoon.smpl.formula.VariableUsePredicate;
 import spoon.smpl.pattern.PatternBuilder;
 import spoon.smpl.pattern.PatternNode;
+import spoon.smpl.pattern.SubElemPatternMatcher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,12 +36,27 @@ abstract public class CodeElementLabel implements Label {
     /**
      * Test whether the label matches the given predicate.
      *
-     * @param obj Predicate to test
+     * @param predicate Predicate to test
      * @return True if the predicate matches the label, false otherwise
      */
-    public boolean matches(Predicate obj) {
-        if (obj instanceof VariableUsePredicate) {
-            VariableUsePredicate vup = (VariableUsePredicate) obj;
+    public boolean matches(Predicate predicate) {
+        if (predicate instanceof Expression) {
+            Expression ep = (Expression) predicate;
+
+            SubElemPatternMatcher spm = new SubElemPatternMatcher(ep.getPattern());
+
+            if (spm.matches(codePattern)) {
+                metavarBindings = spm.getParameters();
+
+                if (ep.processMetavariableBindings(metavarBindings)) {
+                    predicate.setMatchedElement(spm.getMatchedElement());
+                    return true;
+                }
+            }
+
+            return false;
+        } else if (predicate instanceof VariableUsePredicate) {
+            VariableUsePredicate vup = (VariableUsePredicate) predicate;
             List<String> metakeys = new ArrayList<>(vup.getMetavariables().keySet());
             Map<String, CtElement> variablesUsed = new VariableUseScanner(codeElement, metakeys).getResult();
 

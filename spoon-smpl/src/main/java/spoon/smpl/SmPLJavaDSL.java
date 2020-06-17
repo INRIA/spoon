@@ -173,22 +173,50 @@ public class SmPLJavaDSL {
         return dotsWithOptionalMatchName;
     }
 
+    /**
+     * Name for element indicating the beginning of an SmPL pattern disjunction.
+     */
     private static String beginDisjunctionName = "__SmPLBeginDisjunction__";
 
+    /**
+     * Get name for element indicating the beginning of an SmPL pattern disjunction.
+     *
+     * @return Name for element indicating the beginning of an SmPL pattern disjunction
+     */
     public static String getBeginDisjunctionName() {
         return beginDisjunctionName;
     }
 
+    /**
+     * Name for element indicating a continuation (clause-separator) of an SmPL pattern disjunction.
+     */
     private static String continueDisjunctionName = "__SmPLContinueDisjunction__";
 
+    /**
+     * Get name for element indicating a continuation (clause-separator) of an SmPL pattern disjunction.
+     *
+     * @return Name for element indicating a continuation (clause-separator) of an SmPL pattern disjunction
+     */
     public static String getContinueDisjunctionName() {
         return continueDisjunctionName;
     }
 
+    /**
+     * Check if a given element represents the beginning of an SmPL pattern disjunction.
+     *
+     * @param element Element to check
+     * @return True if element represents the beginning of an SmPL pattern disjunction, false otherwise
+     */
     public static boolean isBeginDisjunction(CtElement element) {
         return isIfStatementWithNamedConditionVariable(element, beginDisjunctionName);
     }
 
+    /**
+     * Check if a given element represents a continuation (clause-separator) of an SmPL pattern disjunction.
+     *
+     * @param element Element to check
+     * @return True if element represents a continuation (clause-separator) of an SmPL pattern disjunction, false otherwise
+     */
     public static boolean isContinueDisjunction(CtElement element) {
         return isIfStatementWithNamedConditionVariable(element, continueDisjunctionName);
     }
@@ -202,6 +230,45 @@ public class SmPLJavaDSL {
     public static boolean isDotsWithOptionalMatch(CtElement element) {
         return (element instanceof CtIf
                 && isExecutableWithName(((CtIf) element).getCondition(), dotsWithOptionalMatchName));
+    }
+
+    /**
+     * Name for a wrapper element marking its descendant as a match on an expression rather than a full statement.
+     */
+    private static String expressionMatchWrapperName = "__SmPLExpressionMatch__";
+
+    /**
+     * Get name for a wrapper element marking its descendant as a match on an expression rather than a full statement.
+     *
+     * @return Name for a wrapper element marking its descendant as a match on an expression rather than a full statement
+     */
+    public static String getExpressionMatchWrapperName() {
+        return expressionMatchWrapperName;
+    }
+
+    /**
+     * Check if a given element is a wrapper element marking its descendant as a match on an expression rather than a
+     * full statement.
+     *
+     * @param element Element to check
+     * @return True if element is a wrapper element marking its descendant as a match on an expression, false otherwise
+     */
+    public static boolean isExpressionMatchWrapper(CtElement element) {
+        return isExecutableWithName(element, expressionMatchWrapperName);
+    }
+
+    /**
+     * Get the wrapped descendant of a wrapper element.
+     *
+     * @param wrapper Wrapper element
+     * @return Wrapped descendant element
+     */
+    public static CtElement getWrappedElement(CtElement wrapper) {
+        if (wrapper instanceof CtInvocation) {
+            return ((CtInvocation<?>) wrapper).getArguments().get(0);
+        } else {
+            throw new IllegalArgumentException("invalid wrapper element");
+        }
     }
 
     /**
@@ -368,6 +435,14 @@ public class SmPLJavaDSL {
                && ((CtInvocation<?>) e).getExecutable().getSimpleName().equals(name);
     }
 
+    /**
+     * Check if a given AST element is an If statement with condition expression a single VariableRead of a variable
+     * of a certain name.
+     *
+     * @param element Element to check
+     * @param name Variable name to match
+     * @return True if the given element is an If statement with condition variable of given name, false otherwise
+     */
     private static boolean isIfStatementWithNamedConditionVariable(CtElement element, String name) {
         return element instanceof CtIf
                && ((CtIf) element).getCondition() instanceof CtVariableRead

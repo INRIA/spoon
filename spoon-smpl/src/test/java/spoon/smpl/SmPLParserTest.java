@@ -148,7 +148,7 @@ public class SmPLParserTest {
                                               SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
                                               implicitDotsBegin + "\n" +
                                               "int x = 1;\n" +
-                                              SmPLJavaDSL.getDotsStatementElementName() + "(" + SmPLJavaDSL.getDotsWhenNotEqualName() + "(x));\n" +
+                                              SmPLJavaDSL.getDotsStatementElementName() + "(" + SmPLJavaDSL.getDotsWhenNotEqualName() + "(" + SmPLJavaDSL.getExpressionMatchWrapperName() + "(x)));\n" +
                                               "return x + 1;\n" +
                                               implicitDotsEnd + "\n" +
                                               "}\n" +
@@ -179,7 +179,7 @@ public class SmPLParserTest {
                                               SmPLJavaDSL.createUnspecifiedMethodHeaderString() + " {\n" +
                                               implicitDotsBegin + "\n" +
                                               "T ret = C;\n" +
-                                              SmPLJavaDSL.getDotsStatementElementName() + "(" + SmPLJavaDSL.getDotsWhenNotEqualName() + "(ret));\n" +
+                                              SmPLJavaDSL.getDotsStatementElementName() + "(" + SmPLJavaDSL.getDotsWhenNotEqualName() + "(" + SmPLJavaDSL.getExpressionMatchWrapperName() + "(ret)));\n" +
                                               "return ret;\n" +
                                               implicitDotsEnd + "\n" +
                                               "}\n" +

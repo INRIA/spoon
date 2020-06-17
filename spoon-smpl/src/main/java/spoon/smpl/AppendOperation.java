@@ -20,7 +20,7 @@ public class AppendOperation implements Operation {
     /**
      * Append the contained element to a given target element (by means of insertAfter).
      * @param category Operation is applied when category is APPEND
-     * @param targetElement Target element to append to
+     * @param targetElement AST element targeted by operation
      * @param bindings Metavariable bindings to use
      */
     @Override

@@ -20,9 +20,9 @@ public interface Operation extends TriConsumer<OperationFilter, CtElement, Map<S
      * with the OperationFilter.APPEND category value.
      *
      * @param category Category to match
-     * @param element Element to operate on
+     * @param targetElement AST element targeted by operation
      * @param bindings Metavariable bindings to use
      */
     @Override
-    public void accept(OperationFilter category, CtElement element, Map<String, Object> bindings);
+    public void accept(OperationFilter category, CtElement targetElement, Map<String, Object> bindings);
 }

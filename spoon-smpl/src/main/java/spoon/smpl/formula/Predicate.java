@@ -1,5 +1,7 @@
 package spoon.smpl.formula;
 
+import spoon.reflect.declaration.CtElement;
+
 import java.util.Map;
 
 /**
@@ -23,4 +25,27 @@ public interface Predicate extends Formula {
      * @return True if bindings could be validated (potentially by modification), false otherwise
      */
     public boolean processMetavariableBindings(Map<String, Object> parameters);
+
+    /**
+     * Set the specific (sub-)element that matched the Predicate.
+     *
+     * @param element Element that matched the Predicate
+     */
+    public void setMatchedElement(CtElement element);
+
+    /**
+     * Check if the Predicate should be seen as having bound a specific matching (sub-)element rather than having
+     * matched a full CFG statement node.
+     *
+     * @return True if the Predicate has bound a specific matching (sub-)element, false otherwise
+     */
+    public boolean hasMatchedElement();
+
+    /**
+     * Get the specific (sub-)element that matched the Predicate, if any.
+     *
+     * @return The specific (sub-)element that matched the Predicate, or null if the Predicate matched a full CFG
+     *         statement node
+     */
+    public CtElement getMatchedElement();
 }

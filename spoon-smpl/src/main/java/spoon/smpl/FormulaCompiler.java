@@ -231,9 +231,16 @@ public class FormulaCompiler {
             return compileStatementLevelDotsFormula(node, cutoffNodes);
         } else {
             CtElement statement = node.getStatement();
-            int line = statement.getPosition().getLine();
+            Formula formula;
 
-            Formula formula = new Statement(statement, metavars);
+            if (SmPLJavaDSL.isExpressionMatchWrapper(statement)) {
+                statement = SmPLJavaDSL.getWrappedElement(statement);
+                formula = new Expression(statement, metavars);
+            } else {
+                formula = new Statement(statement, metavars);
+            }
+
+            int line = statement.getPosition().getLine();
 
             ArrayList<Operation> ops = new ArrayList<>();
 
@@ -246,7 +253,7 @@ public class FormulaCompiler {
             }
 
             if (ops.size() > 0) {
-                formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", ops)));
+                formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", replaceDeleteXpendOperationPair(ops))));
             }
 
             // Mark first occurences of metavars as quantified before compiling inner formula
@@ -596,7 +603,11 @@ public class FormulaCompiler {
 
             while (it.hasNext()) {
                 CtElement neqElement = it.next();
-                
+
+                if (SmPLJavaDSL.isExpressionMatchWrapper(neqElement)) {
+                    neqElement = SmPLJavaDSL.getWrappedElement(neqElement);
+                }
+
                 if (neqElement instanceof CtVariableRead) {
                     guard = combine(guard, new VariableUsePredicate(((CtVariableRead<?>) neqElement).getVariable().getSimpleName(), metavars), Or.class);
                 } else {
@@ -748,6 +759,34 @@ public class FormulaCompiler {
         return SmPLJavaDSL.isBeginDisjunction(element)
                || SmPLJavaDSL.isContinueDisjunction(element)
                || SmPLJavaDSL.isDotsWithOptionalMatch(element);
+    }
+
+    // TODO: move this responsibility to SmPLParser
+    /**
+     * Replace Delete-Append or Delete-Prepend Operation pairs with ReplaceOperations.
+     *
+     * @param ops List of Operations to process
+     * @return Singleton list containing a ReplaceOperation if input was an appropriate pair, unmodified input list otherwise.
+     */
+    private List<Operation> replaceDeleteXpendOperationPair(List<Operation> ops) {
+        if (ops.size() != 2) {
+            return ops;
+        }
+
+        Operation op1 = ops.get(0);
+        Operation op2 = ops.get(1);
+
+        if (op1 instanceof DeleteOperation && op2 instanceof PrependOperation) {
+            return Collections.singletonList(new ReplaceOperation(((PrependOperation) op2).elementToPrepend));
+        } else if (op1 instanceof DeleteOperation && op2 instanceof AppendOperation) {
+            return Collections.singletonList(new ReplaceOperation(((AppendOperation) op2).elementToAppend));
+        } else if (op2 instanceof DeleteOperation && op1 instanceof PrependOperation) {
+            return Collections.singletonList(new ReplaceOperation(((PrependOperation) op1).elementToPrepend));
+        } else if (op2 instanceof DeleteOperation && op1 instanceof AppendOperation) {
+            return Collections.singletonList(new ReplaceOperation(((AppendOperation) op1).elementToAppend));
+        } else {
+            return ops;
+        }
     }
 
     /**

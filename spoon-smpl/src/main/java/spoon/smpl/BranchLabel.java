@@ -35,12 +35,12 @@ public class BranchLabel extends CodeElementLabel {
 
     /**
      * Test whether the label matches the given predicate.
-     * @param obj Predicate to test
+     * @param predicate Predicate to test
      * @return True if the predicate is a Branch element whose Pattern matches the code exactly once, false otherwise.
      */
-    public boolean matches(Predicate obj) {
-        if (obj instanceof Branch) {
-            Branch bp = (Branch) obj;
+    public boolean matches(Predicate predicate) {
+        if (predicate instanceof Branch) {
+            Branch bp = (Branch) predicate;
 
             if (!bp.getBranchType().isInstance(codeElement.getParent())) {
                 return false;
@@ -51,7 +51,7 @@ public class BranchLabel extends CodeElementLabel {
             metavarBindings = matcher.getParameters();
             return matcher.getResult() && bp.processMetavariableBindings(metavarBindings);
         } else {
-            return super.matches(obj);
+            return super.matches(predicate);
         }
     }
 

@@ -4,6 +4,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.formula.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A MethodHeaderLabel is used to associate a state of a CTL model with an inner MethodHeaderModel that
@@ -94,6 +95,16 @@ public class MethodHeaderLabel implements Label {
     }
 
     /**
+     * Remove matched-element witnesses from a given witness set.
+     *
+     * @param witnesses Witness set to process
+     * @return Input set with matched-element witnesses excluded.
+     */
+    private static Set<ModelChecker.Witness> withoutMatchedElements(Set<ModelChecker.Witness> witnesses) {
+        return witnesses.stream().filter(x -> !x.metavar.equals("_e")).collect(Collectors.toSet());
+    }
+
+    /**
      * Verify that the given result set contains a single branch of witnesses and collect all the
      * bindings on the path of that branch, storing each binding in the given map.
      *
@@ -106,11 +117,13 @@ public class MethodHeaderLabel implements Label {
             return false;
         }
 
-        switch (result.getAllWitnesses().size()) {
+        Set<ModelChecker.Witness> witnesses = withoutMatchedElements(result.getAllWitnesses());
+
+        switch (witnesses.size()) {
             case 0:
                 return true;
             case 1:
-                return verifyResultAndCollectMetavars(result.getAllWitnesses().iterator().next(), bindings);
+                return verifyResultAndCollectMetavars(witnesses.iterator().next(), bindings);
             default:
                 return false;
         }
@@ -127,10 +140,12 @@ public class MethodHeaderLabel implements Label {
     private static boolean verifyResultAndCollectMetavars(ModelChecker.Witness witness, Map<String, Object> bindings) {
         bindings.put(witness.metavar, witness.binding);
 
-        if (witness.witnesses.size() == 0) {
+        Set<ModelChecker.Witness> witnesses = withoutMatchedElements(witness.witnesses);
+
+        if (witnesses.size() == 0) {
             return true;
-        } else if (witness.witnesses.size() == 1) {
-            return verifyResultAndCollectMetavars(witness.witnesses.iterator().next(), bindings);
+        } else if (witnesses.size() == 1) {
+            return verifyResultAndCollectMetavars(witnesses.iterator().next(), bindings);
         } else {
             return false;
         }

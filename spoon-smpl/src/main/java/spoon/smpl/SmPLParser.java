@@ -240,6 +240,21 @@ public class SmPLParser {
 
             switch (token.getType()) {
                 case Newline:
+                    if (!isAddition) {
+                        String lastLine = getLastLine(bodyOutput.toString());
+                        String exprMatch = getExpressionMatch(lastLine);
+
+                        if (exprMatch != null) {
+                            bodyOutput.delete(bodyOutput.length() - lastLine.length(), bodyOutput.length());
+
+                            if (isDeletion) {
+                                bodyOutput.append("- ");
+                            }
+
+                            bodyOutput.append(SmPLJavaDSL.getExpressionMatchWrapperName()).append("(").append(exprMatch).append(");");
+                        }
+                    }
+
                     isAddition = false;
                     dotsWouldBeStatement = true;
                     isMethodHeader = false;
@@ -384,7 +399,16 @@ public class SmPLParser {
                 } else if (tpe == SmPLLexer.TokenType.WhenExists) {
                     output.append(comma).append(SmPLJavaDSL.getDotsWhenExistsName()).append("()");
                 } else {
-                    output.append(comma).append(SmPLJavaDSL.getDotsWhenNotEqualName()).append("(").append(tokens.get(pos).getText().strip()).append(")");
+                    String exprMatch = getExpressionMatch(tokens.get(pos).getText().strip());
+
+                    if (exprMatch != null) {
+                        output.append(comma).append(SmPLJavaDSL.getDotsWhenNotEqualName()).append("(")
+                              .append(SmPLJavaDSL.getExpressionMatchWrapperName()).append("(")
+                              .append(tokens.get(pos).getText().strip()).append(")")
+                              .append(")");
+                    } else {
+                        output.append(comma).append(SmPLJavaDSL.getDotsWhenNotEqualName()).append("(").append(tokens.get(pos).getText().strip()).append(")");
+                    }
                 }
 
                 finalPos = ++pos;
