@@ -127,7 +127,12 @@ public class JDTTreeBuilderHelper {
 			//do not set type of variable yet. It will be initialized later by visit of multiple types. Each call then ADDs one type
 			return result;
 		} else {
-			CtTypeReference ctTypeReference = jdtTreeBuilder.getReferencesBuilder().<Throwable>getTypeReference(typeReference.resolvedType);
+			CtTypeReference ctTypeReference;
+			if (typeReference.resolvedType instanceof ProblemReferenceBinding) {
+				ctTypeReference = jdtTreeBuilder.getReferencesBuilder().buildTypeReference(typeReference, null);
+			} else {
+				ctTypeReference = jdtTreeBuilder.getReferencesBuilder().<Throwable>getTypeReference(typeReference.resolvedType);
+			}
 			return result.<CtCatchVariable>setType(ctTypeReference);
 		}
 	}

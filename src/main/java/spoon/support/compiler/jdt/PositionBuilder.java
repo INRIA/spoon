@@ -165,6 +165,7 @@ public class PositionBuilder {
 			int modifiersSourceStart = variableDeclaration.modifiersSourceStart;
 			int declarationSourceStart = variableDeclaration.declarationSourceStart;
 			int declarationSourceEnd = variableDeclaration.declarationSourceEnd;
+
 			if (declarationSourceStart == 0 && declarationSourceEnd == 0) {
 				return SourcePosition.NOPOSITION;
 			}
@@ -252,11 +253,26 @@ public class PositionBuilder {
 				setModifiersPosition((CtModifiable) e, modifiersSourceStart, modifiersSourceEnd);
 			}
 
-			return cf.createDeclarationSourcePosition(cu,
+			if (variableDeclaration instanceof FieldDeclaration
+			&& !(variableDeclaration instanceof Initializer)) /* in JDT Initializer is a subclass of FieldDeclaration WTF!*/ {
+				// in JDT, for fields
+				// variableDeclaration.declarationEnd is the ";"
+				// while variableDeclaration.declarationSourceEnd contains the line comment afterwards, we don't want the comment
+				declarationSourceEnd = 	variableDeclaration.declarationEnd;
+			}
+
+
+			DeclarationSourcePosition declarationSourcePosition = cf.createDeclarationSourcePosition(cu,
 					sourceStart, sourceEnd,
 					modifiersSourceStart, modifiersSourceEnd,
 					declarationSourceStart, declarationSourceEnd,
 					lineSeparatorPositions);
+
+			if (variableDeclaration instanceof FieldDeclaration) {
+				// endPart2Position is after the initialization code
+				declarationSourcePosition = declarationSourcePosition.addDefaultValueEnd(((FieldDeclaration) variableDeclaration).endPart2Position);
+			}
+			return declarationSourcePosition;
 		} else if (node instanceof TypeDeclaration && e instanceof CtPackage) {
 			// the position returned by JTD is equals to 0
 			return cf.createSourcePosition(cu, 0, contents.length - 1, lineSeparatorPositions);

@@ -110,6 +110,8 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 
 	@Override
 	public void calculate(CtCompilationUnit compilationUnit, List<CtType<?>> types) {
+		sourceCompilationUnit = compilationUnit;
+
 		//use line separator of origin source file
 		setLineSeparator(detectLineSeparator(compilationUnit.getOriginalSourceCode()));
 		runInContext(new SourceFragmentContextList(mutableTokenWriter,

@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -36,6 +37,7 @@ import spoon.refactoring.Refactoring;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
@@ -135,6 +137,13 @@ public class RefactoringTest {
 		launcher.run();
 		final CtClass<?> aClassX = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.refactoring.testclasses.AClassX");
 
+		// contract: the new compilation unit has been written
+		assertTrue(new File("target/spooned/refactoring/spoon/test/refactoring/testclasses/AClassX.java").exists());
+
+		// contract: the source position has been set correctly
+		assertEquals("AClassX.java", aClassX.getPosition().getFile().getName());
+
+		// contract: instanceof parameter have been renamed
 		final CtBinaryOperator<?> instanceofInvocation = aClassX.getElements(new TypeFilter<CtBinaryOperator<?>>(CtBinaryOperator.class)).get(0);
 		assertEquals(BinaryOperatorKind.INSTANCEOF, instanceofInvocation.getKind());
 		assertEquals("o", instanceofInvocation.getLeftHandOperand().toString());
