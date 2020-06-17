@@ -952,7 +952,9 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     ): CompositeTransformResult.Single<CtReturn<*>> {
         val ctReturn = factory.Core().createReturn<Any>()
         val ctExpr = returnExpression.result.accept(this,null).single
-
+        if(returnExpression.target.labelName != null) {
+            ctReturn.setLabel<CtReturn<*>>(returnExpression.target.labelName)
+        }
         when(ctExpr) {
             is CtExpression<*> -> {
                 ctReturn.setReturnedExpression<CtReturn<Any>>(ctExpr as CtExpression<Any>)

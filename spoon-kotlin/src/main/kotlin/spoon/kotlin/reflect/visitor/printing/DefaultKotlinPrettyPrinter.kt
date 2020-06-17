@@ -633,6 +633,9 @@ class DefaultKotlinPrettyPrinter(
             ctReturn.returnedExpression.accept(this)
         } else {
             adapter write "return"
+            if(ctReturn.label != null) {
+                adapter write '@' and ctReturn.label
+            }
             if(ctReturn.returnedExpression != null) {
                 adapter write SPACE
                 ctReturn.returnedExpression.accept(this)
