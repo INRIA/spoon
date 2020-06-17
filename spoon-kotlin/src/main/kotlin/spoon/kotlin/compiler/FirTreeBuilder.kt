@@ -538,6 +538,13 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctBlock.compose()
     }
 
+    private fun CtLoop.exitLoopStatement(firLoop: FirLoop):
+            CompositeTransformResult.Single<CtLoop> {
+        if(firLoop.label != null)
+            setLabel<CtLoop>(firLoop.label!!.name)
+        return compose()
+    }
+
     override fun visitWhileLoop(whileLoop: FirWhileLoop, data: Nothing?): CompositeTransformResult<CtElement> {
         when(whileLoop.source?.psi) {
             null -> throw RuntimeException("Unknown source of while loop")
@@ -549,7 +556,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctWhile.apply {
             setLoopingExpression<CtWhile>(condition)
             setBody<CtWhile>(body)
-        }.compose()
+        }.exitLoopStatement(whileLoop)
 
     }
 
@@ -560,7 +567,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctDo.apply {
             setLoopingExpression<CtDo>(condition)
             setBody<CtDo>(body)
-        }.compose()
+        }.exitLoopStatement(doWhileLoop)
 
     }
 
@@ -576,7 +583,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         (forLoop.block.statements as MutableList<FirStatement>).removeAt(0)
         val body = forLoop.block.accept(this,null).single as CtStatement
         ctForEach.setBody<CtForEach>(body)
-        return ctForEach.compose()
+        return ctForEach.exitLoopStatement(forLoop)
     }
 
     override fun visitOperatorCall(operatorCall: FirOperatorCall, data: Nothing?): CompositeTransformResult<CtElement> {
