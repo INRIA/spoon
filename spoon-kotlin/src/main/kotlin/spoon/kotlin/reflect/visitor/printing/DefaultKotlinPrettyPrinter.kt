@@ -285,10 +285,6 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtCatchVariable(p0: CtCatchVariable<T>?) {
-        TODO("Not yet implemented")
-    }
-
     override fun <T : Enum<*>?> visitCtEnum(p0: CtEnum<T>?) {
         TODO("Not yet implemented")
     }
@@ -329,8 +325,28 @@ class DefaultKotlinPrettyPrinter(
         exitCtExpression(varRead)
     }
 
-    override fun visitCtCatch(p0: CtCatch?) {
-        TODO("Not yet implemented")
+    override fun visitCtTry(ctTry: CtTry) {
+        adapter write "try" and SPACE
+        ctTry.body.accept(this)
+        ctTry.catchers.forEach { it.accept(this) }
+        val finalizer = ctTry.finalizer
+        if(finalizer != null) {
+            adapter write " finally "
+            finalizer.accept(this)
+        }
+    }
+
+    override fun visitCtCatch(ctCatch: CtCatch) {
+        adapter write SPACE and "catch" and LEFT_ROUND
+        ctCatch.parameter.accept(this)
+        adapter write RIGHT_ROUND and SPACE
+        ctCatch.body.accept(this)
+    }
+
+    override fun <T : Any?> visitCtCatchVariable(catchVariable: CtCatchVariable<T>) {
+        adapter write catchVariable.simpleName
+        adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
+        catchVariable.type.accept(this)
     }
 
     override fun <T : Any?, S : Any?> visitCtSwitchExpression(p0: CtSwitchExpression<T, S>?) {
@@ -354,10 +370,6 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtLocalVariableReference(p0: CtLocalVariableReference<T>?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun visitCtTry(p0: CtTry?) {
         TODO("Not yet implemented")
     }
 
