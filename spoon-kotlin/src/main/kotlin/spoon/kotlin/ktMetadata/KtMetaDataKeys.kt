@@ -28,6 +28,7 @@ object KtMetadataKeys {
     const val INVOCATION_IS_SAFE = "skt_key invocation is safe : Boolean"
 
     const val INVOKE_AS_OPERATOR = "skt_key invoke as operator : Boolean"
+    const val ANONYMOUS_EXECUTABLE_IS_INITIALIZER = "skt_key anonymous executable is initializer : Boolean"
 
     const val ACCESS_IS_CHECK_NOT_NULL = "skt_key access is assert not null : Boolean"
 

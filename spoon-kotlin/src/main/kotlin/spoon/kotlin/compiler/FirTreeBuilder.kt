@@ -253,6 +253,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         val ctAnonExec = factory.Core().createAnonymousExecutable()
         val body = anonymousInitializer.body?.accept(this,null)?.single as CtStatement?
         ctAnonExec.setBody<CtAnonymousExecutable>(body)
+        ctAnonExec.putMetadata<CtAnonymousExecutable>(KtMetadataKeys.ANONYMOUS_EXECUTABLE_IS_INITIALIZER, true)
         return ctAnonExec.compose()
     }
 
