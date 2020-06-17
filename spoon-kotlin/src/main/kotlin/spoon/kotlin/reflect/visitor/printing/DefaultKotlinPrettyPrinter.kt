@@ -151,12 +151,14 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun visitCtForEach(forEach: CtForEach) {
+        enterCtStatement(forEach)
         adapter write "for" and LEFT_ROUND
         forEach.variable.accept(this)
         adapter write " in "
         forEach.expression.accept(this)
         adapter write RIGHT_ROUND
         forEach.body.accept(this)
+        exitCtStatement(forEach)
     }
 
     override fun <T : Any?> visitCtConstructorCall(constrCall: CtConstructorCall<T>?) {
@@ -423,6 +425,7 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun visitCtAnonymousExecutable(ctAnonExec: CtAnonymousExecutable) {
+        // TODO Can have label?
         adapter.ensureNEmptyLines(1)
         if(ctAnonExec.getBooleanMetadata(KtMetadataKeys.ANONYMOUS_EXECUTABLE_IS_INITIALIZER) == true)
             adapter write "init "
@@ -430,11 +433,13 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun visitCtDo(ctDo: CtDo) {
+        enterCtStatement(ctDo)
         adapter write "do "
         ctDo.body.accept(this)
         adapter write " while " and LEFT_ROUND
         ctDo.loopingExpression.accept(this)
         adapter write RIGHT_ROUND
+        exitCtStatement(ctDo)
     }
 
     override fun <T : Any?> visitCtLiteral(literal: CtLiteral<T>) {
@@ -603,6 +608,7 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <R : Any?> visitCtBlock(block: CtBlock<R>) {
+        enterCtStatement(block)
         if(block.isImplicit && block.statements.size == 1) {
             block.statements[0].accept(this)
             return
@@ -615,6 +621,7 @@ class DefaultKotlinPrettyPrinter(
 
         adapter.popIndent()
         adapter write RIGHT_CURL
+        exitCtStatement(block)
     }
 
     override fun <T : Any?> visitCtUnboundVariableReference(p0: CtUnboundVariableReference<T>?) {
@@ -642,10 +649,12 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun visitCtWhile(ctWhile: CtWhile) {
+        enterCtStatement(ctWhile)
         adapter write "while" and SPACE and LEFT_ROUND
         ctWhile.loopingExpression.accept(this)
         adapter write RIGHT_ROUND and SPACE
         ctWhile.body.accept(this)
+        exitCtStatement(ctWhile)
     }
 
     override fun visitCtWildcardReference(p0: CtWildcardReference?) {
