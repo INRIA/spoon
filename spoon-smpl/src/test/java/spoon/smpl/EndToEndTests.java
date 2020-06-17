@@ -2736,12 +2736,60 @@ public class EndToEndTests {
         runSingleTest(smpl, inputCode, expectedCode);
     }
     @Test
-    public void testUnsupportedElementsMatchSurrounding() {
+    public void testUnsupportedElementsDotsWhenExists() {
+        // contract: dots in \"when exists\" mode should be allowed to traverse over unsupported elements when there exists a path that avoids them
+
+        String inputCode = "class A {\n" +
+                           "    /* skip */ void a() {}\n" +
+                           "    /* skip */ void b() {}\n" +
+                           "    float random;\n" +
+                           "    boolean loopsNotSupported;\n" +
+                           "    \n" +
+                           "    void foo() {\n" +
+                           "        a();\n" +
+                           "        \n" +
+                           "        if (random > 0.5f) {\n" +
+                           "            while (loopsNotSupported) {\n" +
+                           "              break;\n" +
+                           "            }\n" +
+                           "        }\n" +
+                           "        \n" +
+                           "        b();\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    /* skip */ void a() {}\n" +
+                              "    /* skip */ void b() {}\n" +
+                              "    float random;\n" +
+                              "    boolean loopsNotSupported;\n" +
+                              "    \n" +
+                              "    void foo() {\n" +
+                              "        a();\n" +
+                              "        \n" +
+                              "        if (random > 0.5f) {\n" +
+                              "            while (loopsNotSupported) {\n" +
+                              "              break;\n" +
+                              "            }\n" +
+                              "        }\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@\n" +
+                      "@@\n" +
+                      "a();\n" +
+                      "... when exists\n" +
+                      "- b();\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testUnsupportedElementsMatchAfter() {
         // contract: should be able to match and transform things surrounding an unsupported element
 
         String inputCode = "class A {\n" +
-                           "    void a() {}\n" +
-                           "    void b() {}\n" +
+                           "    /* skip */ void a() {}\n" +
+                           "    /* skip */ void b() {}\n" +
                            "    boolean loopsNotSupported;\n" +
                            "    \n" +
                            "    void foo() {\n" +
@@ -2754,23 +2802,138 @@ public class EndToEndTests {
                            "}\n";
     
         String expectedCode = "class A {\n" +
-                              "    void a() {}\n" +
-                              "    void b() {}\n" +
+                              "    /* skip */ void a() {}\n" +
+                              "    /* skip */ void b() {}\n" +
+                              "    boolean loopsNotSupported;\n" +
+                              "    \n" +
+                              "    void foo() {\n" +
+                              "        a();\n" +
+                              "        while (loopsNotSupported) {\n" +
+                              "            break;\n" +
+                              "        }\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@\n" +
+                      "@@\n" +
+                      "- b();\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testUnsupportedElementsMatchBefore() {
+        // contract: should be able to match and transform things surrounding an unsupported element
+
+        String inputCode = "class A {\n" +
+                           "    /* skip */ void a() {}\n" +
+                           "    /* skip */ void b() {}\n" +
+                           "    boolean loopsNotSupported;\n" +
+                           "    \n" +
+                           "    void foo() {\n" +
+                           "        a();\n" +
+                           "        while (loopsNotSupported) {\n" +
+                           "          break;\n" +
+                           "        }\n" +
+                           "        b();\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    /* skip */ void a() {}\n" +
+                              "    /* skip */ void b() {}\n" +
                               "    boolean loopsNotSupported;\n" +
                               "    \n" +
                               "    void foo() {\n" +
                               "        while (loopsNotSupported) {\n" +
                               "            break;\n" +
-                              "        } \n" +
+                              "        }\n" +
                               "        b();\n" +
                               "    }\n" +
                               "}\n";
     
         String smpl = "@@\n" +
                       "@@\n" +
+                      "- a();\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testUnsupportedElementsMatchSurrounding() {
+        // contract: should be able to match and transform things surrounding an unsupported element
+
+        String inputCode = "class A {\n" +
+                           "    /* skip */ void a() {}\n" +
+                           "    /* skip */ void b() {}\n" +
+                           "    boolean loopsNotSupported;\n" +
+                           "    \n" +
+                           "    void foo() {\n" +
+                           "        a();\n" +
+                           "        while (loopsNotSupported) {\n" +
+                           "          break;\n" +
+                           "        }\n" +
+                           "        b();\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    /* skip */ void a() {}\n" +
+                              "    /* skip */ void b() {}\n" +
+                              "    boolean loopsNotSupported;\n" +
+                              "    \n" +
+                              "    void foo() {\n" +
+                              "        while (loopsNotSupported) {\n" +
+                              "            break;\n" +
+                              "        }\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@\n" +
+                      "@@\n" +
+                      "(\n" +
                       "- a();\n" +
+                      "|\n" +
+                      "- b();\n" +
+                      ")\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testUnsupportedElementsRejectDots() {
+        // contract: dots with post-context should not be allowed to traverse across unsupported elements
+
+        String inputCode = "class A {\n" +
+                           "    /* skip */ void a() {}\n" +
+                           "    /* skip */ void b() {}\n" +
+                           "    boolean loopsNotSupported;\n" +
+                           "    \n" +
+                           "    void foo() {\n" +
+                           "        a();\n" +
+                           "        while (loopsNotSupported) {\n" +
+                           "          break;\n" +
+                           "        }\n" +
+                           "        b();\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    /* skip */ void a() {}\n" +
+                              "    /* skip */ void b() {}\n" +
+                              "    boolean loopsNotSupported;\n" +
+                              "    \n" +
+                              "    void foo() {\n" +
+                              "        a();\n" +
+                              "        while (loopsNotSupported) {\n" +
+                              "            break;\n" +
+                              "        }\n" +
+                              "        b();\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@\n" +
+                      "@@\n" +
+                      "a();\n" +
                       "...\n" +
-                      "b();\n";
+                      "- b();\n";
     
         runSingleTest(smpl, inputCode, expectedCode);
     }
@@ -2811,6 +2974,43 @@ public class EndToEndTests {
                       "- a();\n" +
                       "... when != x\n" +
                       "b();\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testUnsupportedElementsRejectDotsWhenNotEquals() {
+        // contract: dots constrained by \"when != x\" should not be allowed to traverse across unsupported elements even if there is no post-context
+
+        String inputCode = "class A {\n" +
+                           "    /* skip */ void a() {}\n" +
+                           "    /* skip */ void b() {}\n" +
+                           "    boolean loopsNotSupported;\n" +
+                           "    \n" +
+                           "    void foo() {\n" +
+                           "        a();\n" +
+                           "        while (loopsNotSupported) {\n" +
+                           "          break;\n" +
+                           "        }\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    /* skip */ void a() {}\n" +
+                              "    /* skip */ void b() {}\n" +
+                              "    boolean loopsNotSupported;\n" +
+                              "    \n" +
+                              "    void foo() {\n" +
+                              "        a();\n" +
+                              "        while (loopsNotSupported) {\n" +
+                              "            break;\n" +
+                              "        }\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@\n" +
+                      "@@\n" +
+                      "- a();\n" +
+                      "... when != x\n";
     
         runSingleTest(smpl, inputCode, expectedCode);
     }

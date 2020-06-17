@@ -359,7 +359,7 @@ public class SmPLParser {
                     result.hasUnspecifiedMethodHeader = true;
                     result.out.append(SmPLJavaDSL.createUnspecifiedMethodHeaderString())
                               .append(" {\n")
-                              .append("if (").append(SmPLJavaDSL.getDotsWithOptionalMatchName()).append(") {")
+                              .append("if (").append(SmPLJavaDSL.getDotsWithOptionalMatchName()).append("()) {")
                               .append("\n");
                     result.out.append(result.prebodyAdditions).append("\n");
                     return 0;
@@ -514,7 +514,7 @@ public class SmPLParser {
         optionalMatchDots.add(new RewriteRule("optdots_begin", "(?s)^<\\.\\.\\.", // TODO: could add something like result.required += "optdots_end" for error detection
                 (ctx) -> { },
                 (result, match) -> {
-                    result.out.append("if (").append(SmPLJavaDSL.getDotsWithOptionalMatchName()).append(") {");
+                    result.out.append("if (").append(SmPLJavaDSL.getDotsWithOptionalMatchName()).append("()) {");
                     return match.end();
                 }));
 

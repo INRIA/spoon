@@ -1,17 +1,15 @@
 [name]
-UnsupportedElementsMatchSurrounding
+UnsupportedElementsRejectDots
 
 [contract]
-should be able to match and transform things surrounding an unsupported element
+dots with post-context should not be allowed to traverse across unsupported elements
 
 [patch]
 @@
 @@
-(
-- a();
-|
+a();
+...
 - b();
-)
 
 [input]
 class A {
@@ -36,8 +34,10 @@ class A {
     boolean loopsNotSupported;
     
     void foo() {
+        a();
         while (loopsNotSupported) {
             break;
         }
+        b();
     }
 }

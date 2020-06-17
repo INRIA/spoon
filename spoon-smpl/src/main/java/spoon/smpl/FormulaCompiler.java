@@ -563,6 +563,16 @@ public class FormulaCompiler {
     }
 
     /**
+     * Check if a given Formula is a Proposition for matching the end (exit) node.
+     *
+     * @param phi Formula to test
+     * @return True if Formula is a Proposition matching the end (exit) node, false otherwise
+     */
+    private boolean isEndNodeProposition(Formula phi) {
+        return phi instanceof Proposition && ((Proposition) phi).getProposition().equals("end");
+    }
+
+    /**
      * Compile a CTL-VW formula for a statement-level dots operator.
      *
      * @param node Node representing a statement-level dots operator
@@ -575,23 +585,34 @@ public class FormulaCompiler {
         Formula guard = getDotsGuard(node, false == SmPLJavaDSL.hasWhenAny(dots));
         Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
 
-        List<String> whenNotEquals = SmPLJavaDSL.getWhenNotEquals(dots);
+        if (innerFormula == null) {
+            innerFormula = new Proposition("end");
+        }
+
+        List<CtElement> whenNotEquals = SmPLJavaDSL.getWhenNotEquals(dots);
 
         if (whenNotEquals.size() > 0) {
-            Iterator<String> it = whenNotEquals.iterator();
-            guard = combine(guard, new Proposition("unsupported"), Or.class);
+            Iterator<CtElement> it = whenNotEquals.iterator();
 
             while (it.hasNext()) {
-                guard = combine(guard, new VariableUsePredicate(it.next(), metavars), Or.class);
+                CtElement neqElement = it.next();
+                
+                if (neqElement instanceof CtVariableRead) {
+                    guard = combine(guard, new VariableUsePredicate(((CtVariableRead<?>) neqElement).getVariable().getSimpleName(), metavars), Or.class);
+                } else {
+                    throw new NotImplementedException("WhenNotEqual not implemented for " + neqElement.getClass().toString());
+                }
             }
         }
 
-        guard = finalizeDotsGuard(guard);
+        if (whenNotEquals.size() > 0 || !isEndNodeProposition(innerFormula)) {
+            guard = combine(guard, new Proposition("unsupported"), Or.class);
+        }
 
         if (SmPLJavaDSL.hasWhenExists(dots)) {
-            return new ExistsUntil(guard, innerFormula);
+            return new ExistsUntil(finalizeDotsGuard(guard), innerFormula);
         } else {
-            return new AllUntil(guard, innerFormula);
+            return new AllUntil(finalizeDotsGuard(guard), innerFormula);
         }
     }
 
@@ -605,7 +626,10 @@ public class FormulaCompiler {
      * @return CTL-VW Formula
      */
     private Formula compileDotsWithOptionalMatchFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
-        // TODO: modifiers/constraints e.g whenAny
+        // TODO: "when any" constraint relaxation
+        // TODO: merge the common compilation parts of statement-level and optional-match dots
+
+        CtInvocation<?> dots = (CtInvocation<?>) node.getStatement();
 
         // The SmPL Java DSL construct for dots-with-optional-match is an elseless if, so the branch
         //   node must have exactly two successors where one is a BLOCK_BEGIN node and the other one
@@ -630,10 +654,18 @@ public class FormulaCompiler {
             tail = new Proposition("end");
         }
 
-        // TODO: is there a case where metavariables need to be quantified enclosing the AllUntil here?
+        if (!isEndNodeProposition(tail)) {
+            guard = combine(guard, new Proposition("unsupported"), Or.class);
+        }
+
+        // TODO: is there a case where metavariables need to be quantified enclosing the EU/AU here?
         //  maybe if the same unquantified metavariable is used in both the optional match and immediately
         //  in the tail? e.g optionalMatch = ExistsVar(x, ...), tail = ExistsVar(x, ...)
-        return new AllUntil(combine(finalizeDotsGuard(guard), new Optional(optionalMatch), And.class), tail);
+        if (SmPLJavaDSL.hasWhenExists(dots)) {
+            return new ExistsUntil(combine(finalizeDotsGuard(guard), new Optional(optionalMatch), And.class), tail);
+        } else {
+            return new AllUntil(combine(finalizeDotsGuard(guard), new Optional(optionalMatch), And.class), tail);
+        }
     }
 
     /**

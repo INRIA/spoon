@@ -17,8 +17,9 @@ import java.util.Stack;
  */
 public class DebugUtils {
     /**
-     * Given a CtClass of an SmPL rule in the SmPL Java DSL, pretty-print format
-     * the rule method adding line numbers to statements.
+     * Given a CtClass of an SmPL rule in the SmPL Java DSL, pretty-print format the rule method adding line
+     * numbers to statements.
+     *
      * @param ctClass SmPL rule in SmPL Java DSL
      * @return Pretty-print formatted string
      */
@@ -29,6 +30,7 @@ public class DebugUtils {
 
     /**
      * Recursive helper method for printRuleMethodWithLines.
+     *
      * @param e Element to pretty-print format
      * @param indent Current indentation level
      * @return Pretty-print formatted string
@@ -72,16 +74,18 @@ public class DebugUtils {
     }
 
     /**
-     * Format text for pretty-printing.
+     * Add indentation to text in unindented C-like syntax.
+     *
      * @param text Text to format
      * @return Formatted text
      */
-    public static String prettify(String text) {
-        return prettify(text, '{', '}', 4, false);
+    public static String prettifyCLike(String text) {
+        return prettifyCLike(text, '{', '}', 4, false);
     }
 
     /**
-     * Format text for pretty-printing.
+     * Add indentation to text in unindented C-like syntax.
+     *
      * @param text Text to format
      * @param open Indentation-increasing character
      * @param close Indentation-decreasing character
@@ -89,7 +93,7 @@ public class DebugUtils {
      * @param addNewlines Add newlines after indentation-altering characters?
      * @return Formatted text
      */
-    public static String prettify(String text, char open, char close, int indentSize, boolean addNewlines) {
+    public static String prettifyCLike(String text, char open, char close, int indentSize, boolean addNewlines) {
         StringBuilder result = new StringBuilder();
 
         int indent = 0;
@@ -141,12 +145,12 @@ public class DebugUtils {
      * @return Pretty-printed String
      */
     public static String prettifyFormula(Formula phi) {
-        return prettifyFormula(phi.toString());
+        return prettifyFunctionlike(phi.toString());
     }
 
     /**
-     * Reformat a given String, adding line breaks after commas and indenting the content
-     * following a comma such that it aligns with the appropriate enclosing opening parenthesis.
+     * Reformat a given String, adding line breaks after commas and indenting the content following a comma such
+     * that it aligns with the appropriate enclosing opening parenthesis.
      *
      * Example:
      *   input: "And(First, Or(Second, Third))"
@@ -157,7 +161,7 @@ public class DebugUtils {
      * @param str String to reformat
      * @return Reformatted String
      */
-    public static String prettifyFormula(String str) {
+    public static String prettifyFunctionlike(String str) {
         StringBuilder sb = new StringBuilder();
 
         Stack<Integer> indentStack = new Stack<>();

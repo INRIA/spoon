@@ -1,5 +1,5 @@
 [name]
-UnsupportedElementsMatchSurrounding
+UnsupportedElementsMatchAfter
 
 [contract]
 should be able to match and transform things surrounding an unsupported element
@@ -7,11 +7,8 @@ should be able to match and transform things surrounding an unsupported element
 [patch]
 @@
 @@
-(
-- a();
-|
 - b();
-)
+
 
 [input]
 class A {
@@ -36,6 +33,7 @@ class A {
     boolean loopsNotSupported;
     
     void foo() {
+        a();
         while (loopsNotSupported) {
             break;
         }

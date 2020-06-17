@@ -1,17 +1,14 @@
 [name]
-UnsupportedElementsMatchSurrounding
+UnsupportedElementsRejectDotsWhenNotEquals
 
 [contract]
-should be able to match and transform things surrounding an unsupported element
+dots constrained by "when != x" should not be allowed to traverse across unsupported elements even if there is no post-context
 
 [patch]
 @@
 @@
-(
 - a();
-|
-- b();
-)
+... when != x
 
 [input]
 class A {
@@ -24,7 +21,6 @@ class A {
         while (loopsNotSupported) {
           break;
         }
-        b();
     }
 }
 
@@ -36,6 +32,7 @@ class A {
     boolean loopsNotSupported;
     
     void foo() {
+        a();
         while (loopsNotSupported) {
             break;
         }

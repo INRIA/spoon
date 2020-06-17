@@ -200,7 +200,8 @@ public class SmPLJavaDSL {
      * @return True if element represents a dots-with-optional-match SmPL construct, false otherwise
      */
     public static boolean isDotsWithOptionalMatch(CtElement element) {
-        return isIfStatementWithNamedConditionVariable(element, dotsWithOptionalMatchName);
+        return (element instanceof CtIf
+                && isExecutableWithName(((CtIf) element).getCondition(), dotsWithOptionalMatchName));
     }
 
     /**
@@ -257,13 +258,12 @@ public class SmPLJavaDSL {
      * @param dots Element representing an SmPL dots construct
      * @return List of arguments x provided in "when != x" constraints
      */
-    public static List<String> getWhenNotEquals(CtInvocation<?> dots) {
-        List<String> result = new ArrayList<>();
+    public static List<CtElement> getWhenNotEquals(CtInvocation<?> dots) {
+        List<CtElement> result = new ArrayList<>();
 
         for (CtExpression<?> stmt : dots.getArguments()) {
             if (isWhenNotEquals(stmt)) {
-                CtVariableRead<?> read = (CtVariableRead<?>) ((CtInvocation<?>) stmt).getArguments().get(0);
-                result.add(read.getVariable().getSimpleName());
+                result.add(((CtInvocation<?>) stmt).getArguments().get(0));
             }
         }
 
@@ -333,6 +333,16 @@ public class SmPLJavaDSL {
      */
     public static String createUnspecifiedMethodHeaderString() {
         return "void " + unspecifiedElementOrTypeName + "()";
+    }
+
+    /**
+     * Create a source code String for the method call expression part of the implicit dots construct that is added to
+     * a patch that does not match on the method header.
+     *
+     * @return Source code String for method call expression of the implicit dots construct
+     */
+    public static String createImplicitDotsCall() {
+        return dotsWithOptionalMatchName + "(" + dotsWhenExistsName + "())";
     }
 
     /**

@@ -1,0 +1,51 @@
+[name]
+UnsupportedElementsDotsWhenExists
+
+[contract]
+dots in "when exists" mode should be allowed to traverse over unsupported elements when there exists a path that avoids them
+
+[patch]
+@@
+@@
+a();
+... when exists
+- b();
+
+[input]
+class A {
+    /* skip */ void a() {}
+    /* skip */ void b() {}
+    float random;
+    boolean loopsNotSupported;
+    
+    void foo() {
+        a();
+        
+        if (random > 0.5f) {
+            while (loopsNotSupported) {
+              break;
+            }
+        }
+        
+        b();
+    }
+}
+
+
+[expected]
+class A {
+    /* skip */ void a() {}
+    /* skip */ void b() {}
+    float random;
+    boolean loopsNotSupported;
+    
+    void foo() {
+        a();
+        
+        if (random > 0.5f) {
+            while (loopsNotSupported) {
+              break;
+            }
+        }
+    }
+}
