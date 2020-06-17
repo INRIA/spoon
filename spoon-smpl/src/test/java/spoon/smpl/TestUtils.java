@@ -154,4 +154,8 @@ public class TestUtils {
     public static ModelChecker.Witness witness(int state, String metavar, Object binding, ModelChecker.Witness ... witnesses) {
         return new ModelChecker.Witness(state, metavar, binding, new HashSet<ModelChecker.Witness>(Arrays.asList(witnesses)));
     }
+
+    public static int countOccurrences(String text, String find) {
+        return (text.length() - text.replace(find, "").length()) / find.length();
+    }
 }
