@@ -143,7 +143,7 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
             )
             NOT_IN -> {
                 val inExpression = receiver as? FirFunctionCall ?: throw RuntimeException("Unable to get 'contains' subtree of !in operator, $receiver")
-                val inReceiver = getReceiver(inExpression) as FirExpression
+                val inReceiver = getReceiver(inExpression)!!
                 InvocationType.BINARY_OPERATOR( // Reversed operand order, ignore 'not' call (receiver)
                     inExpression.arguments[0],
                     tokenToBinaryOperatorKind(token),
