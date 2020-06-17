@@ -304,11 +304,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		if (sfc == null) {
 			throw new SpoonException("Missing SourceFragmentContext");
 		}
-		if (mutableTokenWriter.isMuted()) {
-			// the printer may require to update its state based on this event
-			sfc.update(event);
-			return;
-		}
 		// the context-dependent printer handles the event
 		sfc.print(event);
 	}

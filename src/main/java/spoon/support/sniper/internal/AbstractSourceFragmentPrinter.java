@@ -49,6 +49,10 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 
 	@Override
 	public void print(PrinterEvent event) {
+		if (mutableTokenWriter.isMuted()) {
+			return;
+		}
+
 		int prevIndex = childFragmentIdx;
 		int index = update(event);
 		if (index != -1) { // means we have found a source code fragment corresponding to this event
