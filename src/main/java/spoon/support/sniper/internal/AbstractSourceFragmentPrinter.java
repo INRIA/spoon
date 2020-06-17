@@ -187,7 +187,7 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 							mutableTokenWriter.writeComment(comment);
 						} else {
 							//comment is not modified write origin sources
-							mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
+							mutableTokenWriter.directPrint(fragment.getSourceCode());
 						}
 						//we printed the comment, so we can print next space too
 						canPrintSpace = true;
@@ -199,7 +199,7 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 				}
 			} else if (isSpaceFragment(fragment) && canPrintSpace) {
 				if (!skipSpaceAfterDeletedElement) {
-					mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
+					mutableTokenWriter.directPrint(fragment.getSourceCode());
 				} else {
 					skipSpaceAfterDeletedElement = false;
 				}

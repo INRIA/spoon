@@ -173,7 +173,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 						//push the context of this collection
 						pushContext(listContext);
 					}
-					mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
+					mutableTokenWriter.directPrint(fragment.getSourceCode());
 				}
 			}
 		});
@@ -266,7 +266,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 					//and scan first element of that collection again in new context of that collection
 					if (ModificationStatus.NOT_MODIFIED.equals(isModified)) {
 						// we print the original source code
-						mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
+						mutableTokenWriter.directPrint(fragment.getSourceCode());
 					} else {
 						// we print with the new list context
 						listContext.print(this);
@@ -275,7 +275,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 					ElementSourceFragment sourceFragment = (ElementSourceFragment) fragment;
 					if (isModified == ModificationStatus.NOT_MODIFIED) {
 						//nothing is changed, we can print origin sources of this element
-						mutableTokenWriter.getPrinterHelper().directPrint(fragment.getSourceCode());
+						mutableTokenWriter.directPrint(fragment.getSourceCode());
 						return;
 					}
 

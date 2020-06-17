@@ -10,6 +10,7 @@ package spoon.support.sniper.internal;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.visitor.DefaultTokenWriter;
+import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.TokenWriter;
 
 /**
@@ -22,7 +23,7 @@ public class MutableTokenWriter implements TokenWriter {
 	private boolean muted = false;
 
 	public MutableTokenWriter(Environment env) {
-		this.delegate = new DefaultTokenWriter(new DirectPrinterHelper(env));
+		this.delegate = new DefaultTokenWriter(new PrinterHelper(env));
 	}
 
 	/**
@@ -129,8 +130,8 @@ public class MutableTokenWriter implements TokenWriter {
 		return this;
 	}
 	@Override
-	public DirectPrinterHelper getPrinterHelper() {
-		return (DirectPrinterHelper) delegate.getPrinterHelper();
+	public PrinterHelper getPrinterHelper() {
+		return delegate.getPrinterHelper();
 	}
 	@Override
 	public void reset() {
@@ -151,5 +152,17 @@ public class MutableTokenWriter implements TokenWriter {
 	@Override
 	public String toString() {
 		return delegate.toString();
+	}
+
+	/** prints a piece of text regardless of muted */
+	public void directPrint(String text) {
+		int len = text.length();
+
+		for (int i = 0; i < len; i++) {
+			char c = text.charAt(i);
+			//avoid automatic writing of tabs in the middle of text
+			getPrinterHelper().setShouldWriteTabs(false);
+			getPrinterHelper().write(c);
+		}
 	}
 }
