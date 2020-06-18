@@ -15,6 +15,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+// TODO: access modifiers
+// TODO: maybe ditch the sub-model approach and go for something more similar to dots-in-method-calls
+
 /**
  * A MethodHeaderModel is a CTL model representation of a method header.
  *

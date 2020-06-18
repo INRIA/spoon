@@ -57,18 +57,32 @@ public class SmPLParser {
             throw new IllegalArgumentException("Empty match context");
         }
 
+        // TODO: why do we need to includeMetaElements here?
+        Set<Integer> delsLines = collectStatementLines(delsRuleMethod, true);
+
         for (CtMethod<?> method : adds.getMethods()) {
-            if (method.getSimpleName().equals(delsRuleMethod.getSimpleName())) {
+            if (method.getSignature().equals(delsRuleMethod.getSignature())
+                || (adds.getMethods().size() == 2 && !method.getSimpleName().equals(SmPLJavaDSL.getMetavarsMethodName()))) {
                 addsRuleMethod = method;
+                break;
+            }
+
+            for (CtStatement stmt : collectStatements(method, true)) {
+                if (SmPLJavaDSL.isDeletionAnchor(stmt) || delsLines.contains(stmt.getPosition().getLine())) {
+                    addsRuleMethod = stmt.getParent(CtMethod.class);
+                    break;
+                }
+            }
+
+            if (addsRuleMethod != null) {
+                break;
             }
         }
 
         if (addsRuleMethod == null) {
-            throw new IllegalStateException("impossible");
+            throw new IllegalStateException("Unable to determine rule method of additions AST");
         }
 
-        // TODO: why do we need to includeMetaElements here?
-        Set<Integer> delsLines = collectStatementLines(delsRuleMethod, true);
         Set<Integer> addsLines = collectStatementLines(addsRuleMethod, true);
 
         Set<Integer> commonLines = new HashSet<>(delsLines);
@@ -88,6 +102,14 @@ public class SmPLParser {
 
         for (int line : anchoredOperations.keySet()) {
             anchoredOperations.put(line, replaceDeleteXpendOperationPair(anchoredOperations.get(line)));
+        }
+
+        String delsSignature = delsRuleMethod.getType().toString() + " " + delsRuleMethod.getSignature();
+        String addsSignature = addsRuleMethod.getType().toString() + " " + addsRuleMethod.getSignature();
+
+        if (!delsSignature.equals(addsSignature)) {
+            anchoredOperations.addKeyIfNotExists(AnchoredOperationsMap.methodBodyAnchor);
+            anchoredOperations.get(AnchoredOperationsMap.methodBodyAnchor).add(new MethodHeaderReplaceOperation(addsRuleMethod));
         }
 
         new DeletionAnchorRemover().scan(adds);
@@ -207,10 +229,6 @@ public class SmPLParser {
         boolean isMethodHeader = false;
         boolean matchesOnMethodHeader = false;
         boolean dotsWouldBeStatement = true;
-
-        java.util.function.Predicate<String> methodHeader;
-        methodHeader = Pattern.compile("(?s)^(public\\s+|private\\s+|protected\\s+|static\\s+)*" +
-                                       "[A-Za-z_][A-Za-z0-9_-]*\\s+[A-Za-z_][A-Za-z0-9_-]*\\s*\\(.*").asMatchPredicate();
 
         List<String> genericMetavarTypes = Arrays.asList("identifier", "type", "constant", "expression");
 
@@ -465,7 +483,7 @@ public class SmPLParser {
             if (str.length() > 0) {
                 if (str.charAt(0) == '-') {
                     dels.append(' ').append(str.substring(1)).append("\n");
-                    if (str.contains(SmPLJavaDSL.getDotsStatementElementName() + "();")) {
+                    if (str.contains(SmPLJavaDSL.getDotsStatementElementName() + "();") || methodHeader.test(str.substring(1).strip())) {
                         adds.append("\n");
                     } else {
                         adds.append(SmPLJavaDSL.getDeletionAnchorName()).append("();\n");
@@ -794,4 +812,11 @@ public class SmPLParser {
             return ops;
         }
     }
+
+    /**
+     * Regex match predicate for identifying a method header.
+     */
+    private static java.util.function.Predicate<String> methodHeader
+        = Pattern.compile("(?s)^(public\\s+|private\\s+|protected\\s+|static\\s+)*" +
+                          "[A-Za-z_][A-Za-z0-9_-]*\\s+[A-Za-z_][A-Za-z0-9_-]*\\s*\\(.*").asMatchPredicate();
 }

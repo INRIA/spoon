@@ -2157,6 +2157,133 @@ public class EndToEndTests {
         runSingleTest(smpl, inputCode, expectedCode);
     }
     @Test
+    public void testMethodHeaderTransformationAlsoAddingMethods() {
+        // contract: a patch should be able to modify the matched header while also adding new methods
+
+        String inputCode = "class A {\n" +
+                           "    /*skip*/ void print(String message) {}\n" +
+                           "    void m1() {\n" +
+                           "        print(\"hello\");\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    /*skip*/ void print(String message) {}\n" +
+                              "    \n" +
+                              "    int square(int x) {\n" +
+                              "        return x*x;\n" +
+                              "    }\n" +
+                              "    \n" +
+                              "    void m2(String p1) {\n" +
+                              "        print(\"hello\");\n" +
+                              "    }\n" +
+                              "    \n" +
+                              "    int cube(int y) {\n" +
+                              "        return y*y*y;\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "+ int square(int x) {\n" +
+                      "+   return x*x;\n" +
+                      "+ }\n" +
+                      "- void m1() {\n" +
+                      "+ void m2(String p1) {\n" +
+                      "    print(\"hello\");\n" +
+                      "}\n" +
+                      "+ int cube(int y) {\n" +
+                      "+   return y*y*y;\n" +
+                      "+ }\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testMethodHeaderTransformationChangeAll() {
+        // contract: a patch should be able to specify multiple modifications to a matched method header
+
+        String inputCode = "class A {\n" +
+                           "    void m1() {\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    int sgn(int x) {\n" +
+                              "      if (x > 0) return 1 else return 0;\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- void m1() {\n" +
+                      "+ int sgn(int x) {\n" +
+                      "+   if (x > 0) return 1 else return 0;\n" +
+                      "}\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testMethodHeaderTransformationChangeName() {
+        // contract: a patch should be able to specify a change of return type on a matched method header
+
+        String inputCode = "class A {\n" +
+                           "    void m1() {\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    int m1() {\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- void m1() {\n" +
+                      "+ int m1() {\n" +
+                      "}\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testMethodHeaderTransformationChangeParams() {
+        // contract: a patch should be able to specify modifications to formal parameters on a matched method header
+
+        String inputCode = "class A {\n" +
+                           "    void m1() {\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    void m1(String s, int x) {\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- void m1() {\n" +
+                      "+ void m1(String s, int x) {\n" +
+                      "}\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testMethodHeaderTransformationChangeType() {
+        // contract: a patch should be able to specify a change of return type on a matched method header
+
+        String inputCode = "class A {\n" +
+                           "    void m1() {\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    int m1() {\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- void m1() {\n" +
+                      "+ int m1() {\n" +
+                      "}\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
     public void testMethodsAddedToClass() {
         // contract: a patch should be able to add entire methods to the parent class of a patch-context-matching method
 

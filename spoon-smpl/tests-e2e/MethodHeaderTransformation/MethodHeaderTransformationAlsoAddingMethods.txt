@@ -1,0 +1,46 @@
+[name]
+MethodHeaderTransformationAlsoAddingMethods
+
+[contract]
+a patch should be able to modify the matched header while also adding new methods
+
+[patch]
+@@ @@
++ int square(int x) {
++   return x*x;
++ }
+
+- void m1() {
++ void m2(String p1) {
+    print("hello");
+}
+
++ int cube(int y) {
++   return y*y*y;
++ }
+
+[input]
+class A {
+    /*skip*/ void print(String message) {}
+    void m1() {
+        print("hello");
+    }
+}
+
+
+[expected]
+class A {
+    /*skip*/ void print(String message) {}
+    
+    int square(int x) {
+        return x*x;
+    }
+    
+    void m2(String p1) {
+        print("hello");
+    }
+    
+    int cube(int y) {
+        return y*y*y;
+    }
+}

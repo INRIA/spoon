@@ -402,7 +402,12 @@ public class Substitutor implements CtVisitor {
         String typename = reference.getSimpleName();
 
         if (bindings.containsKey(typename)) {
-            reference.replace((CtElement) bindings.get(typename));
+            if (!reference.isParentInitialized()) {
+                // TODO: why does this case occur? e.g method header transform using type metavar
+                reference.setSimpleName(((CtTypeReference<?>) bindings.get(typename)).getSimpleName());
+            } else {
+                reference.replace((CtElement) bindings.get(typename));
+            }
         }
     }
 
