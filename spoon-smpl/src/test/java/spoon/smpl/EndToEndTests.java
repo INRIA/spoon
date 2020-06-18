@@ -4,7 +4,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
-import spoon.smpl.*;
 import static spoon.smpl.TestUtils.*;
 
 public class EndToEndTests {
