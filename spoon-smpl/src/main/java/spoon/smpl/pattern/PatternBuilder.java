@@ -206,7 +206,14 @@ public class PatternBuilder implements CtVisitor {
             result.sub.put("declaringtype", new ValueNode(ctExecutableReference.getDeclaringType().getSimpleName(), ctExecutableReference.getDeclaringType()));
         }*/
 
-        result.sub.put("name", new ValueNode(ctExecutableReference.getSimpleName(), ctExecutableReference.getSimpleName()));
+        String exename = ctExecutableReference.getSimpleName();
+
+        if (params.contains(exename)) {
+            result.sub.put("name", new ParamNode(exename));
+        } else {
+            result.sub.put("name", new ValueNode(exename, ctExecutableReference));
+        }
+
 
         resultStack.push(result);
     }
@@ -591,7 +598,13 @@ public class PatternBuilder implements CtVisitor {
         } else {
             String fieldName = ctFieldRead.getVariable().getSimpleName();
             ElemNode result = new ElemNode(ctFieldRead);
-            result.sub.put("field", new ValueNode(fieldName, ctFieldRead));
+
+            if (params.contains(fieldName)) {
+                result.sub.put("field", new ParamNode(fieldName));
+            } else {
+                result.sub.put("field", new ValueNode(fieldName, ctFieldRead.getVariable()));
+            }
+
             ctFieldRead.getTarget().accept(this);
             result.sub.put("target", resultStack.pop());
             resultStack.push(result);
