@@ -21,15 +21,13 @@ public class FormulaCompiler {
      *
      * @param cfg SmPL-adapted CFG to produce formula from
      * @param metavars Metavariable names and their constraints
-     * @param commonLines Set of line numbers of context statements common to both addition and deletion perspectives
-     * @param additions Map of line-anchored addition operations
+     * @param operations Map of line-anchored operations
      */
-    public FormulaCompiler(SmPLMethodCFG cfg, Map<String, MetavariableConstraint> metavars, Set<Integer> commonLines, AnchoredOperationsMap additions) {
+    public FormulaCompiler(SmPLMethodCFG cfg, Map<String, MetavariableConstraint> metavars, AnchoredOperationsMap operations) {
         this.cfg = cfg;
         this.quantifiedMetavars = new ArrayList<>();
         this.metavars = metavars;
-        this.commonLines = commonLines;
-        this.additions = additions;
+        this.operations = operations;
     }
 
     /**
@@ -210,7 +208,7 @@ public class FormulaCompiler {
             metavarsToQuantifyOutermost.addAll(metavarsUsed);
         }
 
-        List<Operation> methodBodyOps = additions.getOperationsAnchoredToMethodBody();
+        List<Operation> methodBodyOps = operations.getOperationsAnchoredToMethodBody();
 
         if (methodBodyOps != null && methodBodyOps.size() > 0) {
             formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", methodBodyOps)));
@@ -244,16 +242,12 @@ public class FormulaCompiler {
 
             ArrayList<Operation> ops = new ArrayList<>();
 
-            if (!commonLines.contains(line)) {
-                ops.add(new DeleteOperation());
-            }
-
-            if (additions.containsKey(line)) {
-                ops.addAll(additions.get(line));
+            if (operations.containsKey(line)) {
+                ops.addAll(operations.get(line));
             }
 
             if (ops.size() > 0) {
-                formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", replaceDeleteXpendOperationPair(ops))));
+                formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", ops)));
             }
 
             // Mark first occurences of metavars as quantified before compiling inner formula
@@ -294,12 +288,8 @@ public class FormulaCompiler {
 
         ArrayList<Operation> ops = new ArrayList<>();
 
-        if (!commonLines.contains(line)) {
-            ops.add(new DeleteOperation());
-        }
-
-        if (additions.containsKey(line)) {
-            ops.addAll(additions.get(line));
+        if (operations.containsKey(line)) {
+            ops.addAll(operations.get(line));
         }
 
         if (ops.size() > 0) {
@@ -761,34 +751,6 @@ public class FormulaCompiler {
                || SmPLJavaDSL.isDotsWithOptionalMatch(element);
     }
 
-    // TODO: move this responsibility to SmPLParser
-    /**
-     * Replace Delete-Append or Delete-Prepend Operation pairs with ReplaceOperations.
-     *
-     * @param ops List of Operations to process
-     * @return Singleton list containing a ReplaceOperation if input was an appropriate pair, unmodified input list otherwise.
-     */
-    private List<Operation> replaceDeleteXpendOperationPair(List<Operation> ops) {
-        if (ops.size() != 2) {
-            return ops;
-        }
-
-        Operation op1 = ops.get(0);
-        Operation op2 = ops.get(1);
-
-        if (op1 instanceof DeleteOperation && op2 instanceof PrependOperation) {
-            return Collections.singletonList(new ReplaceOperation(((PrependOperation) op2).elementToPrepend));
-        } else if (op1 instanceof DeleteOperation && op2 instanceof AppendOperation) {
-            return Collections.singletonList(new ReplaceOperation(((AppendOperation) op2).elementToAppend));
-        } else if (op2 instanceof DeleteOperation && op1 instanceof PrependOperation) {
-            return Collections.singletonList(new ReplaceOperation(((PrependOperation) op1).elementToPrepend));
-        } else if (op2 instanceof DeleteOperation && op1 instanceof AppendOperation) {
-            return Collections.singletonList(new ReplaceOperation(((AppendOperation) op1).elementToAppend));
-        } else {
-            return ops;
-        }
-    }
-
     /**
      * SmPL-adapted CFG to use for formula generation.
      */
@@ -805,14 +767,9 @@ public class FormulaCompiler {
     private Map<String, MetavariableConstraint> metavars;
 
     /**
-     * Set of line numbers associated with common (context) statements.
-     */
-    private Set<Integer> commonLines;
-
-    /**
      * Map of anchored lists of addition operations.
      */
-    private AnchoredOperationsMap additions;
+    private AnchoredOperationsMap operations;
 
     /**
      * Stored code element formula to be used as shortest-path guard for dots.

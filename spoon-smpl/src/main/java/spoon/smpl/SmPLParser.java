@@ -67,8 +67,9 @@ public class SmPLParser {
             throw new IllegalStateException("impossible");
         }
 
-        Set<Integer> delsLines = collectStatementLines(delsRuleMethod);
-        Set<Integer> addsLines = collectStatementLines(addsRuleMethod);
+        // TODO: why do we need to includeMetaElements here?
+        Set<Integer> delsLines = collectStatementLines(delsRuleMethod, true);
+        Set<Integer> addsLines = collectStatementLines(addsRuleMethod, true);
 
         Set<Integer> commonLines = new HashSet<>(delsLines);
         commonLines.retainAll(addsLines);
@@ -77,6 +78,17 @@ public class SmPLParser {
 
         Set<Integer> containedCommonLines = findContainedCommonLines(addsRuleMethod, commonLines);
         commonLines.removeAll(containedCommonLines);
+
+        for (int line : delsLines) {
+            if (!commonLines.contains(line)) {
+                anchoredOperations.addKeyIfNotExists(line);
+                anchoredOperations.get(line).add(new DeleteOperation());
+            }
+        }
+
+        for (int line : anchoredOperations.keySet()) {
+            anchoredOperations.put(line, replaceDeleteXpendOperationPair(anchoredOperations.get(line)));
+        }
 
         new DeletionAnchorRemover().scan(adds);
         SmPLRuleImpl result = (SmPLRuleImpl) compile(dels, commonLines, anchoredOperations);
@@ -167,7 +179,7 @@ public class SmPLParser {
             return new SmPLRuleImpl(new Not(new True()), metavars);
         }
 
-        FormulaCompiler fc = new FormulaCompiler(new SmPLMethodCFG(ruleMethod), metavars, commonLines, additions);
+        FormulaCompiler fc = new FormulaCompiler(new SmPLMethodCFG(ruleMethod), metavars, additions);
         SmPLRule rule = new SmPLRuleImpl(fc.compileFormula(), metavars);
         rule.setName(ruleName);
 
@@ -609,21 +621,41 @@ public class SmPLParser {
      * @param method Rule method in SmPL Java DSL
      * @return Set of line numbers at which statements occur in the rule method
      */
-    private static Set<Integer> collectStatementLines(CtMethod<?> method) {
-        class LineCollectingScanner extends CtScanner {
-            public Set<Integer> result = new HashSet<>();
+    private static Set<Integer> collectStatementLines(CtMethod<?> method, boolean includeMetaElements) {
+        Set<Integer> result = new HashSet<>();
+
+        for (CtStatement stmt : collectStatements(method, includeMetaElements)) {
+            result.add(stmt.getPosition().getLine());
+        }
+
+        return result;
+    }
+
+    /**
+     * Scan a given method and collect all statement elements found in its body.
+     *
+     * @param method Method to scan
+     * @return List of statements found in method body
+     */
+    private static List<CtStatement> collectStatements(CtMethod<?> method, boolean includeMetaElements) {
+        class StatementCollectingScanner extends CtScanner {
+            public List<CtStatement> result = new ArrayList<>();
 
             @Override
             protected void enter(CtElement e) {
+                if (!includeMetaElements && !SmPLJavaDSL.isExpressionMatchWrapper(e) && SmPLJavaDSL.isMetaElement(e)) {
+                    return;
+                }
+
                 if (!SmPLJavaDSL.isDeletionAnchor(e) && e instanceof CtStatement && !(e instanceof CtBlock)) {
-                    result.add(e.getPosition().getLine());
+                    result.add((CtStatement) e);
                 }
             }
         }
 
-        LineCollectingScanner lines = new LineCollectingScanner();
-        lines.scan(method.getBody().getStatements());
-        return lines.result;
+        StatementCollectingScanner statements = new StatementCollectingScanner();
+        statements.scan(method.getBody().getStatements());
+        return statements.result;
     }
 
     /**
@@ -734,5 +766,32 @@ public class SmPLParser {
         };
 
         scanner.scan(element);
+    }
+
+    /**
+     * Replace Delete-Append or Delete-Prepend Operation pairs with ReplaceOperations.
+     *
+     * @param ops List of Operations to process
+     * @return Singleton list containing a ReplaceOperation if input was an appropriate pair, unmodified input list otherwise.
+     */
+    private static List<Operation> replaceDeleteXpendOperationPair(List<Operation> ops) {
+        if (ops.size() != 2) {
+            return ops;
+        }
+
+        Operation op1 = ops.get(0);
+        Operation op2 = ops.get(1);
+
+        if (op1 instanceof DeleteOperation && op2 instanceof PrependOperation) {
+            return Collections.singletonList(new ReplaceOperation(((PrependOperation) op2).elementToPrepend));
+        } else if (op1 instanceof DeleteOperation && op2 instanceof AppendOperation) {
+            return Collections.singletonList(new ReplaceOperation(((AppendOperation) op2).elementToAppend));
+        } else if (op2 instanceof DeleteOperation && op1 instanceof PrependOperation) {
+            return Collections.singletonList(new ReplaceOperation(((PrependOperation) op1).elementToPrepend));
+        } else if (op2 instanceof DeleteOperation && op1 instanceof AppendOperation) {
+            return Collections.singletonList(new ReplaceOperation(((AppendOperation) op1).elementToAppend));
+        } else {
+            return ops;
+        }
     }
 }

@@ -20,7 +20,7 @@ public class FormulaCompilerTest {
                                                   "  b();\n" +
                                                   "}\n"));
 
-        FormulaCompiler compiler = new FormulaCompiler(cfg, makeMetavars(), intSet(2,3,4), new AnchoredOperationsMap());
+        FormulaCompiler compiler = new FormulaCompiler(cfg, makeMetavars(), new AnchoredOperationsMap());
         assertFalse(compiler.compileFormula().toString().contains("Metadata(parent->__parent-1__)"));
     }
 }

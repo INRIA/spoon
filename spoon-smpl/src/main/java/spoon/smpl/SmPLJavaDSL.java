@@ -229,7 +229,8 @@ public class SmPLJavaDSL {
      */
     public static boolean isDotsWithOptionalMatch(CtElement element) {
         return (element instanceof CtIf
-                && isExecutableWithName(((CtIf) element).getCondition(), dotsWithOptionalMatchName));
+                && isExecutableWithName(((CtIf) element).getCondition(), dotsWithOptionalMatchName))
+               || isExecutableWithName(element, dotsWithOptionalMatchName); // TODO: maybe separate these cases
     }
 
     /**
@@ -421,6 +422,19 @@ public class SmPLJavaDSL {
      */
     public static boolean isUnspecifiedMethodHeader(CtElement e) {
         return e instanceof CtMethod && ((CtMethod<?>) e).getSimpleName().equals(unspecifiedElementOrTypeName);
+    }
+
+    /**
+     * Check whether the given element is any of the DSL meta elements.
+     *
+     * @param e Element to check
+     * @return True if the element is any of the DSL meta elements, false otherwise
+     */
+    public static boolean isMetaElement(CtElement e) {
+        return isExpressionMatchWrapper(e) || isBeginDisjunction(e) || isContinueDisjunction(e)
+                || isStatementLevelDots(e) || isDotsWithOptionalMatch(e) || isDeletionAnchor(e)
+                || isParameterLevelDots(e) || isParameterLevelDots(e) || isWhenAny(e)
+                || isWhenExists(e) || isWhenNotEquals(e);
     }
 
     /**
