@@ -219,12 +219,12 @@ public class SmPLParserTest {
 
         // contract: the fieldread target of the expression "foo.x" with no further context for "foo" should not disappear when parsing a patch
 
-        CtClass<?> ctClass = Launcher.parseClass(SmPLParser.rewrite("@@\n" +
-                                                                    "@@\n" +
-                                                                    "print(foo.x);\n"));
+        String stuff = SmPLParser.parse("@@\n" +
+                                          "@@\n" +
+                                          "print(foo.x);\n").getFormula().toString();
 
-        if (!ctClass.toString().contains("print(foo.x)")) {
-            fail(ctClass.toString() + " does not contain \"print(foo.x)\"");
+        if (!stuff.contains("print(foo.x)")) {
+            fail("did not contain \"print(foo.x)\"");
         }
     }
 

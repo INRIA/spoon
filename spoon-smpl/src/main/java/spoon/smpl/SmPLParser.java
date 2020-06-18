@@ -5,13 +5,16 @@ import org.apache.commons.lang3.tuple.Pair;
 import spoon.Launcher;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.smpl.formula.*;
 import spoon.smpl.metavars.*;
+import spoon.support.compiler.VirtualFile;
+import spoon.support.reflect.code.CtInvocationImpl;
 
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 /**
@@ -37,8 +40,11 @@ public class SmPLParser {
 
         List<String> separated = separateAdditionsDeletions(rewrite(smpl));
 
-        CtClass<?> dels = Launcher.parseClass(separated.get(0));
-        CtClass<?> adds = Launcher.parseClass(separated.get(1));
+        CtClass<?> dels = parseClass(separated.get(0));
+        CtClass<?> adds = parseClass(separated.get(1));
+
+        fixNoContextTypeAccesses(dels);
+        fixNoContextTypeAccesses(adds);
 
         if (dels.getMethods().size() > 2) {
             throw new IllegalArgumentException("Referring to multiple methods in match context is not supported");
@@ -60,11 +66,6 @@ public class SmPLParser {
         if (addsRuleMethod == null) {
             throw new IllegalStateException("impossible");
         }
-
-        // TODO: we probably want to keep legitimate this-accesses, only remove those associated with SmPLUnspecified
-        // part of hack to fix parsing of e.g "foo.x" with zero context for "foo"
-        nullifyThisAccessTargets(dels);
-        nullifyThisAccessTargets(adds);
 
         Set<Integer> delsLines = collectStatementLines(delsRuleMethod);
         Set<Integer> addsLines = collectStatementLines(addsRuleMethod);
@@ -181,7 +182,6 @@ public class SmPLParser {
      */
     public static String rewrite(String text) {
         List<SmPLLexer.Token> tokens = SmPLLexer.lex(text);
-        //System.out.println(tokens);
         StringBuilder output = new StringBuilder();
         StringBuilder bodyOutput = new StringBuilder();
 
@@ -338,21 +338,6 @@ public class SmPLParser {
             output.append("}\n");
         } else {
             output.append(bodyOutput);
-        }
-
-        // hack to fix parsing of e.g "foo.x" with zero context for "foo"
-        List<String> addedMembers = new ArrayList<>();
-        Matcher m = Pattern.compile("(?s)([$A-Za-z_][$A-Za-z0-9_]*)(\\s*\\.\\s*([$A-Za-z_][$A-Za-z0-9_]*))+").matcher(output.toString());
-
-        while (m.find()) {
-            String memberName = m.group(1);
-
-            if (addedMembers.contains(memberName)) {
-                continue;
-            }
-
-            output.append(SmPLJavaDSL.getUnspecifiedElementOrTypeName()).append(" ").append(memberName).append(";\n");
-            addedMembers.add(memberName);
         }
 
         // Close class
@@ -687,25 +672,67 @@ public class SmPLParser {
     }
 
     /**
-     * Given a CtElement AST, Replace with null all targets of CtTargetedExpressions that are
-     * CtThisAccesses
-     * @param e AST to operate on
+     * Parse a single Java class using Spoon with auto-imports disabled.
+     *
+     * @param code Source code of single Java class
+     * @return Spoon metamodel representation of input class
      */
-    private static void nullifyThisAccessTargets(CtElement e) {
-        // part of hack to fix parsing of e.g "foo.x" with zero context for "foo"
+    private static CtClass<?> parseClass(String code) {
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setAutoImports(false);
+        launcher.addInputResource(new VirtualFile(code));
+        launcher.buildModel();
+        return (CtClass<?>) launcher.getModel().getAllTypes().iterator().next();
+    }
+
+    /**
+     * Replace (by mutating input AST) certain CtTypeAccesses with CtFieldReads.
+     *
+     * When there is absolutely no context for the identifier "foo", Launcher.buildModel with auto-imports disabled
+     * parses expressions of the form "foo.x" as a CtTypeAccess of the type "x" in the package "foo". In the SmPL
+     * context we would rather have such expressions seen as a CtFieldRead of "x" on some arbitrary variable-like "foo".
+     *
+     * The replacement has the following structure:
+     *  CtTypeAccess("x", pkg=CtPackageReference("foo")) --> CtFieldRead("x", target=CtFieldRead("foo", target=null))
+     *
+     * @param element AST to process
+     */
+    private static void fixNoContextTypeAccesses(CtElement element) {
         CtScanner scanner = new CtScanner() {
+            List<Class<? extends CtElement>> validParentTypes = Arrays.asList(CtInvocationImpl.class);
+
             @Override
             protected void enter(CtElement e) {
-                if (e instanceof CtTargetedExpression) {
-                    CtTargetedExpression<?,?> ctTargeted = (CtTargetedExpression<?,?>) e;
-
-                    if (ctTargeted.getTarget() instanceof CtThisAccess) {
-                        ctTargeted.setTarget(null);
-                    }
+                if (!(e instanceof CtTypeAccess)) {
+                    return;
                 }
+
+                CtTypeAccess<?> typeAccess = (CtTypeAccess<?>) e;
+
+                if (!typeAccess.toString().contains(".") || !validParentTypes.contains(typeAccess.getParent().getClass())) {
+                    return;
+                }
+
+                Factory factory = e.getFactory();
+
+                CtFieldReference<Object> outerField = factory.createFieldReference();
+                outerField.setSimpleName(typeAccess.getAccessedType().getPackage().getSimpleName());
+
+                CtFieldReference<Object> innerField = factory.createFieldReference();
+                innerField.setSimpleName(typeAccess.getAccessedType().getSimpleName());
+
+                CtFieldRead<Object> outerFieldRead = factory.createFieldRead();
+                outerFieldRead.setTarget(null);
+                outerFieldRead.setVariable(outerField);
+
+                CtFieldRead<Object> innerFieldRead = factory.createFieldRead();
+                innerFieldRead.setTarget(outerFieldRead);
+                innerFieldRead.setVariable(innerField);
+
+                typeAccess.replace(innerFieldRead);
             }
         };
 
-        scanner.scan(e);
+        scanner.scan(element);
     }
 }
