@@ -21,7 +21,6 @@ class A {
     void foo() {}
     
     void m1() {
-        boolean debug = Math.random() < 0.5;
         anchor();
         if (debug) {
             foo();
@@ -32,7 +31,6 @@ class A {
 [patch]
 @@
 @@
-+ boolean debug = Math.random() < 0.5;
   anchor();
 + if (debug) {
       foo();

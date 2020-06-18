@@ -1085,7 +1085,6 @@ public class EndToEndTests {
                               "    void foo() {}\n" +
                               "    \n" +
                               "    void m1() {\n" +
-                              "        boolean debug = Math.random() < 0.5;\n" +
                               "        anchor();\n" +
                               "        if (debug) {\n" +
                               "            foo();\n" +
@@ -1095,7 +1094,6 @@ public class EndToEndTests {
     
         String smpl = "@@\n" +
                       "@@\n" +
-                      "+ boolean debug = Math.random() < 0.5;\n" +
                       "  anchor();\n" +
                       "+ if (debug) {\n" +
                       "      foo();\n" +
