@@ -10,6 +10,7 @@ package spoon.support.sniper.internal;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.visitor.DefaultTokenWriter;
+import spoon.reflect.visitor.PrinterHelper;
 import spoon.reflect.visitor.TokenWriter;
 
 /**
@@ -22,7 +23,7 @@ public class MutableTokenWriter implements TokenWriter {
 	private boolean muted = false;
 
 	public MutableTokenWriter(Environment env) {
-		this.delegate = new DefaultTokenWriter(new DirectPrinterHelper(env));
+		this.delegate = new DefaultTokenWriter(new PrinterHelper(env));
 	}
 
 	/**
@@ -129,8 +130,8 @@ public class MutableTokenWriter implements TokenWriter {
 		return this;
 	}
 	@Override
-	public DirectPrinterHelper getPrinterHelper() {
-		return (DirectPrinterHelper) delegate.getPrinterHelper();
+	public PrinterHelper getPrinterHelper() {
+		return delegate.getPrinterHelper();
 	}
 	@Override
 	public void reset() {
@@ -152,4 +153,29 @@ public class MutableTokenWriter implements TokenWriter {
 	public String toString() {
 		return delegate.toString();
 	}
+
+	/**
+	 * Prints a piece of text regardless of mute status
+	 * Don't call this, this is dangerous and irregular design.
+	 */
+	public void directPrint(String text) {
+		int len = text.length();
+		// we do it char by char because there is no write(String) in PrinterHelper
+		for (int i = 0; i < len; i++) {
+			char c = text.charAt(i);
+			//avoid automatic writing of tabs in the middle of text, because write(char) keeps putting it back to true
+			getPrinterHelper().setShouldWriteTabs(false);
+			getPrinterHelper().write(c);
+		}
+	}
+
+	/** writes the piece of text if not muted */
+	public TokenWriter write(String text) {
+		if (isMuted()) {
+			return this;
+		}
+		directPrint(text);
+		return this;
+	}
+
 }
