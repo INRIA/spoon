@@ -298,7 +298,7 @@ public class PrinterHelper {
 	public void writeSpace() {
 		this.write(' ');
 	}
-	
+
 	public void setShouldWriteTabs(boolean b) {
 		this.shouldWriteTabs = b;
 	}
