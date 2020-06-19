@@ -567,6 +567,33 @@ public class EndToEndTests {
         runSingleTest(smpl, inputCode, expectedCode);
     }
     @Test
+    public void testMissingSubstitutionInAddedLocalVarDeclBug() {
+        // contract: bound metavariable should be substituted in addition of local variable declaration
+
+        String inputCode = "class A {\n" +
+                           "    void m1() {\n" +
+                           "      int x;\n" +
+                           "      x = 2;\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    void m1() {\n" +
+                              "        float x;\n" +
+                              "        x = 2;\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ identifier y; @@\n" +
+                      "  void m1() {\n" +
+                      "-   int y;\n" +
+                      "+   float y;\n" +
+                      "    y = 2;\n" +
+                      "  }\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
     public void testDeleteBranch() {
         // contract: a patch should be able to delete a complete branch statement
 

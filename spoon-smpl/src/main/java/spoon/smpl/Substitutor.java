@@ -256,7 +256,19 @@ public class Substitutor implements CtVisitor {
     @Override
     public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
         localVariable.getType().accept(this);
-        localVariable.getReference().accept(this);
+
+        // Since CtLocalVariable doesnt actually store a variable reference we cant do .getReference().replace
+        String variableName = localVariable.getSimpleName();
+
+        if (bindings.containsKey(variableName)) {
+            CtElement replacement = (CtElement) bindings.get(variableName);
+
+            if (replacement instanceof CtVariableReference) {
+                localVariable.setSimpleName(((CtVariableReference<?>) replacement).getSimpleName());
+            } else {
+                throw new IllegalArgumentException("unhandled type " + replacement.getClass().toString());
+            }
+        }
 
         if (localVariable.getDefaultExpression() != null) {
             localVariable.getDefaultExpression().accept(this);
