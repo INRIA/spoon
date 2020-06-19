@@ -81,7 +81,7 @@
         <!-- doc: https://logging.apache.org/log4j/2.0/faq.html -->
         <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
-      <version>2.13.0</version>
+      <version>2.13.3</version>
     </dependency>
     <dependency>
         <groupId>org.apache.logging.log4j</groupId>
