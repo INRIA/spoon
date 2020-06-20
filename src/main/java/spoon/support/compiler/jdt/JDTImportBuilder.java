@@ -11,6 +11,8 @@ import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
+
+import spoon.compiler.Environment;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtMethod;
@@ -148,7 +150,7 @@ class JDTImportBuilder {
 
 			if (klass == null) {
 				try {
-					Class zeClass = this.getClass().getClassLoader().loadClass(className);
+					Class<?> zeClass = loadClass(className);
 					klass = this.factory.Type().get(zeClass);
 					return klass;
 				} catch (NoClassDefFoundError | ClassNotFoundException e) {
@@ -163,5 +165,15 @@ class JDTImportBuilder {
 			}
 		}
 		return klass;
+	}
+
+	private Class<?> loadClass(String className) throws ClassNotFoundException {
+		Class<?> zeClass;
+		if(this.factory.getEnvironment().getInputClassLoader() != null) {
+			zeClass = this.factory.getEnvironment().getInputClassLoader().loadClass(className);						
+		} else {
+			zeClass = this.getClass().getClassLoader().loadClass(className);						
+		}
+		return zeClass;
 	}
 }
