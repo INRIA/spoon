@@ -314,7 +314,7 @@
                 <!-- There is another block maven-javadoc-plugin below -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.2.0</version>
                 <configuration>
                     <!-- see https://stackoverflow.com/a/57430117 -->
                     <doclint>none</doclint>
@@ -400,7 +400,7 @@
                         <!-- Warning: there is another block maven-javadoc-plugin above -->
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.1.1</version>
+                        <version>3.2.0</version>
                         <configuration>
                             <doclint>none</doclint>
                         </configuration>
