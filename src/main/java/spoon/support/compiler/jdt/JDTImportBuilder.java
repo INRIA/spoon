@@ -171,7 +171,7 @@ class JDTImportBuilder {
 		if (this.factory.getEnvironment().getInputClassLoader() != null) {
 			zeClass = this.factory.getEnvironment().getInputClassLoader().loadClass(className);
 		} else {
-			zeClass = this.getClass().getClassLoader().loadClass(className);	
+			zeClass = this.getClass().getClassLoader().loadClass(className);
 		}
 		return zeClass;
 	}
