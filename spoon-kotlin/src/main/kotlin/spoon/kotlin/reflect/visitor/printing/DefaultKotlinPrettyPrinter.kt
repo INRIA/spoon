@@ -51,7 +51,8 @@ class DefaultKotlinPrettyPrinter(
             adapter write LEFT_ROUND and RIGHT_ROUND
             return
         }
-        if(list.size == 1 && list[0] is CtLambda<*>) {
+        if(list.size == 1 && list[0] is CtLambda<*> &&
+            list[0].getBooleanMetadata(KtMetadataKeys.LAMBDA_AS_ANONYMOUS_FUNCTION) == false) {
             adapter write SPACE
             list[0].accept(this)
             return
@@ -61,7 +62,8 @@ class DefaultKotlinPrettyPrinter(
             list[i].accept(this)
             adapter write ", "
         }
-        val closeParBefore = list.last() is CtLambda<*>
+        val closeParBefore = list.last() is CtLambda<*> &&
+                list.last().getBooleanMetadata(KtMetadataKeys.LAMBDA_AS_ANONYMOUS_FUNCTION) == false
         if(closeParBefore) {
             adapter write RIGHT_ROUND and SPACE
         }
@@ -172,15 +174,34 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtLambda(ctLambda: CtLambda<T>) {
-        adapter write LEFT_CURL and SPACE
-        val params = ctLambda.parameters.filterNot { it.isImplicit }
-        if(params.isNotEmpty()) {
-            visitCommaSeparatedList(params)
-            adapter write " -> "
-        }
+        if(ctLambda.getBooleanMetadata(KtMetadataKeys.LAMBDA_AS_ANONYMOUS_FUNCTION) == true) {
+            visitAnonymousFunction(ctLambda)
+        } else {
+            adapter write LEFT_CURL and SPACE
+            val params = ctLambda.parameters.filterNot { it.isImplicit }
+            if (params.isNotEmpty()) {
+                visitCommaSeparatedList(params)
+                adapter write " -> "
+            }
 
-        ctLambda.body?.let { visitStatementList(it.statements, inlineSingleStatement = true) }
-        adapter write RIGHT_CURL
+            ctLambda.body?.let { visitStatementList(it.statements, inlineSingleStatement = true) }
+            adapter write RIGHT_CURL
+        }
+    }
+
+    private fun visitAnonymousFunction(ctLambda: CtLambda<*>) {
+        adapter write "fun" and LEFT_ROUND
+        visitCommaSeparatedList(ctLambda.parameters)
+        adapter write RIGHT_ROUND
+        if(ctLambda.type.qualifiedName != "kotlin.Unit") {
+            adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
+            ctLambda.type.accept(this)
+        }
+        adapter write SPACE
+        if(ctLambda.body.isImplicit) {
+            adapter write "= "
+        }
+        ctLambda.body.accept(this)
     }
 
     override fun visitCtForEach(forEach: CtForEach) {
