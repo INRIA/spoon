@@ -51,8 +51,11 @@ class DefaultKotlinPrettyPrinter(
             adapter write LEFT_ROUND and RIGHT_ROUND
             return
         }
-        if(list.size == 1 && list[0] is CtLambda<*> &&
-            list[0].getBooleanMetadata(KtMetadataKeys.LAMBDA_AS_ANONYMOUS_FUNCTION) == false) {
+        fun CtElement.isLambda() =
+            this is CtLambda<*> &&
+            this.getBooleanMetadata(KtMetadataKeys.LAMBDA_AS_ANONYMOUS_FUNCTION) == false
+
+        if(list.size == 1 && list[0].isLambda()) {
             adapter write SPACE
             list[0].accept(this)
             return
@@ -62,8 +65,7 @@ class DefaultKotlinPrettyPrinter(
             list[i].accept(this)
             adapter write ", "
         }
-        val closeParBefore = list.last() is CtLambda<*> &&
-                list.last().getBooleanMetadata(KtMetadataKeys.LAMBDA_AS_ANONYMOUS_FUNCTION) == false
+        val closeParBefore = list.last().isLambda()
         if(closeParBefore) {
             adapter write RIGHT_ROUND and SPACE
         }
@@ -387,7 +389,7 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtVariableRead(varRead: CtVariableRead<T>) {
         enterCtExpression(varRead)
-        adapter write varRead.variable.simpleName
+        varRead.variable.accept(this)
         exitCtExpression(varRead)
     }
 
@@ -435,8 +437,8 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtLocalVariableReference(p0: CtLocalVariableReference<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtLocalVariableReference(localVarRef: CtLocalVariableReference<T>) {
+        adapter write localVarRef.simpleName
     }
 
     override fun visitCtCodeSnippetStatement(p0: CtCodeSnippetStatement?) {
@@ -650,8 +652,8 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtParameterReference(p0: CtParameterReference<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtParameterReference(parameterRef: CtParameterReference<T>) {
+        adapter write parameterRef.simpleName
     }
 
     override fun visitCtModuleReference(p0: CtModuleReference?) {
