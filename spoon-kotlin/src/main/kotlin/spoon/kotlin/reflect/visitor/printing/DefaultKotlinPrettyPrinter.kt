@@ -1,11 +1,13 @@
 package spoon.kotlin.reflect.visitor.printing
 
+import spoon.experimental.CtUnresolvedImport
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.kotlin.reflect.code.KtBinaryOperatorKind
 import spoon.reflect.code.*
 import spoon.reflect.declaration.*
 import spoon.reflect.reference.*
+import spoon.reflect.visitor.CtImportVisitor
 import spoon.reflect.visitor.CtVisitor
 import spoon.reflect.visitor.PrettyPrinter
 
@@ -357,8 +359,11 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun visitCtCompilationUnit(p0: CtCompilationUnit?) {
-        TODO("Not yet implemented")
+    override fun visitCtCompilationUnit(compilationUnit: CtCompilationUnit) {
+        compilationUnit.packageDeclaration?.accept(this)
+        adapter.ensureNEmptyLines(1)
+        compilationUnit.imports.forEach { it.accept(this) }
+        compilationUnit.declaredTypes.forEach { it.accept(this) }
     }
 
     override fun <T : Any?> visitCtNewArray(p0: CtNewArray<T>?) {
@@ -429,8 +434,10 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun visitCtPackageDeclaration(p0: CtPackageDeclaration?) {
-        TODO("Not yet implemented")
+    override fun visitCtPackageDeclaration(ctPackage: CtPackageDeclaration) {
+        if(!ctPackage.reference.isUnnamedPackage) {
+            adapter write "package" and SPACE and ctPackage.reference.qualifiedName
+        }
     }
 
     override fun visitCtThrow(p0: CtThrow?) {
@@ -461,8 +468,8 @@ class DefaultKotlinPrettyPrinter(
         exitCtExpression(superAccess)
     }
 
-    override fun visitCtPackageReference(p0: CtPackageReference?) {
-        TODO("Not yet implemented")
+    override fun visitCtPackageReference(pkgRef: CtPackageReference) {
+        adapter write pkgRef.qualifiedName
     }
 
     override fun <A : Annotation?> visitCtAnnotation(p0: CtAnnotation<A>?) {
@@ -742,8 +749,48 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun visitCtImport(p0: CtImport?) {
-        TODO("Not yet implemented")
+    override fun visitCtImport(ctImport: CtImport) {
+        if(ctImport.importKind != null) {
+            adapter.ensureNEmptyLines(0)
+            adapter write "import" and SPACE
+            ctImport.accept(object : CtImportVisitor {
+                override fun <T : Any?> visitTypeImport(typeRef: CtTypeReference<T>) {
+                    visitCtTypeReference(typeRef)
+                }
+
+                override fun <T : Any?> visitUnresolvedImport(unresolvedImport: CtUnresolvedImport) {
+                    adapter write unresolvedImport.unresolvedReference
+                }
+
+                override fun <T : Any?> visitMethodImport(execRef: CtExecutableReference<T>) {
+                    if(execRef.declaringType.`package` != null) {
+                        visitCtPackageReference(execRef.declaringType.`package`)
+                        adapter write '.'
+                    }
+                    adapter write execRef.simpleName
+                }
+
+                override fun <T : Any?> visitFieldImport(fieldRef: CtFieldReference<T>) {
+                    if(fieldRef.declaringType.`package` != null) {
+                        visitCtPackageReference(fieldRef.declaringType.`package`)
+                        adapter write '.'
+                    }
+                    adapter write fieldRef.simpleName
+                }
+
+                override fun visitAllTypesImport(pkgRef: CtPackageReference) {
+                    visitCtPackageReference(pkgRef)
+                    adapter write '.' and '*'
+                }
+
+                override fun <T : Any?> visitAllStaticMembersImport(typeRef: CtTypeMemberWildcardImportReference) {
+                    visitCtTypeReference(typeRef.typeReference)
+                    adapter write '.' and '*'
+                }
+
+            })
+            (ctImport.getMetadata(KtMetadataKeys.IMPORT_ALIAS) as String?)?.let { adapter write " as " and it }
+        }
     }
 
     override fun <S : Any?> visitCtSwitch(p0: CtSwitch<S>?) {
