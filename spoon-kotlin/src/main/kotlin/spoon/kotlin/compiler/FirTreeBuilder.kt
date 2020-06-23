@@ -139,7 +139,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
                             (type as CtClass<Any>).addConstructor<CtClass<Any>>(decl as CtConstructor<Any>)
                         } else warn("Constructor without accompanying CtClass")
                     }
-                    is CtAnonymousExecutable -> {
+                    is CtTypeMember -> {
                         type.addTypeMember(decl)
                     }
                 }
