@@ -37,5 +37,7 @@ object KtMetadataKeys {
     const val ARRAY_ACCESS_INDEX_ARGS = "skt_key array access args : List<CtExpression>"
 
     const val LAMBDA_AS_ANONYMOUS_FUNCTION = "skt_key lambda as anonymous function : Boolean"
+
+    const val IMPORT_ALIAS = "skt_key import alias : String?"
 }
 
