@@ -40,6 +40,7 @@ import kotlin.collections.ArrayList
 class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisitor<CompositeTransformResult<CtElement>, Nothing?>() {
     internal val referenceBuilder = ReferenceBuilder(this)
     internal val helper = FirTreeBuilderHelper(this)
+    internal val toplvlClassName = "<top-level>"
 
     // Temporary printing, remove later
     private var msgCollector: MsgCollector = PrintingMsgCollector()
@@ -89,9 +90,21 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         transformedTopLvlDecl.forEach {
             val t = it.single
             t.setParent(compilationUnit)
-            if(t is CtType<*>) {
-                pkg.addType<CtPackage>(t)
-                compilationUnit.addDeclaredType(t)
+            when(t) {
+                is CtType<*> -> {
+                    pkg.addType<CtPackage>(t)
+                    compilationUnit.addDeclaredType(t)
+                }
+                is CtTypeMember -> { // Top level function or property declaration
+                    val topLvl = pkg.getType<CtType<Any>>(toplvlClassName) ?: factory.Core().createClass<Any>()
+                        .also { topLvlClass ->
+                            topLvlClass.setImplicit<CtClass<*>>(true)
+                            topLvlClass.setSimpleName<CtClass<*>>(toplvlClassName)
+                            pkg.addType<CtPackage>(topLvlClass)
+                            compilationUnit.addDeclaredType(topLvlClass)
+                        }
+                    topLvl.addTypeMember<CtClass<Any>>(t)
+                }
             }
 
         }

@@ -13,7 +13,8 @@ import spoon.reflect.visitor.PrettyPrinter
 
 class DefaultKotlinPrettyPrinter(
     private val adapter: DefaultPrinterAdapter,
-    private val forceExplicitTypes : Boolean = false
+    private val forceExplicitTypes: Boolean = false,
+    private val topLvlClassName: String = "<top-level>"
     //     private val sourceCompilationUnit : CtCompilationUnit
 ) : CtVisitor, PrettyPrinter {
 
@@ -267,6 +268,12 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtClass(ctClass: CtClass<T>?) {
         if(ctClass == null) return
+        if(ctClass.isImplicit && ctClass.simpleName == topLvlClassName) { // Print the top level class
+            ctClass.typeMembers.filter { it is CtMethod<*> || it is CtField<*> }.forEach {
+                 it.accept(this)
+            }
+            return
+        }
         adapter.ensureNEmptyLines(1)
         // Annotations
         // Not implemented
