@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Assertions.*
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.visitor.printing.DefaultKotlinPrettyPrinter
 import spoon.kotlin.reflect.visitor.printing.DefaultPrinterAdapter
-import spoon.reflect.code.CtInvocation
+import spoon.reflect.code.*
+import spoon.reflect.declaration.CtAnonymousExecutable
 import spoon.reflect.declaration.CtClass
 import spoon.reflect.declaration.CtConstructor
+import spoon.reflect.visitor.filter.TypeFilter
 import spoon.test.TestBuildUtil
 import spoon.test.constructor.testclasses.*
 
@@ -153,5 +155,38 @@ class ConstructorTest {
         assertEquals("kotlin.Byte", p3.type.qualifiedName)
         assertEquals("kotlin.Double", constructor.parameters[3].type.qualifiedName)
         assertEquals("kotlin.Double", p4.type.qualifiedName)
+    }
+
+    @Test
+    fun testAnonymousInitBlock() {
+        // Contracts:
+        // Init blocks are built in order
+        // Init block has access to primary constructor parameters
+        val c = util.buildClass("spoon.test.constructor.testclasses","AnonymousInit") as CtClass<*>
+
+        val inits = c.getElements(TypeFilter(CtAnonymousExecutable::class.java))
+        assertEquals(3, inits.size)
+        var initBlock = inits[0]
+        assertEquals(2, initBlock.body.statements.size)
+        var localVar = initBlock.body.statements[0] as CtLocalVariable<*>
+        assertEquals("val i1 = \"init1\"", pp.prettyprint(localVar))
+
+        var assignment = initBlock.body.statements[1] as CtAssignment<*,*>
+        assertEquals("p = param", pp.prettyprint(assignment))
+        assertTrue(assignment.assignment is CtVariableRead<*>)
+        assertTrue(assignment.assigned is CtFieldWrite<*>)
+
+        val param = (assignment.assignment as CtVariableRead<*>).variable
+        assertEquals(param, c.constructors.toList()[0].parameters[0].reference)
+
+        initBlock = inits[1]
+        localVar = initBlock.body.statements[0] as CtLocalVariable<*>
+        assertEquals("val i2 = \"init2\"", pp.prettyprint(localVar))
+
+        assignment = initBlock.body.statements[1] as CtAssignment<*,*>
+        assertTrue(assignment.assignment is CtLiteral<*>)
+        assertTrue(assignment.assigned is CtFieldWrite<*>)
+
+        assertEquals("init {${System.getProperty("line.separator")}}", pp.prettyprint(inits[2]))
     }
 }
