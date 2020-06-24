@@ -112,12 +112,17 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return compilationUnit.compose()
     }
 
-    override fun visitRegularClass(regularClass: FirRegularClass, data: Nothing?): CompositeTransformResult<CtElement> {
+    override fun visitRegularClass(regularClass: FirRegularClass, data: Nothing?): CompositeTransformResult.Single<CtType<*>> {
         val module = helper.getOrCreateModule(regularClass.session, factory)
-        val pkg = if (regularClass.classId.packageFqName.isRoot) module.rootPackage else
-            factory.Package().getOrCreate(regularClass.classId.packageFqName.asString(), module)
         val type = helper.createType(regularClass)
-        pkg.addType<CtPackage>(type)
+        if(regularClass.classId.isLocal) {
+            return type.compose()
+        }
+        if(!regularClass.classId.isNestedClass) {
+            val pkg = if (regularClass.classId.packageFqName.isRoot) module.rootPackage else
+                  factory.Package().getOrCreate(regularClass.classId.packageFqName.asString(), module)
+            pkg.addType<CtPackage>(type)
+        }
 
         // Modifiers
         val modifierList = KtModifierKind.fromClass(regularClass)
@@ -868,7 +873,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         ctProperty.setType<CtField<*>>(referenceBuilder.getNewTypeReference(returnType))
 
         // Mark as implicit/explicit type
-        val explicitType = (returnType is FirResolvedTypeRef && returnType.delegatedTypeRef != null)
+        val explicitType = (returnType is FirResolvedTypeRef && returnType.delegatedTypeRef != null) // FIXME Correct?
         ctProperty.putMetadata<CtField<*>>(KtMetadataKeys.VARIABLE_EXPLICIT_TYPE, explicitType)
 
         // Check if property stems from primary constructor value parameter, in that case this property is implicit
