@@ -215,7 +215,11 @@ public class SmPLParser {
      * @return Plain text Java code in SmPL Java DSL
      */
     public static String rewrite(String text) {
+        handleProblems(SmPLProblemDetector.detectProblems(text));
+
         List<SmPLLexer.Token> tokens = SmPLLexer.lex(text);
+        handleProblems(SmPLProblemDetector.detectProblems(tokens));
+
         StringBuilder output = new StringBuilder();
         StringBuilder bodyOutput = new StringBuilder();
 
@@ -374,6 +378,31 @@ public class SmPLParser {
         output.append("}\n");
 
         return removeEmptyLines(output.toString()) + "\n";
+    }
+
+    /**
+     * Check for problems reported by SmPLProblemDetector and abort if there are unrecoverable errors.
+     *
+     * @param problems
+     */
+    private static void handleProblems(List<SmPLProblemDetector.Problem> problems) {
+        if (problems == null) {
+            return;
+        }
+
+        boolean canRecover = true;
+
+        for (SmPLProblemDetector.Problem problem : problems) {
+            System.err.println(problem.toString());
+
+            if (problem.type == SmPLProblemDetector.ProblemType.Error) {
+                canRecover = false;
+            }
+        }
+
+        if (!canRecover) {
+            throw new IllegalArgumentException("Unrecoverable SmPL parse error");
+        }
     }
 
     /**

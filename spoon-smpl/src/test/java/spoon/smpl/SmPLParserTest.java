@@ -1,11 +1,12 @@
 package spoon.smpl;
 
 import org.junit.Test;
-import spoon.Launcher;
-import spoon.reflect.declaration.CtClass;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 import static org.junit.Assert.assertEquals;
-
 import static org.junit.Assert.fail;
 import static spoon.smpl.SmPLParser.parse;
 import static spoon.smpl.SmPLParser.rewrite;
@@ -245,6 +246,76 @@ public class SmPLParserTest {
                      "foo();\n" +
                      "}\n" +
                      "}\n", SmPLParser.rewrite(smpl));
+    }
+
+    private static PrintStream err;
+
+    private void disableStderr() {
+        err = System.err;
+        System.setErr(new PrintStream(new OutputStream() {
+            public void write(int i) throws IOException {}
+        }));
+    }
+
+    private void enableStderr() {
+        System.setErr(err);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLeadingSuperfluousStatementDotsOperatorThrowsException() {
+
+        // contract: a superfluous statement dots operator at the top of a patch that does not match on the method header should cause SmPLParser to throw an exception
+
+        String smpl = "@@ @@\n" +
+                      "...\n" +
+                      "\n";
+
+        disableStderr();
+
+        try {
+            SmPLParser.parse(smpl);
+        } finally {
+            enableStderr();
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLeadingSuperfluousOptDotsOperatorThrowsException() {
+
+        // contract: a superfluous optdots operator at the top of a patch that does not match on the method header should cause SmPLParser to throw an exception
+
+        String smpl = "@@ @@\n" +
+                      "<...\n" +
+                      "...>\n" +
+                      "\n";
+
+        disableStderr();
+
+        try {
+            SmPLParser.parse(smpl);
+        } finally {
+            enableStderr();
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConsecutiveStatementtDotsOperatorThrowsException() {
+
+        // contract: consecutive statement dots operators should cause SmPLParser to throw an exception
+
+        String smpl = "@@ @@\n" +
+                      "void m() {\n" +
+                      "...\n" +
+                      "...\n" +
+                      "}\n";
+
+        disableStderr();
+
+        try {
+            SmPLParser.parse(smpl);
+        } finally {
+            enableStderr();
+        }
     }
 }
 
