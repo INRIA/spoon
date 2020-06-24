@@ -29,6 +29,9 @@ public class C4JGetColorTest {
 
     @Test
     public void testNotificationBuilder() {
+
+        // contract: patch (lines 5-6) should perform replacement in target method
+
         CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.PushNotifications::notificationBuilder");
         assertTrue(method.toString().contains("context.getResources().getColor(R.color.green)"));
 
@@ -39,6 +42,9 @@ public class C4JGetColorTest {
 
     @Test
     public void testPrimaryColor() {
+
+        // contract: patch (lines 5-6) should perform replacement in target method
+
         CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.DiscoveryUtils::primaryColor");
         assertTrue(method.toString().contains("context.getResources().getColor(R.color.discovery_primary)"));
 
@@ -49,6 +55,9 @@ public class C4JGetColorTest {
 
     @Test
     public void testSecondaryColor() {
+
+        // contract: patch (lines 5-6) should perform replacement in target method
+
         CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.DiscoveryUtils::secondaryColor");
         assertTrue(method.toString().contains("context.getResources().getColor(R.color.discovery_secondary)"));
 
@@ -59,6 +68,9 @@ public class C4JGetColorTest {
 
     @Test
     public void testOverlayTextColor() {
+
+        // contract: patch (lines 5-6) should perform replacement in target method
+
         CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.DiscoveryUtils::overlayTextColor", 1);
         assertTrue(method.toString().contains("context.getResources().getColor(color)"));
 
@@ -69,6 +81,9 @@ public class C4JGetColorTest {
 
     @Test
     public void testDarkColor() {
+
+        // contract: patch (lines 5-6) should perform replacement in target method
+
         CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.KSColorUtils::darkColor");
         assertTrue(method.toString().contains("context.getResources().getColor(com.kickstarter.libs.utils.KSColorUtils.darkColorId())"));
 
@@ -79,6 +94,9 @@ public class C4JGetColorTest {
 
     @Test
     public void testLightColor() {
+
+        // contract: patch (lines 5-6) should perform replacement in target method
+
         CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.KSColorUtils::lightColor");
         assertTrue(method.toString().contains("context.getResources().getColor(com.kickstarter.libs.utils.KSColorUtils.lightColorId())"));
 
@@ -89,6 +107,9 @@ public class C4JGetColorTest {
 
     @Test
     public void testForegroundColor() {
+
+        // contract: patch (lines 5-6) should perform replacement in target method
+
         CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.KSColorUtils::foregroundColor");
         assertTrue(method.toString().contains("return context.getResources().getColor(colorId)"));
 
@@ -99,6 +120,9 @@ public class C4JGetColorTest {
 
     @Test
     public void testCategorySecondaryColor() {
+
+        // contract: patch (lines 5-6) should perform replacement in target method
+
         CtMethod<?> method = ctx.getMethod("com.kickstarter.models.Category::secondaryColor");
         assertTrue(method.toString().contains("return context.getResources().getColor(identifier)"));
 

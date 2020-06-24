@@ -38,6 +38,9 @@ public class C4JStickyBroadcastTest {
 
     @Test
     public void testSendBroadcastUploadsAdded() {
+
+        // contract: first clause of patch should perform replacement in target method
+
         CtMethod<?> method = ctx.getMethod("com.owncloud.android.files.services.FileUploader::sendBroadcastUploadsAdded");
         assertTrue(method.toString().contains("    start.setPackage(getPackageName());\n    sendStickyBroadcast(start);"));
 
@@ -48,6 +51,9 @@ public class C4JStickyBroadcastTest {
 
     @Test
     public void testSendBroadcastUploadStarted() {
+
+        // contract: first clause of patch should perform replacement in target method
+
         CtMethod<?> method = ctx.getMethod("com.owncloud.android.files.services.FileUploader::sendBroadcastUploadStarted");
         assertTrue(method.toString().contains("    start.setPackage(getPackageName());\n    sendStickyBroadcast(start);"));
 
@@ -58,6 +64,9 @@ public class C4JStickyBroadcastTest {
 
     @Test
     public void testSendBroadcastUploadFinished() {
+
+        // contract: first clause of patch should perform replacement in target method
+
         CtMethod<?> method = ctx.getMethod("com.owncloud.android.files.services.FileUploader::sendBroadcastUploadFinished");
         assertTrue(method.toString().contains("    end.setPackage(getPackageName());\n    sendStickyBroadcast(end);"));
 
@@ -68,6 +77,9 @@ public class C4JStickyBroadcastTest {
 
     @Test
     public void testSendBroadcastDownloadFinished() {
+
+        // contract: first clause of patch should perform replacement in target method
+
         CtMethod<?> method = ctx.getMethod("com.owncloud.android.files.services.FileDownloader::sendBroadcastDownloadFinished");
         assertTrue(method.toString().contains("    end.setPackage(getPackageName());\n    sendStickyBroadcast(end);"));
 
@@ -78,6 +90,9 @@ public class C4JStickyBroadcastTest {
 
     @Test
     public void testSendBroadcastNewDownload() {
+
+        // contract: first clause of patch should perform replacement in target method
+
         CtMethod<?> method = ctx.getMethod("com.owncloud.android.files.services.FileDownloader::sendBroadcastNewDownload");
         assertTrue(method.toString().contains("    added.setPackage(getPackageName());\n    sendStickyBroadcast(added);"));
 
@@ -88,6 +103,9 @@ public class C4JStickyBroadcastTest {
 
     @Test
     public void testOnReceive1() {
+
+        // contract: second clause of patch should perform deletion in target method
+
         CtMethod<?> method = ctx.getMethodFromInnerClass("com.owncloud.android.ui.preview.PreviewImageActivity$DownloadFinishReceiver::onReceive");
         assertEquals(1, countOccurrences(method.toString(), "removeStickyBroadcast(intent);"));
 
@@ -97,6 +115,9 @@ public class C4JStickyBroadcastTest {
 
     @Test
     public void testOnReceive2() {
+
+        // contract: second clause of patch should perform deletion in target method
+
         CtMethod<?> method = ctx.getMethodFromInnerClass("com.owncloud.android.ui.activity.FileDisplayActivity$SyncBroadcastReceiver::onReceive");
         assertEquals(2, countOccurrences(method.toString(), "removeStickyBroadcast(intent);"));
 
@@ -106,6 +127,9 @@ public class C4JStickyBroadcastTest {
 
     @Test
     public void testOnReceive3() {
+
+        // contract: second clause of patch should perform deletion in target method
+
         CtMethod<?> method = ctx.getMethodFromInnerClass("com.owncloud.android.ui.activity.FileDisplayActivity$UploadFinishReceiver::onReceive");
         assertEquals(1, countOccurrences(method.toString(), "removeStickyBroadcast(intent);"));
 
@@ -115,6 +139,9 @@ public class C4JStickyBroadcastTest {
 
     @Test
     public void testOnReceive4() {
+
+        // contract: second clause of patch should perform deletion in target method
+
         CtMethod<?> method = ctx.getMethodFromInnerClass("com.owncloud.android.ui.activity.FileDisplayActivity$DownloadFinishReceiver::onReceive");
         assertEquals(1, countOccurrences(method.toString(), "removeStickyBroadcast(intent);"));
 
@@ -124,6 +151,9 @@ public class C4JStickyBroadcastTest {
 
     @Test
     public void testOnReceive5() {
+
+        // contract: second clause of patch should perform deletion in target method
+
         CtMethod<?> method = ctx.getMethodFromInnerClass("com.owncloud.android.ui.activity.FolderPickerActivity$SyncBroadcastReceiver::onReceive");
         assertEquals(2, countOccurrences(method.toString(), "removeStickyBroadcast(intent);"));
 

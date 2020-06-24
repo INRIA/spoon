@@ -22,30 +22,33 @@ public class C4JShouldVibrateTest {
                       "identifier am, f, ctx;\n" +
                       "expression vibrate_type;\n" +
                       "@@\n" +
-                      "+ boolean shouldVibrate(AudioManager am, Context ctx, int vibrateType) {\n" +
-                      "+     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {\n" +
-                      "+         Vibrator vibrator = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);\n" +
-                      "+         if (vibrator == null || !vibrator.hasVibrator()) {\n" +
-                      "+                 return false;\n" +
-                      "+         }\n" +
-                      "+         return am.getRingerMode() != AudioManager.RINGER_MODE_SILENT;\n" +
-                      "+     } else {\n" +
-                      "+         return audioManager.shouldVibrate(vibrateType);\n" +
-                      "+     }\n" +
-                      "+ }\n" +
-                      "\n" +
-                      "T f(..., Context ctx, ...) {\n" +
-                      "...\n" +
-                      "- am.shouldVibrate(vibrate_type)\n" +
-                      "+ shouldVibrate(am, ctx, vibrate_type)\n" +
-                      "...\n" +
-                      "}\n";
+        /*  6 */      "+ boolean shouldVibrate(AudioManager am, Context ctx, int vibrateType) {\n" +
+        /*  7 */      "+     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {\n" +
+        /*  8 */      "+         Vibrator vibrator = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);\n" +
+        /*  9 */      "+         if (vibrator == null || !vibrator.hasVibrator()) {\n" +
+        /* 10 */      "+                 return false;\n" +
+        /* 11 */      "+         }\n" +
+        /* 12 */      "+         return am.getRingerMode() != AudioManager.RINGER_MODE_SILENT;\n" +
+        /* 13 */      "+     } else {\n" +
+        /* 14 */      "+         return audioManager.shouldVibrate(vibrateType);\n" +
+        /* 15 */      "+     }\n" +
+        /* 16 */      "+ }\n" +
+        /* 17 */      "\n" +
+        /* 18 */      "T f(..., Context ctx, ...) {\n" +
+        /* 19 */      "...\n" +
+        /* 20 */      "- am.shouldVibrate(vibrate_type)\n" +
+        /* 21 */      "+ shouldVibrate(am, ctx, vibrate_type)\n" +
+        /* 22 */      "...\n" +
+        /* 23 */      "}\n";
 
         ctx = new ZippedCodeBaseTestContext(smpl, "src/test/resources/C4JShouldVibrate.zip", false);
     }
 
     @Test
     public void testShouldVibrateOld() {
+
+        // contract: patch lines 18-23 should match target method, perform replacement (patch lines 20-21) and add new method (patch lines 6-16) to parent class of target method.
+
         CtMethod<?> method = ctx.getMethod("org.thoughtcrime.securesms.webrtc.audio.IncomingRinger::shouldVibrateOld");
         assertTrue(method.toString().contains("return vibrate && audioManager.shouldVibrate(AudioManager.VIBRATE_TYPE_RINGER);"));
 
