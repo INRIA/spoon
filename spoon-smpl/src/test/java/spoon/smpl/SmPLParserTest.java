@@ -247,4 +247,4 @@ public class SmPLParserTest {
                      "}\n", SmPLParser.rewrite(smpl));
     }
 }
-s
+
