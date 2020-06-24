@@ -1,7 +1,9 @@
 package spoon.smpl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -127,7 +129,7 @@ public class SmPLLexer {
          * @return Line number
          */
         public int getLine() {
-            return 0;
+            return countOccurrences(text.substring(0, pos), "\n") + 1;
         }
 
         /**
@@ -136,7 +138,25 @@ public class SmPLLexer {
          * @return Column number
          */
         public int getColumn() {
-            return 0;
+            Map<Character, Integer> whitespace = new HashMap<>();
+            whitespace.put(' ', 1);
+            whitespace.put('\t', 4);
+
+            int wschars = 0;
+            int wsoffset = 0;
+
+            while ((pos + wschars) < text.length() && whitespace.containsKey(text.charAt(pos + wschars))) {
+                wsoffset += whitespace.get(text.charAt(pos + wschars));
+                wschars += 1;
+            }
+
+            String mytext = text.substring(0, pos);
+
+            if (mytext.contains("\n")) {
+                return mytext.substring(mytext.lastIndexOf('\n')).length() + wsoffset;
+            } else {
+                return 1 + pos + wsoffset;
+            }
         }
 
         /**
@@ -146,6 +166,22 @@ public class SmPLLexer {
          */
         public int getOffset() {
             return pos;
+        }
+
+        @Override
+        public String toString() {
+            return "line " + getLine() + ", column " + getColumn();
+        }
+
+        /**
+         * Count the number of occurrences of a substring in given String.
+         *
+         * @param text String to scan
+         * @param find Substring to count
+         * @return Number of occurrences of substring
+         */
+        private static int countOccurrences(String text, String find) {
+            return (text.length() - text.replace(find, "").length()) / find.length();
         }
 
         /**
