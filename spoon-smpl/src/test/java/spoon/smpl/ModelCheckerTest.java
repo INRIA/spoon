@@ -19,8 +19,6 @@ import spoon.smpl.formula.*;
 import static spoon.smpl.TestUtils.*;
 
 public class ModelCheckerTest {
-    // TODO: add test for the merging in ResultSet.negate
-
     private static class ModelBuilder implements Model {
         public List<Integer> states;
         public Map<Integer, List<Integer>> successors;
@@ -70,6 +68,9 @@ public class ModelCheckerTest {
 
     @Test
     public void testTrue() {
+
+        // contract: SAT(true) should select every state
+
         ModelBuilder model = new ModelBuilder();
         model.addStates(1,2,3)
                 .addTransition(1,2)
@@ -86,6 +87,9 @@ public class ModelCheckerTest {
 
     @Test
     public void testAnd() {
+
+        // contract: SAT(phi AND psi) should select every state selected by both SAT(phi) and SAT(psi)
+
         ModelBuilder model = new ModelBuilder();
         model.addStates(1,2,3)
                 .addTransition(1,2)
@@ -106,6 +110,9 @@ public class ModelCheckerTest {
 
     @Test
     public void testOr() {
+
+        // contract: SAT(phi OR psi) should select all states selected by either SAT(phi) or SAT(psi)
+
         ModelBuilder model = new ModelBuilder();
         model.addStates(1,2,3)
                 .addTransition(1,2)
@@ -126,6 +133,9 @@ public class ModelCheckerTest {
 
     @Test
     public void testNeg() {
+
+        // contract: SAT(not(phi)) should select all states not selected by SAT(phi)
+
         ModelBuilder model = new ModelBuilder();
         model.addStates(1,2,3)
                 .addTransition(1,2)
@@ -149,6 +159,9 @@ public class ModelCheckerTest {
 
     @Test
     public void testProposition() {
+
+        // contract: for a proposition p, SAT(p) should select all states s for which p \in Labels(s)
+
         ModelBuilder model = new ModelBuilder();
         model.addStates(1,2,3)
              .addTransition(1,2)
@@ -175,6 +188,9 @@ public class ModelCheckerTest {
 
     @Test
     public void testExistsNext() {
+
+        // contract: SAT(EX(phi)) should select all states s for which there exists a transition (s -> s') and s' is selected by SAT(phi)
+
         ModelBuilder model = new ModelBuilder();
         model.addStates(1,2,3,4,5)
                 .addTransition(1,2)
@@ -205,6 +221,9 @@ public class ModelCheckerTest {
 
     @Test
     public void testAllNext() {
+
+        // contract: SAT(AX(phi)) should select all states s where it holds for all transitions (s -> s') that s' is selected by SAT(phi)
+
         ModelBuilder model = new ModelBuilder();
         model.addStates(1,2,3,4,5)
                 .addTransition(1,2)
@@ -235,6 +254,9 @@ public class ModelCheckerTest {
 
     @Test
     public void testExistsUntil() {
+
+        // contract: SAT(EU(phi, psi)) should select the states s either selected by SAT(psi) or for which there exists a path (s, s1, ..., sn) where sn is selected by SAT(psi) and for each i \in [1, n-1] si is selected by SAT(phi)
+
         ModelBuilder model = new ModelBuilder();
         model.addStates(1,2,3,4,5)
                 .addTransition(1,2)
@@ -259,6 +281,9 @@ public class ModelCheckerTest {
 
     @Test
     public void testAllUntil() {
+
+        // contract: SAT(EU(phi, psi)) should select the states s either selected by SAT(psi) or for which it holds that over all paths (s, s1, ..., sn) sn is selected by SAT(psi) and for each i \in [1, n-1] si is selected by SAT(phi)
+
         ModelBuilder model = new ModelBuilder();
         model.addStates(1,2,3,4,5)
                 .addTransition(1,2)
@@ -283,6 +308,9 @@ public class ModelCheckerTest {
 
     @Test
     public void testPreExists() {
+
+        // contract: preExists(X) should produce the set of states capable of transitioning into X, i.e the set {s | exists (s -> s'). s' in X}
+
         ModelBuilder model = new ModelBuilder();
         model.addStates(1,2,3,4,5,6)
                 .addTransition(1,2)
@@ -305,6 +333,9 @@ public class ModelCheckerTest {
 
     @Test
     public void testPreAll() {
+
+        // contract: preExists(X) should produce the set of states ONLY capable of transitioning into X, i.e the set {s | forall (s -> s'). s' in X}
+
         ModelBuilder model = new ModelBuilder();
         model.addStates(1, 2, 3, 4, 5, 6)
                 .addTransition(1, 2)
@@ -327,6 +358,9 @@ public class ModelCheckerTest {
 
     @Test
     public void testStatementPattern() {
+
+        // contract: when no metavariables are involved, a statement pattern should essentially match the contained statement literally
+
         Launcher launcher = new Launcher();
         CtClass<?> myclass = Launcher.parseClass("class C { void M() { int x = 1; }}");
         CtElement stmt = ((CtMethod<?>)myclass.getMethods().toArray()[0]).getBody().getStatement(0);
@@ -386,7 +420,8 @@ public class ModelCheckerTest {
     @Test
     public void testVariableUsePredicateExplicitMatch() {
 
-        // contract: correct model checking for VariableUsePredicate over explicitly matching variables
+        // TODO: get rid of VariableUseLabel and use real code labels for this test
+        // contract: with no metavariables involved, SAT(VariableUsePredicate(x)) should select the states that represent code that makes use of the literal identifier "x"
 
         ModelBuilder model = new ModelBuilder();
         model.addStates(1,2,3)
@@ -413,7 +448,7 @@ public class ModelCheckerTest {
     @Test
     public void testVariableUsePredicateMetavariableBind() {
 
-        // contract: correct model checking for VariableUsePredicate over metavariables
+        // contract: SAT(VariableUsePredicate(mv)) with mv a metavariable should select the states representing code in which some identifier is used that can be bound to the metavariable, recording the binding in the environment and producing multiple results as necessary
 
         ModelBuilder model = new ModelBuilder();
         model.addStates(1,2,3)

@@ -17,7 +17,7 @@ import static org.junit.Assert.fail;
 import static spoon.smpl.TestUtils.*;
 
 public class MethodHeaderMatchingTest {
-    /*@Test
+    /*
     public void generateMethods() {
         Set<String> generated = new HashSet<>();
         Random random = new Random();

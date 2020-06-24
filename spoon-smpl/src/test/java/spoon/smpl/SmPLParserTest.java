@@ -230,6 +230,9 @@ public class SmPLParserTest {
 
     @Test
     public void testRewriteProducingExtraClosingBraceBug() {
+
+        // contract: the rewrite method of the SmPL parser should not produce a superfluous closing brace for patches that explicitly match on the method header
+
         String smpl = "@@ @@\n" +
                       "void m() {\n" +
                       "foo();\n" +
@@ -244,3 +247,4 @@ public class SmPLParserTest {
                      "}\n", SmPLParser.rewrite(smpl));
     }
 }
+s

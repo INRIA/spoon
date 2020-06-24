@@ -12,6 +12,9 @@ import static spoon.smpl.TestUtils.*;
 public class EnvironmentTest {
     @Test
     public void testJoinPositives() {
+
+        // contract: non-conflicting positive bindings should be joinable into an env containing all of them
+
         Environment e1 = new Environment();
         e1.put("x", 1);
 
@@ -23,6 +26,9 @@ public class EnvironmentTest {
 
     @Test
     public void testJoinNegatives() {
+
+        // contract: arbitrary sets of neg. bindings for the same variable name should be joinable into an env containing all of the bindings
+
         Environment e1 = new Environment();
         e1.put("x", new Environment.NegativeBinding(1));
 
@@ -34,6 +40,9 @@ public class EnvironmentTest {
 
     @Test
     public void testJoinMixed() {
+
+        // contract: joining envs containing both non-conflicting positive bindings on arbitrary variables and neg. bindings on the same variable should produce an env containing all the bindings
+
         Environment e1 = new Environment();
         e1.put("x", new Environment.NegativeBinding(1));
         e1.put("y", 3);
@@ -47,6 +56,9 @@ public class EnvironmentTest {
 
     @Test
     public void testNegationOfPositives() {
+
+        // contract: negating an env containing positive bindings should produce an env of identical domain with each positive binding replaced by a neg. binding
+
         Environment e1 = new Environment();
         e1.put("x", 1);
         e1.put("y", 2);
@@ -56,6 +68,9 @@ public class EnvironmentTest {
 
     @Test
     public void testNegationOfSingularNegatives() {
+
+        // contract: negating a neg. binding over a singular value should produce a singular positive binding, so negating an env containing only singular neg. bindings should produce a single env with the singular neg. bindings replaced by positive bindings
+
         Environment e1 = new Environment();
         e1.put("x", new Environment.NegativeBinding(1));
         e1.put("y", new Environment.NegativeBinding(2));
@@ -65,6 +80,9 @@ public class EnvironmentTest {
 
     @Test
     public void testNegationOfNonSingularNegatives() {
+
+        // contract: negating a neg. binding over multiple values should produce a set of envs covering each possible positive binding, so negating an env containing multiple such neg. bindings should produce the cartesian product of these sets
+
         Environment e1 = new Environment();
         e1.put("x", new Environment.NegativeBinding(1, 2));
         e1.put("y", new Environment.NegativeBinding(3, 4));

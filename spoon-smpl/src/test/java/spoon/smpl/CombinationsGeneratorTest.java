@@ -9,6 +9,9 @@ import java.util.List;
 public class CombinationsGeneratorTest {
     @Test
     public void test() {
+
+        // contract: CombinationsGenerator should iteratively build the cartesian product of sets
+
         List<String> S1 = Arrays.asList("A", "B", "C");
         List<String> S2 = Arrays.asList("x", "y");
         List<String> S3 = Arrays.asList("1");

@@ -14,6 +14,9 @@ import static spoon.smpl.TestUtils.*;
 public class FormulaCompilerTest {
     @Test
     public void testParentIdGuardGeneratedForDotsInMethodRootBug() {
+
+        // contract: the formula compiler should not generate the "parent id" guard for dots operators that live in root scope of the method body
+
         SmPLMethodCFG cfg = methodCfg(parseMethod("void m() {\n" +
                                                   "  a();\n" +
                                                   "  " + SmPLJavaDSL.getDotsStatementElementName() + "();\n" +
