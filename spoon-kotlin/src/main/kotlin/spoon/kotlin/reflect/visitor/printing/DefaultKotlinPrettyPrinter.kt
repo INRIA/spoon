@@ -495,10 +495,8 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun visitCtAnonymousExecutable(ctAnonExec: CtAnonymousExecutable) {
-        // TODO Can have label?
         adapter.ensureNEmptyLines(1)
-        if(ctAnonExec.getBooleanMetadata(KtMetadataKeys.ANONYMOUS_EXECUTABLE_IS_INITIALIZER) == true)
-            adapter write "init "
+        adapter write "init "
         ctAnonExec.body.accept(this)
     }
 
