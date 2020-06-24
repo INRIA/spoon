@@ -25,7 +25,6 @@ public class FormulaCompiler {
      */
     public FormulaCompiler(SmPLMethodCFG cfg, Map<String, MetavariableConstraint> metavars, AnchoredOperationsMap operations) {
         this.cfg = cfg;
-        this.quantifiedMetavars = new ArrayList<>();
         this.metavars = metavars;
         this.operations = operations;
     }
@@ -36,10 +35,9 @@ public class FormulaCompiler {
      * @return CTL-VW Formula
      */
     public Formula compileFormula() {
-        quantifiedMetavars = new ArrayList<>();
         metavarsToQuantifyOutermost = new ArrayList<>();
 
-        Formula formula = compileFormulaInner(cfg.findNodesOfKind(BranchKind.BEGIN).get(0).next().get(0), null);
+        Formula formula = compileFormulaInner(cfg.findNodesOfKind(BranchKind.BEGIN).get(0).next().get(0), null, new ArrayList<>());
         formula = FormulaOptimizer.optimizeFully(formula);
 
         Collections.sort(metavarsToQuantifyOutermost);
@@ -59,7 +57,9 @@ public class FormulaCompiler {
      * @param cutoffNodes Nodes at which formula compilation should stop
      * @return CTL-VW Formula
      */
-    private Formula compileFormulaInner(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
+    private Formula compileFormulaInner(ControlFlowNode node, List<ControlFlowNode> cutoffNodes, List<String> quantifiedMetavars) {
+        quantifiedMetavars = shallowCopy(quantifiedMetavars);
+
         Formula formula;
         Formula innerFormula;
         SmPLMethodCFG.NodeTag tag;
@@ -81,7 +81,7 @@ public class FormulaCompiler {
         if (node.getKind() == BranchKind.EXIT) {
             return new Proposition("end");
         } else if (SmPLMethodCFG.isMethodHeaderNode(node)) {
-            return compileMethodHeaderFormula(node, cutoffNodes);
+            return compileMethodHeaderFormula(node, cutoffNodes, quantifiedMetavars);
         } else {
             switch (node.next().size()) {
                 case 0:
@@ -90,11 +90,11 @@ public class FormulaCompiler {
                 case 1:
                     switch (node.getKind()) {
                         case STATEMENT:
-                            return compileStatementFormula(node, cutoffNodes);
+                            return compileStatementFormula(node, cutoffNodes, quantifiedMetavars);
 
                         case BLOCK_BEGIN:
                             if (isNodeForSmPLJavaDSLMetaElement(node)) {
-                                return compileFormulaInner(node.next().get(0), cutoffNodes);
+                                return compileFormulaInner(node.next().get(0), cutoffNodes, quantifiedMetavars);
                             }
 
                             if (tag == null) {
@@ -108,7 +108,7 @@ public class FormulaCompiler {
 
                             quantifiedMetavars.add(parentIdVar);
 
-                            innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
+                            innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes, quantifiedMetavars);
 
                             formula = new And(new Proposition(tag.getLabel()),
                                               new MetadataPredicate(parentIdVar, "parent"));
@@ -127,12 +127,12 @@ public class FormulaCompiler {
 
                         case CONVERGE:
                             if (isNodeForSmPLJavaDSLMetaElement(node)) {
-                                return compileFormulaInner(node.next().get(0), cutoffNodes);
+                                return compileFormulaInner(node.next().get(0), cutoffNodes, quantifiedMetavars);
                             }
 
                             formula = new Proposition("after");
 
-                            innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
+                            innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes, quantifiedMetavars);
 
                             if (innerFormula == null) {
                                 return formula;
@@ -147,7 +147,7 @@ public class FormulaCompiler {
                             }
 
                             formula = new Proposition(tag.getLabel());
-                            innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
+                            innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes, quantifiedMetavars);
 
                             return combine(formula, connectTail(innerFormula), And.class);
                         default:
@@ -164,11 +164,11 @@ public class FormulaCompiler {
                             CtElement statement = node.getStatement();
 
                             if (SmPLJavaDSL.isDotsWithOptionalMatch(statement.getParent())) {
-                                return compileDotsWithOptionalMatchFormula(node, cutoffNodes);
+                                return compileDotsWithOptionalMatchFormula(node, cutoffNodes, quantifiedMetavars);
                             } else if (SmPLJavaDSL.isBeginDisjunction(statement.getParent())) {
-                                return compileDisjunction(node, cutoffNodes);
+                                return compileDisjunction(node, cutoffNodes, quantifiedMetavars);
                             } else {
-                                return compileBranchFormula(node, cutoffNodes);
+                                return compileBranchFormula(node, cutoffNodes, quantifiedMetavars);
                             }
 
                         default:
@@ -185,7 +185,9 @@ public class FormulaCompiler {
      * @param cutoffNodes Nodes at which formula compilation should stop
      * @return CTL-VW Formula
      */
-    private Formula compileMethodHeaderFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
+    private Formula compileMethodHeaderFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes, List<String> quantifiedMetavars) {
+        quantifiedMetavars = shallowCopy(quantifiedMetavars);
+
         Formula formula;
 
         if (!(node.getTag() instanceof SmPLMethodCFG.NodeTag)) {
@@ -214,7 +216,7 @@ public class FormulaCompiler {
             formula = new And(formula, new ExistsVar("_v", new SetEnv("_v", methodBodyOps)));
         }
 
-        return new And(formula, connectTail(compileFormulaInner(node.next().get(0), cutoffNodes)));
+        return new And(formula, connectTail(compileFormulaInner(node.next().get(0), cutoffNodes, quantifiedMetavars)));
     }
 
     /**
@@ -224,9 +226,11 @@ public class FormulaCompiler {
      * @param cutoffNodes Nodes at which formula compilation should stop
      * @return CTL-VW Formula
      */
-    private Formula compileStatementFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
+    private Formula compileStatementFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes, List<String> quantifiedMetavars) {
+        quantifiedMetavars = shallowCopy(quantifiedMetavars);
+
         if (SmPLJavaDSL.isStatementLevelDots(node.getStatement())) {
-            return compileStatementLevelDotsFormula(node, cutoffNodes);
+            return compileStatementLevelDotsFormula(node, cutoffNodes, quantifiedMetavars);
         } else {
             CtElement statement = node.getStatement();
             Formula formula;
@@ -251,10 +255,10 @@ public class FormulaCompiler {
             }
 
             // Mark first occurences of metavars as quantified before compiling inner formula
-            List<String> newMetavars = getUnquantifiedMetavarsUsedIn(statement);
+            List<String> newMetavars = getUnquantifiedMetavarsUsedIn(statement, quantifiedMetavars);
             quantifiedMetavars.addAll(newMetavars);
 
-            Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
+            Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes, quantifiedMetavars);
 
             if (innerFormula != null) {
                 formula = new And(formula, connectTail(innerFormula));
@@ -278,7 +282,9 @@ public class FormulaCompiler {
      * @param cutoffNodes Nodes at which formula compilation should stop
      * @return CTL-VW Formula
      */
-    private Formula compileBranchFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
+    private Formula compileBranchFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes, List<String> quantifiedMetavars) {
+        quantifiedMetavars = shallowCopy(quantifiedMetavars);
+
         Formula formula;
 
         CtElement statement = node.getStatement();
@@ -297,11 +303,11 @@ public class FormulaCompiler {
         }
 
         // Mark first occurences of metavars as quantified before compiling inner formulas
-        List<String> newMetavars = getUnquantifiedMetavarsUsedIn(node.getStatement());
+        List<String> newMetavars = getUnquantifiedMetavarsUsedIn(node.getStatement(), quantifiedMetavars);
         quantifiedMetavars.addAll(newMetavars);
 
-        Formula lhs = compileFormulaInner(node.next().get(0), cutoffNodes);
-        Formula rhs = compileFormulaInner(node.next().get(1), cutoffNodes);
+        Formula lhs = compileFormulaInner(node.next().get(0), cutoffNodes, quantifiedMetavars);
+        Formula rhs = compileFormulaInner(node.next().get(1), cutoffNodes, quantifiedMetavars);
 
         if (lhs != null && rhs != null) {
             formula = new And(formula, new And(new ExistsNext(lhs), new ExistsNext(rhs)));
@@ -354,7 +360,8 @@ public class FormulaCompiler {
      * @param dotsNode Node of statement-level dots or dots-with-optional-match operator
      * @return Non-finalized shortest path guard formula for preceding element
      */
-    private Formula getDotsPreGuard(ControlFlowNode dotsNode) {
+    private Formula getDotsPreGuard(ControlFlowNode dotsNode, List<String> quantifiedMetavars) {
+        quantifiedMetavars = shallowCopy(quantifiedMetavars);
         List<ControlFlowNode> prevNodes = dotsNode.prev();
 
         switch (prevNodes.size()) {
@@ -367,12 +374,12 @@ public class FormulaCompiler {
                             return null;
                         }
 
-                        return compileFormulaInner(prevNode, Collections.singletonList(dotsNode));
+                        return compileFormulaInner(prevNode, Collections.singletonList(dotsNode), quantifiedMetavars);
 
                     case BLOCK_BEGIN:
                         switch (prevNode.prev().size()) {
                             case 1:
-                                return compileFormulaInner(prevNode.prev().get(0), prevNode.prev().get(0).next());
+                                return compileFormulaInner(prevNode.prev().get(0), prevNode.prev().get(0).next(), quantifiedMetavars);
 
                             default:
                                 throw new NotImplementedException("preGuard not implemented for BLOCK_BEGIN with " + Integer.toString(prevNode.prev().size()) + " predecessors");
@@ -387,7 +394,7 @@ public class FormulaCompiler {
                             // TODO: figure out if a disjunction should generate a guard
                             return null;
                         } else {
-                            return compileFormulaInner(branchNode, branchNode.next());
+                            return compileFormulaInner(branchNode, branchNode.next(), quantifiedMetavars);
                         }
                     default:
                         throw new NotImplementedException("preGuard not implemented for " + prevNode.getKind().toString() + " single predecessor");
@@ -405,7 +412,8 @@ public class FormulaCompiler {
      * @param dotsNode Node of statement-level dots or dots-with-optional-match operator
      * @return Non-finalized shortest path guard formula for succeeding element
      */
-    private Formula getDotsPostGuard(ControlFlowNode dotsNode) {
+    private Formula getDotsPostGuard(ControlFlowNode dotsNode, List<String> quantifiedMetavars) {
+        quantifiedMetavars = shallowCopy(quantifiedMetavars);
         List<ControlFlowNode> nextNodes = dotsNode.next();
 
         if (SmPLJavaDSL.isDotsWithOptionalMatch(dotsNode.getStatement().getParent())) {
@@ -420,7 +428,7 @@ public class FormulaCompiler {
 
                 switch (nextNode.getKind()) {
                     case STATEMENT:
-                        return compileFormulaInner(nextNode, nextNode.next());
+                        return compileFormulaInner(nextNode, nextNode.next(), quantifiedMetavars);
 
                     case CONVERGE:
                         return null;
@@ -519,7 +527,8 @@ public class FormulaCompiler {
      * @param shortestPath Flag indicating whether the guard should enforce the shortest path constraint
      * @return Non-finalized guard Formula
      */
-    private Formula getDotsGuard(ControlFlowNode dotsNode, boolean shortestPath) {
+    private Formula getDotsGuard(ControlFlowNode dotsNode, boolean shortestPath, List<String> quantifiedMetavars) {
+        quantifiedMetavars = shallowCopy(quantifiedMetavars);
         int parentId = findParentId(dotsNode);
 
         Formula guard = null;
@@ -530,14 +539,8 @@ public class FormulaCompiler {
         }
 
         if (shortestPath) {
-            Formula contextPreGuard = getDotsPreGuard(dotsNode);
-            Formula contextPostGuard = getDotsPostGuard(dotsNode);
-
-            // Remove any metavars "accidentally" marked as being quantified by compiling the postguard formula
-            while (contextPostGuard instanceof ExistsVar) {
-                quantifiedMetavars.remove(((ExistsVar) contextPostGuard).getVarName());
-                contextPostGuard = ((ExistsVar) contextPostGuard).getInnerElement();
-            }
+            Formula contextPreGuard = getDotsPreGuard(dotsNode, quantifiedMetavars);
+            Formula contextPostGuard = getDotsPostGuard(dotsNode, quantifiedMetavars);
 
             contextPreGuard = removeOperations(contextPreGuard);
             contextPostGuard = removeOperations(contextPostGuard);
@@ -576,11 +579,12 @@ public class FormulaCompiler {
      * @param cutoffNodes Nodes at which formula compilation should stop
      * @return CTL-VW Formula
      */
-    private Formula compileStatementLevelDotsFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
+    private Formula compileStatementLevelDotsFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes, List<String> quantifiedMetavars) {
+        quantifiedMetavars = shallowCopy(quantifiedMetavars);
         CtInvocation<?> dots = (CtInvocation<?>) node.getStatement();
 
-        Formula guard = getDotsGuard(node, false == SmPLJavaDSL.hasWhenAny(dots));
-        Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes);
+        Formula guard = getDotsGuard(node, false == SmPLJavaDSL.hasWhenAny(dots), quantifiedMetavars);
+        Formula innerFormula = compileFormulaInner(node.next().get(0), cutoffNodes, quantifiedMetavars);
 
         if (innerFormula == null) {
             innerFormula = new Proposition("end");
@@ -626,10 +630,11 @@ public class FormulaCompiler {
      * @param cutoffNodes Nodes at which formula compilation should stop
      * @return CTL-VW Formula
      */
-    private Formula compileDotsWithOptionalMatchFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
+    private Formula compileDotsWithOptionalMatchFormula(ControlFlowNode node, List<ControlFlowNode> cutoffNodes, List<String> quantifiedMetavars) {
         // TODO: "when any" constraint relaxation
         // TODO: merge the common compilation parts of statement-level and optional-match dots
 
+        quantifiedMetavars = shallowCopy(quantifiedMetavars);
         CtInvocation<?> dots = (CtInvocation<?>) node.getStatement();
 
         // The SmPL Java DSL construct for dots-with-optional-match is an elseless if, so the branch
@@ -647,9 +652,9 @@ public class FormulaCompiler {
                                               .filter(x -> x.getKind() == BranchKind.CONVERGE)
                                               .findFirst().get();
 
-        Formula guard = getDotsGuard(node, true);
-        Formula optionalMatch = compileFormulaInner(bodyNode, Collections.singletonList(convergenceNode));
-        Formula tail = compileFormulaInner(convergenceNode.next().get(0), cutoffNodes);
+        Formula guard = getDotsGuard(node, true, quantifiedMetavars);
+        Formula optionalMatch = compileFormulaInner(bodyNode, Collections.singletonList(convergenceNode), quantifiedMetavars);
+        Formula tail = compileFormulaInner(convergenceNode.next().get(0), cutoffNodes, quantifiedMetavars);
 
         if (tail == null) {
             tail = new Proposition("end");
@@ -676,7 +681,8 @@ public class FormulaCompiler {
      * @param cutoffNodes Node at which formula compilation should stop
      * @return CTL-VW Formula
      */
-    private Formula compileDisjunction(ControlFlowNode node, List<ControlFlowNode> cutoffNodes) {
+    private Formula compileDisjunction(ControlFlowNode node, List<ControlFlowNode> cutoffNodes, List<String> quantifiedMetavars) {
+        quantifiedMetavars = shallowCopy(quantifiedMetavars);
         Deque<ControlFlowNode> workQueue = new ArrayDeque<>();
         List<ControlFlowNode> clauseStartingNodes = new ArrayList<>();
 
@@ -698,7 +704,7 @@ public class FormulaCompiler {
 
         // Compile each clause of the disjunction
         for (ControlFlowNode clauseNode : clauseStartingNodes) {
-            formula.add(compileFormulaInner(clauseNode, cutoffNodes));
+            formula.add(compileFormulaInner(clauseNode, cutoffNodes, quantifiedMetavars));
         }
 
         return formula;
@@ -726,7 +732,7 @@ public class FormulaCompiler {
      * @param e Element to scan
      * @return Sorted list of not-yet-quantified metavariable names
      */
-    private List<String> getUnquantifiedMetavarsUsedIn(CtElement e) {
+    private List<String> getUnquantifiedMetavarsUsedIn(CtElement e, List<String> quantifiedMetavars) {
         List<String> result = getMetavarsUsedIn(e);
         result.removeAll(quantifiedMetavars);
         return result;
@@ -752,14 +758,19 @@ public class FormulaCompiler {
     }
 
     /**
+     * Create a shallow copy of a given list.
+     *
+     * @param input List to copy
+     * @return Shallow copy of input list
+     */
+    private <T> List<T> shallowCopy(List<T> input) {
+        return new ArrayList<>(input);
+    }
+
+    /**
      * SmPL-adapted CFG to use for formula generation.
      */
     private SmPLMethodCFG cfg;
-
-    /**
-     * List of metavariable names that have already been quantified.
-     */
-    private List<String> quantifiedMetavars;
 
     /**
      * Metavariable names and their corresponding constraints.
@@ -770,11 +781,6 @@ public class FormulaCompiler {
      * Map of anchored lists of addition operations.
      */
     private AnchoredOperationsMap operations;
-
-    /**
-     * Stored code element formula to be used as shortest-path guard for dots.
-     */
-    private Formula dotsPreGuard;
 
     /**
      * List of metavariables found during compilation of subformulas that must be quantified at the outermost

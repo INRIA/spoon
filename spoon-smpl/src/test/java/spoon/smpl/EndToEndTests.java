@@ -2,6 +2,7 @@ package spoon.smpl;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import static spoon.smpl.TestUtils.*;
@@ -22,6 +23,13 @@ public class EndToEndTests {
             rule.getFormula().accept(checker);
 
             ModelChecker.ResultSet results = checker.getResult();
+
+            for (ModelChecker.Result result : results) {
+                if (!result.getEnvironment().isEmpty()) {
+                    fail("nonempty environment");
+                }
+            }
+
             Transformer.transform(model, results.getAllWitnesses());
 
             if (results.size() > 0 && rule.getMethodsAdded().size() > 0) {
