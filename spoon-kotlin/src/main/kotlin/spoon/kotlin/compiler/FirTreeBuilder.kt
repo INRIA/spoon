@@ -403,9 +403,8 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         val rhs = firRhs.accept(this,null).single
         ktOp.setLeftHandOperand<CtBinaryOperator<Any>>(lhs as CtExpression<*>)
         ktOp.setRightHandOperand<CtBinaryOperator<Any>>(rhs as CtExpression<*>)
-        if(opFunc is FirResolvedNamedReference) {
-            ktOp.setType<CtBinaryOperator<Any>>(referenceBuilder.getNewTypeReference(opFunc.typeRef))
-        }
+        ktOp.setType<CtBinaryOperator<Any>>(referenceBuilder.getNewTypeReference(opFunc.typeRef))
+
         ktOp.putMetadata<CtBinaryOperator<Any>>(KtMetadataKeys.KT_BINARY_OPERATOR_KIND, kind)
         return ktOp.compose()
     }

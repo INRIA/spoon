@@ -172,4 +172,14 @@ class BinaryOperatorTest {
         assertEquals(KtBinaryOperatorKind.ELVIS, op.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND))
         assertEquals("b ?: if (b == null) 1 else b1", pp.prettyprint(op))
     }
+
+    @Test
+    fun testRangeOperator() {
+        val c = util.buildClass("spoon.test.binaryoperator.testclasses","RangeOperator")
+
+        val op = c.getInitializer("r") as CtBinaryOperator<*>
+        assertEquals(c.factory.Type().createReference<CtTypeReference<Int>>("kotlin.ranges.IntRange"), op.type)
+        assertEquals(KtBinaryOperatorKind.RANGE, op.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND))
+        assertEquals("1..3", pp.prettyprint(op))
+    }
 }
