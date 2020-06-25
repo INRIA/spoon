@@ -11,10 +11,7 @@ import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
 import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.resolve.toSymbol
 import org.jetbrains.kotlin.lexer.KtTokens.*
-import org.jetbrains.kotlin.psi.KtArrayAccessExpression
-import org.jetbrains.kotlin.psi.KtBinaryExpression
-import org.jetbrains.kotlin.psi.KtPostfixExpression
-import org.jetbrains.kotlin.psi.KtPrefixExpression
+import org.jetbrains.kotlin.psi.*
 import spoon.SpoonException
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.reflect.code.CtCatchVariable
@@ -182,4 +179,6 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
         EXCL -> UnaryOperatorKind.NOT
         else -> throw SpoonException("Unexpected token for unary operator via function call: $token")
     }
+
+    fun isSingleExpressionBlock(block: FirBlock) = block.source?.psi !is KtBlockExpression
 }

@@ -537,6 +537,9 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             })
         }
         ktBlock.setStatements<CtBlock<*>>(statements)
+        if(statements.size == 1 && helper.isSingleExpressionBlock(block)) {
+            ktBlock.setImplicit<CtBlock<*>>(true)
+        }
 
         ktBlock.putMetadata<CtBlock<*>>(KtMetadataKeys.KT_STATEMENT_TYPE,
             referenceBuilder.getNewTypeReference<CtBlock<*>>(block.typeRef))
