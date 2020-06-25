@@ -211,11 +211,12 @@ class DefaultKotlinPrettyPrinter(
 
     override fun visitCtForEach(forEach: CtForEach) {
         enterCtStatement(forEach)
-        adapter write "for" and LEFT_ROUND
+        adapter write "for" and SPACE and LEFT_ROUND
         forEach.variable.accept(this)
         adapter write " in "
         forEach.expression.accept(this)
         adapter write RIGHT_ROUND
+        adapter.ensureSpaceOrNewlineBeforeNext()
         forEach.body.accept(this)
         exitCtStatement(forEach)
     }

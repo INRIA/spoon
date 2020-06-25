@@ -3,9 +3,9 @@ class Example3() {
     val l = listOf(1, 2, 3)
 
     fun f() {
-        for(i in 1..10){
+        for (i in 1..10) {
             x += i % 3
-            for(j in l){
+            for (j in l) {
                 if ((x.n != 0) && (x.n < 10)) {
                     x /= j / i
                     x *= j + 1

@@ -33,6 +33,7 @@ open class DefaultPrinterAdapter(
 
     private var lastCharWasCR = false
     private var verticalSpace = 0
+    private var enforceSpace = false
 
     fun reset() {
         sb.clear()
@@ -69,10 +70,12 @@ open class DefaultPrinterAdapter(
                     verticalSpace = 0
                     writeIndent()
                 } else {
+                    if(enforceSpace) sb.append(' ')
                     column++
                 }
             }
         }
+        enforceSpace = false
         sb.append(c)
         return this
     }
@@ -87,6 +90,10 @@ open class DefaultPrinterAdapter(
         if(!(line == 1 && column == 1)) { // No vertical space for the first line
             while (verticalSpace < n+1) write(LINE_SEPARATOR)
         }
+    }
+
+    fun ensureSpaceOrNewlineBeforeNext() {
+        enforceSpace = true
     }
 
     private fun writeIndent() = repeat(indentCount) { write(INDENT_UNIT) }
