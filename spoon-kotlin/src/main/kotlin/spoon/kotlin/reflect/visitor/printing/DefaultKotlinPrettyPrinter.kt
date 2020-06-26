@@ -943,11 +943,14 @@ class DefaultKotlinPrettyPrinter(
             adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
             method.type.accept(this)
         }
-        adapter write SPACE
-        if(method.body.isImplicit) {
-            adapter write "= "
+
+        if(method.body != null) {
+            adapter write SPACE
+            if(method.body.isImplicit) {
+                adapter write "= "
+            }
+            method.body.accept(this)
         }
-        method.body.accept(this)
     }
 
     override fun <T : Any?> visitCtAnnotationFieldAccess(p0: CtAnnotationFieldAccess<T>?) {
