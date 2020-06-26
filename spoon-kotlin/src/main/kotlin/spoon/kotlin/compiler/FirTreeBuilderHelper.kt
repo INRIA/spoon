@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.declarations.FirTypedDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
 import org.jetbrains.kotlin.fir.declarations.superConeTypes
 import org.jetbrains.kotlin.fir.expressions.*
@@ -12,6 +13,7 @@ import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.resolve.toSymbol
 import org.jetbrains.kotlin.lexer.KtTokens.*
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import spoon.SpoonException
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.reflect.code.CtCatchVariable
@@ -181,4 +183,10 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
     }
 
     fun isSingleExpressionBlock(block: FirBlock) = block.source?.psi !is KtBlockExpression
+
+    fun hasExplicitTypeDeclaration(firTypedDeclaration: FirTypedDeclaration): Boolean? {
+        val psi = firTypedDeclaration.psi ?: return null
+        val typeRef = psi.getChildOfType<KtTypeReference>()
+        return typeRef != null
+    }
 }

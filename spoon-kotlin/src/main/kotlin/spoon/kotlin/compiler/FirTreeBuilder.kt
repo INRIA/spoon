@@ -760,10 +760,10 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
 
         val assignmentExpr = variableAssignment.rValue.accept(this, null).single
-        ctAssignment.setAssignment<CtAssignment<Any, Any>>(assignmentExpr as CtExpression<Any>)
+        ctAssignment.setAssignment<CtAssignment<Any, Any>>(expressionOrWrappedInStatementExpression(assignmentExpr))
 
         val lvalue = variableAssignment.lValue.accept(this, null).single as CtReference
-        val target = helper.getReceiver(variableAssignment)?.accept(this,null)?.single as CtExpression<*>
+        val target = helper.getReceiver(variableAssignment)?.accept(this,null)?.single as CtExpression<*>?
         val ctWrite = createVariableWrite(target, lvalue)
         ctAssignment.setAssigned<CtAssignment<Any, Any>>(ctWrite)
 
@@ -976,7 +976,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         localVar.setType<CtLocalVariable<*>>(referenceBuilder.getNewTypeReference(returnType))
 
         // Mark as implicit/explicit type
-        val explicitType = (returnType is FirResolvedTypeRef && returnType.delegatedTypeRef != null)
+        val explicitType = helper.hasExplicitTypeDeclaration(property) ?: true // If no PSI source, default to explicit
         localVar.putMetadata<CtLocalVariable<*>>(KtMetadataKeys.VARIABLE_EXPLICIT_TYPE, explicitType)
         localVar.setInferred<CtLocalVariable<Any>>(!explicitType)
 
