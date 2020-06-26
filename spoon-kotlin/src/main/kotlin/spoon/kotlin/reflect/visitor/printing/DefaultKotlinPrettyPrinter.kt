@@ -448,8 +448,11 @@ class DefaultKotlinPrettyPrinter(
         }
     }
 
-    override fun visitCtThrow(p0: CtThrow?) {
-        TODO("Not yet implemented")
+    override fun visitCtThrow(ctThrow: CtThrow) {
+        enterCtStatement(ctThrow)
+        adapter write "throw" and SPACE
+        ctThrow.thrownExpression.accept(this)
+        exitCtStatement(ctThrow)
     }
 
     override fun <T : Any?> visitCtLocalVariableReference(localVarRef: CtLocalVariableReference<T>) {

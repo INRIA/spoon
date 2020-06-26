@@ -1082,6 +1082,16 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         }.compose()
     }
 
+    override fun visitThrowExpression(
+        throwExpression: FirThrowExpression,
+        data: Nothing?
+    ): CompositeTransformResult.Single<CtThrow> {
+        val ctThrow = factory.Core().createThrow()
+        val throwExpr = throwExpression.exception.accept(this,null).single as CtExpression<Throwable>
+        ctThrow.setThrownExpression<CtThrow>(throwExpr)
+        return ctThrow.compose()
+    }
+
     override fun visitCatch(catch: FirCatch, data: Nothing?): CompositeTransformResult<CtElement> {
         val block = catch.block.accept(this,null).single as CtStatement
         return factory.Core().createCatch().apply {
