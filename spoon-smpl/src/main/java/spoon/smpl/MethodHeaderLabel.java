@@ -34,9 +34,9 @@ public class MethodHeaderLabel implements Label {
         // TODO: test potential performance benefit of lazy initialization of the header model
         //this.method = method;
         headerModel = new MethodHeaderModel(method);
-
         stringRep = method.toString().replaceFirst("(?s)\\s*\\{.+", "");
-        metavarBindings = new HashMap<>();
+
+        reset();
     }
 
     /**
@@ -57,7 +57,10 @@ public class MethodHeaderLabel implements Label {
 
             ModelChecker.ResultSet result = checker.getResult();
 
+            HashMap<String, Object> metavarBindings = new HashMap<>();
+
             if (verifyResultAndCollectMetavars(result, metavarBindings)) {
+                matchResults.add(new LabelMatchResultImpl(metavarBindings));
                 return true;
             } else {
                 reset();
@@ -72,13 +75,13 @@ public class MethodHeaderLabel implements Label {
     }
 
     /**
-     * Retrieve any metavariable bindings involved in matching the most recently given predicate.
+     * Get the match results produced for the most recently matched Predicate.
      *
-     * @return Most recent metavariable bindings, or null if there are none
+     * @return List of results
      */
     @Override
-    public Map<String, Object> getMetavariableBindings() {
-        return metavarBindings;
+    public List<LabelMatchResult> getMatchResults() {
+        return matchResults;
     }
 
     /**
@@ -86,7 +89,7 @@ public class MethodHeaderLabel implements Label {
      */
     @Override
     public void reset() {
-        metavarBindings = new HashMap<>();
+        matchResults = new ArrayList<>();
     }
 
     @Override
@@ -152,11 +155,6 @@ public class MethodHeaderLabel implements Label {
     }
 
     /**
-     * The most recently matched metavariable bindings.
-     */
-    private Map<String, Object> metavarBindings;
-
-    /**
      * String representation of method header.
      */
     private final String stringRep;
@@ -170,4 +168,9 @@ public class MethodHeaderLabel implements Label {
      * Model for the method header (a MethodHeaderModel, accessed under a more general interface).
      */
     private final Model headerModel;
+
+    /**
+     * List of match results produced from the most recently matching Predicate.
+     */
+    private List<LabelMatchResult> matchResults;
 }

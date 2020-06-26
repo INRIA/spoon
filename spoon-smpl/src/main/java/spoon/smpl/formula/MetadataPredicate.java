@@ -67,34 +67,6 @@ public class MetadataPredicate implements Predicate {
     }
 
     /**
-     * Metadata Predicates cannot match specific elements.
-     *
-     * @param element Irrelevant
-     */
-    @Override
-    public void setMatchedElement(CtElement element) { }
-
-    /**
-     * Metadata Predicates cannot match specific elements.
-     *
-     * @return false
-     */
-    @Override
-    public boolean hasMatchedElement() {
-        return false;
-    }
-
-    /**
-     * Metadata Predicates cannot match specific elements.
-     *
-     * @return null
-     */
-    @Override
-    public CtElement getMatchedElement() {
-        return null;
-    }
-
-    /**
      * Implement the Visitor pattern.
      *
      * @param visitor Visitor to accept

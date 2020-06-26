@@ -56,38 +56,6 @@ abstract public class ParameterizedPredicate implements Predicate {
         return true;
     }
 
-    /**
-     * Set the specific (sub-)element that matched the Predicate.
-     *
-     * @param element Element that matched the Predicate
-     */
-    @Override
-    public void setMatchedElement(CtElement element) {
-        matchedElement.push(element);
-    }
-
-    /**
-     * Check if the Predicate should be seen as having bound a specific matching (sub-)element rather than having
-     * matched a full CFG statement node.
-     *
-     * @return True if the Predicate has bound a specific matching (sub-)element, false otherwise
-     */
-    @Override
-    public boolean hasMatchedElement() {
-        return !matchedElement.isEmpty();
-    }
-
-    /**
-     * Get the specific (sub-)element that matched the Predicate, if any.
-     *
-     * @return The specific (sub-)element that matched the Predicate, or null if the Predicate matched a full CFG
-     *         statement node
-     */
-    @Override
-    public CtElement getMatchedElement() {
-        return matchedElement.pop();
-    }
-
     @Override
     public int hashCode() {
         return toString().hashCode();

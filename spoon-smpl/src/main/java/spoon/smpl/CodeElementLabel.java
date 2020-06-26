@@ -30,7 +30,7 @@ abstract public class CodeElementLabel implements Label {
         this.codeElement.accept(builder);
         this.codePattern = builder.getResult();
 
-        this.metavarBindings = null;
+        reset();
     }
 
     /**
@@ -39,6 +39,7 @@ abstract public class CodeElementLabel implements Label {
      * @param predicate Predicate to test
      * @return True if the predicate matches the label, false otherwise
      */
+    @Override
     public boolean matches(Predicate predicate) {
         if (predicate instanceof Expression) {
             Expression ep = (Expression) predicate;
@@ -46,12 +47,13 @@ abstract public class CodeElementLabel implements Label {
             SubElemPatternMatcher spm = new SubElemPatternMatcher(ep.getPattern());
 
             if (spm.matches(codePattern)) {
-                metavarBindings = spm.getParameters();
-
-                if (ep.processMetavariableBindings(metavarBindings)) {
-                    predicate.setMatchedElement(spm.getMatchedElement());
-                    return true;
+                for (SubElemPatternMatcher.MatchResult result : spm.getResult()) {
+                    if (ep.processMetavariableBindings((result.parameters))) {
+                        matchResults.add(new LabelMatchResultImpl(result.matchedElement, result.parameters));
+                    }
                 }
+
+                return true;
             }
 
             return false;
@@ -72,8 +74,9 @@ abstract public class CodeElementLabel implements Label {
                 }
 
                 if (alternatives.size() > 0) {
-                    metavarBindings = new HashMap<>();
+                    HashMap<String, Object> metavarBindings = new HashMap<>();
                     metavarBindings.put(vup.getVariable(), alternatives);
+                    matchResults.add(new LabelMatchResultImpl(metavarBindings));
                     return true;
                 } else {
                     return false;
@@ -87,29 +90,30 @@ abstract public class CodeElementLabel implements Label {
     }
 
     /**
-     * Retrieve any metavariable bindings involved in matching the most recently given predicate.
-     *
-     * @return Most recent metavariable bindings, or null if there are none
-     */
-    @Override
-    public Map<String, Object> getMetavariableBindings() {
-        return metavarBindings;
-    }
-
-    /**
-     * Reset/clear metavariable bindings
+     * Reset/clear any match results.
      */
     @Override
     public void reset() {
-        metavarBindings = null;
+        matchResults = new ArrayList<>();
     }
 
     /**
      * Get the code element.
+     *
      * @return The code element
      */
     public CtElement getCodeElement() {
         return codeElement;
+    }
+
+    /**
+     * Get the match results produced for the most recently matched Predicate.
+     *
+     * @return List of results
+     */
+    @Override
+    public List<LabelMatchResult> getMatchResults() {
+        return matchResults;
     }
 
     @Override
@@ -129,7 +133,7 @@ abstract public class CodeElementLabel implements Label {
     protected PatternNode codePattern;
 
     /**
-     * The most recently matched metavariable bindings.
+     * List of match results produced from the most recently matching Predicate.
      */
-    protected Map<String, Object> metavarBindings;
+    protected List<LabelMatchResult> matchResults;
 }

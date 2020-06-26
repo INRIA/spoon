@@ -2,7 +2,9 @@ package spoon.smpl;
 
 import spoon.smpl.formula.*;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,13 +41,17 @@ public class MetadataLabel implements Label {
     }
 
     /**
-     * Retrieve any metavariable bindings involved in matching the most recently given predicate.
+     * Get the match results produced for the most recently matched Predicate.
      *
-     * @return Most recent metavariable bindings, or null if there are none
+     * @return List of results
      */
     @Override
-    public Map<String, Object> getMetavariableBindings() {
-        return metavarBindings;
+    public List<LabelMatchResult> getMatchResults() {
+        if (metavarBindings.keySet().size() > 0) {
+            return Collections.singletonList(new LabelMatchResultImpl(metavarBindings));
+        } else {
+            return null;
+        }
     }
 
     /**

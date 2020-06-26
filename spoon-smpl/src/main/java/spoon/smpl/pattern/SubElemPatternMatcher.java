@@ -2,7 +2,8 @@ package spoon.smpl.pattern;
 
 import spoon.reflect.declaration.CtElement;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -11,6 +12,37 @@ import java.util.Map;
  */
 public class SubElemPatternMatcher {
     /**
+     * A MatchResult consists of a matched code element the parameter bindings involved.
+     */
+    public static class MatchResult {
+        /**
+         * Create a new MatchResult.
+         *
+         * @param matchedElement Matched code element
+         * @param parameters Parameter bindings
+         */
+        public MatchResult(CtElement matchedElement, Map<String, Object> parameters) {
+            this.matchedElement = matchedElement;
+            this.parameters = parameters;
+        }
+
+        @Override
+        public String toString() {
+            return matchedElement.toString() + ":" + parameters.toString();
+        }
+
+        /**
+         * Matched code element.
+         */
+        public final CtElement matchedElement;
+
+        /**
+         * Parameter bindings.
+         */
+        public final Map<String, Object> parameters;
+    }
+
+    /**
      * Create a new SubElemPatternMatcher using the given rule pattern that should be allowed to match any ElemNode
      * sub-pattern of a target pattern.
      *
@@ -18,15 +50,6 @@ public class SubElemPatternMatcher {
      */
     public SubElemPatternMatcher(PatternNode rulePattern) {
         this.rulePattern = rulePattern;
-        reset();
-    }
-
-    /**
-     * Reset the matcher state.
-     */
-    public void reset() {
-        parameters = new HashMap<>();
-        matchedElement = null;
     }
 
     /**
@@ -36,41 +59,31 @@ public class SubElemPatternMatcher {
      * @return True if there is any match, false otherwise
      */
     public boolean matches(PatternNode pattern) {
-        DotsExtPatternMatcher matcher = new DotsExtPatternMatcher(rulePattern);
+        result = new ArrayList<>();
+        DotsExtPatternMatcher regularMatcher = new DotsExtPatternMatcher(rulePattern);
         SubElemPatternCollector spc = new SubElemPatternCollector();
         pattern.accept(spc);
 
         for (ElemNode subPattern : spc.getResult()) {
-            subPattern.accept(matcher);
+            subPattern.accept(regularMatcher);
 
-            if (matcher.getResult() == true) {
-                parameters = matcher.getParameters();
-                matchedElement = subPattern.elem;
-                return true;
+            if (regularMatcher.getResult() == true) {
+                result.add(new MatchResult(subPattern.elem, regularMatcher.getParameters()));
             }
 
-            matcher.reset();
+            regularMatcher.reset();
         }
 
-        return false;
+        return result.size() > 0;
     }
 
     /**
-     * Get parameter bindings of most recent successful pattern match, if any.
+     * Get the results.
      *
-     * @return Parameters matched in most recent successful pattern match
+     * @return List of results
      */
-    public Map<String, Object> getParameters() {
-        return parameters;
-    }
-
-    /**
-     * Get the element corresponding to the specific ElemNode that yielded a match.
-     *
-     * @return The element corresponding to the specific ElemNode that matched
-     */
-    public CtElement getMatchedElement() {
-        return matchedElement;
+    public List<MatchResult> getResult() {
+        return result;
     }
 
     /**
@@ -79,12 +92,7 @@ public class SubElemPatternMatcher {
     private PatternNode rulePattern;
 
     /**
-     * Parameter bindings of most recent successful pattern match.
+     * List of results.
      */
-    private Map<String, Object> parameters;
-
-    /**
-     * Element corresponding to specific ElemNode that yielded the most recent successful match.
-     */
-    private CtElement matchedElement;
+    private List<MatchResult> result;
 }

@@ -407,7 +407,11 @@ public class ModelCheckerTest {
             return false;
         }
 
-        public Map<String, Object> getMetavariableBindings() { return bindings; }
+        @Override
+        public List<LabelMatchResult> getMatchResults() {
+            return Collections.singletonList(new LabelMatchResultImpl(bindings));
+        }
+
         public void reset() { }
     }
 

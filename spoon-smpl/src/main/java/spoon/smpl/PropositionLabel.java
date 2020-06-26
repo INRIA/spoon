@@ -3,6 +3,8 @@ package spoon.smpl;
 import spoon.smpl.formula.Predicate;
 import spoon.smpl.formula.Proposition;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,16 +34,17 @@ public class PropositionLabel implements Label {
     }
 
     /**
-     * Propositions do not support metavariables.
-     * @return null
+     * Propositions do not involve the binding of any information, so an informationless match result is always returned.
+     *
+     * @return Singleton list of informationless match result
      */
     @Override
-    public Map<String, Object> getMetavariableBindings() {
-        return null;
+    public List<LabelMatchResult> getMatchResults() {
+        return Collections.singletonList(new LabelMatchResultImpl());
     }
 
     /**
-     * Propositions do not support metavariables.
+     * Propositions do not involve the binding of any information so resets are not necessary.
      */
     @Override
     public void reset() { }

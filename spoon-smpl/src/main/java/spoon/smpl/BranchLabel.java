@@ -6,6 +6,8 @@ import spoon.smpl.formula.Branch;
 import spoon.smpl.formula.Predicate;
 import spoon.smpl.pattern.*;
 
+import java.util.Map;
+
 
 /**
  * A BranchLabel is a Label used to associate states with CtElement code
@@ -48,8 +50,17 @@ public class BranchLabel extends CodeElementLabel {
 
             PatternMatcher matcher = new DotsExtPatternMatcher(bp.getPattern());
             codePattern.accept(matcher);
-            metavarBindings = matcher.getParameters();
-            return matcher.getResult() && bp.processMetavariableBindings(metavarBindings);
+
+            if (matcher.getResult()) {
+                Map<String, Object> metavarBindings = matcher.getParameters();
+
+                if (bp.processMetavariableBindings(metavarBindings)) {
+                    matchResults.add(new LabelMatchResultImpl(codeElement.getParent(), metavarBindings));
+                    return true;
+                }
+            }
+
+            return false;
         } else {
             return super.matches(predicate);
         }

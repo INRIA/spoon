@@ -445,23 +445,26 @@ public class ModelChecker implements FormulaVisitor {
         for (int s : model.getStates()) {
             for (Label label : model.getLabels(s)) {
                 if (label.matches(element)) {
-                    Map<String, Object> bindings = label.getMetavariableBindings();
+                    List<LabelMatchResult> matchResults = label.getMatchResults();
 
-                    Environment environment = new Environment();
+                    for (LabelMatchResult result : matchResults) {
+                        Environment environment = new Environment();
 
-                    if (bindings != null) {
-                        environment.putAll(bindings);
-                    }
+                        if (result.getMetavariableBindings() != null) {
+                            environment.putAll(result.getMetavariableBindings());
+                        }
 
-                    if (recordMatchedElements && element.hasMatchedElement()) {
-                        resultSet.add(new Result(s, environment, newWitnessForest(new Witness(s, "_e", element.getMatchedElement(), emptyWitnessForest()))));
-                    } else {
-                        resultSet.add(new Result(s, environment, emptyWitnessForest()));
+                        if (recordMatchedElements && result.getMatchedElement() != null) {
+                            resultSet.add(new Result(s, environment, newWitnessForest(new Witness(s, "_e", result.getMatchedElement(), emptyWitnessForest()))));
+                        } else {
+                            resultSet.add(new Result(s, environment, emptyWitnessForest()));
+                        }
                     }
 
                     label.reset();
-
-                    break;
+                    break; // Only one label per model state is allowed to match
+                } else {
+                    label.reset();
                 }
             }
         }

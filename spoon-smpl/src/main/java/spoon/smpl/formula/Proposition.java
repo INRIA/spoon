@@ -49,36 +49,6 @@ public class Proposition implements Predicate {
     }
 
     /**
-     * Propositions cannot match specific elements.
-     *
-     * @param element Irrelevant
-     */
-    @Override
-    public void setMatchedElement(CtElement element) {
-
-    }
-
-    /**
-     * Propositions cannot match specific elements.
-     *
-     * @return false
-     */
-    @Override
-    public boolean hasMatchedElement() {
-        return false;
-    }
-
-    /**
-     * Propositions cannot match specific elements.
-     *
-     * @return null
-     */
-    @Override
-    public CtElement getMatchedElement() {
-        return null;
-    }
-
-    /**
      * Get the proposition String.
      *
      * @return The proposition String
