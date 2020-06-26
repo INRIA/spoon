@@ -190,4 +190,16 @@ public class FormulaScanner implements FormulaVisitor {
         element.getInnerElement().accept(this);
         exit(element);
     }
+
+    /**
+     * Visit an InnerAnd element.
+     *
+     * @param element Formula element
+     */
+    @Override
+    public void visit(InnerAnd element) {
+        enter(element);
+        element.getInnerElement().accept(this);
+        exit(element);
+    }
 }

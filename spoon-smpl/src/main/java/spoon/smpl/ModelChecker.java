@@ -777,6 +777,61 @@ public class ModelChecker implements FormulaVisitor {
     }
 
     /**
+     * Compute the set of states that satisfy InnerAnd(phi).
+     *
+     * @param element InnerAnd Formula
+     */
+    @Override
+    public void visit(InnerAnd element) {
+        element.getInnerElement().accept(this);
+        ResultSet innerResult = resultStack.pop();
+
+        ResultSet finalResult = new ResultSet();
+
+        Map<Integer, Map<String, Set<Object>>> options = getPositiveOptions(innerResult);
+
+        for (int state : innerResult.getIncludedStates()) {
+            List<String> varnames = new ArrayList<>(options.get(state).keySet());
+
+            CombinationsGenerator<Object> combos = new CombinationsGenerator<>();
+
+            for (String var : varnames) {
+                combos.addWheel(new ArrayList<>(options.get(state).get(var)));
+            }
+
+            while (combos.next()) {
+                List<Object> bindings = combos.current();
+
+                Environment environment = new Environment();
+
+                for (int i = 0; i < varnames.size(); ++i) {
+                    environment.put(varnames.get(i), bindings.get(i));
+                }
+
+                Set<Witness> jointWitnesses = new HashSet<>();
+                boolean foundSome = false;
+
+                for (Result res : innerResult) {
+                    if (res.getState() == state && Environment.join(res.getEnvironment(), environment) != null) {
+                        foundSome = true;
+                        jointWitnesses.addAll(res.getWitnesses());
+                    }
+                }
+
+                if (foundSome) {
+                    if (jointWitnesses.size() > 0) {
+                        finalResult.add(new Result(state, environment, jointWitnesses));
+                    } else {
+                        finalResult.add(new Result(state, environment, emptyWitnessForest()));
+                    }
+                }
+            }
+        }
+
+        resultStack.push(finalResult);
+    }
+
+    /**
      * Computes the set of states that have some successor in a given set of target states, i.e
      * the states that CAN transition into the set of target states.
      *
@@ -895,6 +950,35 @@ public class ModelChecker implements FormulaVisitor {
         return w1.state == w2.state
                && ((witnessList.get(0).metavar.equals("_e") && witnessList.get(1).metavar.equals("_v"))
                    || (witnessList.get(0).metavar.equals("_v") && witnessList.get(1).metavar.equals("_e")));
+    }
+
+    /**
+     * Given a set of Results, compute for each included state the set of positive environment variable bindings that
+     * occur in results associated with the state.
+     *
+     * @param input Input set of Results
+     * @return Map from state ID to (Map from environment variable name to Set of positive bindings)
+     */
+    private static Map<Integer, Map<String, Set<Object>>> getPositiveOptions(ResultSet input) {
+        Map<Integer, Map<String, Set<Object>>> result = new HashMap<>();
+
+        for (Result r1 : input) {
+            if (!result.containsKey(r1.getState())) {
+                result.put(r1.getState(), new HashMap<>());
+            }
+
+            for (String key : r1.getEnvironment().keySet()) {
+                if (!(r1.getEnvironment().get(key) instanceof Environment.NegativeBinding)) {
+                    if (!result.get(r1.getState()).containsKey(key)) {
+                        result.get(r1.getState()).put(key, new HashSet<>());
+                    }
+
+                    result.get(r1.getState()).get(key).add(r1.getEnvironment().get(key));
+                }
+            }
+        }
+
+        return result;
     }
 
     /**

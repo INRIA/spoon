@@ -15,7 +15,9 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 
 import spoon.smpl.formula.*;
+import spoon.smpl.metavars.IdentifierConstraint;
 
+import static org.junit.Assert.fail;
 import static spoon.smpl.TestUtils.*;
 
 public class ModelCheckerTest {
@@ -472,5 +474,35 @@ public class ModelCheckerTest {
         new VariableUsePredicate("z", makeMetavars("z", new AnyConstraint())).accept(checker);
         assertEquals(res(1, env("z", "x"), 2, env("z", Arrays.asList("x", "y")), 3, env("z", "y")),
                      checker.getResult());
+    }
+
+    @Test
+    public void testInnerAnd() {
+
+        // contract: InnerAnd(phi) should merge results of SAT(phi) under environments containing only positive bindings
+
+        CFGModel model = new CFGModel(methodCfg(parseMethod("void m() { a = b; }")));
+
+        Map<String, MetavariableConstraint> meta = makeMetavars("x", new IdentifierConstraint(),
+                                                                "y", new IdentifierConstraint());
+
+        SequentialOr phi = new SequentialOr();
+        phi.add(new And(new Expression(parseExpression("x;"), meta), new ExistsVar("_v", new SetEnv("_v", "Delete"))));
+        phi.add(new And(new Expression(parseExpression("y;"), meta), new ExistsVar("_v", new SetEnv("_v", "Delete"))));
+
+        ModelChecker checker = new ModelChecker(model);
+        new InnerAnd(phi).accept(checker);
+
+        ModelChecker.ResultSet results = checker.getResult();
+
+        assertEquals(4, results.size()); // (x,y) = (a,a,) | (a,b) | (b,a) | (b,b)
+
+        for (ModelChecker.Result result : results) {
+            for (String key : result.getEnvironment().keySet()) {
+                if (result.getEnvironment().get(key) instanceof Environment.NegativeBinding) {
+                    fail("A negative binding was present");
+                }
+            }
+        }
     }
 }

@@ -3,16 +3,25 @@ package spoon.smpl.formula;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A SubformulaCollector is a Formula visitor that collects every sub-Formula element into a list.
+ */
 public class SubformulaCollector implements FormulaVisitor {
+    /**
+     * Create a new SubformulaCollector.
+     */
     public SubformulaCollector() {
         subformulas = new ArrayList<>();
     }
 
+    /**
+     * Get the collected sub-Formulas.
+     *
+     * @return List of sub-Formulas
+     */
     public List<Formula> getResult() {
         return subformulas;
     }
-
-    private List<Formula> subformulas;
 
     @Override
     public void visit(True element) {
@@ -96,4 +105,15 @@ public class SubformulaCollector implements FormulaVisitor {
 
         element.getInnerElement().accept(this);
     }
+
+    @Override
+    public void visit(InnerAnd element) {
+        subformulas.add(element);
+        element.getInnerElement().accept(this);
+    }
+
+    /**
+     * List of collected sub-Formulas.
+     */
+    private List<Formula> subformulas;
 }

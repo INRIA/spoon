@@ -707,7 +707,7 @@ public class FormulaCompiler {
             formula.add(compileFormulaInner(clauseNode, cutoffNodes, quantifiedMetavars));
         }
 
-        return formula;
+        return new InnerAnd(formula);
     }
 
     /**

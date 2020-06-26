@@ -4,17 +4,18 @@ package spoon.smpl.formula;
  * FormulaVisitor defines the Visitor pattern for Formula elements.
  */
 public interface FormulaVisitor {
-    public void visit(True element);
-    public void visit(And element);
-    public void visit(Or element);
-    public void visit(Not element);
-    public void visit(Predicate element);
-    public void visit(ExistsNext element);
-    public void visit(AllNext element);
-    public void visit(ExistsUntil element);
-    public void visit(AllUntil element);
-    public void visit(ExistsVar element);
-    public void visit(SetEnv element);
-    public void visit(SequentialOr element);
-    public void visit(Optional element);
+    void visit(True element);
+    void visit(And element);
+    void visit(Or element);
+    void visit(Not element);
+    void visit(Predicate element);
+    void visit(ExistsNext element);
+    void visit(AllNext element);
+    void visit(ExistsUntil element);
+    void visit(AllUntil element);
+    void visit(ExistsVar element);
+    void visit(SetEnv element);
+    void visit(SequentialOr element);
+    void visit(Optional element);
+    void visit(InnerAnd element);
 }
