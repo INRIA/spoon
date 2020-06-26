@@ -12,7 +12,7 @@ import kotlin.test.assertEquals
 
 class ExampleTests {
 
-    val util = TestBuildUtil()
+    val util = TestBuildUtil
     var pp = DefaultKotlinPrettyPrinter(DefaultPrinterAdapter(LINE_SEPARATOR = "\n"))
 
     @BeforeEach

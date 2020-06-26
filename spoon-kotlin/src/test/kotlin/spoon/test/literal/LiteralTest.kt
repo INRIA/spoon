@@ -13,7 +13,7 @@ import spoon.test.literal.testclasses.Tacos
 
 class LiteralTest {
 
-    val util = TestBuildUtil()
+    val util = TestBuildUtil
 
     private fun CtType<*>.createRef(t: Class<*>) =
         this.factory.Type().createReference(t)

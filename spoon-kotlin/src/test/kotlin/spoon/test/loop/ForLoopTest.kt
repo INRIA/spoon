@@ -13,7 +13,7 @@ import spoon.test.TestBuildUtil
 import kotlin.test.assertNotEquals
 
 class ForLoopTest {
-    private val util = TestBuildUtil()
+    private val util = TestBuildUtil
     private val pp = DefaultKotlinPrettyPrinter(DefaultPrinterAdapter())
     private val forLoopsClass = util.buildClass("spoon.test.loop.testclasses", "ForLoops")
     private val eol = System.lineSeparator()

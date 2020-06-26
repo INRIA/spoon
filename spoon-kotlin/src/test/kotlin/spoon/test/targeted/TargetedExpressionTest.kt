@@ -12,7 +12,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter
 
 class TargetedExpressionTest {
 
-    val util = TestBuildUtil()
+    val util = TestBuildUtil
     val pp = DefaultKotlinPrettyPrinter(DefaultPrinterAdapter())
 
     @Test

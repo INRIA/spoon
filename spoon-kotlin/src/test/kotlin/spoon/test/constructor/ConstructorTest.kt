@@ -14,7 +14,7 @@ import spoon.test.TestBuildUtil
 import spoon.test.constructor.testclasses.*
 
 class ConstructorTest {
-    val util = TestBuildUtil()
+    val util = TestBuildUtil
     val pp = DefaultKotlinPrettyPrinter(DefaultPrinterAdapter())
 
     private fun CtConstructor<*>.isPrimary() = this.getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as Boolean

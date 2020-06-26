@@ -14,7 +14,7 @@ import spoon.support.DefaultCoreFactory
 import spoon.support.StandardEnvironment
 import java.io.File
 
-class TestBuildUtil {
+object TestBuildUtil {
     val args = K2JVMCompilerArguments().also {
         it.classpath = "./src/test/resources/kotlin-stdlib.jar" // Need stdlib in classpath for FIR
     }

@@ -12,7 +12,7 @@ import spoon.reflect.reference.CtTypeReference
 import spoon.test.TestBuildUtil
 
 class BinaryOperatorTest {
-    private val util = TestBuildUtil()
+    private val util = TestBuildUtil
     private val pp = DefaultKotlinPrettyPrinter(DefaultPrinterAdapter())
 
     private fun CtBinaryOperator<*>.ktKind() = getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND)

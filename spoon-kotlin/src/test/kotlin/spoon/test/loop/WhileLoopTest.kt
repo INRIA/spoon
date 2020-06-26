@@ -1,18 +1,16 @@
 package spoon.test.loop
 
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import spoon.kotlin.reflect.visitor.printing.DefaultKotlinPrettyPrinter
 import spoon.kotlin.reflect.visitor.printing.DefaultPrinterAdapter
 import spoon.reflect.code.*
 import spoon.reflect.declaration.CtType
-import spoon.reflect.reference.CtTypeReference
 import spoon.reflect.visitor.filter.TypeFilter
 import spoon.test.TestBuildUtil
 
 class WhileLoopTest {
-    private val util = TestBuildUtil()
+    private val util = TestBuildUtil
     private val pp = DefaultKotlinPrettyPrinter(DefaultPrinterAdapter())
     private val whileLoopsClass = util.buildClass("spoon.test.loop.testclasses", "WhileLoops")
     private val eol = System.lineSeparator()

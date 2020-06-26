@@ -10,7 +10,7 @@ import spoon.test.unaryoperator.testclasses.HasAllUnaryOperators
 import org.junit.jupiter.api.Assertions.*
 
 class UnaryOperatorTest {
-    private val util = TestBuildUtil()
+    private val util = TestBuildUtil
     private val pp = DefaultKotlinPrettyPrinter(DefaultPrinterAdapter())
 
     @Test

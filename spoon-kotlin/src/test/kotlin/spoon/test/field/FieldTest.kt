@@ -14,7 +14,7 @@ import spoon.reflect.visitor.filter.TypeFilter
 import spoon.test.TestBuildUtil
 
 class FieldTest {
-    private val util = TestBuildUtil()
+    private val util = TestBuildUtil
     private val pp = DefaultKotlinPrettyPrinter(DefaultPrinterAdapter())
 
     private fun CtField<*>.getKtModifiers() = getMetadata(KtMetadataKeys.KT_MODIFIERS) as Set<KtModifierKind>

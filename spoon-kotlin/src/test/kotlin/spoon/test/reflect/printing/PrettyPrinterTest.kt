@@ -8,7 +8,7 @@ import spoon.test.TestBuildUtil
 
 
 class PrettyPrinterTest {
-    private val util = TestBuildUtil()
+    private val util = TestBuildUtil
 
     @Test
     fun testPrettyPrintIdempotent() {
