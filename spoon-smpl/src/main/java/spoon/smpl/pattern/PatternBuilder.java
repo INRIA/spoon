@@ -318,13 +318,15 @@ public class PatternBuilder implements CtVisitor {
         if (params.contains(varname)) {
             result.sub.put("variable", new ParamNode(varname));
         } else {
-            result.sub.put("variable", new ValueNode(varname, ctLocalVariable.getReference()));
+            ctLocalVariable.getReference().accept(this);
+            result.sub.put("variable", resultStack.pop());
         }
 
         if (params.contains(typename)) {
             result.sub.put("type", new ParamNode(typename));
         } else {
-            result.sub.put("type", new ValueNode(typename, ctLocalVariable.getType()));
+            ctLocalVariable.getType().accept(this);
+            result.sub.put("type", resultStack.pop());
         }
 
         if (ctLocalVariable.getDefaultExpression() != null) {
@@ -557,7 +559,7 @@ public class PatternBuilder implements CtVisitor {
         if (params.contains(varname)) {
             resultStack.push(new ParamNode(varname));
         } else {
-            ElemNode result = new ElemNode(ctVariableRead);
+            ElemNode result = new ElemNode(ctVariableRead, CtVariableRead.class);
             result.sub.put("variable", new ValueNode(varname, ctVariableRead.getVariable()));
             resultStack.push(result);
         }
@@ -570,7 +572,7 @@ public class PatternBuilder implements CtVisitor {
         if (params.contains(varname)) {
             resultStack.push(new ParamNode(varname));
         } else {
-            ElemNode result = new ElemNode(ctVariableWrite);
+            ElemNode result = new ElemNode(ctVariableWrite, CtVariableWrite.class);
             result.sub.put("variable", new ValueNode(varname, ctVariableWrite.getVariable()));
             resultStack.push(result);
         }
@@ -588,36 +590,52 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtFieldRead(CtFieldRead<T> ctFieldRead) {
-        if (ctFieldRead.getTarget() == null || (ctFieldRead.getTarget() instanceof CtThisAccess<?>)) {
-            CtVariableRead<T> ctVariableRead = ctFieldRead.getFactory().createVariableRead();
-            CtVariableReference<T> ctVariableReference = ctFieldRead.getFactory().createLocalVariableReference();
-            ctVariableReference.setSimpleName(ctFieldRead.getVariable().getSimpleName());
-            ctVariableRead.setVariable(ctVariableReference);
-            ctVariableRead.setType(ctFieldRead.getType());
-            visitCtVariableRead(ctVariableRead);
+        String fieldName = ctFieldRead.getVariable().getSimpleName();
+
+        if (params.contains(fieldName) && ctFieldRead.getTarget() == null) {
+            resultStack.push(new ParamNode(fieldName));
+            return;
+        }
+
+        ElemNode result = new ElemNode(ctFieldRead, CtVariableRead.class);
+
+        if (params.contains(fieldName)) {
+            result.sub.put("variable", new ParamNode(fieldName));
         } else {
-            String fieldName = ctFieldRead.getVariable().getSimpleName();
-            ElemNode result = new ElemNode(ctFieldRead);
+            result.sub.put("variable", new ValueNode(fieldName, ctFieldRead.getVariable()));
+        }
 
-            if (params.contains(fieldName)) {
-                result.sub.put("field", new ParamNode(fieldName));
-            } else {
-                result.sub.put("field", new ValueNode(fieldName, ctFieldRead.getVariable()));
-            }
-
+        if (ctFieldRead.getTarget() != null) {
             ctFieldRead.getTarget().accept(this);
             result.sub.put("target", resultStack.pop());
-            resultStack.push(result);
         }
+
+        resultStack.push(result);
     }
 
     @Override
     public <T> void visitCtFieldWrite(CtFieldWrite<T> ctFieldWrite) {
-        CtVariableWrite<T> ctVariableWrite = ctFieldWrite.getFactory().createVariableWrite();
-        CtVariableReference<T> ctVariableReference = ctFieldWrite.getFactory().createLocalVariableReference();
-        ctVariableReference.setSimpleName(ctFieldWrite.getVariable().getSimpleName());
-        ctVariableWrite.setVariable(ctVariableReference);
-        visitCtVariableWrite(ctVariableWrite);
+        String fieldName = ctFieldWrite.getVariable().getSimpleName();
+
+        if (params.contains(fieldName) && ctFieldWrite.getTarget() == null) {
+            resultStack.push(new ParamNode(fieldName));
+            return;
+        }
+
+        ElemNode result = new ElemNode(ctFieldWrite, CtVariableWrite.class);
+
+        if (params.contains(fieldName)) {
+            result.sub.put("variable", new ParamNode(fieldName));
+        } else {
+            result.sub.put("variable", new ValueNode(fieldName, ctFieldWrite.getVariable()));
+        }
+
+        if (ctFieldWrite.getTarget() != null) {
+            ctFieldWrite.getTarget().accept(this);
+            result.sub.put("target", resultStack.pop());
+        }
+
+        resultStack.push(result);
     }
 
     @Override

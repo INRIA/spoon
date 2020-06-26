@@ -9,7 +9,7 @@ import spoon.smpl.formula.MetavariableConstraint;
 
 /**
  * An IdentifierConstraint restricts a metavariable binding to be CtVariableReference, potentially
- * by refining a given binding to a CtVariableRead, CtVariableWrite or CtVariable
+ * by refining a given binding to a CtVariableAccess
  */
 public class IdentifierConstraint implements MetavariableConstraint {
     /**
@@ -21,16 +21,8 @@ public class IdentifierConstraint implements MetavariableConstraint {
     public CtElement apply(CtElement value) {
         if (value instanceof CtVariableReference) {
             return value;
-        } else if (value instanceof CtFieldAccess) {
-            return null;
         } else if (value instanceof CtVariableAccess) {
             return ((CtVariableAccess<?>) value).getVariable();
-        } else if (value instanceof CtVariable) {
-            CtVariable ctVariable = (CtVariable) value;
-            CtVariableReference ref = ctVariable.getFactory().createLocalVariableReference();
-            ref.setType(ctVariable.getType());
-            ref.setSimpleName(ctVariable.getSimpleName());
-            return ref;
         } else {
             return null;
         }

@@ -11,7 +11,12 @@ import java.util.*;
  */
 public class ElemNode implements PatternNode {
     public ElemNode(CtElement elem) {
+        this(elem, elem.getClass());
+    }
+
+    public ElemNode(CtElement elem, Class<? extends CtElement> matchClass) {
         this.elem = elem;
+        this.matchClass = matchClass;
         this.sub = new HashMap<>();
     }
 
@@ -23,7 +28,7 @@ public class ElemNode implements PatternNode {
     @Override
     public boolean equals(Object other) {
         if (other instanceof ElemNode) {
-            return elem.getClass().equals(((ElemNode)other).elem.getClass()) && sub.equals(((ElemNode)other).sub);
+            return matchClass.equals(((ElemNode) other).matchClass) && sub.equals(((ElemNode)other).sub);
         }
         else {
             return false;
@@ -56,5 +61,6 @@ public class ElemNode implements PatternNode {
     }
 
     public final CtElement elem;
+    public final Class<? extends CtElement> matchClass;
     public final Map<String, PatternNode> sub;
 }
