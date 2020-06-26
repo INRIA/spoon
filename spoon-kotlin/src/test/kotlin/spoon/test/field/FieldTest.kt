@@ -12,12 +12,12 @@ import spoon.reflect.declaration.CtElement
 import spoon.reflect.declaration.CtField
 import spoon.reflect.visitor.filter.TypeFilter
 import spoon.test.TestBuildUtil
+import spoon.test.getKtModifiers
 
 class FieldTest {
     private val util = TestBuildUtil
     private val pp = DefaultKotlinPrettyPrinter(DefaultPrinterAdapter())
 
-    private fun CtField<*>.getKtModifiers() = getMetadata(KtMetadataKeys.KT_MODIFIERS) as Set<KtModifierKind>
     private fun CtField<*>.getDelegate() = getMetadata(KtMetadataKeys.PROPERTY_DELEGATE) as CtExpression<*>?
 
     @Test

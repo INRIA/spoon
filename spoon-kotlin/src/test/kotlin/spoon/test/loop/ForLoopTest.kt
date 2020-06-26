@@ -10,15 +10,13 @@ import spoon.reflect.reference.CtLocalVariableReference
 import spoon.reflect.reference.CtTypeReference
 import spoon.reflect.visitor.filter.TypeFilter
 import spoon.test.TestBuildUtil
-import kotlin.test.assertNotEquals
+import spoon.test.getMethodByName
 
 class ForLoopTest {
     private val util = TestBuildUtil
     private val pp = DefaultKotlinPrettyPrinter(DefaultPrinterAdapter())
     private val forLoopsClass = util.buildClass("spoon.test.loop.testclasses", "ForLoops")
     private val eol = System.lineSeparator()
-
-    private fun CtType<*>.getMethodByName(method: String) = getMethodsByName(method)[0]
 
     private fun CtType<*>.getLoop(method: String) =
         getMethodByName(method).body.getElements(TypeFilter(CtForEach::class.java))[0] as CtForEach
