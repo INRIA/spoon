@@ -316,6 +316,7 @@ class DefaultKotlinPrettyPrinter(
            if(!it.isImplicit) { it.accept(this) }
         }
         adapter.popIndent()
+        adapter.ensureNEmptyLines(0)
         adapter writeln RIGHT_CURL
     }
 
@@ -686,6 +687,7 @@ class DefaultKotlinPrettyPrinter(
 
         visitStatementList(block.statements)
 
+        adapter.ensureNEmptyLines(0)
         adapter write RIGHT_CURL
         exitCtStatement(block)
     }
@@ -946,9 +948,6 @@ class DefaultKotlinPrettyPrinter(
             adapter write "= "
         }
         method.body.accept(this)
-
-        adapter.newline()
-
     }
 
     override fun <T : Any?> visitCtAnnotationFieldAccess(p0: CtAnnotationFieldAccess<T>?) {
