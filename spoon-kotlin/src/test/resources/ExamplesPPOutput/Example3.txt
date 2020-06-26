@@ -1,5 +1,5 @@
 class Example3() {
-    var x: spoon.test.examples.testclasses.HasOnlyAssignOperators = HasOnlyAssignOperators(0)
+    var x = HasOnlyAssignOperators(0)
     val l = listOf(1, 2, 3)
 
     fun f() {

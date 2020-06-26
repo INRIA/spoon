@@ -874,7 +874,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         ctProperty.setType<CtField<*>>(referenceBuilder.getNewTypeReference(returnType))
 
         // Mark as implicit/explicit type
-        val explicitType = (returnType is FirResolvedTypeRef && returnType.delegatedTypeRef != null) // FIXME Correct?
+        val explicitType = helper.hasExplicitTypeDeclaration(property)
         ctProperty.putMetadata<CtField<*>>(KtMetadataKeys.VARIABLE_EXPLICIT_TYPE, explicitType)
 
         // Check if property stems from primary constructor value parameter, in that case this property is implicit
