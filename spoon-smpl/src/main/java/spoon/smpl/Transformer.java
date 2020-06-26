@@ -2,6 +2,7 @@ package spoon.smpl;
 
 import fr.inria.controlflow.BranchKind;
 import fr.inria.controlflow.ControlFlowNode;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -25,8 +26,6 @@ import java.util.stream.Collectors;
  * supplying the Operation with the bindings collected along the path (x1=y1, x2=y2, ...).
  */
 public class Transformer {
-    // TODO: a method that applies transformations to a method header
-
     /**
      * Apply a set of transformations to the control flow graph of a method body.
      * @param model CFG of method body
@@ -34,7 +33,7 @@ public class Transformer {
      */
     public static void transform(CFGModel model, Set<ModelChecker.Witness> witnesses) {
         Map<String, Object> bindings = new HashMap<>();
-        HashSet<Integer> done = new HashSet<>();
+        HashSet<StateElementPair> done = new HashSet<>();
 
         for (ModelChecker.Witness witness : witnesses) {
             transform(model, bindings, witness, done);
@@ -80,14 +79,8 @@ public class Transformer {
      * @param bindings Metavariable bindings
      * @param witness CTL-VW witness that encodes zero or more transformations
      */
-    private static void transform(CFGModel model, Map<String, Object> bindings, ModelChecker.Witness witness, Set<Integer> done) {
+    private static void transform(CFGModel model, Map<String, Object> bindings, ModelChecker.Witness witness, Set<StateElementPair> done) {
         if (witness.binding instanceof List<?>) {
-            if (done.contains(witness.state)) {
-                return;
-            }
-
-            done.add(witness.state);
-
             // The witness binding is a list of operations, apply them
 
             List<?> objects = (List<?>) witness.binding;
@@ -107,6 +100,15 @@ public class Transformer {
                     throw new IllegalArgumentException("unexpected node kind " + kind);
                 }
             }
+
+            StateElementPair target = new StateElementPair(witness.state, targetElement);
+
+            if (done.contains(target)) {
+                System.out.println("WARNING: already transformed " + target + ": " + model.getCfg().findNodeById(witness.state));
+                return;
+            }
+
+            done.add(target);
 
             // Process any prepend operations in the list
             objects.stream().filter((obj) -> obj instanceof Operation).forEachOrdered((obj) -> {
@@ -134,5 +136,57 @@ public class Transformer {
 
             bindings.remove(witness.metavar);
         }
+    }
+
+    /**
+     * A StateElementPair is a record of a state ID and a code element, used for keeping track of which elements have
+     * been processed as targets of transformation operations.
+     */
+    private static class StateElementPair {
+        /**
+         * Create a new StateElementPair.
+         *
+         * @param state State ID
+         * @param element Code element
+         */
+        public StateElementPair(Integer state, CtElement element) {
+            this.state = state;
+            this.element = element;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 43;
+            int result = 1;
+            result = prime * result + 17 * state;
+
+            if (!(element.getPosition() instanceof NoSourcePosition)) {
+                result = prime * result + 23 * element.getPosition().getSourceStart();
+            } else {
+                result = prime * result + 23 * element.getParent().getPosition().getSourceStart();
+            }
+
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return this == other || (other instanceof StateElementPair && this.hashCode() == other.hashCode());
+        }
+
+        @Override
+        public String toString() {
+            return "(" + state.toString() + ", " + element.toString() + ")";
+        }
+
+        /**
+         * State ID.
+         */
+        public final Integer state;
+
+        /**
+         * Code element.
+         */
+        public final CtElement element;
     }
 }
