@@ -1140,19 +1140,32 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         is CtExpression<*> -> e.wrapInImplicitReturn()
         else -> throw RuntimeException("Can't wrap ${e::class} in StatementExpression")
     }
-    private fun expressionOrWrappedInStatementExpression(e: CtElement): CtExpression<*> = when(e) {
-        is CtExpression<*> -> e
-        is CtIf -> {
-            val typeRef = e.getMetadata(KtMetadataKeys.KT_STATEMENT_TYPE) as CtTypeReference<Any>
-            val statementExpression = e.wrapInStatementExpression(typeRef)
-            statementExpression.setImplicit(true)
+
+    @Suppress("UNCHECKED_CAST")
+    private fun expressionOrWrappedInStatementExpression(e: CtElement): CtExpression<Any> {
+        val statementExpression: KtStatementExpression<*>
+        when (e) {
+            is CtExpression<*> -> return e as CtExpression<Any>
+            is CtIf -> {
+                val typeRef = e.getMetadata(KtMetadataKeys.KT_STATEMENT_TYPE) as CtTypeReference<Any>
+                statementExpression = e.wrapInStatementExpression(typeRef)
+                statementExpression.setImplicit(true)
+            }
+            is CtBlock<*> -> {
+                if (e.statements.size == 1) {
+                    val statement = e.statements[0]
+                    if (e.isImplicit && statement is CtExpression<*>) {
+                        return statement as CtExpression<Any>
+                    } else {
+                        e.setImplicit<CtBlock<*>>(true)
+                    }
+                }
+                val typeRef = e.getMetadata(KtMetadataKeys.KT_STATEMENT_TYPE) as CtTypeReference<Any>
+                statementExpression = e.wrapInStatementExpression(typeRef)
+                statementExpression.setImplicit(true)
+            }
+            else -> throw RuntimeException("Can't wrap ${e::class.simpleName} in StatementExpression")
         }
-        is CtBlock<*> -> {
-            val typeRef = e.getMetadata(KtMetadataKeys.KT_STATEMENT_TYPE) as CtTypeReference<Any>
-            val statementExpression = e.wrapInStatementExpression(typeRef)
-            if(e.statements.size == 1) e.setImplicit<CtBlock<*>>(true)
-            statementExpression.setImplicit(true)
-        }
-        else -> throw RuntimeException("Can't wrap ${e::class.simpleName} in StatementExpression")
+        return statementExpression
     }
 }
