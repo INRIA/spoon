@@ -418,7 +418,7 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun visitCtCatch(ctCatch: CtCatch) {
-        adapter write SPACE and "catch" and LEFT_ROUND
+        adapter write SPACE and "catch" and SPACE and LEFT_ROUND
         ctCatch.parameter.accept(this)
         adapter write RIGHT_ROUND and SPACE
         ctCatch.body.accept(this)
