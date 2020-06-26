@@ -319,6 +319,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         val receiver = invocationType.receiver.accept(this,null).single as CtExpression<*>
         val ctArrAccess = factory.Core().createArrayRead<Any>()
         ctArrAccess.setTarget<CtArrayRead<Any>>(receiver)
+        ctArrAccess.setType<CtArrayRead<Any>>(referenceBuilder.getNewTypeReference(invocationType.originalFunction.typeRef))
         val args = invocationType.args.map { it.accept(this,null).single.apply { setParent(ctArrAccess) } }
         ctArrAccess.putMetadata<CtArrayRead<*>>(KtMetadataKeys.ARRAY_ACCESS_INDEX_ARGS, args)
         return ctArrAccess.compose()
@@ -332,9 +333,10 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         val ctArrayWrite = factory.Core().createArrayWrite<Any>()
         val args = invocationType.args.map { it.accept(this,null).single.apply { setParent(ctArrayWrite) } }
         ctArrayWrite.setTarget<CtArrayWrite<Any>>(receiver)
+        ctArrayWrite.setType<CtArrayWrite<Any>>(referenceBuilder.getNewTypeReference(invocationType.originalFunction.typeRef))
+        ctArrayWrite.putMetadata<CtArrayWrite<*>>(KtMetadataKeys.ARRAY_ACCESS_INDEX_ARGS, args)
         ctAssignment.setAssigned<CtAssignment<Any,Any>>(ctArrayWrite)
         ctAssignment.setAssignment<CtAssignment<Any,Any>>(rhs)
-        ctArrayWrite.putMetadata<CtArrayWrite<*>>(KtMetadataKeys.ARRAY_ACCESS_INDEX_ARGS, args)
         return ctAssignment.compose()
     }
 
