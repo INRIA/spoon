@@ -9,7 +9,10 @@ import spoon.kotlin.reflect.visitor.printing.DefaultPrinterAdapter
 import spoon.reflect.code.*
 import spoon.reflect.declaration.CtType
 import spoon.reflect.reference.CtTypeReference
+import spoon.reflect.visitor.filter.TypeFilter
 import spoon.test.TestBuildUtil
+import spoon.test.asString
+import spoon.test.getMethodByName
 
 class BinaryOperatorTest {
     private val util = TestBuildUtil
@@ -181,5 +184,62 @@ class BinaryOperatorTest {
         assertEquals(c.factory.Type().createReference<CtTypeReference<Int>>("kotlin.ranges.IntRange"), op.type)
         assertEquals(KtBinaryOperatorKind.RANGE, op.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND))
         assertEquals("1..3", pp.prettyprint(op))
+    }
+
+
+    @Test
+    fun testGetAndSetOperator() {
+        val c = TestBuildUtil.buildClass("spoon.test.binaryoperator.testclasses","GetSetOperators")
+        val m = c.getMethodByName("m")
+
+        fun CtArrayAccess<*,*>.getIndexArgs() = getMetadata(KtMetadataKeys.ARRAY_ACCESS_INDEX_ARGS) as List<CtExpression<*>>
+
+        assertEquals(2, m.body.statements.size)
+        val setCalls = m.getElements(TypeFilter(CtArrayWrite::class.java)) as List<CtArrayWrite<*>>
+        assertEquals(1, setCalls.size)
+        assertEquals("kotlin.String", setCalls[0].type.qualifiedName)
+        assertEquals("kotlin.Int", setCalls[0].getIndexArgs()[0].type.qualifiedName)
+
+
+        val getCalls = m.getElements(TypeFilter(CtArrayRead::class.java)) as List<CtArrayRead<*>>
+        assertEquals(2, getCalls.size)
+        assertEquals("kotlin.String", getCalls[0].type.qualifiedName)
+        assertEquals("kotlin.Int", getCalls[0].getIndexArgs()[0].type.qualifiedName)
+        assertEquals("kotlin.String", getCalls[1].type.qualifiedName)
+        assertEquals("kotlin.Int", getCalls[1].getIndexArgs()[0].type.qualifiedName)
+
+        assertEquals("l[0]", getCalls[0].asString())
+        assertEquals("l[1]", setCalls[0].asString())
+        assertEquals("l[2]", getCalls[1].asString())
+    }
+
+    @Test
+    fun testBuildGetSetWithMultiParams() {
+        val c = TestBuildUtil.buildClass("spoon.test.binaryoperator.testclasses","GetSetOperators")
+        val m = c.getMethodByName("multiParam")
+
+        // explicit set() and get() should be invocation
+        val getSetInvocations = m.getElements(TypeFilter(CtInvocation::class.java))
+        assertEquals(2, getSetInvocations.size)
+        assertEquals("list.get(0, \"1\")", getSetInvocations[0].asString())
+        assertEquals("list.set(1, \"2\", 15)", getSetInvocations[1].asString())
+
+        val setCalls = m.getElements(TypeFilter(CtArrayWrite::class.java)) as List<CtArrayWrite<*>>
+        assertEquals(1, setCalls.size)
+        val getCalls = m.getElements(TypeFilter(CtArrayRead::class.java)) as List<CtArrayRead<*>>
+        assertEquals(1, getCalls.size)
+
+        val setArgs = setCalls[0].getMetadata(KtMetadataKeys.ARRAY_ACCESS_INDEX_ARGS) as List<CtExpression<*>>
+        assertEquals(2, setArgs.size)
+        assertEquals("kotlin.Int", setArgs[0].type.qualifiedName)
+        assertEquals("kotlin.String", setArgs[1].type.qualifiedName)
+
+        val getArgs = getCalls[0].getMetadata(KtMetadataKeys.ARRAY_ACCESS_INDEX_ARGS) as List<CtExpression<*>>
+        assertEquals(2, getArgs.size)
+        assertEquals("kotlin.Int", getArgs[0].type.qualifiedName)
+        assertEquals("kotlin.String", getArgs[1].type.qualifiedName)
+
+        assertEquals("list[2, \"3\"]", getCalls[0].asString())
+        assertEquals("list[3, \"4\"]", setCalls[0].asString())
     }
 }
