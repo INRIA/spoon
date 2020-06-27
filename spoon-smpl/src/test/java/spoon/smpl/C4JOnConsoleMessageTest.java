@@ -23,27 +23,30 @@ public class C4JOnConsoleMessageTest {
                       "type T;\n" +
                       "identifier p1, p2, p3;\n" +
                       "@@\n" +
-                      "- T onConsoleMessage(String p1, int p2, String p3) {\n" +
-                      "+ T onConsoleMessage(ConsoleMessage cs) {\n" +
-                      "<...\n" +
-                      "(\n" +
-                      "- p1\n" +
-                      "+ cs.message()\n" +
-                      "|\n" +
-                      "- p2\n" +
-                      "+ cs.lineNumber()\n" +
-                      "|\n" +
-                      "- p3\n" +
-                      "+ cs.sourceId()\n" +
-                      ")\n" +
-                      "...>\n" +
-                      "}\n";
+        /*  5 */      "- T onConsoleMessage(String p1, int p2, String p3) {\n" +
+        /*  6 */      "+ T onConsoleMessage(ConsoleMessage cs) {\n" +
+        /*  7 */      "<...\n" +
+        /*  8 */      "(\n" +
+        /*  9 */      "- p1\n" +
+        /* 10 */      "+ cs.message()\n" +
+        /* 11 */      "|\n" +
+        /* 12 */      "- p2\n" +
+        /* 13 */      "+ cs.lineNumber()\n" +
+        /* 14 */      "|\n" +
+        /* 15 */      "- p3\n" +
+        /* 16 */      "+ cs.sourceId()\n" +
+        /* 17 */      ")\n" +
+        /* 18 */      "...>\n" +
+        /* 19 */      "}\n";
 
         ctx = new ZippedCodeBaseTestContext(smpl, "src/test/resources/C4JOnConsoleMessage.zip", false);
     }
 
     @Test
     public void testLoadFileContent() {
+
+        // contract: the patch should match and perform each of the four replacements (lines 5-6, 9-10, 12-13, 15-16) exactly once
+
         CtMethod<?> outerMethod = ctx.getMethod("me.sheimi.sgit.activities.CommitDiffActivity::loadFileContent");
 
         CtInvocation<?> invocation = outerMethod.getBody().getStatement(4);
