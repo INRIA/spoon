@@ -362,10 +362,12 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
                 expressionOrWrappedInStatementExpression(it.accept(this,null).single)
             })
         }
+
         invocation.putMetadata<CtInvocation<*>>(KtMetadataKeys.INVOCATION_IS_SAFE, functionCall.safe)
-        if(invocation.executable.simpleName == "invoke") {
-            val isOperatorInvoke = firReceiver != null && firReceiver.source == null
-            invocation.putMetadata<CtInvocation<*>>(KtMetadataKeys.INVOKE_AS_OPERATOR, isOperatorInvoke)
+
+        // Handle special invoke operator
+        if(helper.resolveIfInvokeOperatorCall(functionCall) == true) {
+            invocation.putMetadata<CtInvocation<*>>(KtMetadataKeys.INVOKE_AS_OPERATOR, true)
         }
 
         return invocation.compose()

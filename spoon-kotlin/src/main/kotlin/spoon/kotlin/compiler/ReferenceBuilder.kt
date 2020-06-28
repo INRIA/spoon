@@ -1,14 +1,12 @@
 package spoon.kotlin.compiler
 
-import org.jetbrains.kotlin.fir.declarations.FirProperty
-import org.jetbrains.kotlin.fir.declarations.FirValueParameter
+import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.FirDelegatedConstructorCall
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.resolve.toSymbol
 import org.jetbrains.kotlin.fir.symbols.CallableId
-import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
@@ -51,9 +49,17 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
     fun <T> getNewExecutableReference(call : FirFunctionCall): CtExecutableReference<T> {
         val execRef = firTreeBuilder.factory.Core().createExecutableReference<T>()
         val callee = call.calleeReference
-        execRef.setSimpleName<CtExecutableReference<T>>(callee.name.identifier)
+        val name: String = if(callee is FirResolvedNamedReference) {
+            // Safer to use resolved name if possible, as called name and callee might differ when invoke operator is involved
+            when(callee.resolvedSymbol) {
+                is FirFunctionSymbol<*> -> callee.resolvedSymbol.callableId.callableName.identifier
+                else -> callee.name.identifier
+            }
+        } else {
+            callee.name.identifier
+        }
+        execRef.setSimpleName<CtExecutableReference<T>>(name)
         execRef.setType<CtExecutableReference<T>>(getNewTypeReference(call.typeRef))
-
         if(call.arguments.isNotEmpty()) {
             execRef.setParameters<CtExecutableReference<T>>(call.arguments.map { getNewTypeReference<Any>(it.typeRef) })
         }

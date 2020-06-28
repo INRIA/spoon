@@ -3,14 +3,13 @@ package spoon.kotlin.compiler
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.declarations.FirRegularClass
-import org.jetbrains.kotlin.fir.declarations.FirTypedDeclaration
-import org.jetbrains.kotlin.fir.declarations.FirValueParameter
-import org.jetbrains.kotlin.fir.declarations.superConeTypes
+import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
 import org.jetbrains.kotlin.fir.psi
+import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.resolve.toSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.lexer.KtTokens.*
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
@@ -188,5 +187,46 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
         val psi = firTypedDeclaration.psi ?: return null
         val typeRef = psi.getChildOfType<KtTypeReference>()
         return typeRef != null
+    }
+
+    fun resolveIfInvokeOperatorCall(functionCall: FirFunctionCall): Boolean? {
+        val callee = functionCall.calleeReference as? FirResolvedNamedReference ?: return false
+        val actualFunction = callee.resolvedSymbol as? FirNamedFunctionSymbol ?: return false
+        val calledName = if(!callee.name.isSpecial) callee.name.identifier else return false
+        if(actualFunction.fir.isOperator && actualFunction.fir.name.asString() == "invoke") {
+
+            // Operator invoke is called, but we dont know if it's a() or a.invoke()
+            if(calledName != "invoke") {
+                // Easiest case "a()" has become "a.invoke()" during resolution
+                return true
+            } else {
+                /*
+                The receiver (e.g. variable holding a class with the invoke operator, or function) is named invoke.
+                Ex.
+                val invoke = ClassWithInvokeOperator()
+                invoke()
+                invoke.invoke()
+                Tricky edge case, these 2, and other potential sequences, must be distinguished
+                */
+                // These can match some simple cases, but not when invoke calls are nested
+                var psi = functionCall.psi
+                while(psi != null && psi.parent != null &&
+                    (psi.parent is KtCallExpression || psi.parent is KtQualifiedExpression)) {
+                    psi = psi.parent
+                }
+                if(psi != null) {
+                    val text = psi.text.replace("""\s|\n""".toRegex(),"")
+
+                    if(text.matches("((.+[)][(].*[)];?)|(this[(].*[)];?\$))\$".toRegex()))
+                        return true
+
+                    if(text.matches(".+[.]invoke[(].*[)]\$".toRegex()))
+                        return false
+                }
+            }
+        }
+
+        //Default to false
+        return false
     }
 }
