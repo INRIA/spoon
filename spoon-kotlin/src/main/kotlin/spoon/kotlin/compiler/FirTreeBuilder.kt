@@ -687,15 +687,14 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         thisReceiverExpression: FirThisReceiverExpression,
         data: Nothing?
     ): CompositeTransformResult.Single<CtThisAccess<*>> {
-        val thisAccess = factory.Core().createThisAccess<Any>()
-        thisAccess.setType<CtThisAccess<*>>(referenceBuilder.getNewTypeReference(thisReceiverExpression.typeRef))
         val implicit = when(thisReceiverExpression.calleeReference) {
             is FirExplicitThisReference -> false
             is FirImplicitThisReference -> true
             else -> false
         }
-        thisAccess.setImplicit<CtThisAccess<*>>(implicit)
-
+        val thisAccess = factory.Code().createThisAccess<Any>(
+            referenceBuilder.getNewTypeReference(thisReceiverExpression.typeRef),
+            implicit)
         return thisAccess.compose()
     }
 
