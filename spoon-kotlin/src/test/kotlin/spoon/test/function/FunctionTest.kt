@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
+import spoon.reflect.declaration.CtClass
 import spoon.reflect.declaration.CtMethod
 import spoon.test.TestBuildUtil
+import spoon.test.TestUtils
 import spoon.test.asString
 import spoon.test.getMethodByName
 
@@ -40,6 +42,9 @@ class FunctionTest {
         assertEquals(1, m.body.statements.size)
         assertTrue(m.body.isImplicit)
         assertEquals("fun f4(): kotlin.Int = 3", m.asString())
+        m.body.setImplicit<CtMethod<*>>(false)
+        m.body.statements[0].setImplicit<CtMethod<*>>(false)
+        assertEquals("fun f4(): kotlin.Int {${eol}    return 3${eol}}", m.asString())
 
 
         m = c.getMethodByName("f5")
@@ -107,5 +112,16 @@ class FunctionTest {
             "protected tailrec suspend inline infix operator fun plus(i: kotlin.Int): kotlin.Int {$eol    return 0$eol}"
 
         assertEquals(expectedString, m.asString())
+    }
+
+    @Test
+    fun testTopLevelFunctions() {
+        val f = TestBuildUtil.buildFile("spoon.test.function.testclasses","TopLevel")
+        val topLvl = f.Package().get("spoon.test.function.testclasses").getType<CtClass<*>>("<top-level>")
+        assertNotNull(topLvl)
+        assertEquals(2, topLvl.methods.size)
+
+        assertEquals("fun f1() {${System.lineSeparator()}}", topLvl.getMethodByName("f1").asString())
+        assertEquals("fun f2(i: kotlin.Int) {${System.lineSeparator()}}", topLvl.getMethodByName("f2").asString())
     }
 }
