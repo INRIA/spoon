@@ -49,14 +49,15 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
     fun <T> getNewExecutableReference(call : FirFunctionCall): CtExecutableReference<T> {
         val execRef = firTreeBuilder.factory.Core().createExecutableReference<T>()
         val callee = call.calleeReference
-        val name: String = if(callee is FirResolvedNamedReference) {
+        val name: String
+        if(callee is FirResolvedNamedReference && callee.resolvedSymbol is FirFunctionSymbol<*>) {
+
             // Safer to use resolved name if possible, as called name and callee might differ when invoke operator is involved
-            when(callee.resolvedSymbol) {
-                is FirFunctionSymbol<*> -> callee.resolvedSymbol.callableId.callableName.identifier
-                else -> callee.name.identifier
-            }
+            name = callee.resolvedSymbol.callableId.callableName.identifier
+            execRef.setDeclaringType<CtExecutableReference<T>>(getNewDeclaringTypeReference<T>(callee.resolvedSymbol.callableId))
+
         } else {
-            callee.name.identifier
+            name = callee.name.identifier
         }
         execRef.setSimpleName<CtExecutableReference<T>>(name)
         execRef.setType<CtExecutableReference<T>>(getNewTypeReference(call.typeRef))
