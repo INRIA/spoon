@@ -88,6 +88,60 @@ class InvocationTest {
         assertEquals("nullable?.compareTo(1)", stmt.asString())
     }
 
+    @Test
+    fun testNamedArgs() {
+        val c = TestBuildUtil.buildClass("spoon.test.invocation.testclasses","NamedArgs")
+        val m = c.getMethodByName("m2")
+
+        fun CtExpression<*>.getName(): String? = getMetadata(KtMetadataKeys.NAMED_ARGUMENT) as String?
+
+        // #1 No names
+        var invocation = m.body.statements[0] as CtInvocation<*>
+        assertEquals(2, invocation.arguments.size)
+        for(a in invocation.arguments) {
+            assertNull(a.getName())
+        }
+        assertEquals("m(1, \"1\")", invocation.asString())
+
+        // #2 Same order as param declaration
+        invocation = m.body.statements[1] as CtInvocation<*>
+        assertEquals(2, invocation.arguments.size)
+        var name = invocation.arguments[0].getName()
+        assertNotNull(name)
+        assertEquals("i", name)
+
+        name = invocation.arguments[1].getName()
+        assertNotNull(name)
+        assertEquals("k", name)
+
+        assertEquals("m(i = 2, k = \"2\")", invocation.asString())
+
+        // #3 Different order than param declaration
+        invocation = m.body.statements[2] as CtInvocation<*>
+        assertEquals(2, invocation.arguments.size)
+        name = invocation.arguments[0].getName()
+        assertNotNull(name)
+        assertEquals("k", name)
+
+        name = invocation.arguments[1].getName()
+        assertNotNull(name)
+        assertEquals("i", name)
+
+        assertEquals("m(k = \"3\", i = 3)", invocation.asString())
+
+        // #4 Mixed named and unnamed
+        invocation = m.body.statements[3] as CtInvocation<*>
+        assertEquals(2, invocation.arguments.size)
+        name = invocation.arguments[0].getName()
+        assertNull(name)
+
+        name = invocation.arguments[1].getName()
+        assertNotNull(name)
+        assertEquals("k", name)
+
+        assertEquals("m(4, k = \"4\")", invocation.asString())
+    }
+
     private fun CtInvocation<*>.getInvokeOperatorFlag() = getMetadata(KtMetadataKeys.INVOKE_AS_OPERATOR) as? Boolean? ?: false
 
     @Test

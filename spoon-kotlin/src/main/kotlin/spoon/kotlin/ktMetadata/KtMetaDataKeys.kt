@@ -38,5 +38,7 @@ object KtMetadataKeys {
     const val LAMBDA_AS_ANONYMOUS_FUNCTION = "skt_key lambda as anonymous function : Boolean"
 
     const val IMPORT_ALIAS = "skt_key import alias : String?"
+
+    const val NAMED_ARGUMENT = "skt_key named argument : String?"
 }
 

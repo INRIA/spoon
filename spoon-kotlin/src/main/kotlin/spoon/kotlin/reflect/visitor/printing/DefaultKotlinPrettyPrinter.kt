@@ -55,25 +55,38 @@ class DefaultKotlinPrettyPrinter(
             adapter write LEFT_ROUND and RIGHT_ROUND
             return
         }
-        fun CtElement.isLambda() =
-            this is CtLambda<*> &&
-            this.getBooleanMetadata(KtMetadataKeys.LAMBDA_AS_ANONYMOUS_FUNCTION) == false
 
-        if(list.size == 1 && list[0].isLambda()) {
+        // Check if a lambda can be moved out of parenthesis if it's the last argument
+        fun CtElement.isMovableLambda(): Boolean {
+            return this is CtLambda<*> &&
+                    this.getBooleanMetadata(KtMetadataKeys.LAMBDA_AS_ANONYMOUS_FUNCTION) == false &&
+                    this.getMetadata(KtMetadataKeys.NAMED_ARGUMENT) as String? == null
+        }
+
+        if(list.size == 1 && list[0].isMovableLambda()) {
             adapter write SPACE
             list[0].accept(this)
             return
         }
+
+        fun CtExpression<*>.acceptPossiblyNamed() {
+            val name = getMetadata(KtMetadataKeys.NAMED_ARGUMENT) as String?
+            if(name != null) {
+                adapter write name and " = "
+            }
+            this.accept(this@DefaultKotlinPrettyPrinter)
+        }
+
         adapter write LEFT_ROUND
         for(i in 0 until list.size-1) {
-            list[i].accept(this)
+            list[i].acceptPossiblyNamed()
             adapter write ", "
         }
-        val closeParBefore = list.last().isLambda()
+        val closeParBefore = list.last().isMovableLambda()
         if(closeParBefore) {
             adapter write RIGHT_ROUND and SPACE
         }
-        list.last().accept(this)
+        list.last().acceptPossiblyNamed()
         if(!closeParBefore) {
             adapter write RIGHT_ROUND
         }

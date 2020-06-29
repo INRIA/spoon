@@ -437,6 +437,15 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return expr.compose()
     }
 
+    override fun visitNamedArgumentExpression(
+        namedArgumentExpression: FirNamedArgumentExpression,
+        data: Nothing?
+    ): CompositeTransformResult.Single<CtElement> {
+        return namedArgumentExpression.expression.accept(this,null).single.apply {
+            putMetadata<CtElement>(KtMetadataKeys.NAMED_ARGUMENT, namedArgumentExpression.name.asString())
+        }.compose()
+    }
+
     override fun visitWhenExpression(whenExpression: FirWhenExpression, data: Nothing?): CompositeTransformResult<CtElement> {
         if(whenExpression.isIf()) return visitIfExpression(whenExpression)
         val subjectVariable = whenExpression.subjectVariable
@@ -446,7 +455,6 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             else throw SpoonException(
                 "Unexpected special in subject variable of when-expression: ${subjectVariable.name.asString()}")
         }
-
 
         return super.visitWhenExpression(whenExpression, data)
     }
