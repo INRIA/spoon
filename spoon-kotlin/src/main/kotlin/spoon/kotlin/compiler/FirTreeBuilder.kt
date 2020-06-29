@@ -828,7 +828,12 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         }
 
         // Type
-        ctParam.setType<CtParameter<Any>>(referenceBuilder.getNewTypeReference<Any>(valueParameter.returnTypeRef))
+        if(valueParameter.isVararg) {
+            ctParam.setType<CtParameter<Any>>(helper.resolveVarargType(valueParameter))
+        }
+        else {
+            ctParam.setType<CtParameter<Any>>(referenceBuilder.getNewTypeReference<Any>(valueParameter.returnTypeRef))
+        }
 
         // Implicit? "it" in lambda
         ctParam.setImplicit<CtParameter<*>>(valueParameter.psi == null)

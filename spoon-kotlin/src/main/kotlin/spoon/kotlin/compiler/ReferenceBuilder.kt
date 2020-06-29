@@ -4,12 +4,12 @@ import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.FirDelegatedConstructorCall
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
-import org.jetbrains.kotlin.fir.resolve.toSymbol
 import org.jetbrains.kotlin.fir.symbols.CallableId
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
+import spoon.SpoonException
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.reflect.reference.*
 
@@ -67,23 +67,22 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
         return execRef
     }
 
-    fun <T> getNewTypeReference(typeRef: FirTypeRef) : CtTypeReference<T> {
-        val ref = firTreeBuilder.factory.Core().createTypeReference<T>()
-        val firType = typeRef.coneTypeSafe<ConeClassLikeType>()
-        val symbol = firType?.lookupTag?.toSymbol(firTreeBuilder.session)
-        if(firType != null && symbol != null ) {
-            ref.setSimpleName<CtTypeReference<T>>(symbol.classId.shortClassName.identifier)
-            ref.setPackage<CtTypeReference<T>>(getPackageReference(symbol.classId.packageFqName))
-            ref.putMetadata<CtTypeReference<T>>(KtMetadataKeys.TYPE_REF_NULLABLE, firType.nullability.isNullable)
-        } else {
-            if(firType == null) {
-                throw RuntimeException("Can't get ConeType for TypeRef $typeRef")
-            } else {
-                throw RuntimeException("Can't get symbol for TypeRef $typeRef")
-            }
+    fun <T> getNewTypeReference(coneClass: ConeClassLikeType) : CtTypeReference<T> {
+        val ctRef = firTreeBuilder.factory.Core().createTypeReference<T>()
+        val classId = coneClass.classId ?: throw SpoonException("Can't get classId for $coneClass")
+        ctRef.setSimpleName<CtTypeReference<T>>(classId.shortClassName.identifier)
+        ctRef.setPackage<CtTypeReference<T>>(getPackageReference(classId.packageFqName))
+        ctRef.putMetadata<CtTypeReference<T>>(KtMetadataKeys.TYPE_REF_NULLABLE, coneClass.nullability.isNullable)
+        return ctRef
+    }
 
+    fun <T> getNewTypeReference(typeRef: FirTypeRef) : CtTypeReference<T> {
+        val coneType = typeRef.coneTypeSafe<ConeClassLikeType>()
+        if(coneType != null ) {
+            return getNewTypeReference(coneType)
+        } else {
+            throw RuntimeException("Can't get ConeType for TypeRef $typeRef")
         }
-        return ref
     }
 
     fun <T> getNewVariableReference(property: FirProperty) : CtVariableReference<T> {
@@ -110,6 +109,13 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
         }
     }
 
+    fun <T> getNewSimpleTypeReference(packageFqName: String, className: String) : CtTypeReference<T> {
+        return firTreeBuilder.factory.Core().createTypeReference<T>().apply {
+            setSimpleName<CtTypeReference<T>>(className)
+            setPackage(getPackageReference(packageFqName))
+        }
+    }
+
     fun <T> setPackageOrDeclaringType(ref : CtTypeReference<T>, declaring : CtReference) {
         when(declaring) {
             is CtPackageReference -> ref.setPackage<CtTypeReference<T>>(declaring)
@@ -124,6 +130,16 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
 
         return firTreeBuilder.factory.Core().createPackageReference().apply {
             setSimpleName<CtPackageReference>(fqName.asString())
+        }
+    }
+
+    fun getPackageReference(fqName : String) : CtPackageReference {
+        if(fqName.isEmpty()) {
+            return firTreeBuilder.factory.Package().topLevel()
+        }
+
+        return firTreeBuilder.factory.Core().createPackageReference().apply {
+            setSimpleName<CtPackageReference>(fqName)
         }
     }
 

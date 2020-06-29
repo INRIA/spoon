@@ -14,6 +14,8 @@ import org.jetbrains.kotlin.fir.symbols.AbstractFirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
+import org.jetbrains.kotlin.fir.types.ConeClassLikeType
+import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.lexer.KtTokens.*
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
@@ -25,6 +27,7 @@ import spoon.kotlin.reflect.code.KtBinaryOperatorKind as KtOp
 import spoon.reflect.declaration.CtModule
 import spoon.reflect.declaration.CtType
 import spoon.reflect.factory.Factory
+import spoon.reflect.reference.CtTypeReference
 
 
 internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) {
@@ -202,7 +205,7 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
 
     fun resolveIfInvokeOperatorCall(functionCall: FirFunctionCall): Boolean? {
         val callee = functionCall.calleeReference as? FirResolvedNamedReference ?: return false
-        val actualFunction = callee.resolvedSymbol as? FirNamedFunctionSymbol ?: return false
+        val actualFunction = callee.resolvedSymbol as? FirNamedFunctionSymbol   ?: return false
         val calledName = if(!callee.name.isSpecial) callee.name.identifier else return false
         if(actualFunction.fir.isOperator && actualFunction.fir.name.asString() == "invoke") {
 
@@ -245,5 +248,28 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
 
         //Default to false
         return false
+    }
+
+    /*
+     * Vararg type is already converted to array in the FIR tree.
+     * Try to resolve what the actual type is
+     */
+    fun resolveVarargType(firValueParameter: FirValueParameter): CtTypeReference<Any> {
+        assert(firValueParameter.isVararg)
+        val arrayType = firValueParameter.returnTypeRef
+        return if(arrayType is FirResolvedTypeRef) {
+            if(arrayType.type.typeArguments.isEmpty()) { // Primitive array
+                val coneArrayType = arrayType.type as? ConeClassLikeType ?: throw SpoonException("Can't get type of vararg parameter")
+                val name = coneArrayType.lookupTag.classId.shortClassName.identifier
+                val primitiveName = name.substring(0, name.indexOf("Array"))
+                firTreeBuilder.referenceBuilder.getNewSimpleTypeReference<Any>("kotlin", primitiveName)
+            } else {
+                val coneTypeArgument = arrayType.type.typeArguments[0] as? ConeClassLikeType ?: throw SpoonException("Can't get type of vararg parameter")
+                firTreeBuilder.referenceBuilder.getNewTypeReference<Any>(coneTypeArgument)
+            }
+        } else {
+            firTreeBuilder.referenceBuilder.getNewTypeReference<Any>(firValueParameter.returnTypeRef)
+        }
+
     }
 }
