@@ -14,7 +14,8 @@ import spoon.reflect.visitor.PrettyPrinter
 class DefaultKotlinPrettyPrinter(
     private val adapter: DefaultPrinterAdapter,
     private val forceExplicitTypes: Boolean = false,
-    private val topLvlClassName: String = "<top-level>"
+    private val topLvlClassName: String = "<top-level>",
+    private val localFunctionWrapperName: String = "<local>"
     //     private val sourceCompilationUnit : CtCompilationUnit
 ) : CtVisitor, PrettyPrinter {
 
@@ -269,11 +270,19 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtClass(ctClass: CtClass<T>?) {
         if(ctClass == null) return
-        if(ctClass.isImplicit && ctClass.simpleName == topLvlClassName) { // Print the top level class
-            ctClass.typeMembers.filter { it is CtMethod<*> || it is CtField<*> }.forEach {
-                 it.accept(this)
-            }
-            return
+        if(ctClass.isImplicit) {
+           when(ctClass.simpleName) {
+               topLvlClassName -> { // Print the top level class
+                   ctClass.typeMembers.filter { it is CtMethod<*> || it is CtField<*> }.forEach {
+                       it.accept(this)
+                   }
+                   return
+               }
+               localFunctionWrapperName -> { // Just print the wrapped method
+                   ctClass.methods.forEach { it.accept(this) }
+                   return
+               }
+           }
         }
         adapter.ensureNEmptyLines(1)
         // Annotations
@@ -289,7 +298,7 @@ class DefaultKotlinPrettyPrinter(
         val primaryConstructor = ctClass.constructors.firstOrNull { it.isPrimary() }
         if(primaryConstructor != null) {
             visitCtConstructor(primaryConstructor)
-        } else {
+        } else if(ctClass.superclass != null) {
             inheritanceList.add(getTypeName(ctClass.superclass))
         }
        // if(ctClass.superclass != null && ctClass.superclass.qualifiedName != "kotlin.Any") {

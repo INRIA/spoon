@@ -124,4 +124,24 @@ class FunctionTest {
         assertEquals("fun f1() {${System.lineSeparator()}}", topLvl.getMethodByName("f1").asString())
         assertEquals("fun f2(i: kotlin.Int) {${System.lineSeparator()}}", topLvl.getMethodByName("f2").asString())
     }
+
+    @Test
+    fun testBuildLocalFunctions() {
+        val c = TestBuildUtil.buildClass("spoon.test.function.testclasses","LocalFunctions")
+        val outer = c.getMethodByName("outer")
+        val wrapper1 = outer.body.statements[0] as CtClass<*>
+        val wrapper2 = outer.body.statements[1] as CtClass<*>
+
+        assertEquals("<local>", wrapper1.simpleName)
+        assertTrue(wrapper1.isImplicit)
+        assertEquals(1, wrapper1.typeMembers.size)
+        assertEquals("fun inner1() {${System.lineSeparator()}}", wrapper1.typeMembers[0].asString())
+
+        assertEquals("<local>", wrapper2.simpleName)
+        assertTrue(wrapper2.isImplicit)
+        assertEquals(1, wrapper2.typeMembers.size)
+        assertEquals("fun inner2(i: kotlin.Int) {${System.lineSeparator()}}", wrapper2.typeMembers[0].asString())
+
+        assertNotSame(wrapper1, wrapper2)
+    }
 }

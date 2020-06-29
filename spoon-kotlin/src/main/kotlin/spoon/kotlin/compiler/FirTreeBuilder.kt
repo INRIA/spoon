@@ -536,6 +536,13 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
                 ctElement.wrapInImplicitReturn()
             } else if(ctElement is CtBlock<*> && ctElement.statements.size == 1 && ctElement.isImplicit) {
                 ctElement.statements[0]
+            } else if(ctElement is CtMethod<*>) {
+                val wrapperClass = factory.Core().createClass<Any>()
+                wrapperClass.apply {
+                    setImplicit<CtClass<Any>>(true)
+                    setSimpleName<CtClass<*>>("<local>")
+                    addMethod<Any, CtClass<Any>>(ctElement as CtMethod<Any>)
+                }
             } else {
                 ctElement as CtStatement
             })
