@@ -66,6 +66,28 @@ class InvocationTest {
         assertEquals("foo.f2(2)", invocation.asString())
     }
 
+    @Test
+    fun testNullCheck() {
+        val c = TestBuildUtil.buildClass("spoon.test.invocation.testclasses","NullCheck")
+        val m = c.getMethodByName("assertNotNull")
+        val stmt = m.body.statements[0] as CtInvocation<*>
+        val nullCheckFlag = stmt.target.getMetadata(KtMetadataKeys.ACCESS_IS_CHECK_NOT_NULL) as Boolean?
+        assertNotNull(nullCheckFlag)
+        assertTrue(nullCheckFlag!!)
+        assertEquals("(nullable)!!.compareTo(2)", stmt.asString())
+    }
+
+    @Test
+    fun testSafeCall() {
+        val c = TestBuildUtil.buildClass("spoon.test.invocation.testclasses","NullCheck")
+        val m = c.getMethodByName("safeCall")
+        val stmt = m.body.statements[0] as CtInvocation<*>
+        val safeCall = stmt.getMetadata(KtMetadataKeys.INVOCATION_IS_SAFE) as Boolean?
+        assertNotNull(safeCall)
+        assertTrue(safeCall!!)
+        assertEquals("nullable?.compareTo(1)", stmt.asString())
+    }
+
     private fun CtInvocation<*>.getInvokeOperatorFlag() = getMetadata(KtMetadataKeys.INVOKE_AS_OPERATOR) as? Boolean? ?: false
 
     @Test
