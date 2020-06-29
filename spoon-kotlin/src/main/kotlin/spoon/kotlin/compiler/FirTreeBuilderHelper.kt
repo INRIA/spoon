@@ -228,11 +228,8 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
                 if(psi != null) {
                     val text = psi.text.replace("""\s|\n""".toRegex(),"")
 
-                    if(text.matches("((.+[)][(].*[)]\\s*;?\\s*)|(this\\s*[(].*[)]\\s*;?))\$".toRegex()))
+                    if(text.matches("((.+[)]\\s*[(].*[)]\\s*;?\\s*)|(this\\s*[(].*[)]\\s*;?))\$".toRegex()))
                         return true
-
-                    if(text.matches(".+[.]invoke[(].*[)]\\s*;?\\s*\$".toRegex()))
-                        return false
 
                     val receiver = getReceiver(functionCall)
                     if(receiver is FirQualifiedAccessExpression) {
