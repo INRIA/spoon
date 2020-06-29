@@ -25,7 +25,7 @@ object KtMetadataKeys {
     const val INVOCATION_IS_INFIX = "skt_key invocation is infix : Boolean"
 
     const val TYPE_CAST_AS_SAFE = "skt_key type cast AS_SAFE : Boolean"
-    const val INVOCATION_IS_SAFE = "skt_key invocation is safe : Boolean"
+    const val ACCESS_IS_SAFE = "skt_key access is safe : Boolean"
 
     const val INVOKE_AS_OPERATOR = "skt_key invoke as operator : Boolean"
 

@@ -267,16 +267,6 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtFieldRead(fieldRead: CtFieldRead<T>) {
-        enterCtExpression(fieldRead)
-        if(fieldRead.target != null && !fieldRead.target.isImplicit) {
-            fieldRead.target.accept(this)
-            adapter write '.'
-        }
-        fieldRead.variable.accept(this)
-        exitCtExpression(fieldRead)
-    }
-
     override fun visitCtJavaDoc(p0: CtJavaDoc?) {
         TODO("Not yet implemented")
     }
@@ -674,14 +664,27 @@ class DefaultKotlinPrettyPrinter(
     }
 
 
-    override fun <T : Any?> visitCtFieldWrite(fieldWrite: CtFieldWrite<T>?) {
-        if(fieldWrite == null) return
-        if(fieldWrite.target != null && !fieldWrite.target.isImplicit) {
-            fieldWrite.target.accept(this)
+    override fun <T : Any?> visitCtFieldWrite(fieldWrite: CtFieldWrite<T>) = visitFieldAccess(fieldWrite)
+
+    override fun <T : Any?> visitCtFieldRead(fieldRead: CtFieldRead<T>) = visitFieldAccess(fieldRead)
+
+    private fun visitFieldAccess(fieldAccess: CtFieldAccess<*>) {
+        enterCtExpression(fieldAccess)
+        visitTarget(fieldAccess)
+        fieldAccess.variable.accept(this)
+        exitCtExpression(fieldAccess)
+    }
+
+    private fun visitTarget(expr: CtTargetedExpression<*,*>) {
+        if(expr.target != null && !expr.target.isImplicit) {
+            expr.target.accept(this)
+            if((expr.getMetadata(KtMetadataKeys.ACCESS_IS_SAFE) as? Boolean?) == true) {
+                adapter write '?'
+            }
             adapter write '.'
         }
-        fieldWrite.variable.accept(this)
     }
+
 
     override fun <T : Any?> visitCtAnnotationMethod(p0: CtAnnotationMethod<T>?) {
         TODO("Not yet implemented")
@@ -908,10 +911,10 @@ class DefaultKotlinPrettyPrinter(
             var separator = ""
             if(invocation.target != null && !invocation.target.isImplicit) {
                 invocation.target.accept(this)
-                val isSafe = invocation.getMetadata(KtMetadataKeys.INVOCATION_IS_SAFE) as Boolean?
+                val isSafe = invocation.getMetadata(KtMetadataKeys.ACCESS_IS_SAFE) as Boolean?
                 separator = if(isSafe == true) "?." else "."
             }
-            if(!shouldIgnoreIdentifier(invocation)) {
+            if(!shouldIgnoreIdentifier(invocation)) { // If invoke operator, the name of the called function is omitted
                 adapter write separator
                 adapter write invocation.executable.simpleName
             }

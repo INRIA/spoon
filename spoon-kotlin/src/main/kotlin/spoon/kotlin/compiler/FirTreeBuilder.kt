@@ -363,7 +363,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             })
         }
 
-        invocation.putMetadata<CtInvocation<*>>(KtMetadataKeys.INVOCATION_IS_SAFE, functionCall.safe)
+        invocation.putMetadata<CtInvocation<*>>(KtMetadataKeys.ACCESS_IS_SAFE, functionCall.safe)
 
         // Handle special invoke operator
         if(helper.resolveIfInvokeOperatorCall(functionCall) == true) {
@@ -735,13 +735,14 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         ctUnaryOp.setKind<CtUnaryOperator<*>>(kind)
         val target = helper.getReceiver(assignment)?.accept(this, null)?.single as CtExpression<*>?
         val lvalue = assignment.lValue.accept(this,null).single as CtReference
-        val operand = createVariableWrite(target, lvalue)
+        val operand = createVariableWrite(target, lvalue, assignment.safe)
         ctUnaryOp.setOperand<CtUnaryOperator<*>>(operand)
         ctUnaryOp.setType<CtUnaryOperator<*>>(referenceBuilder.getNewTypeReference(assignment.rValue.typeRef))
+
         return ctUnaryOp.compose()
     }
 
-    private fun createVariableWrite(receiver: CtExpression<*>?, lvalue: CtReference) = when (lvalue) {
+    private fun createVariableWrite(receiver: CtExpression<*>?, lvalue: CtReference, safe: Boolean) = when (lvalue) {
         is CtLocalVariableReference<*> ->
             factory.Core().createVariableWrite<Any>().also {
                 it.setVariable<CtVariableAccess<Any>>(lvalue as CtLocalVariableReference<Any>)
@@ -758,7 +759,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             }
         }
         else -> throw SpoonException("Unexpected expression ${lvalue::class.simpleName}")
-    }
+    }.also { it.putMetadata<CtElement>(KtMetadataKeys.ACCESS_IS_SAFE, safe) }
 
     override fun visitVariableAssignment(
         variableAssignment: FirVariableAssignment,
@@ -782,7 +783,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
         val lvalue = variableAssignment.lValue.accept(this, null).single as CtReference
         val target = helper.getReceiver(variableAssignment)?.accept(this,null)?.single as CtExpression<*>?
-        val ctWrite = createVariableWrite(target, lvalue)
+        val ctWrite = createVariableWrite(target, lvalue, variableAssignment.safe)
         ctAssignment.setAssigned<CtAssignment<Any, Any>>(ctWrite)
 
         return ctAssignment.compose()
@@ -1087,6 +1088,9 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         if(varAccess == null) {
             return super.visitQualifiedAccessExpression(qualifiedAccessExpression, data)
         }
+
+        varAccess.putMetadata<CtVariableRead<*>>(KtMetadataKeys.ACCESS_IS_SAFE, qualifiedAccessExpression.safe)
+
         if(target != null && varAccess is CtFieldRead<*>) {
             (varAccess as CtFieldRead<Any>).setTarget<CtFieldRead<Any>>(target as CtExpression<*>)
         }

@@ -82,7 +82,7 @@ class InvocationTest {
         val c = TestBuildUtil.buildClass("spoon.test.invocation.testclasses","NullCheck")
         val m = c.getMethodByName("safeCall")
         val stmt = m.body.statements[0] as CtInvocation<*>
-        val safeCall = stmt.getMetadata(KtMetadataKeys.INVOCATION_IS_SAFE) as Boolean?
+        val safeCall = stmt.getMetadata(KtMetadataKeys.ACCESS_IS_SAFE) as Boolean?
         assertNotNull(safeCall)
         assertTrue(safeCall!!)
         assertEquals("nullable?.compareTo(1)", stmt.asString())
