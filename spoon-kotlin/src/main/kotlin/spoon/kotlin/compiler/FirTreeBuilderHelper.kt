@@ -7,9 +7,13 @@ import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
 import org.jetbrains.kotlin.fir.psi
+import org.jetbrains.kotlin.fir.references.FirReference
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.resolve.toSymbol
+import org.jetbrains.kotlin.fir.symbols.AbstractFirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.lexer.KtTokens.*
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
@@ -189,6 +193,13 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
         return typeRef != null
     }
 
+    private fun getResolvedSymbolOrNull(namedRef: FirReference): AbstractFirBasedSymbol<*>? {
+        if(namedRef is FirResolvedNamedReference) {
+            return namedRef.resolvedSymbol
+        }
+        return null
+    }
+
     fun resolveIfInvokeOperatorCall(functionCall: FirFunctionCall): Boolean? {
         val callee = functionCall.calleeReference as? FirResolvedNamedReference ?: return false
         val actualFunction = callee.resolvedSymbol as? FirNamedFunctionSymbol ?: return false
@@ -217,11 +228,20 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
                 if(psi != null) {
                     val text = psi.text.replace("""\s|\n""".toRegex(),"")
 
-                    if(text.matches("((.+[)][(].*[)];?)|(this[(].*[)];?\$))\$".toRegex()))
+                    if(text.matches("((.+[)][(].*[)]\\s*;?\\s*)|(this\\s*[(].*[)]\\s*;?))\$".toRegex()))
                         return true
 
-                    if(text.matches(".+[.]invoke[(].*[)]\$".toRegex()))
+                    if(text.matches(".+[.]invoke[(].*[)]\\s*;?\\s*\$".toRegex()))
                         return false
+
+                    val receiver = getReceiver(functionCall)
+                    if(receiver is FirQualifiedAccessExpression) {
+                        when(getResolvedSymbolOrNull(receiver.calleeReference)) {
+                            is FirPropertySymbol, is FirVariableSymbol<*> ->
+                                if(text.matches("invoke[(].*[)]\\s*;?\\s*\$".toRegex())) return true
+                        }
+                    }
+
                 }
             }
         }
