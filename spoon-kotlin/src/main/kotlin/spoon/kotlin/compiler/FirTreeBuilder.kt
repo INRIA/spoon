@@ -87,7 +87,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         val transformedTopLvlDecl = file.declarations.map {
             it.accept(this, null)
         }
-        transformedTopLvlDecl.forEach {
+        for(it in transformedTopLvlDecl) {
             val t = it.single
             t.setParent(compilationUnit)
             when(t) {
@@ -106,7 +106,6 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
                     topLvl.addTypeMember<CtClass<Any>>(t)
                 }
             }
-
         }
 
         return compilationUnit.compose()
