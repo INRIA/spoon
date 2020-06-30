@@ -1,26 +1,33 @@
 package spoon.kotlin.reflect.visitor.printing
 
+import spoon.kotlin.ktMetadata.KtMetadataKeys
+import spoon.kotlin.reflect.KtModifierKind
 import spoon.reflect.declaration.CtFormalTypeDeclarer
 import spoon.reflect.reference.CtIntersectionTypeReference
 import spoon.reflect.reference.CtTypeReference
-import kotlin.text.StringBuilder
 
-internal class TypeParameterPrinter(
+internal class TypeParameterHandler(
     private val entity: CtFormalTypeDeclarer,
     private val prettyPrinter: DefaultKotlinPrettyPrinter,
     allBoundsInWhereClause: Boolean = false) {
-    private val printBoundInWhereClause: List<Boolean> =
-        if(allBoundsInWhereClause) entity.formalCtTypeParameters.map { it.superclass != null } else
+    private val printBoundInWhereClause: List<Boolean> = if(allBoundsInWhereClause) {
+        entity.formalCtTypeParameters.map { it.superclass != null }
+    } else {
         entity.formalCtTypeParameters.map { it.superclass is CtIntersectionTypeReference<*> }
+    }
     private val hasWhereClause = printBoundInWhereClause.any { it }
+    val isEmpty get() = entity.formalCtTypeParameters.isEmpty()
 
     fun generateTypeParamList(): List<String> {
         if(entity.formalCtTypeParameters.isEmpty()) return emptyList()
         val paramList = ArrayList<String>()
 
         for((i,tParam) in entity.formalCtTypeParameters.withIndex()) {
+            val modifiers = tParam.getMetadata(KtMetadataKeys.KT_MODIFIERS) as? Set<KtModifierKind>?
+            val modifiersString = modifiers?.toList()?.sorted()?.
+                joinToString(separator = " ", postfix = " ", transform = { it.token }) ?: ""
             val s  = if(tParam.superclass != null && !printBoundInWhereClause[i]) {
-                "${tParam.simpleName}: ${prettyPrinter.printElement(tParam.superclass)}"
+                "${modifiersString}${tParam.simpleName}: ${prettyPrinter.printElement(tParam.superclass)}"
             } else {
                 tParam.simpleName
             }
