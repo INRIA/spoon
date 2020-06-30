@@ -116,6 +116,24 @@ open class DefaultPrinterAdapter(
         indentCount = oldIndentCount
     }
 
+    fun writeAligned(strings: List<String>, from: Int = column, breakPoint: Int = 80) {
+        if(strings.isEmpty()) return
+        var commas = strings.size - 1
+        var overrideBreakPoint = false
+        for(s in strings) {
+            if(column + s.length < breakPoint || overrideBreakPoint) {
+                write(s)
+            }
+            else {
+                newline()
+                overrideBreakPoint = true
+                while(column < from) write(' ')
+                write(s)
+            }
+            if(commas-- > 0) write(", ")
+        }
+    }
+
     /**
      * Writes a colon with or without a leading whitespace depending on the context.
      *

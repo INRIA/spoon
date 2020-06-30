@@ -96,13 +96,13 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
                     compilationUnit.addDeclaredType(t)
                 }
                 is CtTypeMember -> { // Top level function or property declaration
-                    val topLvl = pkg.getType<CtType<Any>>(toplvlClassName) ?: factory.Core().createClass<Any>()
-                        .also { topLvlClass ->
+                    val topLvl = pkg.getType<CtType<Any>>(toplvlClassName) ?: (factory.Core().createClass<Any>().also {
+                            topLvlClass ->
                             topLvlClass.setImplicit<CtClass<*>>(true)
                             topLvlClass.setSimpleName<CtClass<*>>(toplvlClassName)
                             pkg.addType<CtPackage>(topLvlClass)
                             compilationUnit.addDeclaredType(topLvlClass)
-                        }
+                        })
                     topLvl.addTypeMember<CtClass<Any>>(t)
                 }
             }
@@ -671,6 +671,12 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             else ctMethod.addParameter<CtMethod<Any>>(p)
         }
 
+        // Add type parameters
+        if(function.typeParameters.isNotEmpty()) {
+            ctMethod.setFormalCtTypeParameters<CtMethod<*>>(
+                function.typeParameters.map { visitTypeParameter(it,null).single })
+        }
+
         // Add body
         val body = function.body
         if(body != null) {
@@ -839,6 +845,24 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         ctParam.setImplicit<CtParameter<*>>(valueParameter.psi == null)
 
         return ctParam.compose()
+    }
+
+    override fun visitTypeParameter(
+        typeParameter: FirTypeParameter,
+        data: Nothing?
+    ): CompositeTransformResult.Single<CtTypeParameter> {
+        val ctTypeParameter = factory.Core().createTypeParameter()
+        ctTypeParameter.setSimpleName<CtTypeParameter>(typeParameter.name.identifier)
+
+        val refs = typeParameter.bounds.map { referenceBuilder.getNewTypeReference<Any>(it) }
+        if(typeParameter.bounds.size == 1) {
+            ctTypeParameter.setSuperclass<CtTypeParameter>(refs[0])
+        } else if(typeParameter.bounds.size > 1) {
+            ctTypeParameter.setSuperclass<CtTypeParameter>(
+                factory.Type().createIntersectionTypeReferenceWithBounds<Any>(refs))
+        }
+
+        return ctTypeParameter.compose()
     }
 
     override fun visitProperty(property: FirProperty, data: Nothing?): CompositeTransformResult<CtVariable<*>> {

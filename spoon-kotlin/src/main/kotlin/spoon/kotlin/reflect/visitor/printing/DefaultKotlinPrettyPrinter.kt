@@ -156,8 +156,9 @@ class DefaultKotlinPrettyPrinter(
         return s
     }
 
-    override fun printElement(p0: CtElement?): String {
-        TODO("Not yet implemented")
+    override fun printElement(element: CtElement): String {
+        // Ugly but good enough for now, avoid changing state in current printer
+        return DefaultKotlinPrettyPrinter(DefaultPrinterAdapter()).prettyprint(element)
     }
 
     override fun printTypes(vararg p0: CtType<*>?): String {
@@ -952,7 +953,10 @@ class DefaultKotlinPrettyPrinter(
         val modifiers = modifierSet?.filterIf(KtModifierKind.OVERRIDE in modifierSet) { it != KtModifierKind.OPEN }
             ?: emptySet<KtModifierKind>()
 
-        adapter writeModifiers modifiers and "fun " /* TODO Type params here */
+        adapter writeModifiers modifiers and "fun"
+
+        val typeParamHandler = TypeParameterPrinter(method, this, false)
+        adapter write typeParamHandler.generateTypeParamListString() and SPACE
 
         val extensionTypeRef = method.getMetadata(KtMetadataKeys.EXTENSION_TYPE_REF) as CtTypeAccess<*>?
         if(extensionTypeRef != null) {
@@ -969,8 +973,14 @@ class DefaultKotlinPrettyPrinter(
             method.type.accept(this)
         }
 
+        val whereClause = typeParamHandler.generateWhereClause()
+        if(whereClause.isNotEmpty()) {
+            adapter write " where "
+            adapter.writeAligned(whereClause)
+        }
+
         if(method.body != null) {
-            adapter write SPACE
+            adapter.ensureSpaceOrNewlineBeforeNext()
             if(method.body.isImplicit) {
                 adapter write "= "
             }
