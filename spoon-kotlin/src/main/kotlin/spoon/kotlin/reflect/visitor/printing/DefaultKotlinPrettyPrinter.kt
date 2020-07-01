@@ -459,8 +459,19 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun visitCtTypeParameter(p0: CtTypeParameter?) {
-        TODO("Not yet implemented")
+    override fun visitCtTypeParameter(typeParam: CtTypeParameter) {
+        val modifiers = typeParam.getMetadata(KtMetadataKeys.KT_MODIFIERS) as? Set<KtModifierKind>?
+        val modifiersString = if(modifiers != null && modifiers.isNotEmpty()) {
+            modifiers.toList().sorted().joinToString(separator = " ", postfix = " ", transform = { it.token })
+        } else {
+            ""
+        }
+
+        adapter write modifiersString and typeParam.simpleName
+
+        if(typeParam.superclass != null) {
+            typeParam.superclass.accept(this)
+        }
     }
 
     override fun visitCtTypeMemberWildcardImportReference(p0: CtTypeMemberWildcardImportReference?) {
@@ -641,8 +652,13 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun visitCtTypeParameterReference(p0: CtTypeParameterReference?) {
-        TODO("Not yet implemented")
+    override fun visitCtTypeParameterReference(typeParam: CtTypeParameterReference) {
+        val name = TypeName.build(typeParam)
+        if(typeParam.isSimplyQualified) {
+            adapter write name.simpleNameWithNullability
+        } else {
+            adapter write name.fQNameWithNullability
+        }
     }
 
     override fun visitCtModuleRequirement(p0: CtModuleRequirement?) {
@@ -793,8 +809,8 @@ class DefaultKotlinPrettyPrinter(
         exitCtStatement(ctWhile)
     }
 
-    override fun visitCtWildcardReference(p0: CtWildcardReference?) {
-        TODO("Not yet implemented")
+    override fun visitCtWildcardReference(wildcardReference: CtWildcardReference) {
+        adapter write '*'
     }
 
     override fun visitCtImport(ctImport: CtImport) {
