@@ -25,6 +25,8 @@ class DefaultKotlinPrettyPrinter(
     private val RIGHT_SQUARE = ']'
     private val LEFT_CURL = '{'
     private val RIGHT_CURL = '}'
+    private val LEFT_ANGLE = '<'
+    private val RIGHT_ANGLE = '>'
     private val SPACE = ' '
 
     /**
@@ -302,19 +304,17 @@ class DefaultKotlinPrettyPrinter(
             adapter write typeParamHandler.generateTypeParamListString() and SPACE
         }
 
-        val inheritanceList = ArrayList<String>()
+        val inheritanceList = ArrayList<TypeName>()
 
         val primaryConstructor = ctClass.constructors.firstOrNull { it.isPrimary() }
         if(primaryConstructor != null) {
             visitCtConstructor(primaryConstructor)
         } else if(ctClass.superclass != null) {
-            inheritanceList.add(getTypeName(ctClass.superclass))
+            inheritanceList.add(TypeName.build(ctClass.superclass))
         }
-       // if(ctClass.superclass != null && ctClass.superclass.qualifiedName != "kotlin.Any") {
-       //     inheritanceList.add("${getTypeName(ctClass.superclass)}()") // TODO Primary constr call
-       // }
+
         if(ctClass.superInterfaces.isNotEmpty()) {
-            ctClass.superInterfaces.forEach { inheritanceList.add(getTypeName(it)) }
+            ctClass.superInterfaces.forEach { inheritanceList.add(TypeName.build(it)) }
         }
         if(inheritanceList.isNotEmpty()) {
             var p = ""
@@ -322,7 +322,7 @@ class DefaultKotlinPrettyPrinter(
                 adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
             }
             else p = ", "
-            adapter write inheritanceList.joinToString(prefix = p)
+            adapter write inheritanceList.joinToString(prefix = p, transform = { it.fQNameWithNullability })
         }
 
         val whereClause = typeParamHandler.generateWhereClause()
@@ -872,24 +872,23 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    private fun getTypeName(type: CtTypeReference<*>,
-                            fullyQualified: Boolean = true,
-                            ignoreNullability: Boolean = false
-    ) : String {
-        val prefix = if(fullyQualified) type.`package`?.qualifiedName ?: "" else ""
-        val nullable = type.getMetadata(KtMetadataKeys.TYPE_REF_NULLABLE) as? Boolean? ?: false
-        val suffix = if(nullable && !ignoreNullability) "?" else ""
-        return if(!fullyQualified || prefix.isEmpty()) "${type.simpleName}$suffix"
-        else "${prefix}.${type.simpleName}${suffix}"
-    }
-
     override fun <T : Any?> visitCtTypeReference(typeRef: CtTypeReference<T>) {
         if(typeRef.isImplicit) return
         if(typeRef.declaringType != null) {
             typeRef.accessType.accept(this)
             adapter write '.'
         }
-        adapter write getTypeName(typeRef)
+
+        val name = TypeName.build(typeRef)
+        adapter write name.fQNameWithoutNullability
+
+        if(typeRef.actualTypeArguments.isNotEmpty()) {
+            adapter write LEFT_ANGLE
+            visitCommaSeparatedList(typeRef.actualTypeArguments)
+            adapter write RIGHT_ANGLE
+        }
+
+        adapter write name.suffix
     }
 
     override fun <T : Any?> visitCtVariableWrite(varWrite: CtVariableWrite<T>) {
@@ -945,6 +944,11 @@ class DefaultKotlinPrettyPrinter(
             if(!shouldIgnoreIdentifier(invocation)) { // If invoke operator, the name of the called function is omitted
                 adapter write separator
                 adapter write invocation.executable.simpleName
+            }
+            if(invocation.actualTypeArguments.isNotEmpty()) {
+                adapter write LEFT_ANGLE
+                visitCommaSeparatedList(invocation.actualTypeArguments)
+                adapter write RIGHT_ANGLE
             }
         }
 
