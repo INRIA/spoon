@@ -18,6 +18,8 @@ import org.jetbrains.kotlin.fir.references.impl.FirExplicitThisReference
 import org.jetbrains.kotlin.fir.references.impl.FirImplicitThisReference
 import org.jetbrains.kotlin.fir.references.impl.FirPropertyFromParameterResolvedNamedReference
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
+import org.jetbrains.kotlin.fir.types.FirTypeProjection
+import org.jetbrains.kotlin.fir.types.isNullableAny
 import org.jetbrains.kotlin.fir.visitors.CompositeTransformResult
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -126,6 +128,12 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         // Modifiers
         val modifierList = KtModifierKind.fromClass(regularClass)
         addModifiersAsMetadata(type, modifierList)
+
+        // Type parameters
+        if(regularClass.typeParameters.isNotEmpty()) {
+            type.setFormalCtTypeParameters<CtType<*>>(
+                regularClass.typeParameters.map { visitTypeParameter(it,null).single })
+        }
 
         val decls = regularClass.declarations.map {
             it.accept(this, null).single.also { decl ->
