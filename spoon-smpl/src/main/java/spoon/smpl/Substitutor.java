@@ -309,7 +309,9 @@ public class Substitutor implements CtVisitor {
 
     @Override
     public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
-        throw new NotImplementedException("Not implemented");
+        // TODO: identifier substitution
+
+        ctConstructorCall.getArguments().forEach(e -> e.accept(this));
     }
 
     @Override
