@@ -297,6 +297,11 @@ class DefaultKotlinPrettyPrinter(
 
         adapter write "class" and SPACE and ctClass.simpleName
 
+        val typeParamHandler = TypeParameterHandler(ctClass, this, false)
+        if(!typeParamHandler.isEmpty) {
+            adapter write typeParamHandler.generateTypeParamListString() and SPACE
+        }
+
         val inheritanceList = ArrayList<String>()
 
         val primaryConstructor = ctClass.constructors.firstOrNull { it.isPrimary() }
@@ -318,6 +323,12 @@ class DefaultKotlinPrettyPrinter(
             }
             else p = ", "
             adapter write inheritanceList.joinToString(prefix = p)
+        }
+
+        val whereClause = typeParamHandler.generateWhereClause()
+        if(whereClause.isNotEmpty()) {
+            adapter write " where "
+            adapter.writeAligned(whereClause)
         }
 
         adapter write SPACE and LEFT_CURL
@@ -955,7 +966,7 @@ class DefaultKotlinPrettyPrinter(
 
         adapter writeModifiers modifiers and "fun"
 
-        val typeParamHandler = TypeParameterPrinter(method, this, false)
+        val typeParamHandler = TypeParameterHandler(method, this, false)
         adapter write typeParamHandler.generateTypeParamListString() and SPACE
 
         val extensionTypeRef = method.getMetadata(KtMetadataKeys.EXTENSION_TYPE_REF) as CtTypeAccess<*>?
