@@ -9,7 +9,8 @@ import spoon.reflect.reference.CtTypeReference
 internal class TypeParameterHandler(
     private val entity: CtFormalTypeDeclarer,
     private val prettyPrinter: DefaultKotlinPrettyPrinter,
-    allBoundsInWhereClause: Boolean = false) {
+    allBoundsInWhereClause: Boolean = false
+) {
     private val printBoundInWhereClause: List<Boolean> = if(allBoundsInWhereClause) {
         entity.formalCtTypeParameters.map { it.superclass != null }
     } else {
@@ -22,14 +23,18 @@ internal class TypeParameterHandler(
         if(entity.formalCtTypeParameters.isEmpty()) return emptyList()
         val paramList = ArrayList<String>()
 
-        for((i,tParam) in entity.formalCtTypeParameters.withIndex()) {
-            val modifiers = tParam.getMetadata(KtMetadataKeys.KT_MODIFIERS) as? Set<KtModifierKind>?
-            val modifiersString = modifiers?.toList()?.sorted()?.
-                joinToString(separator = " ", postfix = " ", transform = { it.token }) ?: ""
-            val s  = if(tParam.superclass != null && !printBoundInWhereClause[i]) {
-                "${modifiersString}${tParam.simpleName}: ${prettyPrinter.printElement(tParam.superclass)}"
+        for((i,typeParam) in entity.formalCtTypeParameters.withIndex()) {
+            val modifiers = typeParam.getMetadata(KtMetadataKeys.KT_MODIFIERS) as? Set<KtModifierKind>?
+            val modifiersString = if(modifiers != null && modifiers.isNotEmpty()) {
+                modifiers.toList().sorted().joinToString(separator = " ", postfix = " ", transform = { it.token })
             } else {
-                tParam.simpleName
+                ""
+            }
+
+            val s  = if(typeParam.superclass != null && !printBoundInWhereClause[i]) {
+                "${modifiersString}${typeParam.simpleName}: ${prettyPrinter.printElement(typeParam.superclass)}"
+            } else {
+                "${modifiersString}${typeParam.simpleName}"
             }
             paramList.add(s)
         }
