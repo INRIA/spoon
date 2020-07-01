@@ -347,6 +347,13 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctAssignment.compose()
     }
 
+    override fun visitTypeProjection(
+        typeProjection: FirTypeProjection,
+        data: Nothing?
+    ): CompositeTransformResult.Single<CtTypeReference<*>> {
+        return referenceBuilder.visitTypeProjection(typeProjection).compose()
+    }
+
     private fun visitNormalFunctionCall(call: InvocationType.NORMAL_CALL):
             CompositeTransformResult<CtInvocation<*>> {
         val (firReceiver, functionCall) = call
@@ -368,6 +375,12 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
             invocation.setArguments<CtInvocation<Any>>(functionCall.arguments.map {
                 expressionOrWrappedInStatementExpression(it.accept(this,null).single)
             })
+        }
+
+        if(functionCall.typeArguments.isNotEmpty()) {
+            invocation.setActualTypeArguments<CtInvocation<*>>(
+                functionCall.typeArguments.map { visitTypeProjection(it, null).single }
+            )
         }
 
         invocation.putMetadata<CtInvocation<*>>(KtMetadataKeys.ACCESS_IS_SAFE, functionCall.safe)
