@@ -854,13 +854,16 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         val ctTypeParameter = factory.Core().createTypeParameter()
         ctTypeParameter.setSimpleName<CtTypeParameter>(typeParameter.name.identifier)
 
-        val refs = typeParameter.bounds.map { referenceBuilder.getNewTypeReference<Any>(it) }
-        if(typeParameter.bounds.size == 1) {
+        // Don't include default upper bound ("Any?")
+        val refs = typeParameter.bounds.filterNot { it.isNullableAny }.map { referenceBuilder.getNewTypeReference<Any>(it) }
+        if(refs.size == 1) {
             ctTypeParameter.setSuperclass<CtTypeParameter>(refs[0])
-        } else if(typeParameter.bounds.size > 1) {
+        } else if(refs.size > 1) {
             ctTypeParameter.setSuperclass<CtTypeParameter>(
                 factory.Type().createIntersectionTypeReferenceWithBounds<Any>(refs))
         }
+
+        addModifiersAsMetadata(ctTypeParameter, KtModifierKind.fromTypeVariable(typeParameter))
 
         return ctTypeParameter.compose()
     }
