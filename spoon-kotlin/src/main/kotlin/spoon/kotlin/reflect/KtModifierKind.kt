@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtModifierList
 import org.jetbrains.kotlin.psi.psiUtil.allChildren
+import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.utils.addIfNotNull
 
 
@@ -130,7 +131,15 @@ enum class KtModifierKind(val token : String) {
             }
 
 
-        fun fromTypeVariable() : List<KtModifierKind> = TODO()
+        fun fromTypeVariable(typeParameter: FirTypeParameter) : List<KtModifierKind> =
+            ArrayList<KtModifierKind>().apply {
+                if(typeParameter.isReified) add(REIFIED)
+                when(typeParameter.variance) {
+                    Variance.IN_VARIANCE -> add(TYPE_PROJECTION_IN)
+                    Variance.OUT_VARIANCE -> add(TYPE_PROJECTION_OUT)
+                    Variance.INVARIANT -> { /*Nothing*/ }
+                }
+            }
 
         fun convertModality(m : Modality?) : KtModifierKind? = when(m) {
             Modality.FINAL     -> FINAL
