@@ -604,6 +604,8 @@ public class FormulaCompiler {
 
                 if (neqElement instanceof CtVariableRead) {
                     guard = combine(guard, new VariableUsePredicate(((CtVariableRead<?>) neqElement).getVariable().getSimpleName(), metavars), Or.class);
+                } else if (neqElement instanceof CtExpression) {
+                    guard = combine(guard, new Expression(neqElement, metavars), Or.class);
                 } else {
                     throw new NotImplementedException("WhenNotEqual not implemented for " + neqElement.getClass().toString());
                 }

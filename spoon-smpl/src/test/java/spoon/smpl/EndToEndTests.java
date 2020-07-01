@@ -265,6 +265,31 @@ public class EndToEndTests {
         runSingleTest(smpl, inputCode, expectedCode);
     }
     @Test
+    public void testArgDotsPatternMatchMismatchedExecutableBug() {
+        // contract: pattern matching the expression \"f(...)\" should not fail to find a mismatch in the executable of the invocation
+
+        String inputCode = "class A {\n" +
+                           "    /* skip */ void a(int x, int y, int z) {}\n" +
+                           "    void m1() {\n" +
+                           "      a(1,2,3);\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    /* skip */\n" +
+                              "    void a(int x, int y, int z) {\n" +
+                              "    }\n" +
+                              "    void m1() {\n" +
+                              "        a(1, 2, 3);\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- b(...)\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
     public void testDotsLeavingScopeBug01() {
         // contract: dots should be prevented from traversing out of the enclosing scope (when forall version)
 
@@ -991,6 +1016,344 @@ public class EndToEndTests {
                       "- foo(x);\n" +
                       "  ... when any\n" +
                       "- bar(x);\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testDotsWhenNeqExpression01() {
+        // contract: due to the constraint on the dots operator the patch should not match m1, but should match and transform m2
+
+        String inputCode = "class A {\n" +
+                           "    /* skip */ void a() {}\n" +
+                           "    /* skip */ void b() {}\n" +
+                           "    /* skip */ void c() {}\n" +
+                           "    void m1() {\n" +
+                           "      a();\n" +
+                           "      b();\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "    void m2() {\n" +
+                           "      a();\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    /* skip */\n" +
+                              "    void a() {\n" +
+                              "    }\n" +
+                              "    /* skip */\n" +
+                              "    void b() {\n" +
+                              "    }\n" +
+                              "    /* skip */\n" +
+                              "    void c() {\n" +
+                              "    }\n" +
+                              "    void m1() {\n" +
+                              "        a();\n" +
+                              "        b();\n" +
+                              "        c();\n" +
+                              "    }\n" +
+                              "    void m2() {\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- a();\n" +
+                      "  ... when != b()\n" +
+                      "- c();\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testDotsWhenNeqExpression02() {
+        // contract: due to the constraint on the dots operator the patch should not match m2, but should match and transform m1
+
+        String inputCode = "class A {\n" +
+                           "    /* skip */ void a() {}\n" +
+                           "    /* skip */ void b(int x) {}\n" +
+                           "    /* skip */ void c() {}\n" +
+                           "    void m1() {\n" +
+                           "      a();\n" +
+                           "      b(0);\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "    void m2() {\n" +
+                           "      a();\n" +
+                           "      b(1);\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    /* skip */\n" +
+                              "    void a() {\n" +
+                              "    }\n" +
+                              "    /* skip */\n" +
+                              "    void b(int x) {\n" +
+                              "    }\n" +
+                              "    /* skip */\n" +
+                              "    void c() {\n" +
+                              "    }\n" +
+                              "    void m1() {\n" +
+                              "        b(0);\n" +
+                              "    }\n" +
+                              "    void m2() {\n" +
+                              "        a();\n" +
+                              "        b(1);\n" +
+                              "        c();\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- a();\n" +
+                      "  ... when != b(1)\n" +
+                      "- c();\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testDotsWhenNeqExpression03() {
+        // contract: dots for arguments should be supported in expressions of when != expr, both m1 and m2 should be rejected
+
+        String inputCode = "class A {\n" +
+                           "    /* skip */ void a() {}\n" +
+                           "    /* skip */ void b(int x) {}\n" +
+                           "    /* skip */ void c() {}\n" +
+                           "    void m1() {\n" +
+                           "      a();\n" +
+                           "      b(0);\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "    void m2() {\n" +
+                           "      a();\n" +
+                           "      b(1);\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    /* skip */\n" +
+                              "    void a() {\n" +
+                              "    }\n" +
+                              "    /* skip */\n" +
+                              "    void b(int x) {\n" +
+                              "    }\n" +
+                              "    /* skip */\n" +
+                              "    void c() {\n" +
+                              "    }\n" +
+                              "    void m1() {\n" +
+                              "        a();\n" +
+                              "        b(0);\n" +
+                              "        c();\n" +
+                              "    }\n" +
+                              "    void m2() {\n" +
+                              "        a();\n" +
+                              "        b(1);\n" +
+                              "        c();\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- a();\n" +
+                      "  ... when != b(...)\n" +
+                      "- c();\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testDotsWhenNeqExpression04() {
+        // contract: constructor calls should be supported in when != expr, m1 should match but m2 should not
+
+        String inputCode = "class A {\n" +
+                           "    /* skip */ void a() {}\n" +
+                           "    /* skip */ void c() {}\n" +
+                           "    public static class Point {\n" +
+                           "        public Point(int x, int y) {\n" +
+                           "            this.x = x;\n" +
+                           "            this.y = y;\n" +
+                           "        }\n" +
+                           "        public final int x;\n" +
+                           "        public final int y;\n" +
+                           "    }\n" +
+                           "    void m1() {\n" +
+                           "      a();\n" +
+                           "      Point p = new Point(1,2);\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "    void m2() {\n" +
+                           "      a();\n" +
+                           "      Point p = new Point(2,3);\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    /* skip */\n" +
+                              "    void a() {\n" +
+                              "    }\n" +
+                              "    /* skip */\n" +
+                              "    void c() {\n" +
+                              "    }\n" +
+                              "    public static class Point {\n" +
+                              "        public Point(int x, int y) {\n" +
+                              "            this.x = x;\n" +
+                              "            this.y = y;\n" +
+                              "        }\n" +
+                              "        public final int x;\n" +
+                              "        public final int y;\n" +
+                              "    }\n" +
+                              "    void m1() {\n" +
+                              "        Point p = new Point(1, 2);\n" +
+                              "    }\n" +
+                              "    void m2() {\n" +
+                              "        a();\n" +
+                              "        Point p = new Point(2, 3);\n" +
+                              "        c();\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- a();\n" +
+                      "  ... when != new Point(2,3)\n" +
+                      "- c();\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testDotsWhenNeqExpression05() {
+        // contract: dots for arguments in constructor calls should be supported in when != expr, m1 and m2 should match but not m3
+
+        String inputCode = "class A {\n" +
+                           "    /* skip */ void a() {}\n" +
+                           "    /* skip */ void c() {}\n" +
+                           "    public static class Point {\n" +
+                           "        public Point(int x, int y) {\n" +
+                           "            this.x = x;\n" +
+                           "            this.y = y;\n" +
+                           "        }\n" +
+                           "        public final int x;\n" +
+                           "        public final int y;\n" +
+                           "    }\n" +
+                           "    void m1() {\n" +
+                           "      a();\n" +
+                           "      Point p = new Point(2,2);\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "    void m2() {\n" +
+                           "      a();\n" +
+                           "      Point p = new Point(2,3);\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "    void m3() {\n" +
+                           "      a();\n" +
+                           "      Point p = new Point(1,1);\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    /* skip */\n" +
+                              "    void a() {\n" +
+                              "    }\n" +
+                              "    /* skip */\n" +
+                              "    void c() {\n" +
+                              "    }\n" +
+                              "    public static class Point {\n" +
+                              "        public Point(int x, int y) {\n" +
+                              "            this.x = x;\n" +
+                              "            this.y = y;\n" +
+                              "        }\n" +
+                              "        public final int x;\n" +
+                              "        public final int y;\n" +
+                              "    }\n" +
+                              "    void m1() {\n" +
+                              "      Point p = new Point(2,2);\n" +
+                              "    }\n" +
+                              "    void m2() {\n" +
+                              "      Point p = new Point(2,3);\n" +
+                              "    }\n" +
+                              "    void m3() {\n" +
+                              "      a();\n" +
+                              "      Point p = new Point(1,1);\n" +
+                              "      c();\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- a();\n" +
+                      "  ... when != new Point(1,...)\n" +
+                      "- c();\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testDotsWhenNeqExpression06() {
+        // contract: dots for arguments in constructor calls should be supported in when != expr, none of m1,m2,m3 should match
+
+        String inputCode = "class A {\n" +
+                           "    /* skip */ void a() {}\n" +
+                           "    /* skip */ void c() {}\n" +
+                           "    public static class Point {\n" +
+                           "        public Point(int x, int y) {\n" +
+                           "            this.x = x;\n" +
+                           "            this.y = y;\n" +
+                           "        }\n" +
+                           "        public final int x;\n" +
+                           "        public final int y;\n" +
+                           "    }\n" +
+                           "    void m1() {\n" +
+                           "      a();\n" +
+                           "      Point p = new Point(2,2);\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "    void m2() {\n" +
+                           "      a();\n" +
+                           "      Point p = new Point(2,3);\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "    void m3() {\n" +
+                           "      a();\n" +
+                           "      Point p = new Point(1,1);\n" +
+                           "      c();\n" +
+                           "    }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "    /* skip */\n" +
+                              "    void a() {\n" +
+                              "    }\n" +
+                              "    /* skip */\n" +
+                              "    void c() {\n" +
+                              "    }\n" +
+                              "    public static class Point {\n" +
+                              "        public Point(int x, int y) {\n" +
+                              "            this.x = x;\n" +
+                              "            this.y = y;\n" +
+                              "        }\n" +
+                              "        public final int x;\n" +
+                              "        public final int y;\n" +
+                              "    }\n" +
+                              "    void m1() {\n" +
+                              "      a();\n" +
+                              "      Point p = new Point(2,2);\n" +
+                              "      c();\n" +
+                              "    }\n" +
+                              "    void m2() {\n" +
+                              "      a();\n" +
+                              "      Point p = new Point(2,3);\n" +
+                              "      c();\n" +
+                              "    }\n" +
+                              "    void m3() {\n" +
+                              "      a();\n" +
+                              "      Point p = new Point(1,1);\n" +
+                              "      c();\n" +
+                              "    }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- a();\n" +
+                      "  ... when != new Point(...)\n" +
+                      "- c();\n";
     
         runSingleTest(smpl, inputCode, expectedCode);
     }

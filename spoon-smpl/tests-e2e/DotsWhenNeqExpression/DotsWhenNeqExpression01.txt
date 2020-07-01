@@ -1,0 +1,55 @@
+[name]
+DotsWhenNeqExpression01
+
+[contract]
+due to the constraint on the dots operator the patch should not match m1, but should match and transform m2
+
+[patch]
+@@ @@
+- a();
+  ... when != b()
+- c();
+
+
+[input]
+class A {
+    /* skip */ void a() {}
+    /* skip */ void b() {}
+    /* skip */ void c() {}
+
+    void m1() {
+      a();
+      b();
+      c();
+    }
+
+    void m2() {
+      a();
+      c();
+    }
+}
+
+
+[expected]
+class A {
+    /* skip */
+    void a() {
+    }
+
+    /* skip */
+    void b() {
+    }
+
+    /* skip */
+    void c() {
+    }
+
+    void m1() {
+        a();
+        b();
+        c();
+    }
+
+    void m2() {
+    }
+}

@@ -1,8 +1,10 @@
 package spoon.smpl.pattern;
 
-import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtAbstractInvocation;
 import spoon.reflect.code.CtVariableRead;
 import spoon.smpl.SmPLJavaDSL;
+
+import java.util.Arrays;
 
 public class DotsExtPatternMatcher extends PatternMatcher {
     public DotsExtPatternMatcher(PatternNode pattern) {
@@ -46,7 +48,7 @@ public class DotsExtPatternMatcher extends PatternMatcher {
     }
 
     private static boolean isInvocationWithDots(ElemNode node) {
-        if (!(node.elem instanceof CtInvocation<?>) || ((CtInvocation<?>) node.elem).getArguments().size() < 1) {
+        if (!(node.elem instanceof CtAbstractInvocation<?>) || ((CtAbstractInvocation<?>) node.elem).getArguments().size() < 1) {
             return false;
         }
 
@@ -72,6 +74,17 @@ public class DotsExtPatternMatcher extends PatternMatcher {
     }
 
     private void matchInvocationWithDots(ElemNode myElemNode, ElemNode otherNode) {
+        for (String key : Arrays.asList("executable", "target")) {
+            if (myElemNode.sub.containsKey(key) && otherNode.sub.containsKey(key)) {
+                patternStack.push(myElemNode.sub.get(key));
+                otherNode.sub.get(key).accept(this);
+
+                if (!result) {
+                    return;
+                }
+            }
+        }
+
         int myNumArgs = numArgs(myElemNode);
 
         if (myNumArgs == 1) {

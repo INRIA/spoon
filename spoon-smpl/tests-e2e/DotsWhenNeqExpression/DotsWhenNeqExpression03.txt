@@ -1,0 +1,59 @@
+[name]
+DotsWhenNeqExpression03
+
+[contract]
+dots for arguments should be supported in expressions of when != expr, both m1 and m2 should be rejected
+
+[patch]
+@@ @@
+- a();
+  ... when != b(...)
+- c();
+
+
+[input]
+class A {
+    /* skip */ void a() {}
+    /* skip */ void b(int x) {}
+    /* skip */ void c() {}
+
+    void m1() {
+      a();
+      b(0);
+      c();
+    }
+
+    void m2() {
+      a();
+      b(1);
+      c();
+    }
+}
+
+
+[expected]
+class A {
+    /* skip */
+    void a() {
+    }
+
+    /* skip */
+    void b(int x) {
+    }
+
+    /* skip */
+    void c() {
+    }
+
+    void m1() {
+        a();
+        b(0);
+        c();
+    }
+
+    void m2() {
+        a();
+        b(1);
+        c();
+    }
+}
