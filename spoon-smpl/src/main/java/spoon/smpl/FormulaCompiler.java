@@ -602,6 +602,8 @@ public class FormulaCompiler {
                     neqElement = SmPLJavaDSL.getWrappedElement(neqElement);
                 }
 
+                // TODO: use expression match for variables as well? (--> get rid of VariableUsePredicate)
+
                 if (neqElement instanceof CtVariableRead) {
                     guard = combine(guard, new VariableUsePredicate(((CtVariableRead<?>) neqElement).getVariable().getSimpleName(), metavars), Or.class);
                 } else if (neqElement instanceof CtExpression) {
