@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import spoon.SpoonException
 import spoon.kotlin.ktMetadata.KtMetadataKeys
+import spoon.kotlin.reflect.KtModifierKind
 import spoon.reflect.reference.*
 
 internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
@@ -23,11 +24,6 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
                 ctRef.setSimpleName(it.shortClassName.identifier)
              }
         return ctRef
-    }
-
-
-    fun <T> buildGenericTypeReference(typeRef: FirResolvedTypeRef) : CtTypeReference<T> {
-        TODO()
     }
 
     fun <T> getNewDeclaringTypeReference(callableId: CallableId) : CtTypeReference<T>? {
@@ -67,21 +63,103 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
         return execRef
     }
 
-    fun <T> getNewTypeReference(coneClass: ConeClassLikeType) : CtTypeReference<T> {
+    fun <T> getNewTypeReference(coneKotlinType: ConeLookupTagBasedType): CtTypeReference<T> {
         val ctRef = firTreeBuilder.factory.Core().createTypeReference<T>()
-        val classId = coneClass.classId ?: throw SpoonException("Can't get classId for $coneClass")
+        val classId = coneKotlinType.classId ?: //FIXME chexk for conetypeparametertype
+        throw SpoonException("Can't get classId for $coneKotlinType")
         ctRef.setSimpleName<CtTypeReference<T>>(classId.shortClassName.identifier)
         ctRef.setPackage<CtTypeReference<T>>(getPackageReference(classId.packageFqName))
-        ctRef.putMetadata<CtTypeReference<T>>(KtMetadataKeys.TYPE_REF_NULLABLE, coneClass.nullability.isNullable)
+        ctRef.putMetadata<CtTypeReference<T>>(KtMetadataKeys.TYPE_REF_NULLABLE, coneKotlinType.nullability.isNullable)
+
+        if(coneKotlinType.typeArguments.isNotEmpty()) {
+            ctRef.setActualTypeArguments<CtTypeReference<*>>(
+                coneKotlinType.typeArguments.map { visitTypeProjection(it) }
+            )
+        }
+
+        return ctRef
+    }
+
+    fun <T> getNewTypeReference(coneKotlinType: ConeKotlinType): CtTypeReference<T> {
+        val ctRef = firTreeBuilder.factory.Core().createTypeReference<T>()
+        val classId = coneKotlinType.classId ?:
+            throw SpoonException("Can't get classId for $coneKotlinType")
+        ctRef.setSimpleName<CtTypeReference<T>>(classId.shortClassName.identifier)
+        ctRef.setPackage<CtTypeReference<T>>(getPackageReference(classId.packageFqName))
+        ctRef.putMetadata<CtTypeReference<T>>(KtMetadataKeys.TYPE_REF_NULLABLE, coneKotlinType.nullability.isNullable)
+
+        if(coneKotlinType.typeArguments.isNotEmpty()) {
+            ctRef.setActualTypeArguments<CtTypeReference<*>>(
+                coneKotlinType.typeArguments.map { visitTypeProjection(it) }
+            )
+        }
+
+        return ctRef
+    }
+
+    private fun getNewTypeParameterReference(coneTypeParam: ConeTypeParameterType): CtTypeParameterReference {
+        val ctRef = firTreeBuilder.factory.Core().createTypeParameterReference()
+        val symbol = coneTypeParam.lookupTag.typeParameterSymbol
+        ctRef.setSimpleName<CtTypeParameterReference>(symbol.name.identifier)
+        ctRef.putMetadata<CtTypeParameterReference>(KtMetadataKeys.TYPE_REF_NULLABLE, coneTypeParam.nullability.isNullable)
+
+        if(coneTypeParam.typeArguments.isNotEmpty()) {
+            ctRef.setActualTypeArguments<CtTypeParameterReference>(
+                coneTypeParam.typeArguments.map { visitTypeProjection(it) }
+            )
+        }
+
+        val modifiers = KtModifierKind.fromTypeVariable(symbol.fir)
+        firTreeBuilder.addModifiersAsMetadata(ctRef, modifiers)
+
+        return ctRef
+    }
+
+    fun visitTypeProjection(typeProjection: ConeKotlinTypeProjection): CtTypeReference<*> {
+        return when(typeProjection) {
+            ConeStarProjection -> firTreeBuilder.factory.createWildcardReference()
+            is ConeKotlinTypeProjectionIn -> getNewTypeReference<Any>(typeProjection.type)
+            is ConeKotlinTypeProjectionOut -> getNewTypeReference<Any>(typeProjection.type)
+            is ConeTypeParameterType -> getNewTypeParameterReference(typeProjection)
+            is ConeLookupTagBasedType -> getNewTypeReference<Any>(typeProjection)
+            is ConeCapturedType -> TODO()
+            is ConeDefinitelyNotNullType -> TODO()
+            is ConeIntersectionType -> TODO()
+            is ConeStubType -> TODO()
+            is ConeIntegerLiteralType -> TODO()
+            is ConeFlexibleType -> TODO()
+        }
+    }
+
+    fun visitTypeProjection(typeProjection: FirTypeProjection): CtTypeReference<*> {
+        return when(typeProjection) {
+            is FirTypeProjectionWithVariance -> getNewTypeReference(typeProjection.typeRef)
+            is FirStarProjection -> firTreeBuilder.factory.createWildcardReference()
+            else -> throw SpoonException("Unexpected type projection $typeProjection")
+        }
+    }
+
+    fun getNewTypeReference(coneTypeParam: ConeTypeParameterType): CtTypeParameterReference {
+        val ctRef = firTreeBuilder.factory.Core().createTypeParameterReference()
+        val typeParam = coneTypeParam.lookupTag.typeParameterSymbol.fir
+        ctRef.setSimpleName<CtReference>(typeParam.name.identifier)
+        ctRef.putMetadata<CtTypeParameterReference>(KtMetadataKeys.TYPE_REF_NULLABLE, coneTypeParam.nullability.isNullable)
+
+
+        if(typeParam.bounds.isNotEmpty()) {
+            ctRef.setActualTypeArguments<CtTypeReference<*>>(
+                typeParam.bounds.map { getNewTypeReference<Any>(it) }
+            )
+        }
         return ctRef
     }
 
     fun <T> getNewTypeReference(typeRef: FirTypeRef) : CtTypeReference<T> {
-        val coneType = typeRef.coneTypeSafe<ConeClassLikeType>()
-        if(coneType != null ) {
-            return getNewTypeReference(coneType)
-        } else {
-            throw RuntimeException("Can't get ConeType for TypeRef $typeRef")
+        val coneType = typeRef.coneTypeSafe<ConeLookupTagBasedType>()
+        return when(coneType) {
+            is ConeClassLikeType -> getNewTypeReference(coneType)
+            is ConeTypeParameterType -> getNewTypeReference(coneType) as CtTypeReference<T>
+            else -> throw RuntimeException("Can't get ConeType for TypeRef $typeRef")
         }
     }
 
