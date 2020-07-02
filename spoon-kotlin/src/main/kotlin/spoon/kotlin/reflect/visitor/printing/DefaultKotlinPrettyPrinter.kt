@@ -882,11 +882,7 @@ class DefaultKotlinPrettyPrinter(
         val name = TypeName.build(typeRef)
         adapter write name.fQNameWithoutNullability
 
-        if(typeRef.actualTypeArguments.isNotEmpty()) {
-            adapter write LEFT_ANGLE
-            visitCommaSeparatedList(typeRef.actualTypeArguments)
-            adapter write RIGHT_ANGLE
-        }
+        visitTypeArgumentsList(typeRef.actualTypeArguments, false)
 
         adapter write name.suffix
     }
@@ -945,16 +941,21 @@ class DefaultKotlinPrettyPrinter(
                 adapter write separator
                 adapter write invocation.executable.simpleName
             }
-            if(invocation.actualTypeArguments.isNotEmpty()) {
-                adapter write LEFT_ANGLE
-                visitCommaSeparatedList(invocation.actualTypeArguments)
-                adapter write RIGHT_ANGLE
-            }
+            visitTypeArgumentsList(invocation.actualTypeArguments, false)
         }
 
         visitArgumentList(invocation.arguments) // Paren handled in call
 
         exitCtExpression(invocation)
+    }
+
+    private fun visitTypeArgumentsList(typeArguments: List<CtTypeReference<*>>, forceExplicitTypeArgs: Boolean) {
+        if(typeArguments.isNotEmpty() &&
+            (forceExplicitTypeArgs || forceExplicitTypes || typeArguments.any { !it.isImplicit })) {
+            adapter write LEFT_ANGLE
+            visitCommaSeparatedList(typeArguments)
+            adapter write RIGHT_ANGLE
+        }
     }
 
     private fun shouldIgnoreIdentifier(invocation: CtInvocation<*>): Boolean {
@@ -999,7 +1000,7 @@ class DefaultKotlinPrettyPrinter(
         visitCommaSeparatedList(method.parameters)
         adapter write RIGHT_ROUND
 
-        if(method.type.qualifiedName != "kotlin.Unit") {
+        if(!method.type.isImplicit && method.type.qualifiedName != "kotlin.Unit") {
             adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
             method.type.accept(this)
         }
