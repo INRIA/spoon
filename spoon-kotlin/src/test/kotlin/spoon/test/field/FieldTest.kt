@@ -29,7 +29,7 @@ class FieldTest {
 
         var property = c.getField("f0")
         assertSame(c.fields[0], property)
-        assertEquals("kotlin.Int", pp.prettyprint(property.type))
+        assertEquals("kotlin.Int", property.type.qualifiedName)
         assertEquals("val f0 = 0", pp.prettyprint(property)) // Public should be ignored
         assertEquals(setOf(KtModifierKind.PUBLIC,KtModifierKind.FINAL,KtModifierKind.VAL), property.getKtModifiers())
 
@@ -41,13 +41,13 @@ class FieldTest {
 
         property = c.getField("f2")
         assertSame(c.fields[2], property)
-        assertEquals("kotlin.String", pp.prettyprint(property.type))
+        assertEquals("kotlin.String", property.type.qualifiedName)
         assertEquals("private val f2 = \"private property\"", pp.prettyprint(property))
         assertEquals(setOf(KtModifierKind.PRIVATE,KtModifierKind.FINAL,KtModifierKind.VAL), property.getKtModifiers())
 
         property = c.getField("f3")
         assertSame(c.fields[3], property)
-        assertEquals("kotlin.Float", pp.prettyprint(property.type))
+        assertEquals("kotlin.Float", property.type.qualifiedName)
         assertEquals("internal open var f3 = 3.0F", pp.prettyprint(property))
         assertEquals(setOf(KtModifierKind.INTERNAL,KtModifierKind.OPEN,KtModifierKind.VAR), property.getKtModifiers())
 
@@ -73,12 +73,12 @@ class FieldTest {
         assertEquals(2, c.declaredFields.size)
 
         var property = c.getField("lazyInt")
-        assertEquals("kotlin.Int", pp.prettyprint(property.type))
+        assertEquals("kotlin.Int", property.type.qualifiedName)
         assertEquals("val lazyInt by lazy { 123 }", pp.prettyprint(property))
         assertEquals(setOf(KtModifierKind.PUBLIC,KtModifierKind.FINAL,KtModifierKind.VAL), property.getKtModifiers())
 
         property = c.getField("lazyString")
-        assertEquals("kotlin.String", pp.prettyprint(property.type))
+        assertEquals("kotlin.String", property.type.qualifiedName)
         assertEquals("val lazyString by lazy(fun(): kotlin.String {$lineSeparator$indent${indent}return \"s\"$lineSeparator$indent})",
             pp.prettyprint(property))
         assertEquals(setOf(KtModifierKind.PUBLIC,KtModifierKind.FINAL,KtModifierKind.VAL), property.getKtModifiers())

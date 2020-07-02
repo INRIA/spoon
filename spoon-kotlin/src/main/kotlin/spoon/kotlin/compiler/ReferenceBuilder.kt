@@ -3,6 +3,7 @@ package spoon.kotlin.compiler
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.FirDelegatedConstructorCall
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.symbols.CallableId
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
@@ -157,10 +158,10 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
     fun <T> getNewTypeReference(typeRef: FirTypeRef) : CtTypeReference<T> {
         val coneType = typeRef.coneTypeSafe<ConeLookupTagBasedType>()
         return when(coneType) {
-            is ConeClassLikeType -> getNewTypeReference(coneType)
+            is ConeClassLikeType -> getNewTypeReference<T>(coneType)
             is ConeTypeParameterType -> getNewTypeReference(coneType) as CtTypeReference<T>
             else -> throw RuntimeException("Can't get ConeType for TypeRef $typeRef")
-        }
+        }.also { it.setImplicit(typeRef.psi == null) }
     }
 
     fun <T> getNewVariableReference(property: FirProperty) : CtVariableReference<T> {

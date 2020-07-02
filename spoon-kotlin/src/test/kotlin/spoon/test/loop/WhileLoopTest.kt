@@ -25,7 +25,7 @@ class WhileLoopTest {
         assertEquals(1, whileLoopsClass.getMethodByName("emptyWhile").body.statements.size)
 
         val loop = whileLoopsClass.getLoop("emptyWhile") as CtWhile
-        assertEquals("kotlin.Boolean", pp.prettyprint(loop.loopingExpression.type))
+        assertEquals("kotlin.Boolean", loop.loopingExpression.type.qualifiedName)
         assertEquals(0, (loop.body as CtBlock<*>).statements.size)
         assertFalse(loop.body.isImplicit)
         assertEquals("while (i < 10) {$eol}", pp.prettyprint(loop))

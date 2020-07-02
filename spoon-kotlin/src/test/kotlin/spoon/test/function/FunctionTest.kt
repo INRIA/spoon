@@ -41,9 +41,11 @@ class FunctionTest {
         assertEquals(c.factory.Type().createReference<Any>("kotlin.Int"), m.type)
         assertEquals(1, m.body.statements.size)
         assertTrue(m.body.isImplicit)
-        assertEquals("fun f4(): kotlin.Int = 3", m.asString())
+        assertEquals("fun f4() = 3", m.asString())
         m.body.setImplicit<CtMethod<*>>(false)
         m.body.statements[0].setImplicit<CtMethod<*>>(false)
+        assertEquals("fun f4() {${eol}    return 3${eol}}", m.asString())
+        m.type.setImplicit<CtMethod<*>>(false)
         assertEquals("fun f4(): kotlin.Int {${eol}    return 3${eol}}", m.asString())
 
 

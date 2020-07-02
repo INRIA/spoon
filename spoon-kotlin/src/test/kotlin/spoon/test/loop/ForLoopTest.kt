@@ -53,7 +53,7 @@ class ForLoopTest {
 
         val loop = forLoopsClass.getLoop("emptyFor")
         assertEquals("i", loop.variable.simpleName)
-        assertEquals("kotlin.Int", pp.prettyprint(loop.variable.type))
+        assertEquals("kotlin.Int", loop.variable.type.qualifiedName)
         assertEquals("0..10", pp.prettyprint(loop.expression))
         assertEquals(
             forLoopsClass.factory.Type().createReference<CtTypeReference<Int>>("kotlin.ranges.IntRange"),
