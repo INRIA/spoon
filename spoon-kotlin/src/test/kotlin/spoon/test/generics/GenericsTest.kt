@@ -154,16 +154,16 @@ class GenericsTest {
     @Test
     fun testActualTypeContainers() {
         /* Contract: Subclasses of CtActualTypeContainer shall be able to take type arguments
-            CtExecutablereference
+            CtExecutableReference
             CtIntersectionTypeReference TODO
             CtInvocation
-            CtNewclass TODO
+            CtNewClass TODO
             CtTypeReference
             N/A:
             CtArrayType - No array types in Kotlin
             CtTypeParameterReference - Illegal in Kotlin
-            CtConstructorcall - Regular invocation in Kotlin
-            CtWildcardReference - Illegal, used as star projection in Kotlin
+            CtConstructorCall - Regular invocation in Kotlin
+            CtWildcardReference - Used as star projection in Kotlin
          */
         val c = TestBuildUtil.buildClass("spoon.test.generics.testclasses", "TypeArguments")
         val m = c.getMethodByName("m")
@@ -185,5 +185,23 @@ class GenericsTest {
         assertEquals(1, variable.type.actualTypeArguments.size)
         assertEquals("kotlin.Boolean", variable.type.actualTypeArguments[0].qualifiedName)
         assertEquals("kotlin.collections.ArrayList<kotlin.Boolean>", variable.type.asString())
+    }
+
+    @Test
+    fun testImplicitTypeArguments() {
+        val c = TestBuildUtil.buildClass("spoon.test.generics.testclasses", "TypeArguments")
+        val implicit = c.getField("implicit").defaultExpression as CtInvocation<*>
+        val explicit = c.getField("explicit").defaultExpression as CtInvocation<*>
+        assertEquals(1, implicit.actualTypeArguments.size)
+        assertEquals(1, explicit.actualTypeArguments.size)
+
+        assertTrue(implicit.actualTypeArguments[0].isImplicit)
+        assertFalse(explicit.actualTypeArguments[0].isImplicit)
+
+        assertEquals("kotlin.Int", implicit.actualTypeArguments[0].qualifiedName)
+        assertEquals("listOf(1, 2, 3)", implicit.asString())
+
+        assertEquals("kotlin.Int", explicit.actualTypeArguments[0].qualifiedName)
+        assertEquals("listOf<kotlin.Int>(4, 5, 6)", explicit.asString())
     }
 }
