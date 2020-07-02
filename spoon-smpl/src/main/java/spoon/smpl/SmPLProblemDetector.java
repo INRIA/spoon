@@ -80,6 +80,30 @@ public class SmPLProblemDetector {
         problems.addAll(detectSuperfluousDotsOperators(tokens));
         problems.addAll(detectConsecutiveDotsOperators(tokens));
         problems.addAll(detectDotsInDisjunctions(tokens));
+        problems.addAll(detectDotsInAdditions(tokens));
+
+        return problems;
+    }
+
+    /**
+     * Detect dots operator on addition lines.
+     *
+     * @param tokens List of tokens
+     * @return List of problems detected
+     */
+    private static List<Problem> detectDotsInAdditions(List<SmPLLexer.Token> tokens) {
+        List<Problem> problems = new ArrayList<>();
+        boolean isAddition = false;
+
+        for (SmPLLexer.Token token : tokens) {
+            if (token.getType() == Addition) {
+                isAddition = true;
+            } else if (token.getType() == Newline) {
+                isAddition = false;
+            } else if (isAddition && token.getType() == Dots) {
+                problems.add(new Problem(ProblemType.Error, "Dots operator in addition at " + token.getPosition().toString()));
+            }
+        }
 
         return problems;
     }

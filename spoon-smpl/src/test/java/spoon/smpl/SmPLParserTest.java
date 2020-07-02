@@ -324,7 +324,6 @@ public class SmPLParserTest {
         // contract: statement dots in a pattern disjunction should cause SmPLParser to throw an exception
 
         String smpl = "@@ @@\n" +
-                      "void m() {\n" +
                       "(\n" +
                       "a()\n" +
                       "|\n" +
@@ -346,7 +345,6 @@ public class SmPLParserTest {
         // contract: an optdots block in a pattern disjunction should cause SmPLParser to throw an exception
 
         String smpl = "@@ @@\n" +
-                      "void m() {\n" +
                       "(\n" +
                       "a()\n" +
                       "|\n" +
@@ -354,6 +352,42 @@ public class SmPLParserTest {
                       "b();\n" +
                       "...>\n" +
                       ")\n";
+
+        disableStderr();
+
+        try {
+            SmPLParser.parse(smpl);
+        } finally {
+            enableStderr();
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testStatementDotsInAdditionThrowsException() {
+
+        // contract: a statement dots operator present in an addition should cause SmPLParser to throw an exception
+
+        String smpl = "@@ @@\n" +
+                      "anchor();\n" +
+                      "+ ... when any\n";
+
+        disableStderr();
+
+        try {
+            SmPLParser.parse(smpl);
+        } finally {
+            enableStderr();
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testArgumentDotsInAdditionThrowsException() {
+
+        // contract: a statement dots operator present in an addition should cause SmPLParser to throw an exception
+
+        String smpl = "@@ @@\n" +
+                      "anchor();\n" +
+                      "+ Arrays.asList(1,2,...);\n";
 
         disableStderr();
 

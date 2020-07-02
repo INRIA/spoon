@@ -133,4 +133,30 @@ public class SmPLProblemDetectorTest {
         List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
         assertTrue(problems.toString().contains("Error: Dots operator in pattern disjunction"));
     }
+
+    @Test
+    public void testDetectStatementDotsInAddition() {
+
+        // contract: statement dots in an addition line should be reported as an error
+
+        String smpl = "@@ @@\n" +
+                      "anchor();\n" +
+                      "+ ...\n";
+
+        List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
+        assertTrue(problems.toString().contains("Error: Dots operator in addition at"));
+    }
+
+    @Test
+    public void testDetectArgumentDotsInAddition() {
+
+        // contract: argument dots in an addition line should be reported as an error
+
+        String smpl = "@@ @@\n" +
+                      "anchor();\n" +
+                      "+ System.out.println(...);\n";
+
+        List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
+        assertTrue(problems.toString().contains("Error: Dots operator in addition at"));
+    }
 }
