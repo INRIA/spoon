@@ -99,4 +99,38 @@ public class SmPLProblemDetectorTest {
         List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
         assertTrue(problems.toString().contains("Error: Consecutive dots operators"));
     }
+
+    @Test
+    public void testDetectStatementDotsInDisjunction() {
+
+        // contract: statement dots operators inside a pattern disjunction should be reported as an error
+
+        String smpl = "@@ @@\n" +
+                      "(\n" +
+                      "foo();\n" +
+                      "|\n" +
+                      "...\n" +
+                      ")\n";
+
+        List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
+        assertTrue(problems.toString().contains("Error: Dots operator in pattern disjunction"));
+    }
+
+    @Test
+    public void testDetectOptDotsInDisjunction() {
+
+        // contract: optdots blocks inside a pattern disjunction should be reported as an error
+
+        String smpl = "@@ @@\n" +
+                      "(\n" +
+                      "foo();\n" +
+                      "|\n" +
+                      "<...\n" +
+                      "bar();\n" +
+                      "...>\n" +
+                      ")\n";
+
+        List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
+        assertTrue(problems.toString().contains("Error: Dots operator in pattern disjunction"));
+    }
 }

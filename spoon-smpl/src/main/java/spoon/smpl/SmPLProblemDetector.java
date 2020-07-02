@@ -1,9 +1,12 @@
 package spoon.smpl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static spoon.smpl.SmPLLexer.TokenType.*;
 
 /**
  * SmPLProblemDetector provides static analysis problem detection on SmPL patch code.
@@ -74,26 +77,73 @@ public class SmPLProblemDetector {
     public static List<Problem> detectProblems(List<SmPLLexer.Token> tokens) {
         List<Problem> problems = new ArrayList<>();
 
-        SmPLLexer.Token firstBodyToken = nextNonMatch(tokens, 0,
-                                                      SmPLLexer.TokenType.Newline,
-                                                      SmPLLexer.TokenType.Rulename,
-                                                      SmPLLexer.TokenType.MetavarType,
-                                                      SmPLLexer.TokenType.MetavarIdentifier);
+        problems.addAll(detectSuperfluousDotsOperators(tokens));
+        problems.addAll(detectConsecutiveDotsOperators(tokens));
+        problems.addAll(detectDotsInDisjunctions(tokens));
 
-        if (firstBodyToken != null && (firstBodyToken.getType() == SmPLLexer.TokenType.Dots || firstBodyToken.getType() == SmPLLexer.TokenType.OptDotsBegin)) {
+        return problems;
+    }
+
+    /**
+     * Detect dots operators inside of pattern disjunctions.
+     *
+     * @param tokens List of tokens
+     * @return List of problems detected
+     */
+    private static List<Problem> detectDotsInDisjunctions(List<SmPLLexer.Token> tokens) {
+        List<Problem> problems = new ArrayList<>();
+        int disjunctionDepth = 0;
+
+        for (SmPLLexer.Token token : tokens) {
+            if (token.getType() == DisjunctionBegin) {
+                disjunctionDepth += 1;
+            } else if (token.getType() == DisjunctionEnd) {
+                disjunctionDepth -= 1;
+            } else if (disjunctionDepth > 0 && (Arrays.asList(Dots, OptDotsBegin, OptDotsEnd).contains(token.getType()))) {
+                problems.add(new Problem(ProblemType.Error, "Dots operator in pattern disjunction at " + token.getPosition().toString()));
+            }
+        }
+
+        return problems;
+    }
+
+    /**
+     * Detect superfluous dots operators at the start and/or end of a rule body. This problem occurs in patches that
+     * do not match on the method header and therefore are fitted with implicit dots surrounding the rule body.
+     *
+     * @param tokens List of tokens
+     * @return List of problems detected
+     */
+    private static List<Problem> detectSuperfluousDotsOperators(List<SmPLLexer.Token> tokens) {
+        List<Problem> problems = new ArrayList<>();
+
+        SmPLLexer.Token firstBodyToken = nextNonMatch(tokens, 0, Newline, Rulename, MetavarType, MetavarIdentifier);
+
+        if (firstBodyToken != null && (firstBodyToken.getType() == Dots || firstBodyToken.getType() == OptDotsBegin)) {
             problems.add(new Problem(ProblemType.Error, "Superfluous dots operator at " + firstBodyToken.getPosition().toString()));
         }
+
+        // TODO: trailing superfluous dots
+
+        return problems;
+    }
+
+    /**
+     * Detect consecutive dots operators.
+     *
+     * @param tokens List of tokens
+     * @return List of problems detected
+     */
+    private static List<Problem> detectConsecutiveDotsOperators(List<SmPLLexer.Token> tokens) {
+        List<Problem> problems = new ArrayList<>();
 
         for (int i = 0; i < tokens.size() - 1; ++i) {
             SmPLLexer.Token t1 = tokens.get(i);
 
             if (t1.getType() == SmPLLexer.TokenType.Dots) {
-                SmPLLexer.Token t2 = nextNonMatch(tokens, i + 1, SmPLLexer.TokenType.Newline,
-                                                                 SmPLLexer.TokenType.WhenAny,
-                                                                 SmPLLexer.TokenType.WhenExists,
-                                                                 SmPLLexer.TokenType.WhenNotEqual);
+                SmPLLexer.Token t2 = nextNonMatch(tokens, i + 1, Newline, WhenAny, WhenExists, WhenNotEqual);
 
-                if (t2 != null && t2.getType() == SmPLLexer.TokenType.Dots) {
+                if (t2 != null && t2.getType() == Dots) {
                     problems.add(new Problem(ProblemType.Error, "Consecutive dots operators at " + t1.getPosition().toString()));
                 }
             }

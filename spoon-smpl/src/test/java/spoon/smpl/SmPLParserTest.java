@@ -317,5 +317,51 @@ public class SmPLParserTest {
             enableStderr();
         }
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testStatementDotsInDisjunctionThrowsException() {
+
+        // contract: statement dots in a pattern disjunction should cause SmPLParser to throw an exception
+
+        String smpl = "@@ @@\n" +
+                      "void m() {\n" +
+                      "(\n" +
+                      "a()\n" +
+                      "|\n" +
+                      "...\n" +
+                      ")\n";
+
+        disableStderr();
+
+        try {
+            SmPLParser.parse(smpl);
+        } finally {
+            enableStderr();
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testOptDotsInDisjunctionThrowsException() {
+
+        // contract: an optdots block in a pattern disjunction should cause SmPLParser to throw an exception
+
+        String smpl = "@@ @@\n" +
+                      "void m() {\n" +
+                      "(\n" +
+                      "a()\n" +
+                      "|\n" +
+                      "<...\n" +
+                      "b();\n" +
+                      "...>\n" +
+                      ")\n";
+
+        disableStderr();
+
+        try {
+            SmPLParser.parse(smpl);
+        } finally {
+            enableStderr();
+        }
+    }
 }
 
