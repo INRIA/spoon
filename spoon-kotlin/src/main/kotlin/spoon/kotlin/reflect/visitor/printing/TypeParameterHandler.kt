@@ -6,6 +6,18 @@ import spoon.reflect.declaration.CtFormalTypeDeclarer
 import spoon.reflect.reference.CtIntersectionTypeReference
 import spoon.reflect.reference.CtTypeReference
 
+/**
+ * Handles that FormalTypeDeclarers have a type parameter list in one place, and potentially a where clause in another
+ * place. Ex:
+ * fun <S, T : SomeClass> funName() where S: X, S: Y {}
+ * class name<S>(..): SomeSuperclass, SomeInterface where S: X, S: Y {}
+ *
+ * Depending on the declarer, the list and where clause may be in different places.
+ * Use by calling #generateTypeParamList for the first position, and #generateWhereClause in the second.
+ *
+ * Any type parameter with more than one superclass will have its superclasses in the where clause
+ * Those with 1 superclass will have it in the first list unless #allBoundsInWhereClause is set.
+ */
 internal class TypeParameterHandler(
     private val entity: CtFormalTypeDeclarer,
     private val prettyPrinter: DefaultKotlinPrettyPrinter,
