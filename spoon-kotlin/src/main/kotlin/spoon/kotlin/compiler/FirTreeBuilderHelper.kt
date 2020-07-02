@@ -89,7 +89,10 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
         val explicitReceiver = qa.explicitReceiver
         val dispatchReceiver = qa.dispatchReceiver
         return if (explicitReceiver == null || explicitReceiver == FirNoReceiverExpression) {
-            if (dispatchReceiver == FirNoReceiverExpression) null
+            if (dispatchReceiver == FirNoReceiverExpression) {
+                if(qa.extensionReceiver == FirNoReceiverExpression) null
+                else qa.extensionReceiver
+            }
             else dispatchReceiver
         } else {
             explicitReceiver
