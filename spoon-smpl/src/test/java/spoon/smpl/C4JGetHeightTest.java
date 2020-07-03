@@ -54,7 +54,7 @@ public class C4JGetHeightTest {
         assertTrue(method.toString().contains("new android.graphics.Point(display.getWidth(), display.getHeight());"));
         assertEquals(1, TestUtils.countOccurrences(method.toString(), "display.getSize(displayDimens);"));
 
-        ctx.testMethod(method);
+        ctx.testExecutable(method);
 
         assertFalse(method.toString().contains("new android.graphics.Point(display.getWidth(), display.getHeight());"));
         assertEquals(2, TestUtils.countOccurrences(method.toString(), "display.getSize(displayDimens);"));

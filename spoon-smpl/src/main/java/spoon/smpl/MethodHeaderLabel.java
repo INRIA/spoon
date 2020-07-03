@@ -1,10 +1,12 @@
 package spoon.smpl;
 
-import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.smpl.formula.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+// TODO: rename since its not just methods but rather executables?
 
 /**
  * A MethodHeaderLabel is used to associate a state of a CTL model with an inner MethodHeaderModel that
@@ -28,13 +30,13 @@ public class MethodHeaderLabel implements Label {
     /**
      * Create a new MethodHeaderLabel using a given method element.
      *
-     * @param method Method to generate header label for
+     * @param executable Executable to generate header label for
      */
-    public MethodHeaderLabel(CtMethod<?> method) {
+    public MethodHeaderLabel(CtExecutable<?> executable) {
         // TODO: test potential performance benefit of lazy initialization of the header model
         //this.method = method;
-        headerModel = new MethodHeaderModel(method);
-        stringRep = method.toString().replaceFirst("(?s)\\s*\\{.+", "");
+        headerModel = new MethodHeaderModel(executable);
+        stringRep = executable.toString().replaceFirst("(?s)\\s*\\{.+", "");
 
         reset();
     }

@@ -3,7 +3,7 @@ package spoon.smpl;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
@@ -17,6 +17,7 @@ import java.util.stream.IntStream;
 
 // TODO: access modifiers
 // TODO: maybe ditch the sub-model approach and go for something more similar to dots-in-method-calls
+// TODO: rename since its not just methods but rather executables?
 
 /**
  * A MethodHeaderModel is a CTL model representation of a method header.
@@ -36,11 +37,11 @@ public class MethodHeaderModel implements Model {
     /**
      * Create a new MethodHeaderModel for a given method.
      *
-     * @param ctMethod Method from which to extract the header and create model for
+     * @param ctExecutable Executable from which to extract the header and create model for
      */
-    public MethodHeaderModel(CtMethod<?> ctMethod) {
+    public MethodHeaderModel(CtExecutable<?> ctExecutable) {
         // type, name, args, exit
-        int numstates = 3 + ctMethod.getParameters().size();
+        int numstates = 3 + ctExecutable.getParameters().size();
 
         states = IntStream.range(0, numstates).boxed().collect(Collectors.toList());
         successors = new HashMap<>();
@@ -57,14 +58,14 @@ public class MethodHeaderModel implements Model {
             }
         });
 
-        Factory factory = ctMethod.getFactory();
+        Factory factory = ctExecutable.getFactory();
 
-        labels.get(0).add(new StatementLabel(createMethodReturnTypeElement(ctMethod.getType())));
-        labels.get(1).add(new StatementLabel(createMethodNameElement(ctMethod.getSimpleName(), factory)));
+        labels.get(0).add(new StatementLabel(createMethodReturnTypeElement(ctExecutable.getType())));
+        labels.get(1).add(new StatementLabel(createMethodNameElement(ctExecutable.getSimpleName(), factory)));
         labels.get(numstates - 1).add(new PropositionLabel("after"));
 
         for (int i = 2; i < numstates - 1; ++i) {
-            labels.get(i).add(new StatementLabel(ctMethod.getParameters().get(i - 2)));
+            labels.get(i).add(new StatementLabel(ctExecutable.getParameters().get(i - 2)));
         }
     }
 
@@ -201,26 +202,26 @@ public class MethodHeaderModel implements Model {
     }
 
     /**
-     * Compile a formula for a MethodHeaderModel of a given method.
+     * Compile a formula for a MethodHeaderModel of a given executable.
      *
-     * @param method Method to compile a formula for
+     * @param executable Executable to compile a formula for
      * @param metavars Metavariable names and their corresponding constraints
      * @param metavarsUsedInHeader Secondary output; metavariable names seen in the method header are written to here
      * @return Formula
      */
-    public static Formula compileMethodHeaderFormula(CtMethod<?> method, Map<String, MetavariableConstraint> metavars, Set<String> metavarsUsedInHeader) {
+    public static Formula compileMethodHeaderFormula(CtExecutable<?> executable, Map<String, MetavariableConstraint> metavars, Set<String> metavarsUsedInHeader) {
         Set<String> potentialMetavarsSet = new HashSet<>();
         Stack<Formula> parts = new Stack<>();
 
-        parts.push(new Statement(createMethodReturnTypeElement(method.getType()), metavars));
-        parts.push(new Statement(createMethodNameElement(method.getSimpleName(), method.getFactory()), metavars));
+        parts.push(new Statement(createMethodReturnTypeElement(executable.getType()), metavars));
+        parts.push(new Statement(createMethodNameElement(executable.getSimpleName(), executable.getFactory()), metavars));
 
-        potentialMetavarsSet.add(method.getType().getSimpleName());
-        potentialMetavarsSet.add(method.getSimpleName());
+        potentialMetavarsSet.add(executable.getType().getSimpleName());
+        potentialMetavarsSet.add(executable.getSimpleName());
 
-        if (method.getParameters().size() > 0) {
+        if (executable.getParameters().size() > 0) {
             Formula paramsFormula = new Proposition("after");
-            List<CtParameter<?>> params = method.getParameters();
+            List<CtParameter<?>> params = executable.getParameters();
 
             for (int i = params.size() - 1; i >= 0; --i) {
                 CtParameter<?> ctLocal = params.get(i);

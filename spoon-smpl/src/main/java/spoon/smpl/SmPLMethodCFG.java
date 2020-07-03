@@ -3,7 +3,7 @@ package spoon.smpl;
 import fr.inria.controlflow.*;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
@@ -13,30 +13,32 @@ import static fr.inria.controlflow.NaiveExceptionControlFlowStrategy.Options.*;
 
 import java.util.*;
 
+// TODO: rename since its not just methods but rather executables?
+
 /**
- * An SmPLMethodCFG creates and adapts a ControlFlowGraph for a given method such as to make it
+ * An SmPLMethodCFG creates and adapts a ControlFlowGraph for a given executable such as to make it
  * suitable for use in an SmPL context.
  */
 public class SmPLMethodCFG {
     /**
-     * UnsupportedElementSwapper takes a CtMethod and replaces unsupported AST elements e with elements e'
+     * UnsupportedElementSwapper takes a CtExecutable and replaces unsupported AST elements e with elements e'
      * such that UnsupportedElementSwapper.isUnsupportedElementMarker(e') will hold true. The replacements
      * can be reversed by calling the method restore().
      */
     public static class UnsupportedElementSwapper extends CtScanner {
         /**
-         * Replace all unsupported elements of a given method with "unsupported element markers".
+         * Replace all unsupported elements of a given executable with "unsupported element markers".
          *
-         * @param ctMethod Method to process
+         * @param ctExecutable Executable to process
          */
-        public UnsupportedElementSwapper(CtMethod<?> ctMethod) {
-            this.ctMethod = ctMethod;
+        public UnsupportedElementSwapper(CtExecutable<?> ctExecutable) {
+            this.ctExecutable = ctExecutable;
 
             isRestoring = false;
             swappedElements = new HashMap<>();
             swapIndex = 0;
 
-            ctMethod.accept(this);
+            ctExecutable.getBody().accept(this);
         }
 
         /**
@@ -56,7 +58,7 @@ public class SmPLMethodCFG {
          */
         public void restore() {
             isRestoring = true;
-            ctMethod.accept(this);
+            ctExecutable.accept(this);
             isRestoring = false;
         }
 
@@ -73,6 +75,16 @@ public class SmPLMethodCFG {
         @Override
         public <S> void visitCtSwitch(CtSwitch<S> switchStatement) {
             replace(switchStatement);
+        }
+
+        @Override
+        public <T> void visitCtNewArray(CtNewArray<T> newArray) {
+            replace(newArray);
+        }
+
+        @Override
+        public <T> void visitCtNewClass(CtNewClass<T> newClass) {
+            replace(newClass);
         }
 
         @Override
@@ -123,7 +135,7 @@ public class SmPLMethodCFG {
         /**
          * Target method.
          */
-        private CtMethod<?> ctMethod;
+        private CtExecutable<?> ctExecutable;
 
         /**
          * Instance state flag signalling whether or not we are currently in "restore" mode, which if true
@@ -213,18 +225,19 @@ public class SmPLMethodCFG {
     }
 
     /**
-     * Create a new SmPL-adapted CFG from a given method element.
-     * @param method Method for which to generate an SmPL-adapted CFG
+     * Create a new SmPL-adapted CFG from a given executable.
+     *
+     * @param executable Executable for which to generate an SmPL-adapted CFG
      */
-    public SmPLMethodCFG(CtMethod<?> method) {
-        this.swapper = new UnsupportedElementSwapper(method);
+    public SmPLMethodCFG(CtExecutable<?> executable) {
+        this.swapper = new UnsupportedElementSwapper(executable);
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
         ExceptionControlFlowStrategy strategy = new NaiveExceptionControlFlowStrategy(EnumSet.of(AddPathsForEmptyTryBlocks,
                                                                                                  ReturnWithoutFinalizers));
         builder.setExceptionControlFlowStrategy(strategy);
 
-        this.cfg = builder.build(method.getBody());
+        this.cfg = builder.build(executable.getBody());
 
         int parentId = 0;
 
@@ -245,8 +258,8 @@ public class SmPLMethodCFG {
             cfg.removeEdge(cfgEntryNode, cfgEntryNodeSuccessor);
 
             // Create a node for the method header / signature
-            ControlFlowNode methodHeaderNode = new ControlFlowNode(method, cfg, BranchKind.STATEMENT);
-            methodHeaderNode.setTag(new NodeTag("methodHeader", method));
+            ControlFlowNode methodHeaderNode = new ControlFlowNode(executable, cfg, BranchKind.STATEMENT);
+            methodHeaderNode.setTag(new NodeTag("methodHeader", executable));
 
             // Connect CFG entry node -> method header node -> CFG entry successor
             cfg.addEdge(cfgEntryNode, methodHeaderNode);

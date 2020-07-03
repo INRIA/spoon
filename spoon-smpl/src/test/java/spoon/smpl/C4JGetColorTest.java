@@ -35,7 +35,7 @@ public class C4JGetColorTest {
         CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.PushNotifications::notificationBuilder");
         assertTrue(method.toString().contains("context.getResources().getColor(R.color.green)"));
 
-        ctx.testMethod(method);
+        ctx.testExecutable(method);
         assertFalse(method.toString().contains("context.getResources().getColor(R.color.green)"));
         assertTrue(method.toString().contains("ContextCompat.getColor(context, R.color.green)"));
     }
@@ -48,7 +48,7 @@ public class C4JGetColorTest {
         CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.DiscoveryUtils::primaryColor");
         assertTrue(method.toString().contains("context.getResources().getColor(R.color.discovery_primary)"));
 
-        ctx.testMethod(method);
+        ctx.testExecutable(method);
         assertFalse(method.toString().contains("context.getResources().getColor(R.color.discovery_primary)"));
         assertTrue(method.toString().contains("ContextCompat.getColor(context, R.color.discovery_primary)"));
     }
@@ -61,7 +61,7 @@ public class C4JGetColorTest {
         CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.DiscoveryUtils::secondaryColor");
         assertTrue(method.toString().contains("context.getResources().getColor(R.color.discovery_secondary)"));
 
-        ctx.testMethod(method);
+        ctx.testExecutable(method);
         assertFalse(method.toString().contains("context.getResources().getColor(R.color.discovery_secondary)"));
         assertTrue(method.toString().contains("ContextCompat.getColor(context, R.color.discovery_secondary)"));
     }
@@ -74,7 +74,7 @@ public class C4JGetColorTest {
         CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.DiscoveryUtils::overlayTextColor", 1);
         assertTrue(method.toString().contains("context.getResources().getColor(color)"));
 
-        ctx.testMethod(method);
+        ctx.testExecutable(method);
         assertFalse(method.toString().contains("context.getResources().getColor(color)"));
         assertTrue(method.toString().contains("ContextCompat.getColor(context, color)"));
     }
@@ -87,7 +87,7 @@ public class C4JGetColorTest {
         CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.KSColorUtils::darkColor");
         assertTrue(method.toString().contains("context.getResources().getColor(com.kickstarter.libs.utils.KSColorUtils.darkColorId())"));
 
-        ctx.testMethod(method);
+        ctx.testExecutable(method);
         assertFalse(method.toString().contains("context.getResources().getColor(com.kickstarter.libs.utils.KSColorUtils.darkColorId())"));
         assertTrue(method.toString().contains("ContextCompat.getColor(context, com.kickstarter.libs.utils.KSColorUtils.darkColorId())"));
     }
@@ -100,7 +100,7 @@ public class C4JGetColorTest {
         CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.KSColorUtils::lightColor");
         assertTrue(method.toString().contains("context.getResources().getColor(com.kickstarter.libs.utils.KSColorUtils.lightColorId())"));
 
-        ctx.testMethod(method);
+        ctx.testExecutable(method);
         assertFalse(method.toString().contains("context.getResources().getColor(com.kickstarter.libs.utils.KSColorUtils.lightColorId())"));
         assertTrue(method.toString().contains("ContextCompat.getColor(context, com.kickstarter.libs.utils.KSColorUtils.lightColorId())"));
     }
@@ -113,7 +113,7 @@ public class C4JGetColorTest {
         CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.KSColorUtils::foregroundColor");
         assertTrue(method.toString().contains("return context.getResources().getColor(colorId)"));
 
-        ctx.testMethod(method);
+        ctx.testExecutable(method);
         assertFalse(method.toString().contains("return context.getResources().getColor(colorId)"));
         assertTrue(method.toString().contains("return ContextCompat.getColor(context, colorId)"));
     }
@@ -126,7 +126,7 @@ public class C4JGetColorTest {
         CtMethod<?> method = ctx.getMethod("com.kickstarter.models.Category::secondaryColor");
         assertTrue(method.toString().contains("return context.getResources().getColor(identifier)"));
 
-        ctx.testMethod(method);
+        ctx.testExecutable(method);
         assertFalse(method.toString().contains("return context.getResources().getColor(identifier)"));
         assertTrue(method.toString().contains("return ContextCompat.getColor(context, identifier)"));
     }

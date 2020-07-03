@@ -52,7 +52,7 @@ public class C4JShouldVibrateTest {
         CtMethod<?> method = ctx.getMethod("org.thoughtcrime.securesms.webrtc.audio.IncomingRinger::shouldVibrateOld");
         assertTrue(method.toString().contains("return vibrate && audioManager.shouldVibrate(AudioManager.VIBRATE_TYPE_RINGER);"));
 
-        ctx.testMethod(method);
+        ctx.testExecutable(method);
         assertFalse(method.toString().contains("return vibrate && audioManager.shouldVibrate(AudioManager.VIBRATE_TYPE_RINGER);"));
         assertTrue(method.toString().contains("return vibrate && shouldVibrate(audioManager, context, AudioManager.VIBRATE_TYPE_RINGER);"));
 

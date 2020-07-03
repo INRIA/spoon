@@ -44,7 +44,7 @@ public class C4JStickyBroadcastTest {
         CtMethod<?> method = ctx.getMethod("com.owncloud.android.files.services.FileUploader::sendBroadcastUploadsAdded");
         assertTrue(method.toString().contains("    start.setPackage(getPackageName());\n    sendStickyBroadcast(start);"));
 
-        ctx.testMethod(method);
+        ctx.testExecutable(method);
         assertFalse(method.toString().contains("    start.setPackage(getPackageName());\n    sendStickyBroadcast(start);"));
         assertTrue(method.toString().contains("    start.setPackage(getPackageName());\n    sendBroadcast(start);"));
     }
@@ -57,7 +57,7 @@ public class C4JStickyBroadcastTest {
         CtMethod<?> method = ctx.getMethod("com.owncloud.android.files.services.FileUploader::sendBroadcastUploadStarted");
         assertTrue(method.toString().contains("    start.setPackage(getPackageName());\n    sendStickyBroadcast(start);"));
 
-        ctx.testMethod(method);
+        ctx.testExecutable(method);
         assertFalse(method.toString().contains("    start.setPackage(getPackageName());\n    sendStickyBroadcast(start);"));
         assertTrue(method.toString().contains("    start.setPackage(getPackageName());\n    sendBroadcast(start);"));
     }
@@ -70,7 +70,7 @@ public class C4JStickyBroadcastTest {
         CtMethod<?> method = ctx.getMethod("com.owncloud.android.files.services.FileUploader::sendBroadcastUploadFinished");
         assertTrue(method.toString().contains("    end.setPackage(getPackageName());\n    sendStickyBroadcast(end);"));
 
-        ctx.testMethod(method);
+        ctx.testExecutable(method);
         assertFalse(method.toString().contains("    end.setPackage(getPackageName());\n    sendStickyBroadcast(end);"));
         assertTrue(method.toString().contains("    end.setPackage(getPackageName());\n    sendBroadcast(end);"));
     }
@@ -83,7 +83,7 @@ public class C4JStickyBroadcastTest {
         CtMethod<?> method = ctx.getMethod("com.owncloud.android.files.services.FileDownloader::sendBroadcastDownloadFinished");
         assertTrue(method.toString().contains("    end.setPackage(getPackageName());\n    sendStickyBroadcast(end);"));
 
-        ctx.testMethod(method);
+        ctx.testExecutable(method);
         assertFalse(method.toString().contains("    end.setPackage(getPackageName());\n    sendStickyBroadcast(end);"));
         assertTrue(method.toString().contains("    end.setPackage(getPackageName());\n    sendBroadcast(end);"));
     }
@@ -96,7 +96,7 @@ public class C4JStickyBroadcastTest {
         CtMethod<?> method = ctx.getMethod("com.owncloud.android.files.services.FileDownloader::sendBroadcastNewDownload");
         assertTrue(method.toString().contains("    added.setPackage(getPackageName());\n    sendStickyBroadcast(added);"));
 
-        ctx.testMethod(method);
+        ctx.testExecutable(method);
         assertFalse(method.toString().contains("    added.setPackage(getPackageName());\n    sendStickyBroadcast(added);"));
         assertTrue(method.toString().contains("    added.setPackage(getPackageName());\n    sendBroadcast(added);"));
     }
@@ -109,7 +109,7 @@ public class C4JStickyBroadcastTest {
         CtMethod<?> method = ctx.getMethodFromInnerClass("com.owncloud.android.ui.preview.PreviewImageActivity$DownloadFinishReceiver::onReceive");
         assertEquals(1, countOccurrences(method.toString(), "removeStickyBroadcast(intent);"));
 
-        String result = ctx.testMethod(method);
+        String result = ctx.testExecutable(method);
         assertEquals(0, countOccurrences(result, "removeStickyBroadcast(intent);"));
     }
 
@@ -121,7 +121,7 @@ public class C4JStickyBroadcastTest {
         CtMethod<?> method = ctx.getMethodFromInnerClass("com.owncloud.android.ui.activity.FileDisplayActivity$SyncBroadcastReceiver::onReceive");
         assertEquals(2, countOccurrences(method.toString(), "removeStickyBroadcast(intent);"));
 
-        String result = ctx.testMethod(method);
+        String result = ctx.testExecutable(method);
         assertEquals(0, countOccurrences(result, "removeStickyBroadcast(intent);"));
     }
 
@@ -133,7 +133,7 @@ public class C4JStickyBroadcastTest {
         CtMethod<?> method = ctx.getMethodFromInnerClass("com.owncloud.android.ui.activity.FileDisplayActivity$UploadFinishReceiver::onReceive");
         assertEquals(1, countOccurrences(method.toString(), "removeStickyBroadcast(intent);"));
 
-        String result = ctx.testMethod(method);
+        String result = ctx.testExecutable(method);
         assertEquals(0, countOccurrences(result, "removeStickyBroadcast(intent);"));
     }
 
@@ -145,7 +145,7 @@ public class C4JStickyBroadcastTest {
         CtMethod<?> method = ctx.getMethodFromInnerClass("com.owncloud.android.ui.activity.FileDisplayActivity$DownloadFinishReceiver::onReceive");
         assertEquals(1, countOccurrences(method.toString(), "removeStickyBroadcast(intent);"));
 
-        String result = ctx.testMethod(method);
+        String result = ctx.testExecutable(method);
         assertEquals(0, countOccurrences(result, "removeStickyBroadcast(intent);"));
     }
 
@@ -157,7 +157,7 @@ public class C4JStickyBroadcastTest {
         CtMethod<?> method = ctx.getMethodFromInnerClass("com.owncloud.android.ui.activity.FolderPickerActivity$SyncBroadcastReceiver::onReceive");
         assertEquals(2, countOccurrences(method.toString(), "removeStickyBroadcast(intent);"));
 
-        String result = ctx.testMethod(method);
+        String result = ctx.testExecutable(method);
         assertEquals(0, countOccurrences(result, "removeStickyBroadcast(intent);"));
     }
 }

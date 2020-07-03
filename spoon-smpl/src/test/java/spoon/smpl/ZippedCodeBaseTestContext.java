@@ -3,6 +3,7 @@ package spoon.smpl;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.support.compiler.ZipFolder;
@@ -75,11 +76,11 @@ public class ZippedCodeBaseTestContext {
     }
 
     public String testMethod(String qualifiedName) {
-        return testMethod(getMethod(qualifiedName));
+        return testExecutable(getMethod(qualifiedName));
     }
 
-    public String testMethod(CtMethod<?> targetMethod) {
-        CFGModel model = new CFGModel(methodCfg(targetMethod));
+    public String testExecutable(CtExecutable<?> ctExecutable) {
+        CFGModel model = new CFGModel(new SmPLMethodCFG(ctExecutable));
         ModelChecker checker = new ModelChecker(model);
         rule.getFormula().accept(checker);
 
@@ -92,8 +93,6 @@ public class ZippedCodeBaseTestContext {
 
         model.getCfg().restoreUnsupportedElements();
 
-        return targetMethod.toString();
+        return ctExecutable.toString();
     }
-
-
 }

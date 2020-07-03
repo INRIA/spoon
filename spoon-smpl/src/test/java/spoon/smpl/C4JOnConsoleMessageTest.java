@@ -57,7 +57,7 @@ public class C4JOnConsoleMessageTest {
         assertTrue(innerMethod.toString().contains("public void onConsoleMessage(java.lang.String message, int lineNumber, java.lang.String sourceID) {"));
         assertTrue(innerMethod.toString().contains("Log.d(\"MyApplication\", (((message + \" -- From line \") + lineNumber) + \" of \") + sourceID);"));
 
-        ctx.testMethod(innerMethod);
+        ctx.testExecutable(innerMethod);
         assertFalse(innerMethod.toString().contains("public void onConsoleMessage(java.lang.String message, int lineNumber, java.lang.String sourceID) {"));
         assertTrue(innerMethod.toString().contains("public void onConsoleMessage(ConsoleMessage cs) {"));
 

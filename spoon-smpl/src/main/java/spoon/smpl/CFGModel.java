@@ -3,7 +3,7 @@ package spoon.smpl;
 import fr.inria.controlflow.BranchKind;
 import fr.inria.controlflow.ControlFlowNode;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtExecutable;
 
 import java.util.*;
 
@@ -13,6 +13,7 @@ import java.util.*;
 public class CFGModel implements Model {
     /**
      * Create a new CTL model from a given SmPL-adapted CFG.
+     *
      * @param cfg SmPL-adapted CFG to use as model
      */
     public CFGModel(SmPLMethodCFG cfg) {
@@ -57,7 +58,7 @@ public class CFGModel implements Model {
                         labels.get(state).add(new PropositionLabel("methodHeader"));
 
                         SmPLMethodCFG.NodeTag nodeTag = (SmPLMethodCFG.NodeTag) node.getTag();
-                        labels.get(state).add(new MethodHeaderLabel((CtMethod<?>) nodeTag.getAnchor()));
+                        labels.get(state).add(new MethodHeaderLabel((CtExecutable<?>) nodeTag.getAnchor()));
                     } else if (SmPLMethodCFG.isUnsupportedElementNode(node)) {
                         labels.get(state).add(new PropositionLabel("unsupported"));
                     } else {
@@ -89,6 +90,8 @@ public class CFGModel implements Model {
     }
 
     /**
+     * Get the set of state IDs contained in the model.
+     *
      * @return the set of state IDs in the model
      */
     @Override
@@ -97,6 +100,8 @@ public class CFGModel implements Model {
     }
 
     /**
+     * Get the set of immediate successors to a given state.
+     *
      * @param state Parent state
      * @return the set of immediate successors of the given state
      */
@@ -106,6 +111,8 @@ public class CFGModel implements Model {
     }
 
     /**
+     * Get the set of labels associated with a given state.
+     *
      * @param state Target state
      * @return the set of labels associated with the given state
      */
@@ -155,6 +162,8 @@ public class CFGModel implements Model {
     }
 
     /**
+     * Get the SmPL-adapted CFG used to generate the model.
+     *
      * @return the SmPL-adapted CFG used to generate the model
      */
     public SmPLMethodCFG getCfg() { return cfg; }
