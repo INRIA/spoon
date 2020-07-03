@@ -3,6 +3,7 @@ package spoon.kotlin.compiler
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.FirDelegatedConstructorCall
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.expressions.FirWhenSubjectExpression
 import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.symbols.CallableId
@@ -140,6 +141,10 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
         }
     }
 
+    fun getNewSubjectReference(whenSubjectExpression: FirWhenSubjectExpression): CtTypeReference<*> {
+        TODO()
+    }
+
     fun getNewTypeReference(coneTypeParam: ConeTypeParameterType): CtTypeParameterReference {
         val ctRef = firTreeBuilder.factory.Core().createTypeParameterReference()
         val typeParam = coneTypeParam.lookupTag.typeParameterSymbol.fir
@@ -156,10 +161,15 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
     }
 
     fun <T> getNewTypeReference(typeRef: FirTypeRef) : CtTypeReference<T> {
-        val coneType = typeRef.coneTypeSafe<ConeLookupTagBasedType>()
+        val coneType = typeRef.coneTypeSafe<ConeKotlinType>()
         return when(coneType) {
             is ConeClassLikeType -> getNewTypeReference<T>(coneType)
             is ConeTypeParameterType -> getNewTypeReference(coneType) as CtTypeReference<T>
+            is ConeIntersectionType -> {
+                val refs = coneType.intersectedTypes.map { getNewTypeReference<Any>(it) }
+                return firTreeBuilder.factory.Type().createIntersectionTypeReferenceWithBounds<T>(refs)
+
+            }
             else -> throw RuntimeException("Can't get ConeType for TypeRef $typeRef")
         }.also { it.setImplicit(typeRef.psi == null) }
     }
@@ -179,6 +189,15 @@ internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
         varRef.setSimpleName<CtVariableReference<T>>(param.name.identifier)
         varRef.setType<CtVariableReference<T>>(getNewTypeReference(param.returnTypeRef))
         return varRef
+    }
+
+    fun <T> getNewVariableReference(firVariable: FirVariable<*>): CtVariableReference<T> {
+        return when(firVariable) {
+            is FirProperty -> getNewVariableReference<T>(firVariable)
+            is FirValueParameter -> getNewVariableReference<T>(firVariable)
+            is FirEnumEntry -> TODO("Enums")
+            else -> TODO()
+        }
     }
 
     fun <T> getNewSimpleTypeReference(classId: ClassId) : CtTypeReference<T> {

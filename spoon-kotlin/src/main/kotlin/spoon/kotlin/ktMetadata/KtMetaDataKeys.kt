@@ -40,5 +40,7 @@ object KtMetadataKeys {
     const val IMPORT_ALIAS = "skt_key import alias : String?"
 
     const val NAMED_ARGUMENT = "skt_key named argument : String?"
+
+    const val WHEN_SUBJECT_VARIABLE = "skt_key when subject variable : CtVariable<*>?"
 }
 

@@ -17,6 +17,8 @@ abstract class AbstractPrinterAdapter(
         return this
     }
 
+    open infix fun writeSeparator(s: String) = write(" $s ")
+
     open fun newline() : AbstractPrinterAdapter = write(lineSeparator)
 
     open infix fun writeln(s : String) : AbstractPrinterAdapter {

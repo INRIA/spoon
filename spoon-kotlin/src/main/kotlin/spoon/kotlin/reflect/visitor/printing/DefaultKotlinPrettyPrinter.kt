@@ -455,9 +455,7 @@ class DefaultKotlinPrettyPrinter(
         catchVariable.type.accept(this)
     }
 
-    override fun <T : Any?, S : Any?> visitCtSwitchExpression(p0: CtSwitchExpression<T, S>?) {
-        TODO("Not yet implemented")
-    }
+    override fun <T : Any?, S : Any?> visitCtSwitchExpression(switch: CtSwitchExpression<T, S>) = visitWhen(switch)
 
     override fun visitCtTypeParameter(typeParam: CtTypeParameter) {
         val modifiers = typeParam.getMetadata(KtMetadataKeys.KT_MODIFIERS) as? Set<KtModifierKind>?
@@ -558,14 +556,17 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtBinaryOperator(binOp: CtBinaryOperator<T>) {
         enterCtExpression(binOp)
-        binOp.leftHandOperand.accept(this)
+
         val operator = binOp.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND) as? KtBinaryOperatorKind
-        if(operator == null) {
-            adapter write KtBinaryOperatorKind.fromJavaOperatorKind(binOp.kind).asToken()
+        var token = operator?.asToken() ?: KtBinaryOperatorKind.fromJavaOperatorKind(binOp.kind).asToken()
+        if(binOp.leftHandOperand == null || binOp.leftHandOperand.isImplicit) {
+            token = token.dropWhile { it == ' ' }
         } else {
-            adapter write operator.asToken()
+            binOp.leftHandOperand.accept(this)
         }
+        adapter write token
         binOp.rightHandOperand.accept(this)
+
         exitCtExpression(binOp)
     }
 
@@ -632,8 +633,16 @@ class DefaultKotlinPrettyPrinter(
         opAssignment.assignment.accept(this)
     }
 
-    override fun <S : Any?> visitCtCase(p0: CtCase<S>?) {
-        TODO("Not yet implemented")
+    override fun <S : Any?> visitCtCase(case: CtCase<S>) {
+        if(case.caseExpressions.isEmpty()) {
+            adapter write "else"
+        } else {
+            visitCommaSeparatedList(case.caseExpressions)
+        }
+        adapter write " -> "
+        for(statement in case.statements) {
+            statement.accept(this)
+        }
     }
 
     override fun <T : Any?> visitCtCodeSnippetExpression(p0: CtCodeSnippetExpression<T>?) {
@@ -857,8 +866,32 @@ class DefaultKotlinPrettyPrinter(
         }
     }
 
-    override fun <S : Any?> visitCtSwitch(p0: CtSwitch<S>?) {
-        TODO("Not yet implemented")
+    override fun <S : Any?> visitCtSwitch(switch: CtSwitch<S>) = visitWhen(switch)
+
+    private fun visitWhen(whenExpr: CtAbstractSwitch<*>) {
+        adapter write "when" and SPACE
+        if(whenExpr.selector != null) {
+            adapter write LEFT_ROUND
+            whenExpr.selector.accept(this)
+            adapter write RIGHT_ROUND and SPACE
+        } else {
+            val subject = whenExpr.getMetadata(KtMetadataKeys.WHEN_SUBJECT_VARIABLE) as CtVariable<*>?
+            if(subject != null) {
+                adapter write LEFT_ROUND
+                subject.accept(this)
+                adapter write RIGHT_ROUND and SPACE
+            }
+        }
+        adapter write LEFT_CURL
+
+        adapter.withIndentDiff(+1) {
+            for(case in whenExpr.cases) {
+                adapter.ensureNEmptyLines(0)
+                case.accept(this)
+            }
+        }
+        adapter.ensureNEmptyLines(0)
+        adapter write RIGHT_CURL
     }
 
     override fun <T : Any?, A : T> visitCtAssignment(ctAssignment: CtAssignment<T, A>?) {

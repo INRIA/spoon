@@ -1,10 +1,13 @@
 package spoon.kotlin.compiler
 
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
+import org.jetbrains.kotlin.fir.expressions.impl.FirElseIfTrueCondition
 import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
 import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.references.FirReference
@@ -16,9 +19,11 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.fir.types.ConeClassLikeType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
+import org.jetbrains.kotlin.fir.types.isUnit
 import org.jetbrains.kotlin.lexer.KtTokens.*
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
+import org.jetbrains.kotlin.psi.psiUtil.getPrevSiblingIgnoringWhitespaceAndComments
 import spoon.SpoonException
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.reflect.code.CtCatchVariable
@@ -103,6 +108,22 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
         val source = firCall.source?.psi
         val receiver = getReceiver(firCall)
 
+        if(firCall.arguments.size == 1 && firCall.arguments[0] is FirWhenSubjectExpression) {
+            // We're at "in x -> {}" in a when-branch condition
+            if (receiver == null) throw SpoonException("'in' operator in when condition without receiver")
+            return InvocationType.BINARY_OPERATOR_IMPL_LHS(firCall.arguments[0], tokenToBinaryOperatorKind(IN_KEYWORD), receiver, firCall)
+        } else if(
+            firCall.arguments.isEmpty() &&
+            firCall.calleeReference.name.asString() == "not" &&
+            receiver is FirFunctionCall) {
+
+            if(receiver.arguments.size == 1 && receiver.arguments[0] is FirWhenSubjectExpression) {
+                // We're at "!in x -> {}" in a when-branch condition
+                val containsReceiver = getReceiver(receiver) ?: throw SpoonException("'!in' operator in when condition without receiver")
+                return InvocationType.BINARY_OPERATOR_IMPL_LHS(receiver.arguments[0], tokenToBinaryOperatorKind(NOT_IN), containsReceiver, firCall)
+            }
+        }
+
         return when (source) {
             is KtBinaryExpression -> {
                 val opToken = source.operationToken
@@ -163,7 +184,7 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
         }
     }
 
-    fun tokenToAssignmentOperatorKind(token: IElementType) = when (token) {
+    private fun tokenToAssignmentOperatorKind(token: IElementType) = when (token) {
         MULTEQ -> KtOp.MUL
         DIVEQ -> KtOp.DIV
         PERCEQ -> KtOp.MOD
@@ -274,5 +295,83 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
             firTreeBuilder.referenceBuilder.getNewTypeReference<Any>(firValueParameter.returnTypeRef)
         }
 
+    }
+
+    fun whenIsStatement(whenExpression: FirWhenExpression): Boolean {
+        // Expression requires exhaustive branches,
+        // No subject means no argument ==> must be statement
+        if(!whenExpression.isExhaustive || whenExpression.subject == null) return true
+
+        val psi = whenExpression.psi ?: return whenExpression.typeRef.isUnit // If no PSI, default to type is Unit (shouldn't happen)
+
+        when(psi.context) {
+            is KtProperty -> return false
+            is KtFunction -> return false
+        }
+
+        var sibling: PsiElement? = psi.getPrevSiblingIgnoringWhitespaceAndComments()
+        while(sibling != null) { // Go to left sibling, skip annotations and labels
+            if(sibling is KtAnnotationEntry ||
+                (sibling is KtContainerNode && psi.parent is KtLabeledExpression)) {
+                sibling = sibling.getPrevSiblingIgnoringWhitespaceAndComments()
+            }
+            if(sibling is LeafPsiElement && sibling.text == "=") return false // Check if it's an assignment
+            break
+        }
+        return true
+    }
+
+    fun resolveWhenBranchMultiCondition(whenBranch: FirWhenBranch): List<Pair<FirExpression,Boolean>> {
+        val condition = whenBranch.condition
+        if(condition is FirElseIfTrueCondition) return emptyList()
+
+        val orderedExprs = ArrayList<Pair<FirExpression,Boolean>> ()
+        visitExpressionsPreorder(condition, false, orderedExprs)
+        return orderedExprs
+    }
+
+    /*
+    Left pre order traversal of a branch condition, needed because
+    when(x) {
+        a, is B, c -> {}
+    }
+    > translates to >
+     ((x == c) || x is B) || x == a
+
+     There might be other EQ operations when subject is boolean.
+     Therefore, return any operation that is not OR, or EQ operations with 'x' (when-subject) as one of its operands.
+     Such EQ should only return the other operand.
+
+     The result of the above example would be [c, x is B, a]
+
+     The pair also holds a marker that indicates whether the LHS as implicit, which is needed for type operators and
+     EQ operations mentioned above.
+     */
+    private fun visitExpressionsPreorder(expression: FirExpression, breakOnOr: Boolean, list: MutableList<Pair<FirExpression, Boolean>>) {
+        when(expression) {
+            is FirTypeOperatorCall -> {
+                list.add(expression to true)
+            }
+            is FirFunctionCall -> list.add(expression to false)
+            is FirBinaryLogicExpression -> {
+                if(expression.kind == LogicOperationKind.OR && !breakOnOr) {
+                    visitExpressionsPreorder(expression.leftOperand, false, list) // Keep traversing the LHS,
+                    visitExpressionsPreorder(expression.rightOperand, true, list) // break if we encounter another OR in the RHS.
+                }
+                else {
+                    list.add(expression to false)
+                }
+            }
+            is FirOperatorCall -> {
+                // When-subject seems to always be in arguments[0] (LHS), but use any and filter to be sure
+                if(expression.operation == FirOperation.EQ && expression.arguments.any { it is FirWhenSubjectExpression }) {
+                    val rhs = expression.arguments.filterNot { it is FirWhenSubjectExpression }.first()
+                    visitExpressionsPreorder(rhs, true, list) // Visit the other operand, break on OR
+                } else {
+                    list.add(expression to false)
+                }
+            }
+            else -> list.add(expression to false)
+        }
     }
 }

@@ -421,11 +421,14 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     private fun visitBinaryOperatorViaFunctionCall(binType: InvocationType.BINARY_OPERATOR):
             CompositeTransformResult.Single<CtBinaryOperator<*>> {
-        val (firLhs, kind, firRhs, opFunc) = binType
+        val firLhs = binType.lhs
+        val kind = binType.kind
+        val firRhs = binType.rhs
+        val opFunc = binType.originalFunction
         val ktOp = factory.Core().createBinaryOperator<Any>()
-        val lhs = firLhs.accept(this,null).single
+        val lhs = firLhs?.accept(this,null)?.single
         val rhs = firRhs.accept(this,null).single
-        ktOp.setLeftHandOperand<CtBinaryOperator<Any>>(lhs as CtExpression<*>)
+        ktOp.setLeftHandOperand<CtBinaryOperator<Any>>(lhs as CtExpression<*>?)
         ktOp.setRightHandOperand<CtBinaryOperator<Any>>(rhs as CtExpression<*>)
         ktOp.setType<CtBinaryOperator<Any>>(referenceBuilder.getNewTypeReference(opFunc.typeRef))
 
@@ -467,7 +470,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     }
 
     override fun visitWhenExpression(whenExpression: FirWhenExpression, data: Nothing?): CompositeTransformResult<CtElement> {
-        if(whenExpression.isIf()) return visitIfExpression(whenExpression)
+        if(whenExpression.isIf()) return visitIfExpression(whenExpression) // FIXME prob wrong for no arg
         val subjectVariable = whenExpression.subjectVariable
         if(subjectVariable?.name?.isSpecial == true) {
             if(subjectVariable.name.asString() == "<elvis>")
@@ -476,14 +479,68 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
                 "Unexpected special in subject variable of when-expression: ${subjectVariable.name.asString()}")
         }
 
-        return super.visitWhenExpression(whenExpression, data)
+        val ctSwitch = if(helper.whenIsStatement(whenExpression)) {
+            factory.Core().createSwitch<Any>()
+        } else {
+            factory.Core().createSwitchExpression<Any,Any>()
+        }
+        val subject = subjectVariable?.accept(this,null)?.single ?:
+            whenExpression.subject?.accept(this, null)?.single
+        if(subject != null) {
+            if(subjectVariable !is FirVariable<*>) {
+                ctSwitch.setSelector<CtAbstractSwitch<Any>>(expressionOrWrappedInStatementExpression(subject))
+            } else {
+                ctSwitch.putMetadata<CtAbstractSwitch<*>>(KtMetadataKeys.WHEN_SUBJECT_VARIABLE, subject)
+            }
+        }
+        ctSwitch.setCases<CtAbstractSwitch<Any>>(whenExpression.branches.map { visitWhenBranch(it, null).single })
+
+        return ctSwitch.compose()
+    }
+
+    override fun visitWhenBranch(whenBranch: FirWhenBranch, data: Nothing?): CompositeTransformResult.Single<CtCase<Any>> {
+        val case = factory.Core().createCase<Any>()
+        case.setCaseKind<CtCase<Any>>(CaseKind.ARROW)
+
+        fun markImplicitLHS(expr: CtElement) {
+            when(expr) {
+                is CtBinaryOperator<*> -> {
+                    when(expr.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND) as KtBinaryOperatorKind?) {
+                        KtBinaryOperatorKind.IS,
+                        KtBinaryOperatorKind.IS_NOT,
+                        KtBinaryOperatorKind.IN,
+                        KtBinaryOperatorKind.NOT_IN -> expr.leftHandOperand.setImplicit<CtBinaryOperator<*>>(true)
+                        else -> { /* Nothing */ }
+                    }
+                }
+            }
+        }
+
+        case.setCaseExpressions<CtCase<Any>>(helper.resolveWhenBranchMultiCondition(whenBranch).map {
+            it.first.accept(this,null).single.also { expr ->
+                expr.setParent(case)
+                if(it.second) markImplicitLHS(expr)
+            } as CtExpression<Any>
+        })
+
+        val result = visitBlock(whenBranch.result, null).single
+        case.addStatement<CtCase<*>>(result)
+        return case.compose()
     }
 
     override fun visitWhenSubjectExpression(
         whenSubjectExpression: FirWhenSubjectExpression,
         data: Nothing?
     ): CompositeTransformResult<CtElement> {
-        return whenSubjectExpression.whenSubject.whenExpression.subject!!.accept(this,null)
+        val subjectVariable = whenSubjectExpression.whenSubject.whenExpression.subjectVariable
+        if(subjectVariable != null) {
+            val read = factory.Core().createVariableRead<Any>()
+            read.setVariable<CtVariableRead<Any>>(referenceBuilder.getNewVariableReference<Any>(subjectVariable))
+            return read.compose()
+        }
+        // Subject has wrong type in typearg for its typeref, but it can be found in the actual type arg instead
+        val subject = whenSubjectExpression.whenSubject.whenExpression.subject
+        return subject?.accept(this,null) ?: CompositeTransformResult.empty()
     }
 
     private fun visitElvisOperator(whenExpression: FirWhenExpression): CompositeTransformResult<CtBinaryOperator<*>> {
@@ -541,7 +598,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         ...
        }
      */
-    override fun visitBlock(block: FirBlock, data: Nothing?): CompositeTransformResult<CtElement> {
+    override fun visitBlock(block: FirBlock, data: Nothing?): CompositeTransformResult.Single<CtBlock<*>> {
         if(block is FirSingleExpressionBlock) return visitSingleExpressionBlock(block)
         val ktBlock = factory.Core().createBlock<Any>()
         val statements = ArrayList<CtStatement>()
