@@ -80,6 +80,10 @@ public class ZippedCodeBaseTestContext {
     }
 
     public String testExecutable(CtExecutable<?> ctExecutable) {
+        if (!rule.isPotentialMatch(ctExecutable)) {
+            return null;
+        }
+
         CFGModel model = new CFGModel(new SmPLMethodCFG(ctExecutable));
         ModelChecker checker = new ModelChecker(model);
         rule.getFormula().accept(checker);

@@ -18,6 +18,10 @@ public class EndToEndTests {
                 return;
             }
 
+            if (!rule.isPotentialMatch(method)) {
+                return;
+            }
+
             CFGModel model = new CFGModel(methodCfg(method));
             ModelChecker checker = new ModelChecker(model);
             rule.getFormula().accept(checker);

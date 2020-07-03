@@ -113,7 +113,7 @@ public class SmPLParser {
         }
 
         new DeletionAnchorRemover().scan(adds);
-        SmPLRuleImpl result = (SmPLRuleImpl) compile(dels, commonLines, anchoredOperations);
+        SmPLRuleImpl result = (SmPLRuleImpl) compile(smpl, dels, commonLines, anchoredOperations);
 
         List<String> sigs = new ArrayList<>();
 
@@ -136,7 +136,7 @@ public class SmPLParser {
      * @param ast AST to compile
      * @return SmPLRule instance
      */
-    public static SmPLRule compile(CtClass<?> ast, Set<Integer> commonLines, AnchoredOperationsMap additions) {
+    public static SmPLRule compile(String source, CtClass<?> ast, Set<Integer> commonLines, AnchoredOperationsMap additions) {
         String ruleName = null;
 
         if (ast.getDeclaredField(SmPLJavaDSL.getRuleNameFieldName()) != null) {
@@ -198,11 +198,11 @@ public class SmPLParser {
         if (ruleMethod == null) {
             // TODO: does the new lexer-parser approach ever reach here? does it ever produce a class without a rule method?
             // A completely empty rule matches nothing
-            return new SmPLRuleImpl(new Not(new True()), metavars);
+            return new SmPLRuleImpl(source, null, new Not(new True()), metavars);
         }
 
         FormulaCompiler fc = new FormulaCompiler(new SmPLMethodCFG(ruleMethod), metavars, additions);
-        SmPLRule rule = new SmPLRuleImpl(fc.compileFormula(), metavars);
+        SmPLRule rule = new SmPLRuleImpl(source, ruleMethod, fc.compileFormula(), metavars);
         rule.setName(ruleName);
 
         return rule;

@@ -1,6 +1,7 @@
 package spoon.smpl;
 
 import org.apache.commons.lang3.NotImplementedException;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.formula.Formula;
 import spoon.smpl.formula.MetavariableConstraint;
@@ -15,13 +16,19 @@ import java.util.Map;
 public class SmPLRuleImpl implements SmPLRule {
     /**
      * Create a new SmPLRule.
+     *
+     * @param source Plain text SmPL source code
+     * @param matchTargetDSL Match target executable DSL AST
      * @param formula Formula of the rule
      * @param metavars Metavariable names and their respective constraints
      */
-    public SmPLRuleImpl(Formula formula, Map<String, MetavariableConstraint> metavars) {
+    public SmPLRuleImpl(String source, CtExecutable matchTargetDSL, Formula formula, Map<String, MetavariableConstraint> metavars) {
+        this.source = source;
+        this.matchTargetDSL = matchTargetDSL;
         this.formula = formula;
         this.metavars = metavars;
         this.name = null;
+        this.grepPattern = null;
 
         methodsAdded = new ArrayList<>();
     }
@@ -50,6 +57,26 @@ public class SmPLRuleImpl implements SmPLRule {
     @Override
     public Formula getFormula() {
         return formula;
+    }
+
+    /**
+     * Get the plain text SmPL source code of the rule.
+     *
+     * @return Plain text SmPL source code of the rule
+     */
+    @Override
+    public String getSource() {
+        return source;
+    }
+
+    /**
+     * Get the match target executable AST in the SmPL Java DSL.
+     *
+     * @return Match target executable AST in the SmPL Java DSL
+     */
+    @Override
+    public CtExecutable<?> getMatchTargetDSL() {
+        return matchTargetDSL;
     }
 
     /**
@@ -89,6 +116,21 @@ public class SmPLRuleImpl implements SmPLRule {
     }
 
     /**
+     * Pre-scan a given executable to check if it could potentially match the rule.
+     *
+     * @param ctExecutable Executable to scan
+     * @return True if there is a possibility the rule could match the executable, false otherwise
+     */
+    @Override
+    public boolean isPotentialMatch(CtExecutable<?> ctExecutable) {
+        if (grepPattern == null) {
+            grepPattern = SmPLGrep.buildPattern(this);
+        }
+
+        return grepPattern.matches(ctExecutable.toString());
+    }
+
+    /**
      * Add method that should be added to parent class of a method matching the rule.
      */
     public void addAddedMethod(CtMethod<?> method) {
@@ -116,6 +158,16 @@ public class SmPLRuleImpl implements SmPLRule {
     private String name;
 
     /**
+     * Plain text SmPL source code.
+     */
+    private String source;
+
+    /**
+     * Match target executable AST in the SmPL Java DSL.
+     */
+    private CtExecutable<?> matchTargetDSL;
+
+    /**
      * Formula of the rule.
      */
     private final Formula formula;
@@ -129,4 +181,9 @@ public class SmPLRuleImpl implements SmPLRule {
      * Methods that should be added to parent class of a method matching the rule.
      */
     private List<CtMethod<?>> methodsAdded;
+
+    /**
+     * SmPLGrep pattern used in isPotentialMatch.
+     */
+    private SmPLGrep.Pattern grepPattern;
 }
