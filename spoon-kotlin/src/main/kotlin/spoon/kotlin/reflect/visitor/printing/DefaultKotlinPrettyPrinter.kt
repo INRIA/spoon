@@ -747,9 +747,10 @@ class DefaultKotlinPrettyPrinter(
         }
         adapter write LEFT_CURL
 
-        visitStatementList(block.statements)
-
-        adapter.ensureNEmptyLines(0)
+        if(block.statements.isNotEmpty()) {
+            visitStatementList(block.statements)
+            adapter.ensureNEmptyLines(0)
+        }
         adapter write RIGHT_CURL
         exitCtStatement(block)
     }
@@ -757,6 +758,7 @@ class DefaultKotlinPrettyPrinter(
     private fun visitStatementList(statements: List<CtStatement>,
                            inlineSingleStatement: Boolean = false
     ) {
+        if(statements.isEmpty()) return
         if(statements.size <= 1 && inlineSingleStatement) {
             statements.getOrNull(0)?.accept(this)
             adapter write SPACE

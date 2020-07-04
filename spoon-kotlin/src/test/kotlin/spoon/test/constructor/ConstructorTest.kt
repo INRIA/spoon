@@ -187,6 +187,6 @@ class ConstructorTest {
         assertTrue(assignment.assignment is CtLiteral<*>)
         assertTrue(assignment.assigned is CtFieldWrite<*>)
 
-        assertEquals("init {${System.getProperty("line.separator")}}", pp.prettyprint(inits[2]))
+        assertEquals("init {}", pp.prettyprint(inits[2]))
     }
 }

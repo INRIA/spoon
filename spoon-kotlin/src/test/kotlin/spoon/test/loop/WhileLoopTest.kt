@@ -28,7 +28,7 @@ class WhileLoopTest {
         assertEquals("kotlin.Boolean", loop.loopingExpression.type.qualifiedName)
         assertEquals(0, (loop.body as CtBlock<*>).statements.size)
         assertFalse(loop.body.isImplicit)
-        assertEquals("while (i < 10) {$eol}", pp.prettyprint(loop))
+        assertEquals("while (i < 10) {}", pp.prettyprint(loop))
     }
 
     @Test
@@ -48,7 +48,7 @@ class WhileLoopTest {
         val loop = whileLoopsClass.getLoop("emptyDoWhile") as CtDo
         assertEquals(0, (loop.body as CtBlock<*>).statements.size)
         assertFalse(loop.body.isImplicit)
-        assertEquals("do {$eol} while (true)", pp.prettyprint(loop))
+        assertEquals("do {} while (true)", pp.prettyprint(loop))
     }
 
     @Test

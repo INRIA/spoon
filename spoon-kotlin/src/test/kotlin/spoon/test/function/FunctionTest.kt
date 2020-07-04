@@ -23,7 +23,7 @@ class FunctionTest {
         assertEquals(c.factory.Type().createReference<Any>("kotlin.Unit"), m.type)
         assertEquals(0, m.body.statements.size)
         assertFalse(m.body.isImplicit)
-        assertEquals("fun f1() {$eol}", m.asString())
+        assertEquals("fun f1() {}", m.asString())
 
         m = c.getMethodByName("f2")
         assertEquals(c.factory.Type().createReference<Any>("kotlin.Int"), m.type)
@@ -53,7 +53,7 @@ class FunctionTest {
         assertEquals(c.factory.Type().createReference<Any>("kotlin.Unit"), m.type)
         assertEquals(0, m.body.statements.size)
         assertFalse(m.body.isImplicit)
-        assertEquals("fun f5(i: kotlin.Int, j: kotlin.Int) {$eol}", m.asString())
+        assertEquals("fun f5(i: kotlin.Int, j: kotlin.Int) {}", m.asString())
     }
 
     @Test
@@ -68,7 +68,7 @@ class FunctionTest {
         assertEquals(0, m.body.statements.size)
         assertEquals(0, m.parameters.size)
         assertFalse(m.body.isImplicit)
-        assertEquals("fun f1() {$eol}", m.asString()) // 'public' is redundant
+        assertEquals("fun f1() {}", m.asString()) // 'public' is redundant
         assertEquals(setOf(KtModifierKind.FINAL, KtModifierKind.PUBLIC), m.getKtModifiers())
 
         m = c.getMethodByName("f2")
@@ -77,7 +77,7 @@ class FunctionTest {
         assertEquals(0, m.parameters.size)
         assertEquals(setOf(KtModifierKind.FINAL, KtModifierKind.PRIVATE), m.getKtModifiers())
         assertFalse(m.body.isImplicit)
-        assertEquals("private fun f2() {$eol}", m.asString())
+        assertEquals("private fun f2() {}", m.asString())
 
         m = c.getMethodByName("f3")
         assertEquals(c.factory.Type().createReference<Any>("kotlin.String"), m.type)
@@ -92,7 +92,7 @@ class FunctionTest {
         assertEquals(setOf(KtModifierKind.OPEN, KtModifierKind.PUBLIC), m.getKtModifiers())
         assertEquals(0, m.parameters.size)
         assertFalse(m.body.isImplicit)
-        assertEquals("open fun f4() {$eol}", m.asString())
+        assertEquals("open fun f4() {}", m.asString())
 
         m = c.getMethodByName("f5")
         assertEquals(c.factory.Type().createReference<Any>("kotlin.Unit"), m.type)
@@ -100,7 +100,7 @@ class FunctionTest {
         assertEquals(setOf(KtModifierKind.FINAL, KtModifierKind.INTERNAL), m.getKtModifiers())
         assertEquals(0, m.parameters.size)
         assertFalse(m.body.isImplicit)
-        assertEquals("internal fun f5() {$eol}", m.asString())
+        assertEquals("internal fun f5() {}", m.asString())
 
         m = c.getMethodByName("plus")
         assertEquals(c.factory.Type().createReference<Any>("kotlin.Int"), m.type)
@@ -123,8 +123,8 @@ class FunctionTest {
         assertNotNull(topLvl)
         assertEquals(2, topLvl.methods.size)
 
-        assertEquals("fun f1() {${System.lineSeparator()}}", topLvl.getMethodByName("f1").asString())
-        assertEquals("fun f2(i: kotlin.Int) {${System.lineSeparator()}}", topLvl.getMethodByName("f2").asString())
+        assertEquals("fun f1() {}", topLvl.getMethodByName("f1").asString())
+        assertEquals("fun f2(i: kotlin.Int) {}", topLvl.getMethodByName("f2").asString())
     }
 
     @Test
@@ -137,12 +137,12 @@ class FunctionTest {
         assertEquals("<local>", wrapper1.simpleName)
         assertTrue(wrapper1.isImplicit)
         assertEquals(1, wrapper1.typeMembers.size)
-        assertEquals("fun inner1() {${System.lineSeparator()}}", wrapper1.typeMembers[0].asString())
+        assertEquals("fun inner1() {}", wrapper1.typeMembers[0].asString())
 
         assertEquals("<local>", wrapper2.simpleName)
         assertTrue(wrapper2.isImplicit)
         assertEquals(1, wrapper2.typeMembers.size)
-        assertEquals("fun inner2(i: kotlin.Int) {${System.lineSeparator()}}", wrapper2.typeMembers[0].asString())
+        assertEquals("fun inner2(i: kotlin.Int) {}", wrapper2.typeMembers[0].asString())
 
         assertNotSame(wrapper1, wrapper2)
     }

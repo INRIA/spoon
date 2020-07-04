@@ -61,7 +61,7 @@ class ForLoopTest {
         )
         assertEquals(0, (loop.body as CtBlock<*>).statements.size)
         assertFalse(loop.body.isImplicit)
-        assertEquals("for (i in 0..10) {$eol}", pp.prettyprint(loop))
+        assertEquals("for (i in 0..10) {}", pp.prettyprint(loop))
     }
 
     @Test
@@ -98,14 +98,14 @@ class ForLoopTest {
     fun testForWithOpenRange() {
         val loop = forLoopsClass.getLoop("forWithOpenRange")
         assertTrue(loop.expression is CtInvocation<*>)
-        assertEquals("for (i in 0 until 10) {$eol}", pp.prettyprint(loop))
+        assertEquals("for (i in 0 until 10) {}", pp.prettyprint(loop))
     }
 
     @Test
     fun testForWithDescendingRange() {
         val loop = forLoopsClass.getLoop("forWithDescendingRange")
         assertTrue(loop.expression is CtInvocation<*>)
-        assertEquals("for (i in 10 downTo 0) {$eol}", pp.prettyprint(loop))
+        assertEquals("for (i in 10 downTo 0) {}", pp.prettyprint(loop))
     }
 
     @Test
@@ -114,7 +114,7 @@ class ForLoopTest {
         assertTrue(loop.expression is CtInvocation<*>)
         val invocation = loop.expression as CtInvocation<*>
         assertEquals("IntRange", invocation.target.type.simpleName)
-        assertEquals("for (i in (0..10) step 2) {$eol}", pp.prettyprint(loop))
+        assertEquals("for (i in (0..10) step 2) {}", pp.prettyprint(loop))
     }
 
     @Test
@@ -122,6 +122,6 @@ class ForLoopTest {
         val loop = forLoopsClass.getLoop("forWithIndices")
         assertTrue(loop.expression is CtVariableRead)
         assertEquals("IntRange", loop.expression.type.simpleName)
-        assertEquals("for (i in l.indices) {$eol}", pp.prettyprint(loop))
+        assertEquals("for (i in l.indices) {}", pp.prettyprint(loop))
     }
 }
