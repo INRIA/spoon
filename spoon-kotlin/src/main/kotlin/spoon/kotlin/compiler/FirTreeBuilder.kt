@@ -421,9 +421,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     private fun visitBinaryOperatorViaFunctionCall(binType: InvocationType.BINARY_OPERATOR):
             CompositeTransformResult.Single<CtBinaryOperator<*>> {
-        val firLhs = binType.lhs
-        val kind = binType.kind
-        val firRhs = binType.rhs
+        val (firLhs, kind, firRhs) = binType
         val opFunc = binType.originalFunction
         val ktOp = factory.Core().createBinaryOperator<Any>()
         val lhs = firLhs.accept(this,null).single
