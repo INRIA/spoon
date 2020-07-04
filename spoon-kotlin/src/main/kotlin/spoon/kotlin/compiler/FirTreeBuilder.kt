@@ -1262,7 +1262,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     private fun FirClass<*>.isClass() = this.classKind == ClassKind.CLASS
     private fun FirClass<*>.isObject() = this.classKind == ClassKind.OBJECT
     private fun FirClass<*>.isEnumClass() = this.classKind == ClassKind.ENUM_CLASS
-    private fun FirWhenExpression.isIf() = this.subject == null && this.subjectVariable == null
+    private fun FirWhenExpression.isIf() = this.psi is KtIfExpression
     private fun <T> CtExpression<T>.wrapInImplicitReturn() : CtReturn<T> {
         val r = factory.Core().createReturn<T>()
         r.setReturnedExpression<CtReturn<T>>(this)
