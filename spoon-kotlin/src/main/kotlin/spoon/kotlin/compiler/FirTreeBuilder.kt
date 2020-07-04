@@ -426,7 +426,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         val firRhs = binType.rhs
         val opFunc = binType.originalFunction
         val ktOp = factory.Core().createBinaryOperator<Any>()
-        val lhs = firLhs?.accept(this,null)?.single
+        val lhs = firLhs.accept(this,null).single
         val rhs = firRhs.accept(this,null).single
         ktOp.setLeftHandOperand<CtBinaryOperator<Any>>(lhs as CtExpression<*>?)
         ktOp.setRightHandOperand<CtBinaryOperator<Any>>(rhs as CtExpression<*>)

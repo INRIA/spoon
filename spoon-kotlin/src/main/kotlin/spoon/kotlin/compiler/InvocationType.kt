@@ -10,13 +10,7 @@ internal sealed class InvocationType {
     data class UNKNOWN(val functionCall: FirFunctionCall): InvocationType()
     data class NORMAL_CALL(val receiver: FirElement?, val function: FirFunctionCall) : InvocationType()
     data class INFIX_CALL(val lhs: FirElement, val function: FirFunctionCall, val rhs: FirElement) : InvocationType()
-    open class BINARY_OPERATOR(val lhs: FirElement?, val kind: KtBinaryOperatorKind, val rhs: FirElement, val originalFunction: FirFunctionCall) : InvocationType()
-    class BINARY_OPERATOR_IMPL_LHS(
-        lhs: FirElement,
-        kind: KtBinaryOperatorKind,
-        rhs: FirElement,
-        originalFunction: FirFunctionCall
-    ) : BINARY_OPERATOR(lhs, kind, rhs, originalFunction)
+    data class BINARY_OPERATOR(val lhs: FirElement, val kind: KtBinaryOperatorKind, val rhs: FirElement, val originalFunction: FirFunctionCall) : InvocationType()
     data class ASSIGNMENT_OPERATOR(val lhs: FirElement, val kind: KtBinaryOperatorKind, val rhs: FirElement, val originalFunction: FirFunctionCall) : InvocationType()
     data class POSTFIX_OPERATOR(val operand: FirElement, val kind: UnaryOperatorKind, val originalFunction: FirFunctionCall) : InvocationType()
     data class PREFIX_OPERATOR(val kind: UnaryOperatorKind, val operand: FirElement, val originalFunction: FirFunctionCall) : InvocationType()

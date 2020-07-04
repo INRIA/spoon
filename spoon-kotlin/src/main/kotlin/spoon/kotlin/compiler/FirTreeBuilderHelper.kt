@@ -111,7 +111,7 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
         if(firCall.arguments.size == 1 && firCall.arguments[0] is FirWhenSubjectExpression) {
             // We're at "in x -> {}" in a when-branch condition
             if (receiver == null) throw SpoonException("'in' operator in when condition without receiver")
-            return InvocationType.BINARY_OPERATOR_IMPL_LHS(firCall.arguments[0], tokenToBinaryOperatorKind(IN_KEYWORD), receiver, firCall)
+            return InvocationType.BINARY_OPERATOR(firCall.arguments[0], tokenToBinaryOperatorKind(IN_KEYWORD), receiver, firCall)
         } else if(
             firCall.arguments.isEmpty() &&
             firCall.calleeReference.name.asString() == "not" &&
@@ -120,7 +120,7 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
             if(receiver.arguments.size == 1 && receiver.arguments[0] is FirWhenSubjectExpression) {
                 // We're at "!in x -> {}" in a when-branch condition
                 val containsReceiver = getReceiver(receiver) ?: throw SpoonException("'!in' operator in when condition without receiver")
-                return InvocationType.BINARY_OPERATOR_IMPL_LHS(receiver.arguments[0], tokenToBinaryOperatorKind(NOT_IN), containsReceiver, firCall)
+                return InvocationType.BINARY_OPERATOR(receiver.arguments[0], tokenToBinaryOperatorKind(NOT_IN), containsReceiver, firCall)
             }
         }
 
@@ -330,31 +330,46 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
         return orderedExprs
     }
 
-    /*
-    Left pre order traversal of a branch condition, needed because
-    when(x) {
-        a, is B, c -> {}
-    }
-    > translates to >
-     ((x == c) || x is B) || x == a
-
-     There might be other EQ operations when subject is boolean.
-     Therefore, return any operation that is not OR, or EQ operations with 'x' (when-subject) as one of its operands.
-     Such EQ should only return the other operand.
-
-     The result of the above example would be [c, x is B, a]
-
-     The pair also holds a marker that indicates whether the LHS as implicit, which is needed for type operators and
-     EQ operations mentioned above.
+    /**
+     * Left pre order traversal of a branch condition, needed because
+     * when(x) {
+     *      a, is B, c -> {}
+     *  }
+     *  > translates to >
+     *
+     *  ((x == c) || x is B) || x == a
+     *
+     * There might be other EQ operations when subject is boolean.
+     * Therefore, return any operation that is not OR, or EQ operations with 'x' (when-subject) as one of its operands.
+     * Such EQ should only return the other operand.
+     *
+     * The result of the above example would be [c, x is B, a]
+     *
+     * The pair also holds a marker that indicates whether the LHS as implicit, which is needed for type operators and
+     * EQ operations mentioned above.
+     *
+     * @param isRoot true if expression is the root of a condition.
      */
-    private fun visitExpressionsPreorder(expression: FirExpression, breakOnOr: Boolean, list: MutableList<Pair<FirExpression, Boolean>>) {
+    private fun visitExpressionsPreorder(expression: FirExpression, isRoot: Boolean, list: MutableList<Pair<FirExpression, Boolean>>) {
         when(expression) {
             is FirTypeOperatorCall -> {
                 list.add(expression to true)
             }
-            is FirFunctionCall -> list.add(expression to false)
+            is FirFunctionCall -> {
+                /*
+                Look at isRoot to know whether we should mark LHS as implicit for 'in' calls that will be converted
+                to binary operator. It is safe because the only possible case when isRoot is true is with a condition
+                "in L". If the subject is boolean, the case below is legal
+
+                when(b) {
+                    in L -> {}  // Is actually (b in L)
+                    b in L -> {} // Is actually (b == b in L)
+                }
+                 */
+                list.add(expression to !isRoot)
+            }
             is FirBinaryLogicExpression -> {
-                if(expression.kind == LogicOperationKind.OR && !breakOnOr) {
+                if(expression.kind == LogicOperationKind.OR && !isRoot) {
                     visitExpressionsPreorder(expression.leftOperand, false, list) // Keep traversing the LHS,
                     visitExpressionsPreorder(expression.rightOperand, true, list) // break if we encounter another OR in the RHS.
                 }
