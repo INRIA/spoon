@@ -326,7 +326,7 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
         if(condition is FirElseIfTrueCondition) return emptyList()
 
         val orderedExprs = ArrayList<Pair<FirExpression,Boolean>> ()
-        visitExpressionsPreorder(condition, false, orderedExprs)
+        visitExpressionsPreOrder(condition, false, orderedExprs)
         return orderedExprs
     }
 
@@ -343,14 +343,14 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
      * Therefore, return any operation that is not OR, or EQ operations with 'x' (when-subject) as one of its operands.
      * Such EQ should only return the other operand.
      *
-     * The result of the above example would be [c, x is B, a]
+     * The result of the above example would be [a, x is B, c]
      *
      * The pair also holds a marker that indicates whether the LHS as implicit, which is needed for type operators and
      * EQ operations mentioned above.
      *
      * @param isRoot true if expression is the root of a condition.
      */
-    private fun visitExpressionsPreorder(expression: FirExpression, isRoot: Boolean, list: MutableList<Pair<FirExpression, Boolean>>) {
+    private fun visitExpressionsPreOrder(expression: FirExpression, isRoot: Boolean, list: MutableList<Pair<FirExpression, Boolean>>) {
         when(expression) {
             is FirTypeOperatorCall -> {
                 list.add(expression to true)
@@ -370,8 +370,8 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
             }
             is FirBinaryLogicExpression -> {
                 if(expression.kind == LogicOperationKind.OR && !isRoot) {
-                    visitExpressionsPreorder(expression.leftOperand, false, list) // Keep traversing the LHS,
-                    visitExpressionsPreorder(expression.rightOperand, true, list) // break if we encounter another OR in the RHS.
+                    visitExpressionsPreOrder(expression.leftOperand, false, list) // Keep traversing the LHS,
+                    visitExpressionsPreOrder(expression.rightOperand, true, list) // break if we encounter another OR in the RHS.
                 }
                 else {
                     list.add(expression to false)
@@ -381,7 +381,7 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
                 // When-subject seems to always be in arguments[0] (LHS), but use any and filter to be sure
                 if(expression.operation == FirOperation.EQ && expression.arguments.any { it is FirWhenSubjectExpression }) {
                     val rhs = expression.arguments.filterNot { it is FirWhenSubjectExpression }.first()
-                    visitExpressionsPreorder(rhs, true, list) // Visit the other operand, break on OR
+                    visitExpressionsPreOrder(rhs, true, list) // Visit the other operand, break on OR
                 } else {
                     list.add(expression to false)
                 }
