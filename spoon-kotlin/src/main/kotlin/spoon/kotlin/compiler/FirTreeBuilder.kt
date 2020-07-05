@@ -36,10 +36,9 @@ import spoon.reflect.declaration.*
 import spoon.reflect.factory.Factory
 import spoon.reflect.reference.*
 import spoon.support.reflect.code.CtLiteralImpl
-import java.util.*
 import kotlin.collections.ArrayList
 
-class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisitor<CompositeTransformResult<CtElement>, Nothing?>() {
+class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisitor<CompositeTransformResult<CtElement>, ContextData?>() {
     internal val referenceBuilder = ReferenceBuilder(this)
     internal val helper = FirTreeBuilderHelper(this)
     internal val toplvlClassName = "<top-level>"
@@ -53,7 +52,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     fun report(s : String) = report(Message(s, MessageType.COMMON))
     fun warn(s : String) = report(Message(s, MessageType.WARN))
 
-    override fun visitElement(element: FirElement, data: Nothing?): CompositeTransformResult<CtElement> {
+    override fun visitElement(element: FirElement, data: ContextData?): CompositeTransformResult<CtElement> {
         //throw SpoonException("Element type not implemented $element")
         if(element is FirUnitExpression) return CompositeTransformResult.empty()
         return CtLiteralImpl<String>().setValue<CtLiteral<String>>("Unimplemented element $element").compose()
@@ -61,7 +60,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitErrorNamedReference(
         errorNamedReference: FirErrorNamedReference,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult<CtElement> {
         throw RuntimeException("Error, file contains compile errors: ${errorNamedReference.diagnostic.reason}")
     }
@@ -70,7 +69,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         element.putMetadata<CtElement>(KtMetadataKeys.KT_MODIFIERS, modifierList.toMutableSet())
     }
 
-    override fun visitFile(file: FirFile, data: Nothing?): CompositeTransformResult<CtElement> {
+    override fun visitFile(file: FirFile, data: ContextData?): CompositeTransformResult<CtElement> {
         val module = helper.getOrCreateModule(file.session, factory)
         val compilationUnit = factory.CompilationUnit().getOrCreate(file.name)
 
@@ -113,7 +112,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return compilationUnit.compose()
     }
 
-    override fun visitRegularClass(regularClass: FirRegularClass, data: Nothing?): CompositeTransformResult.Single<CtType<*>> {
+    override fun visitRegularClass(regularClass: FirRegularClass, data: ContextData?): CompositeTransformResult.Single<CtType<*>> {
         val module = helper.getOrCreateModule(regularClass.session, factory)
         val type = helper.createType(regularClass)
         if(regularClass.classId.isLocal) {
@@ -161,7 +160,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return type.compose()
     }
 
-    override fun visitConstructor(constructor: FirConstructor, data: Nothing?): CompositeTransformResult.Single<CtConstructor<*>> {
+    override fun visitConstructor(constructor: FirConstructor, data: ContextData?): CompositeTransformResult.Single<CtConstructor<*>> {
         val ctConstructor = factory.Core().createConstructor<Any>()
         ctConstructor.setSimpleName<CtConstructor<*>>(constructor.name.asString())
 
@@ -255,7 +254,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitTypeOperatorCall(
         typeOperatorCall: FirTypeOperatorCall,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult<CtElement> {
         return when(typeOperatorCall.operation) {
             FirOperation.IS, FirOperation.NOT_IS -> visitIsTypeOperation(typeOperatorCall)
@@ -266,7 +265,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitResolvedTypeRef(
         resolvedTypeRef: FirResolvedTypeRef,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult<CtElement> {
         val typeAccess = factory.Core().createTypeAccess<Any>()
         typeAccess.setAccessedType<CtTypeAccess<Any>>(referenceBuilder.getNewTypeReference(resolvedTypeRef))
@@ -275,7 +274,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitAnonymousInitializer(
         anonymousInitializer: FirAnonymousInitializer,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult<CtElement> {
         val ctAnonExec = factory.Core().createAnonymousExecutable()
         val body = anonymousInitializer.body?.accept(this,null)?.single as CtStatement?
@@ -306,10 +305,10 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return castedExpr.compose()
     }
 
-    override fun visitFunctionCall(functionCall: FirFunctionCall, data: Nothing?): CompositeTransformResult<CtElement> {
+    override fun visitFunctionCall(functionCall: FirFunctionCall, data: ContextData?): CompositeTransformResult<CtElement> {
         val invocationType = helper.resolveIfOperatorOrInvocation(functionCall)
         return when(invocationType) {
-            is InvocationType.NORMAL_CALL -> visitNormalFunctionCall(invocationType)
+            is InvocationType.NORMAL_CALL -> visitNormalFunctionCall(invocationType, data)
             is InvocationType.INFIX_CALL -> visitInfixFunctionCall(invocationType)
             is InvocationType.BINARY_OPERATOR -> visitBinaryOperatorViaFunctionCall(invocationType)
             is InvocationType.ASSIGNMENT_OPERATOR -> visitAssignmentOperatorViaFunctionCall(invocationType)
@@ -349,22 +348,28 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitTypeProjection(
         typeProjection: FirTypeProjection,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult.Single<CtTypeReference<*>> {
         return referenceBuilder.visitTypeProjection(typeProjection).compose()
     }
 
-    private fun visitNormalFunctionCall(call: InvocationType.NORMAL_CALL):
+    private fun visitNormalFunctionCall(call: InvocationType.NORMAL_CALL, context: ContextData?):
             CompositeTransformResult<CtInvocation<*>> {
         val (firReceiver, functionCall) = call
         val invocation = factory.Core().createInvocation<Any>()
         invocation.setExecutable<CtInvocation<Any>>(referenceBuilder.getNewExecutableReference(functionCall))
 
         val nonSpecialTarget = firReceiver?.accept(this,null)
-        if(nonSpecialTarget?.isEmpty == true) {
-            return CompositeTransformResult.empty()
+        val target: CtElement?
+        target = if(nonSpecialTarget?.isEmpty == true) {
+            if(context is Destruct) {
+                context.destructTarget.accept(this,null).single
+            } else {
+                return CompositeTransformResult.empty()
+            }
+        } else {
+            nonSpecialTarget?.single
         }
-        val target = nonSpecialTarget?.single
         if(target is CtExpression<*>) {
             invocation.setTarget<CtInvocation<Any>>(target)
         } else if(target != null) {
@@ -447,7 +452,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitExpressionWithSmartcast(
         expressionWithSmartcast: FirExpressionWithSmartcast,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult<CtElement> {
         if(expressionWithSmartcast.originalExpression.source?.psi is KtUnaryExpression) return CompositeTransformResult.empty()
         val expr = expressionWithSmartcast.originalExpression.accept(this,null).single as CtTypedElement<*>
@@ -460,14 +465,14 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitNamedArgumentExpression(
         namedArgumentExpression: FirNamedArgumentExpression,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult.Single<CtElement> {
         return namedArgumentExpression.expression.accept(this,null).single.apply {
             putMetadata<CtElement>(KtMetadataKeys.NAMED_ARGUMENT, namedArgumentExpression.name.asString())
         }.compose()
     }
 
-    override fun visitWhenExpression(whenExpression: FirWhenExpression, data: Nothing?): CompositeTransformResult<CtElement> {
+    override fun visitWhenExpression(whenExpression: FirWhenExpression, data: ContextData?): CompositeTransformResult<CtElement> {
         if(whenExpression.isIf()) return visitIfExpression(whenExpression)
         val subjectVariable = whenExpression.subjectVariable
         if(subjectVariable?.name?.isSpecial == true) {
@@ -496,7 +501,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctSwitch.compose()
     }
 
-    override fun visitWhenBranch(whenBranch: FirWhenBranch, data: Nothing?): CompositeTransformResult.Single<CtCase<Any>> {
+    override fun visitWhenBranch(whenBranch: FirWhenBranch, data: ContextData?): CompositeTransformResult.Single<CtCase<Any>> {
         val case = factory.Core().createCase<Any>()
         case.setCaseKind<CtCase<Any>>(CaseKind.ARROW)
 
@@ -528,7 +533,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitWhenSubjectExpression(
         whenSubjectExpression: FirWhenSubjectExpression,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult<CtElement> {
         val subjectVariable = whenSubjectExpression.whenSubject.whenExpression.subjectVariable
         if(subjectVariable != null) {
@@ -596,24 +601,26 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         ...
        }
      */
-    override fun visitBlock(block: FirBlock, data: Nothing?): CompositeTransformResult.Single<CtBlock<*>> {
+    override fun visitBlock(block: FirBlock, data: ContextData?): CompositeTransformResult.Single<CtBlock<*>> {
         if(block is FirSingleExpressionBlock) return visitSingleExpressionBlock(block)
         val ktBlock = factory.Core().createBlock<Any>()
         val statements = ArrayList<CtStatement>()
-        val loopIterableStack = Stack<CtExpression<*>>()
+        var context: ContextData? = null
         for(firStatement in block.statements) {
             if(firStatement is FirProperty && firStatement.isLocal && firStatement.name.isSpecial) {
-                if(firStatement.name.asString() == "<range>")
-                    loopIterableStack.push(firStatement.initializer!!.accept(this,null).single as CtExpression<*>)
+                when(firStatement.name.asString()) {
+                    "<range>" -> {
+                        context = For(firStatement.initializer!!)
+                    }
+                    "<destruct>" -> {
+                        context = Destruct(firStatement.initializer!!)
+                    }
+                }
                 continue
             }
-            val ctElementResult = firStatement.accept(this, null)
+            val ctElementResult = firStatement.accept(this, context)
             if(ctElementResult.isEmpty) continue
             val ctElement = ctElementResult.single
-
-            if(ctElement is CtForEach) {
-                ctElement.setExpression<CtForEach>(loopIterableStack.pop())
-            }
 
             statements.add(if(ctElement is CtExpression<*> && ctElement !is CtStatement) {
                 ctElement.wrapInImplicitReturn()
@@ -662,10 +669,10 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return compose()
     }
 
-    override fun visitWhileLoop(whileLoop: FirWhileLoop, data: Nothing?): CompositeTransformResult<CtElement> {
+    override fun visitWhileLoop(whileLoop: FirWhileLoop, data: ContextData?): CompositeTransformResult<CtElement> {
         when(whileLoop.source?.psi) {
             null -> throw RuntimeException("Unknown source of while loop")
-            is KtForExpression -> return visitForLoop(whileLoop,null)
+            is KtForExpression -> return visitForLoop(whileLoop,data)
         }
         val ctWhile = factory.Core().createWhile()
         val condition = whileLoop.condition.accept(this,null).single as CtExpression<Boolean>
@@ -677,7 +684,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     }
 
-    override fun visitDoWhileLoop(doWhileLoop: FirDoWhileLoop, data: Nothing?): CompositeTransformResult<CtElement> {
+    override fun visitDoWhileLoop(doWhileLoop: FirDoWhileLoop, data: ContextData?): CompositeTransformResult<CtElement> {
         val ctDo = factory.Core().createDo()
         val condition = doWhileLoop.condition.accept(this,null).single as CtExpression<Boolean>
         val body = doWhileLoop.block.accept(this,null).single as CtStatement
@@ -688,7 +695,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     }
 
-    fun visitForLoop(forLoop: FirWhileLoop, data: Nothing?): CompositeTransformResult<CtElement> {
+    fun visitForLoop(forLoop: FirWhileLoop, data: ContextData?): CompositeTransformResult<CtElement> {
         val ctForEach = factory.Core().createForEach()
         val variable = forLoop.block.statements[0].accept(this,null).single as CtLocalVariable<*>
         // Remove initializer ( = next() )
@@ -698,12 +705,20 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         ctForEach.setVariable<CtForEach>(variable)
         // Local loop variable has already been handled, remove before visiting
         (forLoop.block.statements as MutableList<FirStatement>).removeAt(0)
+
+        // Add variable, provided by context
+        if(data !is For) {
+            throw SpoonException("For-loop without iterable")
+        } else {
+            ctForEach.setExpression(data.iterable.accept(this,null).single as CtExpression<*>)
+        }
+
         val body = forLoop.block.accept(this,null).single as CtStatement
         ctForEach.setBody<CtForEach>(body)
         return ctForEach.exitLoopStatement(forLoop)
     }
 
-    override fun visitOperatorCall(operatorCall: FirOperatorCall, data: Nothing?): CompositeTransformResult<CtElement> {
+    override fun visitOperatorCall(operatorCall: FirOperatorCall, data: ContextData?): CompositeTransformResult<CtElement> {
         val op = factory.Core().createBinaryOperator<Any>()
         val kind = KtBinaryOperatorKind.fromFirOperation(operatorCall.operation)
         op.putMetadata<CtBinaryOperator<Any>>(KtMetadataKeys.KT_BINARY_OPERATOR_KIND, kind)
@@ -720,7 +735,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitBinaryLogicExpression(
         binaryLogicExpression: FirBinaryLogicExpression,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult<CtElement> {
         val op = factory.Core().createBinaryOperator<Boolean>()
         val kind = KtBinaryOperatorKind.firLogicOperationToJavaBinOp(binaryLogicExpression.kind)
@@ -768,7 +783,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctMethod
     }
 
-    override fun visitSimpleFunction(simpleFunction: FirSimpleFunction, data: Nothing?): CompositeTransformResult.Single<CtMethod<*>> {
+    override fun visitSimpleFunction(simpleFunction: FirSimpleFunction, data: ContextData?): CompositeTransformResult.Single<CtMethod<*>> {
         val ctMethod = createUnnamedFunction(simpleFunction)
         ctMethod.setSimpleName<CtMethod<Any>>(simpleFunction.name.identifier)
 
@@ -781,7 +796,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitThisReceiverExpression(
         thisReceiverExpression: FirThisReceiverExpression,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult.Single<CtThisAccess<*>> {
         val implicit = when(thisReceiverExpression.calleeReference) {
             is FirExplicitThisReference -> false
@@ -796,7 +811,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitSuperReference(
         superReference: FirSuperReference,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult.Single<CtSuperAccess<*>> {
         val superAccess = factory.Core().createSuperAccess<Any>()
         superAccess.setType<CtSuperAccess<Any>>(referenceBuilder.getNewTypeReference(superReference.superTypeRef))
@@ -844,7 +859,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitVariableAssignment(
         variableAssignment: FirVariableAssignment,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult.Single<CtExpression<*>> {
 
         if(variableAssignment.source?.psi is KtUnaryExpression)
@@ -872,7 +887,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitResolvedNamedReference(
         resolvedNamedReference: FirResolvedNamedReference,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult<CtElement> {
         val fir = resolvedNamedReference.resolvedSymbol.fir
         val ctRef = when(fir) {
@@ -891,7 +906,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitValueParameter(
         valueParameter: FirValueParameter,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult.Single<CtParameter<*>> {
         val ctParam = factory.Core().createParameter<Any>()
         ctParam.setSimpleName<CtParameter<Any>>(valueParameter.name.identifier)
@@ -925,7 +940,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitTypeParameter(
         typeParameter: FirTypeParameter,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult.Single<CtTypeParameter> {
         val ctTypeParameter = factory.Core().createTypeParameter()
         ctTypeParameter.setSimpleName<CtTypeParameter>(typeParameter.name.identifier)
@@ -944,7 +959,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctTypeParameter.compose()
     }
 
-    override fun visitProperty(property: FirProperty, data: Nothing?): CompositeTransformResult<CtVariable<*>> {
+    override fun visitProperty(property: FirProperty, data: ContextData?): CompositeTransformResult<CtVariable<*>> {
         /*
             a++
             >translates to>
@@ -954,6 +969,8 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
          */
         if(property.source?.psi is KtUnaryExpression)
             return CompositeTransformResult.empty()  // Context is responsible for handling this case
+        if(property.name.asString() == "_")
+            return CompositeTransformResult.empty() // Discarded variable
         if(property.isLocal)
             return visitLocalVariable(property, data)
 
@@ -1023,7 +1040,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return LiteralBase.DECIMAL
     }
 
-    override fun <T> visitConstExpression(constExpression: FirConstExpression<T>, data: Nothing?): CompositeTransformResult<CtLiteral<T>> {
+    override fun <T> visitConstExpression(constExpression: FirConstExpression<T>, data: ContextData?): CompositeTransformResult<CtLiteral<T>> {
         val value = when(constExpression.kind) {
             FirConstKind.Int -> (constExpression.value as Long).toInt()
             FirConstKind.Null -> null
@@ -1060,12 +1077,12 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return l.compose()
     }
 
-    fun visitLocalVariable(property: FirProperty, data: Nothing?) : CompositeTransformResult.Single<CtVariable<*>> {
+    fun visitLocalVariable(property: FirProperty, data: ContextData?) : CompositeTransformResult.Single<CtVariable<*>> {
         val localVar = factory.Core().createLocalVariable<Any>().also {
             it.setSimpleName<CtLocalVariable<Any>>(property.name.identifier)
         }
 
-        val transformedExpression = property.initializer?.accept(this,null)
+        val transformedExpression = property.initializer?.accept(this, data)
         if(transformedExpression != null && transformedExpression.isSingle) {
             when(val initializer = transformedExpression.single) {
                 is CtExpression<*> -> {
@@ -1111,7 +1128,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitAnonymousFunction(
         anonymousFunction: FirAnonymousFunction,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult<CtExecutable<*>> {
         val ctLambda = factory.Core().createLambda<Any>()
         val params = anonymousFunction.valueParameters.map { it.accept(this,null).single } as List<CtParameter<*>>
@@ -1126,12 +1143,12 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitLambdaArgumentExpression(
         lambdaArgumentExpression: FirLambdaArgumentExpression,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult<CtElement> = lambdaArgumentExpression.expression.accept(this,null)
 
     override fun visitReturnExpression(
         returnExpression: FirReturnExpression,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult<CtElement> {
         if(returnExpression.source == null) {
             return returnExpression.result.accept(this,null)
@@ -1149,7 +1166,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitCheckNotNullCall( // a!!
         checkNotNullCall: FirCheckNotNullCall,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult<CtElement> {
         val qa = checkNotNullCall.arguments[0].accept(this,null)
         return qa.apply {
@@ -1160,7 +1177,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     @Suppress("UNCHECKED_CAST")
     override fun visitQualifiedAccessExpression(
         qualifiedAccessExpression: FirQualifiedAccessExpression,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult<CtElement> {
         val calleeRefRes = qualifiedAccessExpression.calleeReference.accept(this,null)
         if(calleeRefRes.isEmpty) return CompositeTransformResult.empty()
@@ -1202,7 +1219,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitTryExpression(
         tryExpression: FirTryExpression,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult<CtElement> {
         return factory.Core().createTry().apply {
             setBody<CtTry>(tryExpression.tryBlock.accept(this@FirTreeBuilder,null).single as CtStatement)
@@ -1213,7 +1230,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitThrowExpression(
         throwExpression: FirThrowExpression,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult.Single<CtThrow> {
         val ctThrow = factory.Core().createThrow()
         val throwExpr = throwExpression.exception.accept(this,null).single as CtExpression<Throwable>
@@ -1221,7 +1238,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
         return ctThrow.compose()
     }
 
-    override fun visitCatch(catch: FirCatch, data: Nothing?): CompositeTransformResult<CtElement> {
+    override fun visitCatch(catch: FirCatch, data: ContextData?): CompositeTransformResult<CtElement> {
         val block = catch.block.accept(this,null).single as CtStatement
         return factory.Core().createCatch().apply {
             setParameter<CtCatch>(helper.createCatchVariable(catch.parameter))
@@ -1231,7 +1248,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitBreakExpression(
         breakExpression: FirBreakExpression,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult.Single<CtBreak> {
         val ctBreak = factory.Core().createBreak()
         val label = breakExpression.target.labelName
@@ -1243,7 +1260,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
 
     override fun visitContinueExpression(
         continueExpression: FirContinueExpression,
-        data: Nothing?
+        data: ContextData?
     ): CompositeTransformResult.Single<CtContinue> {
         val ctContinue = factory.Core().createContinue()
         val label = continueExpression.target.labelName
