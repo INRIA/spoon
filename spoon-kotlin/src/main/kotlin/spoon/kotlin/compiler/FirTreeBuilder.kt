@@ -468,7 +468,7 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisito
     }
 
     override fun visitWhenExpression(whenExpression: FirWhenExpression, data: Nothing?): CompositeTransformResult<CtElement> {
-        if(whenExpression.isIf()) return visitIfExpression(whenExpression) // FIXME prob wrong for no arg
+        if(whenExpression.isIf()) return visitIfExpression(whenExpression)
         val subjectVariable = whenExpression.subjectVariable
         if(subjectVariable?.name?.isSpecial == true) {
             if(subjectVariable.name.asString() == "<elvis>")
