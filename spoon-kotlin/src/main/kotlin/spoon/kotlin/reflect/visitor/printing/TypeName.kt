@@ -3,6 +3,9 @@ package spoon.kotlin.reflect.visitor.printing
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.reflect.reference.CtTypeReference
 
+/**
+ * Convenience class for handling type names.
+ */
 internal data class TypeName(val packageName: String, val simpleName: String, val suffix: String) {
     private fun asFQString(ignoreNullability: Boolean): String {
         val name = if(packageName.isEmpty()) simpleName else "$packageName.$simpleName"
