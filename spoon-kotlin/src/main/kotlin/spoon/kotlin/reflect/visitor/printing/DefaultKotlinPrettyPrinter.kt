@@ -322,7 +322,7 @@ class DefaultKotlinPrettyPrinter(
                 adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
             }
             else p = ", "
-            adapter write inheritanceList.joinToString(prefix = p, transform = { it.fQNameWithNullability })
+            adapter write inheritanceList.joinToString(prefix = p, transform = { it.fQNameWithoutNullability })
         }
 
         val whereClause = typeParamHandler.generateWhereClause()
