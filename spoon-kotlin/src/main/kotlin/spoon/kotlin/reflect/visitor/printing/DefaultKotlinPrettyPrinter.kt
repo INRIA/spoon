@@ -344,6 +344,50 @@ class DefaultKotlinPrettyPrinter(
         adapter writeln RIGHT_CURL
     }
 
+    override fun <T : Any?> visitCtInterface(ctInterface: CtInterface<T>) {
+        adapter.ensureNEmptyLines(1)
+        // Annotations
+        // Not yet implemented
+
+        // Modifiers
+        // Interfaces are abstract, but it shouldn't be printed
+        val modifiers = getModifiersMetadata(ctInterface)?.filterNot { it == KtModifierKind.ABSTRACT }
+        adapter writeModifiers modifiers
+
+        // Name
+        adapter write "interface" and SPACE and ctInterface.simpleName
+
+        // Type parameters list
+        val typeParamHandler = TypeParameterHandler(ctInterface, this, false)
+        if(!typeParamHandler.isEmpty) {
+            adapter write typeParamHandler.generateTypeParamListString()
+        }
+
+        // Super interfaces
+        if(ctInterface.superInterfaces.isNotEmpty()) {
+            adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
+            adapter write ctInterface.superInterfaces.map(TypeName.Companion::build)
+                .joinToString(transform = { it.fQNameWithoutNullability })
+        }
+        val whereClause = typeParamHandler.generateWhereClause()
+        if(whereClause.isNotEmpty()) {
+            adapter write " where "
+            adapter.writeAligned(whereClause)
+        }
+
+        adapter write SPACE and LEFT_CURL
+        adapter.newline()
+        adapter.pushIndent()
+
+        for (it in ctInterface.typeMembers) {
+            if(!it.isImplicit) { it.accept(this) }
+        }
+
+        adapter.popIndent()
+        adapter.ensureNEmptyLines(0)
+        adapter writeln RIGHT_CURL
+    }
+
     override fun <T : Any?> visitCtConstructor(ctConstructor : CtConstructor<T>) {
         // Annotations not implemented
 
@@ -376,9 +420,6 @@ class DefaultKotlinPrettyPrinter(
         }
     }
 
-    override fun <T : Any?> visitCtInterface(p0: CtInterface<T>?) {
-
-    }
 
     override fun visitCtPackageExport(p0: CtPackageExport?) {
         TODO("Not yet implemented")
@@ -578,10 +619,12 @@ class DefaultKotlinPrettyPrinter(
         // Not implemented
 
         // Modifiers
+        // Filter out redundant modifiers: 'open' if method has override modifier, and
+        // 'abstract' and 'open' modifiers if method is member of an interface
         val modifierSet : Set<KtModifierKind>? = getModifiersMetadata(field)
-        val modifiers : Set<KtModifierKind> =
-            modifierSet?.filterIf(KtModifierKind.OVERRIDE in modifierSet) { it != KtModifierKind.OPEN } ?:
-            setOf(KtModifierKind.VAR)
+        val modifiers = modifierSet?.filterIf(KtModifierKind.OVERRIDE in modifierSet) { it != KtModifierKind.OPEN }
+            ?.filterIf(field.parent is CtInterface<*>) { it != KtModifierKind.ABSTRACT && it != KtModifierKind.OPEN }
+            ?: setOf(KtModifierKind.VAR)
 
         adapter writeModifiers modifiers
 
@@ -1017,7 +1060,10 @@ class DefaultKotlinPrettyPrinter(
 
         // Modifiers
         val modifierSet = getModifiersMetadata(method)
+        // Filter out redundant modifiers: 'open' if method has override modifier, and
+        // 'abstract' and 'open' modifiers if method is member of an interface
         val modifiers = modifierSet?.filterIf(KtModifierKind.OVERRIDE in modifierSet) { it != KtModifierKind.OPEN }
+            ?.filterIf(method.parent is CtInterface<*>) { it != KtModifierKind.ABSTRACT && it != KtModifierKind.OPEN }
             ?: emptySet<KtModifierKind>()
 
         adapter writeModifiers modifiers and "fun"
