@@ -1,9 +1,12 @@
 package spoon.kotlin.compiler
 
+import org.jetbrains.kotlin.cli.jvm.compiler.NoScopeRecordCliBindingTrace
+import org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
@@ -13,17 +16,20 @@ import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.references.FirReference
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.resolve.toSymbol
+import org.jetbrains.kotlin.fir.resolve.transformers.firClassLike
 import org.jetbrains.kotlin.fir.symbols.AbstractFirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.fir.types.ConeClassLikeType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
+import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.isUnit
 import org.jetbrains.kotlin.lexer.KtTokens.*
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.psi.psiUtil.getPrevSiblingIgnoringWhitespaceAndComments
+import org.jetbrains.kotlin.resolve.calls.CallTransformer
+import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
+import org.jetbrains.kotlin.resolve.calls.model.VariableAsFunctionResolvedCall
 import spoon.SpoonException
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.reflect.code.CtCatchVariable
@@ -35,7 +41,15 @@ import spoon.reflect.factory.Factory
 import spoon.reflect.reference.CtTypeReference
 
 
-internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) {
+internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder, private val spoonKtEnvironment: SpoonKtEnvironment) {
+
+    private val analysisResult by lazy { // Don't want to analyze PSI module unless needed
+        TopDownAnalyzerFacadeForJVM.analyzeFilesWithJavaIntegration(spoonKtEnvironment.ktEnvironment.project,
+            spoonKtEnvironment.ktEnvironment.getSourceFiles(),
+            NoScopeRecordCliBindingTrace(),
+            spoonKtEnvironment.config,
+            spoonKtEnvironment.ktEnvironment::createPackagePartProvider)
+    }
 
     fun createType(firClass: FirRegularClass): CtType<*> {
         val type: CtType<Any> = when (firClass.classKind) {
@@ -237,36 +251,21 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder) 
             if(calledName != "invoke") {
                 // Easiest case "a()" has become "a.invoke()" during resolution
                 return true
-            } else {
-                /*
-                The receiver (e.g. variable holding a class with the invoke operator, or function) is named invoke.
-                Ex.
-                val invoke = ClassWithInvokeOperator()
-                invoke()
-                invoke.invoke()
-                Tricky edge case, these 2, and other potential sequences, must be distinguished
-                */
-                // These can match some simple cases, but not when invoke calls are nested
-                var psi = functionCall.psi
-                while(psi != null && psi.parent != null &&
-                    (psi.parent is KtCallExpression || psi.parent is KtQualifiedExpression)) {
-                    psi = psi.parent
-                }
-                if(psi != null) {
-                    val text = psi.text.replace("""\s|\n""".toRegex(),"")
+            }
+            /*
+            Else the receiver (e.g. variable holding a class with the invoke operator, or function) is named invoke.
+            Ex.
+            val invoke = ClassWithInvokeOperator()
+            invoke()
+            invoke.invoke()
+            Tricky edge case, these 2, and other potential sequences, must be distinguished.
+            */
 
-                    if(text.matches("((.+[)]\\s*[(].*[)]\\s*;?\\s*)|(this\\s*[(].*[)]\\s*;?))\$".toRegex()))
-                        return true
-
-                    val receiver = getReceiver(functionCall)
-                    if(receiver is FirQualifiedAccessExpression) {
-                        when(getResolvedSymbolOrNull(receiver.calleeReference)) {
-                            is FirPropertySymbol, is FirVariableSymbol<*> ->
-                                if(text.matches("invoke[(].*[)]\\s*;?\\s*\$".toRegex())) return true
-                        }
-                    }
-
-                }
+            // As a last resort, analyze full PSI module and check the analysis result for an answer.
+            val psi = functionCall.psi
+            if(psi is KtCallExpression) {
+                val call = psi.getResolvedCall(analysisResult.bindingContext)
+                return call is VariableAsFunctionResolvedCall || call?.call is CallTransformer.CallForImplicitInvoke
             }
         }
 

@@ -38,14 +38,16 @@ import spoon.reflect.reference.*
 import spoon.support.reflect.code.CtLiteralImpl
 import kotlin.collections.ArrayList
 
-class FirTreeBuilder(val factory : Factory, val session: FirSession) : FirVisitor<CompositeTransformResult<CtElement>, ContextData?>() {
+class FirTreeBuilder(val factory : Factory, val session: FirSession, spoonKtEnvironment: SpoonKtEnvironment) : FirVisitor<CompositeTransformResult<CtElement>, ContextData?>() {
     internal val referenceBuilder = ReferenceBuilder(this)
-    internal val helper = FirTreeBuilderHelper(this)
+    internal val helper = FirTreeBuilderHelper(this, spoonKtEnvironment)
     internal val toplvlClassName = "<top-level>"
 
     // Temporary printing, remove later
     private var msgCollector: MsgCollector = PrintingMsgCollector()
-    internal constructor(factory : Factory, session: FirSession, m: MsgCollector) : this(factory, session) {
+    internal constructor(factory : Factory, session: FirSession, spoonKtEnvironment: SpoonKtEnvironment, m: MsgCollector) :
+            this(factory, session, spoonKtEnvironment)
+    {
         msgCollector = m
     }
     fun report(m : Message) = msgCollector.report(m)
