@@ -147,42 +147,50 @@ public class SmPLParser {
 
         Map<String, MetavariableConstraint> metavars = new HashMap<>();
 
+        Map<String, MetavariableConstraint> metavarTypeMap = new HashMap<>();
+        metavarTypeMap.put("type", new TypeConstraint());
+        metavarTypeMap.put("identifier", new IdentifierConstraint());
+        metavarTypeMap.put("constant", new ConstantConstraint());
+        metavarTypeMap.put("expression", new ExpressionConstraint());
+
         if (ast.getMethodsByName(SmPLJavaDSL.getMetavarsMethodName()).size() != 0) {
             CtMethod<?> mth = ast.getMethodsByName(SmPLJavaDSL.getMetavarsMethodName()).get(0);
+
+            String currentVarName = null;
 
             for (CtElement e : mth.getBody().getStatements()) {
                 if (e instanceof CtInvocation) {
                     CtInvocation<?> invocation = (CtInvocation<?>) e;
-                    CtElement arg = invocation.getArguments().get(0);
-                    String varname = null;
+                    String exeName = invocation.getExecutable().getSimpleName();
 
-                    if (arg instanceof CtFieldRead<?>) {
-                        varname = ((CtFieldRead<?>) arg).getVariable().getSimpleName();
-                    } else if (arg instanceof CtTypeAccess<?>) {
-                        varname = ((CtTypeAccess<?>) arg).getAccessedType().getSimpleName();
+                    if (metavarTypeMap.containsKey(exeName)) {
+                        CtElement arg = invocation.getArguments().get(0);
+
+                        if (arg instanceof CtFieldRead<?>) {
+                            currentVarName = ((CtFieldRead<?>) arg).getVariable().getSimpleName();
+                        } else if (arg instanceof CtTypeAccess<?>) {
+                            currentVarName = ((CtTypeAccess<?>) arg).getAccessedType().getSimpleName();
+                        } else {
+                            throw new IllegalArgumentException("Unable to extract metavariable name at <position>");
+                        }
+
+                        metavars.put(currentVarName, metavarTypeMap.get(exeName));
+                    } else if (exeName.equals("constraint")) {
+                        String constraintType = ((CtLiteral<?>) invocation.getArguments().get(0)).getValue().toString();
+                        String constraintValue = ((CtLiteral<?>) invocation.getArguments().get(1)).getValue().toString();
+
+                        switch (constraintType) {
+                            case "regex-match":
+                                metavars.put(currentVarName, new RegexConstraint(constraintValue, metavars.get(currentVarName)));
+                                break;
+
+                            default:
+                                throw new IllegalArgumentException("unknown constraint type " + constraintType);
+                        }
+
+
                     } else {
-                        throw new IllegalArgumentException("Unable to extract metavariable name at <position>");
-                    }
-
-                    switch (invocation.getExecutable().getSimpleName()) {
-                        case "type":
-                            metavars.put(varname, new TypeConstraint());
-                            break;
-
-                        case "identifier":
-                            metavars.put(varname, new IdentifierConstraint());
-                            break;
-
-                        case "constant":
-                            metavars.put(varname, new ConstantConstraint());
-                            break;
-
-                        case "expression":
-                            metavars.put(varname, new ExpressionConstraint());
-                            break;
-
-                        default:
-                            throw new IllegalArgumentException("Unknown metavariable type " + invocation.getExecutable().getSimpleName());
+                        throw new IllegalArgumentException();
                     }
                 } else if (e instanceof CtLocalVariable) {
                     CtLocalVariable<?> ctLocalVar = (CtLocalVariable<?>) e;
@@ -255,12 +263,25 @@ public class SmPLParser {
             String metavarType = tokens.get(pos).getText().strip();
             ++pos;
 
-            while (tokens.get(pos).getType() == SmPLLexer.TokenType.MetavarIdentifier) {
-                if (genericMetavarTypes.contains(metavarType)) {
-                    output.append(metavarType).append("(").append(tokens.get(pos).getText().strip()).append(");\n");
-                } else {
-                    output.append(metavarType).append(" ").append(tokens.get(pos).getText().strip()).append(";\n");
+            while (Arrays.asList(SmPLLexer.TokenType.MetavarIdentifier, SmPLLexer.TokenType.WhenMatches).contains(tokens.get(pos).getType())) {
+                switch (tokens.get(pos).getType()) {
+                    case MetavarIdentifier:
+                        if (genericMetavarTypes.contains(metavarType)) {
+                            output.append(metavarType).append("(").append(tokens.get(pos).getText().strip()).append(");\n");
+                        } else {
+                            output.append(metavarType).append(" ").append(tokens.get(pos).getText().strip()).append(";\n");
+                        }
+                        break;
+
+                    case WhenMatches:
+                        output.append("constraint(\"regex-match\", " + tokens.get(pos + 1).getText() + ");\n");
+                        ++pos;
+                        break;
+
+                    default:
+                        throw new IllegalStateException("impossible");
                 }
+
                 ++pos;
             }
         }

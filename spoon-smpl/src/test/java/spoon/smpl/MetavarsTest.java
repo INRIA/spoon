@@ -4,10 +4,13 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtVariable;
 import spoon.smpl.formula.*;
 import spoon.smpl.metavars.ConstantConstraint;
 import spoon.smpl.metavars.ExpressionConstraint;
 import spoon.smpl.metavars.IdentifierConstraint;
+import spoon.smpl.metavars.RegexConstraint;
 import spoon.smpl.metavars.TypeConstraint;
 
 import java.util.*;
@@ -197,5 +200,57 @@ public class MetavarsTest {
 
         assertEquals(1, result.size());
         assertTrue(result.toString().contains("x=Integer"));
+    }
+
+    @Test
+    public void testRegexConstraintOnIdentifier() {
+
+        // contract: identifier metavariables can be further constrained by regex constraints
+
+        CtElement e = parseExpression("foobar");
+
+        assertEquals(e, new RegexConstraint("foo.*", new IdentifierConstraint()).apply(e));
+        assertEquals(e, new RegexConstraint(".*bar", new IdentifierConstraint()).apply(e));
+        assertEquals(e, new RegexConstraint(".*", new IdentifierConstraint()).apply(e));
+        assertEquals(null, new RegexConstraint("foo", new IdentifierConstraint()).apply(e));
+        assertEquals(null, new RegexConstraint("bar", new IdentifierConstraint()).apply(e));
+        assertEquals(null, new RegexConstraint("Frank Zappa", new IdentifierConstraint()).apply(e));
+    }
+
+    @Test
+    public void testRegexConstraintOnType() {
+
+        // contract: type metavariables can be further constrained by regex constraints
+
+        CtElement e = ((CtVariable<?>) parseStatement("WebSettings.TextSize size = 10;")).getType();
+
+        assertEquals(e, new RegexConstraint("\\w+Settings\\..*", new TypeConstraint()).apply(e));
+        assertEquals(e, new RegexConstraint(".*TextSize", new TypeConstraint()).apply(e));
+        assertEquals(e, new RegexConstraint(".*", new TypeConstraint()).apply(e));
+        assertEquals(null, new RegexConstraint("WebSe[ab]+tings\\..*", new TypeConstraint()).apply(e));
+        assertEquals(null, new RegexConstraint("TextSize", new TypeConstraint()).apply(e));
+        assertEquals(null, new RegexConstraint("Frank Zappa", new TypeConstraint()).apply(e));
+    }
+
+    @Test
+    public void testRegexConstraintOnConstant() {
+
+        // contract: constant metavariables can be further constrained by regex constraints
+
+        CtElement e = ((CtVariable<?>) parseStatement("WebSettings.TextSize size = 10;")).getDefaultExpression();
+
+        assertEquals(e, new RegexConstraint("(2|4|6|8|10)", new ConstantConstraint()).apply(e));
+        assertEquals(null, new RegexConstraint("(1|3|5|7|9)", new ConstantConstraint()).apply(e));
+    }
+
+    @Test
+    public void testRegexConstraintOnExpression() {
+
+        // contract: expression metavariables can be further constrained by regex constraints
+
+        CtElement e = parseExpression("LARGE + 44");
+
+        assertEquals(e, new RegexConstraint("[A-Z]+\\s+[+]\\s+\\d+", new ExpressionConstraint()).apply(e));
+        assertEquals(null, new RegexConstraint("[a-z]+\\s+[+]\\s+\\d+", new ExpressionConstraint()).apply(e));
     }
 }

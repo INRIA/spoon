@@ -10,6 +10,8 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// TODO: proper strings including escape characters
+
 /**
  * An SmPL lexer.
  */
@@ -94,9 +96,19 @@ public class SmPLLexer {
         WhenNotEqual,
 
         /**
+         * Metavariable additional constraint for 'when matches "..."'
+         */
+        WhenMatches,
+
+        /**
          * Arbitrary code.
          */
         Code,
+
+        /**
+         * A string of text enclosed in double quotes.
+         */
+        String,
     }
 
     /**
@@ -286,6 +298,8 @@ public class SmPLLexer {
         metavars.add(new LexerRule("metavar_type", "(?s)^[A-Za-z_][A-Za-z0-9_]*", always, push(metavarIdentifiers), addToken(TokenType.MetavarType, text)));
         metavars.add(new LexerRule("atat", "(?s)^@@", always, cswitch(rulebody), eat));
 
+        metavarIdentifiers.add(new LexerRule("when_matches", "(?s)^when\\s+matches\\s+", prev(TokenType.MetavarIdentifier), noop, addEmptyToken(TokenType.WhenMatches, text)));
+        metavarIdentifiers.add(new LexerRule("string", "(?s)^\"[^\"]+\"", prev(TokenType.WhenMatches), noop, addToken(TokenType.String, text)));
         metavarIdentifiers.add(new LexerRule("metavar_id", "(?s)^[A-Za-z_][A-Za-z0-9_]*", always, noop, addToken(TokenType.MetavarIdentifier, text)));
         metavarIdentifiers.add(new LexerRule("whitespace", "(?s)^\\s+", always, noop, eat));
         metavarIdentifiers.add(new LexerRule("comma", "(?s)^,", always, noop, eat));
