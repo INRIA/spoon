@@ -47,7 +47,7 @@ public class PatternMatcher implements PatternNodeVisitor {
         if (myNode instanceof ElemNode) {
             ElemNode myElemNode = (ElemNode)myNode;
 
-            if (myElemNode.matchClass != otherNode.matchClass) {
+            if (!myElemNode.matchStr.equals(otherNode.matchStr)) {
                 result = false;
                 return;
             }

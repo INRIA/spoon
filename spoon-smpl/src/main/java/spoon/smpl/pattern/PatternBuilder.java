@@ -79,7 +79,7 @@ public class PatternBuilder implements CtVisitor {
             resultStack.push(new ParamNode(typename));
         } else {
             ElemNode result = new ElemNode(ctArrayTypeReference);
-            result.sub.put("typename", new ValueNode(ctArrayTypeReference.getSimpleName(), ctArrayTypeReference));
+            result.sub.put("id", new ValueNode(ctArrayTypeReference.getSimpleName(), ctArrayTypeReference));
             resultStack.push(result);
         }
     }
@@ -209,9 +209,9 @@ public class PatternBuilder implements CtVisitor {
         String exename = ctExecutableReference.getSimpleName();
 
         if (params.contains(exename)) {
-            result.sub.put("name", new ParamNode(exename));
+            result.sub.put("id", new ParamNode(exename));
         } else {
-            result.sub.put("name", new ValueNode(exename, ctExecutableReference));
+            result.sub.put("id", new ValueNode(exename, ctExecutableReference));
         }
 
 
@@ -312,22 +312,11 @@ public class PatternBuilder implements CtVisitor {
     public <T> void visitCtLocalVariable(CtLocalVariable<T> ctLocalVariable) {
         ElemNode result = new ElemNode(ctLocalVariable);
 
-        String varname = ctLocalVariable.getReference().getSimpleName();
-        String typename = ctLocalVariable.getType().getSimpleName();
+        ctLocalVariable.getReference().accept(this);
+        result.sub.put("variable", resultStack.pop());
 
-        if (params.contains(varname)) {
-            result.sub.put("variable", new ParamNode(varname));
-        } else {
-            ctLocalVariable.getReference().accept(this);
-            result.sub.put("variable", resultStack.pop());
-        }
-
-        if (params.contains(typename)) {
-            result.sub.put("type", new ParamNode(typename));
-        } else {
-            ctLocalVariable.getType().accept(this);
-            result.sub.put("type", resultStack.pop());
-        }
+        ctLocalVariable.getType().accept(this);
+        result.sub.put("type", resultStack.pop());
 
         if (ctLocalVariable.getDefaultExpression() != null) {
             ctLocalVariable.getDefaultExpression().accept(this);
@@ -345,7 +334,7 @@ public class PatternBuilder implements CtVisitor {
             resultStack.push(new ParamNode(varname));
         } else {
             ElemNode result = new ElemNode(ctLocalVariableReference);
-            result.sub.put("variable", new ValueNode(varname, ctLocalVariableReference.getSimpleName()));
+            result.sub.put("id", new ValueNode(varname, ctLocalVariableReference.getSimpleName()));
             resultStack.push(result);
         }
     }
@@ -433,7 +422,7 @@ public class PatternBuilder implements CtVisitor {
         result.sub.put("type", resultStack.pop());
 
         ctParameter.getReference().accept(this);
-        result.sub.put("reference", resultStack.pop());
+        result.sub.put("variable", resultStack.pop());
 
         resultStack.push(result);
     }
@@ -446,7 +435,7 @@ public class PatternBuilder implements CtVisitor {
             resultStack.push(new ParamNode(paramname));
         } else {
             ElemNode result = new ElemNode(ctParameterReference);
-            result.sub.put("paramname", new ValueNode(paramname, ctParameterReference));
+            result.sub.put("id", new ValueNode(paramname, ctParameterReference));
             resultStack.push(result);
         }
     }
@@ -523,7 +512,7 @@ public class PatternBuilder implements CtVisitor {
             resultStack.push(new ParamNode(typename));
         } else {
             ElemNode result = new ElemNode(ctTypeReference);
-            result.sub.put("typename", new ValueNode(ctTypeReference.getSimpleName(), ctTypeReference));
+            result.sub.put("id", new ValueNode(ctTypeReference.getSimpleName(), ctTypeReference));
             resultStack.push(result);
         }
     }
@@ -536,7 +525,7 @@ public class PatternBuilder implements CtVisitor {
             resultStack.push(new ParamNode(typename));
         } else {
             ElemNode result = new ElemNode(ctTypeAccess);
-            result.sub.put("typename", new ValueNode(typename, ctTypeAccess));
+            result.sub.put("id", new ValueNode(typename, ctTypeAccess));
             resultStack.push(result);
         }
     }
@@ -559,8 +548,8 @@ public class PatternBuilder implements CtVisitor {
         if (params.contains(varname)) {
             resultStack.push(new ParamNode(varname));
         } else {
-            ElemNode result = new ElemNode(ctVariableRead, CtVariableRead.class);
-            result.sub.put("variable", new ValueNode(varname, ctVariableRead.getVariable()));
+            ElemNode result = new ElemNode(ctVariableRead, "id-read");
+            result.sub.put("id", new ValueNode(varname, ctVariableRead.getVariable()));
             resultStack.push(result);
         }
     }
@@ -572,8 +561,8 @@ public class PatternBuilder implements CtVisitor {
         if (params.contains(varname)) {
             resultStack.push(new ParamNode(varname));
         } else {
-            ElemNode result = new ElemNode(ctVariableWrite, CtVariableWrite.class);
-            result.sub.put("variable", new ValueNode(varname, ctVariableWrite.getVariable()));
+            ElemNode result = new ElemNode(ctVariableWrite, "id-write");
+            result.sub.put("id", new ValueNode(varname, ctVariableWrite.getVariable()));
             resultStack.push(result);
         }
     }
@@ -597,12 +586,12 @@ public class PatternBuilder implements CtVisitor {
             return;
         }
 
-        ElemNode result = new ElemNode(ctFieldRead, CtVariableRead.class);
+        ElemNode result = new ElemNode(ctFieldRead, "id-read");
 
         if (params.contains(fieldName)) {
-            result.sub.put("variable", new ParamNode(fieldName));
+            result.sub.put("id", new ParamNode(fieldName));
         } else {
-            result.sub.put("variable", new ValueNode(fieldName, ctFieldRead.getVariable()));
+            result.sub.put("id", new ValueNode(fieldName, ctFieldRead.getVariable()));
         }
 
         if (ctFieldRead.getTarget() != null) {
@@ -622,12 +611,12 @@ public class PatternBuilder implements CtVisitor {
             return;
         }
 
-        ElemNode result = new ElemNode(ctFieldWrite, CtVariableWrite.class);
+        ElemNode result = new ElemNode(ctFieldWrite, "id-write");
 
         if (params.contains(fieldName)) {
-            result.sub.put("variable", new ParamNode(fieldName));
+            result.sub.put("id", new ParamNode(fieldName));
         } else {
-            result.sub.put("variable", new ValueNode(fieldName, ctFieldWrite.getVariable()));
+            result.sub.put("id", new ValueNode(fieldName, ctFieldWrite.getVariable()));
         }
 
         if (ctFieldWrite.getTarget() != null) {

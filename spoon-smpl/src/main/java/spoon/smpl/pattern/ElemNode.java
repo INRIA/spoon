@@ -11,12 +11,12 @@ import java.util.*;
  */
 public class ElemNode implements PatternNode {
     public ElemNode(CtElement elem) {
-        this(elem, elem.getClass());
+        this(elem, elem.getClass().toString());
     }
 
-    public ElemNode(CtElement elem, Class<? extends CtElement> matchClass) {
+    public ElemNode(CtElement elem, String matchStr) {
         this.elem = elem;
-        this.matchClass = matchClass;
+        this.matchStr = matchStr;
         this.sub = new HashMap<>();
     }
 
@@ -28,7 +28,7 @@ public class ElemNode implements PatternNode {
     @Override
     public boolean equals(Object other) {
         if (other instanceof ElemNode) {
-            return matchClass.equals(((ElemNode) other).matchClass) && sub.equals(((ElemNode)other).sub);
+            return matchStr.equals(((ElemNode) other).matchStr) && sub.equals(((ElemNode)other).sub);
         }
         else {
             return false;
@@ -40,7 +40,7 @@ public class ElemNode implements PatternNode {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Elem(");
-        sb.append(elem.getClass().getSimpleName());
+        sb.append(matchStr);
         sb.append(", ");
 
         List<String> subKeys = new ArrayList<>(sub.keySet());
@@ -61,6 +61,6 @@ public class ElemNode implements PatternNode {
     }
 
     public final CtElement elem;
-    public final Class<? extends CtElement> matchClass;
+    public final String matchStr;
     public final Map<String, PatternNode> sub;
 }

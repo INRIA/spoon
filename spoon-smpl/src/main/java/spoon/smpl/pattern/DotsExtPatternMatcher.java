@@ -18,7 +18,7 @@ public class DotsExtPatternMatcher extends PatternMatcher {
         if (myNode instanceof ElemNode) {
             ElemNode myElemNode = (ElemNode) myNode;
 
-            if (myElemNode.matchClass != otherNode.matchClass) {
+            if (!myElemNode.matchStr.equals(otherNode.matchStr)) {
                 result = false;
                 return;
             }
