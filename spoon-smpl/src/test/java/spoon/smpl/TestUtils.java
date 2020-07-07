@@ -123,23 +123,23 @@ public class TestUtils {
     }
 
     public static CtMethod<?> parseMethod(String methodCode) {
-        CtClass<?> myclass = Launcher.parseClass("class A { " + methodCode + " }");
+        CtClass<?> myclass = SpoonJavaParser.parseClass("class A { " + methodCode + " }", "A");
         return (CtMethod<?>) myclass.getMethods().toArray()[0];
     }
 
     public static CtElement parseStatement(String code) {
-        CtClass<?> myclass = Launcher.parseClass("class A { void m() { " + code + " } }");
+        CtClass<?> myclass = SpoonJavaParser.parseClass("class A { void m() { " + code + " } }", "A");
         return ((CtMethod<?>)myclass.getMethods().toArray()[0]).getBody().getLastStatement();
     }
 
     public static CtElement parseExpression(String code) {
-        CtClass<?> myclass = Launcher.parseClass("class A { Object m() { return " + code + " } }");
+        CtClass<?> myclass = SpoonJavaParser.parseClass("class A { Object m() { return " + code + " } }", "A");
         CtReturn<?> ctReturn = ((CtMethod<?>)myclass.getMethods().toArray()[0]).getBody().getLastStatement();
         return ctReturn.getReturnedExpression();
     }
 
     public static CtElement parseReturnStatement(String code) {
-        CtClass<?> myclass = Launcher.parseClass("class A { Object m() { " + code + " } }");
+        CtClass<?> myclass = SpoonJavaParser.parseClass("class A { Object m() { " + code + " } }", "A");
         return ((CtMethod<?>)myclass.getMethods().toArray()[0]).getBody().getLastStatement();
     }
 

@@ -30,6 +30,7 @@ public class ZippedCodeBaseTestContext {
         try {
             launcher.addInputResource(new ZipFolder(new File(pathToZipFile)));
             launcher.buildModel();
+            new TypeAccessReplacer().scan(launcher.getModel().getRootPackage());
         } catch (IOException e) {
             fail("failed to build model");
         }

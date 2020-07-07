@@ -5,7 +5,6 @@ import spoon.reflect.declaration.*;
 import spoon.reflect.reference.*;
 import spoon.reflect.visitor.CtVisitor;
 import org.apache.commons.lang3.NotImplementedException;
-import spoon.smpl.SmPLJavaDSL;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -519,15 +518,7 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtTypeAccess(CtTypeAccess<T> ctTypeAccess) {
-        String typename = ctTypeAccess.getAccessedType().getSimpleName();
-
-        if (params.contains(typename)) {
-            resultStack.push(new ParamNode(typename));
-        } else {
-            ElemNode result = new ElemNode(ctTypeAccess);
-            result.sub.put("id", new ValueNode(typename, ctTypeAccess));
-            resultStack.push(result);
-        }
+        throw new NotImplementedException("Not implemented");
     }
 
     @Override
@@ -597,6 +588,8 @@ public class PatternBuilder implements CtVisitor {
         if (ctFieldRead.getTarget() != null) {
             ctFieldRead.getTarget().accept(this);
             result.sub.put("target", resultStack.pop());
+        } else {
+            result.sub.put("target", new ValueNode("none", null));
         }
 
         resultStack.push(result);
@@ -622,6 +615,8 @@ public class PatternBuilder implements CtVisitor {
         if (ctFieldWrite.getTarget() != null) {
             ctFieldWrite.getTarget().accept(this);
             result.sub.put("target", resultStack.pop());
+        } else {
+            result.sub.put("target", new ValueNode("none", null));
         }
 
         resultStack.push(result);

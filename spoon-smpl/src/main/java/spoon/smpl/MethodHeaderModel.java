@@ -1,5 +1,6 @@
 package spoon.smpl;
 
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtElement;
@@ -7,6 +8,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.smpl.formula.*;
@@ -125,7 +127,16 @@ public class MethodHeaderModel implements Model {
      */
     public static CtElement createMethodReturnTypeElement(CtTypeReference<?> ctTypeRef, Factory factory) {
         CtInvocation<Void> result = createWrapperInvocation(methodReturnTypeElementName, factory);
-        result.addArgument(factory.createTypeAccess(ctTypeRef));
+
+        CtFieldReference<Object> fieldRef = factory.createFieldReference();
+        fieldRef.setSimpleName(ctTypeRef.getSimpleName());
+
+        CtFieldRead<Object> fieldRead = factory.createFieldRead();
+        fieldRead.setVariable(fieldRef);
+        fieldRef.setParent(fieldRead);
+
+        result.addArgument(fieldRead);
+        fieldRead.setParent(result);
 
         return result;
     }

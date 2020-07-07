@@ -1,0 +1,38 @@
+[name]
+ReplacedTypeAccessesMatchInner
+
+[contract]
+the statement "setTextSize(WebSettings.TextSize.LARGER);" should be removed (inner class version)
+
+[patch]
+@@ @@
+- setTextSize(WebSettings.TextSize.LARGER);
+
+[input]
+class A {
+  public static class WebSettings {
+    public enum TextSize {
+      LARGER, NORMAL, SMALLER
+    }
+  }
+
+  /* skip */ public void setTextSize(Object x) {}
+
+  public void m1() {
+    setTextSize(WebSettings.TextSize.LARGER);
+  }
+}
+
+[expected]
+class A {
+  public static class WebSettings {
+    public enum TextSize {
+      LARGER, NORMAL, SMALLER
+    }
+  }
+
+  /* skip */ public void setTextSize(Object x) {}
+
+  public void m1() {
+  }
+}

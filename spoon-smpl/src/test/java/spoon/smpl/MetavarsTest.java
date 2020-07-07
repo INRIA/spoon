@@ -168,41 +168,6 @@ public class MetavarsTest {
     }
 
     @Test
-    public void testTypeConstraintOnTypeAccess() {
-
-        // contract: a "type" metavariable should be able to bind the accessed type of a CtTypeAccess
-
-        Model model = new CFGModel(methodCfg(parseMethod("void m() { print(Integer); }")));
-
-        // verify that the model indeed contains a CtTypeAccess
-        boolean foundTypeAccess = false;
-
-        for (int state : model.getStates()) {
-            for (Label label : model.getLabels(state)) {
-                if (label instanceof StatementLabel && label.toString().contains("print(Integer)")) {
-                    StatementLabel stmLabel = (StatementLabel) label;
-                    CtInvocation<?> ctInvocation = (CtInvocation<?>) stmLabel.getCodeElement();
-                    foundTypeAccess = ctInvocation.getArguments().get(0) instanceof CtTypeAccess;
-                }
-            }
-        }
-
-        if (!foundTypeAccess) {
-            fail("no CtTypeAccess found in model");
-        }
-
-        Map<String, MetavariableConstraint> metavars = makeMetavars("x", new TypeConstraint());
-        ModelChecker checker = new ModelChecker(model);
-
-        stmt("print(x);", metavars).accept(checker);
-
-        ModelChecker.ResultSet result = checker.getResult();
-
-        assertEquals(1, result.size());
-        assertTrue(result.toString().contains("x=Integer"));
-    }
-
-    @Test
     public void testRegexConstraintOnIdentifier() {
 
         // contract: identifier metavariables can be further constrained by regex constraints

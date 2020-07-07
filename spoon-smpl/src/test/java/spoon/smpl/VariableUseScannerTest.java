@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertTrue;
 import static spoon.smpl.TestUtils.*;
 
 public class VariableUseScannerTest {
@@ -60,8 +61,9 @@ public class VariableUseScannerTest {
 
         Map<String, CtElement> result = new VariableUseScanner(method).getResult();
 
-        assertEquals(1, result.keySet().size());
-        assertEquals("x", result.keySet().iterator().next());
+        assertEquals(2, result.keySet().size());
+        assertTrue(result.containsKey("x"));
+        assertTrue(result.containsKey("B"));
     }
 
     @Test
@@ -82,7 +84,7 @@ public class VariableUseScannerTest {
 
         assertEquals(3, result.keySet().size());
         assertEquals("A x", result.get("x").toString());
-        assertEquals("A", result.get("A").toString());
+        assertEquals("A x", result.get("A").toString());
         assertEquals("B", result.get("B").toString());
     }
 }

@@ -1,0 +1,34 @@
+[name]
+ReplacedTypeAccessesRejectExternal
+
+[contract]
+the sub-expression "LARGER" in the patch should NOT match the expression "WebSettings.TextSize.LARGER" in the code, no transformation should be applied (external class version)
+
+[patch]
+@@ @@
+- setTextSize(LARGER);
+
+[input]
+class A {
+  /* skip */ public void setTextSize(Object x) {}
+
+  public void m1() {
+    setTextSize(WebSettings.TextSize.LARGER);
+  }
+}
+
+/* skip */
+class WebSettings {
+  public enum TextSize {
+    LARGER, NORMAL, SMALLER
+  }
+}
+
+[expected]
+class A {
+  /* skip */ public void setTextSize(Object x) {}
+
+  public void m1() {
+    setTextSize(WebSettings.TextSize.LARGER);
+  }
+}

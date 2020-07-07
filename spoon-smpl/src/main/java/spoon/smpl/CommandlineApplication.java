@@ -1,6 +1,5 @@
 package spoon.smpl;
 
-import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.formula.Formula;
@@ -202,7 +201,7 @@ public class CommandlineApplication {
                 try {
                     SmPLRule smplRule = SmPLParser.parse(readFile(smplFilename, StandardCharsets.UTF_8));
 
-                    CtClass<?> inputClass = Launcher.parseClass(readFile(javaFilename, StandardCharsets.UTF_8));
+                    CtClass<?> inputClass = SpoonJavaParser.parseClass(readFile(javaFilename, StandardCharsets.UTF_8));
 
                     for (CtMethod<?> method : inputClass.getMethods()) {
                         SmPLMethodCFG cfg = new SmPLMethodCFG(method);

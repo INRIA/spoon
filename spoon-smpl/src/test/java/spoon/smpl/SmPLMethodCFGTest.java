@@ -13,7 +13,7 @@ public class SmPLMethodCFGTest {
 
         // contract: SmPLCFGAdapter should remove the outermost BLOCK_BEGIN node
 
-        CtClass<?> myclass = Launcher.parseClass("class A { void m() { int x = 0; if (true) { int y = 1; } else { int z = 2; } } }");
+        CtClass<?> myclass = SpoonJavaParser.parseClass("class A { void m() { int x = 0; if (true) { int y = 1; } else { int z = 2; } } }", "A");
 
         SmPLMethodCFG cfg = new SmPLMethodCFG(myclass.getMethods().iterator().next());
 
@@ -27,7 +27,7 @@ public class SmPLMethodCFGTest {
 
         // contract: SmPLCFGAdapter should remove all BLOCK_END nodes
 
-        CtClass<?> myclass = Launcher.parseClass("class A { void m() { int x = 0; if (true) { int y = 1; } else { int z = 2; } } }");
+        CtClass<?> myclass = SpoonJavaParser.parseClass("class A { void m() { int x = 0; if (true) { int y = 1; } else { int z = 2; } } }", "A");
 
         SmPLMethodCFG cfg = new SmPLMethodCFG(myclass.getMethods().iterator().next());
 
@@ -39,7 +39,7 @@ public class SmPLMethodCFGTest {
 
         // contract: SmPLCFGAdapter should tag BLOCK_BEGIN nodes with String "trueBranch" or "falseBranch"
 
-        CtClass<?> myclass = Launcher.parseClass("class A { void m() { int x = 0; if (true) { int y = 1; } else { int z = 2; } } }");
+        CtClass<?> myclass = SpoonJavaParser.parseClass("class A { void m() { int x = 0; if (true) { int y = 1; } else { int z = 2; } } }", "A");
 
         SmPLMethodCFG cfg = new SmPLMethodCFG(myclass.getMethods().iterator().next());
 

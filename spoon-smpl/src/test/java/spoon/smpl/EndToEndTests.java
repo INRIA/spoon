@@ -4,14 +4,28 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
+import spoon.support.compiler.VirtualFile;
 import static spoon.smpl.TestUtils.*;
 
 public class EndToEndTests {
+    private CtClass<?> getTargetClass(String code) {
+        CtModel model = SpoonJavaParser.parse(code);
+        return (CtClass<?>) model.getRootPackage()
+                                 .getTypes()
+                                 .stream()
+                                 .filter(ctType -> ctType.getComments()
+                                                         .stream()
+                                                         .noneMatch(comment -> comment.getContent()
+                                                                                      .contains("skip")))
+                                 .findFirst().get();
+    }
+
     private void runSingleTest(String smpl, String inputCode, String expectedCode) {
         SmPLRule rule = SmPLParser.parse(smpl);
-        CtClass<?> input = Launcher.parseClass(inputCode);
-        CtClass<?> expected = Launcher.parseClass(expectedCode);
+        CtClass<?> input = getTargetClass(inputCode);
+        CtClass<?> expected = getTargetClass(expectedCode);
 
         input.getMethods().forEach((method) -> {
             if (method.getComments().stream().anyMatch(x -> x.getContent().toLowerCase().equals("skip"))) {
@@ -3176,6 +3190,173 @@ public class EndToEndTests {
                       "  ... when != ret\n" +
                       "- return ret;\n" +
                       "+ return C;\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testReplacedTypeAccessesMatchExternal() {
+        // contract: the statement \"setTextSize(WebSettings.TextSize.LARGER);\" should be removed (external class version)
+
+        String inputCode = "class A {\n" +
+                           "  /* skip */ public void setTextSize(Object x) {}\n" +
+                           "  public void m1() {\n" +
+                           "    setTextSize(WebSettings.TextSize.LARGER);\n" +
+                           "  }\n" +
+                           "}\n" +
+                           "/* skip */\n" +
+                           "class WebSettings {\n" +
+                           "  public enum TextSize {\n" +
+                           "    LARGER, NORMAL, SMALLER\n" +
+                           "  }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "  /* skip */ public void setTextSize(Object x) {}\n" +
+                              "  public void m1() {\n" +
+                              "  }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- setTextSize(WebSettings.TextSize.LARGER);\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testReplacedTypeAccessesMatchInner() {
+        // contract: the statement \"setTextSize(WebSettings.TextSize.LARGER);\" should be removed (inner class version)
+
+        String inputCode = "class A {\n" +
+                           "  public static class WebSettings {\n" +
+                           "    public enum TextSize {\n" +
+                           "      LARGER, NORMAL, SMALLER\n" +
+                           "    }\n" +
+                           "  }\n" +
+                           "  /* skip */ public void setTextSize(Object x) {}\n" +
+                           "  public void m1() {\n" +
+                           "    setTextSize(WebSettings.TextSize.LARGER);\n" +
+                           "  }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "  public static class WebSettings {\n" +
+                              "    public enum TextSize {\n" +
+                              "      LARGER, NORMAL, SMALLER\n" +
+                              "    }\n" +
+                              "  }\n" +
+                              "  /* skip */ public void setTextSize(Object x) {}\n" +
+                              "  public void m1() {\n" +
+                              "  }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- setTextSize(WebSettings.TextSize.LARGER);\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testReplacedTypeAccessesMatchMissing() {
+        // contract: the statement \"setTextSize(WebSettings.TextSize.LARGER);\" should be removed (missing information version). validate-e2e: purposefully-invalid
+
+        String inputCode = "class A {\n" +
+                           "  /* skip */ public void setTextSize(Object x) {}\n" +
+                           "  public void m1() {\n" +
+                           "    setTextSize(WebSettings.TextSize.LARGER);\n" +
+                           "  }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "  /* skip */ public void setTextSize(Object x) {}\n" +
+                              "  public void m1() {\n" +
+                              "  }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- setTextSize(WebSettings.TextSize.LARGER);\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testReplacedTypeAccessesRejectExternal() {
+        // contract: the sub-expression \"LARGER\" in the patch should NOT match the expression \"WebSettings.TextSize.LARGER\" in the code, no transformation should be applied (external class version)
+
+        String inputCode = "class A {\n" +
+                           "  /* skip */ public void setTextSize(Object x) {}\n" +
+                           "  public void m1() {\n" +
+                           "    setTextSize(WebSettings.TextSize.LARGER);\n" +
+                           "  }\n" +
+                           "}\n" +
+                           "/* skip */\n" +
+                           "class WebSettings {\n" +
+                           "  public enum TextSize {\n" +
+                           "    LARGER, NORMAL, SMALLER\n" +
+                           "  }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "  /* skip */ public void setTextSize(Object x) {}\n" +
+                              "  public void m1() {\n" +
+                              "    setTextSize(WebSettings.TextSize.LARGER);\n" +
+                              "  }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- setTextSize(LARGER);\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testReplacedTypeAccessesRejectInner() {
+        // contract: the sub-expression \"LARGER\" in the patch should NOT match the expression \"WebSettings.TextSize.LARGER\" in the code, no transformation should be applied (inner class version)
+
+        String inputCode = "class A {\n" +
+                           "  public static class WebSettings {\n" +
+                           "    public enum TextSize {\n" +
+                           "      LARGER, NORMAL, SMALLER\n" +
+                           "    }\n" +
+                           "  }\n" +
+                           "  /* skip */ public void setTextSize(Object x) {}\n" +
+                           "  public void m1() {\n" +
+                           "    setTextSize(WebSettings.TextSize.LARGER);\n" +
+                           "  }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "  public static class WebSettings {\n" +
+                              "    public enum TextSize {\n" +
+                              "      LARGER, NORMAL, SMALLER\n" +
+                              "    }\n" +
+                              "  }\n" +
+                              "  /* skip */ public void setTextSize(Object x) {}\n" +
+                              "  public void m1() {\n" +
+                              "    setTextSize(WebSettings.TextSize.LARGER);\n" +
+                              "  }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- setTextSize(LARGER);\n";
+    
+        runSingleTest(smpl, inputCode, expectedCode);
+    }
+    @Test
+    public void testReplacedTypeAccessesRejectMissing() {
+        // contract: the sub-expression \"LARGER\" in the patch should NOT match the expression \"WebSettings.TextSize.LARGER\" in the code, no transformation should be applied (missing information version). validate-e2e: purposefully-invalid
+
+        String inputCode = "class A {\n" +
+                           "  /* skip */ public void setTextSize(Object x) {}\n" +
+                           "  public void m1() {\n" +
+                           "    setTextSize(WebSettings.TextSize.LARGER);\n" +
+                           "  }\n" +
+                           "}\n";
+    
+        String expectedCode = "class A {\n" +
+                              "  /* skip */ public void setTextSize(Object x) {}\n" +
+                              "  public void m1() {\n" +
+                              "    setTextSize(WebSettings.TextSize.LARGER);\n" +
+                              "  }\n" +
+                              "}\n";
+    
+        String smpl = "@@ @@\n" +
+                      "- setTextSize(LARGER);\n";
     
         runSingleTest(smpl, inputCode, expectedCode);
     }

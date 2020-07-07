@@ -364,8 +364,8 @@ public class ModelCheckerTest {
         // contract: when no metavariables are involved, a statement pattern should essentially match the contained statement literally
 
         Launcher launcher = new Launcher();
-        CtClass<?> myclass = Launcher.parseClass("class C { void M() { int x = 1; }}");
-        CtElement stmt = ((CtMethod<?>)myclass.getMethods().toArray()[0]).getBody().getStatement(0);
+        CtMethod<?> method = parseMethod("void M() { int x = 1; }");
+        CtElement stmt = method.getBody().getStatement(0);
 
         ModelBuilder model = new ModelBuilder();
         model.addStates(1).addTransition(1,1);
