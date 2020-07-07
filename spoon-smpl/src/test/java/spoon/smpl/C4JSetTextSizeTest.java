@@ -8,8 +8,42 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
+/**
+ * Note: the patch used in this test has been significantly modified from the C4J original.
+ */
 public class C4JSetTextSizeTest {
     private static ZippedCodeBaseTestContext ctx = null;
+
+    /*@BeforeClass
+    public static void initializeContext() {
+        if (ctx != null) {
+            return;
+        }
+
+        // This is the original C4J patch
+
+        String smpl = "@@\n" +
+                      "expression E;\n" +
+                      "@@\n" +
+                      "(\n" +
+                      "- E.setTextSize(LARGEST);\n" +
+                      "+ E.setTextZoom(200);\n" +
+                      "|\n" +
+                      "- E.setTextSize(LARGER);\n" +
+                      "+ E.setTextZoom(150);\n" +
+                      "|\n" +
+                      "- E.setTextSize(NORMAL);\n" +
+                      "+ E.setTextZoom(100);\n" +
+                      "|\n" +
+                      "- E.setTextSize(SMALLER);\n" +
+                      "+ E.setTextZoom(75);\n" +
+                      "|\n" +
+                      "- E.setTextSize(SMALLEST);\n" +
+                      "+ E.setTextZoom(50);\n" +
+                      ")\n";
+
+        ctx = new ZippedCodeBaseTestContext(smpl, "src/test/resources/C4JSetTextSize.zip", false);
+    }*/
 
     @BeforeClass
     public static void initializeContext() {
@@ -17,8 +51,15 @@ public class C4JSetTextSizeTest {
             return;
         }
 
+        // This is the modified patch
+
         String smpl = "@@\n" +
-                      "expression E;\n" +
+                      "expression E;" +
+                      "expression LARGEST when matches \".*LARGEST\";\n" +
+                      "expression LARGER when matches \".*LARGER\";\n" +
+                      "expression NORMAL when matches \".*NORMAL\";\n" +
+                      "expression SMALLER when matches \".*SMALLER\";\n" +
+                      "expression SMALLEST when matches \".*SMALLEST\";\n" +
                       "@@\n" +
                       "(\n" +
                       "- E.setTextSize(LARGEST);\n" +
