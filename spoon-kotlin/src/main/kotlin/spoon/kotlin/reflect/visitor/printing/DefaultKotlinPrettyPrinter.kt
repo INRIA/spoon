@@ -290,12 +290,17 @@ class DefaultKotlinPrettyPrinter(
                }
            }
         }
+
         adapter.ensureNEmptyLines(1)
         // Annotations
         // Not implemented
 
         val modifiers = getModifiersMetadata(ctClass)
         adapter writeModifiers modifiers
+        if(ctClass.getBooleanMetadata(KtMetadataKeys.CLASS_IS_OBJECT) == true) {
+            visitObject(ctClass)
+            return
+        }
 
         adapter write "class" and SPACE and ctClass.simpleName
 
@@ -304,17 +309,17 @@ class DefaultKotlinPrettyPrinter(
             adapter write typeParamHandler.generateTypeParamListString() and SPACE
         }
 
-        val inheritanceList = ArrayList<TypeName>()
+        val inheritanceList = ArrayList<CtTypeReference<*>>()
 
         val primaryConstructor = ctClass.constructors.firstOrNull { it.isPrimary() }
         if(primaryConstructor != null) {
             visitCtConstructor(primaryConstructor)
         } else if(ctClass.superclass != null) {
-            inheritanceList.add(TypeName.build(ctClass.superclass))
+            inheritanceList.add(ctClass.superclass)
         }
 
         if(ctClass.superInterfaces.isNotEmpty()) {
-            ctClass.superInterfaces.forEach { inheritanceList.add(TypeName.build(it)) }
+            ctClass.superInterfaces.forEach { inheritanceList.add(it) }
         }
         if(inheritanceList.isNotEmpty()) {
             var p = ""
@@ -322,7 +327,11 @@ class DefaultKotlinPrettyPrinter(
                 adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
             }
             else p = ", "
-            adapter write inheritanceList.joinToString(prefix = p, transform = { it.fQNameWithoutNullability })
+            adapter write inheritanceList.joinToString(prefix = p, transform = {
+                val delegate = it.getMetadata(KtMetadataKeys.SUPER_TYPE_DELEGATE) as CtElement?
+                if(delegate == null) TypeName.build(it).fQNameWithoutNullability
+                else "${TypeName.build(it).fQNameWithoutNullability} by ${printElement(delegate)}"
+            })
         }
 
         val whereClause = typeParamHandler.generateWhereClause()
@@ -1033,7 +1042,7 @@ class DefaultKotlinPrettyPrinter(
         enterCtExpression(invocation)
         if(invocation.executable.isConstructor) {
             val parentType = invocation.getParent(CtType::class.java)
-            adapter.writeColon(DefaultPrinterAdapter.ColonContext.CONSTRUCTOR_DELEGATION)
+            adapter.writeColon(DefaultPrinterAdapter.ColonContext.CONSTRUCTOR_DELEGATION) // FIXME, move to class impl
             if(parentType == null || parentType.qualifiedName == invocation.executable.declaringType.qualifiedName) {
                 adapter write "this"
             } else {

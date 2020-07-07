@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.fir.types.isNullableAny
 import org.jetbrains.kotlin.fir.visitors.CompositeTransformResult
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
 import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import spoon.SpoonException
@@ -38,15 +39,21 @@ import spoon.reflect.reference.*
 import spoon.support.reflect.code.CtLiteralImpl
 import kotlin.collections.ArrayList
 
-class FirTreeBuilder(val factory : Factory, val session: FirSession, spoonKtEnvironment: SpoonKtEnvironment) : FirVisitor<CompositeTransformResult<CtElement>, ContextData?>() {
+class FirTreeBuilder(val factory : Factory,
+                     val session: FirSession,
+                     val delegateMap: Map<ClassId, MutableMap<ClassId, FirStatement>>,
+                     spoonKtEnvironment: SpoonKtEnvironment
+) : FirVisitor<CompositeTransformResult<CtElement>, ContextData?>() {
     internal val referenceBuilder = ReferenceBuilder(this)
     internal val helper = FirTreeBuilderHelper(this, spoonKtEnvironment)
     internal val toplvlClassName = "<top-level>"
 
     // Temporary printing, remove later
     private var msgCollector: MsgCollector = PrintingMsgCollector()
-    internal constructor(factory : Factory, session: FirSession, spoonKtEnvironment: SpoonKtEnvironment, m: MsgCollector) :
-            this(factory, session, spoonKtEnvironment)
+    internal constructor(factory : Factory, session: FirSession,
+                         delegateMap: Map<ClassId, MutableMap<ClassId, FirStatement>>,
+                         spoonKtEnvironment: SpoonKtEnvironment, m: MsgCollector
+    ) : this(factory, session, delegateMap, spoonKtEnvironment)
     {
         msgCollector = m
     }
@@ -117,6 +124,8 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession, spoonKtEnvi
     override fun visitRegularClass(regularClass: FirRegularClass, data: ContextData?): CompositeTransformResult.Single<CtType<*>> {
         val module = helper.getOrCreateModule(regularClass.session, factory)
         val type = helper.createType(regularClass)
+        val isObject = type.getMetadata(KtMetadataKeys.CLASS_IS_OBJECT) as Boolean? == true
+
         if(regularClass.classId.isLocal) {
             return type.compose()
         }
@@ -136,29 +145,27 @@ class FirTreeBuilder(val factory : Factory, val session: FirSession, spoonKtEnvi
                 regularClass.typeParameters.map { visitTypeParameter(it,null).single })
         }
 
-        val decls = regularClass.declarations.map {
-            it.accept(this, null).single.also { decl ->
-                decl.setParent(type)
-                when (decl) {
-                    is CtField<*> -> type.addField(decl)
-                    is CtMethod<*> -> {
-                        if (regularClass.isInterface() && decl.body != null) {
-                            decl.setDefaultMethod<Nothing>(true)
-                        }
-                        type.addMethod(decl)
+        for(decl in regularClass.declarations) {
+            val ctDecl = decl.accept(this, null).single
+            ctDecl.setParent(type)
+            when (ctDecl) {
+                is CtField<*> -> type.addField(ctDecl)
+                is CtMethod<*> -> {
+                    if (regularClass.isInterface() && ctDecl.body != null) {
+                        ctDecl.setDefaultMethod<Nothing>(true)
                     }
-                    is CtConstructor<*> -> {
-                        if (type is CtClass<*>) {
-                            (type as CtClass<Any>).addConstructor<CtClass<Any>>(decl as CtConstructor<Any>)
-                        } else warn("Constructor without accompanying CtClass")
+                    type.addMethod(ctDecl)
+                }
+                is CtConstructor<*> -> {
+                    if (type is CtClass<*> && !isObject) {
+                        (type as CtClass<Any>).addConstructor<CtClass<Any>>(ctDecl as CtConstructor<Any>)
                     }
-                    is CtTypeMember -> {
-                        type.addTypeMember(decl)
-                    }
+                }
+                is CtTypeMember -> {
+                    type.addTypeMember(ctDecl)
                 }
             }
         }
-
         return type.compose()
     }
 

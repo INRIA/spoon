@@ -6,7 +6,6 @@ import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.descriptors.ClassKind
-import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
@@ -16,13 +15,9 @@ import org.jetbrains.kotlin.fir.psi
 import org.jetbrains.kotlin.fir.references.FirReference
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.resolve.toSymbol
-import org.jetbrains.kotlin.fir.resolve.transformers.firClassLike
 import org.jetbrains.kotlin.fir.symbols.AbstractFirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
-import org.jetbrains.kotlin.fir.types.ConeClassLikeType
-import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
-import org.jetbrains.kotlin.fir.types.FirTypeRef
-import org.jetbrains.kotlin.fir.types.isUnit
+import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.lexer.KtTokens.*
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
@@ -31,6 +26,7 @@ import org.jetbrains.kotlin.resolve.calls.CallTransformer
 import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
 import org.jetbrains.kotlin.resolve.calls.model.VariableAsFunctionResolvedCall
 import spoon.SpoonException
+import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.reflect.code.CtCatchVariable
 import spoon.reflect.code.UnaryOperatorKind
@@ -38,6 +34,7 @@ import spoon.kotlin.reflect.code.KtBinaryOperatorKind as KtOp
 import spoon.reflect.declaration.CtModule
 import spoon.reflect.declaration.CtType
 import spoon.reflect.factory.Factory
+import spoon.reflect.reference.CtReference
 import spoon.reflect.reference.CtTypeReference
 
 
@@ -63,30 +60,41 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder, 
         type.setSimpleName<CtType<*>>(firClass.name.identifier)
 
         firTreeBuilder.addModifiersAsMetadata(type, KtModifierKind.fromClass(firClass))
-
-        firClass.superConeTypes.forEach {
-            firTreeBuilder.referenceBuilder.buildTypeReference<Any>(it).apply {
-                val symbol = it.lookupTag.toSymbol(firClass.session)?.fir
-                if (symbol != null && symbol is FirRegularClass) {
-                    when (symbol.classKind) {
-                        ClassKind.CLASS -> {
-                            type.setSuperclass<CtType<Any>>(this)
-                        }
-                        ClassKind.INTERFACE -> {
-                            type.addSuperInterface<Any, CtType<Any>>(this)
-                        }
-                        else -> {
-                            throw RuntimeException("Bad class kind for supertype: $symbol")
-                        }
+        var didUseDelegateMap = false
+        for (it in firClass.superConeTypes) {
+            val ctSuperRef = firTreeBuilder.referenceBuilder.buildTypeReference<Any>(it)
+            val symbol = it.lookupTag.toSymbol(firClass.session)?.fir
+            if (symbol != null && symbol is FirRegularClass) {
+                val delegateMap = firTreeBuilder.delegateMap[firClass.classId]
+                if(delegateMap != null) {
+                    val delegate = delegateMap[it.classId]
+                    if(delegate != null) {
+                        didUseDelegateMap = true
+                        val ctDelegate = delegate.accept(firTreeBuilder,null).single
+                        ctSuperRef.putMetadata<CtReference>(KtMetadataKeys.SUPER_TYPE_DELEGATE, ctDelegate)
+                        ctDelegate.setParent(ctSuperRef)
                     }
-                } else {
-                    if (symbol == null)
-                        throw RuntimeException("Can't access class symbol")
-                    throw RuntimeException("Unknown symbol implementation: $symbol")
                 }
+                when (symbol.classKind) {
+                    ClassKind.CLASS -> {
+                        type.setSuperclass<CtType<Any>>(ctSuperRef)
+                    }
+                    ClassKind.INTERFACE -> {
+                        type.addSuperInterface<Any, CtType<Any>>(ctSuperRef)
+                    }
+                    else -> {
+                        throw RuntimeException("Bad class kind for supertype: $symbol")
+                    }
+                }
+            } else {
+                if (symbol == null)
+                    throw RuntimeException("Can't access class symbol")
+                throw RuntimeException("Unknown symbol implementation: $symbol")
             }
 
         }
+        if(didUseDelegateMap) firTreeBuilder.warn("Super type delegate detected")
+
         return type
     }
 

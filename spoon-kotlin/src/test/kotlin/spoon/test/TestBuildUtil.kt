@@ -35,7 +35,7 @@ object TestBuildUtil {
         val firFiles = fG.generateFIR()
         val factory = FactoryImpl(DefaultCoreFactory(), StandardEnvironment())
 
-        val builder = FirTreeBuilder(factory, firFiles[0].session, ktEnvironment, SilentMsgCollector())
+        val builder = FirTreeBuilder(factory, firFiles[0].session, emptyMap(), ktEnvironment, SilentMsgCollector())
 
         firFiles.forEach {  builder.visitFile(it,null) }
 
