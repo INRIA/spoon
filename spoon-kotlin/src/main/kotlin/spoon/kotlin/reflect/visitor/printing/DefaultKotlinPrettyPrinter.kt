@@ -344,6 +344,43 @@ class DefaultKotlinPrettyPrinter(
         adapter writeln RIGHT_CURL
     }
 
+    private fun visitObject(ctClass: CtClass<*>) {
+        adapter write "object" and SPACE and ctClass.simpleName
+
+        val inheritanceList = ArrayList<TypeName>()
+
+        if(ctClass.superclass != null) {
+            inheritanceList.add(TypeName.build(ctClass.superclass))
+        }
+
+        if(ctClass.superInterfaces.isNotEmpty()) {
+            ctClass.superInterfaces.forEach { inheritanceList.add(TypeName.build(it)) }
+        }
+        if(inheritanceList.isNotEmpty()) {
+            var p = ""
+            if(ctClass.superclass == null || ctClass.superclass.qualifiedName == "kotlin.Any") {
+                adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
+            }
+            else p = ", "
+            adapter write inheritanceList.joinToString(prefix = p, transform = { it.fQNameWithoutNullability })
+        }
+
+        adapter write SPACE and LEFT_CURL
+        adapter.newline()
+        adapter.pushIndent()
+
+        ctClass.typeMembers.filterNot { it is CtConstructor<*> && it.isPrimary() }.forEach {
+            if(!it.isImplicit) { it.accept(this) }
+        }
+        adapter.popIndent()
+        adapter.ensureNEmptyLines(0)
+        adapter writeln RIGHT_CURL
+    }
+
+    private fun visitInheritanceList(superTypes: List<TypeName>) {
+        
+    }
+
     override fun <T : Any?> visitCtInterface(ctInterface: CtInterface<T>) {
         adapter.ensureNEmptyLines(1)
         // Annotations
