@@ -47,7 +47,6 @@ internal object SuperTypeDelegateFinder {
             tmpFileWriter.flush()
             tmpFiles.add(tmpNewFile)
             classWrapperMap.putAll(fileClassWrapperMap)
-            println(tmpNewFile.readText())
         }
 
         if(classWrapperMap.isEmpty() || classWrapperMap.none { it.value.hasDelegates }) return emptyMap()
