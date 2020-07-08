@@ -55,7 +55,9 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder, 
             ClassKind.ENUM_CLASS -> firTreeBuilder.factory.Core().createEnum<Enum<*>>() as CtType<Any>
             ClassKind.ENUM_ENTRY -> TODO()
             ClassKind.ANNOTATION_CLASS -> TODO()
-            ClassKind.OBJECT -> TODO()
+            ClassKind.OBJECT -> firTreeBuilder.factory.Core().createClass<Any>().apply {
+                putMetadata<CtType<Any>>(KtMetadataKeys.CLASS_IS_OBJECT, true)
+            }
         }
         type.setSimpleName<CtType<*>>(firClass.name.identifier)
 
