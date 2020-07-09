@@ -238,8 +238,14 @@ class DefaultKotlinPrettyPrinter(
         exitCtStatement(forEach)
     }
 
-    override fun <T : Any?> visitCtConstructorCall(constrCall: CtConstructorCall<T>?) {
-        TODO()
+    override fun <T : Any?> visitCtConstructorCall(constructorCall: CtConstructorCall<T>) {
+        if(constructorCall.target != null) {
+            constructorCall.target.accept(this)
+            adapter write '.'
+        }
+        constructorCall.type.accept(this)
+        visitArgumentList(constructorCall.arguments)
+
     }
 
     override fun <T : Any?> visitCtUnaryOperator(unaryOperator: CtUnaryOperator<T>) {
@@ -326,7 +332,7 @@ class DefaultKotlinPrettyPrinter(
             if(ctClass.superclass == null || ctClass.superclass.qualifiedName == "kotlin.Any") {
                 adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
             }
-            else p = ", "
+            else p = ", " // FIXME Broken, delegate to generic function
             adapter write inheritanceList.joinToString(prefix = p, transform = {
                 val delegate = it.getMetadata(KtMetadataKeys.SUPER_TYPE_DELEGATE) as CtElement?
                 if(delegate == null) TypeName.build(it).fQNameWithoutNullability
@@ -440,7 +446,8 @@ class DefaultKotlinPrettyPrinter(
         val primary = ctConstructor.getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as? Boolean? ?: false
         if(ctConstructor.isImplicit && !primary) return
 
-        val modifierSet = getModifiersMetadata(ctConstructor)
+        val modifierSet = getModifiersMetadata(ctConstructor)?.
+            filterIf(ctConstructor.parent is CtEnum<*>) { it != KtModifierKind.PRIVATE }
         if(primary) {
             if(modifierSet != null && modifierSet.filterNot { it == KtModifierKind.PUBLIC }.isNotEmpty()) {
                 adapter write SPACE
@@ -475,8 +482,49 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Enum<*>?> visitCtEnum(p0: CtEnum<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Enum<*>?> visitCtEnum(ctEnum: CtEnum<T>) {
+
+        val modifiers = getModifiersMetadata(ctEnum)
+        adapter writeModifiers modifiers
+
+        adapter write "enum class" and SPACE and ctEnum.simpleName
+
+        val primaryConstructor = ctEnum.constructors.firstOrNull { it.isPrimary() }
+        if(primaryConstructor != null) {
+            visitCtConstructor(primaryConstructor)
+        }
+
+        if(ctEnum.superInterfaces.isNotEmpty()) {
+            adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
+            var commas = ctEnum.superInterfaces.size - 1
+            for (it in ctEnum.superInterfaces) {
+                it.accept(this)
+                val delegate = it.getMetadata(KtMetadataKeys.SUPER_TYPE_DELEGATE) as CtElement?
+                if(delegate != null) {
+                    adapter write " by "
+                    delegate.accept(this)
+                }
+                if(commas-- > 0) adapter write ", "
+            }
+        }
+
+        adapter write LEFT_CURL
+        adapter.newline()
+        adapter.pushIndent()
+
+        //  ctClass.constructors.filterNot { it.isPrimary() }.forEach { it.accept(this) }
+        if(ctEnum.enumValues.isNotEmpty()) {
+            visitCommaSeparatedList(ctEnum.enumValues)
+            adapter write ';'
+        }
+
+        ctEnum.typeMembers.filterNot { it is CtConstructor<*> && it.isPrimary() }.forEach {
+            if(!it.isImplicit) { it.accept(this) }
+        }
+        adapter.popIndent()
+        adapter.ensureNEmptyLines(0)
+        adapter writeln RIGHT_CURL
+
     }
 
     override fun visitCtCompilationUnit(compilationUnit: CtCompilationUnit) {
@@ -763,8 +811,23 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtEnumValue(p0: CtEnumValue<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtEnumValue(enumValue: CtEnumValue<T>) {
+        when(val defaultExpr = enumValue.defaultExpression) {
+            null -> { /* Nothing */}
+            is CtNewClass<*> -> {
+                adapter.ensureNEmptyLines(0)
+                defaultExpr.accept(this)
+            }
+            else -> {
+                if(!defaultExpr.isImplicit) {
+                    adapter.ensureNEmptyLines(0)
+                    adapter write enumValue.simpleName
+                    adapter write LEFT_ROUND
+                    visitCommaSeparatedList((defaultExpr as CtConstructorCall<*>).arguments)
+                    adapter write RIGHT_ROUND
+                }
+            }
+        }
     }
 
     override fun visitCtFor(p0: CtFor?) {
@@ -863,8 +926,25 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtNewClass(p0: CtNewClass<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtNewClass(newClass: CtNewClass<T>) {
+        if(newClass.target != null) {
+            newClass.target.accept(this)
+            adapter write '.'
+        }
+        newClass.type.accept(this)
+        visitTypeArgumentsList(newClass.actualTypeArguments, false)
+        visitArgumentList(newClass.arguments)
+
+        adapter write SPACE and LEFT_CURL // TODO To generic function
+        adapter.newline()
+        adapter.pushIndent()
+
+        newClass.anonymousClass.typeMembers.filterNot { it is CtConstructor<*> && it.isPrimary() }.forEach {
+            if(!it.isImplicit) { it.accept(this) }
+        }
+        adapter.popIndent()
+        adapter.ensureNEmptyLines(0)
+        adapter write RIGHT_CURL
     }
 
     override fun <R : Any?> visitCtReturn(ctReturn: CtReturn<R>) {
@@ -1098,8 +1178,8 @@ class DefaultKotlinPrettyPrinter(
         exitCtExpression(ctInvocation)
     }
 
-    override fun <T : Any?> visitCtMethod(method: CtMethod<T>?) {
-        if(method == null) return
+    override fun <T : Any?> visitCtMethod(method: CtMethod<T>) {
+        if(method.isImplicit) return
         // Annotations not implemented
 
         adapter.ensureNEmptyLines(1)

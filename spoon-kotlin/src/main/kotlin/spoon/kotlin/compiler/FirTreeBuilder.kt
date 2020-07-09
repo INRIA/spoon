@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.*
+import org.jetbrains.kotlin.fir.declarations.impl.FirPrimaryConstructorImpl
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirElseIfTrueCondition
 import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
@@ -26,6 +27,7 @@ import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
+import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
 import spoon.SpoonException
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
@@ -149,10 +151,16 @@ class FirTreeBuilder(val factory : Factory,
             val ctDecl = decl.accept(this, null).single
             ctDecl.setParent(type)
             when (ctDecl) {
+                is CtEnumValue<*> -> {
+                    (type as CtEnum<Enum<*>>).addEnumValue<CtEnum<Enum<*>>>(ctDecl)
+                }
                 is CtField<*> -> type.addField(ctDecl)
                 is CtMethod<*> -> {
                     if (regularClass.isInterface() && ctDecl.body != null) {
                         ctDecl.setDefaultMethod<Nothing>(true)
+                    }
+                    if(decl.psi is KtClass) {
+                        ctDecl.setImplicit<CtMethod<*>>(true)
                     }
                     type.addMethod(ctDecl)
                 }
@@ -164,9 +172,76 @@ class FirTreeBuilder(val factory : Factory,
                 is CtTypeMember -> {
                     type.addTypeMember(ctDecl)
                 }
+
             }
         }
         return type.compose()
+    }
+
+    private fun transformAndAddTypeMembers(ctType: CtType<*>, declarations: List<FirDeclaration>) {
+        val isObject = ctType.getMetadata(KtMetadataKeys.CLASS_IS_OBJECT) as Boolean? == true
+        for(decl in declarations) {
+            val ctDecl = decl.accept(this, null).single
+            ctDecl.setParent(ctType)
+            when (ctDecl) {
+                is CtField<*> -> ctType.addField(ctDecl)
+                is CtMethod<*> -> {
+                    if (ctDecl.body != null) {
+                        ctDecl.setDefaultMethod<Nothing>(true)
+                    }
+                    ctType.addMethod(ctDecl)
+                }
+                is CtConstructor<*> -> {
+                    if (ctType is CtClass<*>) {
+                        (ctType as CtClass<Any>).addConstructor<CtClass<Any>>(ctDecl as CtConstructor<Any>)
+                        if(isObject) ctDecl.setImplicit<CtConstructor<*>>(true)
+                    }
+                }
+                is CtTypeMember -> {
+                    ctType.addTypeMember(ctDecl)
+                }
+            }
+        }
+    }
+
+    override fun visitEnumEntry(enumEntry: FirEnumEntry, data: ContextData?): CompositeTransformResult.Single<CtEnumValue<*>> {
+        val ctEnum = factory.Core().createEnumValue<Any>()
+        ctEnum.setSimpleName<CtEnumValue<*>>(enumEntry.name.identifier)
+        val constr = enumEntry.declarations.firstIsInstance<FirPrimaryConstructorImpl>()
+        val enumTypeRef = referenceBuilder.getNewTypeReference<Any>(constr.delegatedConstructor!!.constructedTypeRef)
+        val delegate = visitDelegatedConstructorCall(constr.delegatedConstructor!!, null).single as CtConstructorCall<Any>
+        if(enumEntry.declarations.size == 1) {
+            ctEnum.setType<CtEnumValue<*>>(enumTypeRef)
+            ctEnum.setDefaultExpression<CtEnumValue<Any>>(delegate)
+        } else {
+            val anonClass = factory.Core().createNewClass<Any>()
+            anonClass.setAnonymousClass<CtNewClass<*>>(createAnonymousClass(enumEntry).single)
+            anonClass.setArguments<CtNewClass<Any>>(delegate.arguments)
+            anonClass.setExecutable<CtNewClass<Any>>(referenceBuilder.getNewExecutableReference(constr.delegatedConstructor!!, constr.returnTypeRef))
+            ctEnum.setDefaultExpression<CtVariable<Any>>(anonClass)
+        }
+        return ctEnum.compose()
+
+    }
+
+    override fun visitDelegatedConstructorCall(
+        delegatedConstructorCall: FirDelegatedConstructorCall,
+        data: ContextData?
+    ): CompositeTransformResult.Single<CtConstructorCall<*>> {
+        val ctConstructorCall = factory.Core().createConstructorCall<Any>()
+        ctConstructorCall.setExecutable<CtConstructorCall<Any>>(referenceBuilder.getNewExecutableReference<Any>(delegatedConstructorCall,
+            delegatedConstructorCall.constructedTypeRef))
+        ctConstructorCall.setArguments<CtConstructorCall<Any>>(delegatedConstructorCall.arguments.map {
+            expressionOrWrappedInStatementExpression(it.accept(this,null).single)
+        })
+        return ctConstructorCall.compose()
+    }
+
+    private fun createAnonymousClass(firEnumEntry: FirEnumEntry): CompositeTransformResult.Single<CtClass<*>> {
+        val ctClass = factory.Core().createClass<Any>()
+        ctClass.setSimpleName<CtType<*>>(firEnumEntry.name.identifier)
+        transformAndAddTypeMembers(ctClass, firEnumEntry.declarations)
+        return ctClass.compose()
     }
 
     override fun visitConstructor(constructor: FirConstructor, data: ContextData?): CompositeTransformResult.Single<CtConstructor<*>> {
@@ -205,7 +280,7 @@ class FirTreeBuilder(val factory : Factory,
             if(constructor.isPrimary) {
                 val pModifiers = (p.getMetadata(KtMetadataKeys.KT_MODIFIERS) as? MutableSet<KtModifierKind>?) ?:
                         mutableSetOf<KtModifierKind>()
-                val qqq = it.source.psi?.getChildrenOfType<KtModifierList>()
+
                 val psiModifiersList = it.source.psi?.getChildrenOfType<KtModifierList>()?.let { lists ->
                     if(lists.isNotEmpty()) { KtModifierKind.fromPsiModifierList(lists[0]) }
                     else emptyList()

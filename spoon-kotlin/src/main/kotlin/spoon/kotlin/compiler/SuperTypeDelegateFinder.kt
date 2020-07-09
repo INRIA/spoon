@@ -144,6 +144,10 @@ internal object SuperTypeDelegateFinder {
                     if (superType.isAny) {
                         continue
                     }
+                    if(superType.psi == null &&
+                        superType.coneTypeSafe<ConeClassLikeType>()?.classId?.asSingleFqName()?.asString() == "kotlin.Enum") {
+                        continue
+                    }
                     val psi = superType.psi ?:
                         throw RuntimeException("Unable to get PSI when resolving supertype expression for $superType")
                     val parent = psi.parent
