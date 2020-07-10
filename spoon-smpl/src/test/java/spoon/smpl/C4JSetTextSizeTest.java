@@ -55,11 +55,11 @@ public class C4JSetTextSizeTest {
 
         String smpl = "@@\n" +
                       "expression E;" +
-                      "expression LARGEST when matches \".*LARGEST\";\n" +
-                      "expression LARGER when matches \".*LARGER\";\n" +
-                      "expression NORMAL when matches \".*NORMAL\";\n" +
-                      "expression SMALLER when matches \".*SMALLER\";\n" +
-                      "expression SMALLEST when matches \".*SMALLEST\";\n" +
+                      "expression LARGEST when matches \"(WebSettings\\\\.TextSize\\\\.)?LARGEST\";\n" +
+                      "expression LARGER when matches \"(WebSettings\\\\.TextSize\\\\.)?LARGER\";\n" +
+                      "expression NORMAL when matches \"(WebSettings\\\\.TextSize\\\\.)?NORMAL\";\n" +
+                      "expression SMALLER when matches \"(WebSettings\\\\.TextSize\\\\.)?SMALLER\";\n" +
+                      "expression SMALLEST when matches \"(WebSettings\\\\.TextSize\\\\.)?SMALLEST\";\n" +
                       "@@\n" +
                       "(\n" +
                       "- E.setTextSize(LARGEST);\n" +
