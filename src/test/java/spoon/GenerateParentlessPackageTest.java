@@ -1,4 +1,4 @@
-package spoon.generating;
+package spoon;
 
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
