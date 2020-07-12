@@ -1,6 +1,6 @@
 package spoon;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
  * This test generates a parent-less package.
