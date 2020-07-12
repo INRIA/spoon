@@ -15,7 +15,7 @@ import static org.junit.Assert.fail;
 /**
  * This test generates a parent-less package.
  */
-public class GenerateParentlessPackage {
+public class GenerateParentlessPackageTest {
 
     @Test
     public void generateParentlessPackage() {
