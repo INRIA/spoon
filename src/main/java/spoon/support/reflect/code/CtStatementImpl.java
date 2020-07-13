@@ -25,6 +25,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static spoon.reflect.path.CtRole.LABEL;
@@ -281,6 +282,16 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, LABEL, label, this.label);
 		this.label = label;
 		return (T) this;
+	}
+	
+	@Override
+	public void comment() {
+		if (!isParentInitialized()) {
+			// already not in a tree, commenting wouldn't make a difference
+			return;
+		}
+		// comment is implemented as replace by a comment
+		replace(getFactory().Code().createInlineComment(toString()));
 	}
 
 	@Override
