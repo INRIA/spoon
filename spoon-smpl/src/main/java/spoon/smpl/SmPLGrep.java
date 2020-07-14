@@ -93,7 +93,7 @@ public class SmPLGrep {
                     check(((CtNamedElement) e).getSimpleName());
                 }
 
-                if (e instanceof CtTypeAccess) {
+                if (e instanceof CtTypeAccess && ((CtTypeAccess<?>) e).getAccessedType() != null) {
                     check(((CtTypeAccess<?>) e).getAccessedType().getSimpleName());
                 }
 
