@@ -54,7 +54,7 @@ public class SmPLProcessor extends AbstractProcessor<CtExecutable<?>> {
      * Example commandline:
      *
      *   java -classpath [...] spoon.smpl.SmPLProcessor --with-diff-command "bash -c \"diff -u {a} {b}\""  \
-     *                                                  /path/to/patch.smpl                                \
+     *                                                  --with-smpl-file /path/to/patch.smpl               \
      *                                                  -i /path/to/sources                                \
      *                                                  -o /path/to/spooned/output                         \
      *                                                  --with-imports                                     \
