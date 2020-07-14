@@ -4,6 +4,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.smpl.formula.*;
 import spoon.smpl.metavars.*;
@@ -34,10 +35,26 @@ public class SmPLParser {
             }
         }
 
+        // Nullify type references to self so Spoon doesn't add imports for "RewrittenSmPLRule"
+        class SelfTypeReferenceNullifier extends CtScanner {
+            @Override
+            public void enter(CtElement e) {
+                // TODO: use SmPLJavaDSL as single source of the class/type name
+                if (e.toString().contains("RewrittenSmPLRule")) {
+                    if (e instanceof CtTypeReference<?>) {
+                        e.replace((CtElement) null);
+                    }
+                }
+            }
+        }
+
         List<String> separated = separateAdditionsDeletions(rewrite(smpl));
 
         CtClass<?> dels = SpoonJavaParser.parseClass(separated.get(0), "RewrittenSmPLRule");
         CtClass<?> adds = SpoonJavaParser.parseClass(separated.get(1), "RewrittenSmPLRule");
+
+        new SelfTypeReferenceNullifier().scan(dels);
+        new SelfTypeReferenceNullifier().scan(adds);
 
         if (dels.getMethods().size() > 2) {
             throw new IllegalArgumentException("Referring to multiple methods in match context is not supported");
