@@ -1,7 +1,6 @@
 package spoon.smpl;
 
 import fr.inria.controlflow.ControlFlowNode;
-import spoon.Launcher;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;

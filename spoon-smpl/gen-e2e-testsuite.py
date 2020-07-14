@@ -164,10 +164,8 @@ def gen_suite(suitename, dirname, recursive=True):
     output.append("import org.junit.Test;")
     output.append("import static org.junit.Assert.assertEquals;")
     output.append("import static org.junit.Assert.fail;")
-    output.append("import spoon.Launcher;")
     output.append("import spoon.reflect.CtModel;")
     output.append("import spoon.reflect.declaration.CtClass;")
-    output.append("import spoon.support.compiler.VirtualFile;")
     output.append("import static spoon.smpl.TestUtils.*;")
     output.append("")
     

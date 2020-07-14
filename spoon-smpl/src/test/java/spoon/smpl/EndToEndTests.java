@@ -3,10 +3,8 @@ package spoon.smpl;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
-import spoon.support.compiler.VirtualFile;
 import static spoon.smpl.TestUtils.*;
 
 public class EndToEndTests {

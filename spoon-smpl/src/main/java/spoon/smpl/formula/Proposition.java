@@ -1,7 +1,5 @@
 package spoon.smpl.formula;
 
-import spoon.reflect.declaration.CtElement;
-
 import java.util.Map;
 
 /**

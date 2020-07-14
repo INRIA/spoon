@@ -2,7 +2,6 @@ package spoon.smpl;
 
 import fr.inria.controlflow.*;
 import org.junit.Test;
-import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 
 import static org.junit.jupiter.api.Assertions.*;

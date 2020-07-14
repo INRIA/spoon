@@ -2,8 +2,6 @@ package spoon.smpl;
 
 import org.junit.Before;
 import org.junit.Test;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.smpl.formula.*;

@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import spoon.Launcher;
 //import spoon.pattern.Pattern;
 //import spoon.pattern.PatternBuilder;
-import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 

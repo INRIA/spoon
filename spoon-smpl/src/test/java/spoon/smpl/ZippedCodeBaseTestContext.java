@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.fail;
-import static spoon.smpl.TestUtils.methodCfg;
 
 public class ZippedCodeBaseTestContext {
     public ZippedCodeBaseTestContext(String smpl, String pathToSourcesZipFile, boolean useAutoImports) {

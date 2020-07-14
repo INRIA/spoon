@@ -1,9 +1,7 @@
 package spoon.smpl.metavars;
 
-import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.smpl.formula.MetavariableConstraint;
 
