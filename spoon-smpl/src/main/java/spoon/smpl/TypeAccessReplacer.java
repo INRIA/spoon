@@ -135,15 +135,14 @@ public class TypeAccessReplacer extends CtScanner {
      */
     @Override
     public void enter(CtElement element) {
-        // TODO: find proper way to detect the empty string case as the .toString() call is really slow and very poorly self-documenting
         if (element instanceof CtTypeAccess) {
-            String repr = element.toString();
+            CtTypeAccess<?> ctTypeAccess = (CtTypeAccess<?>) element;
 
-            if (!repr.equals("") // case for static members
+            if (ctTypeAccess.getAccessedType() != null && !(ctTypeAccess.getAccessedType().isImplicit()) // case for static members
                 && (!checkParents || (element.getParent(CtMethod.class) != null || element.getParent(CtConstructor.class) != null))
                 && !(element.getParent() instanceof CtThisAccess)) {
 
-                element.replace(createTypeAccessReplacement((CtTypeAccess<?>) element, repr));
+                element.replace(createTypeAccessReplacement((CtTypeAccess<?>) element, ctTypeAccess.toString()));
             }
         }
     }
