@@ -1,5 +1,7 @@
 package spoon.smpl;
 
+import spoon.smpl.operation.Operation;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

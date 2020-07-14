@@ -4,6 +4,11 @@ import fr.inria.controlflow.BranchKind;
 import fr.inria.controlflow.ControlFlowNode;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
+import spoon.smpl.label.BranchLabel;
+import spoon.smpl.label.MetadataLabel;
+import spoon.smpl.label.MethodHeaderLabel;
+import spoon.smpl.label.PropositionLabel;
+import spoon.smpl.label.StatementLabel;
 
 import java.util.*;
 

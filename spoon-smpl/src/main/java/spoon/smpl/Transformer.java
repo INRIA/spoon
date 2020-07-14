@@ -6,6 +6,8 @@ import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.smpl.operation.Operation;
+import spoon.smpl.operation.OperationFilter;
 
 import java.util.*;
 import java.util.stream.Collectors;

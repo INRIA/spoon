@@ -1,11 +1,13 @@
-package spoon.smpl;
+package spoon.smpl.label;
 
+import spoon.smpl.Label;
+import spoon.smpl.LabelMatchResult;
+import spoon.smpl.LabelMatchResultImpl;
 import spoon.smpl.formula.Predicate;
 import spoon.smpl.formula.Proposition;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A PropositionLabel is a Label used to associate states with simple, constant proposition strings

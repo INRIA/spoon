@@ -1,6 +1,12 @@
-package spoon.smpl;
+package spoon.smpl.label;
 
 import spoon.reflect.declaration.CtExecutable;
+import spoon.smpl.Label;
+import spoon.smpl.LabelMatchResult;
+import spoon.smpl.LabelMatchResultImpl;
+import spoon.smpl.MethodHeaderModel;
+import spoon.smpl.Model;
+import spoon.smpl.ModelChecker;
 import spoon.smpl.formula.*;
 
 import java.util.*;

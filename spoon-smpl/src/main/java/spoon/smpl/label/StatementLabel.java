@@ -1,7 +1,8 @@
-package spoon.smpl;
+package spoon.smpl.label;
 
 //import spoon.pattern.Match;
 import spoon.reflect.declaration.CtElement;
+import spoon.smpl.LabelMatchResultImpl;
 import spoon.smpl.formula.Statement;
 import spoon.smpl.formula.Predicate;
 import spoon.smpl.pattern.*;

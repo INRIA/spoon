@@ -12,6 +12,8 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.smpl.formula.*;
+import spoon.smpl.label.PropositionLabel;
+import spoon.smpl.label.StatementLabel;
 
 import java.util.*;
 import java.util.stream.Collectors;

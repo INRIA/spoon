@@ -1,5 +1,8 @@
-package spoon.smpl;
+package spoon.smpl.label;
 
+import spoon.smpl.Label;
+import spoon.smpl.LabelMatchResult;
+import spoon.smpl.LabelMatchResultImpl;
 import spoon.smpl.formula.*;
 
 import java.util.Collections;

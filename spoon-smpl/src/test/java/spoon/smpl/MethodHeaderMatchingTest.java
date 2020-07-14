@@ -5,6 +5,7 @@ import org.junit.Test;
 import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.formula.MetavariableConstraint;
 import spoon.smpl.formula.MethodHeaderPredicate;
+import spoon.smpl.label.MethodHeaderLabel;
 import spoon.smpl.metavars.IdentifierConstraint;
 import spoon.smpl.metavars.TypeConstraint;
 

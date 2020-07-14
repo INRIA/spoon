@@ -3,6 +3,8 @@ package spoon.smpl;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.reflect.declaration.CtMethod;
+import spoon.smpl.operation.Operation;
+import spoon.smpl.operation.OperationFilter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

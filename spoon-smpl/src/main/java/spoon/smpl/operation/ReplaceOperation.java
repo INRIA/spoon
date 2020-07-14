@@ -1,6 +1,7 @@
-package spoon.smpl;
+package spoon.smpl.operation;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.smpl.Substitutor;
 
 import java.util.Map;
 

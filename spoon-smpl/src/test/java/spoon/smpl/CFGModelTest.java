@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import spoon.reflect.declaration.*;
 import spoon.smpl.formula.*;
+import spoon.smpl.label.PropositionLabel;
+import spoon.smpl.label.StatementLabel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

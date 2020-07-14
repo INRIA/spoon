@@ -1,10 +1,11 @@
-package spoon.smpl;
+package spoon.smpl.operation;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+import spoon.smpl.Substitutor;
 
 import java.util.Map;
 

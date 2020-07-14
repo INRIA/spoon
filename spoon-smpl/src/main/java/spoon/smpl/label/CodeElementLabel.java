@@ -1,6 +1,11 @@
-package spoon.smpl;
+package spoon.smpl.label;
 
 import spoon.reflect.declaration.CtElement;
+import spoon.smpl.Environment;
+import spoon.smpl.Label;
+import spoon.smpl.LabelMatchResult;
+import spoon.smpl.LabelMatchResultImpl;
+import spoon.smpl.VariableUseScanner;
 import spoon.smpl.formula.Expression;
 import spoon.smpl.formula.Predicate;
 import spoon.smpl.formula.VariableUsePredicate;

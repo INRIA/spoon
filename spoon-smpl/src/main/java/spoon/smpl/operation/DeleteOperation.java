@@ -1,4 +1,4 @@
-package spoon.smpl;
+package spoon.smpl.operation;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtIf;

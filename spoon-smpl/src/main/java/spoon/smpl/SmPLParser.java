@@ -7,6 +7,7 @@ import spoon.reflect.declaration.*;
 import spoon.reflect.visitor.CtScanner;
 import spoon.smpl.formula.*;
 import spoon.smpl.metavars.*;
+import spoon.smpl.operation.*;
 
 import java.util.*;
 import java.util.regex.Pattern;

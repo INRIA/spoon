@@ -8,6 +8,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.formula.*;
 import spoon.smpl.formula.Optional;
+import spoon.smpl.operation.Operation;
 
 import java.util.*;
 

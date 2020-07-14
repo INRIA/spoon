@@ -1,4 +1,4 @@
-package spoon.smpl;
+package spoon.smpl.operation;
 
 /**
  * OperationFilter defines categories for prioritization and ordering of operations.

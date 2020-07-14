@@ -15,6 +15,8 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 
 import spoon.smpl.formula.*;
+import spoon.smpl.label.PropositionLabel;
+import spoon.smpl.label.StatementLabel;
 import spoon.smpl.metavars.IdentifierConstraint;
 
 import static org.junit.Assert.fail;
