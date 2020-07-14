@@ -14,6 +14,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Stack;
 
 // TODO: find a way to get rid of this entire thing
@@ -58,8 +59,46 @@ import java.util.Stack;
  *  Thus the idea is to make matching easier while outputting semantically equivalent source programs.
  */
 public class TypeAccessReplacer extends CtScanner {
+    /**
+     * Instance options.
+     */
+    public enum Options {
+        /**
+         * Disable checking that encountered CtTypeAccess elements are parented by a CtMethod or CtConstructor.
+         * Default: parents are checked.
+         */
+        NoCheckParents
+    }
+
+    /**
+     * Create a TypeAccessReplacer using default options.
+     */
+    public TypeAccessReplacer() {
+        this(EnumSet.noneOf(Options.class));
+    }
+
+    /**
+     * Create a TypeAccessReplacer using the given set of options.
+     *
+     * @param options Options to use
+     */
+    public TypeAccessReplacer(EnumSet<Options> options) {
+        super();
+
+        if (options.contains(Options.NoCheckParents)) {
+            checkParents = false;
+        }
+    }
+
+    /**
+     * Create a replacement CtFieldRead chain for a given CtTypeAccess element.
+     *
+     * @param originalElement CtTypeAccess element to generate a replacement for
+     * @param typeSpec Typename as reported by CtTypeAccess::toString
+     * @return Chain of CtFieldRead elements intended to produce the equivalent source code
+     */
     @SuppressWarnings("unchecked")
-    private static CtExpression createTypeAccessReplacement(CtElement originalElement, String typeSpec) {
+    private static CtExpression createTypeAccessReplacement(CtTypeAccess<?> originalElement, String typeSpec) {
         Factory factory = originalElement.getFactory();
         Stack<String> parts = new Stack<>();
         parts.addAll(Arrays.asList(typeSpec.split("\\.")));
@@ -89,11 +128,29 @@ public class TypeAccessReplacer extends CtScanner {
         return fieldRead;
     }
 
+    /**
+     * Scanner implementation that replaces certain CtTypeAccess elements.
+     *
+     * @param element Element being scanned
+     */
     @Override
-    public void enter(CtElement e) {
-        if (e instanceof CtTypeAccess && (e.getParent(CtMethod.class) != null || e.getParent(CtConstructor.class) != null)
-            && !(e.getParent() instanceof CtThisAccess)) {
-            e.replace(createTypeAccessReplacement(e, e.toString()));
+    public void enter(CtElement element) {
+        // TODO: find proper way to detect the empty string case as the .toString() call is really slow and very poorly self-documenting
+        if (element instanceof CtTypeAccess) {
+            String repr = element.toString();
+
+            if (!repr.equals("") // case for static members
+                && (!checkParents || (element.getParent(CtMethod.class) != null || element.getParent(CtConstructor.class) != null))
+                && !(element.getParent() instanceof CtThisAccess)) {
+
+                element.replace(createTypeAccessReplacement((CtTypeAccess<?>) element, repr));
+            }
         }
     }
+
+    /**
+     * If true, scanned CtTypeAccess elements will be checked for being parented by a CtMethod or CtConstructor before
+     * being replaced.
+     */
+    private boolean checkParents = true;
 }
