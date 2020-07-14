@@ -9,6 +9,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -284,7 +285,7 @@ public class PatternBuilder implements CtVisitor {
 
         if (ctInvocation.getTarget() != null) {
             ctInvocation.getTarget().accept(this);
-            result.sub.put("target", resultStack.pop());
+            setTarget(result.sub, resultStack.pop());
         }
 
         int numargs = ctInvocation.getArguments().size();
@@ -518,7 +519,7 @@ public class PatternBuilder implements CtVisitor {
 
     @Override
     public <T> void visitCtTypeAccess(CtTypeAccess<T> ctTypeAccess) {
-        throw new NotImplementedException("Not implemented");
+        resultStack.push(null);
     }
 
     @Override
@@ -587,7 +588,7 @@ public class PatternBuilder implements CtVisitor {
 
         if (ctFieldRead.getTarget() != null) {
             ctFieldRead.getTarget().accept(this);
-            result.sub.put("target", resultStack.pop());
+            setTarget(result.sub, resultStack.pop(), new ValueNode("none", null));
         } else {
             result.sub.put("target", new ValueNode("none", null));
         }
@@ -614,7 +615,7 @@ public class PatternBuilder implements CtVisitor {
 
         if (ctFieldWrite.getTarget() != null) {
             ctFieldWrite.getTarget().accept(this);
-            result.sub.put("target", resultStack.pop());
+            setTarget(result.sub, resultStack.pop(), new ValueNode("none", null));
         } else {
             result.sub.put("target", new ValueNode("none", null));
         }
@@ -699,4 +700,18 @@ public class PatternBuilder implements CtVisitor {
 
     private List<String> params;
     private Stack<PatternNode> resultStack;
+
+    private static void setTarget(Map<String, PatternNode> sub, PatternNode target) {
+        if (target != null) {
+            sub.put("target", target);
+        }
+    }
+
+    private static void setTarget(Map<String, PatternNode> sub, PatternNode target, PatternNode _default) {
+        if (target != null) {
+            sub.put("target", target);
+        } else {
+            sub.put("target", _default);
+        }
+    }
 }
