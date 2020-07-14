@@ -22,7 +22,7 @@ public class SmPLRuleImpl implements SmPLRule {
      * @param formula Formula of the rule
      * @param metavars Metavariable names and their respective constraints
      */
-    public SmPLRuleImpl(String source, CtExecutable matchTargetDSL, Formula formula, Map<String, MetavariableConstraint> metavars) {
+    public SmPLRuleImpl(String source, CtExecutable<?> matchTargetDSL, Formula formula, Map<String, MetavariableConstraint> metavars) {
         this.source = source;
         this.matchTargetDSL = matchTargetDSL;
         this.formula = formula;

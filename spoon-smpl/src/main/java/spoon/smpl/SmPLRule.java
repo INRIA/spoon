@@ -14,9 +14,6 @@ import java.util.Map;
  * from the most recently matched code.
  */
 public interface SmPLRule {
-    // public getMetavariableBindings
-    // public reset
-
     /**
      * Set the name of the rule.
      * @param name name of the rule, or null for anonymous rule
