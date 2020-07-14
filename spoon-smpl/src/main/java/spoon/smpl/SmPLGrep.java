@@ -1,20 +1,10 @@
 package spoon.smpl;
 
-import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.reference.CtVariableReference;
-import spoon.reflect.visitor.CtScanner;
-
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
@@ -33,127 +23,77 @@ public class SmPLGrep {
      * @return Pattern representing strings required to be present in matching code
      */
     public static Pattern buildPattern(SmPLRule rule) {
-        // Extract the source rule body (patch source excluding metavariable declarations), lowercase it and remove
-        //   any addition lines
-        String ruleBodySource = rule.getSource()
-                                    .substring(rule.getSource().lastIndexOf("@@") + 2)
-                                    .toLowerCase()
-                                    .replaceAll("(?m)^\\+.+$", "");
-
-        Pattern result = new Pattern();
-
-        // A scanner for finding interesting strings
-        CtScanner scanner = new CtScanner() {
-            @Override
-            public <T> void visitCtInvocation(CtInvocation<T> invocation) {
-                if (SmPLJavaDSL.isMetaElement(invocation) && !SmPLJavaDSL.isExpressionMatchWrapper(invocation)) {
-                    // Prevent scanning into literals and other stuff that is only part of the meta syntax
-                    return;
-                }
-
-                super.visitCtInvocation(invocation);
-            }
-
-            @Override
-            public void visitCtIf(CtIf ifElement) {
-                if (SmPLJavaDSL.isDotsWithOptionalMatch(ifElement)) {
-                    // Since optdots denote completely optional matches the only optdots we will scan are the implicit
-                    //   dots added to a rule that doesnt match on the method header. Implicit dots will always be the
-                    //   first statement in the rule body.
-                    if (ifElement != ifElement.getParent(CtExecutable.class).getBody().getStatement(0)) {
-                        return;
-                    }
-                }
-
-                if (SmPLJavaDSL.isBeginDisjunction(ifElement)) {
-                    result.enterDisjunction();
-                } else if (SmPLJavaDSL.isContinueDisjunction(ifElement)) {
-                    result.continueDisjunction();
-                }
-
-                super.visitCtIf(ifElement);
-            }
-
-            @Override
-            protected void enter(CtElement e) {
-                super.enter(e);
-
-                if (SmPLJavaDSL.isMetaElement(e)) {
-                    return;
-                }
-
-                // Dig out interesting strings. Only strings literally present in the patch source will be included in
-                //   the final result.
-
-                if (e instanceof CtIf) {
-                    result.addString("if");
-                }
-
-                if (e instanceof CtNamedElement) {
-                    check(((CtNamedElement) e).getSimpleName());
-                }
-
-                if (e instanceof CtTypeAccess && ((CtTypeAccess<?>) e).getAccessedType() != null) {
-                    check(((CtTypeAccess<?>) e).getAccessedType().getSimpleName());
-                }
-
-                if (e instanceof CtTypeReference) {
-                    check(((CtTypeReference<?>) e).getSimpleName());
-                }
-
-                if (e instanceof CtExecutableReference<?>) {
-                    check(((CtExecutableReference<?>) e).getSimpleName());
-                }
-
-                if (e instanceof CtLiteral) {
-                    check(((CtLiteral<?>) e).toString());
-                }
-
-                if (e instanceof CtVariableReference) {
-                    check(((CtVariableReference<?>) e).getSimpleName());
-                }
-
-                if (e instanceof CtConstructorCall) {
-                    result.addString("new");
-                    check(((CtConstructorCall<?>) e).getType().getSimpleName());
-                }
-
-                if (e instanceof CtReturn) {
-                    result.addString("return");
-                }
-            }
-
-            protected void exit(CtElement e) {
-                if (SmPLJavaDSL.isBeginDisjunction(e)) {
-                    result.exitDisjunction();
-                }
-            }
-
-            private void check(String s) {
-                // Check if we should add a string (and if so, add it). Only strings literally present in the patch
-                //   that are also not metavariable identifiers will be added.
-                if (ruleBodySource.contains(s.toLowerCase())
-                    && !rule.getMetavariableConstraints().containsKey(s)
-                    && !rule.getMetavariableConstraints().containsKey(s.toLowerCase())) {
-                    result.addString(s);
-                }
-            }
-        };
-
-        scanner.scan(rule.getMatchTargetDSL());
-//        System.out.println(result);
-        return result;
+        return buildPattern(rule.getSource());
     }
 
     /**
-     * Check if a given arbitrary executable AST block contains all the strings required by the given pattern.
+     * Build a pattern from a given plain-text SmPL patch.
      *
-     * @param ctExecutable Executable to check
-     * @param pattern Pattern representing required strings
-     * @return True if all required strings are present, false otherwise
+     * @param smpl Plain-text SmPL patch
+     * @return Pattern representing strings required to be present in matching code
      */
-    public static boolean isPatternMatch(CtExecutable<?> ctExecutable, Pattern pattern) {
-        return pattern.matches(ctExecutable.toString());
+    public static Pattern buildPattern(String smpl) {
+        List<SmPLLexer.Token> tokens = SmPLLexer.lex(smpl);
+        Pattern result = new Pattern();
+        Set<String> metavars = new HashSet<>();
+        java.util.regex.Pattern targetPattern = java.util.regex.Pattern.compile("[0-9.]+[0-9fL]+|[A-Za-z0-9_]+");
+        boolean isAddition = false;
+
+        for (SmPLLexer.Token token : tokens) {
+            switch (token.getType()) {
+                case Newline:
+                    isAddition = false;
+                    break;
+
+                case Addition:
+                    isAddition = true;
+                    break;
+
+                case DisjunctionBegin:
+                    result.enterDisjunction();
+                    break;
+
+                case DisjunctionContinue:
+                    result.continueDisjunction();
+                    break;
+
+                case DisjunctionEnd:
+                    result.exitDisjunction();
+                    break;
+
+                case MetavarType:
+                    // TODO: use SmPLJavaDSL for checking the type-of-type
+                    if (!Arrays.asList("identifier", "type", "constant", "expression").contains(token.getText())) {
+                        result.addString(token.getText());
+                    }
+
+                    break;
+
+                case MetavarIdentifier:
+                    metavars.add(token.getText());
+                    break;
+
+                case Code:
+                    if (isAddition) {
+                        break;
+                    }
+
+                    for (java.util.regex.MatchResult mr : targetPattern.matcher(token.getText()).results().collect(Collectors.toList())) {
+                        String match = mr.group();
+
+                        if (!metavars.contains(match)) {
+                            result.addString(match);
+                        }
+                    }
+
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        return result;
     }
 
     /**
