@@ -3,6 +3,9 @@ package fr.inria.controlflow;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 
+/**
+ * Base interface for exception control flow strategies.
+ */
 public interface ExceptionControlFlowStrategy {
 	/**
 	 * Handle a try-catch-finally construct.

@@ -23,14 +23,14 @@ import java.util.Stack;
  *   2) All exceptions thrown inside a try block are caught by the catchers immediately associated with the block.
  *
  * Support for finalizers is limited by the lack of modeling for the semantics of return statements in regards to
- * executing finalizers before actually returning. Because of this limitation, by default the model will refuse to
- * model the flow of a try-(catch-)finally construct that contains return statements. An option is available to allow
- * the model to produce a partially incorrect graph where return statements jump directly to the exit without executing
- * finalizers.
+ * executing finalizers before actually returning. Because of this limitation, by default the implementation will
+ * refuse to model the flow of a try-(catch-)finally construct that contains return statements. An option is
+ * available to allow the model to produce a partially incorrect graph where return statements jump directly to the
+ * exit without executing finalizers.
  */
 public class NaiveExceptionControlFlowStrategy implements ExceptionControlFlowStrategy {
 	/**
-	 * Per-instance option flags for NaiveExceptionControlFlowStrategy
+	 * Per-instance option flags for NaiveExceptionControlFlowStrategy.
 	 */
 	public enum Options {
 		/**
