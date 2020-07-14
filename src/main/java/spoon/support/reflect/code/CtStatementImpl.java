@@ -11,6 +11,7 @@ import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLoop;
@@ -291,7 +292,11 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 			return;
 		}
 		// comment is implemented as replace by a comment
-		replace(getFactory().Code().createInlineComment(toString()));
+		final String stmt = toString();
+		if(stmt.contains(CtComment.LINE_SEPARATOR))
+			this.replace(getFactory().Code().createComment(stmt, CtComment.CommentType.BLOCK)); // Multi line comment
+		else
+			this.replace(getFactory().Code().createInlineComment(stmt + ';')); // Single line comment
 	}
 
 	@Override
