@@ -182,12 +182,18 @@ public class SmPLGrep {
              */
             public _String(String value) {
                 this.value = value;
+                this.lowerCaseValue = value.toLowerCase();
             }
 
             /**
              * String value.
              */
             public final String value;
+
+            /**
+             * Lowercase String value;
+             */
+            public final String lowerCaseValue;
 
             /**
              * Check if a given target String contains this String.
@@ -197,7 +203,7 @@ public class SmPLGrep {
              */
             @Override
             public boolean matches(String s) {
-                return s.toLowerCase().contains(value.toLowerCase());
+                return s.contains(lowerCaseValue);
             }
 
             @Override
@@ -207,7 +213,7 @@ public class SmPLGrep {
 
             @Override
             public boolean equals(Object other) {
-                return other == this || (other instanceof _String && ((_String) other).value.equals(value));
+                return other == this || (other instanceof _String && ((_String) other).lowerCaseValue.equals(lowerCaseValue));
             }
 
             /**
@@ -358,7 +364,7 @@ public class SmPLGrep {
          * @return True if the String matches the Pattern, false otherwise
          */
         public boolean matches(String s) {
-            return patternNodeStack.peek().matches(s);
+            return patternNodeStack.peek().matches(s.toLowerCase());
         }
 
         @Override
