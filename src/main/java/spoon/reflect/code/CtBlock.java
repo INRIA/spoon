@@ -34,5 +34,5 @@ public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParame
 	 * then the block itself is replaced by a Block comment.
 	 */
 	@Override
-	public void comment();
+	void comment();
 }

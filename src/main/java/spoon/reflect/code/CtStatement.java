@@ -60,7 +60,7 @@ public interface CtStatement extends CtCodeElement {
 	 * Replace the statement with a CtComment having the statement as text
 	 */
 	void comment();
-	
+
 	@Override
 	CtStatement clone();
 }

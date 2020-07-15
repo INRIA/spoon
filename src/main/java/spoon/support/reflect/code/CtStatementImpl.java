@@ -26,7 +26,6 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static spoon.reflect.path.CtRole.LABEL;
@@ -284,7 +283,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		this.label = label;
 		return (T) this;
 	}
-	
+
 	@Override
 	public void comment() {
 		if (!isParentInitialized()) {
@@ -293,10 +292,11 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		}
 		// comment is implemented as replace by a comment
 		final String stmt = toString();
-		if(stmt.contains(CtComment.LINE_SEPARATOR))
+		if (stmt.contains(CtComment.LINE_SEPARATOR)) {
 			this.replace(getFactory().Code().createComment(stmt, CtComment.CommentType.BLOCK)); // Multi line comment
-		else
+		} else {
 			this.replace(getFactory().Code().createInlineComment(stmt + ';')); // Single line comment
+		}
 	}
 
 	@Override
