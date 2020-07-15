@@ -216,7 +216,7 @@
                     <dependency>
                         <groupId>org.revapi</groupId>
                         <artifactId>revapi-reporter-text</artifactId>
-                        <version>0.11.0</version>
+                        <version>0.11.1</version>
                     </dependency>
                 </dependencies>
                 <configuration>
