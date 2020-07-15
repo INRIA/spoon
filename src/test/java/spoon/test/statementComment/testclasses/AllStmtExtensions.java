@@ -14,6 +14,19 @@ public class AllStmtExtensions{
 		
 	}
 	void m3() {
-		
+		try {
+			throw new Exception();
+		}catch(Exception e) {
+			System.out.println(e);
+		}
+		int r = 30;
+		r++;
+	}
+	void m4() {
+		if (5 > 6) {
+			System.out.println("Impossible!");
+		} else {
+			System.out.println("Seems right...");
+		}
 	}
 }

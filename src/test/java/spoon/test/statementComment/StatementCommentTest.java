@@ -26,6 +26,8 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
@@ -175,7 +177,19 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testIfStatement(){
-		
+		Launcher launcher = setUpTest();
+		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
+		CtMethod<?> m4 =  allstmt.getMethod("m4");
+		assertTrue(m4.getBody().getStatement(0) instanceof CtIf);
+		CtIf ifStmt = (CtIf) m4.getBody().getStatement(0);
+		ifStmt.comment();
+		assertTrue(m4.getBody().getStatement(0) instanceof CtComment);
+		CtComment ifAsComment = (CtComment) m4.getBody().getStatement(0);
+		assertEquals("if (5 > 6) {" + EOL  + 
+				"java.lang.System.out.println(\"Impossible!\");" + EOL  + 
+				"} else {" + EOL  + 
+				"java.lang.System.out.println(\"Seems right...\");" + EOL  + 
+				"}", ifAsComment.getContent());
 	}
 	
 	@Test
@@ -205,11 +219,30 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testTryStatement(){
-		
+		Launcher launcher = setUpTest();
+		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
+		CtMethod<?> m3 =  allstmt.getMethod("m3");
+		assertTrue(m3.getBody().getStatement(0) instanceof CtTry);
+		CtTry tryStmt = (CtTry) m3.getBody().getStatement(0);
+		tryStmt.comment();
+		assertTrue(m3.getBody().getStatement(0) instanceof CtComment);
+		CtComment tryAsComment = m3.getBody().getStatement(0);
+		assertEquals("try {" + EOL  + 
+				"throw new java.lang.Exception();" + EOL  + 
+				"} catch (java.lang.Exception e) {" + EOL  + 
+				"java.lang.System.out.println(e);" + EOL  + 
+				"}", tryAsComment.getContent());
 	}
 	
 	@Test
 	public void testUnaryOperatorStatement(){
-		
+		Launcher launcher = setUpTest();
+		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
+		CtMethod<?> m3 =  allstmt.getMethod("m3");
+		assertTrue(m3.getBody().getStatement(2) instanceof CtUnaryOperator);
+		CtUnaryOperator<?> incrementStmt = (CtUnaryOperator) m3.getBody().getStatement(2);
+		incrementStmt.comment();
+		CtComment incrementComment = m3.getBody().getStatement(2);
+		assertEquals("r++;", incrementComment.getContent());
 	}
 }
