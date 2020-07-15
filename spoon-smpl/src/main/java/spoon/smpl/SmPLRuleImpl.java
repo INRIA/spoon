@@ -127,7 +127,11 @@ public class SmPLRuleImpl implements SmPLRule {
             grepPattern = SmPLGrep.buildPattern(this);
         }
 
-        return grepPattern.matches(ctExecutable.toString());
+        try {
+            return grepPattern.matches(ctExecutable.getOriginalSourceFragment().getSourceCode());
+        } catch (Exception ignored) {
+            return grepPattern.matches(ctExecutable.toString());
+        }
     }
 
     /**
