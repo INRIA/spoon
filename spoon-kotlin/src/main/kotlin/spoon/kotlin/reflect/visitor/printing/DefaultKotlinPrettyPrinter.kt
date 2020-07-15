@@ -43,7 +43,7 @@ class DefaultKotlinPrettyPrinter(
 
     private fun visitCommaSeparatedList(list : List<CtElement>) {
         var commas = list.size-1
-        list.forEach {
+        for (it in list) {
             it.accept(this)
             if(commas > 0) {
                 commas--
@@ -557,7 +557,12 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtFieldReference(fieldRef: CtFieldReference<T>) {
-        adapter write fieldRef.simpleName
+        if(fieldRef.getBooleanMetadata(KtMetadataKeys.IS_ACTUAL_FIELD) == true) {
+            adapter write "field"
+        }
+        else {
+            adapter write fieldRef.simpleName
+        }
     }
 
     override fun <T : Any?> visitCtVariableRead(varRead: CtVariableRead<T>) {
@@ -735,6 +740,33 @@ class DefaultKotlinPrettyPrinter(
         // Initializer or delegate
         adapter.pushIndent()
         visitDefaultExpr(field)
+
+
+        val getter = field.getMetadata(KtMetadataKeys.PROPERTY_GETTER) as? CtMethod<*>?
+        val setter = field.getMetadata(KtMetadataKeys.PROPERTY_SETTER) as? CtMethod<*>?
+        if(getter != null) {
+            adapter.ensureNEmptyLines(0)
+            val getterModifiers = getModifiersMetadata(getter)
+            adapter.writeModifiers(getterModifiers)
+            adapter write "get() "
+            if(getter.body.isImplicit) {
+                adapter write "= "
+            }
+            visitCtBlock(getter.body)
+        }
+        if(setter != null) {
+            adapter.ensureNEmptyLines(0)
+            val setterModifiers = getModifiersMetadata(setter)
+            adapter.writeModifiers(setterModifiers)
+            adapter write "set" and LEFT_ROUND
+            visitCommaSeparatedList(setter.parameters)
+            adapter write RIGHT_ROUND
+            if(setter.body.isImplicit) {
+                adapter write "= "
+            }
+            visitCtBlock(setter.body)
+        }
+
         adapter.popIndent()
     }
 
@@ -842,8 +874,10 @@ class DefaultKotlinPrettyPrinter(
         if(param.isImplicit) return
         val modifierSet = getModifiersMetadata(param)
         adapter writeModifiers modifierSet and param.simpleName
-        adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
-        param.type.accept(this)
+        if(!param.type.isImplicit) {
+            adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
+        }
+        visitCtTypeReference(param.type)
 
         val defaultValue = param.getMetadata(KtMetadataKeys.PARAMETER_DEFAULT_VALUE) as? CtExpression<*>?
         if(defaultValue != null) {

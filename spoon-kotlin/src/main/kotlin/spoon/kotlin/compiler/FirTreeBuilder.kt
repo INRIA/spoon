@@ -5,6 +5,8 @@ import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.*
+import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertyGetter
+import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertySetter
 import org.jetbrains.kotlin.fir.declarations.impl.FirPrimaryConstructorImpl
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirElseIfTrueCondition
@@ -12,6 +14,7 @@ import org.jetbrains.kotlin.fir.expressions.impl.FirNoReceiverExpression
 import org.jetbrains.kotlin.fir.expressions.impl.FirSingleExpressionBlock
 import org.jetbrains.kotlin.fir.expressions.impl.FirUnitExpression
 import org.jetbrains.kotlin.fir.psi
+import org.jetbrains.kotlin.fir.references.FirBackingFieldReference
 import org.jetbrains.kotlin.fir.references.FirErrorNamedReference
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.references.FirSuperReference
@@ -838,12 +841,9 @@ class FirTreeBuilder(val factory : Factory,
         val ctMethod = factory.Core().createMethod<Any>()
 
         // Add params
-        function.valueParameters.forEach {
-            val p = it.accept(this,null).single
-            if(p !is CtParameter<*>) {
-                warn("Transformed parameter is not CtParameter")
-            }
-            else ctMethod.addParameter<CtMethod<Any>>(p)
+        for (it in function.valueParameters) {
+            val p = visitValueParameter(it,null).single
+            ctMethod.addParameter<CtMethod<Any>>(p)
         }
 
         // Add type parameters
@@ -1111,9 +1111,41 @@ class FirTreeBuilder(val factory : Factory,
             ctProperty.setImplicit<CtField<*>>(true)
         }
 
-        // TODO getter/setter
+        // Getter
+        val getter = property.getter
+        if(getter != null && getter !is FirDefaultPropertyGetter && getter.psi != null) {
+            ctProperty.putMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_GETTER, visitPropertyAccessor(getter, null ).single)
+        }
+        // Setter
+        val setter = property.setter
+        if(setter != null && setter !is FirDefaultPropertySetter && setter.psi != null) {
+            ctProperty.putMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_SETTER, visitPropertyAccessor(setter, null ).single)
+        }
 
         return ctProperty.compose()
+    }
+
+    override fun visitPropertyAccessor(
+        propertyAccessor: FirPropertyAccessor,
+        data: ContextData?
+    ): CompositeTransformResult.Single<CtMethod<*>> {
+        val ctMethod = createUnnamedFunction(propertyAccessor)
+
+        // Add modifiers
+        val modifiers = listOfNotNull(
+            KtModifierKind.convertVisibility(propertyAccessor.status.visibility),
+            KtModifierKind.convertModality(propertyAccessor.status.modality))
+        addModifiersAsMetadata(ctMethod, modifiers)
+        return ctMethod.compose()
+    }
+
+    override fun visitBackingFieldReference(
+        backingFieldReference: FirBackingFieldReference,
+        data: ContextData?
+    ): CompositeTransformResult.Single<CtVariableReference<*>> {
+        return referenceBuilder.getNewVariableReference<Any>(backingFieldReference.resolvedSymbol.fir).also {
+            it.putMetadata<CtVariableReference<*>>(KtMetadataKeys.IS_ACTUAL_FIELD, true)
+        }.compose()
     }
 
     private fun getBaseOfConst(constExpression: FirConstExpression<Number>) : LiteralBase {

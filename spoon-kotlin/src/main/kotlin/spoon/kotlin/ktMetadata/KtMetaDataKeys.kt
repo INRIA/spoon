@@ -9,6 +9,9 @@ object KtMetadataKeys {
     const val KT_MODIFIERS = "skt_key kt modifiers : Set<KtModifierKind>"
 
     const val PROPERTY_DELEGATE = "skt_key property delegate : CtExpression<*>?"
+    const val PROPERTY_GETTER = "skt_key property getter : CtMethod<*>?"
+    const val PROPERTY_SETTER = "skt_key property setter : CtMethod<*>?"
+    const val IS_ACTUAL_FIELD = "skt_key is actual field : Boolean"
     const val VARIABLE_EXPLICIT_TYPE = "skt_key variable explicit type : Boolean"
 
     const val PARAMETER_DEFAULT_VALUE = "skt_key parameter default value : CtExpression<*>?"
