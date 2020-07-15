@@ -10,11 +10,13 @@ package spoon.support.reflect.code;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
@@ -195,5 +197,19 @@ public class CtBlockImpl<R> extends CtStatementImpl implements CtBlock<R> {
 	@Override
 	public CtBlock<R> clone() {
 		return (CtBlock<R>) super.clone();
+	}
+	
+	@Override
+	public void comment() {
+		if (!isParentInitialized()) {
+			// already not in a tree, commenting wouldn't make a difference
+			return;
+		}
+		
+		if(getParent() instanceof CtMethod) {
+			this.getStatements().forEach(stmt -> stmt.comment());
+		}else{
+			super.comment();
+		}
 	}
 }
