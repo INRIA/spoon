@@ -2,6 +2,7 @@ package spoon.smpl;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -63,5 +64,20 @@ public class SmPLGrepTest {
         SmPLGrep.Pattern pattern = getPattern(smpl);
 
         assertTrue(pattern.matches("websettings GetFontSize"));
+    }
+
+    @Test
+    public void testEmptyDisjunctionRemovalBug() {
+
+        // contract: SmPLGrep.Pattern should remove empty disjunctions upon calling exitDisjunction
+
+        SmPLGrep.Pattern pattern = new SmPLGrep.Pattern();
+
+        pattern.addString("a");
+        pattern.addString("b");
+        pattern.enterDisjunction();
+        pattern.exitDisjunction();
+
+        assertEquals("(a & b)", pattern.toString());
     }
 }

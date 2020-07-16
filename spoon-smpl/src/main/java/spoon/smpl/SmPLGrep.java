@@ -279,11 +279,26 @@ public class SmPLGrep {
             Disjunction disjunction = (Disjunction) patternNodeStack.pop();
 
             if (lastClause.size() == 0) {
-                disjunction.remove(lastClause);
+                removeFrom(disjunction, lastClause);
             }
 
             if (disjunction.size() == 0) {
-                patternNodeStack.peek().remove(disjunction);
+                removeFrom(patternNodeStack.peek(), disjunction);
+            }
+        }
+
+        /**
+         * Remove an inner pattern node from an outer container by object identity.
+         *
+         * @param container Outer container node
+         * @param element Inner element node
+         */
+        private void removeFrom(PatternNode container, PatternNode element) {
+            for (int i = 0; i < container.size(); ++i) {
+                if (container.get(i) == element) {
+                    container.remove(i);
+                    return;
+                }
             }
         }
 
