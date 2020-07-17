@@ -22,22 +22,22 @@ public class FlagReference extends CtVariableReferenceImpl<Boolean>
 
     public static FlagReference makeFreshReturnReference()
     {
-        return new FlagReference("#NORETURN_FLAG_" + counter++);
+        return new FlagReference("NORETURN_FLAG_" + counter++);
     }
 
     public static FlagReference makeFreshBreakReference()
     {
-        return new FlagReference("#BREAK_FLAG_" + counter++);
+        return new FlagReference("BREAK_FLAG_" + counter++);
     }
 
     public static FlagReference makeFreshContinueReference()
     {
-        return new FlagReference("#CONTINUE_FLAG_" + counter++);
+        return new FlagReference("CONTINUE_FLAG_" + counter++);
     }
 
     public static FlagReference makeFreshThrowReference()
     {
-        return new FlagReference("#THROW_FLAG_" + counter++);
+        return new FlagReference("THROW_FLAG_" + counter++);
     }
 
 
