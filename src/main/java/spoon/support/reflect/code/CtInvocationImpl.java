@@ -9,7 +9,6 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtAbstractInvocation;
-import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtStatement;
@@ -197,21 +196,6 @@ public class CtInvocationImpl<T> extends CtTargetedExpressionImpl<T, CtExpressio
 			return getExecutable().removeActualTypeArgument(actualTypeArgument);
 		}
 		return false;
-	}
-
-	@Override
-	public void comment() {
-		if (!isParentInitialized()) {
-			// already not in a tree, commenting wouldn't make a difference
-			return;
-		}
-		// comment is implemented as replace by a comment
-		final String stmt = toString();
-		if (stmt.contains(CtComment.LINE_SEPARATOR)) {
-			this.replace(getFactory().Code().createComment(stmt, CtComment.CommentType.BLOCK)); // Multi line comment
-		} else {
-			this.replace(getFactory().Code().createInlineComment(stmt + ';')); // Single line comment
-		}
 	}
 
 	@Override

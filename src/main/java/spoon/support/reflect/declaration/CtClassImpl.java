@@ -11,7 +11,6 @@ import spoon.SpoonException;
 import spoon.SpoonModelBuilder.InputType;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -270,21 +269,6 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 			} catch (Exception e) {
 				return super.loadClass(s);
 			}
-		}
-	}
-
-	@Override
-	public void comment() {
-		if (!isParentInitialized()) {
-			// already not in a tree, commenting wouldn't make a difference
-			return;
-		}
-		// comment is implemented as replace by a comment
-		final String stmt = toString();
-		if (stmt.contains(CtComment.LINE_SEPARATOR)) {
-			this.replace(getFactory().Code().createComment(stmt, CtComment.CommentType.BLOCK)); // Multi line comment
-		} else {
-			this.replace(getFactory().Code().createInlineComment(stmt + ';')); // Single line comment
 		}
 	}
 

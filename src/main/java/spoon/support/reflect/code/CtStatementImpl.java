@@ -11,7 +11,6 @@ import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
-import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLoop;
@@ -282,21 +281,6 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, LABEL, label, this.label);
 		this.label = label;
 		return (T) this;
-	}
-
-	@Override
-	public void comment() {
-		if (!isParentInitialized()) {
-			// already not in a tree, commenting wouldn't make a difference
-			return;
-		}
-		// comment is implemented as replace by a comment
-		final String stmt = toString();
-		if (stmt.contains(CtComment.LINE_SEPARATOR)) {
-			this.replace(getFactory().Code().createComment(stmt, CtComment.CommentType.BLOCK)); // Multi line comment
-		} else {
-			this.replace(getFactory().Code().createInlineComment(stmt + ';')); // Single line comment
-		}
 	}
 
 	@Override
