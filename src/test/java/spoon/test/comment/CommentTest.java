@@ -1063,9 +1063,10 @@ public class CommentTest {
 
 		CtType<?> t = model.getElements(new TypeFilter<>(CtType.class)).get(0);
 
-		assertEquals("foo \nf\n", t.getDocComment());
+		// contract: the class API Javadoc works also for classes in the default package
+		assertEquals("foo\nf\n", t.getDocComment());
 
-		assertEquals("foo \nf", t.getComments().get(0).getContent());
+		assertEquals("foo\nf", t.getComments().get(0).getContent());
 	}
 
 	@Test
@@ -1080,9 +1081,10 @@ public class CommentTest {
 
 		CtPackageDeclaration pkgDecl = launcher.getFactory().CompilationUnit().getOrCreate(t).getPackageDeclaration();
 
-		assertEquals("foo \nf\n", pkgDecl.getDocComment());
+		// contract: the commet is attached to the package declaration
+		assertEquals("foo\nf\n", pkgDecl.getDocComment());
 
-		assertEquals("foo \nf", pkgDecl.getComments().get(0).getContent());
+		assertEquals("foo\nf", pkgDecl.getComments().get(0).getContent());
 	}
 
 	@Test

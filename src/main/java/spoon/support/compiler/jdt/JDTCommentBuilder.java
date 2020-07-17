@@ -193,17 +193,13 @@ public class JDTCommentBuilder {
 	 */
 	private void insertCommentInAST(final CtComment comment) {
 		CtElement commentParent = findCommentParent(comment);
-		if (commentParent instanceof CtPackageDeclaration || commentParent instanceof CtCompilationUnit) {
-			File file = spoonUnit.getFile();
-			if (file == null) {
-				//it is a virtual compilation unit - e.g. Snipet compilation unit
-				//all such comments belongs to declared type
-				List<CtType<?>> types = spoonUnit.getDeclaredTypes();
-				if (types.size() > 0) {
+		if (commentParent instanceof CtCompilationUnit) {
+				File file = spoonUnit.getFile();
+				List<CtType<?>> types = ((CtCompilationUnit) commentParent).getDeclaredTypes();
+				if (types.size() > 0 && types.get(0).getPackage().getReference().isUnnamedPackage()) {
 					types.get(0).addComment(comment);
 					return;
-				}
-			} else if (file.getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION)) {
+				} else if (file.getName().equals(DefaultJavaPrettyPrinter.JAVA_PACKAGE_DECLARATION)) {
 				//all compilation unit comments and package declaration comments are in package
 				//other comments can belong to imports or types declared in package-info.java file
 				spoonUnit.getDeclaredPackage().addComment(comment);
@@ -226,10 +222,6 @@ public class JDTCommentBuilder {
 				if (!isScanned) {
 					isScanned = true;
 					SourcePosition sp = e.getPosition();
-					if (sp.getSourceStart() == comment.getPosition().getSourceStart()) {
-						e.addComment(comment);
-						return;
-					}
 					if (sp instanceof DeclarationSourcePosition) {
 						DeclarationSourcePosition dsp = (DeclarationSourcePosition) sp;
 						if (comment.getPosition().getSourceEnd() < dsp.getModifierSourceEnd()) {
@@ -334,7 +326,7 @@ public class JDTCommentBuilder {
 
 			@Override
 			public void visitCtCompilationUnit(CtCompilationUnit compilationUnit) {
-				compilationUnit.addComment(comment);
+				compilationUnit.getPackageDeclaration().addComment(comment);
 			}
 
 			@Override
