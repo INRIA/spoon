@@ -54,7 +54,7 @@ public class C4JSetTextSizeTest {
         // This is the modified patch
 
         String smpl = "@@\n" +
-                      "expression E;" +
+                      "expression E;\n" +
                       "expression LARGEST when matches \"(WebSettings\\\\.TextSize\\\\.)?LARGEST\";\n" +
                       "expression LARGER when matches \"(WebSettings\\\\.TextSize\\\\.)?LARGER\";\n" +
                       "expression NORMAL when matches \"(WebSettings\\\\.TextSize\\\\.)?NORMAL\";\n" +
