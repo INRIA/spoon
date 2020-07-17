@@ -602,6 +602,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		}
 	}
 
+	/**
+	 * Replace the statement with a CtComment having the statement as text
+	 */
 	public void comment() {
 		if (this instanceof CtStatement && getParent() instanceof CtBlock) {
 			final String stmt = toString();
