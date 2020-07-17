@@ -88,6 +88,11 @@ public class SmPLMethodCFG {
         }
 
         @Override
+        public <T> void visitCtSuperAccess(CtSuperAccess<T> superAccess) {
+            replace(superAccess);
+        }
+
+        @Override
         public <T> void visitCtInvocation(CtInvocation<T> invocation) {
             if (!isRestoring || !isUnsupportedElementMarker(invocation)) {
                 super.visitCtInvocation(invocation);
