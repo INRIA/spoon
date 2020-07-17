@@ -16,8 +16,8 @@ contexts and give different results, depending on its parameters.
 
 ![Overview of Spoon's Templating System]({{ "/images/template-overview.svg" | prepend: site.baseurl }})
 
-Definition of templates
------------------------
+### Definition of templates
+
 
 Class `CheckBoundTemplate` below defines a Spoon template. 
 
@@ -50,8 +50,7 @@ checked. Instead of being executed, the template source code is taken as input b
 templating engine which is described above. Consequently, the template source is 
 well-typed, compiles, but the binary code of the template is thrown away.
 
-Template Instantiation
--------------
+### Template Instantiation
 
 In order to be correctly substituted, the template parameters need 
 to be bound to actual values. This is done during template instantiation.
@@ -81,8 +80,8 @@ method.getBody().insertBegin(injectedCode);
 
 ```
 
-Kinds of templating
--------------------
+### Kinds of templating
+
 
 There are different kinds of templating.
 
@@ -145,8 +144,7 @@ Substitution.insertAll(aCtClass, t);
 
 ```
 
-Template parameters
-------------------
+### Template parameters
 
 #### AST elements
 All meta-model elements can be used as template parameter. 

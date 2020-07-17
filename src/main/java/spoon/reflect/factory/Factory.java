@@ -62,6 +62,7 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
@@ -1041,4 +1042,10 @@ public interface Factory {
 	 * @see TypeFactory#createSimplyQualifiedReference(String)
 	 */
 	<T> CtTypeReference<T> createSimplyQualifiedReference(String qualifiedName);
+
+	/**
+	 *  @see CoreFactory#createYieldStatement()
+	 */
+	CtYieldStatement createYieldStatement(boolean isImplicit);
+
 }

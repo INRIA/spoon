@@ -58,6 +58,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
@@ -151,6 +152,7 @@ import spoon.support.reflect.code.CtUnaryOperatorImpl;
 import spoon.support.reflect.code.CtVariableReadImpl;
 import spoon.support.reflect.code.CtVariableWriteImpl;
 import spoon.support.reflect.code.CtWhileImpl;
+import spoon.support.reflect.code.CtYieldStatementImpl;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.position.BodyHolderSourcePositionImpl;
 import spoon.support.reflect.cu.position.CompoundSourcePositionImpl;
@@ -193,8 +195,6 @@ import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 import spoon.support.reflect.reference.CtWildcardReferenceImpl;
 import spoon.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl;
 import spoon.support.visitor.equals.CloneHelper;
-
-
 
 /**
  * This class implements a default core factory for Spoon's meta-model. This
@@ -786,9 +786,14 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	}
 
 	@Override
-	public BodyHolderSourcePosition createBodyHolderSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int bodyStart, int bodyEnd, int[] lineSeparatorPositions) {
+	public BodyHolderSourcePosition createBodyHolderSourcePosition(
+			CompilationUnit compilationUnit,
+			int nameStart, int nameEnd,
+			int modifierStart, int modifierEnd,
+			int declarationStart, int declarationEnd,
+			int bodyStart, int bodyEnd, int[] lineSeparatorPositions) {
 		return new BodyHolderSourcePositionImpl(compilationUnit,
-				startSource, end,
+				nameStart, nameEnd,
 				modifierStart, modifierEnd,
 				declarationStart, declarationEnd,
 				bodyStart, bodyEnd,
@@ -1070,6 +1075,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.declaration.CtPackageDeclaration.class)) {
 			return createPackageDeclaration();
 		}
+		if (klass.equals(spoon.reflect.code.CtYieldStatement.class)) {
+			return createYieldStatement();
+		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}
 
@@ -1122,5 +1130,11 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		ctUsedService.setFactory(getMainFactory());
 		return ctUsedService;
 	}
-}
 
+	@Override
+	public CtYieldStatement createYieldStatement() {
+		CtYieldStatement e = new CtYieldStatementImpl();
+		e.setFactory(getMainFactory());
+		return e;
+	}
+}

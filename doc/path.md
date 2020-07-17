@@ -11,7 +11,7 @@ A `CtPath`is based on: names of elements (eg `foo`), and roles of elements with 
 A role is a relation between two AST nodes.
 For instance, a "then" branch in a if/then/else is a role (and not an node). All roles can be found in `CtRole`. In addition, each getter or setter in the metamodel is annotated with its role.
 
-## Evaluating paths
+### Evaluating AST paths
 
 Paths are used to find code elements, from a given root elements.
 
@@ -20,9 +20,9 @@ path = new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.fo
 List<CtElement> l = path.evaluateOn(root)
 ```
 
-## Creating paths
+### Creating AST paths
 
-### From an existing element
+#### From an existing element
 
 Method `getPath` in `CtElement` returns a path
 
@@ -30,7 +30,7 @@ Method `getPath` in `CtElement` returns a path
 CtPath path = anElement.getPath();
 ```
 
-### From a string
+#### From a string
 
 `CtPathStringBuilder` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPathStringBuilder.html)), creates a path object from a string according to the following syntax:
 
@@ -42,7 +42,7 @@ CtPath path = anElement.getPath();
   - Example of constructor signature: `#constructor[signature=(int)]`
 - `index=<idx>` - fitler which accepts only idx-th element of the List. The first element has index 0. the fifth type memeber in a class `#typeMember[index=4]`
 
-### From the API
+#### From the API
 
 The low-level `CtPathBuilder` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtPathBuilder.html)) defines a fluent api to build your path:
 

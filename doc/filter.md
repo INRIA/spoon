@@ -5,8 +5,8 @@ keywords: quering, query, filter, ast, elements
 ---
 
 
-Getters
--------
+### Getters
+
 
 All elements provide a set of appropriate getters to get the children of an element.
 
@@ -28,8 +28,7 @@ allDescendants = ctElement.getDirectChildren();
 ```
 
 
-Filters
--------
+### Filters
 
 A Filter defines a predicate of the form of a `matches` method that
 returns `true` if an element has to be selected in the filtering operation.
@@ -63,8 +62,8 @@ list3 = rootPackage.filterChildren(
 ).list();
 ```
 
-Scanners
---------
+### Scanners
+
 
 `CtScanner` provides a simple way to visit a node and its children.
 
@@ -91,8 +90,7 @@ assertEquals(1, scanner.visited);
 
 See also `CtVisitor`.
 
-Iterator
---------
+### Iterator
 
 `CtIterator` provides an iterator on all transitive children of a node in depth first order.
 
@@ -106,8 +104,7 @@ while (iterator.hasNext()) {
 
 `CtBFSIterator` is similar to CtIterator but in Breadth first order.
 
-Queries
--------
+### Queries
 
 The Query, introduced in Spoon 5.5 by Pavel Vojtechovsky, is an improved filter mechanism:
 

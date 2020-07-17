@@ -7,6 +7,8 @@
  */
 package spoon.reflect.factory;
 
+import java.lang.annotation.Annotation;
+
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -56,6 +58,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
@@ -92,13 +95,11 @@ import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
-
-import java.lang.annotation.Annotation;
 
 /**
  * This interface defines the core creation methods for the meta-model (to be
@@ -422,7 +423,7 @@ public interface CoreFactory {
 	 */
 	BodyHolderSourcePosition createBodyHolderSourcePosition(
 			CompilationUnit compilationUnit,
-			int startSource, int end,
+			int nameSource, int nameEnd,
 			int modifierStart, int modifierEnd,
 			int declarationStart, int declarationEnd,
 			int bodyStart, int bodyEnd, int[] lineSeparatorPositions);
@@ -605,4 +606,11 @@ public interface CoreFactory {
 
 	/** Creates a "uses" directive for a Java 9 module file */
 	CtUsedService createUsedService();
+
+
+	/**
+	 * Creates a <code>yield</code> statement
+	 * @return yieldStatement
+	 */
+	CtYieldStatement createYieldStatement();
 }

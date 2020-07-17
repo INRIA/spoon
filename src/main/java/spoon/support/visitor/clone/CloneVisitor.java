@@ -6,8 +6,6 @@
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.clone;
-
-
 /**
  * Used to clone a given element.
  *
@@ -162,7 +160,6 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.code.CtBreak aCtBreak = breakStatement.getFactory().Core().createBreak();
 		this.builder.copy(breakStatement, aCtBreak);
 		aCtBreak.setAnnotations(this.cloneHelper.clone(breakStatement.getAnnotations()));
-		aCtBreak.setExpression(this.cloneHelper.clone(breakStatement.getExpression()));
 		aCtBreak.setComments(this.cloneHelper.clone(breakStatement.getComments()));
 		this.cloneHelper.tailor(breakStatement, aCtBreak);
 		this.other = aCtBreak;
@@ -1081,5 +1078,17 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtTypeMemberWildcardImportReference.setTypeReference(this.cloneHelper.clone(wildcardReference.getTypeReference()));
 		this.cloneHelper.tailor(wildcardReference, aCtTypeMemberWildcardImportReference);
 		this.other = aCtTypeMemberWildcardImportReference;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtYieldStatement(spoon.reflect.code.CtYieldStatement statement) {
+		spoon.reflect.code.CtYieldStatement aCtYieldStatement = statement.getFactory().Core().createYieldStatement();
+		this.builder.copy(statement, aCtYieldStatement);
+		aCtYieldStatement.setAnnotations(this.cloneHelper.clone(statement.getAnnotations()));
+		aCtYieldStatement.setExpression(this.cloneHelper.clone(statement.getExpression()));
+		aCtYieldStatement.setComments(this.cloneHelper.clone(statement.getComments()));
+		this.cloneHelper.tailor(statement, aCtYieldStatement);
+		this.other = aCtYieldStatement;
 	}
 }

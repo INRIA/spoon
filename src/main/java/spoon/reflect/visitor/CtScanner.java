@@ -62,6 +62,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -100,7 +101,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
-
 
 /**
  * This visitor implements a deep-search scan on the model.
@@ -143,6 +143,7 @@ public abstract class CtScanner implements CtVisitor {
 			}
 		}
 	}
+
 	/**
 	 * Generically scans a Map of meta-model elements.
 	 */
@@ -194,6 +195,7 @@ public abstract class CtScanner implements CtVisitor {
 	public void scan(Object o) {
 		scan(null, o);
 	}
+
 	/**
 	 * Generically scans an object that can be an element, a reference, or a
 	 * collection of those.
@@ -302,7 +304,6 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtBreak(final CtBreak breakStatement) {
 		enter(breakStatement);
 		scan(CtRole.ANNOTATION, breakStatement.getAnnotations());
-		scan(CtRole.EXPRESSION, breakStatement.getExpression());
 		scan(CtRole.COMMENT, breakStatement.getComments());
 		exit(breakStatement);
 	}
@@ -1003,5 +1004,14 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.TYPE_REF, wildcardReference.getTypeReference());
 		exit(wildcardReference);
 	}
+
+	@Override
+	public void visitCtYieldStatement(CtYieldStatement statement) {
+		enter(statement);
+		scan(CtRole.ANNOTATION, statement.getAnnotations());
+		scan(CtRole.EXPRESSION, statement.getExpression());
+		scan(CtRole.COMMENT, statement.getComments());
+		exit(statement);
+		}
 }
 

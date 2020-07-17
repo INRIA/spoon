@@ -165,6 +165,7 @@ public class PositionBuilder {
 			int modifiersSourceStart = variableDeclaration.modifiersSourceStart;
 			int declarationSourceStart = variableDeclaration.declarationSourceStart;
 			int declarationSourceEnd = variableDeclaration.declarationSourceEnd;
+
 			if (declarationSourceStart == 0 && declarationSourceEnd == 0) {
 				return SourcePosition.NOPOSITION;
 			}
@@ -252,11 +253,26 @@ public class PositionBuilder {
 				setModifiersPosition((CtModifiable) e, modifiersSourceStart, modifiersSourceEnd);
 			}
 
-			return cf.createDeclarationSourcePosition(cu,
+			if (variableDeclaration instanceof FieldDeclaration
+			&& !(variableDeclaration instanceof Initializer)) /* in JDT Initializer is a subclass of FieldDeclaration WTF!*/ {
+				// in JDT, for fields
+				// variableDeclaration.declarationEnd is the ";"
+				// while variableDeclaration.declarationSourceEnd contains the line comment afterwards, we don't want the comment
+				declarationSourceEnd = 	variableDeclaration.declarationEnd;
+			}
+
+
+			DeclarationSourcePosition declarationSourcePosition = cf.createDeclarationSourcePosition(cu,
 					sourceStart, sourceEnd,
 					modifiersSourceStart, modifiersSourceEnd,
 					declarationSourceStart, declarationSourceEnd,
 					lineSeparatorPositions);
+
+			if (variableDeclaration instanceof FieldDeclaration) {
+				// endPart2Position is after the initialization code
+				declarationSourcePosition = declarationSourcePosition.addDefaultValueEnd(((FieldDeclaration) variableDeclaration).endPart2Position);
+			}
+			return declarationSourcePosition;
 		} else if (node instanceof TypeDeclaration && e instanceof CtPackage) {
 			// the position returned by JTD is equals to 0
 			return cf.createSourcePosition(cu, 0, contents.length - 1, lineSeparatorPositions);
@@ -391,6 +407,12 @@ public class PositionBuilder {
 			//build position with appropriate context
 			return buildPositionCtElement(e, (Argument) pair.node);
 		} else if (node instanceof TypeReference) {
+			TypeReference typeReference = (TypeReference) node;
+			if (typeReference.resolvedType.getTypeAnnotations() != null) {
+				for (int a = 0; a < typeReference.resolvedType.getTypeAnnotations().length; a++) {
+					sourceStart = findPrevAnnotations(contents, 0, sourceStart);
+				}
+			}
 			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
 		} else if (node instanceof AllocationExpression) {
 			AllocationExpression allocationExpression = (AllocationExpression) node;
@@ -580,6 +602,15 @@ public class PositionBuilder {
 					//TODO handle comments correctly here. E.g. List<T /*ccc*/ >
 					sourceEnd = findNextNonWhitespace(contents, contents.length - 1, getSourceEndOfTypeReference(contents, tr, tr.sourceEnd) + 1);
 				}
+				// hack to get sniper of varargs right
+				// we remove the "..." from the source position
+				// hence from the fragment
+				if (contents[sourceEnd] == '.'
+						&& contents[sourceEnd - 1] == '.'
+						&& contents[sourceEnd - 2] == '.'
+				) {
+					sourceEnd = sourceEnd - 3;
+				}
 			} else {
 				//SomeType<>
 				int startIdx = findNextNonWhitespace(contents, contents.length - 1, sourceEnd + 1);
@@ -678,6 +709,24 @@ public class PositionBuilder {
 			if (startOfCommentOff >= 0) {
 				off = startOfCommentOff;
 			} else if (Character.isWhitespace(c) == false) {
+				//non whitespace found.
+				return off;
+			}
+			off--;
+		}
+		return -1;
+	}
+
+	static int findPrevAnnotations(char[] content, int minOff, int off) {
+		minOff = Math.max(0, minOff);
+		while (off >= minOff) {
+			char c = content[off];
+			//first check a comment and then whitesapce
+			//because line comment "// ...  \n" ends with EOL, which would be eat by isWhitespace and the comment detection would fail then
+			int startOfCommentOff = getStartOfComment(content, minOff, off);
+			if (startOfCommentOff >= 0) {
+				off = startOfCommentOff;
+			} else if (c == '@') {
 				//non whitespace found.
 				return off;
 			}

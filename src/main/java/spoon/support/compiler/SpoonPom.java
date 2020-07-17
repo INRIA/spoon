@@ -260,7 +260,7 @@ public class SpoonPom implements SpoonResource {
 			return correctJavaVersion(javaVersion);
 		}
 		for (Profile profile: model.getProfiles()) {
-			if (profile.getActivation() != null && profile.getActivation().isActiveByDefault()) {
+			if (profile.getActivation() != null && profile.getActivation().isActiveByDefault() && profile.getBuild() != null) {
 				javaVersion = getSourceVersion(profile.getBuild());
 			}
 		}

@@ -56,6 +56,10 @@ import java.util.regex.Pattern;
 
 /**
  * A scanner that calculates the imports for a given model.
+ *
+ * This class is not used anymore, it has been replaced by all subclasses of {@link ImportAnalyzer}.
+ *
+ * Still, we keep ImportScannerImpl for backward compatibility because it is used by some clients.
  */
 public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
@@ -666,11 +670,9 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 		methodImports.put(ref.getSimpleName(), ref);
 
 		// if we are in the same package than target type, we also import class to avoid FQN in FQN mode.
-		if (ref.getDeclaringType() != null) {
-			if (ref.getDeclaringType().getPackage() != null) {
+		if (ref.getDeclaringType() != null && ref.getDeclaringType().getPackage() != null && this.targetType != null) {
 				if (ref.getDeclaringType().getPackage().equals(this.targetType.getPackage())) {
 					addClassImport(ref.getDeclaringType());
-				}
 			}
 		}
 		return true;

@@ -356,8 +356,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 			if (declaredTypeReferences.isEmpty()) {
 				throw new SpoonException("Root source fragment of compilation unit of package is not supported");
 			}
-			rootFragment = new ElementSourceFragment(this, null);
-			rootFragment.addTreeOfSourceFragmentsOfElement(this);
+			rootFragment = ElementSourceFragment.createSourceFragmentsFrom(this);
 		}
 		return rootFragment;
 	}

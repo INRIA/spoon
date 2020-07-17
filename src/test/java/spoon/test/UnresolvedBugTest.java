@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -60,10 +61,10 @@ public class UnresolvedBugTest {
 	public void checkGithubIssueAnnotations() throws IOException {
 		// contract: every test GitHubIssue annotation points to a valid issue number and the issue is open.
 		// Ignored by default as it is flacky when run in CI
-		testMethods = testMethods.stream()
+		List<CtMethod<?>> testMethodsWithGHI = testMethods.stream()
 				.filter(v -> v.hasAnnotation(Test.class) && v.hasAnnotation(GitHubIssue.class))
 				.collect(Collectors.toList());
-		for (CtMethod<?> ctMethod : testMethods) {
+		for (CtMethod<?> ctMethod : testMethodsWithGHI) {
 			int issueNumber = ctMethod.getAnnotation(GitHubIssue.class).issueNumber();
 			URL url = new URL(githubURL + issueNumber);
 			// because readAllBytes is jdk9 only
@@ -75,6 +76,7 @@ public class UnresolvedBugTest {
 	}
 
 	static private List<CtMethod<?>> findTestMethods() {
+		System.out.println("path: " + (new File("src/test/java/spoon")).getAbsolutePath());
 		return new FluentLauncher().inputResource("src/test/java/spoon")
 				.noClasspath(true)
 				.disableConsistencyChecks()
@@ -91,20 +93,22 @@ public class UnresolvedBugTest {
 		// contract: every test ignored with @Ignore("UnresolvedBug") has an open
 		// issue.
 		// Ignored by default as it is flacky when run in CI
-		testMethods = testMethods.stream()
+		List<CtMethod<?>> testMethodsWithoutGHI = testMethods.stream()
 				.filter(v -> !v.hasAnnotation(GitHubIssue.class))
 				.collect(Collectors.toList());
-		assertEquals(testMethods.size(), 0);
+		assertEquals(testMethodsWithoutGHI.size(), 0);
 	}
 
 	@Test
 	public void checkThatUnresolvedBugTestFail() throws InitializationError {
 		//contract: Test annotated with UnresolvedBug must fail
+		System.out.println("Running @Ignore(\"UnresolvedBug\") tests: " + testMethods.size());
 
 		JUnitCore junit = new JUnitCore();
 		FailureListener failures = new FailureListener();
 		junit.addListener(failures);
 		for(CtMethod unresolvedTest: testMethods) {
+			System.out.println("Running : " + unresolvedTest.getDeclaringType().getQualifiedName() + "#" + unresolvedTest.getSimpleName());
 			Class testClass = unresolvedTest.getDeclaringType().getActualClass();
 			String testMethod = unresolvedTest.getSimpleName();
 			junit.run(new RunDespiteIgnore(testClass, testMethod));

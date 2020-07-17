@@ -39,9 +39,11 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtWildcardReference;
@@ -701,5 +703,52 @@ public class TypeReferenceTest {
 		// test type with null package
 		CtTypeReference tr2 = fields.get(0).getType();
 		assertTrue(vars.get(0).getReference().getType().canAccess(tr2));
+	}
+
+	@Test
+	public void testQualifiedArrayTypeReferenceNoClasspath() {
+		// contract: component type of explicitly qualified array type reference should have explicit package reference
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/QualifiedArrayType.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+		List<CtArrayTypeReference<?>> refs = model.getElements(e -> true);
+
+		int loopIterations = 0; // for meta assert
+		for (CtArrayTypeReference<?> arrayTypeRef : refs) {
+		    CtTypeReference<?> compType = getDeepestComponentType(arrayTypeRef);
+		    assertFalse(compType.getPackage().isImplicit());
+			loopIterations++;
+		}
+
+		assertTrue("Test loop did not execute", loopIterations > 0);
+	}
+
+	private static CtTypeReference<?> getDeepestComponentType(CtArrayTypeReference<?> arrayTypeRef) {
+		CtReference ref = arrayTypeRef;
+		while (ref instanceof CtArrayTypeReference) {
+			ref = ((CtArrayTypeReference<?>) ref).getComponentType();
+		}
+		return (CtTypeReference<?>) ref;
+	}
+
+	@Test
+	public void testUnqualifiedExternalTypeMemberAccess() {
+		// contract: if a type member is accessed without qualification, but it is not part of the current
+		// compilation unit, any qualification attached to it through import resolution must remain implicit
+		// See #3363 for details
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/noclasspath/UnqualifiedExternalTypeMemberAccess.java");
+		launcher.getEnvironment().setNoClasspath(true);
+		CtModel model = launcher.buildModel();
+		List<CtTypeReference<?>> typeReferences = model.getElements(e -> e.getSimpleName().equals("SOMETHING"));
+
+		assertEquals("There should only be one reference to SOMETHING, check the resource!", 1, typeReferences.size());
+
+		CtTypeReference<?> typeRef = typeReferences.get(0);
+		CtTypeReference<?> declType = typeRef.getDeclaringType();
+
+		assertEquals("Constants", declType.getSimpleName());
+		assertTrue(declType.isImplicit());
 	}
 }

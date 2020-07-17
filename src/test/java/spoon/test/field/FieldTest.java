@@ -19,6 +19,7 @@ package spoon.test.field;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -42,6 +43,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.cu.position.DeclarationSourcePositionImpl;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.field.testclasses.A;
 import spoon.test.field.testclasses.AddFieldAtTop;
@@ -136,6 +138,20 @@ public class FieldTest {
 		spoon.buildModel();
 
 		final CtClass<A> aClass = spoon.getFactory().Class().get(A.class);
+
+		// contract: isPartOfJointDeclaration works per the specification in the javadoc
+		assertEquals(false,aClass.getField("alone1").isPartOfJointDeclaration());
+		assertEquals(false,aClass.getField("alone2").isPartOfJointDeclaration());
+		assertEquals(false,aClass.getField("alone3").isPartOfJointDeclaration());
+		assertEquals(true,aClass.getField("i").isPartOfJointDeclaration());
+		assertEquals(true,aClass.getField("k").isPartOfJointDeclaration());
+		assertEquals(true,aClass.getField("n").isPartOfJointDeclaration());
+		assertEquals(true,aClass.getField("l").isPartOfJointDeclaration());
+		assertEquals(true,aClass.getField("m").isPartOfJointDeclaration());
+
+		// bonus assertions for Java noobs
+		assertEquals(0,A.l); // default initialization of Java
+		assertEquals(1,A.m);
 
 		CtClass<A.ClassB> bClass = aClass.getFactory().Class().get(A.ClassB.class);
 		List<CtMethod<?>> methods = bClass.getMethodsByName("getKey");

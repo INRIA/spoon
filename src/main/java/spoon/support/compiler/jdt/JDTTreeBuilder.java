@@ -98,6 +98,7 @@ import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.UnaryExpression;
 import org.eclipse.jdt.internal.compiler.ast.UnionTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.WhileStatement;
+import org.eclipse.jdt.internal.compiler.ast.YieldStatement;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -1779,6 +1780,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 	public boolean visit(ModuleDeclaration moduleDeclaration, CompilationUnitScope scope) {
 		CtModule module = getHelper().createModule(moduleDeclaration);
 		context.compilationUnitSpoon.setDeclaredModule(module);
+		return true;
+	}
+
+	@Override
+	public void endVisit(YieldStatement yieldStatement, BlockScope scope) {
+		context.exit(yieldStatement);
+	}
+	@Override
+	public boolean visit(YieldStatement yieldStatement, BlockScope scope) {
+		context.enter(factory.Core().createYieldStatement().setImplicit(yieldStatement.isImplicit), yieldStatement);
 		return true;
 	}
 }

@@ -53,9 +53,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
-/**
- * Created by gerard on 14/10/2014.
- */
 public class ImportScannerTest {
 
 	@Test
@@ -69,6 +66,11 @@ public class ImportScannerTest {
 		spoon.getEnvironment().setSourceOutputDirectory(targetDir);
 		spoon.getEnvironment().setLevel("warn");
 		spoon.buildModel();
+
+		// contract: ImportScannerImpl does not throw an exception on a large and complex model (OK, it's a smoke test)
+		// Update: I found a nasty NPE bug :-), smoke tests can be useful
+		new ImportScannerImpl().scan(spoon.getFactory().Package().getRootPackage());
+
 
 		PrettyPrinter prettyPrinter = new DefaultJavaPrettyPrinter(spoon.getEnvironment());
 

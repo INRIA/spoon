@@ -460,6 +460,26 @@ int x = switch(i) { // <-- switch expression
     };
 
 ```
+### CtYieldStatement
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtYieldStatement.html)
+
+```java
+
+    int x = 0;
+    x = switch ("foo") {
+        default -> {
+					x=x+1;
+					yield x; //<--- yield statement
+					}
+    };
+
+
+    int x = 0;
+    x = switch ("foo") {
+        default -> 4; //<---  implicit yield statement
+    };
+
+```
 ### CtAnnotation
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtAnnotation.html)
 

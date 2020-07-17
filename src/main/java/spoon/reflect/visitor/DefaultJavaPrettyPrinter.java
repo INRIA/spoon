@@ -69,6 +69,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.code.UnaryOperatorKind;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
@@ -115,6 +116,7 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.printer.CommentOffset;
+import spoon.support.util.ModelList;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -548,13 +550,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeKeyword("break");
 			if (breakStatement.getTargetLabel() != null) {
 				printer.writeSpace().writeKeyword(breakStatement.getTargetLabel());
-			} else if (breakStatement.getExpression() != null) {
-				printer.writeSpace();
-				scan(breakStatement.getExpression());
 			}
-		} else {
-			// Arrow (->) syntax from Java 12
-			scan(breakStatement.getExpression());
 		}
 		exitCtStatement(breakStatement);
 	}
@@ -1088,7 +1084,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			break;
 		case TYPE_DECLARATION:
 				scan(compilationUnit.getPackageDeclaration());
-				for (CtImport imprt : compilationUnit.getImports()) {
+				for (CtImport imprt : getImports(compilationUnit)) {
 					scan(imprt);
 					printer.writeln();
 				}
@@ -1103,6 +1099,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} finally {
 			this.sourceCompilationUnit = outerCompilationUnit;
 		}
+	}
+
+	protected ModelList<CtImport> getImports(CtCompilationUnit compilationUnit) {
+		return compilationUnit.getImports();
 	}
 
 	@Override
@@ -1620,7 +1620,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!ctPackage.isUnnamedPackage()) {
 			elementPrinterHelper.writePackageLine(ctPackage.getQualifiedName());
 		}
-		elementPrinterHelper.writeImports(ctPackage.getPosition().getCompilationUnit().getImports());
+		elementPrinterHelper.writeImports(getImports(ctPackage.getPosition().getCompilationUnit()));
 	}
 
 	@Override
@@ -1870,7 +1870,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 					printer.writeSeparator(CtPackage.PACKAGE_SEPARATOR);
 				}
 			}
-			elementPrinterHelper.writeAnnotations(ref);
+			// You don't want to include annotations in import of an annotated object
+			if (ref.isParentInitialized() && !(ref.getParent() instanceof CtImport)) {
+				elementPrinterHelper.writeAnnotations(ref);
+			}
 			printer.writeIdentifier(ref.getSimpleName());
 		}
 		if (withGenerics && !context.ignoreGenerics()) {
@@ -2101,4 +2104,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void setIgnoreImplicit(boolean ignoreImplicit) {
 		this.ignoreImplicit = ignoreImplicit;
 }
+
+	@Override
+	public void visitCtYieldStatement(CtYieldStatement statement) {
+		if (statement.isImplicit()) {
+			scan(statement.getExpression());
+			exitCtStatement(statement);
+			return;
+		}
+		enterCtStatement(statement);
+		printer.writeKeyword("yield");
+		if (statement.getExpression() != null) {
+			printer.writeSpace();
+		}
+		scan(statement.getExpression());
+		exitCtStatement(statement);
+	}
 }

@@ -56,6 +56,7 @@ import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
@@ -523,4 +524,9 @@ public interface CtVisitor {
 	 * Visits an import wildcard static type member reference
 	 */
 	void visitCtTypeMemberWildcardImportReference(CtTypeMemberWildcardImportReference wildcardReference);
+
+	/**
+	 * Visits a yield statement.
+	 */
+	void visitCtYieldStatement(CtYieldStatement statement);
 }

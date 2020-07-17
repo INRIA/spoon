@@ -108,6 +108,11 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	}
 
 	@Override
+	public boolean isPartOfJointDeclaration() {
+		return false;
+	}
+
+	@Override
 	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.NAME, simpleName, this.name);
 		this.name = simpleName;

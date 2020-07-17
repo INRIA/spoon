@@ -54,9 +54,27 @@ import spoon.test.position.testclasses.AnnonymousClassNewIface;
 import spoon.test.position.testclasses.FooField;
 import spoon.test.position.testclasses.FooSourceFragments;
 import spoon.test.position.testclasses.NewArrayList;
+import spoon.test.prettyprinter.testclasses.OneLineMultipleVariableDeclaration;
 import spoon.testing.utils.ModelUtils;
 
 public class TestSourceFragment {
+
+	@Test
+	public void testSourceFragmentField() {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/java/spoon/test/prettyprinter/testclasses/OneLineMultipleVariableDeclaration.java");
+		spoon.buildModel();
+
+		CtType t = spoon.getFactory().Type().get(OneLineMultipleVariableDeclaration.class);
+
+		ElementSourceFragment fragment = ElementSourceFragment.createSourceFragmentsFrom(t);
+
+		// contract: there is no full fragment for joint fields
+		// the fragment of the type of field a
+		assertEquals("|int|", fragment.getChildrenFragments().get(8).toString());
+
+	}
+
 
 	@Test
 	public void testSourcePositionFragment() {
@@ -102,14 +120,15 @@ public class TestSourceFragment {
 
 	@Test
 	public void testSourceFragmentAddChildBeforeOrAfter() {
-		//contract: start / end of root fragment is moved when child is added
+		//contract: fragments are linked with sibling relation when child is added
 		ElementSourceFragment rootFragment = createFragment(10, 20);
-		rootFragment.addChild(createFragment(5, 7));
-		assertEquals(5, rootFragment.getStart());
-		assertEquals(20, rootFragment.getEnd());
-		rootFragment.addChild(createFragment(20, 25));
-		assertEquals(5, rootFragment.getStart());
-		assertEquals(25, rootFragment.getEnd());
+		assertEquals(null, rootFragment.getNextSibling());
+		ElementSourceFragment fragment1 = createFragment(5, 7);
+		rootFragment.add(fragment1);
+		assertSame(rootFragment, fragment1.getNextSibling());
+		ElementSourceFragment fragment = createFragment(20, 25);
+		rootFragment.add(fragment);
+		assertSame(fragment, rootFragment.getNextSibling());
 	}
 
 	@Test
@@ -145,7 +164,6 @@ public class TestSourceFragment {
 		assertSame(childA, childWrapper.getFirstChild());
 		assertSame(child, childA.getNextSibling());
 		assertSame(childB, child.getFirstChild());
-		assertSame(childC, child.getNextSibling());
 		assertSame(childD, childC.getNextSibling());
 	}
 

@@ -127,7 +127,12 @@ public class JDTTreeBuilderHelper {
 			//do not set type of variable yet. It will be initialized later by visit of multiple types. Each call then ADDs one type
 			return result;
 		} else {
-			CtTypeReference ctTypeReference = jdtTreeBuilder.getReferencesBuilder().<Throwable>getTypeReference(typeReference.resolvedType);
+			CtTypeReference ctTypeReference;
+			if (typeReference.resolvedType instanceof ProblemReferenceBinding) {
+				ctTypeReference = jdtTreeBuilder.getReferencesBuilder().buildTypeReference(typeReference, null);
+			} else {
+				ctTypeReference = jdtTreeBuilder.getReferencesBuilder().<Throwable>getTypeReference(typeReference.resolvedType);
+			}
 			return result.<CtCatchVariable>setType(ctTypeReference);
 		}
 	}
@@ -639,7 +644,9 @@ public class JDTTreeBuilderHelper {
 		} else {
 			typeReference.setSimpleName(CharOperation.charToString(singleNameReference.binding.readableName()));
 		}
-		jdtTreeBuilder.getReferencesBuilder().setPackageOrDeclaringType(typeReference, jdtTreeBuilder.getReferencesBuilder().getDeclaringReferenceFromImports(singleNameReference.token));
+		CtReference packageOrDeclaringType = jdtTreeBuilder.getReferencesBuilder().getDeclaringReferenceFromImports(singleNameReference.token);
+		// package/declaring type must be added as implicit as a SingleNameReference is not qualified, see #3363 and #3370
+		jdtTreeBuilder.getReferencesBuilder().setImplicitPackageOrDeclaringType(typeReference, packageOrDeclaringType);
 		return jdtTreeBuilder.getFactory().Code().createTypeAccess(typeReference);
 	}
 
@@ -659,7 +666,11 @@ public class JDTTreeBuilderHelper {
 		} else if (ref.isStatic()) {
 			target = createTypeAccess(qualifiedNameReference, ref);
 		} else if (!ref.isStatic() && !ref.getDeclaringType().isAnonymous()) {
-			target = jdtTreeBuilder.getFactory().Code().createThisAccess(jdtTreeBuilder.getReferencesBuilder().<Object>getTypeReference(qualifiedNameReference.actualReceiverType), true);
+			if (!JDTTreeBuilderQuery.isResolvedField(qualifiedNameReference)) {
+				target = createTypeAccessNoClasspath(qualifiedNameReference);
+			} else {
+				target = jdtTreeBuilder.getFactory().Code().createThisAccess(jdtTreeBuilder.getReferencesBuilder().<Object>getTypeReference(qualifiedNameReference.actualReceiverType), true);
+			}
 		}
 		return target;
 	}
