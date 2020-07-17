@@ -19,8 +19,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -101,11 +103,13 @@ public class SmPLProcessor extends AbstractProcessor<CtExecutable<?>> {
 
         totalTimer.stop();
 
+        double totaltime = totalTimer.getAccumulatedTime() / 1E9;
+        double proctime = procTimer.getAccumulatedTime() / 1E9;
         double greptime = grepTimer.getAccumulatedTime() / 1E9;
         double patchtime = patchTimer.getAccumulatedTime() / 1E9;
-        double totaltime = totalTimer.getAccumulatedTime() / 1E9;
+
         double smpltime = greptime + patchtime;
-        double spoontime = totaltime - smpltime;
+        double spoontime = totaltime - proctime;
 
         System.out.println("grepCounter: " + grepCounter);
         System.out.println("grepTimer: " + greptime + " s.");
@@ -113,6 +117,7 @@ public class SmPLProcessor extends AbstractProcessor<CtExecutable<?>> {
         System.out.println("transformationCounter: " + transformationCounter);
         System.out.println("patchTimer: " + patchtime + " s.");
         System.out.println("totalTimer: " + totaltime + " s.");
+        System.out.println("procTimer: " + proctime + " s.");
         System.out.println("SmPL processing: " + smpltime + " s.");
         System.out.println("Spoon processing: " + spoontime + " s.");
 
@@ -200,42 +205,74 @@ public class SmPLProcessor extends AbstractProcessor<CtExecutable<?>> {
      * @param ctExecutable Executable block to patch
      */
     @Override
-    public void process(CtExecutable ctExecutable) {
-        if (smplRule == null) {
-            throw new IllegalStateException("SmPL rule must be loaded before calling process()");
+    public void process(CtExecutable<?> ctExecutable) {
+        procTimer.start();
+
+        try {
+            if (smplRule == null) {
+                throw new IllegalStateException("SmPL rule must be loaded before calling process()");
+            }
+
+            File sourceFile = ctExecutable.getPosition().getFile();
+
+            if (sourceFile != null) {
+                if (skippedFiles.contains(sourceFile)) {
+                    return;
+                }
+
+                if (!candidateFiles.contains(sourceFile)) {
+                    grepTimer.start();
+
+                    boolean isCandidateFile = smplRule.isPotentialMatch(sourceFile);
+
+                    grepTimer.stop();
+                    grepCounter += 1;
+
+                    if (isCandidateFile) {
+                        candidateFiles.add(sourceFile);
+                        System.out.println("HANDLING: " + sourceFile.getPath());
+                    } else {
+                        skippedFiles.add(sourceFile);
+                        System.out.println("Skipped: " + sourceFile.getPath());
+                        return;
+                    }
+                }
+            }
+
+            grepTimer.start();
+
+            boolean potentialMatch = smplRule.isPotentialMatch(ctExecutable);
+
+            grepTimer.stop();
+            grepCounter += 1;
+
+            if (!potentialMatch) {
+                return;
+            }
+
+            System.out.print("Potential: " + getFullyQualifiedName(ctExecutable));
+
+            storeOriginalSourceIfNotAlreadyStored(ctExecutable.getPosition().getCompilationUnit());
+
+            patchTimer.start();
+
+            new TypeAccessReplacer(EnumSet.of(TypeAccessReplacer.Options.NoCheckParents)).scan(ctExecutable);
+            boolean patchApplied = tryApplyPatch(ctExecutable, smplRule);
+
+            patchTimer.stop();
+
+            if (patchApplied) {
+                System.out.println("... Patched!");
+                transformedCUs.put(ctExecutable.getPosition().getFile(), ctExecutable.getPosition().getCompilationUnit());
+                transformationCounter += 1;
+            } else {
+                System.out.print("\n");
+            }
+
+            tryPatchCounter += 1;
+        } finally {
+            procTimer.stop();
         }
-
-        grepTimer.start();
-
-        boolean potentialMatch = smplRule.isPotentialMatch(ctExecutable);
-
-        grepTimer.stop();
-        grepCounter += 1;
-
-        if (!potentialMatch) {
-            return;
-        }
-
-        System.out.print("Potential: " + getFullyQualifiedName(ctExecutable));
-
-        storeOriginalSourceIfNotAlreadyStored(ctExecutable.getPosition().getCompilationUnit());
-
-        patchTimer.start();
-
-        new TypeAccessReplacer(EnumSet.of(TypeAccessReplacer.Options.NoCheckParents)).scan(ctExecutable);
-        boolean patchApplied = tryApplyPatch(ctExecutable, smplRule);
-
-        patchTimer.stop();
-
-        if (patchApplied) {
-            System.out.println("... Patched!");
-            transformedCUs.put(ctExecutable.getPosition().getFile(), ctExecutable.getPosition().getCompilationUnit());
-            transformationCounter += 1;
-        } else {
-            System.out.print("\n");
-        }
-
-        tryPatchCounter += 1;
     }
 
     /**
@@ -274,6 +311,7 @@ public class SmPLProcessor extends AbstractProcessor<CtExecutable<?>> {
         ModelChecker.ResultSet results = checker.getResult();
 
         if (results.isEmpty() || results.getAllWitnesses().isEmpty()) {
+            model.getCfg().restoreUnsupportedElements();
             return false;
         }
 
@@ -442,6 +480,11 @@ public class SmPLProcessor extends AbstractProcessor<CtExecutable<?>> {
     private static Timer totalTimer = new Timer();
 
     /**
+     * Timer for calls to the process() method.
+     */
+    private static Timer procTimer = new Timer();
+
+    /**
      * Timer for application of SmPLGrep optimization through SmPLRule::isPotentialMatch().
      */
     private static Timer grepTimer = new Timer();
@@ -476,4 +519,14 @@ public class SmPLProcessor extends AbstractProcessor<CtExecutable<?>> {
      * Original compilation unit sources, kept track of in order to print diffs.
      */
     private static Map<File, String> originalSource = new HashMap<>();
+
+    /**
+     * Set of Files matching the SmPLGrep pattern, being candidates for containing patchable executables.
+     */
+    private static Set<File> candidateFiles = new HashSet<>();
+
+    /**
+     * Set of Files not matching the SmPLGrep pattern, having no possibility of matching the patch.
+     */
+    private static Set<File> skippedFiles = new HashSet<>();
 }
