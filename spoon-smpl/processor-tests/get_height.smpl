@@ -1,0 +1,23 @@
+@rule1@
+Display display;
+identifier p;
+type T;
+@@
+(
+- p = new Point(display.getWidth(), display.getHeight());
++ p = new Point();
++ display.getSize(p);
+|
+- T p = new Point(display.getWidth(), display.getHeight());
++ T p = new Point();
++ display.getSize(p);
+)
+<...
+(
+- display.getHeight()
++ p.y
+|
+- display.getWidth()
++ p.x
+)
+...>

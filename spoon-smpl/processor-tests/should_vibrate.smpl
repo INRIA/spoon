@@ -1,0 +1,23 @@
+@@
+type T;
+identifier am, f, ctx;
+expression vibrate_type;
+@@
++ boolean shouldVibrate(AudioManager am, Context ctx, int vibrateType) {
++     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
++         Vibrator vibrator = (Vibrator) ctx.getSystemService(Context.VIBRATOR_SERVICE);
++         if (vibrator == null || !vibrator.hasVibrator()) {
++                 return false;
++         }
++         return am.getRingerMode() != AudioManager.RINGER_MODE_SILENT;
++     } else {
++         return audioManager.shouldVibrate(vibrateType);
++     }
++ }
+
+T f(..., Context ctx, ...) {
+...
+- am.shouldVibrate(vibrate_type)
++ shouldVibrate(am, ctx, vibrate_type)
+...
+}
