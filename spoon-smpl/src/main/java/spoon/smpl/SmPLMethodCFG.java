@@ -38,7 +38,7 @@ public class SmPLMethodCFG {
             swappedElements = new HashMap<>();
             swapIndex = 0;
 
-            ctExecutable.getBody().accept(this);
+            ctExecutable.accept(this);
         }
 
         /**
@@ -89,13 +89,9 @@ public class SmPLMethodCFG {
 
         @Override
         public <T> void visitCtInvocation(CtInvocation<T> invocation) {
-            if (!isRestoring) {
+            if (!isRestoring || !isUnsupportedElementMarker(invocation)) {
                 super.visitCtInvocation(invocation);
             } else {
-                if (!isUnsupportedElementMarker(invocation)) {
-                    return;
-                }
-
                 int index = ((CtLiteral<Integer>) invocation.getArguments().get(0)).getValue();
 
                 invocation.replace(swappedElements.get(index));
@@ -108,6 +104,10 @@ public class SmPLMethodCFG {
          * @param e Element to replace
          */
         private void replace(CtElement e) {
+            if (isRestoring) {
+                throw new IllegalStateException("there should never be a call to replace() while restoring");
+            }
+
             swappedElements.put(swapIndex, e);
             e.replace(createReplacementInvocation(e.getFactory(), swapIndex));
 

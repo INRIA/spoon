@@ -2,7 +2,10 @@ package spoon.smpl;
 
 import fr.inria.controlflow.*;
 import org.junit.Test;
+import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtMethod;
+import spoon.support.compiler.VirtualFile;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -65,5 +68,47 @@ public class SmPLMethodCFGTest {
         }
 
         assertEquals(2, branchesFound);
+    }
+
+    @Test
+    public void testUnsupportedElementInAnnotationBug() {
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setAutoImports(false);
+        launcher.addInputResource(new VirtualFile("class A {\n" +
+                                                  "  public static @interface MyAnnotation {\n" +
+                                                  "    public String[] value() default {};\n" +
+                                                  "  }\n" +
+                                                  "\n" +
+                                                  "  @MyAnnotation({\"a\", \"b\"})\n" +
+                                                  "  public void m() {\n" +
+                                                  "    int[] xs = new int[]{1, 2, 3};\n" +
+                                                  "  }\n" +
+                                                  "}\n"));
+        launcher.buildModel();
+        CtMethod<?> method = launcher.getModel().getRootPackage().getType("A").getMethodsByName("m").get(0);
+
+        SmPLMethodCFG.UnsupportedElementSwapper ues = new SmPLMethodCFG.UnsupportedElementSwapper(method);
+        ues.restore();
+
+        assertFalse(method.getParent().toString().contains("__SmPLUnsupported__"));
+    }
+
+    @Test
+    public void testNestedInvocationRestoreBug() {
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setAutoImports(false);
+        launcher.addInputResource(new VirtualFile("class A {\n" +
+                                                  "  public void foo(int[] xs) { }\n" +
+                                                  "  public void m() {\n" +
+                                                  "    foo(new int[]{1, 2, 3});\n" +
+                                                  "  }\n" +
+                                                  "}\n"));
+        launcher.buildModel();
+        CtMethod<?> method = launcher.getModel().getRootPackage().getType("A").getMethodsByName("m").get(0);
+
+        SmPLMethodCFG.UnsupportedElementSwapper ues = new SmPLMethodCFG.UnsupportedElementSwapper(method);
+        ues.restore();
+
+        assertFalse(method.toString().contains("__SmPLUnsupported__"));
     }
 }
