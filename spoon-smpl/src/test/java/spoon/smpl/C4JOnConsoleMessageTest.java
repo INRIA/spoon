@@ -64,4 +64,27 @@ public class C4JOnConsoleMessageTest {
         assertFalse(innerMethod.toString().contains("Log.d(\"MyApplication\", (((message + \" -- From line \") + lineNumber) + \" of \") + sourceID);"));
         assertTrue(innerMethod.toString().contains("Log.d(\"MyApplication\", (((cs.message() + \" -- From line \") + cs.lineNumber()) + \" of \") + cs.sourceId());"));
     }
+
+    @Test
+    public void testViewFileFragment() {
+
+        // contract: the patch should match and perform each of the four replacements (lines 5-6, 9-10, 12-13, 15-16) exactly once
+
+        CtMethod<?> outerMethod = ctx.getMethod("me.sheimi.sgit.fragments.ViewFileFragment::onCreateView");
+
+        CtInvocation<?> invocation = outerMethod.getBody().getStatement(10);
+        CtClass<?> innerClass = ((CtNewClass<?>) invocation.getArguments().get(0)).getAnonymousClass();
+
+        CtMethod<?> innerMethod = innerClass.getMethodsByName("onConsoleMessage").get(0);
+
+        assertTrue(innerMethod.toString().contains("public void onConsoleMessage(java.lang.String message, int lineNumber, java.lang.String sourceID) {"));
+        assertTrue(innerMethod.toString().contains("Log.d(\"MyApplication\", (((message + \" -- From line \") + lineNumber) + \" of \") + sourceID);"));
+
+        ctx.testExecutable(innerMethod);
+        assertFalse(innerMethod.toString().contains("public void onConsoleMessage(java.lang.String message, int lineNumber, java.lang.String sourceID) {"));
+        assertTrue(innerMethod.toString().contains("public void onConsoleMessage(ConsoleMessage cs) {"));
+
+        assertFalse(innerMethod.toString().contains("Log.d(\"MyApplication\", (((message + \" -- From line \") + lineNumber) + \" of \") + sourceID);"));
+        assertTrue(innerMethod.toString().contains("Log.d(\"MyApplication\", (((cs.message() + \" -- From line \") + cs.lineNumber()) + \" of \") + cs.sourceId());"));
+    }
 }
