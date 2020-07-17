@@ -5,6 +5,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.formula.Formula;
 import spoon.smpl.formula.MetavariableConstraint;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +72,7 @@ public interface SmPLRule {
     public List<CtMethod<?>> getMethodsAdded();
 
     /**
-     * Pre-scan a given executable to check if it could potentially match the rule.
+     * Scan a given executable to check if it could potentially match the rule.
      *
      * The intention is to provide implementations with an opportunity to apply optimization pre-filtering, reducing
      * the number of targets for full model checking.
@@ -80,4 +81,12 @@ public interface SmPLRule {
      * @return True if there is a possibility the rule could match the executable, false otherwise
      */
     public boolean isPotentialMatch(CtExecutable<?> ctExecutable);
+
+    /**
+     * Scan a given File containing source code to check if it could potentially match the rule.
+     *
+     * @param sourceFile File containing Java source code
+     * @return True if there is a possibility the rule could match code in the File, false otherwise
+     */
+    public boolean isPotentialMatch(File sourceFile);
 }

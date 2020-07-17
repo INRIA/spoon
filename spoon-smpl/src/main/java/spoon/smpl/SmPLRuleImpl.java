@@ -6,6 +6,10 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.formula.Formula;
 import spoon.smpl.formula.MetavariableConstraint;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -116,22 +120,52 @@ public class SmPLRuleImpl implements SmPLRule {
     }
 
     /**
-     * Pre-scan a given executable to check if it could potentially match the rule.
+     * Scan a given executable to check if it could potentially match the rule.
      *
      * @param ctExecutable Executable to scan
      * @return True if there is a possibility the rule could match the executable, false otherwise
      */
     @Override
     public boolean isPotentialMatch(CtExecutable<?> ctExecutable) {
+        try {
+            return isPotentialMatch(ctExecutable.getOriginalSourceFragment().getSourceCode());
+        } catch (Exception ignored) {
+            return isPotentialMatch(ctExecutable.toString());
+        }
+    }
+
+    /**
+     * Scan a given File containing source code to check if it could potentially match the rule.
+     *
+     * @param sourceFile File containing Java source code
+     * @return True if there is a possibility the rule could match code in the File, false otherwise
+     */
+    @Override
+    public boolean isPotentialMatch(File sourceFile) {
+        if (sourceFile == null) {
+            throw new IllegalArgumentException("sourceFile cannot be null");
+        }
+
+        try {
+            return isPotentialMatch(Files.readString(Paths.get(sourceFile.getPath()), StandardCharsets.UTF_8));
+        } catch (Exception ignored) {
+            System.err.println("WARNING: unable to read " + sourceFile.getPath());
+            return true;
+        }
+    }
+
+    /**
+     * Check if a given String, presumably containing source code, matches the SmPLGrep.Pattern of this rule.
+     *
+     * @param sourceCode String to check
+     * @return True if grep pattern matches the String, false otherwise
+     */
+    private boolean isPotentialMatch(String sourceCode) {
         if (grepPattern == null) {
             grepPattern = SmPLGrep.buildPattern(this);
         }
 
-        try {
-            return grepPattern.matches(ctExecutable.getOriginalSourceFragment().getSourceCode());
-        } catch (Exception ignored) {
-            return grepPattern.matches(ctExecutable.toString());
-        }
+        return grepPattern.matches(sourceCode);
     }
 
     /**
