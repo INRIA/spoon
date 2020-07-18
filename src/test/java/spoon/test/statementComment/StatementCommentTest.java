@@ -16,39 +16,28 @@
  */
 package spoon.test.statementComment;
 
+import java.util.Iterator;
+
 import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.CtBFSIterator;
-import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.statementComment.testclasses.AllStmtExtensions;
+import spoon.support.reflect.code.CtCatchImpl;
 
-import java.lang.annotation.Annotation;
-import java.util.List;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.build;
+import static org.junit.Assert.assertEquals;
 
 public class StatementCommentTest {
 	String EOL;
@@ -145,9 +134,15 @@ public class StatementCommentTest {
 				"}", m1.getBody().prettyprint());
 	}
 	
-	@Test
+	@Test(expected = UnsupportedOperationException.class)
 	public void testCaseStatement(){
-		
+		Launcher launcher = setUpTest();
+		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
+		CtMethod<?> m5 =  allstmt.getMethod("m5");
+		assertTrue(m5.getBody().getStatement(2) instanceof CtSwitch);
+		CtSwitch<?> switchStmt = (CtSwitch<?>) m5.getBody().getStatement(2);
+		CtCase<?> caseStmt = (CtCase<?>) switchStmt.getCases().get(1);
+		caseStmt.comment();
 	}
 	
 	@Test
@@ -209,7 +204,21 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testSwitchStatement(){
-		
+		Launcher launcher = setUpTest();
+		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
+		CtMethod<?> m5 =  allstmt.getMethod("m5");
+		assertTrue(m5.getBody().getStatement(2) instanceof CtSwitch);
+		CtSwitch<?> switchStmt = (CtSwitch<?>) m5.getBody().getStatement(2);
+		switchStmt.comment();
+		assertTrue(m5.getBody().getStatement(2) instanceof CtComment);
+		CtComment switchAsComment = (CtComment) m5.getBody().getStatement(2);
+		assertEquals("switch (t) {" + EOL +
+				"case 1 :" + EOL +
+				"java.lang.System.out.println(\"1\");" + EOL +
+				"break;" + EOL + 
+				"default :" + EOL + 
+				"java.lang.System.out.println(\"None\");" + EOL + 
+				"}", switchAsComment.getContent());
 	}
 	
 	@Test
@@ -232,6 +241,19 @@ public class StatementCommentTest {
 				"} catch (java.lang.Exception e) {" + EOL  + 
 				"java.lang.System.out.println(e);" + EOL  + 
 				"}", tryAsComment.getContent());
+	}
+	
+	@Test(expected = UnsupportedOperationException.class)
+	public void testCatchStatementFail(){
+		Launcher launcher = setUpTest();
+		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
+		CtMethod<?> m3 =  allstmt.getMethod("m3");
+		assertTrue(m3.getBody().getStatement(0) instanceof CtTry);
+		CtTry tryStmt = (CtTry) m3.getBody().getStatement(0);
+		Iterator<CtCatch> it = tryStmt.getCatchers().iterator();
+		while(it.hasNext()) {
+			((CtCatchImpl) it.next()).comment();
+		}
 	}
 	
 	@Test

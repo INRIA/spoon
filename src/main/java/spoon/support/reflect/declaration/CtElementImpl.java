@@ -614,7 +614,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 				this.replace(getFactory().Code().createInlineComment(stmt + ';')); // Single line comment
 			}
 		} else {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("Only CtStatement within CtBlock or CtBlock as a method body can be commented out");
 		}
 	}
 

@@ -1,4 +1,7 @@
 package spoon.test.statementComment.testclasses;
+
+import java.util.Scanner;
+
 public class AllStmtExtensions{
 	public AllStmtExtensions() {}
 	void m1() {
@@ -27,6 +30,18 @@ public class AllStmtExtensions{
 			System.out.println("Impossible!");
 		} else {
 			System.out.println("Seems right...");
+		}
+	}
+
+	void m5() {
+		Scanner s = new Scanner(System.in);
+		int t = s.nextInt();
+		switch(t) {
+		case 1:
+			System.out.println("1");
+			break;
+		default:
+			System.out.println("None");
 		}
 	}
 }
