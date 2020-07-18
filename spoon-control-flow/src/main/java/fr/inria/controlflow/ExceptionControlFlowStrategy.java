@@ -21,18 +21,41 @@
  */
 package fr.inria.controlflow;
 
+import spoon.reflect.code.CtThrow;
+import spoon.reflect.code.CtTry;
+
 /**
- * Branching for a node
+ * Base interface for exception control flow strategies.
  */
-public enum BranchKind {
-	TRY,         // Represents the start of a try block
-	CATCH,       // Represents the start of a catch block
-	FINALLY,     // Represents the start of a finally block
-	BRANCH,      // Represents a branch
-	STATEMENT,   // Represents an statement
-	BLOCK_BEGIN, // Represents the begining of a block
-	BLOCK_END,   // Represents the end of a block
-	CONVERGE,    // The exit node of all branches. Depending on the analysis it may be convenient to leave them
-	EXIT,        // EXIT node is where all return statements points to
-	BEGIN         // BEGIN node is where all begins
+public interface ExceptionControlFlowStrategy {
+	/**
+	 * Handle a try-catch-finally construct.
+	 *
+	 * @param builder The builder
+	 * @param tryBlock A try statement
+	 */
+	void handleTryStatement(ControlFlowBuilder builder, CtTry tryBlock);
+
+	/**
+	 * Handle a throw statement.
+	 *
+	 * @param builder The builder
+	 * @param throwStatement A throw statement
+	 */
+	void handleThrowStatement(ControlFlowBuilder builder, CtThrow throwStatement);
+
+	/**
+	 * Handle a statement node.
+	 *
+	 * @param builder The builder
+	 * @param source Statement node
+	 */
+	void handleStatement(ControlFlowBuilder builder, ControlFlowNode source);
+
+	/**
+	 * Apply any post-processing to the graph.
+	 *
+	 * @param graph Graph to post-process
+	 */
+	void postProcess(ControlFlowGraph graph);
 }
