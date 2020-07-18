@@ -1,4 +1,4 @@
-package spoon.kotlin.compiler
+package spoon.kotlin.compiler.fir
 
 
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
@@ -32,7 +32,10 @@ internal object SuperTypeDelegateFinder {
         val tmpFiles = ArrayList<File>()
         for(file in firFiles) {
             val fileClassWrapperMap: ClassWrapperMap = mutableMapOf()
-            fillClassWrapperMap(file.declarations, fileClassWrapperMap)
+            fillClassWrapperMap(
+                file.declarations,
+                fileClassWrapperMap
+            )
             val originalKtFile = file.psi as KtFile? ?: throw RuntimeException("Can't get KtFile")
             val tmpNewFilePath: Path = createTempFile("delegateResolve",".kt")
             val tmpNewFile = tmpNewFilePath.toFile()
@@ -42,7 +45,11 @@ internal object SuperTypeDelegateFinder {
             val originalContent = originalKtFile.text.replace(System.lineSeparator(),"\n")
 
             val newContentSb = StringBuilder()
-            copyAndInsert(originalContent, newContentSb, fileClassWrapperMap.values.toList())
+            copyAndInsert(
+                originalContent,
+                newContentSb,
+                fileClassWrapperMap.values.toList()
+            )
             tmpFileWriter.write(newContentSb.toString().replace("\n",System.lineSeparator()))
             tmpFileWriter.flush()
             tmpFiles.add(tmpNewFile)
@@ -67,7 +74,11 @@ internal object SuperTypeDelegateFinder {
         val delegateToFirMap = mutableMapOf<ClassId, MutableMap<ClassId, FirStatement>>()
 
         for(tmpFirFile in newFirFiles) {
-            allClassesWithFirDelegate(tmpFirFile.declarations, classWrapperMap, delegateToFirMap)
+            allClassesWithFirDelegate(
+                tmpFirFile.declarations,
+                classWrapperMap,
+                delegateToFirMap
+            )
         }
 
         for(tmpFile in tmpFiles)
@@ -88,7 +99,10 @@ internal object SuperTypeDelegateFinder {
                 newStringBuilder.append(originalContent[currentPos++])
             }
             if(currentPos < originalContent.length && currentInit < initsByOffset.size) {
-                insertInitBlock(newStringBuilder, initsByOffset[currentInit++])
+                insertInitBlock(
+                    newStringBuilder,
+                    initsByOffset[currentInit++]
+                )
                 nextOffset = if(currentInit >= initsByOffset.size) {
                     Int.MAX_VALUE
                 } else {
@@ -130,7 +144,11 @@ internal object SuperTypeDelegateFinder {
                         }
                     }
                 }
-                allClassesWithFirDelegate(decl.declarations, classWrapperMap, refToFirExprMap)
+                allClassesWithFirDelegate(
+                    decl.declarations,
+                    classWrapperMap,
+                    refToFirExprMap
+                )
             }
         }
     }
@@ -165,9 +183,17 @@ internal object SuperTypeDelegateFinder {
                     } else {
                         body.startOffset + 1
                     }
-                    map[decl.classId] = ClassWrapper(superTypeMap, offset, body == null)
+                    map[decl.classId] =
+                        ClassWrapper(
+                            superTypeMap,
+                            offset,
+                            body == null
+                        )
                 }
-                fillClassWrapperMap(decl.declarations, map)
+                fillClassWrapperMap(
+                    decl.declarations,
+                    map
+                )
             }
         }
     }

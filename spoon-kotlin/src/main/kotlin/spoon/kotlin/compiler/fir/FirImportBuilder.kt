@@ -1,4 +1,4 @@
-package spoon.kotlin.compiler
+package spoon.kotlin.compiler.fir
 
 import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.declarations.FirImport

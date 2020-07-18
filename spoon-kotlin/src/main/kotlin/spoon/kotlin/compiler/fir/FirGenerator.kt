@@ -1,4 +1,4 @@
-package spoon.kotlin.compiler
+package spoon.kotlin.compiler.fir
 
 import org.jetbrains.kotlin.analyzer.ModuleInfo
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment

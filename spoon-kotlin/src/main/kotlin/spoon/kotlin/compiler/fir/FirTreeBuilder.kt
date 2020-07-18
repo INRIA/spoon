@@ -1,4 +1,4 @@
-package spoon.kotlin.compiler
+package spoon.kotlin.compiler.fir
 
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.descriptors.ClassKind
@@ -32,6 +32,9 @@ import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
 import spoon.SpoonException
+import spoon.kotlin.compiler.*
+import spoon.kotlin.compiler.MsgCollector
+import spoon.kotlin.compiler.PrintingMsgCollector
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.kotlin.reflect.KtStatementExpression
@@ -54,7 +57,8 @@ class FirTreeBuilder(val factory : Factory,
     internal val toplvlClassName = "<top-level>"
 
     // Temporary printing, remove later
-    private var msgCollector: MsgCollector = PrintingMsgCollector()
+    private var msgCollector: MsgCollector =
+        PrintingMsgCollector()
     internal constructor(factory : Factory, session: FirSession,
                          delegateMap: Map<ClassId, MutableMap<ClassId, FirStatement>>,
                          spoonKtEnvironment: SpoonKtEnvironment, m: MsgCollector
@@ -63,8 +67,18 @@ class FirTreeBuilder(val factory : Factory,
         msgCollector = m
     }
     fun report(m : Message) = msgCollector.report(m)
-    fun report(s : String) = report(Message(s, MessageType.COMMON))
-    fun warn(s : String) = report(Message(s, MessageType.WARN))
+    fun report(s : String) = report(
+        Message(
+            s,
+            MessageType.COMMON
+        )
+    )
+    fun warn(s : String) = report(
+        Message(
+            s,
+            MessageType.WARN
+        )
+    )
 
     override fun visitElement(element: FirElement, data: ContextData?): CompositeTransformResult<CtElement> {
         //throw SpoonException("Element type not implemented $element")
@@ -307,7 +321,8 @@ class FirTreeBuilder(val factory : Factory,
             val invocation = factory.Core().createInvocation<Any>()
            // invocation.setExecutable<CtInvocation<Any>>(referenceBuilder.getNewExecutableReference(delegatedConstr,
            // constructor.returnTypeRef))
-            invocation.setExecutable<CtInvocation<Any>>(ConstructorDelegateResolver.resolveSuperCallBug(
+            invocation.setExecutable<CtInvocation<Any>>(
+                ConstructorDelegateResolver.resolveSuperCallBug(
                 this, constructor)) // Sets parent
 
             delegatedConstr.arguments.forEach {

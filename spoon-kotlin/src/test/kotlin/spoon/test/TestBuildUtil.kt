@@ -1,8 +1,8 @@
 package spoon.test
 
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
-import spoon.kotlin.compiler.FirGenerator
-import spoon.kotlin.compiler.FirTreeBuilder
+import spoon.kotlin.compiler.fir.FirGenerator
+import spoon.kotlin.compiler.fir.FirTreeBuilder
 import spoon.kotlin.compiler.SilentMsgCollector
 import spoon.kotlin.compiler.SpoonKtEnvironment
 import spoon.reflect.CtModel
@@ -35,7 +35,13 @@ object TestBuildUtil {
         val firFiles = fG.generateFIR()
         val factory = FactoryImpl(DefaultCoreFactory(), StandardEnvironment())
 
-        val builder = FirTreeBuilder(factory, firFiles[0].session, emptyMap(), ktEnvironment, SilentMsgCollector())
+        val builder = FirTreeBuilder(
+            factory,
+            firFiles[0].session,
+            emptyMap(),
+            ktEnvironment,
+            SilentMsgCollector()
+        )
 
         firFiles.forEach {  builder.visitFile(it,null) }
 

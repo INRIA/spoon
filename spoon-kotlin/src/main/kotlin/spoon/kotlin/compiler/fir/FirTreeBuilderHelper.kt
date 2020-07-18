@@ -1,4 +1,4 @@
-package spoon.kotlin.compiler
+package spoon.kotlin.compiler.fir
 
 import org.jetbrains.kotlin.cli.jvm.compiler.NoScopeRecordCliBindingTrace
 import org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM
@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.resolve.calls.CallTransformer
 import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
 import org.jetbrains.kotlin.resolve.calls.model.VariableAsFunctionResolvedCall
 import spoon.SpoonException
+import spoon.kotlin.compiler.SpoonKtEnvironment
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.reflect.code.CtCatchVariable
@@ -135,7 +136,12 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder, 
         if(firCall.arguments.size == 1 && firCall.arguments[0] is FirWhenSubjectExpression) {
             // We're at "in x -> {}" in a when-branch condition
             if (receiver == null) throw SpoonException("'in' operator in when condition without receiver")
-            return InvocationType.BINARY_OPERATOR(firCall.arguments[0], tokenToBinaryOperatorKind(IN_KEYWORD), receiver, firCall)
+            return InvocationType.BINARY_OPERATOR(
+                firCall.arguments[0],
+                tokenToBinaryOperatorKind(IN_KEYWORD),
+                receiver,
+                firCall
+            )
         } else if(
             firCall.arguments.isEmpty() &&
             firCall.calleeReference.name.asString() == "not" &&
@@ -144,7 +150,12 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder, 
             if(receiver.arguments.size == 1 && receiver.arguments[0] is FirWhenSubjectExpression) {
                 // We're at "!in x -> {}" in a when-branch condition
                 val containsReceiver = getReceiver(receiver) ?: throw SpoonException("'!in' operator in when condition without receiver")
-                return InvocationType.BINARY_OPERATOR(receiver.arguments[0], tokenToBinaryOperatorKind(NOT_IN), containsReceiver, firCall)
+                return InvocationType.BINARY_OPERATOR(
+                    receiver.arguments[0],
+                    tokenToBinaryOperatorKind(NOT_IN),
+                    containsReceiver,
+                    firCall
+                )
             }
         }
 
@@ -152,25 +163,46 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder, 
             is KtBinaryExpression -> {
                 val opToken = source.operationToken
                 if (receiver == null) throw SpoonException("Infix operator/function call without receiver")
-                if (opToken == IDENTIFIER) InvocationType.INFIX_CALL(receiver, firCall, firCall.arguments[0])
+                if (opToken == IDENTIFIER) InvocationType.INFIX_CALL(
+                    receiver,
+                    firCall,
+                    firCall.arguments[0]
+                )
                 else orderBinaryOperands(opToken, receiver, firCall)
             }
             is KtPrefixExpression -> {
                 val opToken = source.operationToken
                 if (receiver == null) throw SpoonException("Prefix operator without receiver")
-                InvocationType.PREFIX_OPERATOR(tokenToUnaryOperatorKind(opToken), receiver, firCall)
+                InvocationType.PREFIX_OPERATOR(
+                    tokenToUnaryOperatorKind(opToken),
+                    receiver,
+                    firCall
+                )
             }
             is KtPostfixExpression -> {
                 val opToken = source.operationToken
                 if (receiver == null) throw SpoonException("Postfix operator without receiver")
-                InvocationType.PREFIX_OPERATOR(tokenToUnaryOperatorKind(opToken), receiver, firCall)
+                InvocationType.PREFIX_OPERATOR(
+                    tokenToUnaryOperatorKind(opToken),
+                    receiver,
+                    firCall
+                )
             }
             is KtArrayAccessExpression -> {
                 val name = firCall.calleeReference.name.identifier
                 if (receiver == null) throw SpoonException("Array access operator without receiver")
                 when(name) {
-                    "get" -> InvocationType.GET_OPERATOR(receiver, firCall.arguments, firCall)
-                    "set" -> InvocationType.SET_OPERATOR(receiver, firCall.arguments.dropLast(1), firCall.arguments.last(), firCall)
+                    "get" -> InvocationType.GET_OPERATOR(
+                        receiver,
+                        firCall.arguments,
+                        firCall
+                    )
+                    "set" -> InvocationType.SET_OPERATOR(
+                        receiver,
+                        firCall.arguments.dropLast(1),
+                        firCall.arguments.last(),
+                        firCall
+                    )
                     else -> throw SpoonException("Array access operator doesn't call get or set")
                 }
             }
@@ -185,9 +217,19 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder, 
     ): InvocationType {
         return when (token) {
             MUL, PLUS, MINUS, DIV, PERC, RANGE ->
-                InvocationType.BINARY_OPERATOR(receiver, tokenToBinaryOperatorKind(token), call.arguments[0], call)
+                InvocationType.BINARY_OPERATOR(
+                    receiver,
+                    tokenToBinaryOperatorKind(token),
+                    call.arguments[0],
+                    call
+                )
             MULTEQ, DIVEQ, PERCEQ, PLUSEQ, MINUSEQ ->
-                InvocationType.ASSIGNMENT_OPERATOR(receiver, tokenToAssignmentOperatorKind(token), call.arguments[0], call)
+                InvocationType.ASSIGNMENT_OPERATOR(
+                    receiver,
+                    tokenToAssignmentOperatorKind(token),
+                    call.arguments[0],
+                    call
+                )
             IN_KEYWORD -> InvocationType.BINARY_OPERATOR( // Reversed operand order
                 call.arguments[0],
                 tokenToBinaryOperatorKind(token),
