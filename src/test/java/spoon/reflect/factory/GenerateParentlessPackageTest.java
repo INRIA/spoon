@@ -36,6 +36,7 @@ public class GenerateParentlessPackageTest {
 
         final Factory factory = launcher.getFactory();
 
+        //contract: a package without a parent can be created
         final CtPackage ctPackage = factory.createPackage(null, "fooBar");
         assertNotNull(ctPackage);
     }
