@@ -1,6 +1,7 @@
-package spoon;
+package spoon.reflect.factory;
 
 import org.junit.Test;
+import spoon.Launcher;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
 
