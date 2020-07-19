@@ -607,6 +607,9 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	 */
 	public void comment() {
 		if (this instanceof CtStatement && getParent() instanceof CtBlock) {
+			if (this instanceof CtComment) {
+				return;
+			}
 			final String stmt = toString();
 			if (stmt.contains(CtComment.LINE_SEPARATOR)) {
 				this.replace(getFactory().Code().createComment(stmt, CtComment.CommentType.BLOCK)); // Multi line comment

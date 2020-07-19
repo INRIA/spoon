@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 public class AllStmtExtensions{
 	public AllStmtExtensions() {}
+
 	void m1() {
 		assert 1 == 5;
 		int r = 10;
@@ -13,9 +14,11 @@ public class AllStmtExtensions{
 			int j = 10;
 		}
 	}
+
 	void m2() {
 		
 	}
+
 	void m3() {
 		try {
 			throw new Exception();
@@ -25,6 +28,7 @@ public class AllStmtExtensions{
 		int r = 30;
 		r++;
 	}
+
 	void m4() {
 		if (5 > 6) {
 			System.out.println("Impossible!");
@@ -43,5 +47,16 @@ public class AllStmtExtensions{
 		default:
 			System.out.println("None");
 		}
+	}
+	
+	void m6() {
+		Object obj = new Object();
+		synchronized(obj) {
+			System.out.println("Executing");
+		}
+		for(int i = 0; i < 10; ++i) {
+			System.out.println(i);
+		}
+		// Hi, I am a comment
 	}
 }

@@ -25,10 +25,14 @@ import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtClass;
@@ -94,7 +98,7 @@ public class StatementCommentTest {
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m1 =  allstmt.getMethod("m1");
 		assertTrue(m1.getBody().getStatement(4) instanceof CtBlock);
-		CtBlock blockWithinBody = m1.getBody().getStatement(4);
+		CtBlock<?> blockWithinBody = m1.getBody().getStatement(4);
 		blockWithinBody.comment();
 		assertTrue(m1.getBody().getStatement(4) instanceof CtComment);
 		CtComment blockAsComment = (CtComment) m1.getBody().getStatement(4);
@@ -144,30 +148,25 @@ public class StatementCommentTest {
 		CtCase<?> caseStmt = (CtCase<?>) switchStmt.getCases().get(1);
 		caseStmt.comment();
 	}
-	
-	@Test
-	public void testFlowBreakStatement(){
-		
-	}
-	
-	@Test
+
+	@Test(expected = UnsupportedOperationException.class)
 	public void testClassStatement(){
-		
+		Launcher launcher = setUpTest();
+		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
+		allstmt.comment();
 	}
-	
-	@Test
-	public void testCodeSnippetStatement(){
-		
-	}
-	
+
 	@Test
 	public void testCommentStatement(){
-		
-	}
-	
-	@Test
-	public void testConstructorCallStatement(){
-		
+		Launcher launcher = setUpTest();
+		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
+		CtMethod<?> m6 =  allstmt.getMethod("m6");
+		assertTrue(m6.getBody().getStatement(3) instanceof CtComment);
+		CtComment comment = (CtComment) m6.getBody().getStatement(3);
+		final String initialContent = comment.getContent();
+		comment.comment();
+		assertTrue(m6.getBody().getStatement(3) instanceof CtComment);
+		assertEquals(((CtComment) m6.getBody().getStatement(3)).getContent(), initialContent);
 	}
 	
 	@Test
@@ -186,20 +185,32 @@ public class StatementCommentTest {
 				"java.lang.System.out.println(\"Seems right...\");" + EOL  + 
 				"}", ifAsComment.getContent());
 	}
-	
-	@Test
-	public void testInvocationStatement(){
-		
-	}
-	
+
 	@Test
 	public void testLocalVariableStatement(){
-		
+		Launcher launcher = setUpTest();
+		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
+		CtMethod<?> m3 =  allstmt.getMethod("m3");
+		assertTrue(m3.getBody().getStatement(1) instanceof CtLocalVariable);
+		CtLocalVariable<?> locAsStmt = (CtLocalVariable<?>) m3.getBody().getStatement(1);
+		locAsStmt.comment();
+		assertTrue(m3.getBody().getStatement(1) instanceof CtComment);
+		CtComment comm = (CtComment) m3.getBody().getStatement(1);
+		assertEquals("int r = 30;", comm.getContent());
 	}
 	
 	@Test
 	public void testLoopStatement(){
-		
+		Launcher launcher = setUpTest();
+		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
+		CtMethod<?> m6 =  allstmt.getMethod("m6");
+		assertTrue(m6.getBody().getStatement(2) instanceof CtLoop);
+		CtLoop loopAsStmt = m6.getBody().getStatement(2);
+		loopAsStmt.comment();
+		assertTrue(m6.getBody().getStatement(2) instanceof CtComment);
+		assertEquals("for (int i = 0; i < 10; ++i) {" + EOL  + 
+				"java.lang.System.out.println(i);" + EOL  + 
+				"}", ((CtComment) m6.getBody().getStatement(2)).getContent());
 	}
 	
 	@Test
@@ -223,7 +234,16 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testSynchronousStatement(){
-		
+		Launcher launcher = setUpTest();
+		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
+		CtMethod<?> m6 =  allstmt.getMethod("m6");
+		assertTrue(m6.getBody().getStatement(1) instanceof CtSynchronized);
+		CtSynchronized synchronizedAsStmt = (CtSynchronized) m6.getBody().getStatement(1);
+		synchronizedAsStmt.comment();
+		assertTrue(m6.getBody().getStatement(1) instanceof CtComment);
+		assertEquals("synchronized(obj) {" + EOL  + 
+				"java.lang.System.out.println(\"Executing\");" + EOL  + 
+				"}", ((CtComment) m6.getBody().getStatement(1)).getContent());
 	}
 	
 	@Test
@@ -266,5 +286,19 @@ public class StatementCommentTest {
 		incrementStmt.comment();
 		CtComment incrementComment = m3.getBody().getStatement(2);
 		assertEquals("r++;", incrementComment.getContent());
+	}
+
+	@Test
+	public void testCodeSnippetStatement(){
+		Launcher launcher = setUpTest();
+		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
+		CtMethod<?> m6 =  allstmt.getMethod("m6");
+		CtCodeSnippetStatement codeSnippet = getSpoonFactory().createCodeSnippetStatement("int j = 10");
+		m6.getBody().insertEnd(codeSnippet);
+		assertTrue(m6.getBody().getStatement(4) instanceof CtCodeSnippetStatement);
+		codeSnippet.comment();
+		assertTrue(m6.getBody().getStatement(4) instanceof CtComment);
+		CtComment comment = (CtComment) m6.getBody().getStatement(4);
+		assertEquals("int j = 10;", comment.getContent());
 	}
 }
