@@ -70,6 +70,7 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testAssertStatement(){
+		// contract: test assert statement can be singly commented out
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m1 =  allstmt.getMethod("m1");
@@ -81,6 +82,7 @@ public class StatementCommentTest {
 
 	@Test
 	public void testAssignmentStatement(){
+		// contract: test assignment statement can be singly commented out
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m1 =  allstmt.getMethod("m1");
@@ -94,6 +96,7 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testBlockStatementWithinBody(){
+		// contract: test a CtBlock within body is commented out as a block comment
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m1 =  allstmt.getMethod("m1");
@@ -109,6 +112,7 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testMethodBodyEmptyStatement(){
+		// contract: test that a CtBlock representing empty method body doesn't change anything
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m2 =  allstmt.getMethod("m2");
@@ -119,6 +123,7 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testMethodBodyNonEmptyStatement(){
+		// contract: test CtBlock representing method body is commented out by commenting all contained statements individually
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m1 =  allstmt.getMethod("m1");
@@ -140,6 +145,7 @@ public class StatementCommentTest {
 	
 	@Test(expected = UnsupportedOperationException.class)
 	public void testCaseStatement(){
+		// contract: test an isolated case statement commented out leads to UnsupportedOperationException
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m5 =  allstmt.getMethod("m5");
@@ -151,6 +157,7 @@ public class StatementCommentTest {
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void testClassStatement(){
+		// contract: test an entire class cannot be commented out
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		allstmt.comment();
@@ -158,6 +165,7 @@ public class StatementCommentTest {
 
 	@Test
 	public void testCommentStatement(){
+		// contract: test commenting out of an existing comment doesn't change it
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m6 =  allstmt.getMethod("m6");
@@ -171,6 +179,7 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testIfStatement(){
+		// contract: test commenting of if statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m4 =  allstmt.getMethod("m4");
@@ -188,6 +197,7 @@ public class StatementCommentTest {
 
 	@Test
 	public void testLocalVariableStatement(){
+		// contract: test commenting of local variable declaration statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m3 =  allstmt.getMethod("m3");
@@ -201,6 +211,7 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testLoopStatement(){
+		// contract: test commenting of loop statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m6 =  allstmt.getMethod("m6");
@@ -215,6 +226,7 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testSwitchStatement(){
+		// contract: test commenting of switch statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m5 =  allstmt.getMethod("m5");
@@ -234,6 +246,7 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testSynchronousStatement(){
+		// contract: test commenting of synchronous statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m6 =  allstmt.getMethod("m6");
@@ -248,6 +261,7 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testTryStatement(){
+		// contract: test commenting of try-catch statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m3 =  allstmt.getMethod("m3");
@@ -265,6 +279,7 @@ public class StatementCommentTest {
 	
 	@Test(expected = UnsupportedOperationException.class)
 	public void testCatchStatementFail(){
+		// contract: test commenting of isolated catch leads to UnsupportedOperationException exception
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m3 =  allstmt.getMethod("m3");
@@ -278,6 +293,7 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testUnaryOperatorStatement(){
+		// contract: test commenting out of UnaryOperator statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m3 =  allstmt.getMethod("m3");
@@ -290,6 +306,7 @@ public class StatementCommentTest {
 
 	@Test
 	public void testCodeSnippetStatement(){
+		// contract: test creation and comment out of code snippet
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m6 =  allstmt.getMethod("m6");
