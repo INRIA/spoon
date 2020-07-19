@@ -4,6 +4,7 @@ title: Custom Java Pretty-Printing
 
 It is a good practice to have consistent formatting in a project.
 Spoon can be used to implement a custom Java pretty-printer, according to the guidelines of your project.
+For instance, this can be used to write a pretty-printer according to a custom Checkstyle ruleset.
 
 The idea is to configure `DefaultJavaPrettyPrinter` with an appropriate `TokenWriter`. Subclasses of [`TokenWriter`](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/visitor/TokenWriter.html) can override a number of pretty-printing methods.
 
