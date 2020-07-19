@@ -70,6 +70,9 @@ public class PrinterHelper {
 	 */
 	private boolean lastCharWasCR = false;
 
+	public PrinterHelper() {
+	}
+
 	public PrinterHelper(Environment env) {
 		this.env = env;
 	}
@@ -146,11 +149,15 @@ public class PrinterHelper {
 
 	private void writeTabsInternal() {
 		for (int i = 0; i < nbTabs; i++) {
-			if (env.isUsingTabulations()) {
+			if (env != null && env.isUsingTabulations()) {
 				sbf.append('\t');
 				column += 1;
 			} else {
-				for (int j = 0; j < env.getTabulationSize(); j++) {
+				int indentationSize = 2;
+				if (env != null) {
+					indentationSize = env.getTabulationSize();
+				}
+				for (int j = 0; j < indentationSize; j++) {
 					sbf.append(' ');
 					column += 1;
 				}
@@ -238,7 +245,7 @@ public class PrinterHelper {
 	}
 
 	public PrinterHelper adjustEndPosition(CtElement e) {
-		if (env.isPreserveLineNumbers() && e.getPosition().isValidPosition()) {
+		if (env != null && env.isPreserveLineNumbers() && e.getPosition().isValidPosition()) {
 			// let's add lines if required
 			while (line < e.getPosition().getEndLine()) {
 				writeln();
