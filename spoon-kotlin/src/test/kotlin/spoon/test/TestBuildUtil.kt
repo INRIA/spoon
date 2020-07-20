@@ -1,10 +1,9 @@
 package spoon.test
 
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
-import spoon.kotlin.compiler.fir.FirGenerator
-import spoon.kotlin.compiler.fir.FirTreeBuilder
-import spoon.kotlin.compiler.SilentMsgCollector
 import spoon.kotlin.compiler.SpoonKtEnvironment
+import spoon.kotlin.compiler.ir.IrGenerator
+import spoon.kotlin.compiler.ir.IrTreeBuilder
 import spoon.reflect.CtModel
 import spoon.reflect.declaration.CtPackage
 import spoon.reflect.declaration.CtType
@@ -30,20 +29,14 @@ object TestBuildUtil {
 
     fun buildFiles(inputFiles: List<File>): Factory {
         val ktEnvironment = SpoonKtEnvironment(inputFiles, "test", args)
-        val module = ktEnvironment.moduleChunk.modules[0]
-        val fG = FirGenerator(ktEnvironment.ktEnvironment, module)
-        val firFiles = fG.generateFIR()
+        val irGenerator = IrGenerator(ktEnvironment)
+        val (irModule, context) = irGenerator.generateIrWithContext()
+        val irFiles = irModule.files
         val factory = FactoryImpl(DefaultCoreFactory(), StandardEnvironment())
 
-        val builder = FirTreeBuilder(
-            factory,
-            firFiles[0].session,
-            emptyMap(),
-            ktEnvironment,
-            SilentMsgCollector()
-        )
+        val builder = IrTreeBuilder(factory, context.sourceManager)
 
-        firFiles.forEach {  builder.visitFile(it,null) }
+        irFiles.forEach {  builder.visitFile(it,null) }
 
         factory.model.setBuildModelIsFinished<CtModel>(true)
         return factory
