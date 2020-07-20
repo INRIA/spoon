@@ -3,6 +3,7 @@ package spoon.kotlin.compiler.ir
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
+import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.util.file
 import org.jetbrains.kotlin.psi.KtFile
@@ -14,12 +15,16 @@ import spoon.reflect.code.LiteralBase
 import spoon.reflect.declaration.CtModule
 import spoon.reflect.declaration.CtType
 
-class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
+internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     private val factory get() = irTreeBuilder.factory
     private val referenceBuilder get() = irTreeBuilder.referenceBuilder
 
-    fun getKtFile(irDeclaration: IrDeclaration): KtFile {
-        return PsiSourceManager().getKtFile(irDeclaration.file)!!
+    private fun getKtFile(irDeclaration: IrDeclaration): KtFile {
+        return irTreeBuilder.sourceManager.getKtFile(irDeclaration.file)!!
+    }
+
+    private fun getKtFile(file: IrFile): KtFile {
+        return irTreeBuilder.sourceManager.getKtFile(file.fileEntry as PsiSourceManager.PsiFileEntry)!!
     }
 
     fun createType(irClass: IrClass): CtType<*> {
@@ -45,7 +50,7 @@ class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
         }.toSet())
 
         type.setFormalCtTypeParameters<CtType<*>>(irClass.typeParameters.map {
-            irTreeBuilder.visitTypeParameter(it, null).single
+            irTreeBuilder.visitTypeParameter(it, null).resultUnsafe
         })
 
         return type
@@ -55,7 +60,8 @@ class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
         return factory.Module().unnamedModule
     }
 
-    fun getBaseOfConst(constExpression: IrConst<Number>, ktFile: KtFile): LiteralBase {
+    fun getBaseOfConst(constExpression: IrConst<Number>, file: IrFile): LiteralBase {
+        val ktFile = getKtFile(file)
         val text = ktFile.text.substring(constExpression.startOffset,constExpression.endOffset)
         if(text.startsWith("0x", ignoreCase = true) == true) return LiteralBase.HEXADECIMAL
         if(text.startsWith("0b", ignoreCase = true) == true) return LiteralBase.BINARY

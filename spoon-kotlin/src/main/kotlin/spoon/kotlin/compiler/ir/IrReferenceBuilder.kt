@@ -16,7 +16,7 @@ import spoon.reflect.reference.CtReference
 import spoon.reflect.reference.CtTypeParameterReference
 import spoon.reflect.reference.CtTypeReference
 
-class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
+internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
 
     private val factory get() = irTreeBuilder.factory
 

@@ -1,16 +1,15 @@
 package spoon.kotlin.compiler.ir
 
 import org.jetbrains.kotlin.descriptors.PackageFragmentDescriptor
-import org.jetbrains.kotlin.fir.visitors.CompositeTransformResult
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.*
+import org.jetbrains.kotlin.ir.expressions.IrBody
 import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.expressions.IrConstKind
 import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
-import org.jetbrains.kotlin.ir.util.isInterface
-import org.jetbrains.kotlin.ir.util.isVararg
-import org.jetbrains.kotlin.ir.util.lineStartOffsets
+import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
+import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import spoon.SpoonException
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
@@ -23,18 +22,20 @@ import spoon.reflect.reference.CtReference
 import spoon.reflect.reference.CtTypeReference
 import spoon.support.reflect.code.CtLiteralImpl
 
-class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformResult<CtElement>, ContextData?> {
+internal class IrTreeBuilder(val factory: Factory,
+                    val sourceManager: PsiSourceManager
+) : IrElementVisitor<TransformResult<CtElement>, ContextData?> {
     val referenceBuilder = IrReferenceBuilder(this)
     val helper = IrTreeBuilderHelper(this)
     private val core get() = factory.Core()
     internal val toplvlClassName = "<top-level>"
 
-    override fun visitElement(element: IrElement, data: ContextData?): CompositeTransformResult<CtElement> {
+    override fun visitElement(element: IrElement, data: ContextData?): TransformResult<CtElement> {
         //TODO("Not yet implemented")
-        return CtLiteralImpl<String>().setValue<CtLiteral<String>>("Unimplemented element $element").compose()
+        return CtLiteralImpl<String>().setValue<CtLiteral<String>>("Unimplemented element $element").definitely()
     }
 
-    override fun visitFile(declaration: IrFile, data: ContextData?): CompositeTransformResult<CtElement> {
+    override fun visitFile(declaration: IrFile, data: ContextData?): DefiniteTransformResult<CtCompilationUnit> {
         val module = helper.getOrCreateModule()
         val compilationUnit = factory.CompilationUnit().getOrCreate(declaration.name)
 
@@ -65,10 +66,10 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
             }
         }
 
-        return compilationUnit.compose()
+        return compilationUnit.definitely()
     }
 
-    override fun visitClass(declaration: IrClass, data: ContextData?): CompositeTransformResult<CtElement> {
+    override fun visitClass(declaration: IrClass, data: ContextData?): DefiniteTransformResult<CtElement> {
         val module = helper.getOrCreateModule()
         val type = helper.createType(declaration)
         val isObject = type.getMetadata(KtMetadataKeys.CLASS_IS_OBJECT) as Boolean? == true
@@ -85,12 +86,13 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
 
         // Type params
         if(declaration.typeParameters.isNotEmpty()) {
-            type.setFormalCtTypeParameters<CtType<*>>(
-                declaration.typeParameters.map { visitTypeParameter(it, data).result() })
+            type.setFormalCtTypeParameters<CtType<Any>>(
+                declaration.typeParameters.map { visitTypeParameter(it, data).resultSafe })
         }
 
         for(decl in declaration.declarations) {
-            val ctDecl = decl.accept(this, data).single
+            if(decl.isFakeOverride) continue
+            val ctDecl = decl.accept(this, data).resultUnsafe
             ctDecl.setParent(type)
             when(ctDecl) {
                 is CtEnumValue<*> -> {
@@ -117,11 +119,11 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
             }
         }
 
-        return type.compose()
+        return type.definitely()
     }
 
     override fun visitTypeParameter(declaration: IrTypeParameter, data: ContextData?):
-            CompositeTransformResult.Single<CtTypeParameter> {
+            DefiniteTransformResult<CtTypeParameter> {
         val ctTypeParam = factory.Core().createTypeParameter()
         ctTypeParam.setSimpleName<CtTypeParameter>(declaration.name.identifier)
         val bounds = declaration.superTypes.map { referenceBuilder.getNewTypeReference<Any>(it) }
@@ -134,10 +136,10 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         }
 
         ctTypeParam.addModifiersAsMetadata(IrToModifierKind.fromTypeVariable(declaration))
-        return ctTypeParam.compose()
+        return ctTypeParam.definitely()
     }
 
-    override fun <T> visitConst(expression: IrConst<T>, data: ContextData?): CompositeTransformResult<CtElement> {
+    override fun <T> visitConst(expression: IrConst<T>, data: ContextData?): DefiniteTransformResult<CtLiteral<*>> {
         val value = when(expression.kind) {
             IrConstKind.Null -> null
             IrConstKind.Boolean -> expression.value as Boolean
@@ -154,19 +156,24 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         ctLiteral.setValue<CtLiteral<T>>(value as T)
         if(value == null)
             ctLiteral.setType<CtLiteral<T>>(factory.Type().nullType() as CtTypeReference<T>)
-        else
+        else {
             ctLiteral.setType<CtLiteral<T>>(referenceBuilder.getNewTypeReference(expression.type))
-        return ctLiteral.compose()
+            if(value is Number) {
+                ctLiteral.setBase<CtLiteral<T>>(helper.getBaseOfConst(expression as IrConst<Number>, data!!.file))
+            }
+        }
+        return ctLiteral.definitely()
     }
 
-    override fun visitProperty(declaration: IrProperty, data: ContextData?): CompositeTransformResult<CtElement> {
+    override fun visitProperty(declaration: IrProperty, data: ContextData?): DefiniteTransformResult<CtElement> {
         val ctField = core.createField<Any>()
+        ctField.setSimpleName<CtField<*>>(declaration.name.identifier)
 
         // Initializer (if any) exists in backing field initializer
         val backingField = declaration.backingField
         val initializer = backingField?.initializer
         if(initializer != null) {
-            val ctInitializer = visitExpressionBody(initializer, data).single
+            val ctInitializer = visitExpressionBody(initializer, data).resultUnsafe
 
             if(backingField.origin == IrDeclarationOrigin.DELEGATE) {
                 ctField.putKtMetadata<CtElement>(KtMetadataKeys.PROPERTY_DELEGATE, KtMetaData.wrap(ctInitializer))
@@ -199,31 +206,31 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         val getter = declaration.getter
         if(getter != null && getter.origin != IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR) {
             ctField.putKtMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_GETTER,
-                KtMetaData.wrap(visitSimpleFunction(getter, data).result()))
+                KtMetaData.wrap(createUnnamedFunction(getter, data)))
         }
 
         val setter = declaration.setter
         if(setter != null && setter.origin != IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR) {
             ctField.putKtMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_SETTER,
-                KtMetaData.wrap(visitSimpleFunction(setter, data).result()))
+                KtMetaData.wrap(createUnnamedFunction(setter, data)))
         }
 
-        return ctField.compose()
+        return ctField.definitely()
     }
 
     override fun visitLocalDelegatedProperty(
         declaration: IrLocalDelegatedProperty,
         data: ContextData?
-    ): CompositeTransformResult<CtElement> {
+    ): TransformResult<CtElement> {
         return super.visitLocalDelegatedProperty(declaration, data)
     }
 
-    override fun visitVariable(declaration: IrVariable, data: ContextData?): CompositeTransformResult<CtElement> {
+    override fun visitVariable(declaration: IrVariable, data: ContextData?): TransformResult<CtLocalVariable<*>> {
         val ctLocalVar = core.createLocalVariable<Any>()
         ctLocalVar.setSimpleName<CtVariable<*>>(declaration.name.identifier)
 
         // Initializer
-        val initializer = declaration.initializer?.accept(this, data)?.single
+        val initializer = declaration.initializer?.accept(this, data)?.resultUnsafe
         if(initializer != null) {
             val initializerExpr = expressionOrWrappedInStatementExpression(initializer)
             ctLocalVar.setDefaultExpression<CtLocalVariable<Any>>(initializerExpr)
@@ -238,13 +245,13 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         // Implicit/explicit type marker
         // TODO
 
-        return super.visitVariable(declaration, data)
+        return ctLocalVar.definitely()
     }
 
     override fun visitValueParameter(
         declaration: IrValueParameter,
         data: ContextData?
-    ): CompositeTransformResult.Single<CtParameter<*>> {
+    ): DefiniteTransformResult<CtParameter<*>> {
         val ctParam = core.createParameter<Any>()
         ctParam.setSimpleName<CtParameter<Any>>(declaration.name.identifier)
         ctParam.setInferred<CtParameter<Any>>(false) // Not allowed
@@ -254,7 +261,7 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         ctParam.addModifiersAsMetadata(modifierList)
         ctParam.setVarArgs<CtParameter<Any>>(KtModifierKind.VARARG in modifierList)
 
-        val defaultValue = declaration.defaultValue?.let { visitExpressionBody(it, data) }?.single
+        val defaultValue = declaration.defaultValue?.let { visitExpressionBody(it, data) }?.resultUnsafe
         if(defaultValue != null) {
             ctParam.setDefaultExpression<CtParameter<Any>>(
                 expressionOrWrappedInStatementExpression(defaultValue)
@@ -272,7 +279,7 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         // Mark implicit for "it" in lambda
         //TODO
 
-        return ctParam.compose()
+        return ctParam.definitely()
     }
 
     private fun createUnnamedFunction(irFunction: IrFunction, data: ContextData?): CtMethod<*> {
@@ -281,14 +288,14 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         // Value params
         if(irFunction.valueParameters.isNotEmpty()) {
             ctMethod.setParameters<CtMethod<Any>>(
-                irFunction.valueParameters.map { visitValueParameter(it, data).result() }
+                irFunction.valueParameters.map { visitValueParameter(it, data).resultSafe }
             )
         }
 
         // Type params
         if(irFunction.typeParameters.isNotEmpty()) {
             ctMethod.setFormalCtTypeParameters<CtMethod<Any>>(
-                irFunction.typeParameters.map { visitTypeParameter(it, data).result() }
+                irFunction.typeParameters.map { visitTypeParameter(it, data).resultSafe }
             )
         }
 
@@ -305,21 +312,38 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
                 KtMetaData.wrap(extensionReceiverRef)
             )
         }
+
+        // Body
+        val body = irFunction.body
+        if(body != null) {
+            ctMethod.setBody<CtMethod<Any>>(visitBody(body, data).resultSafe)
+        }
         return ctMethod
     }
 
     override fun visitSimpleFunction(
         declaration: IrSimpleFunction,
         data: ContextData?
-    ): CompositeTransformResult.Single<CtMethod<*>> {
+    ): DefiniteTransformResult<CtMethod<*>> {
         return createUnnamedFunction(declaration, data).also {
             it.setSimpleName<CtMethod<*>>(declaration.name.identifier)
             it.addModifiersAsMetadata(IrToModifierKind.fromFunctionDeclaration(declaration))
-        }.compose()
+        }.definitely()
+    }
+
+    override fun visitBody(body: IrBody, data: ContextData?): DefiniteTransformResult<CtBlock<*>> {
+        val ctBlock = core.createBlock<Any>()
+        val statements = ArrayList<CtStatement>()
+        for(irStatement in body.statements) {
+            if(irStatement is IrDeclaration && irStatement.isFakeOverride) continue
+            statements.add(statementOrWrappedInImplicitReturn(irStatement.accept(this, data).resultUnsafe))
+        }
+        ctBlock.setStatements<CtBlock<*>>(statements)
+        return ctBlock.definitely()
     }
 
     override fun visitExpressionBody(body: IrExpressionBody, data: ContextData?):
-            CompositeTransformResult<CtElement> {
+            TransformResult<CtElement> {
         return body.expression.accept(this, data)
     }
 
@@ -334,8 +358,7 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
     internal fun <T: CtElement> T.putKtMetadata(s: String, d: KtMetaData<*>) {
         putMetadata<CtElement>(s, d.value)
     }
-    private fun <T: CtElement> T.compose() = CompositeTransformResult.Single(this)
-    private fun <T: CtElement> CompositeTransformResult.Single<T>.result() = _single
+
     private fun <T> CtExpression<T>.wrapInImplicitReturn() : CtReturn<T> {
         val r = factory.Core().createReturn<T>()
         r.setReturnedExpression<CtReturn<T>>(this)
