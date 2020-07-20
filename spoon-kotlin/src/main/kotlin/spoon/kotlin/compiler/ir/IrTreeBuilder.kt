@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.ir.expressions.IrBody
 import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.expressions.IrConstKind
 import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
+import org.jetbrains.kotlin.ir.types.isNullableAny
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
@@ -136,7 +137,8 @@ internal class IrTreeBuilder(val factory: Factory,
             DefiniteTransformResult<CtTypeParameter> {
         val ctTypeParam = factory.Core().createTypeParameter()
         ctTypeParam.setSimpleName<CtTypeParameter>(declaration.name.identifier)
-        val bounds = declaration.superTypes.map { referenceBuilder.getNewTypeReference<Any>(it) }
+        // Don't include default upper bound ("Any?")
+        val bounds = declaration.superTypes.filterNot { it.isNullableAny() }.map { referenceBuilder.getNewTypeReference<Any>(it) }
         if(bounds.size == 1) {
             ctTypeParam.setSuperclass<CtTypeParameter>(bounds[0])
         } else if(bounds.size > 1) {
