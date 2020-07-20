@@ -23,6 +23,7 @@ class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
     private fun <T> getNewSimpleTypeReference(irType: IrSimpleType): CtTypeReference<T> {
         val ctRef = typeRefFromDescriptor(irType.classifier.descriptor)
         ctRef.setActualTypeArguments<CtTypeReference<*>>(irType.arguments.map { visitTypeArgument(it) })
+        ctRef.putMetadata<CtReference>(KtMetadataKeys.TYPE_REF_NULLABLE, irType.hasQuestionMark)
         return ctRef as CtTypeReference<T>
     }
 
