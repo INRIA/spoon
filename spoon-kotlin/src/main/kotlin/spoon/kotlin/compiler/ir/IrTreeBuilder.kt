@@ -312,7 +312,10 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         declaration: IrSimpleFunction,
         data: ContextData?
     ): CompositeTransformResult.Single<CtMethod<*>> {
-        return TODO()
+        return createUnnamedFunction(declaration, data).also {
+            it.setSimpleName<CtMethod<*>>(declaration.name.identifier)
+            it.addModifiersAsMetadata(IrToModifierKind.fromFunctionDeclaration(declaration))
+        }.compose()
     }
 
     override fun visitExpressionBody(body: IrExpressionBody, data: ContextData?):
