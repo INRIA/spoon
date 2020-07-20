@@ -63,6 +63,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         return when(descriptor) {
             is ClassDescriptor -> getDeclaringTypeReference(descriptor)
             is PackageFragmentDescriptor -> getPackageReference(descriptor.fqName)
+            is FunctionDescriptor -> getDeclaringRef(descriptor.containingDeclaration)
             else -> TODO()
         }
     }
