@@ -5,6 +5,10 @@ import org.jetbrains.kotlin.ir.declarations.IrTypeParameter
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.IrTypeProjectionImpl
 import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.types.FlexibleType
+import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.types.SimpleType
+import org.jetbrains.kotlin.types.WrappedType
 import spoon.SpoonException
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.reflect.reference.CtPackageReference
@@ -31,6 +35,12 @@ class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
 
     fun <T> getNewTypeReference(classDescriptor: ClassDescriptor) =
         typeRefFromDescriptor(classDescriptor) as CtTypeReference<T>
+
+    fun <T> getNewTypeReference(kotlinType: KotlinType): CtTypeReference<T> = when(kotlinType) {
+        is WrappedType -> typeRefFromDescriptor(kotlinType.unwrap().constructor.declarationDescriptor!!)
+        is SimpleType -> typeRefFromDescriptor(kotlinType.constructor.declarationDescriptor!!)
+        is FlexibleType -> TODO()
+    } as CtTypeReference<T>
 
     private fun typeRefFromDescriptor(descriptor: ClassifierDescriptor) = when(descriptor) {
         is ClassDescriptor -> {
