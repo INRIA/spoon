@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.ir.expressions.IrConstKind
 import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
 import org.jetbrains.kotlin.ir.util.isInterface
 import org.jetbrains.kotlin.ir.util.isVararg
+import org.jetbrains.kotlin.ir.util.lineStartOffsets
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import spoon.SpoonException
 import spoon.kotlin.ktMetadata.KtMetadataKeys
@@ -19,18 +20,54 @@ import spoon.reflect.code.*
 import spoon.reflect.declaration.*
 import spoon.reflect.factory.Factory
 import spoon.reflect.reference.CtTypeReference
+import spoon.support.reflect.code.CtLiteralImpl
 
-class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformResult<CtElement>, ContextData> {
+class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformResult<CtElement>, ContextData?> {
     val referenceBuilder = IrReferenceBuilder(this)
     val helper = IrTreeBuilderHelper(this)
     private val core get() = factory.Core()
+    internal val toplvlClassName = "<top-level>"
 
-    override fun visitElement(element: IrElement, data: ContextData): CompositeTransformResult<CtElement> {
+    override fun visitElement(element: IrElement, data: ContextData?): CompositeTransformResult<CtElement> {
         //TODO("Not yet implemented")
-        return factory.Core().createContinue().compose()
+        return CtLiteralImpl<String>().setValue<CtLiteral<String>>("Unimplemented element $element").compose()
     }
 
-    override fun visitClass(declaration: IrClass, data: ContextData): CompositeTransformResult<CtElement> {
+    override fun visitFile(declaration: IrFile, data: ContextData?): CompositeTransformResult<CtElement> {
+        val module = helper.getOrCreateModule()
+        val compilationUnit = factory.CompilationUnit().getOrCreate(declaration.name)
+
+        val pkg = if(declaration.packageFragmentDescriptor.fqName.isRoot) module.rootPackage else
+            factory.Package().getOrCreate(declaration.packageFragmentDescriptor.fqName.asString(), module)
+
+        compilationUnit.declaredPackage = pkg
+        compilationUnit.lineSeparatorPositions = declaration.fileEntry.lineStartOffsets
+
+        for(subDeclaration in declaration.declarations) {
+            val ctDecl = subDeclaration.accept(this, Empty(declaration))
+            when(ctDecl) {
+                is CtType<*> -> {
+                    pkg.addType<CtPackage>(ctDecl)
+                    compilationUnit.addDeclaredType(ctDecl)
+                }
+                is CtTypeMember -> {
+                    val topLvl = pkg.getType<CtType<Any>>(toplvlClassName) ?:
+                    (core.createClass<Any>().also {
+                        topLvlClass ->
+                        topLvlClass.setImplicit<CtClass<*>>(true)
+                        topLvlClass.setSimpleName<CtClass<*>>(toplvlClassName)
+                        pkg.addType<CtPackage>(topLvlClass)
+                        ctDecl.putKtMetadata<CtTypeMember>(KtMetadataKeys.TOP_LEVEL_DECLARING_CU, KtMetaData.wrap(compilationUnit))
+                    })
+                    topLvl.addTypeMember<CtClass<Any>>(ctDecl)
+                }
+            }
+        }
+
+        return compilationUnit.compose()
+    }
+
+    override fun visitClass(declaration: IrClass, data: ContextData?): CompositeTransformResult<CtElement> {
         val module = helper.getOrCreateModule()
         val type = helper.createType(declaration)
         val isObject = type.getMetadata(KtMetadataKeys.CLASS_IS_OBJECT) as Boolean? == true
@@ -82,7 +119,7 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         return type.compose()
     }
 
-    override fun visitTypeParameter(declaration: IrTypeParameter, data: ContextData):
+    override fun visitTypeParameter(declaration: IrTypeParameter, data: ContextData?):
             CompositeTransformResult.Single<CtTypeParameter> {
         val ctTypeParam = factory.Core().createTypeParameter()
         ctTypeParam.setSimpleName<CtTypeParameter>(declaration.name.identifier)
@@ -99,7 +136,7 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         return ctTypeParam.compose()
     }
 
-    override fun <T> visitConst(expression: IrConst<T>, data: ContextData): CompositeTransformResult<CtElement> {
+    override fun <T> visitConst(expression: IrConst<T>, data: ContextData?): CompositeTransformResult<CtElement> {
         val value = when(expression.kind) {
             IrConstKind.Null -> null
             IrConstKind.Boolean -> expression.value as Boolean
@@ -121,14 +158,14 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         return ctLiteral.compose()
     }
 
-    override fun visitProperty(declaration: IrProperty, data: ContextData): CompositeTransformResult<CtElement> {
+    override fun visitProperty(declaration: IrProperty, data: ContextData?): CompositeTransformResult<CtElement> {
         val ctField = core.createField<Any>()
 
         // Initializer (if any) exists in backing field initializer
         val backingField = declaration.backingField
         val initializer = backingField?.initializer
         if(initializer != null) {
-            val ctInitializer = visitExpressionBody(initializer, data).result()
+            val ctInitializer = visitExpressionBody(initializer, data).single
 
             if(backingField.origin == IrDeclarationOrigin.DELEGATE) {
                 ctField.putKtMetadata<CtElement>(KtMetadataKeys.PROPERTY_DELEGATE, KtMetaData.wrap(ctInitializer))
@@ -175,7 +212,7 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
 
     override fun visitValueParameter(
         declaration: IrValueParameter,
-        data: ContextData
+        data: ContextData?
     ): CompositeTransformResult<CtElement> {
         val ctParam = core.createParameter<Any>()
         ctParam.setSimpleName<CtParameter<Any>>(declaration.name.identifier)
@@ -186,7 +223,7 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         ctParam.addModifiersAsMetadata(modifierList)
         ctParam.setVarArgs<CtParameter<Any>>(KtModifierKind.VARARG in modifierList)
 
-        val defaultValue = declaration.defaultValue?.let { visitExpressionBody(it, data) }?.result()
+        val defaultValue = declaration.defaultValue?.let { visitExpressionBody(it, data) }?.single
         if(defaultValue != null) {
             ctParam.setDefaultExpression<CtParameter<Any>>(
                 expressionOrWrappedInStatementExpression(defaultValue)
@@ -207,10 +244,16 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         return ctParam.compose()
     }
 
-    override fun visitExpressionBody(body: IrExpressionBody, data: ContextData):
-            CompositeTransformResult.Single<CtExpression<*>> {
-
+    override fun visitSimpleFunction(
+        declaration: IrSimpleFunction,
+        data: ContextData?
+    ): CompositeTransformResult.Single<CtMethod<*>> {
         return TODO()
+    }
+
+    override fun visitExpressionBody(body: IrExpressionBody, data: ContextData?):
+            CompositeTransformResult<CtElement> {
+        return body.expression.accept(this, data)
     }
 
     internal class KtMetaData<T> private constructor(val value: T) {
