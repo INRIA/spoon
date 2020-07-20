@@ -56,6 +56,15 @@ object IrToModifierKind {
         sort()
     }
 
+    fun fromVariable(variable: IrVariable): List<KtModifierKind> =
+        ArrayList<KtModifierKind>().apply {
+            if(variable.isConst) add(KtModifierKind.CONST)
+            if(variable.isLateinit) add(KtModifierKind.LATEINIT)
+            if(variable.isVar) add(KtModifierKind.VAR)
+            else add(KtModifierKind.VAL)
+            sort()
+        }
+
     fun fromTypeVariable(typeParameter: IrTypeParameter) : List<KtModifierKind> =
         ArrayList<KtModifierKind>().apply {
             if(typeParameter.isReified) add(KtModifierKind.REIFIED)
