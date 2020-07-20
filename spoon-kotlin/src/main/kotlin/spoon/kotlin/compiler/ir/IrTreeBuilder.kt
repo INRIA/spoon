@@ -19,6 +19,7 @@ import spoon.kotlin.reflect.KtStatementExpressionImpl
 import spoon.reflect.code.*
 import spoon.reflect.declaration.*
 import spoon.reflect.factory.Factory
+import spoon.reflect.reference.CtReference
 import spoon.reflect.reference.CtTypeReference
 import spoon.support.reflect.code.CtLiteralImpl
 
@@ -243,7 +244,7 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
     override fun visitValueParameter(
         declaration: IrValueParameter,
         data: ContextData?
-    ): CompositeTransformResult<CtElement> {
+    ): CompositeTransformResult.Single<CtParameter<*>> {
         val ctParam = core.createParameter<Any>()
         ctParam.setSimpleName<CtParameter<Any>>(declaration.name.identifier)
         ctParam.setInferred<CtParameter<Any>>(false) // Not allowed
@@ -272,6 +273,39 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         //TODO
 
         return ctParam.compose()
+    }
+
+    private fun createUnnamedFunction(irFunction: IrFunction, data: ContextData?): CtMethod<*> {
+        val ctMethod = core.createMethod<Any>()
+
+        // Value params
+        if(irFunction.valueParameters.isNotEmpty()) {
+            ctMethod.setParameters<CtMethod<Any>>(
+                irFunction.valueParameters.map { visitValueParameter(it, data).result() }
+            )
+        }
+
+        // Type params
+        if(irFunction.typeParameters.isNotEmpty()) {
+            ctMethod.setFormalCtTypeParameters<CtMethod<Any>>(
+                irFunction.typeParameters.map { visitTypeParameter(it, data).result() }
+            )
+        }
+
+        // Return type
+        ctMethod.setType<CtMethod<*>>(referenceBuilder.getNewTypeReference(irFunction.returnType))
+
+        // Extension receiver
+        val extensionReceiverRef = irFunction.extensionReceiverParameter?.type?.let {
+            referenceBuilder.getNewTypeReference<Any>(it)
+        }
+        if(extensionReceiverRef != null) {
+            extensionReceiverRef.setParent<CtReference>(extensionReceiverRef)
+            ctMethod.putKtMetadata(KtMetadataKeys.EXTENSION_TYPE_REF,
+                KtMetaData.wrap(extensionReceiverRef)
+            )
+        }
+        return ctMethod
     }
 
     override fun visitSimpleFunction(
