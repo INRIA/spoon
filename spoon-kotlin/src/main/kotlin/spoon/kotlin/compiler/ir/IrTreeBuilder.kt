@@ -3,17 +3,16 @@ package spoon.kotlin.compiler.ir
 import org.jetbrains.kotlin.descriptors.PackageFragmentDescriptor
 import org.jetbrains.kotlin.fir.visitors.CompositeTransformResult
 import org.jetbrains.kotlin.ir.IrElement
-import org.jetbrains.kotlin.ir.declarations.IrClass
-import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
-import org.jetbrains.kotlin.ir.declarations.IrProperty
-import org.jetbrains.kotlin.ir.declarations.IrTypeParameter
+import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.expressions.IrConstKind
 import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
 import org.jetbrains.kotlin.ir.util.isInterface
+import org.jetbrains.kotlin.ir.util.isVararg
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import spoon.SpoonException
 import spoon.kotlin.ktMetadata.KtMetadataKeys
+import spoon.kotlin.reflect.KtModifierKind
 import spoon.kotlin.reflect.KtStatementExpression
 import spoon.kotlin.reflect.KtStatementExpressionImpl
 import spoon.reflect.code.*
@@ -172,8 +171,42 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         return ctField.compose()
     }
 
+    override fun visitValueParameter(
+        declaration: IrValueParameter,
+        data: ContextData
+    ): CompositeTransformResult<CtElement> {
+        val ctParam = core.createParameter<Any>()
+        ctParam.setSimpleName<CtParameter<Any>>(declaration.name.identifier)
+        ctParam.setInferred<CtParameter<Any>>(false) // Not allowed
+
+        // Modifiers
+        val modifierList = IrToModifierKind.fromValueParameter(declaration)
+        ctParam.addModifiersAsMetadata(modifierList)
+        ctParam.setVarArgs<CtParameter<Any>>(KtModifierKind.VARARG in modifierList)
+
+        val defaultValue = declaration.defaultValue?.let { visitExpressionBody(it, data) }?.result()
+        if(defaultValue != null) {
+            ctParam.setDefaultExpression<CtParameter<Any>>(
+                expressionOrWrappedInStatementExpression(defaultValue)
+            )
+        }
+
+        // Type
+        val type = if(declaration.isVararg) {
+            declaration.varargElementType!!
+        } else {
+            declaration.type
+        }
+        ctParam.setType<CtParameter<Any>>(referenceBuilder.getNewTypeReference<Any>(type))
+
+        // Mark implicit for "it" in lambda
+        //TODO
+
+        return ctParam.compose()
+    }
+
     override fun visitExpressionBody(body: IrExpressionBody, data: ContextData):
-            CompositeTransformResult.Single<CtElement> {
+            CompositeTransformResult.Single<CtExpression<*>> {
 
         return TODO()
     }
