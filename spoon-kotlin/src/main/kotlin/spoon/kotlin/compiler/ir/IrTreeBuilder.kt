@@ -131,7 +131,7 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
             val ctInitializer = visitExpressionBody(initializer, data).result()
 
             if(backingField.origin == IrDeclarationOrigin.DELEGATE) {
-                ctField.putMetadata<CtElement>(KtMetadataKeys.PROPERTY_DELEGATE, ctInitializer)
+                ctField.putKtMetadata<CtElement>(KtMetadataKeys.PROPERTY_DELEGATE, KtMetaData.wrap(ctInitializer))
                 ctInitializer.setParent(ctField)
             } else {
                 ctField.setDefaultExpression<CtField<Any>>(
@@ -160,12 +160,14 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
 
         val getter = declaration.getter
         if(getter != null && getter.origin != IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR) {
-            ctField.putMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_GETTER, visitSimpleFunction(getter, data))
+            ctField.putKtMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_GETTER,
+                KtMetaData.wrap(visitSimpleFunction(getter, data).result()))
         }
 
         val setter = declaration.setter
         if(setter != null && setter.origin != IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR) {
-            ctField.putMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_SETTER, visitSimpleFunction(setter, data))
+            ctField.putKtMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_SETTER,
+                KtMetaData.wrap(visitSimpleFunction(setter, data).result()))
         }
 
         return ctField.compose()
@@ -211,6 +213,17 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         return TODO()
     }
 
+    internal class KtMetaData<T> private constructor(val value: T) {
+        // Used for type safety when putting metadata, Kt metadata is either Boolean or a CtElement
+        companion object {
+            fun wrap(b: Boolean): KtMetaData<Boolean> = KtMetaData(b)
+            fun wrap(c: CtElement): KtMetaData<CtElement> = KtMetaData(c)
+        }
+    }
+
+    internal fun <T: CtElement> T.putKtMetadata(s: String, d: KtMetaData<*>) {
+        putMetadata<CtElement>(s, d.value)
+    }
     private fun <T: CtElement> T.compose() = CompositeTransformResult.Single(this)
     private fun <T: CtElement> CompositeTransformResult.Single<T>.result() = _single
     private fun <T> CtExpression<T>.wrapInImplicitReturn() : CtReturn<T> {
