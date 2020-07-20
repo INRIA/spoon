@@ -53,7 +53,8 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         is TypeParameterDescriptor -> {
             irTreeBuilder.factory.Core().createTypeParameterReference().apply {
                 setSimpleName<CtReference>(descriptor.name.identifier)
-                setPackageOrDeclaringType(getDeclaringRef(descriptor.containingDeclaration))
+                // TODO Type params shouldn't have declaring type?
+               // setPackageOrDeclaringType(getDeclaringRef(descriptor.containingDeclaration))
             }
         }
         else -> TODO()
