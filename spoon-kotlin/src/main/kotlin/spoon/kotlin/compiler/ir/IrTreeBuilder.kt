@@ -122,6 +122,16 @@ internal class IrTreeBuilder(val factory: Factory,
         return type.definitely()
     }
 
+    override fun visitAnonymousInitializer(
+        declaration: IrAnonymousInitializer,
+        data: ContextData?
+    ): DefiniteTransformResult<CtElement> {
+        val ctAnonExecutable = core.createAnonymousExecutable()
+        val body = visitBody(declaration.body, data).resultSafe
+        ctAnonExecutable.setBody<CtAnonymousExecutable>(body)
+        return ctAnonExecutable.definitely()
+    }
+
     override fun visitTypeParameter(declaration: IrTypeParameter, data: ContextData?):
             DefiniteTransformResult<CtTypeParameter> {
         val ctTypeParam = factory.Core().createTypeParameter()
