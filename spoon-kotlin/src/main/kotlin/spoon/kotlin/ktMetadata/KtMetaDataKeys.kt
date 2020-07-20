@@ -49,5 +49,7 @@ object KtMetadataKeys {
     const val CLASS_IS_OBJECT = "skt_key class is object : Boolean?"
 
     const val SUPER_TYPE_DELEGATE = "skt_key super type delegate : CtElement?"
+
+    const val TOP_LEVEL_DECLARING_CU = "skt_key top level declaring CU : CtCompilationUnit"
 }
 

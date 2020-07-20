@@ -210,6 +210,36 @@ class IrTreeBuilder(val factory: Factory): IrElementVisitor<CompositeTransformRe
         return ctField.compose()
     }
 
+    override fun visitLocalDelegatedProperty(
+        declaration: IrLocalDelegatedProperty,
+        data: ContextData?
+    ): CompositeTransformResult<CtElement> {
+        return super.visitLocalDelegatedProperty(declaration, data)
+    }
+
+    override fun visitVariable(declaration: IrVariable, data: ContextData?): CompositeTransformResult<CtElement> {
+        val ctLocalVar = core.createLocalVariable<Any>()
+        ctLocalVar.setSimpleName<CtVariable<*>>(declaration.name.identifier)
+
+        // Initializer
+        val initializer = declaration.initializer?.accept(this, data)?.single
+        if(initializer != null) {
+            val initializerExpr = expressionOrWrappedInStatementExpression(initializer)
+            ctLocalVar.setDefaultExpression<CtLocalVariable<Any>>(initializerExpr)
+        }
+
+        // Modifiers
+        ctLocalVar.addModifiersAsMetadata(IrToModifierKind.fromVariable(declaration))
+
+        // Type
+        ctLocalVar.setType<CtLocalVariable<*>>(referenceBuilder.getNewTypeReference(declaration.type))
+
+        // Implicit/explicit type marker
+        // TODO
+
+        return super.visitVariable(declaration, data)
+    }
+
     override fun visitValueParameter(
         declaration: IrValueParameter,
         data: ContextData?
