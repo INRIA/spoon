@@ -51,7 +51,7 @@ internal class IrTreeBuilder(
         compilationUnit.lineSeparatorPositions = declaration.fileEntry.lineStartOffsets
 
         for(subDeclaration in declaration.declarations) {
-            val ctDecl = subDeclaration.accept(this, Empty(declaration))
+            val ctDecl = subDeclaration.accept(this, Empty(declaration)).resultUnsafe
             when(ctDecl) {
                 is CtType<*> -> {
                     pkg.addType<CtPackage>(ctDecl)
