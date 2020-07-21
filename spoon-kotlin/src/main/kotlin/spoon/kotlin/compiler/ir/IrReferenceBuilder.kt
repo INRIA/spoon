@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.types.FlexibleType
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.SimpleType
 import org.jetbrains.kotlin.types.WrappedType
-import spoon.SpoonException
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.reflect.reference.*
 
@@ -35,7 +34,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         is IrSimpleType -> getNewSimpleTypeReference(irType)
         is IrErrorType -> TODO()
         is IrDynamicType -> TODO()
-        else -> throw SpoonException("Unexpected Ir type: ${irType::class.simpleName}")
+        else -> throw SpoonIrBuildException("Unexpected Ir type: ${irType::class.simpleName}")
     }
 
     fun <T> getNewTypeReference(classDescriptor: ClassDescriptor) =
@@ -93,7 +92,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         is IrTypeProjectionImpl -> getNewTypeReference(typeArgument.type)
         is IrDynamicType,
         is IrErrorType -> TODO()
-        else -> throw SpoonException("Unexpected IR type argument: ${typeArgument::class.simpleName}")
+        else -> throw SpoonIrBuildException("Unexpected IR type argument: ${typeArgument::class.simpleName}")
     }
 
     fun getNewTypeParameterReference(irTypeParam: IrTypeParameter): CtTypeParameterReference {
@@ -132,7 +131,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
             is LocalVariableDescriptor -> getNewVariableReference<T>(descriptor)
             is PropertyDescriptor -> getNewVariableReference<T>(descriptor)
             is ValueParameterDescriptor -> getNewVariableReference<T>(descriptor)
-        else -> throw SpoonException("Unexpected value descriptor ${descriptor::class.simpleName}")
+        else -> throw SpoonIrBuildException("Unexpected value descriptor ${descriptor::class.simpleName}")
     }
 
     // ========================== EXECUTABLE ==========================

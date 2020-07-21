@@ -13,7 +13,6 @@ import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
-import spoon.SpoonException
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.kotlin.reflect.KtStatementExpression
@@ -209,7 +208,7 @@ internal class IrTreeBuilder(
         } else if(declaration.getter != null) {
             referenceBuilder.getNewTypeReference<Any>(declaration.getter!!.returnType)
         } else {
-            throw SpoonException("Unable to get IR type of property $declaration")
+            throw SpoonIrBuildException("Unable to get IR type of property $declaration")
         }
         ctField.setType<CtField<*>>(type)
 
@@ -454,7 +453,7 @@ internal class IrTreeBuilder(
             is CtSuperAccess<*> -> {
                 variableRef
             }
-            else -> throw SpoonException("Unexpected access ${variableRef.simpleName}")
+            else -> throw SpoonIrBuildException("Unexpected access ${variableRef.simpleName}")
         }
         return maybe(varAccess)
     }
