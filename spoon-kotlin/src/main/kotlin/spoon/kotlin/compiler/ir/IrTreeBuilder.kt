@@ -2,6 +2,7 @@ package spoon.kotlin.compiler.ir
 
 import org.jetbrains.kotlin.descriptors.PackageFragmentDescriptor
 import org.jetbrains.kotlin.descriptors.PropertyGetterDescriptor
+import org.jetbrains.kotlin.descriptors.PropertySetterDescriptor
 import org.jetbrains.kotlin.descriptors.ReceiverParameterDescriptor
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.*
@@ -13,6 +14,11 @@ import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
+import org.jetbrains.kotlin.psi2ir.generators.AUGMENTED_ASSIGNMENTS
+import org.jetbrains.kotlin.psi2ir.generators.INCREMENT_DECREMENT_OPERATORS
+import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
+import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
+import spoon.SpoonException
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.kotlin.reflect.KtStatementExpression
@@ -357,10 +363,35 @@ internal class IrTreeBuilder(
         return ctBlock.definitely()
     }
 
-    override fun visitCall(expression: IrCall, data: ContextData?): DefiniteTransformResult<CtElement> {
-        if(expression.origin == IrStatementOrigin.GET_PROPERTY) {
-            return visitPropertyAccess(expression, data!!).definitely()
+    private fun nonInvocationCtElement(irCall: IrCall, data: ContextData?): TransformResult<CtElement> {
+        val callDescriptor = irCall.symbol.descriptor
+        if(callDescriptor is PropertyGetterDescriptor) {
+            return createVariableRead(
+                referenceBuilder.getNewVariableReference<Any>(callDescriptor.correspondingProperty)).definitely()
         }
+        if(callDescriptor is PropertySetterDescriptor) {
+            return createVariableWrite(
+                referenceBuilder.getNewVariableReference<Any>(callDescriptor.correspondingProperty)).definitely()
+
+        }
+        if(irCall.origin == IrStatementOrigin.GET_PROPERTY) {
+            return visitPropertyAccess(irCall, data!!)
+        }
+        if(irCall.origin in AUGMENTED_ASSIGNMENTS) {
+            return createAugmentedAssignmentOperator(irCall, irCall.origin!!, data!!).definitely()
+        }
+        if(OperatorHelper.isUnaryOperator(irCall.origin)) {
+            return visitUnaryOperator(irCall, data!!)
+        }
+        if(OperatorHelper.isBinaryOperator(irCall.origin)) {
+            return visitBinaryOperator(irCall, data!!)
+        }
+        return TransformResult.nothing()
+    }
+
+    override fun visitCall(expression: IrCall, data: ContextData?): DefiniteTransformResult<CtElement> {
+        val nonInvocationResult = nonInvocationCtElement(expression, data)
+        if(nonInvocationResult.isDefinite) return nonInvocationResult as DefiniteTransformResult<CtElement>
         val invocation = core.createInvocation<Any>()
         invocation.setExecutable<CtInvocation<Any>>(referenceBuilder.getNewExecutableReference(expression))
 
@@ -402,14 +433,148 @@ internal class IrTreeBuilder(
         return invocation.definitely()
     }
 
-    private fun visitPropertyAccess(irCall: IrCall, data: ContextData): CtVariableAccess<*> {
+    private fun visitBinaryOperator(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtBinaryOperator<*>> {
+        val irLHS: IrExpression
+        val irRHS: IrExpression
+        if(irCall.valueArgumentsCount == 2) {
+            irLHS = irCall.getValueArgument(0)!!
+            irRHS = irCall.getValueArgument(1)!!
+        } else if(irCall.valueArgumentsCount == 1) {
+            irLHS = irCall.dispatchReceiver!!
+            irRHS = irCall.getValueArgument(0)!!
+        } else {
+            val receiver = irCall.dispatchReceiver
+            if(receiver is IrCall)
+                return visitBinaryOperator(receiver, data)
+            else
+                throw SpoonIrBuildException("Unable to get operands of binary operator call")
+        }
+        val lhs = irLHS.accept(this, data).resultUnsafe
+        val rhs = irRHS.accept(this, data).resultUnsafe
+
+        val ctOp = core.createBinaryOperator<Any>()
+        ctOp.setLeftHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(lhs))
+        ctOp.setRightHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(rhs))
+        ctOp.setType<CtBinaryOperator<Any>>(referenceBuilder.getNewTypeReference(irCall.type))
+        ctOp.putKtMetadata(
+            KtMetadataKeys.KT_BINARY_OPERATOR_KIND,
+            KtMetadata.wrap(OperatorHelper.originToBinaryOperatorKind(irCall.origin!!))
+        )
+        return ctOp.definitely()
+    }
+
+    private fun visitUnaryOperator(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtUnaryOperator<*>> {
+        val ctOp = core.createUnaryOperator<Any>()
+        val operand = irCall.dispatchReceiver!!.accept(this, data).resultUnsafe
+        ctOp.setOperand<CtUnaryOperator<*>>(operand as CtExpression<Any>)
+        ctOp.setKind<CtUnaryOperator<*>>(OperatorHelper.originToUnaryOperatorKind(irCall.origin!!))
+        ctOp.setType<CtUnaryOperator<*>>(referenceBuilder.getNewTypeReference(irCall.type))
+        return ctOp.definitely()
+    }
+
+
+    override fun visitBlock(expression: IrBlock, data: ContextData?): TransformResult<CtElement> {
+        if(expression.origin in INCREMENT_DECREMENT_OPERATORS) {
+            val setVar = expression.statements.firstIsInstanceOrNull<IrSetVariable>()?.symbol
+            val operand: CtExpression<Any> = if(setVar == null) {
+                val call = expression.statements.firstIsInstance<IrBlock>().
+                    statements.firstIsInstance<IrCall>()
+                nonInvocationCtElement(call, data).resultUnsafe as CtExpression<Any>
+            } else {
+                createVariableWrite(
+                    referenceBuilder.getNewVariableReference<Any>(setVar.descriptor))
+            }
+            val ctUnaryOp = core.createUnaryOperator<Any>()
+            ctUnaryOp.setOperand<CtUnaryOperator<*>>(operand)
+            ctUnaryOp.setKind<CtUnaryOperator<*>>(OperatorHelper.originToUnaryOperatorKind(expression.origin!!))
+            ctUnaryOp.setType<CtUnaryOperator<*>>(referenceBuilder.getNewTypeReference(expression.type))
+            return ctUnaryOp.definitely()
+        }
+        if(expression.origin in AUGMENTED_ASSIGNMENTS) {
+            return createAugmentedAssignmentOperator(expression, expression.origin!!, data!!).definitely()
+        }
+        return super.visitBlock(expression, data)
+
+    }
+
+    private fun createAugmentedAssignmentOperator(
+            expression: IrExpression,
+            origin: IrStatementOrigin,
+            data: ContextData
+    ): CtOperatorAssignment<*,*> {
+        val (irLhs, irRhs) = OperatorHelper.getAugmentedAssignmentOperands(expression)
+        val ctAssignmentOp = core.createOperatorAssignment<Any,Any>()
+        val lhs = expressionOrWrappedInStatementExpression(irLhs.accept(this, data).resultUnsafe)
+        val rhs = expressionOrWrappedInStatementExpression(irRhs.accept(this, data).resultUnsafe)
+        ctAssignmentOp.setKind<CtOperatorAssignment<Any,Any>>(
+            OperatorHelper.originToBinaryOperatorKind(origin).toJavaAssignmentOperatorKind()
+        )
+        ctAssignmentOp.setAssigned<CtOperatorAssignment<Any,Any>>(lhs)
+        ctAssignmentOp.setAssignment<CtOperatorAssignment<Any,Any>>(rhs)
+        ctAssignmentOp.setType<CtOperatorAssignment<Any,Any>>(referenceBuilder.getNewTypeReference(expression.type))
+        return ctAssignmentOp
+    }
+
+    override fun visitSetVariable(expression: IrSetVariable, data: ContextData?): TransformResult<CtElement> {
+        if(expression.origin in AUGMENTED_ASSIGNMENTS) {
+            return createAugmentedAssignmentOperator(expression, expression.origin!!, data!!).definitely()
+        }
+
+        return super.visitSetVariable(expression, data)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun createVariableWrite(variableRef: CtReference) = when (variableRef) {
+        is CtLocalVariableReference<*> ->
+            factory.Core().createVariableWrite<Any>().also {
+                it.setVariable<CtVariableAccess<Any>>(variableRef as CtLocalVariableReference<Any>)
+            }
+        is CtFieldReference<*> -> {
+            factory.Core().createFieldWrite<Any>().also {
+                it.setVariable<CtVariableAccess<Any>>(variableRef as CtFieldReference<Any>)
+              //  it.setTarget<CtTargetedExpression<Any, CtExpression<*>>>(receiver)
+            }
+        }
+        is CtParameterReference<*> -> {
+            factory.Core().createVariableWrite<Any>().also {
+                it.setVariable<CtVariableAccess<Any>>(variableRef as CtParameterReference<Any>)
+            }
+        }
+        else -> throw SpoonException("Unexpected expression ${variableRef::class.simpleName}")
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun createVariableRead(variableRef: CtReference) = when(variableRef) {
+        is CtFieldReference<*> -> {
+            factory.Core().createFieldRead<Any>().also {
+                it.setVariable<CtVariableRead<Any>>(variableRef as CtVariableReference<Any>)
+            }
+        }
+        is CtParameterReference<*> -> {
+            factory.Core().createVariableRead<Any>().also {
+                it.setVariable<CtVariableRead<Any>>(variableRef as CtVariableReference<Any>)
+            }
+        }
+        is CtLocalVariableReference<*> -> {
+            factory.Core().createVariableRead<Any>().also {
+                it.setVariable<CtVariableRead<Any>>(variableRef as CtVariableReference<Any>)
+            }
+        }
+        is CtSuperAccess<*> -> {
+            variableRef
+        }
+        else -> throw SpoonIrBuildException("Unexpected reference for variable read ${variableRef::class.simpleName}")
+    }
+
+
+    private fun visitPropertyAccess(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtVariableAccess<*>> {
         val descriptor = irCall.symbol.descriptor as PropertyGetterDescriptor
         val variable = referenceBuilder.getNewVariableReference<Any>(descriptor.correspondingProperty)
         val target = getReceiver(irCall, data)
         val fieldRead = core.createFieldRead<Any>()
         fieldRead.setVariable<CtFieldRead<Any>>(variable)
         if(target != null) fieldRead.setTarget<CtFieldRead<Any>>(target as CtExpression<*>)
-        return fieldRead
+        return fieldRead.definitely()
     }
 
     override fun visitExpressionBody(body: IrExpressionBody, data: ContextData?):
@@ -433,29 +598,9 @@ internal class IrTreeBuilder(
             }
         }
 
-        val variableRef = referenceBuilder.getNewVariableReference<Any>(expression)
-        val varAccess = when(variableRef) {
-            is CtFieldReference<*> -> {
-                factory.Core().createFieldRead<Any>().also {
-                    it.setVariable<CtVariableRead<Any>>(variableRef)
-                }
-            }
-            is CtParameterReference<*> -> {
-                factory.Core().createVariableRead<Any>().also {
-                    it.setVariable<CtVariableRead<Any>>(variableRef)
-                }
-            }
-            is CtLocalVariableReference<*> -> {
-                factory.Core().createVariableRead<Any>().also {
-                    it.setVariable<CtVariableRead<Any>>(variableRef)
-                }
-            }
-            is CtSuperAccess<*> -> {
-                variableRef
-            }
-            else -> throw SpoonIrBuildException("Unexpected access ${variableRef.simpleName}")
-        }
-        return maybe(varAccess)
+        val varAccess = createVariableRead(referenceBuilder.getNewVariableReference<Any>(expression))
+
+        return varAccess.definitely()
     }
 
     private fun getReceiver(irCall: IrCall, data: ContextData): CtElement? {
