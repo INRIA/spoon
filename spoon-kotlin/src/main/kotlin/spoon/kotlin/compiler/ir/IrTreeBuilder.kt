@@ -1,12 +1,13 @@
 package spoon.kotlin.compiler.ir
 
 import org.jetbrains.kotlin.descriptors.PackageFragmentDescriptor
+import org.jetbrains.kotlin.descriptors.PropertyGetterDescriptor
+import org.jetbrains.kotlin.descriptors.ReceiverParameterDescriptor
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.expressions.IrBody
-import org.jetbrains.kotlin.ir.expressions.IrConst
-import org.jetbrains.kotlin.ir.expressions.IrConstKind
-import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
+import org.jetbrains.kotlin.ir.expressions.*
+import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
+import org.jetbrains.kotlin.ir.symbols.IrValueParameterSymbol
 import org.jetbrains.kotlin.ir.types.isNullableAny
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
@@ -20,8 +21,7 @@ import spoon.kotlin.reflect.KtStatementExpressionImpl
 import spoon.reflect.code.*
 import spoon.reflect.declaration.*
 import spoon.reflect.factory.Factory
-import spoon.reflect.reference.CtReference
-import spoon.reflect.reference.CtTypeReference
+import spoon.reflect.reference.*
 import spoon.support.reflect.code.CtLiteralImpl
 
 internal class IrTreeBuilder(val factory: Factory,
@@ -359,6 +359,69 @@ internal class IrTreeBuilder(val factory: Factory,
     override fun visitExpressionBody(body: IrExpressionBody, data: ContextData?):
             TransformResult<CtElement> {
         return body.expression.accept(this, data)
+    }
+
+    override fun visitTypeOperator(expression: IrTypeOperatorCall, data: ContextData?): TransformResult<CtElement> {
+        if(expression.operator == IrTypeOperator.IMPLICIT_COERCION_TO_UNIT) {
+            return expression.argument.accept(this, data)
+        }
+        return super.visitTypeOperator(expression, data)
+    }
+
+    override fun visitGetValue(expression: IrGetValue, data: ContextData?): TransformResult<CtElement> {
+        val symbol = expression.symbol
+        if(symbol is IrValueParameterSymbol) {
+            val descriptor = symbol.descriptor
+            if(descriptor is ReceiverParameterDescriptor) {
+                return visitThisReceiver(expression, data!!).definitely()
+            }
+        }
+
+        val variableRef = referenceBuilder.getNewVariableReference<Any>(expression)
+        val varAccess = when(variableRef) {
+            is CtFieldReference<*> -> {
+                factory.Core().createFieldRead<Any>().also {
+                    it.setVariable<CtVariableRead<Any>>(variableRef)
+                }
+            }
+            is CtParameterReference<*> -> {
+                factory.Core().createVariableRead<Any>().also {
+                    it.setVariable<CtVariableRead<Any>>(variableRef)
+                }
+            }
+            is CtLocalVariableReference<*> -> {
+                factory.Core().createVariableRead<Any>().also {
+                    it.setVariable<CtVariableRead<Any>>(variableRef)
+                }
+            }
+            is CtSuperAccess<*> -> {
+                variableRef
+            }
+            else -> throw SpoonException("Unexpected access ${variableRef.simpleName}")
+        }
+        return maybe(varAccess)
+    }
+
+    private fun getReceiver(irCall: IrCall, data: ContextData): CtElement? {
+        if(irCall.superQualifierSymbol != null) return visitSuperTarget(irCall.superQualifierSymbol!!)
+        return helper.getReceiver(irCall)?.accept(this, data)?.resultOrNull
+    }
+
+    private fun visitThisReceiver(irGetValue: IrGetValue, data: ContextData): CtThisAccess<*> {
+        val implicit = helper.isImplicitThis(irGetValue, data.file)
+        return factory.Code().createThisAccess<Any>(
+            referenceBuilder.getNewTypeReference(irGetValue.type),
+            implicit
+        )
+    }
+
+    private fun visitSuperTarget(symbol: IrClassSymbol): CtSuperAccess<*> {
+        val superAccess = core.createSuperAccess<Any>()
+        superAccess.setType<CtSuperAccess<*>>(referenceBuilder.getNewTypeReference(
+            symbol.descriptor
+        ))
+        superAccess.setImplicit<CtSuperAccess<*>>(false)
+        return superAccess
     }
 
     internal class KtMetaData<T> private constructor(val value: T) {
