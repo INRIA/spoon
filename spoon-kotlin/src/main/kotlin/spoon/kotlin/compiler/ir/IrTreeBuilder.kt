@@ -388,9 +388,15 @@ internal class IrTreeBuilder(
             )
         }
         if(detectInfix) {
-            invocation.putKtMetadata<CtInvocation<*>>(
+            invocation.putKtMetadata(
                 KtMetadataKeys.INVOCATION_IS_INFIX,
                 KtMetaData.wrap(helper.isInfixCall(expression, data))
+            )
+        }
+        if(expression.origin == IrStatementOrigin.INVOKE) {
+            invocation.putKtMetadata(
+                KtMetadataKeys.INVOKE_AS_OPERATOR,
+                KtMetaData.wrap(true)
             )
         }
 
