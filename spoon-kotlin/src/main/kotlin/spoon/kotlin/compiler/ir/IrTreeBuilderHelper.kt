@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.ir.util.file
 import org.jetbrains.kotlin.lexer.KtKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
@@ -80,6 +81,15 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     fun isImplicitThis(irGetValue: IrGetValue, file: IrFile): Boolean {
         val text = getKtFile(file).text.substring(irGetValue.startOffset, irGetValue.endOffset)
         return text != "this"
+    }
+
+    fun isInfixCall(irCall: IrCall, context: ContextData): Boolean {
+        val psiElements = PsiSourceFinder.getSourceElement(
+            getKtFile(context.file),
+            irCall.startOffset,
+            irCall.endOffset
+        )
+        return psiElements.any { it is KtBinaryExpression && it.operationToken == KtTokens.IDENTIFIER }
     }
 
     fun escapedIdentifier(name: Name): String {

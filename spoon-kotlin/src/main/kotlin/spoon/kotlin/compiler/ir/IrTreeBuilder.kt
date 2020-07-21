@@ -24,8 +24,10 @@ import spoon.reflect.factory.Factory
 import spoon.reflect.reference.*
 import spoon.support.reflect.code.CtLiteralImpl
 
-internal class IrTreeBuilder(val factory: Factory,
-                    val sourceManager: PsiSourceManager
+internal class IrTreeBuilder(
+    val factory: Factory,
+    val sourceManager: PsiSourceManager,
+    private val detectInfix: Boolean = true
 ) : IrElementVisitor<TransformResult<CtElement>, ContextData?> {
     val referenceBuilder = IrReferenceBuilder(this)
     val helper = IrTreeBuilderHelper(this)
@@ -354,6 +356,55 @@ internal class IrTreeBuilder(val factory: Factory,
         }
         ctBlock.setStatements<CtBlock<*>>(statements)
         return ctBlock.definitely()
+    }
+
+    override fun visitCall(expression: IrCall, data: ContextData?): DefiniteTransformResult<CtElement> {
+        if(expression.origin == IrStatementOrigin.GET_PROPERTY) {
+            return visitPropertyAccess(expression, data!!).definitely()
+        }
+        val invocation = core.createInvocation<Any>()
+        invocation.setExecutable<CtInvocation<Any>>(referenceBuilder.getNewExecutableReference(expression))
+
+        val target = getReceiver(expression, data!!)
+        if(target is CtExpression<*>) {
+            invocation.setTarget<CtInvocation<Any>>(target)
+        } else if(target != null) {
+            throw RuntimeException("Function call target not CtExpression")
+        }
+
+        if(expression.valueArgumentsCount > 0) {
+            invocation.setArguments<CtInvocation<Any>>(expression.symbol.descriptor.valueParameters.map {
+                expressionOrWrappedInStatementExpression(
+                    expression.getValueArgument(it.index)!!.accept(this, data).resultUnsafe
+                )
+            })
+        }
+
+        if(expression.typeArgumentsCount > 0) {
+            invocation.setActualTypeArguments<CtInvocation<Any>>(
+                expression.symbol.descriptor.typeParameters.map {
+                    referenceBuilder.getNewTypeReference<Any>(expression.getTypeArgument(it.index)!!)
+                }
+            )
+        }
+        if(detectInfix) {
+            invocation.putKtMetadata<CtInvocation<*>>(
+                KtMetadataKeys.INVOCATION_IS_INFIX,
+                KtMetaData.wrap(helper.isInfixCall(expression, data))
+            )
+        }
+
+        return invocation.definitely()
+    }
+
+    private fun visitPropertyAccess(irCall: IrCall, data: ContextData): CtVariableAccess<*> {
+        val descriptor = irCall.symbol.descriptor as PropertyGetterDescriptor
+        val variable = referenceBuilder.getNewVariableReference<Any>(descriptor.correspondingProperty)
+        val target = getReceiver(irCall, data)
+        val fieldRead = core.createFieldRead<Any>()
+        fieldRead.setVariable<CtFieldRead<Any>>(variable)
+        if(target != null) fieldRead.setTarget<CtFieldRead<Any>>(target as CtExpression<*>)
+        return fieldRead
     }
 
     override fun visitExpressionBody(body: IrExpressionBody, data: ContextData?):
