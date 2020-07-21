@@ -2,6 +2,7 @@ package spoon.kotlin.compiler.ir
 
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
+import spoon.kotlin.reflect.code.KtBinaryOperatorKind
 import spoon.reflect.declaration.CtElement
 
 fun CtElement.addModifiersAsMetadata(modifierList: List<KtModifierKind>) {
@@ -14,6 +15,7 @@ internal class KtMetadata<T> private constructor(val value: T) {
     companion object {
         fun wrap(b: Boolean): KtMetadata<Boolean> = KtMetadata(b)
         fun wrap(c: CtElement): KtMetadata<CtElement> = KtMetadata(c)
+        fun wrap(kind: KtBinaryOperatorKind): KtMetadata<KtBinaryOperatorKind> = KtMetadata(kind)
     }
 }
 
