@@ -64,7 +64,7 @@ internal class IrTreeBuilder(
                         topLvlClass.setImplicit<CtClass<*>>(true)
                         topLvlClass.setSimpleName<CtClass<*>>(toplvlClassName)
                         pkg.addType<CtPackage>(topLvlClass)
-                        ctDecl.putKtMetadata<CtTypeMember>(KtMetadataKeys.TOP_LEVEL_DECLARING_CU, KtMetaData.wrap(compilationUnit))
+                        ctDecl.putKtMetadata<CtTypeMember>(KtMetadataKeys.TOP_LEVEL_DECLARING_CU, KtMetadata.wrap(compilationUnit))
                     })
                     topLvl.addTypeMember<CtClass<Any>>(ctDecl)
                 }
@@ -192,7 +192,7 @@ internal class IrTreeBuilder(
             val ctInitializer = visitExpressionBody(initializer, data).resultUnsafe
 
             if(backingField.origin == IrDeclarationOrigin.DELEGATE) {
-                ctField.putKtMetadata<CtElement>(KtMetadataKeys.PROPERTY_DELEGATE, KtMetaData.wrap(ctInitializer))
+                ctField.putKtMetadata<CtElement>(KtMetadataKeys.PROPERTY_DELEGATE, KtMetadata.wrap(ctInitializer))
                 ctInitializer.setParent(ctField)
             } else {
                 ctField.setDefaultExpression<CtField<Any>>(
@@ -222,13 +222,13 @@ internal class IrTreeBuilder(
         val getter = declaration.getter
         if(getter != null && getter.origin != IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR) {
             ctField.putKtMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_GETTER,
-                KtMetaData.wrap(createUnnamedFunction(getter, data)))
+                KtMetadata.wrap(createUnnamedFunction(getter, data)))
         }
 
         val setter = declaration.setter
         if(setter != null && setter.origin != IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR) {
             ctField.putKtMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_SETTER,
-                KtMetaData.wrap(createUnnamedFunction(setter, data)))
+                KtMetadata.wrap(createUnnamedFunction(setter, data)))
         }
 
         return ctField.definitely()
@@ -325,7 +325,7 @@ internal class IrTreeBuilder(
         if(extensionReceiverRef != null) {
             extensionReceiverRef.setParent<CtReference>(extensionReceiverRef)
             ctMethod.putKtMetadata(KtMetadataKeys.EXTENSION_TYPE_REF,
-                KtMetaData.wrap(extensionReceiverRef)
+                KtMetadata.wrap(extensionReceiverRef)
             )
         }
 
@@ -390,13 +390,13 @@ internal class IrTreeBuilder(
         if(detectInfix) {
             invocation.putKtMetadata(
                 KtMetadataKeys.INVOCATION_IS_INFIX,
-                KtMetaData.wrap(helper.isInfixCall(expression, data))
+                KtMetadata.wrap(helper.isInfixCall(expression, data))
             )
         }
         if(expression.origin == IrStatementOrigin.INVOKE) {
             invocation.putKtMetadata(
                 KtMetadataKeys.INVOKE_AS_OPERATOR,
-                KtMetaData.wrap(true)
+                KtMetadata.wrap(true)
             )
         }
 
@@ -481,15 +481,15 @@ internal class IrTreeBuilder(
         return superAccess
     }
 
-    internal class KtMetaData<T> private constructor(val value: T) {
+    internal class KtMetadata<T> private constructor(val value: T) {
         // Used for type safety when putting metadata, Kt metadata is either Boolean or a CtElement
         companion object {
-            fun wrap(b: Boolean): KtMetaData<Boolean> = KtMetaData(b)
-            fun wrap(c: CtElement): KtMetaData<CtElement> = KtMetaData(c)
+            fun wrap(b: Boolean): KtMetadata<Boolean> = KtMetadata(b)
+            fun wrap(c: CtElement): KtMetadata<CtElement> = KtMetadata(c)
         }
     }
 
-    internal fun <T: CtElement> T.putKtMetadata(s: String, d: KtMetaData<*>) {
+    internal fun <T: CtElement> T.putKtMetadata(s: String, d: KtMetadata<*>) {
         putMetadata<CtElement>(s, d.value)
     }
 
