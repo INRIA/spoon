@@ -4,7 +4,9 @@ import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrFile
+import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrConst
+import org.jetbrains.kotlin.ir.expressions.IrGetValue
 import org.jetbrains.kotlin.ir.util.file
 import org.jetbrains.kotlin.lexer.KtKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -63,6 +65,8 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     fun getOrCreateModule(): CtModule {
         return factory.Module().unnamedModule
     }
+
+    fun getReceiver(irCall: IrCall) = irCall.extensionReceiver ?: irCall.dispatchReceiver
 
     fun getBaseOfConst(constExpression: IrConst<Number>, file: IrFile): LiteralBase {
         val ktFile = getKtFile(file)
