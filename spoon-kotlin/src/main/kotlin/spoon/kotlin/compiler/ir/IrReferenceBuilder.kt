@@ -109,6 +109,8 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         setType<CtVariableReference<T>>(getNewTypeReference<T>(descriptor.type))
     }
 
+    // ========================== VARIABLE ==========================
+
     fun <T> getNewVariableReference(localVar: LocalVariableDescriptor): CtLocalVariableReference<T> =
         irTreeBuilder.factory.Core().createLocalVariableReference<T>().also { it.setNameAndType(localVar) }
 
@@ -126,13 +128,16 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         return paramRef
     }
 
-    fun <T> getNewVariableReference(irGetValue: IrGetValue): CtVariableReference<T> =
-        when(val descriptor = irGetValue.symbol.descriptor) {
+    fun <T> getNewVariableReference(descriptor: ValueDescriptor) =
+        when(val descriptor = descriptor) {
             is LocalVariableDescriptor -> getNewVariableReference<T>(descriptor)
             is PropertyDescriptor -> getNewVariableReference<T>(descriptor)
             is ValueParameterDescriptor -> getNewVariableReference<T>(descriptor)
-        else -> throw SpoonIrBuildException("Unexpected value descriptor ${descriptor::class.simpleName}")
-    }
+            else -> throw SpoonIrBuildException("Unexpected value descriptor ${descriptor::class.simpleName}")
+        }
+
+    fun <T> getNewVariableReference(irGetValue: IrGetValue): CtVariableReference<T> =
+        getNewVariableReference(irGetValue.symbol.descriptor)
 
     // ========================== EXECUTABLE ==========================
 
