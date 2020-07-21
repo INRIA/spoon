@@ -1,9 +1,13 @@
 package spoon.kotlin.compiler.ir
 
 import org.jetbrains.kotlin.descriptors.*
+import org.jetbrains.kotlin.descriptors.impl.LocalVariableDescriptor
 import org.jetbrains.kotlin.ir.declarations.IrTypeParameter
+import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrGetValue
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.IrTypeProjectionImpl
+import org.jetbrains.kotlin.ir.util.getArguments
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.FlexibleType
@@ -12,10 +16,7 @@ import org.jetbrains.kotlin.types.SimpleType
 import org.jetbrains.kotlin.types.WrappedType
 import spoon.SpoonException
 import spoon.kotlin.ktMetadata.KtMetadataKeys
-import spoon.reflect.reference.CtPackageReference
-import spoon.reflect.reference.CtReference
-import spoon.reflect.reference.CtTypeParameterReference
-import spoon.reflect.reference.CtTypeReference
+import spoon.reflect.reference.*
 
 internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
 
@@ -103,6 +104,52 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         ctRef.setPackageOrDeclaringType(getDeclaringRef(irTypeParam.descriptor.containingDeclaration))
         return ctRef
     }
+
+    private fun <T> CtVariableReference<T>.setNameAndType(descriptor: ValueDescriptor) {
+        setSimpleName<CtVariableReference<*>>(descriptor.name.escaped())
+        setType<CtVariableReference<T>>(getNewTypeReference<T>(descriptor.type))
+    }
+
+    fun <T> getNewVariableReference(localVar: LocalVariableDescriptor): CtLocalVariableReference<T> =
+        irTreeBuilder.factory.Core().createLocalVariableReference<T>().also { it.setNameAndType(localVar) }
+
+
+    fun <T> getNewVariableReference(property: PropertyDescriptor): CtFieldReference<T> =
+        irTreeBuilder.factory.Core().createFieldReference<T>().also {
+            it.setNameAndType(property)
+            it.setDeclaringType<CtFieldReference<T>>(getDeclaringRef(property.containingDeclaration) as? CtTypeReference<*>)
+        }
+
+    private fun <T> getNewVariableReference(valueParam: ValueParameterDescriptor): CtParameterReference<T> {
+        val paramRef = irTreeBuilder.factory.Core().createParameterReference<T>()
+        paramRef.setSimpleName<CtVariableReference<T>>(valueParam.name.escaped())
+        paramRef.setType<CtVariableReference<T>>(getNewTypeReference(valueParam.type))
+        return paramRef
+    }
+
+    fun <T> getNewVariableReference(irGetValue: IrGetValue): CtVariableReference<T> =
+        when(val descriptor = irGetValue.symbol.descriptor) {
+            is LocalVariableDescriptor -> getNewVariableReference<T>(descriptor)
+            is PropertyDescriptor -> getNewVariableReference<T>(descriptor)
+            is ValueParameterDescriptor -> getNewVariableReference<T>(descriptor)
+        else -> throw SpoonException("Unexpected value descriptor ${descriptor::class.simpleName}")
+    }
+
+    // ========================== EXECUTABLE ==========================
+
+    fun <T> getNewExecutableReference(irCall: IrCall): CtExecutableReference<T> {
+        val executableReference = irTreeBuilder.factory.Core().createExecutableReference<T>()
+        executableReference.setSimpleName<CtReference>(irCall.symbol.descriptor.name.escaped())
+        executableReference.setType<CtExecutableReference<T>>(getNewTypeReference(irCall.type))
+        if(irCall.valueArgumentsCount > 0) {
+            executableReference.setParameters<CtExecutableReference<T>>(
+                irCall.getArguments().map { getNewTypeReference<Any>(it.first.type) }
+            )
+        }
+        return executableReference
+    }
+
+
 
     fun getPackageReference(fqName : FqName) : CtPackageReference {
         if(fqName.isRoot) {
