@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.ir.declarations.IrTypeParameter
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.IrTypeProjectionImpl
 import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.FlexibleType
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.SimpleType
@@ -19,6 +20,8 @@ import spoon.reflect.reference.CtTypeReference
 internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
 
     private val factory get() = irTreeBuilder.factory
+    private val helper get() = irTreeBuilder.helper
+    private fun Name.escaped() = helper.escapedIdentifier(this)
 
     private fun <T> getNewSimpleTypeReference(irType: IrSimpleType): CtTypeReference<T> {
         val ctRef = typeRefFromDescriptor(irType.classifier.descriptor)
@@ -46,13 +49,13 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
     private fun typeRefFromDescriptor(descriptor: ClassifierDescriptor) = when(descriptor) {
         is ClassDescriptor -> {
             irTreeBuilder.factory.Core().createTypeReference<Any>().apply {
-                setSimpleName<CtReference>(descriptor.name.identifier)
+                setSimpleName<CtReference>(descriptor.name.escaped())
                 setPackageOrDeclaringType(getDeclaringRef(descriptor.containingDeclaration))
             }
         }
         is TypeParameterDescriptor -> {
             irTreeBuilder.factory.Core().createTypeParameterReference().apply {
-                setSimpleName<CtReference>(descriptor.name.identifier)
+                setSimpleName<CtReference>(descriptor.name.escaped())
                 // TODO Type params shouldn't have declaring type?
                // setPackageOrDeclaringType(getDeclaringRef(descriptor.containingDeclaration))
             }
@@ -71,7 +74,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
 
     private fun getDeclaringTypeReference(classDescriptor: ClassDescriptor): CtTypeReference<*> {
         val ctRef = factory.Core().createTypeReference<Any>()
-        ctRef.setSimpleName<CtReference>(classDescriptor.name.identifier)
+        ctRef.setSimpleName<CtReference>(classDescriptor.name.escaped())
         ctRef.setPackageOrDeclaringType(getDeclaringRef(classDescriptor.containingDeclaration))
         return ctRef
     }
@@ -94,7 +97,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
 
     fun getNewTypeParameterReference(irTypeParam: IrTypeParameter): CtTypeParameterReference {
         val ctRef = irTreeBuilder.factory.Core().createTypeParameterReference()
-        ctRef.setSimpleName<CtReference>(irTypeParam.name.identifier)
+        ctRef.setSimpleName<CtReference>(irTypeParam.name.escaped())
         ctRef.putMetadata<CtReference>(KtMetadataKeys.TYPE_REF_NULLABLE, irTypeParam.symbol.defaultType.isNullable())
         ctRef.addModifiersAsMetadata(IrToModifierKind.fromTypeVariable(irTypeParam))
         ctRef.setPackageOrDeclaringType(getDeclaringRef(irTypeParam.descriptor.containingDeclaration))

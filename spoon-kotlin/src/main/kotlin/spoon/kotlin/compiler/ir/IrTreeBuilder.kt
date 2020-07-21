@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
 import org.jetbrains.kotlin.ir.types.isNullableAny
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
+import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import spoon.SpoonException
 import spoon.kotlin.ktMetadata.KtMetadataKeys
@@ -29,6 +30,7 @@ internal class IrTreeBuilder(val factory: Factory,
     val referenceBuilder = IrReferenceBuilder(this)
     val helper = IrTreeBuilderHelper(this)
     private val core get() = factory.Core()
+    private fun Name.escaped() = helper.escapedIdentifier(this)
     internal val toplvlClassName = "<top-level>"
 
     override fun visitElement(element: IrElement, data: ContextData?): TransformResult<CtElement> {
@@ -136,7 +138,7 @@ internal class IrTreeBuilder(val factory: Factory,
     override fun visitTypeParameter(declaration: IrTypeParameter, data: ContextData?):
             DefiniteTransformResult<CtTypeParameter> {
         val ctTypeParam = factory.Core().createTypeParameter()
-        ctTypeParam.setSimpleName<CtTypeParameter>(declaration.name.identifier)
+        ctTypeParam.setSimpleName<CtTypeParameter>(declaration.name.escaped())
         // Don't include default upper bound ("Any?")
         val bounds = declaration.superTypes.filterNot { it.isNullableAny() }.map { referenceBuilder.getNewTypeReference<Any>(it) }
         if(bounds.size == 1) {
@@ -179,7 +181,7 @@ internal class IrTreeBuilder(val factory: Factory,
 
     override fun visitProperty(declaration: IrProperty, data: ContextData?): DefiniteTransformResult<CtElement> {
         val ctField = core.createField<Any>()
-        ctField.setSimpleName<CtField<*>>(declaration.name.identifier)
+        ctField.setSimpleName<CtField<*>>(declaration.name.escaped())
 
         // Initializer (if any) exists in backing field initializer
         val backingField = declaration.backingField
@@ -239,7 +241,7 @@ internal class IrTreeBuilder(val factory: Factory,
 
     override fun visitVariable(declaration: IrVariable, data: ContextData?): TransformResult<CtLocalVariable<*>> {
         val ctLocalVar = core.createLocalVariable<Any>()
-        ctLocalVar.setSimpleName<CtVariable<*>>(declaration.name.identifier)
+        ctLocalVar.setSimpleName<CtVariable<*>>(declaration.name.escaped())
 
         // Initializer
         val initializer = declaration.initializer?.accept(this, data)?.resultUnsafe
@@ -265,7 +267,7 @@ internal class IrTreeBuilder(val factory: Factory,
         data: ContextData?
     ): DefiniteTransformResult<CtParameter<*>> {
         val ctParam = core.createParameter<Any>()
-        ctParam.setSimpleName<CtParameter<Any>>(declaration.name.identifier)
+        ctParam.setSimpleName<CtParameter<Any>>(declaration.name.escaped())
         ctParam.setInferred<CtParameter<Any>>(false) // Not allowed
 
         // Modifiers
@@ -338,7 +340,7 @@ internal class IrTreeBuilder(val factory: Factory,
         data: ContextData?
     ): DefiniteTransformResult<CtMethod<*>> {
         return createUnnamedFunction(declaration, data).also {
-            it.setSimpleName<CtMethod<*>>(declaration.name.identifier)
+            it.setSimpleName<CtMethod<*>>(declaration.name.escaped())
             it.addModifiersAsMetadata(IrToModifierKind.fromFunctionDeclaration(declaration))
         }.definitely()
     }

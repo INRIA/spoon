@@ -6,6 +6,9 @@ import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.util.file
+import org.jetbrains.kotlin.lexer.KtKeywordToken
+import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
@@ -18,6 +21,7 @@ import spoon.reflect.declaration.CtType
 internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     private val factory get() = irTreeBuilder.factory
     private val referenceBuilder get() = irTreeBuilder.referenceBuilder
+    private val keywords = KtTokens.KEYWORDS.types.map { (it as KtKeywordToken).value }
 
     private fun getKtFile(irDeclaration: IrDeclaration): KtFile {
         return irTreeBuilder.sourceManager.getKtFile(irDeclaration.file)!!
@@ -67,5 +71,17 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
         if(text.startsWith("0b", ignoreCase = true) == true) return LiteralBase.BINARY
         // No octal in Kotlin
         return LiteralBase.DECIMAL
+    }
+
+    fun isImplicitThis(irGetValue: IrGetValue, file: IrFile): Boolean {
+        val text = getKtFile(file).text.substring(irGetValue.startOffset, irGetValue.endOffset)
+        return text != "this"
+    }
+
+    fun escapedIdentifier(name: Name): String {
+        val identifier = name.identifier
+       // if('$' in identifier | identifier in keywords) return "`$identifier`"
+        if('$' in identifier || identifier in keywords) return "\$$identifier\$"
+        return identifier
     }
 }
