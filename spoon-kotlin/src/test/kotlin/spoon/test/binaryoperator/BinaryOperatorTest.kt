@@ -62,7 +62,7 @@ class BinaryOperatorTest {
     fun testExplicitAssignments() {
         /*
         * Assignment operators are used on classes with explicit opAssign functions (ex. plusAssign for +=)
-        * Reason for this test is that FIR has generated code that differs depending on if target class has plusAssign()
+        * Reason for this test is that IR has generated code that differs depending on if target class has plusAssign()
         * or just plus() member functions.
         *
         * a has plusAssign: a += other >translates to> { a.plusAssign(other) } (this test)
@@ -89,7 +89,7 @@ class BinaryOperatorTest {
     fun testImplicitAssignments() {
         /*
         * Assignment operators are used on classes with implicit opAssign functions (ex. plusAssign for +=)
-        * Reason for this test is that FIR has generated code that differs depending on if target class has plusAssign()
+        * Reason for this test is that IR has generated code that differs depending on if target class has plusAssign()
         * or just plus() member functions.
         *
         * a has plusAssign: a += other >translates to> { a.plusAssign(other) } (testExplicitAssignments)
