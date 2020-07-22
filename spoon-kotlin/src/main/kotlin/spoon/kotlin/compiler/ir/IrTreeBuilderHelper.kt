@@ -92,10 +92,35 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
         return psiElements.any { it is KtBinaryExpression && it.operationToken == KtTokens.IDENTIFIER }
     }
 
+    /**
+     * Checks which non-terminal in grammar the identifier matches (throws error if it doesn't match any)
+     * Kotlin grammar (spec 0.1-29):
+     * Identifier:
+        (Letter | Underscore) {Letter | Underscore | UnicodeDigit}
+        | '`' {EscapedIdentifierCharacter} '`'
+     * EscapedIdentifierCharacter:
+        <any character except CR, LF, '`'', '[', ']', '<' or '>'>
+     */
+    private fun legalOnlyIfEscaped(id: String): Boolean {
+        if(id.isEmpty()) {
+            throw SpoonIrBuildException("Empty identifier")
+        }
+        if(id.contains("""[\[\],`<>\r\n]""".toRegex())) {
+            throw SpoonIrBuildException("Illegal identifier, even if escaped \"$id\"")
+        }
+        if(!(id.first().isLetter() || id.first() == '_')) return true
+        for(c in id) {
+            if(!(c.isLetterOrDigit() || c == '_')) return true
+        }
+        return false
+    }
+
     fun escapedIdentifier(name: Name): String {
         val identifier = name.identifier
-       // if('$' in identifier | identifier in keywords) return "`$identifier`"
-        if('$' in identifier || identifier in keywords) return "\$$identifier\$"
+
+        // Should be return "`$identifier`" but spoon doesn't allow '`'. However, '$' is legal in java but not
+        // in Kotlin (unless escaped), so it serves as a marker for an escaped identifier
+        if(identifier in keywords || legalOnlyIfEscaped(identifier)) return "\$$identifier\$"
         return identifier
     }
 }
