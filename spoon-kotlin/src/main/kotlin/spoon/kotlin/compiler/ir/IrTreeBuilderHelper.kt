@@ -2,20 +2,18 @@ package spoon.kotlin.compiler.ir
 
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.ir.declarations.IrClass
-import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.expressions.IrGetValue
-import org.jetbrains.kotlin.ir.util.file
 import org.jetbrains.kotlin.lexer.KtKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.psi.KtBinaryExpression
-import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
+import org.jetbrains.kotlin.resolve.source.getPsi
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.reflect.code.LiteralBase
 import spoon.reflect.declaration.CtModule
@@ -25,10 +23,6 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     private val factory get() = irTreeBuilder.factory
     private val referenceBuilder get() = irTreeBuilder.referenceBuilder
     private val keywords = KtTokens.KEYWORDS.types.map { (it as KtKeywordToken).value }
-
-    private fun getKtFile(irDeclaration: IrDeclaration): KtFile {
-        return irTreeBuilder.sourceManager.getKtFile(irDeclaration.file)!!
-    }
 
     private fun getKtFile(file: IrFile): KtFile {
         return irTreeBuilder.sourceManager.getKtFile(file.fileEntry as PsiSourceManager.PsiFileEntry)!!
@@ -72,8 +66,8 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     fun getBaseOfConst(constExpression: IrConst<Number>, file: IrFile): LiteralBase {
         val ktFile = getKtFile(file)
         val text = ktFile.text.substring(constExpression.startOffset,constExpression.endOffset)
-        if(text.startsWith("0x", ignoreCase = true) == true) return LiteralBase.HEXADECIMAL
-        if(text.startsWith("0b", ignoreCase = true) == true) return LiteralBase.BINARY
+        if(text.startsWith("0x", ignoreCase = true)) return LiteralBase.HEXADECIMAL
+        if(text.startsWith("0b", ignoreCase = true)) return LiteralBase.BINARY
         // No octal in Kotlin
         return LiteralBase.DECIMAL
     }
@@ -84,8 +78,10 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     }
 
     fun isInfixCall(irCall: IrCall, context: ContextData): Boolean {
-        val psiElements = PsiSourceFinder.getSourceElement(
-            getKtFile(context.file),
+        val psi = irCall.symbol.descriptor.source.getPsi() // Prefer using built in source
+        if(psi != null)
+            return psi is KtBinaryExpression && psi.operationToken == KtTokens.IDENTIFIER
+        val psiElements = irTreeBuilder.getSourceHelper(context).getSourceElements(
             irCall.startOffset,
             irCall.endOffset
         )
@@ -123,4 +119,6 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
         if(identifier in keywords || legalOnlyIfEscaped(identifier)) return "\$$identifier\$"
         return identifier
     }
+
+
 }

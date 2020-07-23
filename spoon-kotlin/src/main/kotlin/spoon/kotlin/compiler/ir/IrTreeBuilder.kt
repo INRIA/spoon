@@ -1,9 +1,6 @@
 package spoon.kotlin.compiler.ir
 
-import org.jetbrains.kotlin.descriptors.PackageFragmentDescriptor
-import org.jetbrains.kotlin.descriptors.PropertyGetterDescriptor
-import org.jetbrains.kotlin.descriptors.PropertySetterDescriptor
-import org.jetbrains.kotlin.descriptors.ReceiverParameterDescriptor
+import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.*
@@ -36,11 +33,36 @@ internal class IrTreeBuilder(
 ) : IrElementVisitor<TransformResult<CtElement>, ContextData> {
     val referenceBuilder = IrReferenceBuilder(this)
     val helper = IrTreeBuilderHelper(this)
+    private lateinit var sourceHelper: PsiSourceHelper
+
+    fun getSourceHelper(contextData: ContextData): PsiSourceHelper {
+        if(!this::sourceHelper.isInitialized)
+            sourceHelper = PsiSourceHelper(sourceManager, contextData.file)
+        return sourceHelper
+    }
+
     private val core get() = factory.Core()
     private fun Name.escaped() = helper.escapedIdentifier(this)
     internal val toplvlClassName = "<top-level>"
 
-    override fun visitElement(element: IrElement, data: ContextData?): TransformResult<CtElement> {
+    private fun checkLabelOfDeclaration(irElement: IrElement, ctElement: CtElement, data: ContextData) {
+        val label = getSourceHelper(data).getLabelOrNull(irElement)
+        if(label != null) {
+            val isSet: Boolean = if(ctElement is CtStatement) {
+                ctElement.setLabel<CtStatement>(label)
+                ctElement.label != null // Some statements have unsettable labels
+            }
+            else false
+            if(!isSet){
+                ctElement.putKtMetadata(
+                    KtMetadataKeys.LABEL,
+                    KtMetadata.wrap(label)
+                )
+            }
+        }
+    }
+
+    override fun visitElement(element: IrElement, data: ContextData): TransformResult<CtElement> {
         //TODO("Not yet implemented")
         return CtLiteralImpl<String>().setValue<CtLiteral<String>>("Unimplemented element $element").definitely()
     }
@@ -357,7 +379,9 @@ internal class IrTreeBuilder(
         val statements = ArrayList<CtStatement>()
         for(irStatement in body.statements) {
             if(irStatement is IrDeclaration && irStatement.isFakeOverride) continue
-            statements.add(statementOrWrappedInImplicitReturn(irStatement.accept(this, data).resultUnsafe))
+            val ctStatement = statementOrWrappedInImplicitReturn(irStatement.accept(this, data).resultUnsafe)
+            checkLabelOfDeclaration(irStatement, ctStatement, data)
+            statements.add(ctStatement)
         }
         ctBlock.setStatements<CtBlock<*>>(statements)
         return ctBlock.definitely()
@@ -623,6 +647,11 @@ internal class IrTreeBuilder(
         ))
         superAccess.setImplicit<CtSuperAccess<*>>(false)
         return superAccess
+    }
+
+    override fun visitReturn(expression: IrReturn, data: ContextData): TransformResult<CtElement> {
+
+        return super.visitReturn(expression, data)
     }
 
     private fun <T> CtExpression<T>.wrapInImplicitReturn() : CtReturn<T> {

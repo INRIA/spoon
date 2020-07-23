@@ -15,6 +15,7 @@ internal class KtMetadata<T> private constructor(val value: T) {
     companion object {
         fun wrap(b: Boolean): KtMetadata<Boolean> = KtMetadata(b)
         fun wrap(c: CtElement): KtMetadata<CtElement> = KtMetadata(c)
+        fun wrap(s: String): KtMetadata<String> = KtMetadata(s)
         fun wrap(kind: KtBinaryOperatorKind): KtMetadata<KtBinaryOperatorKind> = KtMetadata(kind)
     }
 }
