@@ -3,27 +3,34 @@ package spoon.kotlin.compiler.ir
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.IrFile
+import org.jetbrains.kotlin.ir.expressions.IrReturn
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
+import org.jetbrains.kotlin.utils.addToStdlib.indexOfOrNull
 
 class PsiSourceHelper {
     private val labelOffSetMap = RangeMap()
     private val ktFile: KtFile
+    private var previousStartElement: PsiElement
 
     constructor(ktFile: KtFile) {
         this.ktFile = ktFile
+        previousStartElement = ktFile
         init()
     }
 
     constructor(sourceManager: PsiSourceManager, irFile: IrFile) {
         this.ktFile = sourceManager.getKtFile(irFile)!!
+        previousStartElement = ktFile
         init()
     }
 
+
     private fun init() {
+
         ktFile.accept(object : KtTreeVisitorVoid() {
             override fun visitElement(element: PsiElement) {
                 if(element is KtLabeledExpression) {
@@ -63,8 +70,15 @@ class PsiSourceHelper {
     }
 
     private fun getSourceElements(startOffset: Int, endOffset: Int, startElement: PsiElement): List<KtElement> {
+        val actualElement: PsiElement =
+            if(startElement === ktFile && previousStartElement.startOffset <= startOffset && previousStartElement.endOffset >= endOffset) {
+                previousStartElement
+            } else {
+                startElement
+            }
+
         val res = ArrayList<KtElement>()
-        startElement.accept(object: KtTreeVisitorVoid() {
+        actualElement.accept(object: KtTreeVisitorVoid() {
             override fun visitElement(element: PsiElement) {
                 if(element.startOffset > endOffset || element.endOffset < startOffset) return
                 if(element is KtElement) {
@@ -75,12 +89,37 @@ class PsiSourceHelper {
             }
         }
         )
+        previousStartElement = startElement
         return res
     }
 
     fun getSourceElements(startOffset: Int, endOffset: Int): List<KtElement>
         = getSourceElements(startOffset, endOffset, ktFile)
 
+    private fun sourceTextIs(start: Int, end: Int, predicate: (String) -> Boolean): Boolean {
+        return predicate(ktFile.text.substring(start, end))
+    }
+
+    fun sourceTextIs(element: IrElement, predicate: (String) -> Boolean): Boolean =
+        sourceTextIs(element.startOffset, element.endOffset, predicate)
+
+    fun sourceElementIs(element: IrElement, predicate: (KtElement) -> Boolean): Boolean {
+        return getSourceElements(element.startOffset, element.endOffset, ktFile).any(predicate)
+    }
+
+    fun hasExplicitType(property: KtProperty?): Boolean {
+        return property != null && property.children.any { it is KtTypeReference }
+    }
+
+    fun returnTargetLabelOrNull(irReturn: IrReturn): String? {
+        val sourceText = ktFile.text.substring(irReturn.startOffset, irReturn.endOffset)
+        if(sourceText.startsWith("return@")) {
+            val labelStart = sourceText.indexOf('@'+1)
+            val labelEnd = sourceText.indexOfOrNull(' ', labelStart) ?: sourceText.length
+            return sourceText.substring(labelStart, labelEnd)
+        }
+        return null
+    }
 }
 
 /*

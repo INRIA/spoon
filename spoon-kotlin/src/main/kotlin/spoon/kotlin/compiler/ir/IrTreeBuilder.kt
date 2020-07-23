@@ -10,9 +10,12 @@ import org.jetbrains.kotlin.ir.types.isNullableAny
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.KtTypeArgumentList
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import org.jetbrains.kotlin.psi2ir.generators.AUGMENTED_ASSIGNMENTS
 import org.jetbrains.kotlin.psi2ir.generators.INCREMENT_DECREMENT_OPERATORS
+import org.jetbrains.kotlin.resolve.source.getPsi
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 import spoon.SpoonException
@@ -29,6 +32,7 @@ import spoon.support.reflect.code.CtLiteralImpl
 internal class IrTreeBuilder(
     val factory: Factory,
     val sourceManager: PsiSourceManager,
+    private val detectImplicitTypes: Boolean = true,
     private val detectInfix: Boolean = true
 ) : IrElementVisitor<TransformResult<CtElement>, ContextData> {
     val referenceBuilder = IrReferenceBuilder(this)
@@ -45,7 +49,7 @@ internal class IrTreeBuilder(
     private fun Name.escaped() = helper.escapedIdentifier(this)
     internal val toplvlClassName = "<top-level>"
 
-    private fun checkLabelOfDeclaration(irElement: IrElement, ctElement: CtElement, data: ContextData) {
+    private fun checkLabelOfStatement(irElement: IrElement, ctElement: CtElement, data: ContextData) {
         val label = getSourceHelper(data).getLabelOrNull(irElement)
         if(label != null) {
             val isSet: Boolean = if(ctElement is CtStatement) {
@@ -238,6 +242,9 @@ internal class IrTreeBuilder(
         } else {
             throw SpoonIrBuildException("Unable to get IR type of property $declaration")
         }
+        val implicitType = detectImplicitTypes &&
+            !getSourceHelper(data).hasExplicitType(declaration.descriptor.source.getPsi() as? KtProperty?)
+        type.setImplicit<CtTypeReference<*>>(implicitType)
         ctField.setType<CtField<*>>(type)
 
         // Mark implicit/explicit type
@@ -380,7 +387,7 @@ internal class IrTreeBuilder(
         for(irStatement in body.statements) {
             if(irStatement is IrDeclaration && irStatement.isFakeOverride) continue
             val ctStatement = statementOrWrappedInImplicitReturn(irStatement.accept(this, data).resultUnsafe)
-            checkLabelOfDeclaration(irStatement, ctStatement, data)
+            checkLabelOfStatement(irStatement, ctStatement, data)
             statements.add(ctStatement)
         }
         ctBlock.setStatements<CtBlock<*>>(statements)
@@ -435,9 +442,14 @@ internal class IrTreeBuilder(
         }
 
         if(expression.typeArgumentsCount > 0) {
+            val implicitTypeArguments = detectImplicitTypes && getSourceHelper(data).sourceElementIs(expression) { call ->
+                call.children.none { it is KtTypeArgumentList }
+            }
             invocation.setActualTypeArguments<CtInvocation<Any>>(
                 expression.symbol.descriptor.typeParameters.map {
-                    referenceBuilder.getNewTypeReference<Any>(expression.getTypeArgument(it.index)!!)
+                    referenceBuilder.getNewTypeReference<Any>(expression.getTypeArgument(it.index)!!).also {
+                        res -> res.setImplicit(implicitTypeArguments)
+                    }
                 }
             )
         }
@@ -649,9 +661,33 @@ internal class IrTreeBuilder(
         return superAccess
     }
 
-    override fun visitReturn(expression: IrReturn, data: ContextData): TransformResult<CtElement> {
+    override fun visitGetObjectValue(expression: IrGetObjectValue, data: ContextData): MaybeTransformResult<CtElement> {
+        if(getSourceHelper(data).sourceTextIs(expression) { text -> text == "return" }) {
+            return TransformResult.nothing()
+        }
+        val typeAccess = core.createTypeAccess<Any>()
+        typeAccess.setAccessedType<CtTypeAccess<Any>>(referenceBuilder.getNewTypeReference<Any>(expression.type))
+        return maybe(typeAccess)
+    }
 
-        return super.visitReturn(expression, data)
+    override fun visitReturn(expression: IrReturn, data: ContextData): DefiniteTransformResult<CtElement> {
+        val ctReturn = core.createReturn<Any>()
+        checkLabelOfStatement(expression, ctReturn, data)
+        val targetLabel = getSourceHelper(data).returnTargetLabelOrNull(expression)
+        if(targetLabel != null) {
+            /*
+            'label1@ return@label2' is valid in Kotlin, but CtReturn only has one label inherited from CtStatement.
+             We use metadata label for the target label, and the CtStatement label is reserved for the prefix label
+             */
+            ctReturn.putKtMetadata(KtMetadataKeys.LABEL, KtMetadata.wrap(targetLabel))
+        }
+        val transformResult = expression.value.accept(this, data).resultOrNull
+        if(transformResult != null) {
+            ctReturn.setReturnedExpression<CtReturn<Any>>(
+                expressionOrWrappedInStatementExpression(transformResult)
+            )
+        }
+        return ctReturn.definitely()
     }
 
     private fun <T> CtExpression<T>.wrapInImplicitReturn() : CtReturn<T> {

@@ -147,7 +147,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         executableReference.setType<CtExecutableReference<T>>(getNewTypeReference(irCall.type))
         if(irCall.valueArgumentsCount > 0) {
             executableReference.setParameters<CtExecutableReference<T>>(
-                irCall.getArguments().map { getNewTypeReference<Any>(it.first.type) }
+                irCall.getArguments().map { getNewTypeReference<Any>(it.second.type) }
             )
         }
         return executableReference
