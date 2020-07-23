@@ -989,14 +989,17 @@ class DefaultKotlinPrettyPrinter(
         if(ctReturn.isImplicit && ctReturn.returnedExpression != null) { // FIXME Correct?
             ctReturn.returnedExpression.accept(this)
         } else {
+            enterCtStatement(ctReturn)
             adapter write "return"
-            if(ctReturn.label != null) {
-                adapter write '@' and ctReturn.label
+            val label = ctReturn.getMetadata(KtMetadataKeys.LABEL) as String?
+            if(label != null) {
+                adapter write '@' and label
             }
             if(ctReturn.returnedExpression != null) {
                 adapter write SPACE
                 ctReturn.returnedExpression.accept(this)
             }
+            exitCtStatement(ctReturn)
         }
     }
 
