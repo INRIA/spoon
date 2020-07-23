@@ -735,8 +735,7 @@ class DefaultKotlinPrettyPrinter(
         adapter write field.simpleName
 
         // Type
-        val explicitType = (field.getMetadata(KtMetadataKeys.VARIABLE_EXPLICIT_TYPE) as? Boolean?) ?: true
-        if(explicitType || forceExplicitTypes) {
+        if(!field.type.isImplicit || forceExplicitTypes) {
             adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
             visitCtTypeReference(field.type)
         }
