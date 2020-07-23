@@ -2,6 +2,7 @@ package spoon.test
 
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import spoon.kotlin.compiler.SpoonKtEnvironment
+import spoon.kotlin.compiler.ir.Empty
 import spoon.kotlin.compiler.ir.IrGenerator
 import spoon.kotlin.compiler.ir.IrTreeBuilder
 import spoon.reflect.CtModel
@@ -36,7 +37,7 @@ object TestBuildUtil {
 
         val builder = IrTreeBuilder(factory, context.sourceManager)
 
-        irFiles.forEach {  builder.visitFile(it,null) }
+        irFiles.forEach {  builder.visitFile(it, Empty(it)) }
 
         factory.model.setBuildModelIsFinished<CtModel>(true)
         return factory

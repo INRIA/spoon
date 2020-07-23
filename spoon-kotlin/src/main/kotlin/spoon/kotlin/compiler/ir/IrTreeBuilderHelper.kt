@@ -34,7 +34,7 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
         return irTreeBuilder.sourceManager.getKtFile(file.fileEntry as PsiSourceManager.PsiFileEntry)!!
     }
 
-    fun createType(irClass: IrClass): CtType<*> {
+    fun createType(irClass: IrClass, context: ContextData): CtType<*> {
         val type: CtType<Any> = when(irClass.kind) {
             ClassKind.CLASS -> factory.Core().createClass()
             ClassKind.INTERFACE -> factory.Core().createInterface()
@@ -57,7 +57,7 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
         }.toSet())
 
         type.setFormalCtTypeParameters<CtType<*>>(irClass.typeParameters.map {
-            irTreeBuilder.visitTypeParameter(it, null).resultUnsafe
+            irTreeBuilder.visitTypeParameter(it, context).resultUnsafe
         })
 
         return type

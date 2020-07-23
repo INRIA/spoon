@@ -132,8 +132,10 @@ class DefaultKotlinPrettyPrinter(
     }
 
     private fun enterCtStatement(s: CtStatement) {
-        if(s.label != null) {
-            adapter write s.label and '@' and SPACE
+        val label = s.label ?:
+            s.getMetadata(KtMetadataKeys.LABEL) as String?
+        if(label != null) {
+            adapter write label and '@' and SPACE
         }
     }
 
@@ -301,6 +303,7 @@ class DefaultKotlinPrettyPrinter(
         // Annotations
         // Not implemented
 
+        enterCtStatement(ctClass)
         val modifiers = getModifiersMetadata(ctClass)
         adapter writeModifiers modifiers
         if(ctClass.getBooleanMetadata(KtMetadataKeys.CLASS_IS_OBJECT) == true) {
@@ -357,6 +360,7 @@ class DefaultKotlinPrettyPrinter(
         adapter.popIndent()
         adapter.ensureNEmptyLines(0)
         adapter writeln RIGHT_CURL
+        exitCtStatement(ctClass)
     }
 
     private fun visitObject(ctClass: CtClass<*>) {
@@ -1153,6 +1157,7 @@ class DefaultKotlinPrettyPrinter(
         if(invocation.getMetadata(KtMetadataKeys.INVOCATION_IS_INFIX) as Boolean? == true) {
             return visitInfixInvocation(invocation)
         }
+        enterCtStatement(invocation)
         enterCtExpression(invocation)
         if(invocation.executable.isConstructor) {
             val parentType = invocation.getParent(CtType::class.java)
@@ -1185,6 +1190,7 @@ class DefaultKotlinPrettyPrinter(
         visitArgumentList(invocation.arguments) // Paren handled in call
 
         exitCtExpression(invocation)
+        exitCtStatement(invocation)
     }
 
     private fun visitTypeArgumentsList(typeArguments: List<CtTypeReference<*>>, forceExplicitTypeArgs: Boolean) {

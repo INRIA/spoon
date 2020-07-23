@@ -33,7 +33,7 @@ internal class IrTreeBuilder(
     val factory: Factory,
     val sourceManager: PsiSourceManager,
     private val detectInfix: Boolean = true
-) : IrElementVisitor<TransformResult<CtElement>, ContextData?> {
+) : IrElementVisitor<TransformResult<CtElement>, ContextData> {
     val referenceBuilder = IrReferenceBuilder(this)
     val helper = IrTreeBuilderHelper(this)
     private val core get() = factory.Core()
@@ -45,7 +45,7 @@ internal class IrTreeBuilder(
         return CtLiteralImpl<String>().setValue<CtLiteral<String>>("Unimplemented element $element").definitely()
     }
 
-    override fun visitFile(declaration: IrFile, data: ContextData?): DefiniteTransformResult<CtCompilationUnit> {
+    override fun visitFile(declaration: IrFile, data: ContextData): DefiniteTransformResult<CtCompilationUnit> {
         val module = helper.getOrCreateModule()
         val compilationUnit = factory.CompilationUnit().getOrCreate(declaration.name)
 
@@ -79,9 +79,9 @@ internal class IrTreeBuilder(
         return compilationUnit.definitely()
     }
 
-    override fun visitClass(declaration: IrClass, data: ContextData?): DefiniteTransformResult<CtElement> {
+    override fun visitClass(declaration: IrClass, data: ContextData): DefiniteTransformResult<CtElement> {
         val module = helper.getOrCreateModule()
-        val type = helper.createType(declaration)
+        val type = helper.createType(declaration, data)
         val isObject = type.getMetadata(KtMetadataKeys.CLASS_IS_OBJECT) as Boolean? == true
         val containingDecl = declaration.descriptor.containingDeclaration
         if(containingDecl is PackageFragmentDescriptor) {
@@ -134,7 +134,7 @@ internal class IrTreeBuilder(
 
     override fun visitAnonymousInitializer(
         declaration: IrAnonymousInitializer,
-        data: ContextData?
+        data: ContextData
     ): DefiniteTransformResult<CtElement> {
         val ctAnonExecutable = core.createAnonymousExecutable()
         val body = visitBody(declaration.body, data).resultSafe
@@ -142,7 +142,7 @@ internal class IrTreeBuilder(
         return ctAnonExecutable.definitely()
     }
 
-    override fun visitTypeParameter(declaration: IrTypeParameter, data: ContextData?):
+    override fun visitTypeParameter(declaration: IrTypeParameter, data: ContextData):
             DefiniteTransformResult<CtTypeParameter> {
         val ctTypeParam = factory.Core().createTypeParameter()
         ctTypeParam.setSimpleName<CtTypeParameter>(declaration.name.escaped())
@@ -160,7 +160,7 @@ internal class IrTreeBuilder(
         return ctTypeParam.definitely()
     }
 
-    override fun <T> visitConst(expression: IrConst<T>, data: ContextData?): DefiniteTransformResult<CtLiteral<*>> {
+    override fun <T> visitConst(expression: IrConst<T>, data: ContextData): DefiniteTransformResult<CtLiteral<*>> {
         val value = when(expression.kind) {
             IrConstKind.Null -> null
             IrConstKind.Boolean -> expression.value as Boolean
@@ -180,13 +180,13 @@ internal class IrTreeBuilder(
         else {
             ctLiteral.setType<CtLiteral<T>>(referenceBuilder.getNewTypeReference(expression.type))
             if(value is Number) {
-                ctLiteral.setBase<CtLiteral<T>>(helper.getBaseOfConst(expression as IrConst<Number>, data!!.file))
+                ctLiteral.setBase<CtLiteral<T>>(helper.getBaseOfConst(expression as IrConst<Number>, data.file))
             }
         }
         return ctLiteral.definitely()
     }
 
-    override fun visitProperty(declaration: IrProperty, data: ContextData?): DefiniteTransformResult<CtElement> {
+    override fun visitProperty(declaration: IrProperty, data: ContextData): DefiniteTransformResult<CtElement> {
         val ctField = core.createField<Any>()
         ctField.setSimpleName<CtField<*>>(declaration.name.escaped())
 
@@ -241,12 +241,12 @@ internal class IrTreeBuilder(
 
     override fun visitLocalDelegatedProperty(
         declaration: IrLocalDelegatedProperty,
-        data: ContextData?
+        data: ContextData
     ): TransformResult<CtElement> {
         return super.visitLocalDelegatedProperty(declaration, data)
     }
 
-    override fun visitVariable(declaration: IrVariable, data: ContextData?): TransformResult<CtLocalVariable<*>> {
+    override fun visitVariable(declaration: IrVariable, data: ContextData): TransformResult<CtLocalVariable<*>> {
         val ctLocalVar = core.createLocalVariable<Any>()
         ctLocalVar.setSimpleName<CtVariable<*>>(declaration.name.escaped())
 
@@ -271,7 +271,7 @@ internal class IrTreeBuilder(
 
     override fun visitValueParameter(
         declaration: IrValueParameter,
-        data: ContextData?
+        data: ContextData
     ): DefiniteTransformResult<CtParameter<*>> {
         val ctParam = core.createParameter<Any>()
         ctParam.setSimpleName<CtParameter<Any>>(declaration.name.escaped())
@@ -303,7 +303,7 @@ internal class IrTreeBuilder(
         return ctParam.definitely()
     }
 
-    private fun createUnnamedFunction(irFunction: IrFunction, data: ContextData?): CtMethod<*> {
+    private fun createUnnamedFunction(irFunction: IrFunction, data: ContextData): CtMethod<*> {
         val ctMethod = core.createMethod<Any>()
 
         // Value params
@@ -344,7 +344,7 @@ internal class IrTreeBuilder(
 
     override fun visitSimpleFunction(
         declaration: IrSimpleFunction,
-        data: ContextData?
+        data: ContextData
     ): DefiniteTransformResult<CtMethod<*>> {
         return createUnnamedFunction(declaration, data).also {
             it.setSimpleName<CtMethod<*>>(declaration.name.escaped())
@@ -352,7 +352,7 @@ internal class IrTreeBuilder(
         }.definitely()
     }
 
-    override fun visitBody(body: IrBody, data: ContextData?): DefiniteTransformResult<CtBlock<*>> {
+    override fun visitBody(body: IrBody, data: ContextData): DefiniteTransformResult<CtBlock<*>> {
         val ctBlock = core.createBlock<Any>()
         val statements = ArrayList<CtStatement>()
         for(irStatement in body.statements) {
@@ -363,7 +363,7 @@ internal class IrTreeBuilder(
         return ctBlock.definitely()
     }
 
-    private fun nonInvocationCtElement(irCall: IrCall, data: ContextData?): TransformResult<CtElement> {
+    private fun nonInvocationCtElement(irCall: IrCall, data: ContextData): TransformResult<CtElement> {
         val callDescriptor = irCall.symbol.descriptor
         if(callDescriptor is PropertyGetterDescriptor) {
             return createVariableRead(
@@ -375,27 +375,27 @@ internal class IrTreeBuilder(
 
         }
         if(irCall.origin == IrStatementOrigin.GET_PROPERTY) {
-            return visitPropertyAccess(irCall, data!!)
+            return visitPropertyAccess(irCall, data)
         }
         if(irCall.origin in AUGMENTED_ASSIGNMENTS) {
-            return createAugmentedAssignmentOperator(irCall, irCall.origin!!, data!!).definitely()
+            return createAugmentedAssignmentOperator(irCall, irCall.origin!!, data).definitely()
         }
         if(OperatorHelper.isUnaryOperator(irCall.origin)) {
-            return visitUnaryOperator(irCall, data!!)
+            return visitUnaryOperator(irCall, data)
         }
         if(OperatorHelper.isBinaryOperator(irCall.origin)) {
-            return visitBinaryOperator(irCall, data!!)
+            return visitBinaryOperator(irCall, data)
         }
         return TransformResult.nothing()
     }
 
-    override fun visitCall(expression: IrCall, data: ContextData?): DefiniteTransformResult<CtElement> {
+    override fun visitCall(expression: IrCall, data: ContextData): DefiniteTransformResult<CtElement> {
         val nonInvocationResult = nonInvocationCtElement(expression, data)
         if(nonInvocationResult.isDefinite) return nonInvocationResult as DefiniteTransformResult<CtElement>
         val invocation = core.createInvocation<Any>()
         invocation.setExecutable<CtInvocation<Any>>(referenceBuilder.getNewExecutableReference(expression))
 
-        val target = getReceiver(expression, data!!)
+        val target = getReceiver(expression, data)
         if(target is CtExpression<*>) {
             invocation.setTarget<CtInvocation<Any>>(target)
         } else if(target != null) {
@@ -473,7 +473,7 @@ internal class IrTreeBuilder(
     }
 
 
-    override fun visitBlock(expression: IrBlock, data: ContextData?): TransformResult<CtElement> {
+    override fun visitBlock(expression: IrBlock, data: ContextData): TransformResult<CtElement> {
         if(expression.origin in INCREMENT_DECREMENT_OPERATORS) {
             val setVar = expression.statements.firstIsInstanceOrNull<IrSetVariable>()?.symbol
             val operand: CtExpression<Any> = if(setVar == null) {
@@ -491,7 +491,7 @@ internal class IrTreeBuilder(
             return ctUnaryOp.definitely()
         }
         if(expression.origin in AUGMENTED_ASSIGNMENTS) {
-            return createAugmentedAssignmentOperator(expression, expression.origin!!, data!!).definitely()
+            return createAugmentedAssignmentOperator(expression, expression.origin!!, data).definitely()
         }
         return super.visitBlock(expression, data)
 
@@ -515,9 +515,9 @@ internal class IrTreeBuilder(
         return ctAssignmentOp
     }
 
-    override fun visitSetVariable(expression: IrSetVariable, data: ContextData?): TransformResult<CtElement> {
+    override fun visitSetVariable(expression: IrSetVariable, data: ContextData): TransformResult<CtElement> {
         if(expression.origin in AUGMENTED_ASSIGNMENTS) {
-            return createAugmentedAssignmentOperator(expression, expression.origin!!, data!!).definitely()
+            return createAugmentedAssignmentOperator(expression, expression.origin!!, data).definitely()
         }
 
         return super.visitSetVariable(expression, data)
@@ -577,24 +577,24 @@ internal class IrTreeBuilder(
         return fieldRead.definitely()
     }
 
-    override fun visitExpressionBody(body: IrExpressionBody, data: ContextData?):
+    override fun visitExpressionBody(body: IrExpressionBody, data: ContextData):
             TransformResult<CtElement> {
         return body.expression.accept(this, data)
     }
 
-    override fun visitTypeOperator(expression: IrTypeOperatorCall, data: ContextData?): TransformResult<CtElement> {
+    override fun visitTypeOperator(expression: IrTypeOperatorCall, data: ContextData): TransformResult<CtElement> {
         if(expression.operator == IrTypeOperator.IMPLICIT_COERCION_TO_UNIT) {
             return expression.argument.accept(this, data)
         }
         return super.visitTypeOperator(expression, data)
     }
 
-    override fun visitGetValue(expression: IrGetValue, data: ContextData?): TransformResult<CtElement> {
+    override fun visitGetValue(expression: IrGetValue, data: ContextData): TransformResult<CtElement> {
         val symbol = expression.symbol
         if(symbol is IrValueParameterSymbol) {
             val descriptor = symbol.descriptor
             if(descriptor is ReceiverParameterDescriptor) {
-                return visitThisReceiver(expression, data!!).definitely()
+                return visitThisReceiver(expression, data).definitely()
             }
         }
 

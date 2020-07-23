@@ -51,5 +51,7 @@ object KtMetadataKeys {
     const val SUPER_TYPE_DELEGATE = "skt_key super type delegate : CtElement?"
 
     const val TOP_LEVEL_DECLARING_CU = "skt_key top level declaring CU : CtCompilationUnit"
+
+    const val LABEL = "skt_key label : String?"
 }
 
