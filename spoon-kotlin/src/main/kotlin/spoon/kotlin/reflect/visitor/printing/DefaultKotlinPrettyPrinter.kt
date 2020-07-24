@@ -1,6 +1,7 @@
 package spoon.kotlin.reflect.visitor.printing
 
 import spoon.experimental.CtUnresolvedImport
+import spoon.kotlin.compiler.ir.SpoonIrBuildException
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.kotlin.reflect.code.KtBinaryOperatorKind
@@ -241,13 +242,24 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtConstructorCall(constructorCall: CtConstructorCall<T>) {
-        if(constructorCall.target != null) {
-            constructorCall.target.accept(this)
-            adapter write '.'
+        val parentType = constructorCall.getParent(CtType::class.java)
+        adapter.writeColon(DefaultPrinterAdapter.ColonContext.CONSTRUCTOR_DELEGATION)
+        if(parentType == null || parentType.qualifiedName == constructorCall.executable.declaringType.qualifiedName) {
+            adapter write "this"
+        } else {
+            val parentConstructor = constructorCall.getParent(CtConstructor::class.java) ?:
+                throw SpoonIrBuildException("""ConstructorCall without CtConstructor parent. 
+                        |CtConstructorCall is used as constructor delegate calls. Use CtInvocation for normal constructor invocations.
+                    """.trimMargin())
+            val primary = parentConstructor.getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as Boolean?
+            if(primary == true) {
+                constructorCall.type.accept(this)
+            } else {
+                adapter write "super"
+            }
         }
-        constructorCall.type.accept(this)
-        visitArgumentList(constructorCall.arguments)
 
+        visitArgumentList(constructorCall.arguments)
     }
 
     override fun <T : Any?> visitCtUnaryOperator(unaryOperator: CtUnaryOperator<T>) {
@@ -318,25 +330,18 @@ class DefaultKotlinPrettyPrinter(
             adapter write typeParamHandler.generateTypeParamListString() and SPACE
         }
 
-        val inheritanceList = ArrayList<CtTypeReference<*>>()
-
         val primaryConstructor = ctClass.constructors.firstOrNull { it.isPrimary() }
         if(primaryConstructor != null) {
             visitCtConstructor(primaryConstructor)
-        } else if(ctClass.superclass != null) {
-            inheritanceList.add(ctClass.superclass)
         }
 
         if(ctClass.superInterfaces.isNotEmpty()) {
-            ctClass.superInterfaces.forEach { inheritanceList.add(it) }
-        }
-        if(inheritanceList.isNotEmpty()) {
-            var p = ""
-            if(ctClass.superclass == null || ctClass.superclass.qualifiedName == "kotlin.Any") {
+            if(ctClass.superclass != null && ctClass.superclass.qualifiedName != "kotlin.Any") {
+                adapter write ", "
+            } else {
                 adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
             }
-            else p = ", " // FIXME Broken, delegate to generic function
-            adapter write inheritanceList.joinToString(prefix = p, transform = {
+            adapter write ctClass.superInterfaces.joinToString(transform = {
                 val delegate = it.getMetadata(KtMetadataKeys.SUPER_TYPE_DELEGATE) as CtElement?
                 if(delegate == null) TypeName.build(it).fQNameWithoutNullability
                 else "${TypeName.build(it).fQNameWithoutNullability} by ${printElement(delegate)}"
@@ -466,17 +471,33 @@ class DefaultKotlinPrettyPrinter(
         visitCommaSeparatedList(ctConstructor.parameters)
         adapter write RIGHT_ROUND
 
-        val delegatedConstr = ctConstructor.getMetadata(KtMetadataKeys.CONSTRUCTOR_DELEGATE_CALL) as? CtInvocation<Any>?
-        visitCtInvocation(delegatedConstr)
-
-        if(!primary) {
-            if(ctConstructor.body != null) {
-                adapter write SPACE
-                ctConstructor.body?.accept(this)
-            }
+        if(ctConstructor.body != null) {
+            visitConstructorBody(ctConstructor.body, primary)
         }
     }
 
+    private fun visitConstructorBody(block: CtBlock<*>, primary: Boolean) {
+        enterCtStatement(block)
+        if(block.statements.isEmpty()) return
+        val first = block.statements[0]
+        val rest: List<CtStatement>
+        rest = if(first is CtConstructorCall<*>) {
+            if(first.type.qualifiedName != "kotlin.Any") {
+                visitCtConstructorCall(first)
+            }
+            block.statements.drop(1)
+        } else {
+            block.statements
+        }
+
+        if(!primary && rest.isNotEmpty()) {
+            adapter write LEFT_CURL
+            visitStatementList(rest)
+            adapter.ensureNEmptyLines(0)
+            adapter write RIGHT_CURL
+        }
+        exitCtStatement(block)
+    }
 
     override fun visitCtPackageExport(p0: CtPackageExport?) {
         TODO("Not yet implemented")
