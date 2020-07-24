@@ -3,9 +3,7 @@ package spoon.kotlin.compiler.ir
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFile
-import org.jetbrains.kotlin.ir.expressions.IrCall
-import org.jetbrains.kotlin.ir.expressions.IrConst
-import org.jetbrains.kotlin.ir.expressions.IrGetValue
+import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.lexer.KtKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.Name
@@ -112,7 +110,7 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     }
 
     fun escapedIdentifier(name: Name): String {
-        val identifier = name.identifier
+        val identifier = name.asString()
 
         // Should be return "`$identifier`" but spoon doesn't allow '`'. However, '$' is legal in java but not
         // in Kotlin (unless escaped), so it serves as a marker for an escaped identifier
@@ -120,5 +118,12 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
         return identifier
     }
 
+    fun constructorBodyIsSynthetic(irBody: IrBody?): Boolean {
+        return irBody is IrBlockBody &&
+                irBody.statements.size <= 2 &&
+                irBody.statements.all {
+                    it is IrDelegatingConstructorCall || it is IrInstanceInitializerCall
+                }
+    }
 
 }

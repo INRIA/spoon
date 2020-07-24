@@ -3,8 +3,7 @@ package spoon.kotlin.compiler.ir
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.LocalVariableDescriptor
 import org.jetbrains.kotlin.ir.declarations.IrTypeParameter
-import org.jetbrains.kotlin.ir.expressions.IrCall
-import org.jetbrains.kotlin.ir.expressions.IrGetValue
+import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.IrTypeProjectionImpl
 import org.jetbrains.kotlin.ir.util.getArguments
@@ -21,7 +20,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
 
     private val factory get() = irTreeBuilder.factory
     private val helper get() = irTreeBuilder.helper
-    private fun Name.escaped() = helper.escapedIdentifier(this)
+    private fun Name.escaped() = if(this.isSpecial) this.asString() else helper.escapedIdentifier(this)
 
     private fun <T> getNewSimpleTypeReference(irType: IrSimpleType): CtTypeReference<T> {
         val ctRef = typeRefFromDescriptor(irType.classifier.descriptor)
@@ -142,7 +141,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
     // ========================== EXECUTABLE ==========================
 
     fun <T> getNewExecutableReference(irCall: IrCall): CtExecutableReference<T> {
-        val executableReference = irTreeBuilder.factory.Core().createExecutableReference<T>()
+        val executableReference = irTreeBuilder.core.createExecutableReference<T>()
         executableReference.setSimpleName<CtReference>(irCall.symbol.descriptor.name.escaped())
         executableReference.setType<CtExecutableReference<T>>(getNewTypeReference(irCall.type))
         if(irCall.valueArgumentsCount > 0) {
@@ -153,14 +152,46 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         return executableReference
     }
 
+    // Does not set declaring type as that requires subtypes of FunctionAccessExpression
+    private fun <T> getConstructorExecutableReferenceWithoutDeclaringType(
+        constructorCall: IrFunctionAccessExpression): CtExecutableReference<T> {
+        val executableReference = irTreeBuilder.core.createExecutableReference<T>()
+        executableReference.setSimpleName<CtReference>(constructorCall.symbol.descriptor.name.asString())
+        val descriptor = constructorCall.symbol.descriptor as ClassConstructorDescriptor
+        executableReference.setType<CtExecutableReference<T>>(
+            getNewTypeReference(descriptor.returnType))
 
+        val valueArgs = ArrayList<CtTypeReference<*>>()
+        for(i in 0 until constructorCall.valueArgumentsCount) {
+            val arg = constructorCall.getValueArgument(i)!!
+            valueArgs.add(getNewTypeReference<Any>(arg.type))
+        }
+        if(valueArgs.isNotEmpty()) {
+            executableReference.setParameters<CtExecutableReference<T>>(valueArgs)
+        }
+        return executableReference
+    }
+
+    fun <T> getNewExecutableReference(constructorCall: IrConstructorCall): CtExecutableReference<T> {
+        val executableReference = getConstructorExecutableReferenceWithoutDeclaringType<T>(constructorCall)
+        val declaringType = constructorCall.symbol.descriptor.containingDeclaration
+        executableReference.setDeclaringType<CtExecutableReference<T>>(getDeclaringTypeReference(declaringType))
+        return executableReference
+    }
+
+    fun <T> getNewExecutableReference(constructorCall: IrDelegatingConstructorCall): CtExecutableReference<T> {
+        val executableReference = getConstructorExecutableReferenceWithoutDeclaringType<T>(constructorCall)
+        val declaringType = constructorCall.symbol.descriptor.containingDeclaration
+        executableReference.setDeclaringType<CtExecutableReference<T>>(getDeclaringTypeReference(declaringType))
+        return executableReference
+    }
 
     fun getPackageReference(fqName : FqName) : CtPackageReference {
         if(fqName.isRoot) {
             return irTreeBuilder.factory.Package().topLevel()
         }
 
-        return irTreeBuilder.factory.Core().createPackageReference().apply {
+        return irTreeBuilder.core.createPackageReference().apply {
             setSimpleName<CtPackageReference>(fqName.asString())
         }
     }

@@ -1,5 +1,6 @@
 package spoon.kotlin.compiler.ir
 
+import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.*
@@ -9,9 +10,14 @@ import org.jetbrains.kotlin.ir.symbols.IrValueParameterSymbol
 import org.jetbrains.kotlin.ir.types.isNullableAny
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
+import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.psi.KtModifierList
+import org.jetbrains.kotlin.psi.KtPrimaryConstructor
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtTypeArgumentList
+import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
+import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import org.jetbrains.kotlin.psi2ir.generators.AUGMENTED_ASSIGNMENTS
 import org.jetbrains.kotlin.psi2ir.generators.INCREMENT_DECREMENT_OPERATORS
@@ -45,7 +51,7 @@ internal class IrTreeBuilder(
         return sourceHelper
     }
 
-    private val core get() = factory.Core()
+    val core get() = factory.Core()
     private fun Name.escaped() = helper.escapedIdentifier(this)
     internal val toplvlClassName = "<top-level>"
 
@@ -229,6 +235,12 @@ internal class IrTreeBuilder(
                 ctField.setDefaultExpression<CtField<Any>>(
                     expressionOrWrappedInStatementExpression(ctInitializer))
             }
+
+            val getVal = initializer.expression
+            if(getVal is IrValueAccessExpression &&
+                getVal.origin == IrStatementOrigin.INITIALIZE_PROPERTY_FROM_PARAMETER) {
+                ctField.setImplicit<CtField<*>>(true)
+            }
         }
 
         // Modifiers
@@ -266,6 +278,91 @@ internal class IrTreeBuilder(
         }
 
         return ctField.definitely()
+    }
+
+    override fun visitDelegatingConstructorCall(
+        expression: IrDelegatingConstructorCall,
+        data: ContextData
+    ): DefiniteTransformResult<CtElement> {
+        val ctConstructorCall = core.createConstructorCall<Any>()
+        ctConstructorCall.setExecutable<CtConstructorCall<Any>>(referenceBuilder.getNewExecutableReference(expression))
+
+        val valueArgs = ArrayList<CtExpression<*>>(expression.valueArgumentsCount)
+        for(i in 0 until expression.valueArgumentsCount) {
+            val ctExpr = expression.getValueArgument(i)!!.accept(this, data).resultUnsafe
+            valueArgs.add(expressionOrWrappedInStatementExpression(ctExpr))
+        }
+        if(valueArgs.isNotEmpty()) {
+            ctConstructorCall.setArguments<CtConstructorCall<Any>>(valueArgs)
+        }
+        return ctConstructorCall.definitely()
+    }
+
+    override fun visitConstructor(declaration: IrConstructor, data: ContextData): DefiniteTransformResult<CtElement> {
+        val ctConstructor = core.createConstructor<Any>()
+        ctConstructor.setSimpleName<CtConstructor<*>>(declaration.name.asString())
+
+        val modifierList = listOfNotNull(KtModifierKind.convertVisibility(declaration.visibility))
+        ctConstructor.setImplicit<CtConstructor<Any>>(declaration.isPrimary &&
+                declaration.valueParameters.isEmpty() &&
+                declaration.descriptor.source.getPsi() !is KtPrimaryConstructor &&
+                modifierList.filterNot { it == KtModifierKind.PUBLIC }.isEmpty()
+        )
+        ctConstructor.putKtMetadata(
+            KtMetadataKeys.KT_MODIFIERS,
+            KtMetadata.wrap(modifierList))
+        ctConstructor.putKtMetadata(
+            KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY,
+            KtMetadata.wrap(declaration.isPrimary))
+
+        // Add body
+        val body = declaration.body?.accept(this, data)?.resultOrNull as CtStatement?
+        if(body != null) {
+            ctConstructor.setBody<CtConstructor<*>>(body)
+        }
+
+        for(valueParam in declaration.valueParameters) {
+            val ctParam = visitValueParameter(valueParam, data).resultSafe
+
+            /*
+            * Primary constructor property declaration creates implicit properties in the class. An implicit property is the
+            * holder of the val/var modifier, not the parameter:
+            * ClassName(var x = 2) >translates to> ClassName(x = 2) { var x = x }
+            * To facilitate printing, we look in the PSI if the parameter has modifiers and add them to metadata.
+            *
+            * TODO: Perhaps add metadata mapping property <-> param?
+            *  */
+            if(declaration.isPrimary) {
+                val pModifiers = (ctParam.getMetadata(KtMetadataKeys.KT_MODIFIERS) as MutableSet<KtModifierKind>?) ?:
+                mutableSetOf<KtModifierKind>()
+
+                val psiModifierList = valueParam.descriptor.source.getPsi()?.getChildOfType<KtModifierList>()?.let {
+                        list -> KtModifierKind.fromPsiModifierList(list)
+                    } ?: emptyList()
+
+                pModifiers.addAll(psiModifierList)
+                // Var/val might be outside of modifier list
+                val psiTokens = valueParam.descriptor.source.getPsi()?.getChildrenOfType<LeafPsiElement>()
+                if(psiTokens != null) {
+                    for(token in psiTokens)
+                        if(token.elementType == KtTokens.VAL_KEYWORD) {
+                            pModifiers.add(KtModifierKind.VAL)
+                        } else if(token.elementType == KtTokens.VAR_KEYWORD) {
+                            pModifiers.add(KtModifierKind.VAR)
+                        }
+                }
+                ctParam.putMetadata<CtParameter<*>>(KtMetadataKeys.KT_MODIFIERS, pModifiers)
+            }
+            ctConstructor.addParameter<CtConstructor<Any>>(ctParam)
+        }
+        return ctConstructor.definitely()
+    }
+
+    override fun visitInstanceInitializerCall(
+        expression: IrInstanceInitializerCall,
+        data: ContextData
+    ): EmptyTransformResult<CtElement> {
+        return EmptyTransformResult()
     }
 
     override fun visitLocalDelegatedProperty(
@@ -386,7 +483,9 @@ internal class IrTreeBuilder(
         val statements = ArrayList<CtStatement>()
         for(irStatement in body.statements) {
             if(irStatement is IrDeclaration && irStatement.isFakeOverride) continue
-            val ctStatement = statementOrWrappedInImplicitReturn(irStatement.accept(this, data).resultUnsafe)
+            val result = irStatement.accept(this, data)
+            if(result.isNothing) continue
+            val ctStatement = statementOrWrappedInImplicitReturn(result.resultUnsafe)
             checkLabelOfStatement(irStatement, ctStatement, data)
             statements.add(ctStatement)
         }
