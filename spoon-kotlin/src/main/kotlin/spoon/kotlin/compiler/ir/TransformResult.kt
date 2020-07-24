@@ -14,10 +14,12 @@ sealed class TransformResult<out T : Any>(protected val result: T?) {
 }
 
 class DefiniteTransformResult<out T : Any>(result: T) : TransformResult<T>(result) {
-    val resultSafe get() = result
+    val resultSafe get() = result!!
 }
 
-class MaybeTransformResult<out T: Any>(result: T?) : TransformResult<T>(result)
+open class MaybeTransformResult<out T: Any>(result: T?) : TransformResult<T>(result)
+
+class EmptyTransformResult<out T: Any> : MaybeTransformResult<T>(null)
 
 inline fun <T: CtElement> T.definitely() = DefiniteTransformResult(this)
 inline fun <T: CtElement> maybe(t: T?) = MaybeTransformResult(t)
