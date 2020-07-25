@@ -237,6 +237,7 @@ internal class IrTreeBuilder(
                     expressionOrWrappedInStatementExpression(ctInitializer))
             }
 
+            // Check if property stems from primary constructor parameter
             val getVal = initializer.expression
             if(getVal is IrValueAccessExpression &&
                 getVal.origin == IrStatementOrigin.INITIALIZE_PROPERTY_FROM_PARAMETER) {
@@ -255,16 +256,12 @@ internal class IrTreeBuilder(
         } else {
             throw SpoonIrBuildException("Unable to get IR type of property $declaration")
         }
-        val implicitType = detectImplicitTypes &&
-            !getSourceHelper(data).hasExplicitType(declaration.descriptor.source.getPsi() as? KtProperty?)
-        type.setImplicit<CtTypeReference<*>>(implicitType)
-        ctField.setType<CtField<*>>(type)
 
         // Mark implicit/explicit type
-        // TODO
-
-        // Check if property stems from constructor value parameter, then the property is implicit
-        // TODO
+        val implicitType = detectImplicitTypes &&
+                !getSourceHelper(data).hasExplicitType(declaration.descriptor.source.getPsi() as? KtProperty?)
+        type.setImplicit<CtTypeReference<*>>(implicitType)
+        ctField.setType<CtField<*>>(type)
 
         val getter = declaration.getter
         if(getter != null && getter.origin != IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR) {
