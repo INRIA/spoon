@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.*
+import org.jetbrains.kotlin.ir.expressions.impl.IrIfThenElseImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueParameterSymbol
 import org.jetbrains.kotlin.ir.types.isNullableAny
@@ -519,6 +520,35 @@ internal class IrTreeBuilder(
         return TransformResult.nothing()
     }
 
+    override fun visitWhen(expression: IrWhen, data: ContextData): TransformResult<CtElement> {
+        when(expression) {
+            is IrIfThenElseImpl -> return visitIfThenElse(expression, data)
+        }
+        return super.visitWhen(expression, data)
+    }
+
+    fun visitIfThenElse(ifThenElse: IrIfThenElseImpl, data: ContextData): DefiniteTransformResult<CtIf> {
+        val ctIf = core.createIf()
+        val thenBranch = ifThenElse.branches.first { it !is IrElseBranch }
+        val elseBranch = ifThenElse.branches.firstIsInstanceOrNull<IrElseBranch>()
+        val condition = thenBranch.condition.accept(this, data).resultUnsafe
+        val thenResult = thenBranch.result.accept(this, data).resultUnsafe
+
+        ctIf.setCondition<CtIf>(condition as CtExpression<Boolean>)
+        ctIf.setThenStatement<CtIf>(statementOrWrappedInImplicitReturn(thenResult))
+        if(elseBranch != null) {
+            val elseResult = elseBranch.result.accept(this,data).resultUnsafe
+            ctIf.setElseStatement<CtIf>(statementOrWrappedInImplicitReturn(elseResult))
+        }
+
+        val type = referenceBuilder.getNewTypeReference<Any>(ifThenElse.type)
+        ctIf.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE, KtMetadata.wrap(type))
+
+        return ctIf.definitely()
+    }
+
+
+
     override fun visitCall(expression: IrCall, data: ContextData): DefiniteTransformResult<CtElement> {
         val nonInvocationResult = nonInvocationCtElement(expression, data)
         if(nonInvocationResult.isDefinite) return nonInvocationResult as DefiniteTransformResult<CtElement>
@@ -607,13 +637,12 @@ internal class IrTreeBuilder(
         return ctOp.definitely()
     }
 
-
-    override fun visitBlock(expression: IrBlock, data: ContextData): TransformResult<CtElement> {
-        if(expression.origin in INCREMENT_DECREMENT_OPERATORS) {
-            val setVar = expression.statements.firstIsInstanceOrNull<IrSetVariable>()?.symbol
+    private fun checkForCompositeElement(block: IrBlock, data: ContextData): TransformResult<CtElement> {
+        if(block.origin in INCREMENT_DECREMENT_OPERATORS) {
+            val setVar = block.statements.firstIsInstanceOrNull<IrSetVariable>()?.symbol
             val operand: CtExpression<Any> = if(setVar == null) {
-                val call = expression.statements.firstIsInstance<IrBlock>().
-                    statements.firstIsInstance<IrCall>()
+                val call = block.statements.firstIsInstance<IrBlock>().
+                statements.firstIsInstance<IrCall>()
                 nonInvocationCtElement(call, data).resultUnsafe as CtExpression<Any>
             } else {
                 createVariableWrite(
@@ -621,14 +650,38 @@ internal class IrTreeBuilder(
             }
             val ctUnaryOp = core.createUnaryOperator<Any>()
             ctUnaryOp.setOperand<CtUnaryOperator<*>>(operand)
-            ctUnaryOp.setKind<CtUnaryOperator<*>>(OperatorHelper.originToUnaryOperatorKind(expression.origin!!))
-            ctUnaryOp.setType<CtUnaryOperator<*>>(referenceBuilder.getNewTypeReference(expression.type))
+            ctUnaryOp.setKind<CtUnaryOperator<*>>(OperatorHelper.originToUnaryOperatorKind(block.origin!!))
+            ctUnaryOp.setType<CtUnaryOperator<*>>(referenceBuilder.getNewTypeReference(block.type))
             return ctUnaryOp.definitely()
         }
-        if(expression.origin in AUGMENTED_ASSIGNMENTS) {
-            return createAugmentedAssignmentOperator(expression, expression.origin!!, data).definitely()
+        if(block.origin in AUGMENTED_ASSIGNMENTS) {
+            return createAugmentedAssignmentOperator(block, block.origin!!, data).definitely()
         }
-        return super.visitBlock(expression, data)
+        return TransformResult.nothing()
+    }
+
+    override fun visitBlock(expression: IrBlock, data: ContextData): DefiniteTransformResult<CtElement> {
+        val composite = checkForCompositeElement(expression, data).resultOrNull
+        if(composite != null) return composite.definitely()
+
+        val statements = ArrayList<CtStatement>()
+        for(statement in expression.statements) {
+            val ctElement = statement.accept(this, data).resultOrNull ?: continue
+            val ctStmt: CtStatement = when(ctElement) {
+                is CtMethod<*> -> {
+                    ctElement.wrapLocalMethod()
+                }
+                is CtStatement -> ctElement
+                else -> statementOrWrappedInImplicitReturn(ctElement)
+            }
+            statements.add(ctStmt)
+        }
+
+        val ctBlock = core.createBlock<Any>()
+        ctBlock.setStatements<CtBlock<*>>(statements)
+        ctBlock.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE,
+            KtMetadata.wrap(referenceBuilder.getNewTypeReference<CtBlock<*>>(expression.type)))
+        return ctBlock.definitely()
 
     }
 
@@ -834,5 +887,14 @@ internal class IrTreeBuilder(
             else -> throw RuntimeException("Can't wrap ${e::class.simpleName} in StatementExpression")
         }
         return statementExpression
+    }
+
+    private fun CtMethod<*>.wrapLocalMethod(): CtClass<Any> {
+        val wrapperClass = factory.Core().createClass<Any>()
+        return wrapperClass.apply {
+            setImplicit<CtClass<Any>>(true)
+            setSimpleName<CtClass<*>>("<local>")
+            addMethod<Any, CtClass<Any>>(this as CtMethod<Any>)
+        }
     }
 }
