@@ -96,4 +96,9 @@ object OperatorHelper {
         throw SpoonIrBuildException("Unexpected tree structure of augmented assignment")
     }
 
+    fun getOrderedBinaryOperands(lhs: IrExpression, rhs: IrExpression, operatorKind: KtBinaryOperatorKind): Pair<IrExpression,IrExpression> {
+        if(operatorKind == KtBinaryOperatorKind.NOT_IN || operatorKind == KtBinaryOperatorKind.IN) return rhs to lhs
+        return lhs to rhs
+    }
+
 }

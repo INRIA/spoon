@@ -622,14 +622,14 @@ internal class IrTreeBuilder(
     }
 
     private fun visitBinaryOperator(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtBinaryOperator<*>> {
-        val irLHS: IrExpression
-        val irRHS: IrExpression
+        val tempLhs: IrExpression
+        val tempRhs: IrExpression
         if(irCall.valueArgumentsCount == 2) {
-            irLHS = irCall.getValueArgument(0)!!
-            irRHS = irCall.getValueArgument(1)!!
+            tempLhs = irCall.getValueArgument(0)!!
+            tempRhs = irCall.getValueArgument(1)!!
         } else if(irCall.valueArgumentsCount == 1) {
-            irLHS = irCall.dispatchReceiver!!
-            irRHS = irCall.getValueArgument(0)!!
+            tempLhs = irCall.dispatchReceiver!!
+            tempRhs = irCall.getValueArgument(0)!!
         } else {
             val receiver = irCall.dispatchReceiver
             if(receiver is IrCall)
@@ -637,16 +637,20 @@ internal class IrTreeBuilder(
             else
                 throw SpoonIrBuildException("Unable to get operands of binary operator call")
         }
-        val lhs = irLHS.accept(this, data).resultUnsafe
-        val rhs = irRHS.accept(this, data).resultUnsafe
+        val opKind = OperatorHelper.originToBinaryOperatorKind(irCall.origin!!)
+        val (irLhs, irRhs) = OperatorHelper.getOrderedBinaryOperands(tempLhs, tempRhs, opKind)
+        val lhs = irLhs.accept(this, data).resultUnsafe
+        val rhs = irRhs.accept(this, data).resultUnsafe
 
         val ctOp = core.createBinaryOperator<Any>()
+
         ctOp.setLeftHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(lhs))
         ctOp.setRightHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(rhs))
         ctOp.setType<CtBinaryOperator<Any>>(referenceBuilder.getNewTypeReference(irCall.type))
+
         ctOp.putKtMetadata(
             KtMetadataKeys.KT_BINARY_OPERATOR_KIND,
-            KtMetadata.wrap(OperatorHelper.originToBinaryOperatorKind(irCall.origin!!))
+            KtMetadata.wrap(opKind)
         )
         return ctOp.definitely()
     }
