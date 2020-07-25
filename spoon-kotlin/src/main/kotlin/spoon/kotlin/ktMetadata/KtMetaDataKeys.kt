@@ -31,6 +31,7 @@ object KtMetadataKeys {
     const val ACCESS_IS_SAFE = "skt_key access is safe : Boolean"
 
     const val INVOKE_AS_OPERATOR = "skt_key invoke as operator : Boolean"
+    const val SET_AS_OPERATOR = "skt_key set as operator : Boolean"
 
     const val ACCESS_IS_CHECK_NOT_NULL = "skt_key access is assert not null : Boolean"
 

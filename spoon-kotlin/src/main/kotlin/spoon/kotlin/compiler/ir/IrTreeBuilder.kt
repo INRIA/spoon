@@ -496,22 +496,41 @@ internal class IrTreeBuilder(
         return ctBlock.definitely()
     }
 
-    private fun nonInvocationCtElement(irCall: IrCall, data: ContextData): TransformResult<CtElement> {
+    private fun createAssignment(lhs: CtExpression<Any>, rhs: CtExpression<Any>): CtAssignment<Any, Any> {
+        val ctAssignment = core.createAssignment<Any,Any>()
+        ctAssignment.setAssigned<CtAssignment<Any, Any>>(lhs)
+        ctAssignment.setAssignment<CtAssignment<Any, Any>>(rhs)
+        return ctAssignment
+    }
+
+    private fun createAssignment(irCall: IrCall, data: ContextData): TransformResult<CtElement> {
+        val callDescriptor = irCall.symbol.descriptor as PropertySetterDescriptor
+        val receiver = getReceiver(irCall, data) as CtExpression<*>?
+        val lhs = createVariableWrite(receiver, referenceBuilder.getNewVariableReference<Any>(
+            callDescriptor.correspondingProperty))
+        val rhs = irCall.getValueArgument(0)!!.accept(this, data).resultUnsafe
+        return createAssignment(lhs, expressionOrWrappedInStatementExpression(rhs)).definitely()
+    }
+
+    private fun specialInvocation(irCall: IrCall, data: ContextData): TransformResult<CtElement> {
         val callDescriptor = irCall.symbol.descriptor
         if(callDescriptor is PropertyGetterDescriptor) {
             return createVariableRead(
                 referenceBuilder.getNewVariableReference<Any>(callDescriptor.correspondingProperty)).definitely()
         }
-        if(callDescriptor is PropertySetterDescriptor) {
-            return createVariableWrite(
-                referenceBuilder.getNewVariableReference<Any>(callDescriptor.correspondingProperty)).definitely()
-
-        }
-        if(irCall.origin == IrStatementOrigin.GET_PROPERTY) {
-            return visitPropertyAccess(irCall, data)
-        }
-        if(irCall.origin in AUGMENTED_ASSIGNMENTS) {
-            return createAugmentedAssignmentOperator(irCall, irCall.origin!!, data).definitely()
+        when(irCall.origin) {
+            IrStatementOrigin.GET_PROPERTY -> return visitPropertyAccess(irCall, data)
+            in AUGMENTED_ASSIGNMENTS -> return createAugmentedAssignmentOperator(irCall, irCall.origin!!, data).definitely()
+            IrStatementOrigin.EQ -> {
+                return if(callDescriptor is PropertySetterDescriptor) {
+                    createAssignment(irCall, data)
+                } else {
+                    createInvocation(irCall, data).also { it.resultSafe.putKtMetadata(
+                        KtMetadataKeys.SET_AS_OPERATOR,
+                        KtMetadata.wrap(true)
+                    ) }
+                }
+            }
         }
         if(OperatorHelper.isUnaryOperator(irCall.origin)) {
             return visitUnaryOperator(irCall, data)
@@ -549,37 +568,33 @@ internal class IrTreeBuilder(
         return ctIf.definitely()
     }
 
-
-
-    override fun visitCall(expression: IrCall, data: ContextData): DefiniteTransformResult<CtElement> {
-        val nonInvocationResult = nonInvocationCtElement(expression, data)
-        if(nonInvocationResult.isDefinite) return nonInvocationResult as DefiniteTransformResult<CtElement>
+    private fun createInvocation(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtInvocation<*>> {
         val invocation = core.createInvocation<Any>()
-        invocation.setExecutable<CtInvocation<Any>>(referenceBuilder.getNewExecutableReference(expression))
+        invocation.setExecutable<CtInvocation<Any>>(referenceBuilder.getNewExecutableReference(irCall))
 
-        val target = getReceiver(expression, data)
+        val target = getReceiver(irCall, data)
         if(target is CtExpression<*>) {
             invocation.setTarget<CtInvocation<Any>>(target)
         } else if(target != null) {
             throw RuntimeException("Function call target not CtExpression")
         }
 
-        if(expression.valueArgumentsCount > 0) {
-            invocation.setArguments<CtInvocation<Any>>(expression.symbol.descriptor.valueParameters.map {
+        if(irCall.valueArgumentsCount > 0) {
+            invocation.setArguments<CtInvocation<Any>>(irCall.symbol.descriptor.valueParameters.map {
                 expressionOrWrappedInStatementExpression(
-                    expression.getValueArgument(it.index)!!.accept(this, data).resultUnsafe
+                    irCall.getValueArgument(it.index)!!.accept(this, data).resultUnsafe
                 )
             })
         }
 
-        if(expression.typeArgumentsCount > 0) {
-            val implicitTypeArguments = detectImplicitTypes && getSourceHelper(data).sourceElementIs(expression) { call ->
+        if(irCall.typeArgumentsCount > 0) {
+            val implicitTypeArguments = detectImplicitTypes && getSourceHelper(data).sourceElementIs(irCall) { call ->
                 call.children.none { it is KtTypeArgumentList }
             }
             invocation.setActualTypeArguments<CtInvocation<Any>>(
-                expression.symbol.descriptor.typeParameters.map {
-                    referenceBuilder.getNewTypeReference<Any>(expression.getTypeArgument(it.index)!!).also {
-                        res -> res.setImplicit(implicitTypeArguments)
+                irCall.symbol.descriptor.typeParameters.map {
+                    referenceBuilder.getNewTypeReference<Any>(irCall.getTypeArgument(it.index)!!).also {
+                            res -> res.setImplicit(implicitTypeArguments)
                     }
                 }
             )
@@ -587,10 +602,10 @@ internal class IrTreeBuilder(
         if(detectInfix) {
             invocation.putKtMetadata(
                 KtMetadataKeys.INVOCATION_IS_INFIX,
-                KtMetadata.wrap(helper.isInfixCall(expression, data))
+                KtMetadata.wrap(helper.isInfixCall(irCall, data))
             )
         }
-        if(expression.origin == IrStatementOrigin.INVOKE) {
+        if(irCall.origin == IrStatementOrigin.INVOKE) {
             invocation.putKtMetadata(
                 KtMetadataKeys.INVOKE_AS_OPERATOR,
                 KtMetadata.wrap(true)
@@ -598,6 +613,12 @@ internal class IrTreeBuilder(
         }
 
         return invocation.definitely()
+    }
+
+    override fun visitCall(expression: IrCall, data: ContextData): DefiniteTransformResult<CtElement> {
+        val nonInvocationResult = specialInvocation(expression, data)
+        if(nonInvocationResult.isDefinite) return nonInvocationResult as DefiniteTransformResult<CtElement>
+        return createInvocation(expression, data)
     }
 
     private fun visitBinaryOperator(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtBinaryOperator<*>> {
@@ -645,9 +666,9 @@ internal class IrTreeBuilder(
             val operand: CtExpression<Any> = if(setVar == null) {
                 val call = block.statements.firstIsInstance<IrBlock>().
                 statements.firstIsInstance<IrCall>()
-                nonInvocationCtElement(call, data).resultUnsafe as CtExpression<Any>
+                specialInvocation(call, data).resultUnsafe as CtExpression<Any>
             } else {
-                createVariableWrite(
+                createVariableWrite(null,
                     referenceBuilder.getNewVariableReference<Any>(setVar.descriptor))
             }
             val ctUnaryOp = core.createUnaryOperator<Any>()
@@ -710,11 +731,14 @@ internal class IrTreeBuilder(
             return createAugmentedAssignmentOperator(expression, expression.origin!!, data).definitely()
         }
 
-        return super.visitSetVariable(expression, data)
+        if(expression.origin != IrStatementOrigin.EQ) TODO()
+        val lhs = createVariableWrite(null, referenceBuilder.getNewVariableReference<Any>(expression.symbol.descriptor))
+        val rhs = expression.value.accept(this, data).resultUnsafe as CtExpression<Any>
+        return createAssignment(lhs, rhs).definitely()
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun createVariableWrite(variableRef: CtReference) = when (variableRef) {
+    private fun createVariableWrite(receiver: CtExpression<*>?, variableRef: CtReference) = when (variableRef) {
         is CtLocalVariableReference<*> ->
             factory.Core().createVariableWrite<Any>().also {
                 it.setVariable<CtVariableAccess<Any>>(variableRef as CtLocalVariableReference<Any>)
@@ -722,7 +746,7 @@ internal class IrTreeBuilder(
         is CtFieldReference<*> -> {
             factory.Core().createFieldWrite<Any>().also {
                 it.setVariable<CtVariableAccess<Any>>(variableRef as CtFieldReference<Any>)
-              //  it.setTarget<CtTargetedExpression<Any, CtExpression<*>>>(receiver)
+                it.setTarget<CtTargetedExpression<Any, CtExpression<*>>>(receiver)
             }
         }
         is CtParameterReference<*> -> {
