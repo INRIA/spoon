@@ -18,7 +18,8 @@ class ConstructorTest {
     val pp = DefaultKotlinPrettyPrinter(DefaultPrinterAdapter())
 
     private fun CtConstructor<*>.isPrimary() = this.getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as Boolean
-    private fun CtConstructor<*>.getDelegate() = this.getMetadata(KtMetadataKeys.CONSTRUCTOR_DELEGATE_CALL) as CtInvocation<*>?
+    private fun CtConstructor<*>.getDelegate() =
+        this.body.statements.getOrNull(0) as? CtConstructorCall<*>?
 
     @Test
     fun testImplicitConstructor() {
