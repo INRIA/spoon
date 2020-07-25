@@ -385,10 +385,15 @@ internal class IrTreeBuilder(
         ctLocalVar.addModifiersAsMetadata(IrToModifierKind.fromVariable(declaration))
 
         // Type
-        ctLocalVar.setType<CtLocalVariable<*>>(referenceBuilder.getNewTypeReference(declaration.type))
+        val type = referenceBuilder.getNewTypeReference<Any>(declaration.type)
+        ctLocalVar.setType<CtLocalVariable<*>>(type)
 
-        // Implicit/explicit type marker
-        // TODO
+        // Mark implicit/explicit type
+        val implicitType = detectImplicitTypes &&
+                !getSourceHelper(data).hasExplicitType(declaration.descriptor.source.getPsi() as? KtProperty?)
+        type.setImplicit<CtTypeReference<*>>(implicitType)
+        ctLocalVar.setType<CtVariable<*>>(type)
+        ctLocalVar.setInferred<CtLocalVariable<Any>>(implicitType)
 
         return ctLocalVar.definitely()
     }
