@@ -373,7 +373,7 @@ internal class IrTreeBuilder(
 
         // Initializer
         if(declaration.origin != IrDeclarationOrigin.FOR_LOOP_VARIABLE &&
-                data !is ForLoopVariable) {
+                data !is Destruct) {
             val initializer = declaration.initializer?.accept(this, data)?.resultUnsafe
             if (initializer != null) {
                 val initializerExpr = expressionOrWrappedInStatementExpression(initializer)
@@ -671,12 +671,12 @@ internal class IrTreeBuilder(
         val iterable = (outerBlock.statements[0] as IrVariable).initializer!!.accept(this, data).resultUnsafe
         val innerBlock = (outerBlock.statements[1] as IrWhileLoop).body as IrBlock
         val variables = innerBlock.statements.takeWhile { it is IrVariable }
-        val context = ForLoopVariable(data)
+        val context = Destruct(data)
         val variable = if(variables.size > 1) {
             val components = variables.drop(1).map { visitVariable(it as IrVariable, context).resultSafe }
             components.toDestructuredVariable()
         } else {
-            visitVariable(variables[0] as IrVariable, context).resultSafe
+            visitVariable(variables[0] as IrVariable, data).resultSafe
         }
 
         val body = innerBlock.statements[variables.size].accept(this, data).resultUnsafe
@@ -836,6 +836,22 @@ internal class IrTreeBuilder(
         return super.visitTypeOperator(expression, data)
     }
 
+    override fun visitComposite(expression: IrComposite, data: ContextData): TransformResult<CtElement> {
+        val context = Destruct(data)
+        val tmpComponents = expression.statements.drop(1).map { visitVariable(it as IrVariable, context).resultSafe }
+        val components = ArrayList<CtLocalVariable<*>>()
+        val names = sourceHelper.destructuredNames(expression)
+        for(c in tmpComponents) {
+
+        }
+        val placeHolder = components.toDestructuredVariable()
+        placeHolder.setDefaultExpression<CtLocalVariable<Any>>(
+            (expression.statements[0] as IrVariable).initializer!!.accept(this, data).resultUnsafe as CtExpression<Any>
+        )
+        placeHolder.addModifiersAsMetadata(IrToModifierKind.fromVariable(expression.statements[1] as IrVariable))
+        return placeHolder.definitely()
+    }
+
     override fun visitGetValue(expression: IrGetValue, data: ContextData): TransformResult<CtElement> {
         val symbol = expression.symbol
         if(symbol is IrValueSymbol) {
@@ -924,8 +940,8 @@ internal class IrTreeBuilder(
         else -> throw RuntimeException("Can't wrap ${e::class} in StatementExpression")
     }
 
-    private fun List<CtLocalVariable<*>>.toDestructuredVariable(): CtLocalVariable<*> {
-        val placeHolder = core.createLocalVariable<Unit>()
+    private fun List<CtLocalVariable<*>>.toDestructuredVariable(): CtLocalVariable<Any> {
+        val placeHolder = core.createLocalVariable<Any>()
         placeHolder.setImplicit<CtElement>(true)
         placeHolder.putKtMetadata(KtMetadataKeys.IS_DESTRUCTURED, KtMetadata.wrap(true))
         placeHolder.putMetadata<CtElement>(KtMetadataKeys.COMPONENTS, this)

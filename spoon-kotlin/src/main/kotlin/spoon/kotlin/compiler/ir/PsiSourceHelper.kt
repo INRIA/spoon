@@ -3,12 +3,15 @@ package spoon.kotlin.compiler.ir
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.IrFile
+import org.jetbrains.kotlin.ir.expressions.IrComposite
 import org.jetbrains.kotlin.ir.expressions.IrReturn
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
+import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
+import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
 import org.jetbrains.kotlin.utils.addToStdlib.indexOfOrNull
 
 class PsiSourceHelper {
@@ -119,6 +122,12 @@ class PsiSourceHelper {
             return sourceText.substring(labelStart, labelEnd)
         }
         return null
+    }
+
+    fun destructuredNames(irComposite: IrComposite): List<String> {
+        val psi = getSourceElements(irComposite.startOffset, irComposite.endOffset).
+            firstIsInstance<KtDestructuringDeclaration>()
+        return psi.getChildrenOfType<KtDestructuringDeclarationEntry>().map { it.text }
     }
 }
 

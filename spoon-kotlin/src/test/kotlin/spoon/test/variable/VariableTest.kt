@@ -40,4 +40,16 @@ class VariableTest {
         assertEquals(c.factory.Type().createReference<Any>("kotlin.Double"), localVar.type)
         assertEquals("var l4: kotlin.Double", localVar.asString())
     }
+
+    @Test
+    fun testBuildDestructuredVariable() {
+        val c = TestBuildUtil.buildClass("spoon.test.variable.testclasses","LocalVariables")
+
+        val method = c.getMethodByName("destructured")
+
+        val localVars = method.getElements(TypeFilter(CtLocalVariable::class.java))
+        assertEquals(2, localVars.size)
+
+        var localVar = localVars[0]
+    }
 }

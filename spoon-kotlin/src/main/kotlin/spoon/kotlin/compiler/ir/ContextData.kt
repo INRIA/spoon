@@ -5,4 +5,4 @@ import org.jetbrains.kotlin.ir.declarations.IrFile
 sealed class ContextData(val file: IrFile)
 
 class Empty(file: IrFile) : ContextData(file)
-class ForLoopVariable(parent: ContextData) : ContextData(parent.file)
+class Destruct(parent: ContextData) : ContextData(parent.file)

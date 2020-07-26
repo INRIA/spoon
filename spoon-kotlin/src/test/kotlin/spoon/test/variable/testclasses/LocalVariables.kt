@@ -9,4 +9,9 @@ class LocalVariables {
 
         l3 = l2++
     }
+
+    fun destructured() {
+        val (x,y) = Pair(1,2)
+        var (a,b,c) = Triple(1,2,3)
+    }
 }
