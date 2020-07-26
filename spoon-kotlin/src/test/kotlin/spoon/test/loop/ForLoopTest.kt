@@ -6,10 +6,10 @@ import spoon.kotlin.reflect.visitor.printing.DefaultKotlinPrettyPrinter
 import spoon.kotlin.reflect.visitor.printing.DefaultPrinterAdapter
 import spoon.reflect.code.*
 import spoon.reflect.declaration.CtType
-import spoon.reflect.reference.CtLocalVariableReference
 import spoon.reflect.reference.CtTypeReference
 import spoon.reflect.visitor.filter.TypeFilter
 import spoon.test.TestBuildUtil
+import spoon.test.asString
 import spoon.test.getMethodByName
 
 class ForLoopTest {
@@ -123,5 +123,13 @@ class ForLoopTest {
         assertTrue(loop.expression is CtVariableRead)
         assertEquals("IntRange", loop.expression.type.simpleName)
         assertEquals("for (i in l.indices) {}", pp.prettyprint(loop))
+    }
+
+    @Test
+    fun testForWithWithIndex() {
+        val loop = forLoopsClass.getLoop("forWithWithIndex")
+        assertTrue(loop.expression is CtInvocation<*>)
+        assertEquals("kotlin.collections.Iterable<kotlin.collections.IndexedValue<kotlin.Int>>", loop.expression.type.asString())
+        assertEquals("for ((i, n) in l.withIndex()) {}", pp.prettyprint(loop))
     }
 }

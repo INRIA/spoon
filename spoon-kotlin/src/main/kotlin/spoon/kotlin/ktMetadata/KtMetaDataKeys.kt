@@ -54,5 +54,8 @@ object KtMetadataKeys {
     const val TOP_LEVEL_DECLARING_CU = "skt_key top level declaring CU : CtCompilationUnit"
 
     const val LABEL = "skt_key label : String?"
+
+    const val IS_DESTRUCTURED = "skt_key is destructured : Boolean"
+    const val COMPONENTS = "skt_key components : List<CtLocalVariable>?"
 }
 

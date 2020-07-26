@@ -57,4 +57,13 @@ class ForLoops {
 
         }
     }
+
+    fun forWithWithIndex() {
+        val l = listOf(1,2,3)
+        for((i,n) in l.withIndex()) {
+
+        }
+    }
+
+
 }

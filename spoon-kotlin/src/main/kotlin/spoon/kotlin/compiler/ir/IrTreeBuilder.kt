@@ -4,10 +4,13 @@ import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.*
+import org.jetbrains.kotlin.ir.descriptors.IrTemporaryVariableDescriptor
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.IrIfThenElseImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueParameterSymbol
+import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
+import org.jetbrains.kotlin.ir.symbols.IrVariableSymbol
 import org.jetbrains.kotlin.ir.types.isNullableAny
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
@@ -370,19 +373,22 @@ internal class IrTreeBuilder(
         return super.visitLocalDelegatedProperty(declaration, data)
     }
 
-    override fun visitVariable(declaration: IrVariable, data: ContextData): TransformResult<CtLocalVariable<*>> {
+    override fun visitVariable(declaration: IrVariable, data: ContextData): DefiniteTransformResult<CtLocalVariable<*>> {
         val ctLocalVar = core.createLocalVariable<Any>()
         ctLocalVar.setSimpleName<CtVariable<*>>(declaration.name.escaped())
 
         // Initializer
-        val initializer = declaration.initializer?.accept(this, data)?.resultUnsafe
-        if(initializer != null) {
-            val initializerExpr = expressionOrWrappedInStatementExpression(initializer)
-            ctLocalVar.setDefaultExpression<CtLocalVariable<Any>>(initializerExpr)
-        }
+        if(declaration.origin != IrDeclarationOrigin.FOR_LOOP_VARIABLE &&
+                data !is ForLoopVariable) {
+            val initializer = declaration.initializer?.accept(this, data)?.resultUnsafe
+            if (initializer != null) {
+                val initializerExpr = expressionOrWrappedInStatementExpression(initializer)
+                ctLocalVar.setDefaultExpression<CtLocalVariable<Any>>(initializerExpr)
+            }
 
-        // Modifiers
-        ctLocalVar.addModifiersAsMetadata(IrToModifierKind.fromVariable(declaration))
+            // Modifiers
+            ctLocalVar.addModifiersAsMetadata(IrToModifierKind.fromVariable(declaration))
+        }
 
         // Type
         val type = referenceBuilder.getNewTypeReference<Any>(declaration.type)
@@ -515,11 +521,13 @@ internal class IrTreeBuilder(
     private fun specialInvocation(irCall: IrCall, data: ContextData): TransformResult<CtElement> {
         val callDescriptor = irCall.symbol.descriptor
         if(callDescriptor is PropertyGetterDescriptor) {
-            return createVariableRead(
-                referenceBuilder.getNewVariableReference<Any>(callDescriptor.correspondingProperty)).definitely()
+            return visitPropertyAccess(irCall, data)
         }
         when(irCall.origin) {
             IrStatementOrigin.GET_PROPERTY -> return visitPropertyAccess(irCall, data)
+            IrStatementOrigin.FOR_LOOP_ITERATOR -> {
+                return createInvocation(irCall, data).resultSafe.target.definitely()
+            }
             in AUGMENTED_ASSIGNMENTS -> return createAugmentedAssignmentOperator(irCall, irCall.origin!!, data).definitely()
             IrStatementOrigin.EQ -> {
                 return if(callDescriptor is PropertySetterDescriptor) {
@@ -664,7 +672,30 @@ internal class IrTreeBuilder(
         return ctOp.definitely()
     }
 
+    private fun visitForLoop(outerBlock: IrBlock, data: ContextData): DefiniteTransformResult<CtForEach> {
+        val ctForEach = core.createForEach()
+        val iterable = (outerBlock.statements[0] as IrVariable).initializer!!.accept(this, data).resultUnsafe
+        val innerBlock = (outerBlock.statements[1] as IrWhileLoop).body as IrBlock
+        val variables = innerBlock.statements.takeWhile { it is IrVariable }
+        val context = ForLoopVariable(data)
+        val variable = if(variables.size > 1) {
+            val components = variables.drop(1).map { visitVariable(it as IrVariable, context).resultSafe }
+            components.toDestructuredVariable()
+        } else {
+            visitVariable(variables[0] as IrVariable, context).resultSafe
+        }
+
+        val body = innerBlock.statements[variables.size].accept(this, data).resultUnsafe
+        ctForEach.setVariable<CtForEach>(variable)
+        ctForEach.setExpression<CtForEach>(iterable as CtExpression<*>)
+        ctForEach.setBody<CtForEach>(body.blockOrSingleStatementBlock())
+        return ctForEach.definitely()
+    }
+
     private fun checkForCompositeElement(block: IrBlock, data: ContextData): TransformResult<CtElement> {
+        if(block.origin == IrStatementOrigin.FOR_LOOP) {
+            return visitForLoop(block, data)
+        }
         if(block.origin in INCREMENT_DECREMENT_OPERATORS) {
             val setVar = block.statements.firstIsInstanceOrNull<IrSetVariable>()?.symbol
             val operand: CtExpression<Any> = if(setVar == null) {
@@ -687,12 +718,10 @@ internal class IrTreeBuilder(
         return TransformResult.nothing()
     }
 
-    override fun visitBlock(expression: IrBlock, data: ContextData): DefiniteTransformResult<CtElement> {
-        val composite = checkForCompositeElement(expression, data).resultOrNull
-        if(composite != null) return composite.definitely()
-
+    private fun visitBlock(expression: IrBlock, data: ContextData, skipIndices: List<Int>): DefiniteTransformResult<CtElement> {
         val statements = ArrayList<CtStatement>()
-        for(statement in expression.statements) {
+        for((i, statement) in expression.statements.withIndex()) {
+            if(i in skipIndices) continue
             val ctElement = statement.accept(this, data).resultOrNull ?: continue
             val ctStmt: CtStatement = when(ctElement) {
                 is CtMethod<*> -> {
@@ -710,6 +739,12 @@ internal class IrTreeBuilder(
             KtMetadata.wrap(referenceBuilder.getNewTypeReference<CtBlock<*>>(expression.type)))
         return ctBlock.definitely()
 
+    }
+
+    override fun visitBlock(expression: IrBlock, data: ContextData): DefiniteTransformResult<CtElement> {
+        val composite = checkForCompositeElement(expression, data).resultOrNull
+        if(composite != null) return composite.definitely()
+        return visitBlock(expression, data, emptyList())
     }
 
     private fun createAugmentedAssignmentOperator(
@@ -809,10 +844,14 @@ internal class IrTreeBuilder(
 
     override fun visitGetValue(expression: IrGetValue, data: ContextData): TransformResult<CtElement> {
         val symbol = expression.symbol
-        if(symbol is IrValueParameterSymbol) {
+        if(symbol is IrValueSymbol) {
             val descriptor = symbol.descriptor
-            if(descriptor is ReceiverParameterDescriptor) {
+            if(symbol is IrValueParameterSymbol && descriptor is ReceiverParameterDescriptor) {
                 return visitThisReceiver(expression, data).definitely()
+            }
+            if(symbol is IrVariableSymbol && descriptor is IrTemporaryVariableDescriptor) {
+                if(descriptor.name.asString().matches("tmp\\d+_this".toRegex()))
+                    return visitThisReceiver(expression, data).definitely()
             }
         }
 
@@ -889,6 +928,28 @@ internal class IrTreeBuilder(
         is CtStatement -> e
         is CtExpression<*> -> e.wrapInImplicitReturn()
         else -> throw RuntimeException("Can't wrap ${e::class} in StatementExpression")
+    }
+
+    private fun List<CtLocalVariable<*>>.toDestructuredVariable(): CtLocalVariable<*> {
+        val placeHolder = core.createLocalVariable<Unit>()
+        placeHolder.setImplicit<CtElement>(true)
+        placeHolder.putKtMetadata(KtMetadataKeys.IS_DESTRUCTURED, KtMetadata.wrap(true))
+        placeHolder.putMetadata<CtElement>(KtMetadataKeys.COMPONENTS, this)
+        return placeHolder
+    }
+
+    private fun CtElement.blockOrSingleStatementBlock(): CtBlock<*> = when(this) {
+        is CtBlock<*> -> this
+        else -> {
+            val block = core.createBlock<Any>()
+            if(this is CtExpression<*>) {
+                block.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE,
+                    KtMetadata.wrap(this.type)
+                    )
+            }
+            block.addStatement<CtBlock<*>>(statementOrWrappedInImplicitReturn(this))
+            block.setImplicit<CtBlock<*>>(true)
+        }
     }
 
     @Suppress("UNCHECKED_CAST")

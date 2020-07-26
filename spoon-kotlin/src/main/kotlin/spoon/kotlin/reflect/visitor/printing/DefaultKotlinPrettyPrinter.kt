@@ -123,6 +123,7 @@ class DefaultKotlinPrettyPrinter(
         if((e.getMetadata(KtMetadataKeys.ACCESS_IS_CHECK_NOT_NULL) as? Boolean?) == true) return true
         return when(e.parent) {
             null -> false
+            is CtForEach -> false
             is CtBinaryOperator<*>, is CtUnaryOperator<*> ->
                 e is CtAssignment<*,*> || e is CtUnaryOperator<*> || e is CtBinaryOperator<*>
             is CtTargetedExpression<*,*> -> {
@@ -811,7 +812,15 @@ class DefaultKotlinPrettyPrinter(
         val modifiers = getModifiersMetadata(localVar)
         adapter writeModifiers modifiers and localVar.simpleName
 
-        if(!localVar.isInferred || forceExplicitTypes) {
+        if(localVar.isImplicit) {
+            if(localVar.getBooleanMetadata(KtMetadataKeys.IS_DESTRUCTURED) == true) {
+                val components = localVar.getMetadata(KtMetadataKeys.COMPONENTS) as List<CtLocalVariable<*>>
+                adapter write LEFT_ROUND
+                visitCommaSeparatedList(components)
+                adapter write RIGHT_ROUND
+            }
+        }
+        else if(!localVar.isInferred || forceExplicitTypes) {
             adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
             visitCtTypeReference(localVar.type)
         }
