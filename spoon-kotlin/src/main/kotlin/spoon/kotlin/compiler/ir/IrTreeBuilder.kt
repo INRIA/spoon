@@ -252,13 +252,7 @@ internal class IrTreeBuilder(
         ctField.addModifiersAsMetadata(IrToModifierKind.fromProperty(declaration))
 
         // Type
-        val type = if(backingField != null) {
-            referenceBuilder.getNewTypeReference<Any>(backingField.type)
-        } else if(declaration.getter != null) {
-            referenceBuilder.getNewTypeReference<Any>(declaration.getter!!.returnType)
-        } else {
-            throw SpoonIrBuildException("Unable to get IR type of property $declaration")
-        }
+        val type = referenceBuilder.getNewTypeReference<Any>(declaration.descriptor.type)
 
         // Mark implicit/explicit type
         val implicitType = detectImplicitTypes &&
