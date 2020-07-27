@@ -488,7 +488,9 @@ internal class IrTreeBuilder(
             if(irStatement is IrDeclaration && irStatement.isFakeOverride) continue
             val result = irStatement.accept(this, data)
             if(result.isNothing) continue
-            val ctStatement = statementOrWrappedInImplicitReturn(result.resultUnsafe)
+            val ctResult = result.resultUnsafe
+            val ctStatement = if(ctResult is CtMethod<*>) ctResult.wrapLocalMethod() else
+                statementOrWrappedInImplicitReturn(ctResult)
             checkLabelOfStatement(irStatement, ctStatement, data)
             statements.add(ctStatement)
         }
@@ -992,10 +994,9 @@ internal class IrTreeBuilder(
 
     private fun CtMethod<*>.wrapLocalMethod(): CtClass<Any> {
         val wrapperClass = factory.Core().createClass<Any>()
-        return wrapperClass.apply {
-            setImplicit<CtClass<Any>>(true)
-            setSimpleName<CtClass<*>>("<local>")
-            addMethod<Any, CtClass<Any>>(this as CtMethod<Any>)
-        }
+        wrapperClass.setImplicit<CtClass<Any>>(true)
+        wrapperClass.setSimpleName<CtClass<*>>("<local>")
+        wrapperClass.addMethod<Any, CtClass<Any>>(this as CtMethod<Any>)
+        return wrapperClass
     }
 }
