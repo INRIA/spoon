@@ -466,7 +466,11 @@ internal class IrTreeBuilder(
         // Body
         val body = irFunction.body
         if(body != null) {
-            ctMethod.setBody<CtMethod<Any>>(visitBody(body, data).resultSafe)
+            val ctBody = visitBody(body, data).resultSafe
+            if(ctBody.statements.size == 1 && body.endOffset - body.startOffset == 1) {
+                ctBody.setImplicit<CtBlock<*>>(true)
+            }
+            ctMethod.setBody<CtMethod<Any>>(ctBody)
         }
         return ctMethod
     }
@@ -920,6 +924,8 @@ internal class IrTreeBuilder(
                 expressionOrWrappedInStatementExpression(transformResult)
             )
         }
+        if(expression.endOffset == expression.startOffset)
+            ctReturn.setImplicit<CtReturn<*>>(true)
         return ctReturn.definitely()
     }
 
