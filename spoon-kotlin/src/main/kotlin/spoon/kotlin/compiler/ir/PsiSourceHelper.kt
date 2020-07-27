@@ -114,6 +114,10 @@ class PsiSourceHelper {
         return property != null && property.children.any { it is KtTypeReference }
     }
 
+    fun hasExplicitType(function: KtFunction?): Boolean {
+        return function != null && function.hasDeclaredReturnType()
+    }
+
     fun returnTargetLabelOrNull(irReturn: IrReturn): String? {
         val sourceText = ktFile.text.substring(irReturn.startOffset, irReturn.endOffset)
         if(sourceText.startsWith("return@")) {

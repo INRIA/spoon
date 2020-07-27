@@ -16,10 +16,7 @@ import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.psi.KtModifierList
-import org.jetbrains.kotlin.psi.KtPrimaryConstructor
-import org.jetbrains.kotlin.psi.KtProperty
-import org.jetbrains.kotlin.psi.KtTypeArgumentList
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
@@ -450,7 +447,12 @@ internal class IrTreeBuilder(
         }
 
         // Return type
-        ctMethod.setType<CtMethod<*>>(referenceBuilder.getNewTypeReference(irFunction.returnType))
+        val type = referenceBuilder.getNewTypeReference<Any>(irFunction.returnType)
+        if(detectImplicitTypes && !getSourceHelper(data).hasExplicitType(
+                irFunction.descriptor.source.getPsi() as? KtFunction?)) {
+            type.setImplicit<CtTypeReference<*>>(true)
+        }
+        ctMethod.setType<CtMethod<*>>(type)
 
         // Extension receiver
         val extensionReceiverRef = irFunction.extensionReceiverParameter?.type?.let {
@@ -846,7 +848,7 @@ internal class IrTreeBuilder(
         val context = Destruct(data)
         val tmpComponents = expression.statements.drop(1).map { visitVariable(it as IrVariable, context).resultSafe }
         val components = ArrayList<CtLocalVariable<*>>()
-        val names = sourceHelper.destructuredNames(expression)
+        val names = getSourceHelper(data).destructuredNames(expression)
         for(c in tmpComponents) {
 
         }
