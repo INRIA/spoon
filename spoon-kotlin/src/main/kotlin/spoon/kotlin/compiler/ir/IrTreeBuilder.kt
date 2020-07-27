@@ -543,6 +543,12 @@ internal class IrTreeBuilder(
                     ) }
                 }
             }
+            in INCREMENT_DECREMENT_OPERATORS -> {
+                val receiver = getReceiver(irCall, data) as CtExpression<*>?
+                val variable = referenceBuilder.getNewVariableReference<Any>(
+                    (callDescriptor as PropertySetterDescriptor).correspondingProperty)
+                return createVariableWrite(receiver, variable).definitely()
+            }
         }
         if(OperatorHelper.isUnaryOperator(irCall.origin)) {
             return visitUnaryOperator(irCall, data)
@@ -720,6 +726,29 @@ internal class IrTreeBuilder(
             return createAugmentedAssignmentOperator(block, block.origin!!, data).definitely()
         }
         return TransformResult.nothing()
+    }
+
+    override fun visitWhileLoop(loop: IrWhileLoop, data: ContextData): DefiniteTransformResult<CtWhile> {
+        val ctWhile = core.createWhile()
+        val condition = loop.condition.accept(this, data).resultUnsafe as CtExpression<Boolean>
+        val body = loop.body!!.accept(this,data).resultUnsafe.blockOrSingleStatementBlock()
+        ctWhile.setLoopingExpression<CtWhile>(condition)
+        ctWhile.setBody<CtWhile>(body)
+        return ctWhile.definitely()
+    }
+
+    override fun visitDoWhileLoop(loop: IrDoWhileLoop, data: ContextData): DefiniteTransformResult<CtElement> {
+        val ctDo = factory.Core().createDo()
+        val condition = loop.condition.accept(this, data).resultUnsafe as CtExpression<Boolean>
+
+        val body = if(loop.body is IrComposite) { // Empty body becomes composite for some reason
+            core.createBlock<Any>()
+        } else {
+            loop.body!!.accept(this, data).resultUnsafe.blockOrSingleStatementBlock()
+        }
+        ctDo.setLoopingExpression<CtDo>(condition)
+        ctDo.setBody<CtDo>(body)
+        return ctDo.definitely()
     }
 
     private fun visitBlock(expression: IrBlock, data: ContextData, skipIndices: List<Int>): DefiniteTransformResult<CtElement> {
