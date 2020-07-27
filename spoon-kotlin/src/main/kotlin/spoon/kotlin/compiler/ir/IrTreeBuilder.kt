@@ -517,7 +517,9 @@ internal class IrTreeBuilder(
         val lhs = createVariableWrite(receiver, referenceBuilder.getNewVariableReference<Any>(
             callDescriptor.correspondingProperty))
         val rhs = irCall.getValueArgument(0)!!.accept(this, data).resultUnsafe
-        return createAssignment(lhs, expressionOrWrappedInStatementExpression(rhs)).definitely()
+        return createAssignment(lhs, expressionOrWrappedInStatementExpression(rhs)).also {
+            it.setType<CtExpression<*>>(referenceBuilder.getNewTypeReference(irCall.type))
+        }.definitely()
     }
 
     private fun specialInvocation(irCall: IrCall, data: ContextData): TransformResult<CtElement> {
@@ -775,7 +777,9 @@ internal class IrTreeBuilder(
         if(expression.origin != IrStatementOrigin.EQ) TODO()
         val lhs = createVariableWrite(null, referenceBuilder.getNewVariableReference<Any>(expression.symbol.descriptor))
         val rhs = expression.value.accept(this, data).resultUnsafe as CtExpression<Any>
-        return createAssignment(lhs, rhs).definitely()
+        return createAssignment(lhs, rhs).also {
+            it.setType<CtExpression<*>>(referenceBuilder.getNewTypeReference(expression.type))
+        }.definitely()
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -846,12 +850,8 @@ internal class IrTreeBuilder(
 
     override fun visitComposite(expression: IrComposite, data: ContextData): TransformResult<CtElement> {
         val context = Destruct(data)
-        val tmpComponents = expression.statements.drop(1).map { visitVariable(it as IrVariable, context).resultSafe }
-        val components = ArrayList<CtLocalVariable<*>>()
-        val names = getSourceHelper(data).destructuredNames(expression)
-        for(c in tmpComponents) {
+        val components = expression.statements.drop(1).map { visitVariable(it as IrVariable, context).resultSafe }
 
-        }
         val placeHolder = components.toDestructuredVariable()
         placeHolder.setDefaultExpression<CtLocalVariable<Any>>(
             (expression.statements[0] as IrVariable).initializer!!.accept(this, data).resultUnsafe as CtExpression<Any>
