@@ -3,11 +3,14 @@ package spoon.kotlin.compiler.ir
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFile
+import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.lexer.KtKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
+import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
@@ -126,4 +129,33 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
                 }
     }
 
+    fun getNamedArgumentsMap(block: IrBlock, data: ContextData): List<Pair<String?, IrExpression>> {
+        assert(block.origin == IrStatementOrigin.ARGUMENTS_REORDERING_FOR_CALL)
+        val map = mutableListOf<Pair<String?, IrExpression>>()
+        val variables = block.statements.takeWhile { it is IrVariable } as List<IrVariable>
+        for(i in variables.indices) {
+            val v = variables[i]
+            val name = v.name.asString().substringAfter('_')
+            val psi = irTreeBuilder.getSourceHelper(data).getSourceElements(v.startOffset, v.endOffset)
+            var psiValueArg: KtValueArgument? = null
+            for(element in psi) {
+                if(element is KtValueArgument) {
+                    psiValueArg = element
+                    break
+                }
+                val p = element.getParentOfType<KtValueArgument>(true)
+                if(p != null) {
+                    psiValueArg = p
+                    break
+                }
+            }
+            if(psiValueArg == null) { // Default to named arg if no PSI is found
+                map.add(Pair(name, v.initializer!!))
+            } else {
+                val psiValueArgName = psiValueArg.getChildOfType<KtValueArgumentName>()
+                map.add(Pair(psiValueArgName?.text, v.initializer!!))
+            }
+        }
+        return map
+    }
 }

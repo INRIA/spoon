@@ -586,7 +586,8 @@ internal class IrTreeBuilder(
         return ctIf.definitely()
     }
 
-    private fun createInvocation(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtInvocation<*>> {
+    private fun createInvocation(irCall: IrCall, data: ContextData, namedArgs: List<Pair<String?,IrExpression>>? = null)
+            : DefiniteTransformResult<CtInvocation<*>> {
         val invocation = core.createInvocation<Any>()
         invocation.setExecutable<CtInvocation<Any>>(referenceBuilder.getNewExecutableReference(irCall))
 
@@ -597,12 +598,24 @@ internal class IrTreeBuilder(
             throw RuntimeException("Function call target not CtExpression")
         }
 
-        if(irCall.valueArgumentsCount > 0) {
-            invocation.setArguments<CtInvocation<Any>>(irCall.symbol.descriptor.valueParameters.map {
-                expressionOrWrappedInStatementExpression(
-                    irCall.getValueArgument(it.index)!!.accept(this, data).resultUnsafe
-                )
-            })
+        if(namedArgs != null) {
+            val arguments = ArrayList<CtExpression<*>>()
+            for(arg in namedArgs) {
+                val expr = arg.second.accept(this, data).resultUnsafe
+                if(arg.first != null) {
+                    expr.putKtMetadata(KtMetadataKeys.NAMED_ARGUMENT, KtMetadata.wrap(arg.first!!))
+                }
+                arguments.add(expressionOrWrappedInStatementExpression(expr))
+            }
+            invocation.setArguments<CtInvocation<Any>>(arguments)
+        } else {
+            if(irCall.valueArgumentsCount > 0) {
+                invocation.setArguments<CtInvocation<Any>>(irCall.symbol.descriptor.valueParameters.map {
+                    expressionOrWrappedInStatementExpression(
+                        irCall.getValueArgument(it.index)!!.accept(this, data).resultUnsafe
+                    )
+                })
+            }
         }
 
         if(irCall.typeArgumentsCount > 0) {
@@ -703,28 +716,36 @@ internal class IrTreeBuilder(
     }
 
     private fun checkForCompositeElement(block: IrBlock, data: ContextData): TransformResult<CtElement> {
-        if(block.origin == IrStatementOrigin.FOR_LOOP) {
-            return visitForLoop(block, data)
-        }
-        if(block.origin in INCREMENT_DECREMENT_OPERATORS) {
-            val setVar = block.statements.firstIsInstanceOrNull<IrSetVariable>()?.symbol
-            val operand: CtExpression<Any> = if(setVar == null) {
-                val call = block.statements.firstIsInstance<IrBlock>().
-                statements.firstIsInstance<IrCall>()
-                specialInvocation(call, data).resultUnsafe as CtExpression<Any>
-            } else {
-                createVariableWrite(null,
-                    referenceBuilder.getNewVariableReference<Any>(setVar.descriptor))
+        when(block.origin) {
+            IrStatementOrigin.FOR_LOOP -> {
+                return visitForLoop(block, data)
             }
-            val ctUnaryOp = core.createUnaryOperator<Any>()
-            ctUnaryOp.setOperand<CtUnaryOperator<*>>(operand)
-            ctUnaryOp.setKind<CtUnaryOperator<*>>(OperatorHelper.originToUnaryOperatorKind(block.origin!!))
-            ctUnaryOp.setType<CtUnaryOperator<*>>(referenceBuilder.getNewTypeReference(block.type))
-            return ctUnaryOp.definitely()
+            IrStatementOrigin.ARGUMENTS_REORDERING_FOR_CALL -> {
+                val map = helper.getNamedArgumentsMap(block, data)
+                return createInvocation(block.statements.firstIsInstance<IrCall>(),
+                    data, map)
+            }
+            in INCREMENT_DECREMENT_OPERATORS -> {
+                val setVar = block.statements.firstIsInstanceOrNull<IrSetVariable>()?.symbol
+                val operand: CtExpression<Any> = if(setVar == null) {
+                    val call = block.statements.firstIsInstance<IrBlock>().
+                    statements.firstIsInstance<IrCall>()
+                    specialInvocation(call, data).resultUnsafe as CtExpression<Any>
+                } else {
+                    createVariableWrite(null,
+                        referenceBuilder.getNewVariableReference<Any>(setVar.descriptor))
+                }
+                val ctUnaryOp = core.createUnaryOperator<Any>()
+                ctUnaryOp.setOperand<CtUnaryOperator<*>>(operand)
+                ctUnaryOp.setKind<CtUnaryOperator<*>>(OperatorHelper.originToUnaryOperatorKind(block.origin!!))
+                ctUnaryOp.setType<CtUnaryOperator<*>>(referenceBuilder.getNewTypeReference(block.type))
+                return ctUnaryOp.definitely()
+            }
+            in AUGMENTED_ASSIGNMENTS -> {
+                return createAugmentedAssignmentOperator(block, block.origin!!, data).definitely()
+            }
         }
-        if(block.origin in AUGMENTED_ASSIGNMENTS) {
-            return createAugmentedAssignmentOperator(block, block.origin!!, data).definitely()
-        }
+
         return TransformResult.nothing()
     }
 
