@@ -13,27 +13,31 @@ import org.jetbrains.kotlin.psi.psiUtil.startOffset
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
 import org.jetbrains.kotlin.utils.addToStdlib.indexOfOrNull
+import java.util.*
+import kotlin.collections.ArrayList
 
 class PsiSourceHelper {
     private val labelOffSetMap = RangeMap()
     private val ktFile: KtFile
-    private var previousStartElement: PsiElement
+    private val previousStack = LinkedList<KtElement>()
 
     constructor(ktFile: KtFile) {
         this.ktFile = ktFile
-        previousStartElement = ktFile
         init()
     }
 
     constructor(sourceManager: PsiSourceManager, irFile: IrFile) {
         this.ktFile = sourceManager.getKtFile(irFile)!!
-        previousStartElement = ktFile
         init()
     }
 
+    private fun popCache(): KtElement {
+        if(previousStack.size == 1) return previousStack.peek()
+        return previousStack.pop()
+    }
 
     private fun init() {
-
+        previousStack.push(ktFile)
         ktFile.accept(object : KtTreeVisitorVoid() {
             override fun visitElement(element: PsiElement) {
                 if(element is KtLabeledExpression) {
@@ -72,14 +76,23 @@ class PsiSourceHelper {
         return null
     }
 
-    private fun getSourceElements(startOffset: Int, endOffset: Int, startElement: PsiElement): List<KtElement> {
-        val actualElement: PsiElement =
-            if(startElement === ktFile && previousStartElement.startOffset <= startOffset && previousStartElement.endOffset >= endOffset) {
-                previousStartElement
-            } else {
-                startElement
-            }
+    private fun clearUpTo(startOffset: Int, endOffset: Int) {
+        var cachedElem = previousStack.peek()
+        while(previousStack.size > 1 && (cachedElem.startOffset > startOffset || cachedElem.endOffset < endOffset)) {
+            cachedElem = popCache()
+        }
+    }
 
+    private fun pushCache(element: KtElement) {
+        if(element === ktFile) return
+        clearUpTo(element.startOffset, element.endOffset)
+        previousStack.push(element)
+    }
+
+    private fun getSourceElements(startOffset: Int, endOffset: Int, startElement: KtElement?): List<KtElement> {
+        clearUpTo(startOffset, endOffset)
+        if(startElement != null) pushCache(startElement)
+        val actualElement = previousStack.peek()
         val res = ArrayList<KtElement>()
         actualElement.accept(object: KtTreeVisitorVoid() {
             override fun visitElement(element: PsiElement) {
@@ -92,12 +105,14 @@ class PsiSourceHelper {
             }
         }
         )
-        previousStartElement = startElement
+        if(res.size == 1)
+            pushCache(res[0])
+
         return res
     }
 
     fun getSourceElements(startOffset: Int, endOffset: Int): List<KtElement>
-        = getSourceElements(startOffset, endOffset, ktFile)
+        = getSourceElements(startOffset, endOffset, null)
 
     private fun sourceTextIs(start: Int, end: Int, predicate: (String) -> Boolean): Boolean {
         return predicate(ktFile.text.substring(start, end))
@@ -107,7 +122,7 @@ class PsiSourceHelper {
         sourceTextIs(element.startOffset, element.endOffset, predicate)
 
     fun sourceElementIs(element: IrElement, predicate: (KtElement) -> Boolean): Boolean {
-        return getSourceElements(element.startOffset, element.endOffset, ktFile).any(predicate)
+        return getSourceElements(element.startOffset, element.endOffset, null).any(predicate)
     }
 
     fun hasExplicitType(property: KtProperty?): Boolean {
