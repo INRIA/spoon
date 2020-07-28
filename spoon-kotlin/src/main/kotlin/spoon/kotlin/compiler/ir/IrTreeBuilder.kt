@@ -523,12 +523,21 @@ internal class IrTreeBuilder(
         }.definitely()
     }
 
+
+    private fun createCheckNotNullAccess(call: IrCall, data: ContextData): TransformResult<CtElement> {
+        val access = call.getValueArgument(0)!!.accept(this, data)
+        return access.apply {
+            resultUnsafe.putKtMetadata(KtMetadataKeys.ACCESS_IS_CHECK_NOT_NULL, KtMetadata.wrap(true))
+        }
+    }
+
     private fun specialInvocation(irCall: IrCall, data: ContextData): TransformResult<CtElement> {
         val callDescriptor = irCall.symbol.descriptor
         if(callDescriptor is PropertyGetterDescriptor) {
             return visitPropertyAccess(irCall, data)
         }
         when(irCall.origin) {
+            IrStatementOrigin.EXCLEXCL -> return createCheckNotNullAccess(irCall, data)
             IrStatementOrigin.GET_PROPERTY -> return visitPropertyAccess(irCall, data)
             IrStatementOrigin.FOR_LOOP_ITERATOR -> {
                 return createInvocation(irCall, data).resultSafe.target.definitely()
