@@ -598,9 +598,8 @@ internal class IrTreeBuilder(
         } else if(target != null) {
             throw RuntimeException("Function call target not CtExpression")
         }
-
+        val arguments = ArrayList<CtExpression<*>>()
         if(namedArgs != null) {
-            val arguments = ArrayList<CtExpression<*>>()
             for(arg in namedArgs) {
                 val expr = arg.second.accept(this, data).resultUnsafe
                 if(arg.first != null) {
@@ -611,11 +610,16 @@ internal class IrTreeBuilder(
             invocation.setArguments<CtInvocation<Any>>(arguments)
         } else {
             if(irCall.valueArgumentsCount > 0) {
-                invocation.setArguments<CtInvocation<Any>>(irCall.symbol.descriptor.valueParameters.map {
-                    expressionOrWrappedInStatementExpression(
-                        irCall.getValueArgument(it.index)!!.accept(this, data).resultUnsafe
-                    )
-                })
+                for(i in 0 until irCall.valueArgumentsCount) {
+                    val irExpr = irCall.getValueArgument(i)!!
+                    val ctExpr = irExpr.accept(this, data).resultUnsafe
+                    val name = getSourceHelper(data).getNamedArgumentIfAny(irExpr)
+                    if(name != null) {
+                        ctExpr.putKtMetadata(KtMetadataKeys.NAMED_ARGUMENT, KtMetadata.wrap(name))
+                    }
+                    arguments.add(expressionOrWrappedInStatementExpression(ctExpr))
+                }
+                invocation.setArguments<CtInvocation<Any>>(arguments)
             }
         }
 

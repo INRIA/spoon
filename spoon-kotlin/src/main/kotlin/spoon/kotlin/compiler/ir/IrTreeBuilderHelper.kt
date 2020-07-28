@@ -136,23 +136,11 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
         for(i in variables.indices) {
             val v = variables[i]
             val name = v.name.asString().substringAfter('_')
-            val psi = irTreeBuilder.getSourceHelper(data).getSourceElements(v.startOffset, v.endOffset)
-            var psiValueArg: KtValueArgument? = null
-            for(element in psi) {
-                if(element is KtValueArgument) {
-                    psiValueArg = element
-                    break
-                }
-                val p = element.getParentOfType<KtValueArgument>(true)
-                if(p != null) {
-                    psiValueArg = p
-                    break
-                }
-            }
+            val psiValueArg: KtValueArgument? = irTreeBuilder.getSourceHelper(data).getValueArgumentPsi(v)
             if(psiValueArg == null) { // Default to named arg if no PSI is found
                 map.add(Pair(name, v.initializer!!))
             } else {
-                val psiValueArgName = psiValueArg.getChildOfType<KtValueArgumentName>()
+                val psiValueArgName = psiValueArg.getArgumentName()
                 map.add(Pair(psiValueArgName?.text, v.initializer!!))
             }
         }

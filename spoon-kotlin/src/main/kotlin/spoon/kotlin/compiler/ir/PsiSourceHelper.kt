@@ -4,12 +4,11 @@ import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.expressions.IrComposite
+import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrReturn
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.psi.psiUtil.endOffset
-import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
-import org.jetbrains.kotlin.psi.psiUtil.startOffset
+import org.jetbrains.kotlin.psi.psiUtil.*
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
 import org.jetbrains.kotlin.utils.addToStdlib.indexOfOrNull
@@ -79,7 +78,8 @@ class PsiSourceHelper {
     private fun clearUpTo(startOffset: Int, endOffset: Int) {
         var cachedElem = previousStack.peek()
         while(previousStack.size > 1 && (cachedElem.startOffset > startOffset || cachedElem.endOffset < endOffset)) {
-            cachedElem = popCache()
+            popCache()
+            cachedElem = previousStack.peek()
         }
     }
 
@@ -147,6 +147,24 @@ class PsiSourceHelper {
         val psi = getSourceElements(irComposite.startOffset, irComposite.endOffset).
             firstIsInstance<KtDestructuringDeclaration>()
         return psi.getChildrenOfType<KtDestructuringDeclarationEntry>().map { it.text }
+    }
+
+    fun getValueArgumentPsi(irExpr: IrElement): KtValueArgument? {
+        val psi = getSourceElements(irExpr.startOffset, irExpr.endOffset)
+        for(element in psi) {
+            if(element is KtValueArgument) {
+                return element
+            }
+            val p = element.getParentOfType<KtValueArgument>(true, KtCallExpression::class.java)
+            if(p != null) {
+                return p
+            }
+        }
+        return null
+    }
+
+    fun getNamedArgumentIfAny(irExpr: IrExpression): String? {
+        return getValueArgumentPsi(irExpr)?.getArgumentName()?.text
     }
 }
 
