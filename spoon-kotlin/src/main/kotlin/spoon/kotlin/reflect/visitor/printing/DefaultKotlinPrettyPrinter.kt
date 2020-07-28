@@ -41,6 +41,8 @@ class DefaultKotlinPrettyPrinter(
     }
 
     private fun CtElement.getBooleanMetadata(key: String) = getMetadata(key) as Boolean?
+    private fun CtElement.getBooleanMetadata(key: String, default: Boolean) =
+        getMetadata(key) as Boolean? ?: default
 
     private fun visitCommaSeparatedList(list : List<CtElement>) {
         var commas = list.size-1
@@ -76,6 +78,9 @@ class DefaultKotlinPrettyPrinter(
             val name = getMetadata(KtMetadataKeys.NAMED_ARGUMENT) as String?
             if(name != null) {
                 adapter write name and " = "
+            }
+            if(this.getBooleanMetadata(KtMetadataKeys.SPREAD, default = false)) {
+                adapter write '*'
             }
             this.accept(this@DefaultKotlinPrettyPrinter)
         }

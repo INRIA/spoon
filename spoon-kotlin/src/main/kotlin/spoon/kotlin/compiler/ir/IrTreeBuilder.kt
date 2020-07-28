@@ -610,7 +610,15 @@ internal class IrTreeBuilder(
         val arguments = ArrayList<CtExpression<*>>()
         if(namedArgs != null) {
             for(arg in namedArgs) {
-                val expr = arg.second.accept(this, data).resultUnsafe
+                val irExpr = arg.second
+                val ctExpr: CtExpression<*>
+                ctExpr = if(irExpr is IrVararg) {
+                    val spread = visitVararg(irExpr, data).compositeResultSafe
+                    assert(spread.size == 1)
+                    spread[0]
+                } else {
+                    expressionOrWrappedInStatementExpression(irExpr.accept(this, data).resultUnsafe)
+                }
                 if(arg.first != null) {
                     ctExpr.putKtMetadata(KtMetadataKeys.NAMED_ARGUMENT, KtMetadata.wrap(arg.first!!))
                 }
@@ -620,11 +628,16 @@ internal class IrTreeBuilder(
         } else {
             if(irCall.valueArgumentsCount > 0) {
                 for(i in 0 until irCall.valueArgumentsCount) {
-                    val irExpr = irCall.getValueArgument(i)!!
-                    val ctExpr = irExpr.accept(this, data).resultUnsafe
-                    val name = getSourceHelper(data).getNamedArgumentIfAny(irExpr)
-                    if(name != null) {
-                        ctExpr.putKtMetadata(KtMetadataKeys.NAMED_ARGUMENT, KtMetadata.wrap(name))
+                    val irExpr = irCall.getValueArgument(i) ?: continue
+                    if(irExpr is IrVararg) {
+                        arguments.addAll(visitVararg(irExpr, data).compositeResultSafe)
+                    } else {
+                        val ctExpr = irExpr.accept(this, data).resultUnsafe
+                        val name = getSourceHelper(data).getNamedArgumentIfAny(irExpr)
+                        if(name != null) {
+                            ctExpr.putKtMetadata(KtMetadataKeys.NAMED_ARGUMENT, KtMetadata.wrap(name))
+                        }
+                        arguments.add(expressionOrWrappedInStatementExpression(ctExpr))
                     }
                 }
                 invocation.setArguments<CtInvocation<Any>>(arguments)
@@ -1019,6 +1032,20 @@ internal class IrTreeBuilder(
         val typeAccess = core.createTypeAccess<Any>()
         typeAccess.setAccessedType<CtTypeAccess<Any>>(referenceBuilder.getNewTypeReference<Any>(irType))
         return typeAccess
+    }
+
+    override fun visitVararg(expression: IrVararg, data: ContextData): CompositeTransformResult<CtExpression<*>> {
+        val result = ArrayList<CtExpression<*>>()
+        for(arg in expression.elements) {
+            if(arg is IrSpreadElement) {
+                val spreadElement = arg.expression.accept(this, data).resultUnsafe
+                result.add(expressionOrWrappedInStatementExpression(spreadElement))
+                spreadElement.putKtMetadata(KtMetadataKeys.SPREAD, KtMetadata.wrap(true))
+            } else {
+                result.add(expressionOrWrappedInStatementExpression(arg.accept(this, data).resultUnsafe))
+            }
+        }
+        return CompositeTransformResult(result)
     }
 
     override fun visitGetObjectValue(expression: IrGetObjectValue, data: ContextData): MaybeTransformResult<CtElement> {

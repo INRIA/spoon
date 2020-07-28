@@ -238,4 +238,63 @@ class InvocationTest {
         assertFalse(invocation.getInvokeOperatorFlag())
         assertEquals("invoke.invoke()", invocation.asString())
     }
+
+    @Test
+    fun testInvocationWithVararg() {
+        val c = TestBuildUtil.buildClass("spoon.test.invocation.testclasses","Varargs")
+        val m = c.getMethodByName("m")
+
+        var invocation = m.body.statements[0] as CtInvocation<*>
+        assertEquals(5, invocation.arguments.size)
+        assertEquals("kotlin.Int", invocation.arguments[0].type.qualifiedName)
+        assertEquals("1", invocation.arguments[0].asString())
+        assertEquals("kotlin.Char", invocation.arguments[1].type.qualifiedName)
+        assertEquals("'a'", invocation.arguments[1].asString())
+        assertEquals("kotlin.Char", invocation.arguments[2].type.qualifiedName)
+        assertEquals("'b'", invocation.arguments[2].asString())
+        assertEquals("kotlin.Char", invocation.arguments[3].type.qualifiedName)
+        assertEquals("'c'", invocation.arguments[3].asString())
+        assertEquals("kotlin.String", invocation.arguments[4].type.qualifiedName)
+        assertEquals("\"c\"", invocation.arguments[4].asString())
+
+        assertEquals("f(1, 'a', 'b', 'c', c = \"c\")", invocation.asString())
+
+        invocation = m.body.statements[1] as CtInvocation<*>
+        assertEquals(2, invocation.arguments.size)
+
+        assertEquals("kotlin.Int", invocation.arguments[0].type.qualifiedName)
+        assertEquals("2", invocation.arguments[0].asString())
+        assertEquals("kotlin.CharArray", invocation.arguments[1].type.qualifiedName)
+        assertEquals("charArrayOf('a', 'b', 'c')", invocation.arguments[1].asString())
+        assertTrue(invocation.arguments[1].getMetadata(KtMetadataKeys.SPREAD) as Boolean)
+
+        assertEquals("f(2, *charArrayOf('a', 'b', 'c'))", invocation.asString())
+
+        invocation = m.body.statements[2] as CtInvocation<*>
+        assertEquals(3, invocation.arguments.size)
+
+        assertEquals("kotlin.String", invocation.arguments[0].type.qualifiedName)
+        assertEquals("\"c\"", invocation.arguments[0].asString())
+        assertEquals("kotlin.Int", invocation.arguments[1].type.qualifiedName)
+        assertEquals("3", invocation.arguments[1].asString())
+        assertEquals("kotlin.CharArray", invocation.arguments[2].type.qualifiedName)
+        assertEquals("charArrayOf('a', 'b', 'c')", invocation.arguments[2].asString())
+        assertTrue(invocation.arguments[2].getMetadata(KtMetadataKeys.SPREAD) as Boolean)
+
+        assertEquals("f(c = \"c\", a = 3, v = *charArrayOf('a', 'b', 'c'))", invocation.asString())
+
+        invocation = m.body.statements[3] as CtInvocation<*>
+        assertEquals(3, invocation.arguments.size)
+
+        assertEquals("kotlin.Int", invocation.arguments[0].type.qualifiedName)
+        assertEquals("4", invocation.arguments[0].asString())
+        assertEquals("kotlin.CharArray", invocation.arguments[1].type.qualifiedName)
+        assertEquals("charArrayOf('a', 'b', 'c')", invocation.arguments[1].asString())
+        assertTrue(invocation.arguments[1].getMetadata(KtMetadataKeys.SPREAD) as Boolean)
+        assertEquals("kotlin.CharArray", invocation.arguments[2].type.qualifiedName)
+        assertEquals("charArrayOf('d')", invocation.arguments[2].asString())
+        assertTrue(invocation.arguments[2].getMetadata(KtMetadataKeys.SPREAD) as Boolean)
+        assertEquals("f(4, *charArrayOf('a', 'b', 'c'), *charArrayOf('d'))", invocation.asString())
+
+    }
 }

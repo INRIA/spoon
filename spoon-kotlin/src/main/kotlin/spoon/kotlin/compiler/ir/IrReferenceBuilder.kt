@@ -156,7 +156,8 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
             val args = ArrayList<CtTypeReference<*>>()
             // Using getArguments() includes receiver parameter
             for(i in 0 until irCall.valueArgumentsCount) {
-                args.add(getNewTypeReference<Any>(irCall.getValueArgument(i)!!.type) )
+                val arg = irCall.getValueArgument(i) ?: continue
+                args.add(getNewTypeReference<Any>(arg.type) )
             }
             executableReference.setParameters<CtExecutableReference<T>>(args)
         }
