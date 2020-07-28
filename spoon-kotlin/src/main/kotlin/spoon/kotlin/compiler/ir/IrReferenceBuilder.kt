@@ -3,6 +3,7 @@ package spoon.kotlin.compiler.ir
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.LocalVariableDescriptor
 import org.jetbrains.kotlin.ir.declarations.IrTypeParameter
+import org.jetbrains.kotlin.ir.descriptors.IrTemporaryVariableDescriptor
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.IrTypeProjectionImpl
@@ -128,14 +129,15 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
     }
 
     fun <T> getNewVariableReference(descriptor: ValueDescriptor) =
-        when(val descriptor = descriptor) {
+        when(descriptor) {
             is LocalVariableDescriptor -> getNewVariableReference<T>(descriptor)
             is PropertyDescriptor -> getNewVariableReference<T>(descriptor)
             is ValueParameterDescriptor -> getNewVariableReference<T>(descriptor)
+            is IrTemporaryVariableDescriptor -> null
             else -> throw SpoonIrBuildException("Unexpected value descriptor ${descriptor::class.simpleName}")
         }
 
-    fun <T> getNewVariableReference(irGetValue: IrGetValue): CtVariableReference<T> =
+    fun <T> getNewVariableReference(irGetValue: IrGetValue): CtVariableReference<T>? =
         getNewVariableReference(irGetValue.symbol.descriptor)
 
     // ========================== EXECUTABLE ==========================

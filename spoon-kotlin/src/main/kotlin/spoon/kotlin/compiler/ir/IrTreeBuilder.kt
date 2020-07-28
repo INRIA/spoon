@@ -732,8 +732,19 @@ internal class IrTreeBuilder(
         return ctOperator.definitely()
     }
 
+    private fun createSafeCall(block: IrBlock, data: ContextData): TransformResult<CtElement> {
+        val lhs = block.statements.firstIsInstance<IrVariable>().initializer!!.accept(this, data).resultUnsafe as CtExpression<Any>
+        val rhs = block.statements.firstIsInstance<IrIfThenElseImpl>().branches
+            .firstIsInstance<IrElseBranch>().result.accept(this, data).resultUnsafe as CtTargetedExpression<Any,CtExpression<Any>>
+
+        rhs.setTarget<CtTargetedExpression<Any,CtExpression<Any>>>(lhs)
+        rhs.putKtMetadata(KtMetadataKeys.ACCESS_IS_SAFE, KtMetadata.wrap(true))
+        return rhs.definitely()
+    }
+
     private fun checkForCompositeElement(block: IrBlock, data: ContextData): TransformResult<CtElement> {
         when(block.origin) {
+            null -> return TransformResult.nothing()
             IrStatementOrigin.FOR_LOOP -> {
                 return visitForLoop(block, data)
             }
@@ -745,6 +756,9 @@ internal class IrTreeBuilder(
             IrStatementOrigin.ELVIS -> {
                 return visitElvisOperator(block, data)
             }
+            IrStatementOrigin.SAFE_CALL -> {
+                return createSafeCall(block, data)
+            }
             in INCREMENT_DECREMENT_OPERATORS -> {
                 val setVar = block.statements.firstIsInstanceOrNull<IrSetVariable>()?.symbol
                 val operand: CtExpression<Any> = if(setVar == null) {
@@ -753,7 +767,7 @@ internal class IrTreeBuilder(
                     specialInvocation(call, data).resultUnsafe as CtExpression<Any>
                 } else {
                     createVariableWrite(null,
-                        referenceBuilder.getNewVariableReference<Any>(setVar.descriptor))
+                        referenceBuilder.getNewVariableReference<Any>(setVar.descriptor)!!)
                 }
                 val ctUnaryOp = core.createUnaryOperator<Any>()
                 ctUnaryOp.setOperand<CtUnaryOperator<*>>(operand)
@@ -765,7 +779,6 @@ internal class IrTreeBuilder(
                 return createAugmentedAssignmentOperator(block, block.origin!!, data).definitely()
             }
         }
-
         return TransformResult.nothing()
     }
 
@@ -845,7 +858,7 @@ internal class IrTreeBuilder(
         }
 
         if(expression.origin != IrStatementOrigin.EQ) TODO()
-        val lhs = createVariableWrite(null, referenceBuilder.getNewVariableReference<Any>(expression.symbol.descriptor))
+        val lhs = createVariableWrite(null, referenceBuilder.getNewVariableReference<Any>(expression.symbol.descriptor)!!)
         val rhs = expression.value.accept(this, data).resultUnsafe as CtExpression<Any>
         return createAssignment(lhs, rhs).also {
             it.setType<CtExpression<*>>(referenceBuilder.getNewTypeReference(expression.type))
@@ -932,18 +945,17 @@ internal class IrTreeBuilder(
 
     override fun visitGetValue(expression: IrGetValue, data: ContextData): TransformResult<CtElement> {
         val symbol = expression.symbol
-        if(symbol is IrValueSymbol) {
-            val descriptor = symbol.descriptor
-            if(symbol is IrValueParameterSymbol && descriptor is ReceiverParameterDescriptor) {
+        val descriptor = symbol.descriptor
+        if(symbol is IrValueParameterSymbol && descriptor is ReceiverParameterDescriptor) {
+            return visitThisReceiver(expression, data).definitely()
+        }
+        if(symbol is IrVariableSymbol && descriptor is IrTemporaryVariableDescriptor) {
+            if(descriptor.name.asString().matches("tmp\\d+_this".toRegex()))
                 return visitThisReceiver(expression, data).definitely()
-            }
-            if(symbol is IrVariableSymbol && descriptor is IrTemporaryVariableDescriptor) {
-                if(descriptor.name.asString().matches("tmp\\d+_this".toRegex()))
-                    return visitThisReceiver(expression, data).definitely()
-            }
         }
 
-        val varAccess = createVariableRead(referenceBuilder.getNewVariableReference<Any>(expression))
+        val ref = referenceBuilder.getNewVariableReference<Any>(expression) ?: return TransformResult.nothing()
+        val varAccess = createVariableRead(ref)
 
         return varAccess.definitely()
     }
