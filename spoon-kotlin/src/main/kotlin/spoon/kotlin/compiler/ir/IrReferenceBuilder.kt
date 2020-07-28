@@ -72,6 +72,9 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         }
     }
 
+    private fun getDeclaringTypeReference(descriptor: DeclarationDescriptor): CtTypeReference<Any>? =
+        getDeclaringRef(descriptor) as? CtTypeReference<Any>?
+
     private fun getDeclaringTypeReference(classDescriptor: ClassDescriptor): CtTypeReference<*> {
         val ctRef = factory.Core().createTypeReference<Any>()
         ctRef.setSimpleName<CtReference>(classDescriptor.name.escaped())
@@ -146,10 +149,16 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         val executableReference = irTreeBuilder.core.createExecutableReference<T>()
         executableReference.setSimpleName<CtReference>(irCall.symbol.descriptor.name.escaped())
         executableReference.setType<CtExecutableReference<T>>(getNewTypeReference(irCall.type))
+        executableReference.setDeclaringType<CtExecutableReference<T>>(getDeclaringTypeReference(
+            irCall.symbol.descriptor.containingDeclaration
+        ))
         if(irCall.valueArgumentsCount > 0) {
-            executableReference.setParameters<CtExecutableReference<T>>(
-                irCall.getArguments().map { getNewTypeReference<Any>(it.second.type) }
-            )
+            val args = ArrayList<CtTypeReference<*>>()
+            // Using getArguments() includes receiver parameter
+            for(i in 0 until irCall.valueArgumentsCount) {
+                args.add(getNewTypeReference<Any>(irCall.getValueArgument(i)!!.type) )
+            }
+            executableReference.setParameters<CtExecutableReference<T>>(args)
         }
         return executableReference
     }
