@@ -537,9 +537,15 @@ internal class IrTreeBuilder(
         if(callDescriptor is PropertyGetterDescriptor) {
             return visitPropertyAccess(irCall, data)
         }
+        if(irCall.origin == IrStatementOrigin.EQ && irCall.symbol.descriptor.name.asString() == "set" &&
+            irCall.symbol.descriptor.isOperator) {
+            // Can't be in 'when' because of multiple criteria. Will block potential matches
+            return createSetOperator(irCall, data)
+        }
         when(irCall.origin) {
             IrStatementOrigin.EXCLEXCL -> return createCheckNotNullAccess(irCall, data)
             IrStatementOrigin.GET_PROPERTY -> return visitPropertyAccess(irCall, data)
+            IrStatementOrigin.GET_ARRAY_ELEMENT -> return createGetOperator(irCall, data)
             IrStatementOrigin.FOR_LOOP_ITERATOR -> {
                 return createInvocation(irCall, data).resultSafe.target.definite()
             }
@@ -1052,6 +1058,48 @@ internal class IrTreeBuilder(
         val varAccess = createVariableRead(ref)
 
         return varAccess.definite()
+    }
+
+    private fun createSetOperator(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtAssignment<Any,Any>> {
+        val receiver = irCall.dispatchReceiver!!.accept(this, data).resultUnsafe
+        val ctArrayWrite = factory.Core().createArrayWrite<Any>()
+        val ctAssignment = factory.Core().createAssignment<Any, Any>()
+        val args = ArrayList<CtElement>()
+        for(i in 0 until irCall.valueArgumentsCount) {
+            val ctArg = irCall.getValueArgument(i)!!.accept(this, data).resultUnsafe
+            if(i == irCall.valueArgumentsCount - 1) {
+                ctAssignment.setAssignment<CtAssignment<Any,Any>>(expressionOrWrappedInStatementExpression(ctArg))
+            }
+            else {
+                args.add(ctArg)
+                ctArg.setParent(ctArrayWrite)
+            }
+        }
+
+        ctArrayWrite.setTarget<CtArrayWrite<Any>>(expressionOrWrappedInStatementExpression(receiver))
+        ctArrayWrite.setType<CtArrayWrite<*>>(referenceBuilder.getNewTypeReference(irCall.type))
+        ctArrayWrite.putMetadata<CtArrayWrite<*>>(KtMetadataKeys.ARRAY_ACCESS_INDEX_ARGS, args)
+
+        ctAssignment.setAssigned<CtAssignment<Any,Any>>(ctArrayWrite)
+
+        // Type args ignored, they are implicit
+        return ctAssignment.definite()
+    }
+
+    private fun createGetOperator(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtArrayRead<Any>> {
+        val receiver = irCall.dispatchReceiver!!.accept(this, data).resultUnsafe
+        val ctArrAccess = factory.Core().createArrayRead<Any>()
+        ctArrAccess.setTarget<CtArrayRead<Any>>(expressionOrWrappedInStatementExpression(receiver))
+        ctArrAccess.setType<CtArrayRead<Any>>(referenceBuilder.getNewTypeReference(irCall.type))
+        val args = ArrayList<CtElement>()
+        for(i in 0 until irCall.valueArgumentsCount) {
+            val ctArg = irCall.getValueArgument(i)!!.accept(this, data).resultUnsafe
+            ctArg.setParent(ctArrAccess)
+            args.add(ctArg)
+        }
+        ctArrAccess.putMetadata<CtElement>(KtMetadataKeys.ARRAY_ACCESS_INDEX_ARGS, args)
+        // Type args ignored, they are implicit
+        return ctArrAccess.definite()
     }
 
     private fun getReceiver(irCall: IrFunctionAccessExpression, data: ContextData): CtElement? {
