@@ -30,6 +30,7 @@ import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.kotlin.reflect.KtStatementExpression
 import spoon.kotlin.reflect.KtStatementExpressionImpl
+import spoon.kotlin.reflect.code.KtBinaryOperatorKind
 import spoon.reflect.code.*
 import spoon.reflect.declaration.*
 import spoon.reflect.factory.Factory
@@ -715,6 +716,18 @@ internal class IrTreeBuilder(
         return ctForEach.definitely()
     }
 
+    private fun visitElvisOperator(block: IrBlock, data: ContextData): DefiniteTransformResult<CtBinaryOperator<Any>> {
+        val rhsIf = block.statements.firstIsInstance<IrIfThenElseImpl>()
+        val lhs = (block.statements[0] as IrVariable).initializer!!.accept(this, data).resultUnsafe
+        val rhs = rhsIf.branches[0].result.accept(this, data).resultUnsafe
+        val ctOperator = core.createBinaryOperator<Any>()
+        ctOperator.setLeftHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(lhs))
+        ctOperator.setRightHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(rhs))
+        ctOperator.setType<CtBinaryOperator<Any>>(referenceBuilder.getNewTypeReference(rhsIf.type))
+        ctOperator.putKtMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND, KtMetadata.wrap(KtBinaryOperatorKind.ELVIS))
+        return ctOperator.definitely()
+    }
+
     private fun checkForCompositeElement(block: IrBlock, data: ContextData): TransformResult<CtElement> {
         when(block.origin) {
             IrStatementOrigin.FOR_LOOP -> {
@@ -724,6 +737,9 @@ internal class IrTreeBuilder(
                 val map = helper.getNamedArgumentsMap(block, data)
                 return createInvocation(block.statements.firstIsInstance<IrCall>(),
                     data, map)
+            }
+            IrStatementOrigin.ELVIS -> {
+                return visitElvisOperator(block, data)
             }
             in INCREMENT_DECREMENT_OPERATORS -> {
                 val setVar = block.statements.firstIsInstanceOrNull<IrSetVariable>()?.symbol
