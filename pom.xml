@@ -61,12 +61,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>com.github.stefanbirkner</groupId>
-      <artifactId>system-rules</artifactId>
-      <version>1.19.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.martiansoftware</groupId>
       <artifactId>jsap</artifactId>
       <version>2.1</version>

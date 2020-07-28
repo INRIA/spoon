@@ -98,7 +98,11 @@ public class PackageFactory extends SubFactory {
 	 * @return the newly created package
 	 */
 	public CtPackage create(CtPackage parent, String simpleName) {
-		return getOrCreate(parent.toString() + CtPackage.PACKAGE_SEPARATOR + simpleName);
+		if (parent == null) {
+			return getOrCreate(simpleName);
+		} else {
+			return getOrCreate(parent.toString() + CtPackage.PACKAGE_SEPARATOR + simpleName);
+		}
 	}
 
 	/**
