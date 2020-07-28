@@ -1196,33 +1196,25 @@ class DefaultKotlinPrettyPrinter(
         }
         enterCtStatement(invocation)
         enterCtExpression(invocation)
-        if(invocation.executable.isConstructor) {
-            val parentType = invocation.getParent(CtType::class.java)
-            adapter.writeColon(DefaultPrinterAdapter.ColonContext.CONSTRUCTOR_DELEGATION) // FIXME, move to class impl
-            if(parentType == null || parentType.qualifiedName == invocation.executable.declaringType.qualifiedName) {
-                adapter write "this"
+
+        var separator = ""
+        if(invocation.target != null && !invocation.target.isImplicit) {
+            invocation.target.accept(this)
+            val isSafe = invocation.getMetadata(KtMetadataKeys.ACCESS_IS_SAFE) as Boolean?
+            separator = if(isSafe == true) "?." else "."
+        }
+
+        if(!shouldIgnoreIdentifier(invocation)) { // If invoke operator, the name of the called function is omitted
+            adapter write separator
+            if(invocation.executable.isConstructor) {
+                adapter write invocation.executable.type.simpleName
             } else {
-                val primary = invocation.parent.getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as? Boolean?
-                if(primary == true) {
-                        invocation.type.accept(this)
-                }
-                else {
-                    adapter write "super"
-                }
-            }
-        } else {
-            var separator = ""
-            if(invocation.target != null && !invocation.target.isImplicit) {
-                invocation.target.accept(this)
-                val isSafe = invocation.getMetadata(KtMetadataKeys.ACCESS_IS_SAFE) as Boolean?
-                separator = if(isSafe == true) "?." else "."
-            }
-            if(!shouldIgnoreIdentifier(invocation)) { // If invoke operator, the name of the called function is omitted
-                adapter write separator
                 adapter write invocation.executable.simpleName
             }
-            visitTypeArgumentsList(invocation.actualTypeArguments, false)
         }
+
+        visitTypeArgumentsList(invocation.actualTypeArguments, false)
+
 
         visitArgumentList(invocation.arguments) // Paren handled in call
 

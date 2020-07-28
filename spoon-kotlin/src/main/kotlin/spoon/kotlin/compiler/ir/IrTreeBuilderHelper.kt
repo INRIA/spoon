@@ -62,7 +62,7 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
         return factory.Module().unnamedModule
     }
 
-    fun getReceiver(irCall: IrCall) = irCall.extensionReceiver ?: irCall.dispatchReceiver
+    fun getReceiver(irCall: IrFunctionAccessExpression) = irCall.extensionReceiver ?: irCall.dispatchReceiver
 
     fun getBaseOfConst(constExpression: IrConst<Number>, file: IrFile): LiteralBase {
         val ktFile = getKtFile(file)

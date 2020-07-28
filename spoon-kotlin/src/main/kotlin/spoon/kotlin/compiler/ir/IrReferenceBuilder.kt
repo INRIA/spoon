@@ -7,7 +7,6 @@ import org.jetbrains.kotlin.ir.descriptors.IrTemporaryVariableDescriptor
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.IrTypeProjectionImpl
-import org.jetbrains.kotlin.ir.util.getArguments
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.types.FlexibleType
@@ -50,7 +49,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         is ClassDescriptor -> {
             irTreeBuilder.factory.Core().createTypeReference<Any>().apply {
                 setSimpleName<CtReference>(descriptor.name.escaped())
-                setPackageOrDeclaringType(getDeclaringRef(descriptor.containingDeclaration))
+                setPackageOrDeclaringType(getDeclaringReference(descriptor.containingDeclaration))
             }
         }
         is TypeParameterDescriptor -> {
@@ -63,22 +62,22 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         else -> TODO()
     }
 
-    private fun getDeclaringRef(descriptor: DeclarationDescriptor): CtReference {
+    private fun getDeclaringReference(descriptor: DeclarationDescriptor): CtReference {
         return when(descriptor) {
             is ClassDescriptor -> getDeclaringTypeReference(descriptor)
             is PackageFragmentDescriptor -> getPackageReference(descriptor.fqName)
-            is FunctionDescriptor -> getDeclaringRef(descriptor.containingDeclaration)
+            is FunctionDescriptor -> getDeclaringReference(descriptor.containingDeclaration)
             else -> TODO()
         }
     }
 
-    private fun getDeclaringTypeReference(descriptor: DeclarationDescriptor): CtTypeReference<Any>? =
-        getDeclaringRef(descriptor) as? CtTypeReference<Any>?
+    fun getDeclaringTypeReference(descriptor: DeclarationDescriptor): CtTypeReference<Any>? =
+        getDeclaringReference(descriptor) as? CtTypeReference<Any>?
 
     private fun getDeclaringTypeReference(classDescriptor: ClassDescriptor): CtTypeReference<*> {
         val ctRef = factory.Core().createTypeReference<Any>()
         ctRef.setSimpleName<CtReference>(classDescriptor.name.escaped())
-        ctRef.setPackageOrDeclaringType(getDeclaringRef(classDescriptor.containingDeclaration))
+        ctRef.setPackageOrDeclaringType(getDeclaringReference(classDescriptor.containingDeclaration))
         return ctRef
     }
 
@@ -103,7 +102,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         ctRef.setSimpleName<CtReference>(irTypeParam.name.escaped())
         ctRef.putMetadata<CtReference>(KtMetadataKeys.TYPE_REF_NULLABLE, irTypeParam.symbol.defaultType.isNullable())
         ctRef.addModifiersAsMetadata(IrToModifierKind.fromTypeVariable(irTypeParam))
-        ctRef.setPackageOrDeclaringType(getDeclaringRef(irTypeParam.descriptor.containingDeclaration))
+        ctRef.setPackageOrDeclaringType(getDeclaringReference(irTypeParam.descriptor.containingDeclaration))
         return ctRef
     }
 
@@ -121,7 +120,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
     fun <T> getNewVariableReference(property: PropertyDescriptor): CtFieldReference<T> =
         irTreeBuilder.factory.Core().createFieldReference<T>().also {
             it.setNameAndType(property)
-            it.setDeclaringType<CtFieldReference<T>>(getDeclaringRef(property.containingDeclaration) as? CtTypeReference<*>)
+            it.setDeclaringType<CtFieldReference<T>>(getDeclaringReference(property.containingDeclaration) as? CtTypeReference<*>)
         }
 
     private fun <T> getNewVariableReference(valueParam: ValueParameterDescriptor): CtParameterReference<T> {
@@ -145,7 +144,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
 
     // ========================== EXECUTABLE ==========================
 
-    fun <T> getNewExecutableReference(irCall: IrCall): CtExecutableReference<T> {
+    fun <T> getNewExecutableReference(irCall: IrFunctionAccessExpression): CtExecutableReference<T> {
         val executableReference = irTreeBuilder.core.createExecutableReference<T>()
         executableReference.setSimpleName<CtReference>(irCall.symbol.descriptor.name.escaped())
         executableReference.setType<CtExecutableReference<T>>(getNewTypeReference(irCall.type))
@@ -183,15 +182,15 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         }
         return executableReference
     }
-
+/*
     fun <T> getNewExecutableReference(constructorCall: IrConstructorCall): CtExecutableReference<T> {
         val executableReference = getConstructorExecutableReferenceWithoutDeclaringType<T>(constructorCall)
         val declaringType = constructorCall.symbol.descriptor.containingDeclaration
         executableReference.setDeclaringType<CtExecutableReference<T>>(getDeclaringTypeReference(declaringType))
         return executableReference
     }
-
-    fun <T> getNewExecutableReference(constructorCall: IrDelegatingConstructorCall): CtExecutableReference<T> {
+ */
+    fun <T> getNewDelegatingExecutableReference(constructorCall: IrDelegatingConstructorCall): CtExecutableReference<T> {
         val executableReference = getConstructorExecutableReferenceWithoutDeclaringType<T>(constructorCall)
         val declaringType = constructorCall.symbol.descriptor.containingDeclaration
         executableReference.setDeclaringType<CtExecutableReference<T>>(getDeclaringTypeReference(declaringType))

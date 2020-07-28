@@ -278,7 +278,7 @@ internal class IrTreeBuilder(
         data: ContextData
     ): DefiniteTransformResult<CtElement> {
         val ctConstructorCall = core.createConstructorCall<Any>()
-        ctConstructorCall.setExecutable<CtConstructorCall<Any>>(referenceBuilder.getNewExecutableReference(expression))
+        ctConstructorCall.setExecutable<CtConstructorCall<Any>>(referenceBuilder.getNewDelegatingExecutableReference(expression))
 
         val valueArgs = ArrayList<CtExpression<*>>(expression.valueArgumentsCount)
         for(i in 0 until expression.valueArgumentsCount) {
@@ -596,16 +596,22 @@ internal class IrTreeBuilder(
         return ctIf.definite()
     }
 
-    private fun createInvocation(irCall: IrCall, data: ContextData, namedArgs: List<Pair<String?,IrExpression>>? = null)
+    private fun createInvocation(irCall: IrFunctionAccessExpression, data: ContextData, namedArgs: List<Pair<String?,IrExpression>>? = null)
             : DefiniteTransformResult<CtInvocation<*>> {
         val invocation = core.createInvocation<Any>()
         invocation.setExecutable<CtInvocation<Any>>(referenceBuilder.getNewExecutableReference(irCall))
 
-        val target = getReceiver(irCall, data)
-        if(target is CtExpression<*>) {
-            invocation.setTarget<CtInvocation<Any>>(target)
-        } else if(target != null) {
-            throw RuntimeException("Function call target not CtExpression")
+        if(irCall is IrConstructorCall) {
+            val target = referenceBuilder.getDeclaringTypeReference(irCall.symbol.descriptor.containingDeclaration.containingDeclaration)
+            if(target != null)
+                invocation.setTarget<CtInvocation<Any>>(createTypeAccess(target))
+        } else {
+            val target = getReceiver(irCall, data)
+            if (target is CtExpression<*>) {
+                invocation.setTarget<CtInvocation<Any>>(target)
+            } else if (target != null) {
+                throw RuntimeException("Function call target not CtExpression")
+            }
         }
         val arguments = ArrayList<CtExpression<*>>()
         if(namedArgs != null) {
@@ -656,7 +662,7 @@ internal class IrTreeBuilder(
                 }
             )
         }
-        if(detectInfix) {
+        if(detectInfix && irCall is IrCall) {
             invocation.putKtMetadata(
                 KtMetadataKeys.INVOCATION_IS_INFIX,
                 KtMetadata.wrap(helper.isInfixCall(irCall, data))
@@ -675,6 +681,10 @@ internal class IrTreeBuilder(
     override fun visitCall(expression: IrCall, data: ContextData): DefiniteTransformResult<CtElement> {
         val nonInvocationResult = specialInvocation(expression, data)
         if(nonInvocationResult.isDefinite) return nonInvocationResult as DefiniteTransformResult<CtElement>
+        return createInvocation(expression, data)
+    }
+
+    override fun visitConstructorCall(expression: IrConstructorCall, data: ContextData): TransformResult<CtElement> {
         return createInvocation(expression, data)
     }
 
@@ -1006,8 +1016,8 @@ internal class IrTreeBuilder(
         return varAccess.definite()
     }
 
-    private fun getReceiver(irCall: IrCall, data: ContextData): CtElement? {
-        if(irCall.superQualifierSymbol != null) return visitSuperTarget(irCall.superQualifierSymbol!!)
+    private fun getReceiver(irCall: IrFunctionAccessExpression, data: ContextData): CtElement? {
+        if(irCall is IrCall && irCall.superQualifierSymbol != null) return visitSuperTarget(irCall.superQualifierSymbol!!)
         return helper.getReceiver(irCall)?.accept(this, data)?.resultOrNull
     }
 
@@ -1028,10 +1038,14 @@ internal class IrTreeBuilder(
         return superAccess
     }
 
-    private fun createTypeAccess(irType: IrType): CtTypeAccess<Any> {
+    private fun createTypeAccess(ctType: CtTypeReference<Any>): CtTypeAccess<Any> {
         val typeAccess = core.createTypeAccess<Any>()
-        typeAccess.setAccessedType<CtTypeAccess<Any>>(referenceBuilder.getNewTypeReference<Any>(irType))
+        typeAccess.setAccessedType<CtTypeAccess<Any>>(ctType)
         return typeAccess
+    }
+
+    private fun createTypeAccess(irType: IrType): CtTypeAccess<Any> {
+        return createTypeAccess(referenceBuilder.getNewTypeReference<Any>(irType))
     }
 
     override fun visitVararg(expression: IrVararg, data: ContextData): CompositeTransformResult<CtExpression<*>> {
