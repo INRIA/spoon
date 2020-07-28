@@ -9,8 +9,8 @@ import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.IrIfThenElseImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueParameterSymbol
-import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
 import org.jetbrains.kotlin.ir.symbols.IrVariableSymbol
+import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.isNullableAny
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
@@ -933,11 +933,36 @@ internal class IrTreeBuilder(
         return body.expression.accept(this, data)
     }
 
+    private fun createIsTypeOperation(call: IrTypeOperatorCall, data: ContextData): DefiniteTransformResult<CtBinaryOperator<*>> {
+        val ctBinaryOperator = core.createBinaryOperator<Boolean>()
+        val operatorKind = if(call.operator == IrTypeOperator.INSTANCEOF) KtBinaryOperatorKind.IS
+            else KtBinaryOperatorKind.IS_NOT
+        ctBinaryOperator.putKtMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND, KtMetadata.wrap(operatorKind))
+        ctBinaryOperator.setType<CtExpression<*>>(referenceBuilder.getNewTypeReference(call.type))
+        val lhs = expressionOrWrappedInStatementExpression(call.argument.accept(this, data).resultUnsafe)
+        val rhs = createTypeAccess(call.typeOperand)
+        ctBinaryOperator.setLeftHandOperand<CtBinaryOperator<Boolean>>(lhs)
+        ctBinaryOperator.setRightHandOperand<CtBinaryOperator<Boolean>>(rhs)
+        return ctBinaryOperator.definitely()
+    }
+
+    private fun createTypeCast(call: IrTypeOperatorCall, data: ContextData): DefiniteTransformResult<CtExpression<*>> {
+        val castedExpr = call.argument.accept(this, data).resultUnsafe as CtExpression<Any>
+        val conversionTypeRef = referenceBuilder.getNewTypeReference<Any>(call.typeOperand)
+        castedExpr.addTypeCast<CtExpression<Any>>(conversionTypeRef)
+
+        val safe = call.operator == IrTypeOperator.SAFE_CAST
+        conversionTypeRef.putKtMetadata(KtMetadataKeys.TYPE_CAST_AS_SAFE, KtMetadata.wrap(safe))
+        return castedExpr.definitely()
+    }
+
     override fun visitTypeOperator(expression: IrTypeOperatorCall, data: ContextData): TransformResult<CtElement> {
-        if(expression.operator == IrTypeOperator.IMPLICIT_COERCION_TO_UNIT) {
-            return expression.argument.accept(this, data)
+        return when(expression.operator) {
+            IrTypeOperator.CAST, IrTypeOperator.SAFE_CAST -> createTypeCast(expression, data)
+            IrTypeOperator.INSTANCEOF, IrTypeOperator.NOT_INSTANCEOF -> createIsTypeOperation(expression, data)
+            IrTypeOperator.IMPLICIT_COERCION_TO_UNIT -> expression.argument.accept(this, data)
+            else -> throw SpoonIrBuildException("Unimplemented type operator: ${expression.operator}")
         }
-        return super.visitTypeOperator(expression, data)
     }
 
     override fun visitComposite(expression: IrComposite, data: ContextData): TransformResult<CtElement> {
@@ -991,12 +1016,17 @@ internal class IrTreeBuilder(
         return superAccess
     }
 
+    private fun createTypeAccess(irType: IrType): CtTypeAccess<Any> {
+        val typeAccess = core.createTypeAccess<Any>()
+        typeAccess.setAccessedType<CtTypeAccess<Any>>(referenceBuilder.getNewTypeReference<Any>(irType))
+        return typeAccess
+    }
+
     override fun visitGetObjectValue(expression: IrGetObjectValue, data: ContextData): MaybeTransformResult<CtElement> {
         if(getSourceHelper(data).sourceTextIs(expression) { text -> text == "return" }) {
             return TransformResult.nothing()
         }
-        val typeAccess = core.createTypeAccess<Any>()
-        typeAccess.setAccessedType<CtTypeAccess<Any>>(referenceBuilder.getNewTypeReference<Any>(expression.type))
+        val typeAccess = createTypeAccess(expression.type)
         return maybe(typeAccess)
     }
 
