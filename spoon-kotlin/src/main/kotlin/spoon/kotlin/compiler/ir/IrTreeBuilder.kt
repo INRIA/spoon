@@ -76,7 +76,7 @@ internal class IrTreeBuilder(
 
     override fun visitElement(element: IrElement, data: ContextData): TransformResult<CtElement> {
         //TODO("Not yet implemented")
-        return CtLiteralImpl<String>().setValue<CtLiteral<String>>("Unimplemented element $element").definitely()
+        return CtLiteralImpl<String>().setValue<CtLiteral<String>>("Unimplemented element $element").definite()
     }
 
     override fun visitFile(declaration: IrFile, data: ContextData): DefiniteTransformResult<CtCompilationUnit> {
@@ -110,7 +110,7 @@ internal class IrTreeBuilder(
             }
         }
 
-        return compilationUnit.definitely()
+        return compilationUnit.definite()
     }
 
     override fun visitClass(declaration: IrClass, data: ContextData): DefiniteTransformResult<CtElement> {
@@ -163,7 +163,7 @@ internal class IrTreeBuilder(
             }
         }
 
-        return type.definitely()
+        return type.definite()
     }
 
     override fun visitAnonymousInitializer(
@@ -173,7 +173,7 @@ internal class IrTreeBuilder(
         val ctAnonExecutable = core.createAnonymousExecutable()
         val body = visitBody(declaration.body, data).resultSafe
         ctAnonExecutable.setBody<CtAnonymousExecutable>(body)
-        return ctAnonExecutable.definitely()
+        return ctAnonExecutable.definite()
     }
 
     override fun visitTypeParameter(declaration: IrTypeParameter, data: ContextData):
@@ -191,7 +191,7 @@ internal class IrTreeBuilder(
         }
 
         ctTypeParam.addModifiersAsMetadata(IrToModifierKind.fromTypeVariable(declaration))
-        return ctTypeParam.definitely()
+        return ctTypeParam.definite()
     }
 
     override fun <T> visitConst(expression: IrConst<T>, data: ContextData): DefiniteTransformResult<CtLiteral<*>> {
@@ -217,7 +217,7 @@ internal class IrTreeBuilder(
                 ctLiteral.setBase<CtLiteral<T>>(helper.getBaseOfConst(expression as IrConst<Number>, data.file))
             }
         }
-        return ctLiteral.definitely()
+        return ctLiteral.definite()
     }
 
     override fun visitProperty(declaration: IrProperty, data: ContextData): DefiniteTransformResult<CtElement> {
@@ -270,7 +270,7 @@ internal class IrTreeBuilder(
                 KtMetadata.wrap(createUnnamedFunction(setter, data)))
         }
 
-        return ctField.definitely()
+        return ctField.definite()
     }
 
     override fun visitDelegatingConstructorCall(
@@ -288,7 +288,7 @@ internal class IrTreeBuilder(
         if(valueArgs.isNotEmpty()) {
             ctConstructorCall.setArguments<CtConstructorCall<Any>>(valueArgs)
         }
-        return ctConstructorCall.definitely()
+        return ctConstructorCall.definite()
     }
 
     override fun visitConstructor(declaration: IrConstructor, data: ContextData): DefiniteTransformResult<CtElement> {
@@ -348,7 +348,7 @@ internal class IrTreeBuilder(
             }
             ctConstructor.addParameter<CtConstructor<Any>>(ctParam)
         }
-        return ctConstructor.definitely()
+        return ctConstructor.definite()
     }
 
     override fun visitInstanceInitializerCall(
@@ -393,7 +393,7 @@ internal class IrTreeBuilder(
         ctLocalVar.setType<CtVariable<*>>(type)
         ctLocalVar.setInferred<CtLocalVariable<Any>>(implicitType)
 
-        return ctLocalVar.definitely()
+        return ctLocalVar.definite()
     }
 
     override fun visitValueParameter(
@@ -427,7 +427,7 @@ internal class IrTreeBuilder(
         // Mark implicit for "it" in lambda
         //TODO
 
-        return ctParam.definitely()
+        return ctParam.definite()
     }
 
     private fun createUnnamedFunction(irFunction: IrFunction, data: ContextData): CtMethod<*> {
@@ -485,7 +485,7 @@ internal class IrTreeBuilder(
         return createUnnamedFunction(declaration, data).also {
             it.setSimpleName<CtMethod<*>>(declaration.name.escaped())
             it.addModifiersAsMetadata(IrToModifierKind.fromFunctionDeclaration(declaration))
-        }.definitely()
+        }.definite()
     }
 
     override fun visitBody(body: IrBody, data: ContextData): DefiniteTransformResult<CtBlock<*>> {
@@ -502,7 +502,7 @@ internal class IrTreeBuilder(
             statements.add(ctStatement)
         }
         ctBlock.setStatements<CtBlock<*>>(statements)
-        return ctBlock.definitely()
+        return ctBlock.definite()
     }
 
     private fun createAssignment(lhs: CtExpression<Any>, rhs: CtExpression<Any>): CtAssignment<Any, Any> {
@@ -520,7 +520,7 @@ internal class IrTreeBuilder(
         val rhs = irCall.getValueArgument(0)!!.accept(this, data).resultUnsafe
         return createAssignment(lhs, expressionOrWrappedInStatementExpression(rhs)).also {
             it.setType<CtExpression<*>>(referenceBuilder.getNewTypeReference(irCall.type))
-        }.definitely()
+        }.definite()
     }
 
 
@@ -540,9 +540,9 @@ internal class IrTreeBuilder(
             IrStatementOrigin.EXCLEXCL -> return createCheckNotNullAccess(irCall, data)
             IrStatementOrigin.GET_PROPERTY -> return visitPropertyAccess(irCall, data)
             IrStatementOrigin.FOR_LOOP_ITERATOR -> {
-                return createInvocation(irCall, data).resultSafe.target.definitely()
+                return createInvocation(irCall, data).resultSafe.target.definite()
             }
-            in AUGMENTED_ASSIGNMENTS -> return createAugmentedAssignmentOperator(irCall, irCall.origin!!, data).definitely()
+            in AUGMENTED_ASSIGNMENTS -> return createAugmentedAssignmentOperator(irCall, irCall.origin!!, data).definite()
             IrStatementOrigin.EQ -> {
                 return if(callDescriptor is PropertySetterDescriptor) {
                     createAssignment(irCall, data)
@@ -557,7 +557,7 @@ internal class IrTreeBuilder(
                 val receiver = getReceiver(irCall, data) as CtExpression<*>?
                 val variable = referenceBuilder.getNewVariableReference<Any>(
                     (callDescriptor as PropertySetterDescriptor).correspondingProperty)
-                return createVariableWrite(receiver, variable).definitely()
+                return createVariableWrite(receiver, variable).definite()
             }
         }
         if(OperatorHelper.isUnaryOperator(irCall.origin)) {
@@ -593,7 +593,7 @@ internal class IrTreeBuilder(
         val type = referenceBuilder.getNewTypeReference<Any>(ifThenElse.type)
         ctIf.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE, KtMetadata.wrap(type))
 
-        return ctIf.definitely()
+        return ctIf.definite()
     }
 
     private fun createInvocation(irCall: IrCall, data: ContextData, namedArgs: List<Pair<String?,IrExpression>>? = null)
@@ -612,9 +612,9 @@ internal class IrTreeBuilder(
             for(arg in namedArgs) {
                 val expr = arg.second.accept(this, data).resultUnsafe
                 if(arg.first != null) {
-                    expr.putKtMetadata(KtMetadataKeys.NAMED_ARGUMENT, KtMetadata.wrap(arg.first!!))
+                    ctExpr.putKtMetadata(KtMetadataKeys.NAMED_ARGUMENT, KtMetadata.wrap(arg.first!!))
                 }
-                arguments.add(expressionOrWrappedInStatementExpression(expr))
+                arguments.add(ctExpr)
             }
             invocation.setArguments<CtInvocation<Any>>(arguments)
         } else {
@@ -626,7 +626,6 @@ internal class IrTreeBuilder(
                     if(name != null) {
                         ctExpr.putKtMetadata(KtMetadataKeys.NAMED_ARGUMENT, KtMetadata.wrap(name))
                     }
-                    arguments.add(expressionOrWrappedInStatementExpression(ctExpr))
                 }
                 invocation.setArguments<CtInvocation<Any>>(arguments)
             }
@@ -657,7 +656,7 @@ internal class IrTreeBuilder(
             )
         }
 
-        return invocation.definitely()
+        return invocation.definite()
     }
 
     override fun visitCall(expression: IrCall, data: ContextData): DefiniteTransformResult<CtElement> {
@@ -697,7 +696,7 @@ internal class IrTreeBuilder(
             KtMetadataKeys.KT_BINARY_OPERATOR_KIND,
             KtMetadata.wrap(opKind)
         )
-        return ctOp.definitely()
+        return ctOp.definite()
     }
 
     private fun visitUnaryOperator(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtUnaryOperator<*>> {
@@ -706,7 +705,7 @@ internal class IrTreeBuilder(
         ctOp.setOperand<CtUnaryOperator<*>>(operand as CtExpression<Any>)
         ctOp.setKind<CtUnaryOperator<*>>(OperatorHelper.originToUnaryOperatorKind(irCall.origin!!))
         ctOp.setType<CtUnaryOperator<*>>(referenceBuilder.getNewTypeReference(irCall.type))
-        return ctOp.definitely()
+        return ctOp.definite()
     }
 
     private fun visitForLoop(outerBlock: IrBlock, data: ContextData): DefiniteTransformResult<CtForEach> {
@@ -726,7 +725,7 @@ internal class IrTreeBuilder(
         ctForEach.setVariable<CtForEach>(variable)
         ctForEach.setExpression<CtForEach>(iterable as CtExpression<*>)
         ctForEach.setBody<CtForEach>(body.blockOrSingleStatementBlock())
-        return ctForEach.definitely()
+        return ctForEach.definite()
     }
 
     private fun visitElvisOperator(block: IrBlock, data: ContextData): DefiniteTransformResult<CtBinaryOperator<Any>> {
@@ -738,7 +737,7 @@ internal class IrTreeBuilder(
         ctOperator.setRightHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(rhs))
         ctOperator.setType<CtBinaryOperator<Any>>(referenceBuilder.getNewTypeReference(rhsIf.type))
         ctOperator.putKtMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND, KtMetadata.wrap(KtBinaryOperatorKind.ELVIS))
-        return ctOperator.definitely()
+        return ctOperator.definite()
     }
 
     private fun createSafeCall(block: IrBlock, data: ContextData): TransformResult<CtElement> {
@@ -748,7 +747,7 @@ internal class IrTreeBuilder(
 
         rhs.setTarget<CtTargetedExpression<Any,CtExpression<Any>>>(lhs)
         rhs.putKtMetadata(KtMetadataKeys.ACCESS_IS_SAFE, KtMetadata.wrap(true))
-        return rhs.definitely()
+        return rhs.definite()
     }
 
     private fun checkForCompositeElement(block: IrBlock, data: ContextData): TransformResult<CtElement> {
@@ -782,10 +781,10 @@ internal class IrTreeBuilder(
                 ctUnaryOp.setOperand<CtUnaryOperator<*>>(operand)
                 ctUnaryOp.setKind<CtUnaryOperator<*>>(OperatorHelper.originToUnaryOperatorKind(block.origin!!))
                 ctUnaryOp.setType<CtUnaryOperator<*>>(referenceBuilder.getNewTypeReference(block.type))
-                return ctUnaryOp.definitely()
+                return ctUnaryOp.definite()
             }
             in AUGMENTED_ASSIGNMENTS -> {
-                return createAugmentedAssignmentOperator(block, block.origin!!, data).definitely()
+                return createAugmentedAssignmentOperator(block, block.origin!!, data).definite()
             }
         }
         return TransformResult.nothing()
@@ -797,7 +796,7 @@ internal class IrTreeBuilder(
         val body = loop.body!!.accept(this,data).resultUnsafe.blockOrSingleStatementBlock()
         ctWhile.setLoopingExpression<CtWhile>(condition)
         ctWhile.setBody<CtWhile>(body)
-        return ctWhile.definitely()
+        return ctWhile.definite()
     }
 
     override fun visitDoWhileLoop(loop: IrDoWhileLoop, data: ContextData): DefiniteTransformResult<CtElement> {
@@ -811,7 +810,7 @@ internal class IrTreeBuilder(
         }
         ctDo.setLoopingExpression<CtDo>(condition)
         ctDo.setBody<CtDo>(body)
-        return ctDo.definitely()
+        return ctDo.definite()
     }
 
     private fun visitBlock(expression: IrBlock, data: ContextData, skipIndices: List<Int>): DefiniteTransformResult<CtElement> {
@@ -833,13 +832,13 @@ internal class IrTreeBuilder(
         ctBlock.setStatements<CtBlock<*>>(statements)
         ctBlock.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE,
             KtMetadata.wrap(referenceBuilder.getNewTypeReference<CtBlock<*>>(expression.type)))
-        return ctBlock.definitely()
+        return ctBlock.definite()
 
     }
 
     override fun visitBlock(expression: IrBlock, data: ContextData): DefiniteTransformResult<CtElement> {
         val composite = checkForCompositeElement(expression, data).resultOrNull
-        if(composite != null) return composite.definitely()
+        if(composite != null) return composite.definite()
         return visitBlock(expression, data, emptyList())
     }
 
@@ -863,7 +862,7 @@ internal class IrTreeBuilder(
 
     override fun visitSetVariable(expression: IrSetVariable, data: ContextData): TransformResult<CtElement> {
         if(expression.origin in AUGMENTED_ASSIGNMENTS) {
-            return createAugmentedAssignmentOperator(expression, expression.origin!!, data).definitely()
+            return createAugmentedAssignmentOperator(expression, expression.origin!!, data).definite()
         }
 
         if(expression.origin != IrStatementOrigin.EQ) TODO()
@@ -871,7 +870,7 @@ internal class IrTreeBuilder(
         val rhs = expression.value.accept(this, data).resultUnsafe as CtExpression<Any>
         return createAssignment(lhs, rhs).also {
             it.setType<CtExpression<*>>(referenceBuilder.getNewTypeReference(expression.type))
-        }.definitely()
+        }.definite()
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -925,7 +924,7 @@ internal class IrTreeBuilder(
         val fieldRead = core.createFieldRead<Any>()
         fieldRead.setVariable<CtFieldRead<Any>>(variable)
         if(target != null) fieldRead.setTarget<CtFieldRead<Any>>(target as CtExpression<*>)
-        return fieldRead.definitely()
+        return fieldRead.definite()
     }
 
     override fun visitExpressionBody(body: IrExpressionBody, data: ContextData):
@@ -943,7 +942,7 @@ internal class IrTreeBuilder(
         val rhs = createTypeAccess(call.typeOperand)
         ctBinaryOperator.setLeftHandOperand<CtBinaryOperator<Boolean>>(lhs)
         ctBinaryOperator.setRightHandOperand<CtBinaryOperator<Boolean>>(rhs)
-        return ctBinaryOperator.definitely()
+        return ctBinaryOperator.definite()
     }
 
     private fun createTypeCast(call: IrTypeOperatorCall, data: ContextData): DefiniteTransformResult<CtExpression<*>> {
@@ -953,7 +952,7 @@ internal class IrTreeBuilder(
 
         val safe = call.operator == IrTypeOperator.SAFE_CAST
         conversionTypeRef.putKtMetadata(KtMetadataKeys.TYPE_CAST_AS_SAFE, KtMetadata.wrap(safe))
-        return castedExpr.definitely()
+        return castedExpr.definite()
     }
 
     override fun visitTypeOperator(expression: IrTypeOperatorCall, data: ContextData): TransformResult<CtElement> {
@@ -974,24 +973,24 @@ internal class IrTreeBuilder(
             (expression.statements[0] as IrVariable).initializer!!.accept(this, data).resultUnsafe as CtExpression<Any>
         )
         placeHolder.addModifiersAsMetadata(IrToModifierKind.fromVariable(expression.statements[1] as IrVariable))
-        return placeHolder.definitely()
+        return placeHolder.definite()
     }
 
     override fun visitGetValue(expression: IrGetValue, data: ContextData): TransformResult<CtElement> {
         val symbol = expression.symbol
         val descriptor = symbol.descriptor
         if(symbol is IrValueParameterSymbol && descriptor is ReceiverParameterDescriptor) {
-            return visitThisReceiver(expression, data).definitely()
+            return visitThisReceiver(expression, data).definite()
         }
         if(symbol is IrVariableSymbol && descriptor is IrTemporaryVariableDescriptor) {
             if(descriptor.name.asString().matches("tmp\\d+_this".toRegex()))
-                return visitThisReceiver(expression, data).definitely()
+                return visitThisReceiver(expression, data).definite()
         }
 
         val ref = referenceBuilder.getNewVariableReference<Any>(expression) ?: return TransformResult.nothing()
         val varAccess = createVariableRead(ref)
 
-        return varAccess.definitely()
+        return varAccess.definite()
     }
 
     private fun getReceiver(irCall: IrCall, data: ContextData): CtElement? {
@@ -1049,7 +1048,7 @@ internal class IrTreeBuilder(
         }
         if(expression.endOffset == expression.startOffset)
             ctReturn.setImplicit<CtReturn<*>>(true)
-        return ctReturn.definitely()
+        return ctReturn.definite()
     }
 
     private fun <T> CtExpression<T>.wrapInImplicitReturn() : CtReturn<T> {
