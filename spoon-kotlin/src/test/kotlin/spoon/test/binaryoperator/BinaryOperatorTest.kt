@@ -242,4 +242,147 @@ class BinaryOperatorTest {
         assertEquals("list[2, \"3\"]", getCalls[0].asString())
         assertEquals("list[3, \"4\"]", setCalls[0].asString())
     }
+
+    @Test
+    fun testBuildLogicalOperators() {
+        val c = TestBuildUtil.buildClass("spoon.test.binaryoperator.testclasses","LogicalOperators")
+        val m = c.getMethodByName("m")
+        assertTrue(m.body.statements.all { it is CtReturn<*> })
+        val statements = m.body.statements.map { (it as CtReturn<*>).returnedExpression as CtBinaryOperator<*> }
+
+        val x = c.getField("x")
+        val y = c.getField("y")
+        val z = c.getField("z")
+
+        assertTrue(statements.all { it.type.qualifiedName == "kotlin.Boolean" })
+
+        // x && y
+        var op = statements[0]
+        assertTrue(op.leftHandOperand is CtFieldRead<*>)
+        assertTrue(op.rightHandOperand is CtFieldRead<*>)
+
+        var lhsVar = op.leftHandOperand as CtFieldRead<*>
+        var rhsVar = op.rightHandOperand as CtFieldRead<*>
+
+        assertSame(x, lhsVar.variable.declaration)
+        assertSame(y, rhsVar.variable.declaration)
+
+        assertEquals("kotlin.Boolean", lhsVar.type.qualifiedName)
+        assertEquals("kotlin.Boolean", rhsVar.type.qualifiedName)
+        assertEquals("x && y", op.asString())
+
+        // y && x
+        op = statements[1]
+        assertTrue(op.leftHandOperand is CtFieldRead<*>)
+        assertTrue(op.rightHandOperand is CtFieldRead<*>)
+
+        lhsVar = op.leftHandOperand as CtFieldRead<*>
+        rhsVar = op.rightHandOperand as CtFieldRead<*>
+
+        assertSame(y, lhsVar.variable.declaration)
+        assertSame(x, rhsVar.variable.declaration)
+
+        assertEquals("kotlin.Boolean", lhsVar.type.qualifiedName)
+        assertEquals("kotlin.Boolean", rhsVar.type.qualifiedName)
+        assertEquals("y && x", op.asString())
+
+        // x && y && z
+        op = statements[2]
+        assertTrue(op.leftHandOperand is CtBinaryOperator<*>)
+        assertTrue(op.rightHandOperand is CtFieldRead<*>)
+
+        var innerOp = op.leftHandOperand as CtBinaryOperator<*>
+        assertEquals("kotlin.Boolean", innerOp.type.qualifiedName)
+        assertTrue(innerOp.leftHandOperand is CtFieldRead<*>)
+        assertTrue(innerOp.rightHandOperand is CtFieldRead<*>)
+
+        lhsVar = innerOp.leftHandOperand as CtFieldRead<*>
+        var midVar = innerOp.rightHandOperand as CtFieldRead<*>
+        rhsVar = op.rightHandOperand as CtFieldRead<*>
+
+        assertSame(x, lhsVar.variable.declaration)
+        assertSame(y, midVar.variable.declaration)
+        assertSame(z, rhsVar.variable.declaration)
+
+        assertEquals("kotlin.Boolean", lhsVar.type.qualifiedName)
+        assertEquals("kotlin.Boolean", midVar.type.qualifiedName)
+        assertEquals("kotlin.Boolean", rhsVar.type.qualifiedName)
+        assertEquals("(x && y) && z", op.asString())
+
+        // x && y
+        op = statements[3]
+        assertTrue(op.leftHandOperand is CtFieldRead<*>)
+        assertTrue(op.rightHandOperand is CtFieldRead<*>)
+
+        lhsVar = op.leftHandOperand as CtFieldRead<*>
+        rhsVar = op.rightHandOperand as CtFieldRead<*>
+
+        assertSame(x, lhsVar.variable.declaration)
+        assertSame(y, rhsVar.variable.declaration)
+
+        assertEquals("kotlin.Boolean", lhsVar.type.qualifiedName)
+        assertEquals("kotlin.Boolean", rhsVar.type.qualifiedName)
+        assertEquals("x || y", op.asString())
+
+        // y && x
+        op = statements[4]
+        assertTrue(op.leftHandOperand is CtFieldRead<*>)
+        assertTrue(op.rightHandOperand is CtFieldRead<*>)
+
+        lhsVar = op.leftHandOperand as CtFieldRead<*>
+        rhsVar = op.rightHandOperand as CtFieldRead<*>
+
+        assertSame(y, lhsVar.variable.declaration)
+        assertSame(x, rhsVar.variable.declaration)
+
+        assertEquals("kotlin.Boolean", lhsVar.type.qualifiedName)
+        assertEquals("kotlin.Boolean", rhsVar.type.qualifiedName)
+        assertEquals("y || x", op.asString())
+
+        // x || y || z
+        op = statements[5]
+        assertTrue(op.leftHandOperand is CtBinaryOperator<*>)
+        assertTrue(op.rightHandOperand is CtFieldRead<*>)
+
+        innerOp = op.leftHandOperand as CtBinaryOperator<*>
+        assertEquals("kotlin.Boolean", innerOp.type.qualifiedName)
+        assertTrue(innerOp.leftHandOperand is CtFieldRead<*>)
+        assertTrue(innerOp.rightHandOperand is CtFieldRead<*>)
+
+        lhsVar = innerOp.leftHandOperand as CtFieldRead<*>
+        midVar = innerOp.rightHandOperand as CtFieldRead<*>
+        rhsVar = op.rightHandOperand as CtFieldRead<*>
+
+        assertSame(x, lhsVar.variable.declaration)
+        assertSame(y, midVar.variable.declaration)
+        assertSame(z, rhsVar.variable.declaration)
+
+        assertEquals("kotlin.Boolean", lhsVar.type.qualifiedName)
+        assertEquals("kotlin.Boolean", midVar.type.qualifiedName)
+        assertEquals("kotlin.Boolean", rhsVar.type.qualifiedName)
+        assertEquals("(x || y) || z", op.asString())
+
+        // x && (y || z)
+        op = statements[6]
+        assertTrue(op.leftHandOperand is CtFieldRead<*>)
+        assertTrue(op.rightHandOperand is CtBinaryOperator<*>)
+
+        innerOp = op.rightHandOperand as CtBinaryOperator<*>
+        assertEquals("kotlin.Boolean", innerOp.type.qualifiedName)
+        assertTrue(innerOp.leftHandOperand is CtFieldRead<*>)
+        assertTrue(innerOp.rightHandOperand is CtFieldRead<*>)
+
+        lhsVar = op.leftHandOperand as CtFieldRead<*>
+        midVar = innerOp.leftHandOperand as CtFieldRead<*>
+        rhsVar = innerOp.rightHandOperand as CtFieldRead<*>
+
+        assertSame(x, lhsVar.variable.declaration)
+        assertSame(y, midVar.variable.declaration)
+        assertSame(z, rhsVar.variable.declaration)
+
+        assertEquals("kotlin.Boolean", lhsVar.type.qualifiedName)
+        assertEquals("kotlin.Boolean", midVar.type.qualifiedName)
+        assertEquals("kotlin.Boolean", rhsVar.type.qualifiedName)
+        assertEquals("x && (y || z)", op.asString())
+    }
 }

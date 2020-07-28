@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.descriptors.IrTemporaryVariableDescriptor
 import org.jetbrains.kotlin.ir.expressions.*
+import org.jetbrains.kotlin.ir.expressions.impl.IrElseBranchImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrIfThenElseImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueParameterSymbol
@@ -569,9 +570,46 @@ internal class IrTreeBuilder(
         return TransformResult.nothing()
     }
 
+    private fun createOrOperator(expr: IrIfThenElseImpl, data: ContextData): DefiniteTransformResult<CtBinaryOperator<Boolean>> {
+        val irLhs = expr.branches.first { it !is IrElseBranchImpl }.condition
+        val irRhs = expr.branches.firstIsInstance<IrElseBranchImpl>().result
+        val lhs = irLhs.accept(this, data).resultUnsafe
+        val rhs = irRhs.accept(this, data).resultUnsafe
+        val ctOp = core.createBinaryOperator<Boolean>()
+        ctOp.putKtMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND,
+            KtMetadata.wrap(KtBinaryOperatorKind.OR))
+        ctOp.setLeftHandOperand<CtBinaryOperator<Boolean>>(expressionOrWrappedInStatementExpression(lhs))
+        ctOp.setRightHandOperand<CtBinaryOperator<Boolean>>(expressionOrWrappedInStatementExpression(rhs))
+        ctOp.setType<CtBinaryOperator<Boolean>>(referenceBuilder.getNewTypeReference(expr.type))
+        return ctOp.definite()
+    }
+
+    private fun createAndOperator(expr: IrIfThenElseImpl, data: ContextData): DefiniteTransformResult<CtBinaryOperator<Boolean>> {
+        val branch = expr.branches.first { it !is IrElseBranchImpl }
+        val irLhs = branch.condition
+        val irRhs = branch.result
+        val lhs = irLhs.accept(this, data).resultUnsafe
+        val rhs = irRhs.accept(this, data).resultUnsafe
+        val ctOp = core.createBinaryOperator<Boolean>()
+        ctOp.putKtMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND,
+            KtMetadata.wrap(KtBinaryOperatorKind.AND))
+        ctOp.setLeftHandOperand<CtBinaryOperator<Boolean>>(expressionOrWrappedInStatementExpression(lhs))
+        ctOp.setRightHandOperand<CtBinaryOperator<Boolean>>(expressionOrWrappedInStatementExpression(rhs))
+        ctOp.setType<CtBinaryOperator<Boolean>>(referenceBuilder.getNewTypeReference(expr.type))
+        return ctOp.definite()
+    }
+
     override fun visitWhen(expression: IrWhen, data: ContextData): TransformResult<CtElement> {
         when(expression) {
-            is IrIfThenElseImpl -> return visitIfThenElse(expression, data)
+            is IrIfThenElseImpl -> {
+                if(expression.origin == IrStatementOrigin.OROR) {
+                    return createOrOperator(expression, data)
+                }
+                if(expression.origin == IrStatementOrigin.ANDAND) {
+                    return createAndOperator(expression, data)
+                }
+                return visitIfThenElse(expression, data)
+            }
         }
         return super.visitWhen(expression, data)
     }
