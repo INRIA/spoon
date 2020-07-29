@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import org.jetbrains.kotlin.psi2ir.generators.AUGMENTED_ASSIGNMENTS
+import org.jetbrains.kotlin.psi2ir.generators.GeneratorContext
 import org.jetbrains.kotlin.psi2ir.generators.INCREMENT_DECREMENT_OPERATORS
 import org.jetbrains.kotlin.resolve.source.getPsi
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
@@ -40,12 +41,13 @@ import spoon.support.reflect.code.CtLiteralImpl
 
 internal class IrTreeBuilder(
     val factory: Factory,
-    val sourceManager: PsiSourceManager,
+    private val context: GeneratorContext,
     private val detectImplicitTypes: Boolean = true,
     private val detectInfix: Boolean = true
 ) : IrElementVisitor<TransformResult<CtElement>, ContextData> {
     val referenceBuilder = IrReferenceBuilder(this)
     val helper = IrTreeBuilderHelper(this)
+    val sourceManager: PsiSourceManager = context.sourceManager
     private lateinit var sourceHelper: PsiSourceHelper
 
     fun getSourceHelper(contextData: ContextData): PsiSourceHelper {
@@ -1054,10 +1056,28 @@ internal class IrTreeBuilder(
         }
     }
 
+    private fun createWildcardVariable(): CtLocalVariable<Any> {
+        return core.createLocalVariable<Any>().also {
+            it.setType<CtVariable<Any>>(referenceBuilder.getNewTypeReference(context.irBuiltIns.nothing))
+            it.setSimpleName<CtVariable<*>>("_")
+            it.setInferred<CtLocalVariable<Any>>(true)
+        }
+    }
+
     override fun visitComposite(expression: IrComposite, data: ContextData): TransformResult<CtElement> {
         val context = Destruct(data)
-        val components = expression.statements.drop(1).map { visitVariable(it as IrVariable, context).resultSafe }
-
+        val irComponents = expression.statements.drop(1).map { visitVariable(it as IrVariable, context).resultSafe }
+        val allComponents = getSourceHelper(data).destructuredNames(expression)
+        var ir = 0
+        var allI = 0
+        val components = ArrayList<CtLocalVariable<*>>(allComponents.size)
+        while(allI < allComponents.size) {
+            if(allComponents[allI++] == "_") {
+                components.add(createWildcardVariable())
+            } else {
+                components.add(irComponents[ir++])
+            }
+        }
         val placeHolder = components.toDestructuredVariable()
         placeHolder.setDefaultExpression<CtLocalVariable<Any>>(
             (expression.statements[0] as IrVariable).initializer!!.accept(this, data).resultUnsafe as CtExpression<Any>

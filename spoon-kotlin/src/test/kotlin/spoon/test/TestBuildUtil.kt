@@ -35,7 +35,7 @@ object TestBuildUtil {
         val irFiles = irModule.files
         val factory = FactoryImpl(DefaultCoreFactory(), StandardEnvironment())
 
-        val builder = IrTreeBuilder(factory, context.sourceManager)
+        val builder = IrTreeBuilder(factory, context)
 
         irFiles.forEach {  builder.visitFile(it, Empty(it)) }
 
