@@ -9,10 +9,7 @@ import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.IrTypeProjectionImpl
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.types.FlexibleType
-import org.jetbrains.kotlin.types.KotlinType
-import org.jetbrains.kotlin.types.SimpleType
-import org.jetbrains.kotlin.types.WrappedType
+import org.jetbrains.kotlin.types.*
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.reflect.reference.*
 
@@ -23,10 +20,38 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
     private fun Name.escaped() = if(this.isSpecial) this.asString() else helper.escapedIdentifier(this)
 
     private fun <T> getNewSimpleTypeReference(irType: IrSimpleType): CtTypeReference<T> {
+        if(irType.abbreviation != null) {
+            return getNewAbbreviatedTypeReference(irType.abbreviation!!)
+        }
         val ctRef = typeRefFromDescriptor(irType.classifier.descriptor)
         ctRef.setActualTypeArguments<CtTypeReference<*>>(irType.arguments.map { visitTypeArgument(it) })
         ctRef.putMetadata<CtReference>(KtMetadataKeys.TYPE_REF_NULLABLE, irType.hasQuestionMark)
         return ctRef as CtTypeReference<T>
+    }
+
+    /**
+     * typealias A = Int
+     * This will return only type ref to A
+     */
+    private fun <T> getNewAbbreviatedTypeReference(typeAbbreviation: IrTypeAbbreviation): CtTypeReference<T> {
+        val ctRef = typeRefFromDescriptor(typeAbbreviation.typeAlias.descriptor)
+        ctRef.setActualTypeArguments<CtTypeReference<*>>(typeAbbreviation.arguments.map { visitTypeArgument(it) })
+        ctRef.putMetadata<CtReference>(KtMetadataKeys.TYPE_REF_NULLABLE, typeAbbreviation.hasQuestionMark)
+        return ctRef as CtTypeReference<T>
+    }
+
+    /**
+     * typealias A = Int
+     * This will return type ref to Int with A in it's metadata
+     */
+    private fun <T> getNewTypeReferenceWithAbbreviationAsMetadata(irSimpleType: IrSimpleType): CtTypeReference<T> {
+        val ctRef = getNewTypeReference<T>(irSimpleType)
+        val irAbbreviation = irSimpleType.abbreviation
+        if(irAbbreviation != null) {
+            val abbreviation = getNewAbbreviatedTypeReference<Any>(irAbbreviation)
+            ctRef.putKtMetadata(KtMetadataKeys.TYPE_ALIAS, KtMetadata.wrap(abbreviation))
+        }
+        return ctRef
     }
 
     fun <T> getNewTypeReference(irType: IrType): CtTypeReference<T> = when(irType) {
@@ -39,13 +64,24 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
     fun <T> getNewTypeReference(classDescriptor: ClassDescriptor) =
         typeRefFromDescriptor(classDescriptor) as CtTypeReference<T>
 
-    fun <T> getNewTypeReference(kotlinType: KotlinType): CtTypeReference<T> = when(kotlinType) {
-        is WrappedType -> typeRefFromDescriptor(kotlinType.unwrap().constructor.declarationDescriptor!!)
-        is SimpleType -> typeRefFromDescriptor(kotlinType.constructor.declarationDescriptor!!)
-        is FlexibleType -> TODO()
-    } as CtTypeReference<T>
+    fun <T> getNewTypeReference(kotlinType: KotlinType): CtTypeReference<T> {
+        val ctRef = when(kotlinType) {
+            is AbbreviatedType -> typeRefFromDescriptor(kotlinType.abbreviation.constructor.declarationDescriptor!!)
+            is WrappedType -> typeRefFromDescriptor(kotlinType.unwrap().constructor.declarationDescriptor!!)
+            is SimpleType -> typeRefFromDescriptor(kotlinType.constructor.declarationDescriptor!!)
+            is FlexibleType -> TODO()
+        } as CtTypeReference<T>
+        ctRef.putKtMetadata(KtMetadataKeys.TYPE_REF_NULLABLE, KtMetadata.wrap(kotlinType.isMarkedNullable))
+        return ctRef
+    }
 
     private fun typeRefFromDescriptor(descriptor: ClassifierDescriptor) = when(descriptor) {
+        is TypeAliasDescriptor -> {
+            irTreeBuilder.core.createTypeReference<Any>().apply {
+                setSimpleName<CtReference>(descriptor.name.escaped())
+                setPackageOrDeclaringType(getDeclaringReference(descriptor))
+            }
+        }
         is ClassDescriptor -> {
             irTreeBuilder.factory.Core().createTypeReference<Any>().apply {
                 setSimpleName<CtReference>(descriptor.name.escaped())
@@ -67,6 +103,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
             is ClassDescriptor -> getDeclaringTypeReference(descriptor)
             is PackageFragmentDescriptor -> getPackageReference(descriptor.fqName)
             is FunctionDescriptor -> getDeclaringReference(descriptor.containingDeclaration)
+            is TypeAliasDescriptor -> getDeclaringReference(descriptor.containingDeclaration)
             else -> TODO()
         }
     }
