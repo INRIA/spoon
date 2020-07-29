@@ -29,9 +29,8 @@ public interface CtBlock<R> extends CtStatement, CtStatementList, TemplateParame
 	CtBlock<R> clone();
 
 	/**
-	 * If the block is a method body, then all the statements are
-	 * replaced by corresponding comments within the block. If not
-	 * then the block itself is replaced by a Block comment.
+	 * If the block is a method body, then all statements inside the body are commented out.
+	 * Internally, they are replaced by a CtComment.
 	 */
 	@Override
 	void comment();
