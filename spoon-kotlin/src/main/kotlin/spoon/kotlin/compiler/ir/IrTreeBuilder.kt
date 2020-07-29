@@ -1178,6 +1178,13 @@ internal class IrTreeBuilder(
         return ctReturn.definite()
     }
 
+    override fun visitThrow(expression: IrThrow, data: ContextData): DefiniteTransformResult<CtThrow> {
+        val ctThrow = factory.Core().createThrow()
+        val throwExpr = expression.value.accept(this, data).resultUnsafe
+        ctThrow.setThrownExpression<CtThrow>(expressionOrWrappedInStatementExpression(throwExpr)  as CtExpression<Throwable>)
+        return ctThrow.definite()
+    }
+
     private fun <T> CtExpression<T>.wrapInImplicitReturn() : CtReturn<T> {
         val r = factory.Core().createReturn<T>()
         r.setReturnedExpression<CtReturn<T>>(this)
