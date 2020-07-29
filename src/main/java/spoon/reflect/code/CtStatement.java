@@ -57,7 +57,7 @@ public interface CtStatement extends CtCodeElement {
 	<T extends CtStatement> T setLabel(String label);
 
 	/**
-	 * Replace the statement with a CtComment having the statement as text
+	 * Comments the statement (eg `// call()`). Implemented as a replacement of the statement with a CtComment having the statement as text.
 	 */
 	void comment();
 
