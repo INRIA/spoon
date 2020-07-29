@@ -891,7 +891,7 @@ internal class IrTreeBuilder(
         val ctDo = factory.Core().createDo()
         val condition = loop.condition.accept(this, data).resultUnsafe as CtExpression<Boolean>
 
-        val body = if(loop.body is IrComposite) { // Body of do-while is composite
+        val body = if(loop.body is IrComposite) { // Body of do-while is sometimes composite
             visitBlock(loop.body as IrComposite, data, emptyList()).resultSafe
         } else {
             loop.body!!.accept(this, data).resultUnsafe.blockOrSingleStatementBlock()
