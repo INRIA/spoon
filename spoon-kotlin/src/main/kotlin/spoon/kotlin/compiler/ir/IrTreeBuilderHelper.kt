@@ -114,7 +114,7 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
 
     fun escapedIdentifier(name: Name): String {
         val identifier = name.asString()
-
+        if(identifier.matches("<anonymous parameter \\d+>".toRegex())) return "_"
         // Should be return "`$identifier`" but spoon doesn't allow '`'. However, '$' is legal in java but not
         // in Kotlin (unless escaped), so it serves as a marker for an escaped identifier
         if(identifier in keywords || legalOnlyIfEscaped(identifier)) return "\$$identifier\$"

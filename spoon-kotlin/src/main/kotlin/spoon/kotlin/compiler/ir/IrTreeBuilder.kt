@@ -221,6 +221,19 @@ internal class IrTreeBuilder(
         return ctLiteral.definite()
     }
 
+    override fun visitFunctionExpression(
+        expression: IrFunctionExpression,
+        data: ContextData
+    ): DefiniteTransformResult<CtLambda<*>> {
+        val ctLambda = core.createLambda<Any>()
+        ctLambda.setBody<CtLambda<*>>(visitBody(expression.function.body!!,data).resultSafe)
+        ctLambda.setType<CtLambda<*>>(referenceBuilder.getNewTypeReference(expression.function.returnType))
+        ctLambda.setParameters<CtLambda<Any>>(expression.function.valueParameters.map { visitValueParameter(it, data).resultSafe })
+        ctLambda.putKtMetadata(KtMetadataKeys.LAMBDA_AS_ANONYMOUS_FUNCTION,
+            KtMetadata.wrap(expression.origin == IrStatementOrigin.ANONYMOUS_FUNCTION))
+        return ctLambda.definite()
+    }
+
     override fun visitProperty(declaration: IrProperty, data: ContextData): DefiniteTransformResult<CtElement> {
         val ctField = core.createField<Any>()
         ctField.setSimpleName<CtField<*>>(declaration.name.escaped())
@@ -1175,7 +1188,8 @@ internal class IrTreeBuilder(
                 expressionOrWrappedInStatementExpression(transformResult)
             )
         }
-        if(expression.endOffset == expression.startOffset)
+        if(expression.endOffset == expression.startOffset ||
+                getSourceHelper(data).sourceTextIs(expression) { !it.startsWith("return")})
             ctReturn.setImplicit<CtReturn<*>>(true)
         return ctReturn.definite()
     }
