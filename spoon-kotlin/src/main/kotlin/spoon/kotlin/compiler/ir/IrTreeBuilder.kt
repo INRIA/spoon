@@ -259,16 +259,18 @@ internal class IrTreeBuilder(
         type.setImplicit<CtTypeReference<*>>(implicitType)
         ctField.setType<CtField<*>>(type)
 
-        val getter = declaration.getter
-        if(getter != null && getter.origin != IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR) {
-            ctField.putKtMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_GETTER,
-                KtMetadata.wrap(createUnnamedFunction(getter, data)))
-        }
+        if(!declaration.isDelegated) { // Custom getter/setter is illegal for delegated properties
+            val getter = declaration.getter
+            if(getter != null && getter.origin != IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR) {
+                ctField.putKtMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_GETTER,
+                    KtMetadata.wrap(createUnnamedFunction(getter, data)))
+            }
 
-        val setter = declaration.setter
-        if(setter != null && setter.origin != IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR) {
-            ctField.putKtMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_SETTER,
-                KtMetadata.wrap(createUnnamedFunction(setter, data)))
+            val setter = declaration.setter
+            if(setter != null && setter.origin != IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR) {
+                ctField.putKtMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_SETTER,
+                    KtMetadata.wrap(createUnnamedFunction(setter, data)))
+            }
         }
 
         return ctField.definite()
