@@ -1227,6 +1227,24 @@ internal class IrTreeBuilder(
         return ctCatch.definite()
     }
 
+    override fun visitContinue(jump: IrContinue, data: ContextData): DefiniteTransformResult<CtContinue> {
+        val ctContinue = core.createContinue()
+        val label = jump.label
+        if(label != null) {
+            ctContinue.setTargetLabel<CtContinue>(label)
+        }
+        return ctContinue.definite()
+    }
+
+    override fun visitBreak(jump: IrBreak, data: ContextData): TransformResult<CtElement> {
+        val ctBreak = core.createBreak()
+        val label = jump.label
+        if(label != null) {
+            ctBreak.setTargetLabel<CtBreak>(jump.label)
+        }
+        return ctBreak.definite()
+    }
+
     private fun <T> CtExpression<T>.wrapInImplicitReturn() : CtReturn<T> {
         val r = factory.Core().createReturn<T>()
         r.setReturnedExpression<CtReturn<T>>(this)
