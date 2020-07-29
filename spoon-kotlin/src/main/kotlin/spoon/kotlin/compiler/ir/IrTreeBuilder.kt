@@ -793,7 +793,8 @@ internal class IrTreeBuilder(
     private fun visitForLoop(outerBlock: IrBlock, data: ContextData): DefiniteTransformResult<CtForEach> {
         val ctForEach = core.createForEach()
         val iterable = (outerBlock.statements[0] as IrVariable).initializer!!.accept(this, data).resultUnsafe
-        val innerBlock = (outerBlock.statements[1] as IrWhileLoop).body as IrBlock
+        val whileLoop = (outerBlock.statements[1] as IrWhileLoop)
+        val innerBlock = whileLoop.body as IrBlock
         val variables = innerBlock.statements.takeWhile { it is IrVariable }
         val context = Destruct(data)
         val variable = if(variables.size > 1) {
@@ -807,6 +808,7 @@ internal class IrTreeBuilder(
         ctForEach.setVariable<CtForEach>(variable)
         ctForEach.setExpression<CtForEach>(iterable as CtExpression<*>)
         ctForEach.setBody<CtForEach>(body.blockOrSingleStatementBlock())
+        ctForEach.setLabel<CtForEach>(whileLoop.label)
         return ctForEach.definite()
     }
 
@@ -833,6 +835,9 @@ internal class IrTreeBuilder(
     }
 
     private fun checkForCompositeElement(block: IrBlock, data: ContextData): TransformResult<CtElement> {
+        if(block.statements.size == 1 && block.statements[0] is IrDoWhileLoop) {
+            return visitDoWhileLoop(block.statements[0] as IrDoWhileLoop, data)
+        }
         when(block.origin) {
             null -> return TransformResult.nothing()
             IrStatementOrigin.FOR_LOOP -> {
@@ -878,6 +883,7 @@ internal class IrTreeBuilder(
         val body = loop.body!!.accept(this,data).resultUnsafe.blockOrSingleStatementBlock()
         ctWhile.setLoopingExpression<CtWhile>(condition)
         ctWhile.setBody<CtWhile>(body)
+        ctWhile.setLabel<CtWhile>(loop.label)
         return ctWhile.definite()
     }
 
@@ -885,17 +891,19 @@ internal class IrTreeBuilder(
         val ctDo = factory.Core().createDo()
         val condition = loop.condition.accept(this, data).resultUnsafe as CtExpression<Boolean>
 
-        val body = if(loop.body is IrComposite) { // Empty body becomes composite for some reason
-            core.createBlock<Any>()
+        val body = if(loop.body is IrComposite) { // Body of do-while is composite
+            visitBlock(loop.body as IrComposite, data, emptyList()).resultSafe
         } else {
             loop.body!!.accept(this, data).resultUnsafe.blockOrSingleStatementBlock()
         }
         ctDo.setLoopingExpression<CtDo>(condition)
         ctDo.setBody<CtDo>(body)
+        ctDo.setLabel<CtDo>(loop.label)
         return ctDo.definite()
     }
 
-    private fun visitBlock(expression: IrBlock, data: ContextData, skipIndices: List<Int>): DefiniteTransformResult<CtElement> {
+    // TODO: Remove, skipIndex is not needed
+    private fun visitBlock(expression: IrContainerExpression, data: ContextData, skipIndices: List<Int>): DefiniteTransformResult<CtBlock<*>> {
         val statements = ArrayList<CtStatement>()
         for((i, statement) in expression.statements.withIndex()) {
             if(i in skipIndices) continue
