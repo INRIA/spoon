@@ -16,4 +16,10 @@ class MultipleCatch {
     fun noFinally() {
         try {} catch (e: RuntimeException) {}
     }
+
+    fun catchRef() {
+        try {} catch (e: Throwable) {
+            e
+        }
+    }
 }

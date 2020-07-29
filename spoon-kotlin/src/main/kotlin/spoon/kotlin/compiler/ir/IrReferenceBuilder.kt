@@ -2,7 +2,9 @@ package spoon.kotlin.compiler.ir
 
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.LocalVariableDescriptor
+import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrTypeParameter
+import org.jetbrains.kotlin.ir.declarations.IrValueDeclaration
 import org.jetbrains.kotlin.ir.descriptors.IrTemporaryVariableDescriptor
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.types.*
@@ -166,7 +168,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         paramRef.setType<CtVariableReference<T>>(getNewTypeReference(valueParam.type))
         return paramRef
     }
-
+    // TODO Needs cleanup and generalizing of all these different cases
     fun <T> getNewVariableReference(descriptor: ValueDescriptor) =
         when(descriptor) {
             is LocalVariableDescriptor -> getNewVariableReference<T>(descriptor)
@@ -176,8 +178,20 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
             else -> throw SpoonIrBuildException("Unexpected value descriptor ${descriptor::class.simpleName}")
         }
 
-    fun <T> getNewVariableReference(irGetValue: IrGetValue): CtVariableReference<T>? =
-        getNewVariableReference(irGetValue.symbol.descriptor)
+    private fun <T> getNewVariableReference(valueDeclaration: IrValueDeclaration): CtVariableReference<T>? {
+        return if(valueDeclaration.origin == IrDeclarationOrigin.CATCH_PARAMETER) {
+            irTreeBuilder.core.createCatchVariableReference<T>().also {
+                it.setNameAndType(valueDeclaration.descriptor)
+            }
+        } else {
+            getNewVariableReference<T>(valueDeclaration.descriptor)
+        }
+    }
+
+    fun <T> getNewVariableReference(irGetValue: IrGetValue): CtVariableReference<T>? {
+        return getNewVariableReference(irGetValue.symbol.owner)
+    }
+
 
     // ========================== EXECUTABLE ==========================
 

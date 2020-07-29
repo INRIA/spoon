@@ -672,8 +672,8 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?> visitCtCatchVariableReference(p0: CtCatchVariableReference<T>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?> visitCtCatchVariableReference(catchVarRef: CtCatchVariableReference<T>) {
+        adapter write catchVarRef.simpleName
     }
 
     override fun <T : Any?> visitCtSuperAccess(superAccess: CtSuperAccess<T>) {

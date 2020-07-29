@@ -972,7 +972,7 @@ internal class IrTreeBuilder(
                 it.setVariable<CtVariableRead<Any>>(variableRef as CtVariableReference<Any>)
             }
         }
-        is CtLocalVariableReference<*> -> {
+        is CtLocalVariableReference<*>, is CtCatchVariableReference<*> -> {
             factory.Core().createVariableRead<Any>().also {
                 it.setVariable<CtVariableRead<Any>>(variableRef as CtVariableReference<Any>)
             }
@@ -1179,10 +1179,36 @@ internal class IrTreeBuilder(
     }
 
     override fun visitThrow(expression: IrThrow, data: ContextData): DefiniteTransformResult<CtThrow> {
-        val ctThrow = factory.Core().createThrow()
+        val ctThrow = core.createThrow()
         val throwExpr = expression.value.accept(this, data).resultUnsafe
         ctThrow.setThrownExpression<CtThrow>(expressionOrWrappedInStatementExpression(throwExpr)  as CtExpression<Throwable>)
         return ctThrow.definite()
+    }
+
+    override fun visitTry(aTry: IrTry, data: ContextData): DefiniteTransformResult<CtTry> {
+        val ctTry = core.createTry()
+        ctTry.setBody<CtTry>(aTry.tryResult.accept(this, data).resultUnsafe as CtStatement)
+        ctTry.setCatchers<CtTry>(aTry.catches.map { visitCatch(it, data).resultSafe })
+        val finalizer = aTry.finallyExpression?.accept(this, data)?.resultUnsafe as CtBlock<*>?
+        if(finalizer != null) {
+            ctTry.setFinalizer<CtTry>(finalizer)
+        }
+        return ctTry.definite()
+    }
+
+    private fun createCatchVariable(variable: IrVariable): CtCatchVariable<Throwable> {
+        val catchVar = core.createCatchVariable<Throwable>()
+        catchVar.setSimpleName<CtVariable<*>>(variable.name.escaped())
+        catchVar.setType<CtVariable<*>>(referenceBuilder.getNewTypeReference(variable.type))
+        return catchVar
+    }
+
+    override fun visitCatch(aCatch: IrCatch, data: ContextData): DefiniteTransformResult<CtCatch> {
+        val block = aCatch.result.accept(this, data).resultUnsafe as CtBlock<*>
+        val ctCatch = core.createCatch()
+        ctCatch.setParameter<CtCatch>(createCatchVariable(aCatch.catchParameter))
+        ctCatch.setBody<CtCatch>(block)
+        return ctCatch.definite()
     }
 
     private fun <T> CtExpression<T>.wrapInImplicitReturn() : CtReturn<T> {
