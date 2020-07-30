@@ -109,7 +109,7 @@ public class CommentHelper {
 
 	static void printJavaDocTag(PrinterHelper printer, CtJavaDocTag docTag, Function<String, String> transfo) {
 		printer.write(transfo.apply(CtJavaDocTag.JAVADOC_TAG_PREFIX));
-		printer.write(docTag.getType().name().toLowerCase());
+		printer.write(docTag.getRealName());
 		printer.write(" ");
 		if (docTag.getType().hasParam()) {
 			printer.write(docTag.getParam()).writeln();

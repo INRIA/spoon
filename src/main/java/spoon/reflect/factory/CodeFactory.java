@@ -710,7 +710,7 @@ public class CodeFactory extends SubFactory {
 	 * @param type The tag type
 	 * @return a new CtJavaDocTag
 	 */
-	public CtJavaDocTag createJavaDocTag(String content, CtJavaDocTag.TagType type) {
+	public CtJavaDocTag createJavaDocTag(String content, CtJavaDocTag.TagType type, String realName) {
 		if (content == null) {
 			content = "";
 		}
@@ -728,7 +728,7 @@ public class CodeFactory extends SubFactory {
 			content = content.substring(firstWord);
 			docTag.setParam(param);
 		}
-		return docTag.setContent(content.trim()).setType(type);
+		return docTag.setContent(content.trim()).setType(type).setRealName(realName);
 	}
 
 }
