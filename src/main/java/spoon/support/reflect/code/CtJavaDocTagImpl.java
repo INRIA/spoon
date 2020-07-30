@@ -97,7 +97,7 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
 	@Override
 	public String toString()	{
-		return JAVADOC_TAG_PREFIX + realName // Tag type, with @ sign included, Use realname instead of UNKNOWN
+		return JAVADOC_TAG_PREFIX + this.realName // Tag type, with @ sign included, Use realname instead of UNKNOWN
 				+ " "	//Space required between tag type and parameter
 				+ this.param + System.lineSeparator()	//Tag parameter
 				+ "\t\t" + this.content + System.lineSeparator();

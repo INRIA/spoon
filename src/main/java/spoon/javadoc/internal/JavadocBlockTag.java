@@ -80,7 +80,6 @@ public class JavadocBlockTag implements Serializable {
 	public String toText() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("@");
-//		sb.append(tagName);
 		sb.append(tagRealName);
 		sb.append(" ").append(name);
 		if (!content.isEmpty()) {
