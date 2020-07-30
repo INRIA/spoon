@@ -622,19 +622,72 @@ internal class IrTreeBuilder(
         return ctOp.definite()
     }
 
-    override fun visitWhen(expression: IrWhen, data: ContextData): TransformResult<CtElement> {
-        when(expression) {
-            is IrIfThenElseImpl -> {
-                if(expression.origin == IrStatementOrigin.OROR) {
-                    return createOrOperator(expression, data)
+    override fun visitWhen(expression: IrWhen, data: ContextData): DefiniteTransformResult<CtElement> {
+        if(expression is IrIfThenElseImpl) {
+            if(expression.origin == IrStatementOrigin.OROR) {
+                return createOrOperator(expression, data)
+            }
+            if(expression.origin == IrStatementOrigin.ANDAND) {
+                return createAndOperator(expression, data)
+            }
+            return visitIfThenElse(expression, data)
+        }
+
+        // Use only when as expression
+        val ctSwitch = core.createSwitchExpression<Any,Any>()
+        val context: ContextData
+        if(data is When) { // Coming from a block that declares a subject
+            context = data
+            val subject = helper.getWhenSubjectVarDeclaration(context.subject)?.accept(this, data)?.resultUnsafe
+            if(subject is CtVariable<*>) {
+                ctSwitch.putKtMetadata(KtMetadataKeys.WHEN_SUBJECT_VARIABLE, KtMetadata.wrap(subject))
+            } else if(subject != null) {
+                ctSwitch.setSelector<CtSwitchExpression<*,Any>>(expressionOrWrappedInStatementExpression(subject))
+            }
+        } else { // No subject
+            context = When(data, null)
+        }
+
+        ctSwitch.setCases<CtSwitchExpression<*,Any>>(
+            expression.branches.map { visitBranch(it, context).resultSafe }
+        )
+
+        ctSwitch.setType<CtExpression<*>>(referenceBuilder.getNewTypeReference(expression.type))
+
+        return ctSwitch.definite()
+    }
+
+    override fun visitBranch(branch: IrBranch, data: ContextData): DefiniteTransformResult<CtCase<Any>> {
+        fun markImplicitLHS(expr: CtElement) {
+            when(expr) {
+                is CtBinaryOperator<*> -> {
+                    when(expr.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND) as KtBinaryOperatorKind?) {
+                        KtBinaryOperatorKind.IS,
+                        KtBinaryOperatorKind.IS_NOT,
+                        KtBinaryOperatorKind.IN,
+                        KtBinaryOperatorKind.NOT_IN -> expr.leftHandOperand?.setImplicit<CtElement>(true)
+                        else -> { /* Nothing */ }
+                    }
                 }
-                if(expression.origin == IrStatementOrigin.ANDAND) {
-                    return createAndOperator(expression, data)
-                }
-                return visitIfThenElse(expression, data)
             }
         }
-        return super.visitWhen(expression, data)
+
+        val case = core.createCase<Any>()
+        case.setCaseKind<CtCase<Any>>(CaseKind.ARROW)
+        val context = Empty(data.file)  // Reset context, when-subject is tied to this level
+        case.setCaseExpressions<CtCase<Any>>(
+            helper.resolveBranchMultiCondition(branch, (data as When).subject).map {
+                expressionOrWrappedInStatementExpression(it.first.accept(this, context).resultUnsafe).also {
+                    result ->
+                    result.setParent(case)
+                    if(it.second) markImplicitLHS(result)
+                }
+            }
+        )
+
+        val result = branch.result.accept(this, context).resultUnsafe as CtBlock<*>
+        case.addStatement<CtCase<Any>>(result)
+        return case.definite()
     }
 
     fun visitIfThenElse(ifThenElse: IrIfThenElseImpl, data: ContextData): DefiniteTransformResult<CtIf> {
@@ -767,12 +820,14 @@ internal class IrTreeBuilder(
         }
         val opKind = OperatorHelper.originToBinaryOperatorKind(irCall.origin!!)
         val (irLhs, irRhs) = OperatorHelper.getOrderedBinaryOperands(tempLhs, tempRhs, opKind)
-        val lhs = irLhs.accept(this, data).resultUnsafe
+        val lhs = irLhs.accept(this, data).resultOrNull
         val rhs = irRhs.accept(this, data).resultUnsafe
 
         val ctOp = core.createBinaryOperator<Any>()
 
-        ctOp.setLeftHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(lhs))
+        if(lhs != null) {
+            ctOp.setLeftHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(lhs))
+        }
         ctOp.setRightHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(rhs))
         ctOp.setType<CtBinaryOperator<Any>>(referenceBuilder.getNewTypeReference(irCall.type))
 
@@ -855,6 +910,12 @@ internal class IrTreeBuilder(
             }
             IrStatementOrigin.SAFE_CALL -> {
                 return createSafeCall(block, data)
+            }
+            IrStatementOrigin.WHEN -> {
+                val subjectExpr = block.statements.firstIsInstanceOrNull<IrVariable>()
+                val whenExpr = block.statements.firstIsInstance<IrWhen>()
+                val context = When(data, subjectExpr)
+                return visitWhen(whenExpr, context)
             }
             in INCREMENT_DECREMENT_OPERATORS -> {
                 val setVar = block.statements.firstIsInstanceOrNull<IrSetVariable>()?.symbol
@@ -1030,9 +1091,11 @@ internal class IrTreeBuilder(
             else KtBinaryOperatorKind.IS_NOT
         ctBinaryOperator.putKtMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND, KtMetadata.wrap(operatorKind))
         ctBinaryOperator.setType<CtExpression<*>>(referenceBuilder.getNewTypeReference(call.type))
-        val lhs = expressionOrWrappedInStatementExpression(call.argument.accept(this, data).resultUnsafe)
+        val lhs = call.argument.accept(this, data).resultOrNull
         val rhs = createTypeAccess(call.typeOperand)
-        ctBinaryOperator.setLeftHandOperand<CtBinaryOperator<Boolean>>(lhs)
+        if(lhs != null) {
+            ctBinaryOperator.setLeftHandOperand<CtBinaryOperator<Boolean>>(expressionOrWrappedInStatementExpression(lhs))
+        }
         ctBinaryOperator.setRightHandOperand<CtBinaryOperator<Boolean>>(rhs)
         return ctBinaryOperator.definite()
     }
@@ -1288,6 +1351,19 @@ internal class IrTreeBuilder(
 
     private fun statementOrWrappedInImplicitReturn(e: CtElement): CtStatement = when(e) {
         is CtStatement -> e
+        is CtSwitchExpression<*,*> -> {
+            val switchStmt = core.createSwitch<Any>()
+            if(e.selector != null) {
+                switchStmt.setSelector<CtSwitch<Any>>(e.selector as CtExpression<Any>)
+            }
+            else {
+                switchStmt.putMetadata(KtMetadataKeys.WHEN_SUBJECT_VARIABLE,
+                    e.getMetadata(KtMetadataKeys.WHEN_SUBJECT_VARIABLE))
+            }
+            switchStmt.setCases<CtSwitch<Any>>(e.cases as List<CtCase<Any>>)
+            switchStmt.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE, KtMetadata.wrap(e.type))
+            switchStmt
+        }
         is CtExpression<*> -> e.wrapInImplicitReturn()
         else -> throw RuntimeException("Can't wrap ${e::class} in StatementExpression")
     }

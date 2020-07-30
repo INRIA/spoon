@@ -1,16 +1,18 @@
 package spoon.kotlin.compiler.ir
 
 import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrVariable
+import org.jetbrains.kotlin.ir.descriptors.IrTemporaryVariableDescriptor
 import org.jetbrains.kotlin.ir.expressions.*
+import org.jetbrains.kotlin.ir.expressions.impl.IrIfThenElseImpl
+import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
 import org.jetbrains.kotlin.lexer.KtKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
-import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
@@ -145,5 +147,85 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
             }
         }
         return map
+    }
+
+    /**
+     * Extracts the branch conditions from its potentially nested if-else expressions
+     */
+    fun resolveBranchMultiCondition(whenBranch: IrBranch, subject: IrVariable?): List<Pair<IrExpression,Boolean>> {
+        if(whenBranch is IrElseBranch) return emptyList()
+        if(subject == null) return listOf(whenBranch.condition to false)
+        val orderedExprs = ArrayList<Pair<IrExpression,Boolean>>()
+        val condition = whenBranch.condition
+        if(condition !is IrIfThenElseImpl) {
+            orderedExprs.add(getExprWithoutTempVar(condition, subject))
+        } else {
+            visitConditionsInOrder(whenBranch.condition as IrIfThenElseImpl, subject, orderedExprs)
+        }
+
+        return orderedExprs
+    }
+
+    private fun isWhenTempSubjectVar(symbol: IrValueSymbol): Boolean {
+        return symbol.descriptor is IrTemporaryVariableDescriptor &&
+                symbol.descriptor.name.asString().matches("tmp\\d+_subject".toRegex())
+    }
+
+    private fun isWhenSubjectVar(expr: IrStatement, subject: IrVariable): Boolean {
+        return expr is IrGetValue && expr.symbol === subject.symbol
+    }
+
+    private fun getExprWithoutTempVar(irExpr: IrExpression, subject: IrVariable?): Pair<IrExpression,Boolean> {
+        if(subject == null) return irExpr to false
+        if(irExpr is IrCall) {
+            if(irExpr.origin == IrStatementOrigin.EQEQ) {
+                val eqLhs = irExpr.getValueArgument(0)!!
+                if (isWhenSubjectVar(eqLhs, subject)) {
+                    return irExpr.getValueArgument(1)!! to false
+                }
+            }
+        }
+        return irExpr to true
+    }
+
+    /**
+     * Extract the actual conditions from a nested if-else that represents a list of branch conditions.
+     *
+     * when(x) {
+     *      a, in l, is C -> {}
+     * }
+     * > branch condition translates to >
+     * if( if(x == a) true else l.contains(x) ) true else x is C
+     *
+     * With that as input, this method will return [a, x in l, x is C]. Only the rhs (non-subject expr) is returned
+     * for equality checks against the subject. For in/is operators, a marker indicates if lhs should be implicit.
+     * The marker is needed because the condition can be "y in l" where y is not the subject, if the subject is a Boolean.
+     */
+    private fun visitConditionsInOrder(
+        ifElse: IrIfThenElseImpl,
+        subject: IrVariable?,
+        list: MutableList<Pair<IrExpression,Boolean>>) {
+        if(ifElse.origin != IrStatementOrigin.WHEN_COMMA) {
+            list.add(ifElse to false)
+            return
+        }
+
+        val lhs = ifElse.branches[0].condition
+        if(lhs is IrIfThenElseImpl) {
+            visitConditionsInOrder(lhs, subject, list)
+        }
+        else {
+            list.add(getExprWithoutTempVar(lhs, subject))
+        }
+
+        val actualExpr = ifElse.branches[1].result
+       list.add(getExprWithoutTempVar(actualExpr, subject))
+    }
+
+    fun getWhenSubjectVarDeclaration(irStatement: IrStatement?): IrStatement? {
+        if(irStatement is IrVariable && isWhenTempSubjectVar(irStatement.symbol)) {
+            return irStatement.initializer!!
+        }
+        return irStatement
     }
 }
