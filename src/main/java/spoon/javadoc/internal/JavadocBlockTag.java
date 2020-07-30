@@ -32,20 +32,22 @@ public class JavadocBlockTag implements Serializable {
 	private JavadocDescription content;
 	private String name = "";
 	private String tagName;
+	private String tagRealName;
 
-	public JavadocBlockTag(CtJavaDocTag.TagType type, String content) {
+	public JavadocBlockTag(CtJavaDocTag.TagType type, String tagRealName, String content) {
 		this.type = type;
 		this.tagName = type.getName();
+		this.tagRealName = tagRealName;
 		this.content = Javadoc.parseText(content);
 	}
 
 	public JavadocBlockTag(String tagName, String content) {
-		this(CtJavaDocTag.TagType.tagFromName(tagName), content);
+		this(CtJavaDocTag.TagType.tagFromName(tagName), tagName, content);
 		this.tagName = tagName;
 	}
 
 	public JavadocBlockTag(String tagName, String paramName, String content) {
-		this(CtJavaDocTag.TagType.tagFromName(tagName), content);
+		this(CtJavaDocTag.TagType.tagFromName(tagName), tagName, content);
 		this.tagName = tagName;
 		this.name = paramName;
 	}
@@ -66,11 +68,20 @@ public class JavadocBlockTag implements Serializable {
 		return tagName;
 	}
 
+	public String getTagRealName() {
+		return tagRealName;
+	}
+
+	public void setTagRealName(String tagRealName) {
+		this.tagRealName = tagRealName;
+	}
+
 	/** pretty-prints the Javadoc tag */
 	public String toText() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("@");
-		sb.append(tagName);
+//		sb.append(tagName);
+		sb.append(tagRealName);
 		sb.append(" ").append(name);
 		if (!content.isEmpty()) {
 			sb.append(" ");
@@ -117,6 +128,8 @@ public class JavadocBlockTag implements Serializable {
 			+ '\''
 			+ ", name="
 			+ name
+			+ ", realname="
+			+ tagRealName
 			+ '}';
 	}
 }
