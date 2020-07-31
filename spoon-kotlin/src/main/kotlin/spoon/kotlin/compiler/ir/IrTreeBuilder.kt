@@ -881,12 +881,22 @@ internal class IrTreeBuilder(
     }
 
     private fun createSafeCall(block: IrBlock, data: ContextData): TransformResult<CtElement> {
-        val lhs = block.statements.firstIsInstance<IrVariable>().initializer!!.accept(this, data).resultUnsafe as CtExpression<Any>
+        val safeReceiver = block.statements.firstIsInstance<IrVariable>().initializer!!.accept(this, data).resultUnsafe as CtExpression<Any>
         val rhs = block.statements.firstIsInstance<IrIfThenElseImpl>().branches
-            .firstIsInstance<IrElseBranch>().result.accept(this, data).resultUnsafe as CtTargetedExpression<Any,CtExpression<Any>>
-
-        rhs.setTarget<CtTargetedExpression<Any,CtExpression<Any>>>(lhs)
-        rhs.putKtMetadata(KtMetadataKeys.ACCESS_IS_SAFE, KtMetadata.wrap(true))
+            .firstIsInstance<IrElseBranch>().result.accept(this, data).resultUnsafe
+        when (rhs) {
+            is CtAssignment<*,*> -> {
+                (rhs.assigned as CtTargetedExpression<Any,CtExpression<Any>>).setTarget<CtTargetedExpression<Any,CtExpression<Any>>>(safeReceiver)
+                rhs.assigned.putKtMetadata(KtMetadataKeys.ACCESS_IS_SAFE, KtMetadata.wrap(true))
+            }
+            is CtTargetedExpression<*,*> -> {
+                (rhs as CtTargetedExpression<Any,CtExpression<Any>>).setTarget<CtTargetedExpression<Any,CtExpression<Any>>>(safeReceiver)
+                rhs.putKtMetadata(KtMetadataKeys.ACCESS_IS_SAFE, KtMetadata.wrap(true))
+            }
+            else -> {
+                throw SpoonIrBuildException("Unexpected target of safe call: ${rhs::class.simpleName}")
+            }
+        }
         return rhs.definite()
     }
 
