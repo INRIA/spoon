@@ -1120,13 +1120,6 @@ class DefaultKotlinPrettyPrinter(
             adapter write LEFT_ROUND
             whenExpr.selector.accept(this)
             adapter write RIGHT_ROUND and SPACE
-        } else {
-            val subject = whenExpr.getMetadata(KtMetadataKeys.WHEN_SUBJECT_VARIABLE) as CtVariable<*>?
-            if(subject != null) {
-                adapter write LEFT_ROUND
-                subject.accept(this)
-                adapter write RIGHT_ROUND and SPACE
-            }
         }
         adapter write LEFT_CURL
 

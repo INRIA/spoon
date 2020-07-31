@@ -592,11 +592,7 @@ class FirTreeBuilder(val factory : Factory,
         val subject = subjectVariable?.accept(this,null)?.single ?:
             whenExpression.subject?.accept(this, null)?.single
         if(subject != null) {
-            if(subjectVariable !is FirVariable<*>) {
-                ctSwitch.setSelector<CtAbstractSwitch<Any>>(expressionOrWrappedInStatementExpression(subject))
-            } else {
-                ctSwitch.putMetadata<CtAbstractSwitch<*>>(KtMetadataKeys.WHEN_SUBJECT_VARIABLE, subject)
-            }
+            ctSwitch.setSelector<CtAbstractSwitch<Any>>(expressionOrWrappedInStatementExpression(subject))
         }
         ctSwitch.setCases<CtAbstractSwitch<Any>>(whenExpression.branches.map { visitWhenBranch(it, null).single })
 

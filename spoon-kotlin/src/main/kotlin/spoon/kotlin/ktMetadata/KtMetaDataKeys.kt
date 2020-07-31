@@ -47,8 +47,6 @@ object KtMetadataKeys {
     const val NAMED_ARGUMENT = "skt_key named argument : String?"
     const val SPREAD = "skt_key spread : Boolean?"
 
-    const val WHEN_SUBJECT_VARIABLE = "skt_key when subject variable : CtVariable<*>?"
-
     const val CLASS_IS_OBJECT = "skt_key class is object : Boolean?"
 
     const val SUPER_TYPE_DELEGATE = "skt_key super type delegate : CtElement?"

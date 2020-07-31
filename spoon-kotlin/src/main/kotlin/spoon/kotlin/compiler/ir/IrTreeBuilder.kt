@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.ir.descriptors.IrTemporaryVariableDescriptor
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.IrElseBranchImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrIfThenElseImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrWhenImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueParameterSymbol
 import org.jetbrains.kotlin.ir.symbols.IrVariableSymbol
@@ -639,9 +640,7 @@ internal class IrTreeBuilder(
         if(data is When) { // Coming from a block that declares a subject
             context = data
             val subject = helper.getWhenSubjectVarDeclaration(context.subject)?.accept(this, data)?.resultUnsafe
-            if(subject is CtVariable<*>) {
-                ctSwitch.putKtMetadata(KtMetadataKeys.WHEN_SUBJECT_VARIABLE, KtMetadata.wrap(subject))
-            } else if(subject != null) {
+            if(subject != null) {
                 ctSwitch.setSelector<CtSwitchExpression<*,Any>>(expressionOrWrappedInStatementExpression(subject))
             }
         } else { // No subject
@@ -913,7 +912,8 @@ internal class IrTreeBuilder(
             }
             IrStatementOrigin.WHEN -> {
                 val subjectExpr = block.statements.firstIsInstanceOrNull<IrVariable>()
-                val whenExpr = block.statements.firstIsInstance<IrWhen>()
+                val whenExpr = block.statements.firstIsInstanceOrNull<IrWhen>() ?:
+                        IrWhenImpl(block.startOffset, block.endOffset, context.irBuiltIns.unitType)
                 val context = When(data, subjectExpr)
                 return visitWhen(whenExpr, context)
             }
@@ -1356,10 +1356,6 @@ internal class IrTreeBuilder(
             if(e.selector != null) {
                 switchStmt.setSelector<CtSwitch<Any>>(e.selector as CtExpression<Any>)
             }
-            else {
-                switchStmt.putMetadata(KtMetadataKeys.WHEN_SUBJECT_VARIABLE,
-                    e.getMetadata(KtMetadataKeys.WHEN_SUBJECT_VARIABLE))
-            }
             switchStmt.setCases<CtSwitch<Any>>(e.cases as List<CtCase<Any>>)
             switchStmt.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE, KtMetadata.wrap(e.type))
             switchStmt
@@ -1411,6 +1407,10 @@ internal class IrTreeBuilder(
                 }
                 val typeRef = e.getMetadata(KtMetadataKeys.KT_STATEMENT_TYPE) as CtTypeReference<Any>
                 statementExpression = e.wrapInStatementExpression(typeRef)
+                statementExpression.setImplicit(true)
+            }
+            is CtLocalVariable<*> -> {
+                statementExpression = e.wrapInStatementExpression(e.type as CtTypeReference<Any>)
                 statementExpression.setImplicit(true)
             }
             else -> throw RuntimeException("Can't wrap ${e::class.simpleName} in StatementExpression")
