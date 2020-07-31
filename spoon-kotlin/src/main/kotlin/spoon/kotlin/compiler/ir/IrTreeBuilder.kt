@@ -764,8 +764,8 @@ internal class IrTreeBuilder(
         }
 
         if(irCall.typeArgumentsCount > 0) {
-            val implicitTypeArguments = detectImplicitTypes && getSourceHelper(data).sourceElementIs(irCall) { call ->
-                call.children.none { it is KtTypeArgumentList }
+            val implicitTypeArguments = detectImplicitTypes && !getSourceHelper(data).sourceElementIs(irCall) { call ->
+                call.children.any { it is KtTypeArgumentList }
             }
             invocation.setActualTypeArguments<CtInvocation<Any>>(
                 irCall.symbol.descriptor.typeParameters.map {
