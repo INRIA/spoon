@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.descriptors.IrTemporaryVariableDescriptor
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.IrIfThenElseImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrTypeOperatorCallImpl
 import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
 import org.jetbrains.kotlin.lexer.KtKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -178,13 +179,42 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     private fun getExprWithoutTempVar(irExpr: IrExpression, subject: IrVariable?): Pair<IrExpression,Boolean> {
         if(subject == null) return irExpr to false
         if(irExpr is IrCall) {
-            if(irExpr.origin == IrStatementOrigin.EQEQ) {
-                val eqLhs = irExpr.getValueArgument(0)!!
-                if (isWhenSubjectVar(eqLhs, subject)) {
-                    return irExpr.getValueArgument(1)!! to false
+            when (irExpr.origin) {
+                IrStatementOrigin.EQEQ -> {
+                    val eqLhs = irExpr.getValueArgument(0)!!
+                    if (isWhenSubjectVar(eqLhs, subject)) {
+                        return irExpr.getValueArgument(1)!! to false
+                    }
+                }
+                IrStatementOrigin.EXCL -> {
+                    val typeOp = irExpr.dispatchReceiver as? IrTypeOperatorCall?
+                    if (typeOp != null && typeOp.operator == IrTypeOperator.INSTANCEOF &&
+                        isWhenSubjectVar(typeOp.argument, subject)) {
+                        // Ignore not() call and change operator to !is
+                        val newTypeOp = IrTypeOperatorCallImpl(
+                            typeOp.startOffset,
+                            typeOp.endOffset,
+                            typeOp.type,
+                            IrTypeOperator.NOT_INSTANCEOF,
+                            typeOp.typeOperand,
+                            typeOp.argument
+                        )
+                        return newTypeOp to true
+                    }
+                    val notInCall = irExpr.dispatchReceiver as? IrCall?
+                    if (notInCall != null && notInCall.origin == IrStatementOrigin.NOT_IN) {
+                        return getExprWithoutTempVar(notInCall, subject)
+                    }
+                }
+                IrStatementOrigin.NOT_IN -> {
+                    val arg = irExpr.getValueArgument(0)
+                    if (arg != null && isWhenSubjectVar(arg, subject)) {
+                        return irExpr to true
+                    }
                 }
             }
         }
+
         return irExpr to true
     }
 
@@ -219,7 +249,7 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
         }
 
         val actualExpr = ifElse.branches[1].result
-       list.add(getExprWithoutTempVar(actualExpr, subject))
+        list.add(getExprWithoutTempVar(actualExpr, subject))
     }
 
     fun getWhenSubjectVarDeclaration(irStatement: IrStatement?): IrStatement? {

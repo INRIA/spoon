@@ -685,7 +685,7 @@ internal class IrTreeBuilder(
             }
         )
 
-        val result = branch.result.accept(this, context).resultUnsafe as CtBlock<*>
+        val result = branch.result.accept(this, context).resultUnsafe.blockOrSingleStatementBlock()
         case.addStatement<CtCase<Any>>(result)
         return case.definite()
     }
