@@ -80,6 +80,24 @@ method.getBody().insertBegin(injectedCode);
 
 ```
 
+### Inline templates
+
+Templates can be made inline, if the source code of the transformation is passed appropriately, as an anonymous class, as follows:
+
+```java
+// example of inline template definition + instantiation
+Template t = new StatementTemplate() {
+	TemplateParameter<Collection<?>> _col_ = createVariableAccess(method.getParameters().get(0));
+	@Override
+	public void statement() {
+		if (_col_.S().size() > 10)
+			throw new OutOfBoundException();
+	}
+}; // end of inline template
+CtStatement injectedCode = t.apply();
+```
+
+
 ### Kinds of templating
 
 
