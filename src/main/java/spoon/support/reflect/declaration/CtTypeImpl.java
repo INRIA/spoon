@@ -284,7 +284,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	private boolean shouldIncludeSamePackage(boolean includeSamePackage, CtTypeReference<?> typeRef) {
-		return includeSamePackage || (getPackage() != null && ! getPackageReference(typeRef).map(v->v.equals(getPackage().getReference())).orElse(false));
+		return includeSamePackage || (getPackage() != null && !getPackageReference(typeRef).map(v -> v.equals(getPackage().getReference())).orElse(false));
 	}
 
 	private boolean isValidTypeReference(CtTypeReference<?> typeRef) {

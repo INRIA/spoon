@@ -4,9 +4,6 @@ import org.junit.Test;
 
 import spoon.reflect.CtModel;
 
-import java.util.Collection;
-import java.util.List;
-
 
 public class LayornosIssue3514Test {
 
