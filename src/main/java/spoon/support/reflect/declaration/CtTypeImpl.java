@@ -52,7 +52,15 @@ import spoon.support.util.SignatureBasedSortedSet;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtType}.
