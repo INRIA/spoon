@@ -37,7 +37,7 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
             ClassKind.CLASS -> factory.Core().createClass()
             ClassKind.INTERFACE -> factory.Core().createInterface()
             ClassKind.ENUM_CLASS -> factory.Core().createEnum<Enum<*>>() as CtType<Any>
-            ClassKind.ENUM_ENTRY -> TODO()
+            ClassKind.ENUM_ENTRY -> factory.Core().createClass()
             ClassKind.ANNOTATION_CLASS -> TODO()
             ClassKind.OBJECT -> factory.Core().createClass<Any>().apply {
                 putMetadata<CtType<Any>>(KtMetadataKeys.CLASS_IS_OBJECT, true)

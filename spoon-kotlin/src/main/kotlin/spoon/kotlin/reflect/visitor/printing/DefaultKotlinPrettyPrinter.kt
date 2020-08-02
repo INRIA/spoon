@@ -515,7 +515,7 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Enum<*>?> visitCtEnum(ctEnum: CtEnum<T>) {
 
-        val modifiers = getModifiersMetadata(ctEnum)
+        val modifiers = getModifiersMetadata(ctEnum)?.filterNot { it == KtModifierKind.OPEN }
         adapter writeModifiers modifiers
 
         adapter write "enum class" and SPACE and ctEnum.simpleName
@@ -893,7 +893,7 @@ class DefaultKotlinPrettyPrinter(
                     adapter.ensureNEmptyLines(0)
                     adapter write enumValue.simpleName
                     adapter write LEFT_ROUND
-                    visitCommaSeparatedList((defaultExpr as CtConstructorCall<*>).arguments)
+                    visitCommaSeparatedList((defaultExpr as CtInvocation<*>).arguments)
                     adapter write RIGHT_ROUND
                 }
             }
@@ -998,12 +998,18 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
+    private fun shouldWriteTarget(newClass: CtNewClass<*>): Boolean {
+        return newClass.parent is CtEnumValue<*> && newClass.anonymousClass.superclass?.simpleName ==
+                newClass.parent.simpleName
+    }
+
     override fun <T : Any?> visitCtNewClass(newClass: CtNewClass<T>) {
-        if(newClass.target != null) {
-            newClass.target.accept(this)
-            adapter write '.'
+        if(shouldWriteTarget(newClass)) {
+            newClass.type.accept(this)
+        } else {
+            adapter write newClass.type.simpleName
         }
-        newClass.type.accept(this)
+
         visitTypeArgumentsList(newClass.actualTypeArguments, false)
         visitArgumentList(newClass.arguments)
 

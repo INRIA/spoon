@@ -139,7 +139,13 @@ internal class IrTreeBuilder(
         }
 
         for(decl in declaration.declarations) {
-            if(decl.isFakeOverride) continue
+            if(
+                decl.isFakeOverride ||
+                decl.origin == IrDeclarationOrigin.ENUM_CLASS_SPECIAL_MEMBER ||
+                decl.origin == IrDeclarationOrigin.GENERATED_DATA_CLASS_MEMBER
+            ) {
+                continue
+            }
             val ctDecl = decl.accept(this, data).resultUnsafe
             ctDecl.setParent(type)
             when(ctDecl) {
@@ -151,9 +157,6 @@ internal class IrTreeBuilder(
                     if (declaration.isInterface && ctDecl.body != null) {
                         ctDecl.setDefaultMethod<Nothing>(true)
                     }
-                    //if(decl.psi is KtClass) {
-                     //   ctDecl.setImplicit<CtMethod<*>>(true)
-                   // }
                     type.addMethod(ctDecl)
                 }
                 is CtConstructor<*> -> {
@@ -799,6 +802,34 @@ internal class IrTreeBuilder(
 
     override fun visitConstructorCall(expression: IrConstructorCall, data: ContextData): TransformResult<CtElement> {
         return createInvocation(expression, data)
+    }
+
+    override fun visitEnumConstructorCall(
+        expression: IrEnumConstructorCall,
+        data: ContextData
+    ): DefiniteTransformResult<CtInvocation<*>> {
+        return createInvocation(expression, data)
+    }
+
+    override fun visitEnumEntry(declaration: IrEnumEntry, data: ContextData): DefiniteTransformResult<CtEnumValue<*>> {
+        val ctEnum = core.createEnumValue<Any>()
+        ctEnum.setSimpleName<CtEnumValue<*>>(declaration.name.escaped())
+        val constructorCall = declaration.initializerExpression!! as IrEnumConstructorCall
+        val anonClass = declaration.correspondingClass
+        if(anonClass == null) {
+            ctEnum.setDefaultExpression<CtEnumValue<Any>>(
+                visitEnumConstructorCall(constructorCall, data).resultSafe as CtInvocation<Any>
+            )
+        } else {
+            val ctAnon = core.createNewClass<Any>()
+            ctAnon.setAnonymousClass<CtNewClass<*>>(visitClass(anonClass, data).resultSafe as CtClass<*>)
+            ctAnon.setExecutable<CtNewClass<Any>>(referenceBuilder.getNewConstructorExecutableReference(
+                declaration.initializerExpression as IrEnumConstructorCall
+            ))
+            ctEnum.setDefaultExpression<CtEnumValue<Any>>(ctAnon)
+        }
+
+        return ctEnum.definite()
     }
 
     private fun visitBinaryOperator(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtBinaryOperator<*>> {
