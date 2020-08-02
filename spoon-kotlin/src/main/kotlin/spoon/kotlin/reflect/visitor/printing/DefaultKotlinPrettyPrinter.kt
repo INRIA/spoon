@@ -44,10 +44,16 @@ class DefaultKotlinPrettyPrinter(
     private fun CtElement.getBooleanMetadata(key: String, default: Boolean) =
         getMetadata(key) as Boolean? ?: default
 
-    private fun visitCommaSeparatedList(list : List<CtElement>) {
+    private fun visitCommaSeparatedList(
+        list : List<CtElement>,
+        specialAction: ((CtElement) -> Unit)? = null) {
         var commas = list.size-1
         for (it in list) {
-            it.accept(this)
+            if(specialAction == null) {
+                it.accept(this)
+            } else {
+                specialAction(it)
+            }
             if(commas > 0) {
                 commas--
                 adapter write ", "
@@ -325,7 +331,7 @@ class DefaultKotlinPrettyPrinter(
         val modifiers = getModifiersMetadata(ctClass)
         adapter writeModifiers modifiers
         if(ctClass.getBooleanMetadata(KtMetadataKeys.CLASS_IS_OBJECT) == true) {
-            visitObject(ctClass)
+            visitObject(ctClass, false)
             return
         }
 
@@ -336,6 +342,33 @@ class DefaultKotlinPrettyPrinter(
             adapter write typeParamHandler.generateTypeParamListString() and SPACE
         }
 
+        writeInheritanceList(ctClass)
+
+        val whereClause = typeParamHandler.generateWhereClause()
+        if(whereClause.isNotEmpty()) {
+            adapter write " where "
+            adapter.writeAligned(whereClause)
+        }
+
+        writeTypeMembersWithoutPrimaryConstructor(ctClass)
+        exitCtStatement(ctClass)
+    }
+
+    private fun writeTypeMembersWithoutPrimaryConstructor(ctClass: CtClass<*>) {
+        adapter write SPACE and LEFT_CURL
+        adapter.newline()
+        adapter.pushIndent()
+
+        //  ctClass.constructors.filterNot { it.isPrimary() }.forEach { it.accept(this) }
+        ctClass.typeMembers.filterNot { it is CtConstructor<*> && it.isPrimary() }.forEach {
+            if(!it.isImplicit) { it.accept(this) }
+        }
+        adapter.popIndent()
+        adapter.ensureNEmptyLines(0)
+        adapter writeln RIGHT_CURL
+    }
+
+    private fun writeInheritanceList(ctClass: CtClass<*>) {
         val primaryConstructor = ctClass.constructors.firstOrNull { it.isPrimary() }
         if(primaryConstructor != null) {
             visitCtConstructor(primaryConstructor)
@@ -347,68 +380,24 @@ class DefaultKotlinPrettyPrinter(
             } else {
                 adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
             }
-            adapter write ctClass.superInterfaces.joinToString(transform = {
-                val delegate = it.getMetadata(KtMetadataKeys.SUPER_TYPE_DELEGATE) as CtElement?
-                if(delegate == null) TypeName.build(it).fQNameWithoutNullability
-                else "${TypeName.build(it).fQNameWithoutNullability} by ${printElement(delegate)}"
-            })
-        }
-
-        val whereClause = typeParamHandler.generateWhereClause()
-        if(whereClause.isNotEmpty()) {
-            adapter write " where "
-            adapter.writeAligned(whereClause)
-        }
-
-        adapter write SPACE and LEFT_CURL
-        adapter.newline()
-        adapter.pushIndent()
-
-      //  ctClass.constructors.filterNot { it.isPrimary() }.forEach { it.accept(this) }
-        ctClass.typeMembers.filterNot { it is CtConstructor<*> && it.isPrimary() }.forEach {
-           if(!it.isImplicit) { it.accept(this) }
-        }
-        adapter.popIndent()
-        adapter.ensureNEmptyLines(0)
-        adapter writeln RIGHT_CURL
-        exitCtStatement(ctClass)
-    }
-
-    private fun visitObject(ctClass: CtClass<*>) {
-        adapter write "object" and SPACE and ctClass.simpleName
-
-        val inheritanceList = ArrayList<TypeName>()
-
-        if(ctClass.superclass != null) {
-            inheritanceList.add(TypeName.build(ctClass.superclass))
-        }
-
-        if(ctClass.superInterfaces.isNotEmpty()) {
-            ctClass.superInterfaces.forEach { inheritanceList.add(TypeName.build(it)) }
-        }
-        if(inheritanceList.isNotEmpty()) {
-            var p = ""
-            if(ctClass.superclass == null || ctClass.superclass.qualifiedName == "kotlin.Any") {
-                adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
+            visitCommaSeparatedList(ctClass.superInterfaces.toList()) { superInterface ->
+                val delegate = superInterface.getMetadata(KtMetadataKeys.SUPER_TYPE_DELEGATE) as CtElement?
+                superInterface.accept(this)
+                if(delegate != null) {
+                    adapter write " by "
+                    delegate.accept(this)
+                }
             }
-            else p = ", "
-            adapter write inheritanceList.joinToString(prefix = p, transform = { it.fQNameWithoutNullability })
         }
-
-        adapter write SPACE and LEFT_CURL
-        adapter.newline()
-        adapter.pushIndent()
-
-        ctClass.typeMembers.filterNot { it is CtConstructor<*> && it.isPrimary() }.forEach {
-            if(!it.isImplicit) { it.accept(this) }
-        }
-        adapter.popIndent()
-        adapter.ensureNEmptyLines(0)
-        adapter writeln RIGHT_CURL
     }
 
-    private fun visitInheritanceList(superTypes: List<TypeName>) {
-        
+    private fun visitObject(ctClass: CtClass<*>, anonymous: Boolean) {
+        adapter write "object"
+        if(!anonymous) adapter write SPACE and ctClass.simpleName
+
+        writeInheritanceList(ctClass)
+
+        writeTypeMembersWithoutPrimaryConstructor(ctClass)
     }
 
     override fun <T : Any?> visitCtInterface(ctInterface: CtInterface<T>) {
@@ -462,7 +451,8 @@ class DefaultKotlinPrettyPrinter(
         if(ctConstructor.isImplicit && !primary) return
 
         val modifierSet = getModifiersMetadata(ctConstructor)?.
-            filterIf(ctConstructor.parent is CtEnum<*>) { it != KtModifierKind.PRIVATE }
+            filterIf(ctConstructor.parent is CtEnum<*> ||
+                ctConstructor.parent.getBooleanMetadata(KtMetadataKeys.CLASS_IS_OBJECT, false)) { it != KtModifierKind.PRIVATE }
         if(primary) {
             if(modifierSet != null && modifierSet.filterNot { it == KtModifierKind.PUBLIC }.isNotEmpty()) {
                 adapter write SPACE
@@ -1004,6 +994,10 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtNewClass(newClass: CtNewClass<T>) {
+        if(newClass.getBooleanMetadata(KtMetadataKeys.CLASS_IS_OBJECT, false)) {
+            visitObject(newClass.anonymousClass, true)
+            return
+        }
         if(shouldWriteTarget(newClass)) {
             newClass.type.accept(this)
         } else {
