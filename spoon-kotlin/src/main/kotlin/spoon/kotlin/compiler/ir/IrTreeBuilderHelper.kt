@@ -10,13 +10,14 @@ import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.IrIfThenElseImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrTypeOperatorCallImpl
 import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
+import org.jetbrains.kotlin.ir.types.classifierOrFail
 import org.jetbrains.kotlin.lexer.KtKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
-import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperInterfaces
+import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassOrAny
 import org.jetbrains.kotlin.resolve.source.getPsi
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.reflect.code.LiteralBase
@@ -43,16 +44,25 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
                 putMetadata<CtType<Any>>(KtMetadataKeys.CLASS_IS_OBJECT, true)
             }
         }
-        type.setSimpleName<CtType<*>>(irClass.name.identifier)
+        if(!irClass.name.isSpecial) {
+            type.setSimpleName<CtType<*>>(irClass.name.identifier)
+        }
         type.addModifiersAsMetadata(IrToModifierKind.fromClass(irClass))
 
-        val superClass = irClass.descriptor.getSuperClassNotAny()
-        if(superClass != null) {
-            type.setSuperclass<CtType<Any>>(irTreeBuilder.referenceBuilder.getNewTypeReference<Any>(superClass))
+        val superClassNotAny = irClass.descriptor.getSuperClassNotAny()
+        val superClassOrAny = irClass.descriptor.getSuperClassOrAny()
+        if(superClassNotAny != null) { // ==> superClassNotAny = superClassOrAny
+            type.setSuperclass<CtType<Any>>(
+                referenceBuilder.getNewTypeReference<Any>(
+                irClass.superTypes.first { it.classifierOrFail.descriptor === superClassNotAny }))
         }
-        type.setSuperInterfaces<CtType<Any>>(irClass.descriptor.getSuperInterfaces().map {
-            referenceBuilder.getNewTypeReference<Any>(it)
-        }.toSet())
+
+        type.setSuperInterfaces<CtType<Any>>(irClass.superTypes.
+            filterNot {
+                it.classifierOrFail.descriptor === superClassOrAny // Check against Any, because it is listen in supertypes
+            }.map {
+                referenceBuilder.getNewTypeReference<Any>(it)
+            }.toSet())
 
         type.setFormalCtTypeParameters<CtType<*>>(irClass.typeParameters.map {
             irTreeBuilder.visitTypeParameter(it, context).resultUnsafe
