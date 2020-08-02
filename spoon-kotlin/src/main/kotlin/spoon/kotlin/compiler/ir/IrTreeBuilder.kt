@@ -39,6 +39,7 @@ import spoon.reflect.declaration.*
 import spoon.reflect.factory.Factory
 import spoon.reflect.reference.*
 import spoon.support.reflect.code.CtLiteralImpl
+import spoon.support.reflect.cu.position.SourcePositionImpl
 
 internal class IrTreeBuilder(
     val factory: Factory,
@@ -90,11 +91,18 @@ internal class IrTreeBuilder(
         val pkg = if(declaration.packageFragmentDescriptor.fqName.isRoot) module.rootPackage else
             factory.Package().getOrCreate(declaration.packageFragmentDescriptor.fqName.asString(), module)
 
+        val lineSeparatorPositions = declaration.fileEntry.lineStartOffsets
         compilationUnit.declaredPackage = pkg
-        compilationUnit.lineSeparatorPositions = declaration.fileEntry.lineStartOffsets
+        compilationUnit.lineSeparatorPositions = lineSeparatorPositions
 
         for(subDeclaration in declaration.declarations) {
             val ctDecl = subDeclaration.accept(this, Empty(declaration)).resultUnsafe
+            ctDecl.setPosition<CtType<*>>(SourcePositionImpl(
+                compilationUnit,
+                declaration.startOffset,
+                declaration.endOffset,
+                lineSeparatorPositions)
+            )
             when(ctDecl) {
                 is CtType<*> -> {
                     pkg.addType<CtPackage>(ctDecl)
@@ -117,7 +125,7 @@ internal class IrTreeBuilder(
         return compilationUnit.definite()
     }
 
-    override fun visitClass(declaration: IrClass, data: ContextData): DefiniteTransformResult<CtElement> {
+    override fun visitClass(declaration: IrClass, data: ContextData): DefiniteTransformResult<CtType<*>> {
         val module = helper.getOrCreateModule()
         val type = helper.createType(declaration, data)
         val isObject = type.getMetadata(KtMetadataKeys.CLASS_IS_OBJECT) as Boolean? == true
@@ -131,12 +139,6 @@ internal class IrTreeBuilder(
         // Modifiers
         val modifierList = IrToModifierKind.fromClass(declaration)
         type.addModifiersAsMetadata(modifierList)
-
-        // Type params
-        if(declaration.typeParameters.isNotEmpty()) {
-            type.setFormalCtTypeParameters<CtType<Any>>(
-                declaration.typeParameters.map { visitTypeParameter(it, data).resultSafe })
-        }
 
         for(decl in declaration.declarations) {
             if(
@@ -160,8 +162,9 @@ internal class IrTreeBuilder(
                     type.addMethod(ctDecl)
                 }
                 is CtConstructor<*> -> {
-                    if (type is CtClass<*> && !isObject) {
+                    if (type is CtClass<*>) {
                         (type as CtClass<Any>).addConstructor<CtClass<Any>>(ctDecl as CtConstructor<Any>)
+                        ctDecl.setImplicit<CtElement>(true)
                     }
                 }
                 is CtTypeMember -> {
@@ -800,7 +803,7 @@ internal class IrTreeBuilder(
         return createInvocation(expression, data)
     }
 
-    override fun visitConstructorCall(expression: IrConstructorCall, data: ContextData): TransformResult<CtElement> {
+    override fun visitConstructorCall(expression: IrConstructorCall, data: ContextData): DefiniteTransformResult<CtInvocation<*>> {
         return createInvocation(expression, data)
     }
 
@@ -957,6 +960,16 @@ internal class IrTreeBuilder(
                         IrWhenImpl(block.startOffset, block.endOffset, context.irBuiltIns.unitType)
                 val context = When(data, subjectExpr)
                 return visitWhen(whenExpr, context)
+            }
+            IrStatementOrigin.OBJECT_LITERAL -> {
+                val ctAnonClass = core.createNewClass<Any>()
+                val theAnonClass = visitClass(block.statements[0] as IrClass, data).resultSafe
+                ctAnonClass.setAnonymousClass<CtNewClass<Any>>(theAnonClass as CtClass<*>)
+                ctAnonClass.setExecutable<CtNewClass<Any>>(referenceBuilder.getNewConstructorExecutableReference(
+                    block.statements[1] as IrConstructorCall)
+                )
+                ctAnonClass.putKtMetadata(KtMetadataKeys.CLASS_IS_OBJECT, KtMetadata.wrap(true))
+                return ctAnonClass.definite()
             }
             in INCREMENT_DECREMENT_OPERATORS -> {
                 val setVar = block.statements.firstIsInstanceOrNull<IrSetVariable>()?.symbol

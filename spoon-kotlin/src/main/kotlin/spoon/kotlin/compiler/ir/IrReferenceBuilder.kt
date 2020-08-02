@@ -241,6 +241,13 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         return executableReference
     }
 
+    fun <T> getNewConstructorExecutableReference(constructorCall: IrConstructorCall): CtExecutableReference<T> {
+        val executableReference = getConstructorExecutableReferenceWithoutDeclaringType<T>(constructorCall)
+        val declaringType = constructorCall.symbol.descriptor.containingDeclaration
+        executableReference.setDeclaringType<CtExecutableReference<T>>(getDeclaringTypeReference(declaringType))
+        return executableReference
+    }
+
     fun <T> getNewDelegatingExecutableReference(constructorCall: IrDelegatingConstructorCall): CtExecutableReference<T> {
         val executableReference = getConstructorExecutableReferenceWithoutDeclaringType<T>(constructorCall)
         val declaringType = constructorCall.symbol.descriptor.containingDeclaration
