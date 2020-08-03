@@ -23,11 +23,14 @@ public class CtLineElementComparator implements Comparator<CtElement>, Serializa
 	 */
 	@Override
 	public int compare(CtElement o1, CtElement o2) {
-		if (o1.getPosition().isValidPosition() == false) {
+		if (!o1.getPosition().isValidPosition() && !o2.getPosition().isValidPosition()) {
+			return 0;
+		}
+		if (!o1.getPosition().isValidPosition()) {
 			return -1;
 		}
 
-		if (o2.getPosition().isValidPosition() == false) {
+		if (!o2.getPosition().isValidPosition()) {
 			// ensures that compare(x,y) = - compare(y,x)
 			return 1;
 		}
@@ -38,6 +41,9 @@ public class CtLineElementComparator implements Comparator<CtElement>, Serializa
 		if (pos1 == pos2) {
 			int pos3 = o1.getPosition().getSourceEnd();
 			int pos4 = o2.getPosition().getSourceEnd();
+			if (pos3 == pos4) {
+				return 0;
+			}
 			return (pos3 < pos4) ? -1 : 1;
 		}
 
