@@ -95,18 +95,10 @@ public class CtClassTest {
 		cons.addParameter(cons.getFactory().createParameter().setType(cons.getFactory().Type().OBJECT));
 		// now that we have changed the signature we can call getConstructors safely
 		assertEquals(4, foo.getConstructors().size());
-		// we cloned the first constructor, so it has the same position, and comes before the 2nd and 3rd constructor
-		assertSame(cons, foo.getTypeMembers().get(1));
+
 		// the parent is set (the core problem described in the issue has been fixed)
 		assertSame(foo, cons.getParent());
 
-		// now we clone and reset the position
-		CtConstructor cons2 = foo.getConstructors().toArray(new CtConstructor[0])[0].clone();
-		cons2.setPosition(null);
-		// adding the constructor, this time, without a position
-		foo.addConstructor(cons2);
-		// without position, it has been addded at the end
-		assertSame(cons2, foo.getTypeMembers().get(4));
 	}
 
 	@Test
