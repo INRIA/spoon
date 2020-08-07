@@ -306,8 +306,26 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
+    private fun visitTypeAlias(ctClass: CtClass<*>) {
+        val alias = ctClass.getMetadata(KtMetadataKeys.TYPE_ALIAS) as CtTypeReference<*>
+        adapter.ensureNEmptyLines(1)
+
+        adapter writeModifiers getModifiersMetadata(ctClass) and "typealias " and ctClass.simpleName
+        val typeParamHandler = TypeParameterHandler(ctClass, this, false)
+        if(!typeParamHandler.isEmpty) {
+            adapter write typeParamHandler.generateTypeParamListString()
+        }
+
+        adapter write " = "
+        alias.accept(this)
+    }
+
     override fun <T : Any?> visitCtClass(ctClass: CtClass<T>?) {
         if(ctClass == null) return
+        if(ctClass.getMetadata(KtMetadataKeys.TYPE_ALIAS) != null) {
+            visitTypeAlias(ctClass)
+            return
+        }
         if(ctClass.isImplicit) {
            when(ctClass.simpleName) {
                topLvlClassName -> { // Print the top level class

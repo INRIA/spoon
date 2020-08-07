@@ -815,6 +815,17 @@ internal class IrTreeBuilder(
         return createInvocation(expression, data)
     }
 
+    override fun visitTypeAlias(declaration: IrTypeAlias, data: ContextData): DefiniteTransformResult<CtClass<*>> {
+        val ctClass = core.createClass<Any>()
+        ctClass.setSimpleName<CtClass<*>>(declaration.name.escaped())
+        ctClass.setFormalCtTypeParameters<CtClass<*>>(declaration.typeParameters.map {
+            visitTypeParameter(it, data).resultSafe
+        })
+        ctClass.addModifiersAsMetadata(listOfNotNull(IrToModifierKind.convertVisibility(declaration.visibility)))
+        ctClass.putKtMetadata(KtMetadataKeys.TYPE_ALIAS, KtMetadata.wrap(referenceBuilder.getNewTypeReference<Any>(declaration.expandedType)))
+        return ctClass.definite()
+    }
+
     override fun visitEnumEntry(declaration: IrEnumEntry, data: ContextData): DefiniteTransformResult<CtEnumValue<*>> {
         val ctEnum = core.createEnumValue<Any>()
         ctEnum.setSimpleName<CtEnumValue<*>>(declaration.name.escaped())
