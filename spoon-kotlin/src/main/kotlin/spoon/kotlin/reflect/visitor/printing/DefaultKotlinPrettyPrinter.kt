@@ -159,7 +159,7 @@ class DefaultKotlinPrettyPrinter(
 
     @Suppress("UNCHECKED_CAST")
     private fun getModifiersMetadata(e : CtElement) : Set<KtModifierKind>? =
-        e.getMetadata(KtMetadataKeys.KT_MODIFIERS) as? Set<KtModifierKind>
+        e.getMetadata(KtMetadataKeys.KT_MODIFIERS) as? Set<KtModifierKind>?
 
     override fun getResult(): String {
         return adapter.toString()
@@ -446,27 +446,26 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtConstructor(ctConstructor : CtConstructor<T>) {
         // Annotations not implemented
-
+        val isObject = ctConstructor.parent.getBooleanMetadata(KtMetadataKeys.CLASS_IS_OBJECT, false)
         val primary = ctConstructor.getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as? Boolean? ?: false
-        if(ctConstructor.isImplicit && !primary) return
-
-        val modifierSet = getModifiersMetadata(ctConstructor)?.
-            filterIf(ctConstructor.parent is CtEnum<*> ||
-                ctConstructor.parent.getBooleanMetadata(KtMetadataKeys.CLASS_IS_OBJECT, false)) { it != KtModifierKind.PRIVATE }
-        if(primary) {
-            if(modifierSet != null && modifierSet.filterNot { it == KtModifierKind.PUBLIC }.isNotEmpty()) {
-                adapter write SPACE
-                adapter writeModifiers modifierSet
-                adapter write "constructor"
+        if (ctConstructor.isImplicit && !primary) return
+        if(!isObject) {
+            val modifierSet =
+                getModifiersMetadata(ctConstructor)?.filterIf(ctConstructor.parent is CtEnum<*>) { it != KtModifierKind.PRIVATE }
+            if (primary) {
+                if (modifierSet != null && modifierSet.filterNot { it == KtModifierKind.PUBLIC }.isNotEmpty()) {
+                    adapter write SPACE
+                    adapter writeModifiers modifierSet
+                    adapter write "constructor"
+                }
+            } else {
+                adapter.ensureNEmptyLines(1)
+                adapter writeModifiers modifierSet and "constructor"
             }
-        } else {
-            adapter.ensureNEmptyLines(1)
-            adapter writeModifiers modifierSet and "constructor"
+            adapter write LEFT_ROUND
+            visitCommaSeparatedList(ctConstructor.parameters)
+            adapter write RIGHT_ROUND
         }
-        adapter write LEFT_ROUND
-        visitCommaSeparatedList(ctConstructor.parameters)
-        adapter write RIGHT_ROUND
-
         if(ctConstructor.body != null) {
             visitConstructorBody(ctConstructor.body, primary)
         }

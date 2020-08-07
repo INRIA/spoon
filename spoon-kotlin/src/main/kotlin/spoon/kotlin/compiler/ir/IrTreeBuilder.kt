@@ -164,7 +164,8 @@ internal class IrTreeBuilder(
                 is CtConstructor<*> -> {
                     if (type is CtClass<*>) {
                         (type as CtClass<Any>).addConstructor<CtClass<Any>>(ctDecl as CtConstructor<Any>)
-                        ctDecl.setImplicit<CtElement>(true)
+                        if(isObject)
+                            ctDecl.setImplicit<CtElement>(true)
                     }
                 }
                 is CtTypeMember -> {
