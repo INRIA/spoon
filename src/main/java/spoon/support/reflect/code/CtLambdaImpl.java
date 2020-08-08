@@ -7,11 +7,14 @@ package spoon.support.reflect.code;
 
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
@@ -19,6 +22,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.UnsettableProperty;
@@ -101,7 +105,32 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			//it can be null in noclasspath mode, so we do not know which method is called, by lambda
 			return null;
 		}
-		CtType<T> lambdaType = lambdaTypeRef.getTypeDeclaration();
+		CtMethod<?> lambdaExecutableMethod = null;
+		if (!(lambdaTypeRef instanceof CtIntersectionTypeReference)) {
+			return getOverriddenAux(lambdaTypeRef);
+		} else {
+			CtElement parent = lambdaTypeRef.getParent();
+			CtTypeReference<?> parentTypeReference = null;
+			if (parent != null && parent instanceof CtLocalVariable) {
+				parentTypeReference = ((CtLocalVariable) parent).getType();
+			} else if (parent != null && parent instanceof CtAssignment) {
+				parentTypeReference = ((CtAssignment) parent).getAssigned().getType();
+			}
+			for (CtTypeReference<?> ctTypeReference : ((CtIntersectionTypeReference<?>) lambdaTypeRef).getBounds()) {
+				CtMethod<?> tmp = getOverriddenAux(ctTypeReference);
+				if (tmp != null && (lambdaExecutableMethod == null || ctTypeReference.equals(parentTypeReference))) {
+					lambdaExecutableMethod = tmp;
+				}
+			}
+		}
+		if (lambdaExecutableMethod == null) {
+			throw new SpoonException("The lambda can be based on interface, which has one method. But " + lambdaTypeRef.getQualifiedName() + " has no one");
+		}
+		return (CtMethod<R>) lambdaExecutableMethod;
+	}
+
+	private  <R> CtMethod<R> getOverriddenAux(CtTypeReference<?> lambdaTypeRef) throws SpoonException {
+		CtType<?> lambdaType = lambdaTypeRef.getTypeDeclaration();
 		if (lambdaType.isInterface() == false) {
 			throw new SpoonException("The lambda can be based on interface only. But type " + lambdaTypeRef.getQualifiedName() + " is not an interface");
 		}
@@ -123,9 +152,6 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 				}
 				lambdaExecutableMethod = method;
 			}
-		}
-		if (lambdaExecutableMethod == null) {
-			throw new SpoonException("The lambda can be based on interface, which has one method. But " + lambdaTypeRef.getQualifiedName() + " has no one");
 		}
 		return (CtMethod<R>) lambdaExecutableMethod;
 	}
