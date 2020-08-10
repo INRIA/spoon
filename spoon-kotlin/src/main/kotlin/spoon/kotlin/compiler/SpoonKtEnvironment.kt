@@ -26,7 +26,9 @@ class SpoonKtEnvironment(sourceFiles : List<File>, mName: String?, val args : K2
 
     private val collector = MessageCollector.NONE
        // PrintingMessageCollector(System.err, MessageRenderer.PLAIN_RELATIVE_PATHS, true)
-    private val languageVersion = LanguageVersionSettingsImpl.DEFAULT
+    private val languageVersion =
+        //   LanguageVersionSettingsImpl(LanguageVersion.KOTLIN_1_2, ApiVersion.createByLanguageVersion(LanguageVersion.KOTLIN_1_2))
+        LanguageVersionSettingsImpl.DEFAULT
     val config = CompilerConfiguration()
     val moduleChunk : ModuleChunk
 

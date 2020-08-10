@@ -1163,10 +1163,6 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtTypeReference(typeRef: CtTypeReference<T>) {
         if(typeRef.isImplicit) return
-        if(typeRef.declaringType != null) {
-            typeRef.accessType.accept(this)
-            adapter write '.'
-        }
 
         val name = TypeName.build(typeRef)
         adapter write name.fQNameWithoutNullability
