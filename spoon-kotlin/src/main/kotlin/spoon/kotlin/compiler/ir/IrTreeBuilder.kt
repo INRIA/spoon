@@ -854,7 +854,7 @@ internal class IrTreeBuilder(
             tempLhs = irCall.getValueArgument(0)!!
             tempRhs = irCall.getValueArgument(1)!!
         } else if(irCall.valueArgumentsCount == 1) {
-            tempLhs = irCall.dispatchReceiver!!
+            tempLhs = irCall.dispatchReceiver ?: irCall.extensionReceiver!!
             tempRhs = irCall.getValueArgument(0)!!
         } else {
             val receiver = irCall.dispatchReceiver
@@ -1136,8 +1136,11 @@ internal class IrTreeBuilder(
     }
 
 
-    private fun visitPropertyAccess(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtVariableAccess<*>> {
+    private fun visitPropertyAccess(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtElement> {
+        if(irCall.symbol.descriptor is JavaMethodDescriptor)
+            return createInvocation(irCall, data)
         val descriptor = irCall.symbol.descriptor as PropertyGetterDescriptor
+
         val variable = referenceBuilder.getNewVariableReference<Any>(descriptor.correspondingProperty)
         val target = getReceiver(irCall, data)
         val fieldRead = core.createFieldRead<Any>()
@@ -1180,7 +1183,8 @@ internal class IrTreeBuilder(
         return when(expression.operator) {
             IrTypeOperator.CAST, IrTypeOperator.SAFE_CAST -> createTypeCast(expression, data)
             IrTypeOperator.INSTANCEOF, IrTypeOperator.NOT_INSTANCEOF -> createIsTypeOperation(expression, data)
-            IrTypeOperator.IMPLICIT_COERCION_TO_UNIT -> expression.argument.accept(this, data)
+            IrTypeOperator.IMPLICIT_COERCION_TO_UNIT,
+            IrTypeOperator.IMPLICIT_CAST -> expression.argument.accept(this, data)
             else -> throw SpoonIrBuildException("Unimplemented type operator: ${expression.operator}")
         }
     }
