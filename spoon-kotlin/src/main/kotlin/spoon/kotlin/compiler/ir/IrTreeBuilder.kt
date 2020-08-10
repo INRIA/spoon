@@ -88,7 +88,7 @@ internal class IrTreeBuilder(
     override fun visitFile(declaration: IrFile, data: ContextData): DefiniteTransformResult<CtCompilationUnit> {
         sourceHelper = PsiSourceHelper(sourceManager, data.file) // FIXME
         val module = helper.getOrCreateModule()
-        val compilationUnit = factory.CompilationUnit().getOrCreate(declaration.name)
+        val compilationUnit = factory.CompilationUnit().getOrCreate(declaration.path)
 
         val pkg = if(declaration.packageFragmentDescriptor.fqName.isRoot) module.rootPackage else
             factory.Package().getOrCreate(declaration.packageFragmentDescriptor.fqName.asString(), module)
