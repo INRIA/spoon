@@ -1366,6 +1366,9 @@ internal class IrTreeBuilder(
         if(finalizer != null) {
             ctTry.setFinalizer<CtTry>(finalizer)
         }
+        ctTry.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE, KtMetadata.wrap(
+            referenceBuilder.getNewTypeReference<Any>(aTry.type)
+        ))
         return ctTry.definite()
     }
 
@@ -1477,6 +1480,11 @@ internal class IrTreeBuilder(
             }
             is CtLocalVariable<*> -> {
                 statementExpression = e.wrapInStatementExpression(e.type as CtTypeReference<Any>)
+                statementExpression.setImplicit(true)
+            }
+            is CtStatement -> {
+                val typeRef = e.getMetadata(KtMetadataKeys.KT_STATEMENT_TYPE) as CtTypeReference<Any>
+                statementExpression = e.wrapInStatementExpression(typeRef)
                 statementExpression.setImplicit(true)
             }
             else -> throw RuntimeException("Can't wrap ${e::class.simpleName} in StatementExpression")
