@@ -1091,7 +1091,7 @@ class DefaultKotlinPrettyPrinter(
             adapter write "import" and SPACE
             ctImport.accept(object : CtImportVisitor {
                 override fun <T : Any?> visitTypeImport(typeRef: CtTypeReference<T>) {
-                    visitCtTypeReference(typeRef)
+                    visitCtTypeReference(typeRef, false)
                 }
 
                 override fun <T : Any?> visitUnresolvedImport(unresolvedImport: CtUnresolvedImport) {
@@ -1099,18 +1099,14 @@ class DefaultKotlinPrettyPrinter(
                 }
 
                 override fun <T : Any?> visitMethodImport(execRef: CtExecutableReference<T>) {
-                    if(execRef.declaringType.`package` != null) {
-                        visitCtPackageReference(execRef.declaringType.`package`)
-                        adapter write '.'
-                    }
+                    val didWrite = visitCtTypeReference(execRef.declaringType, false)
+                    if(didWrite) adapter write '.'
                     adapter write execRef.simpleName
                 }
 
                 override fun <T : Any?> visitFieldImport(fieldRef: CtFieldReference<T>) {
-                    if(fieldRef.declaringType.`package` != null) {
-                        visitCtPackageReference(fieldRef.declaringType.`package`)
-                        adapter write '.'
-                    }
+                    val didWrite = visitCtTypeReference(fieldRef.declaringType, false)
+                    if(didWrite) adapter write '.'
                     adapter write fieldRef.simpleName
                 }
 
@@ -1164,12 +1160,34 @@ class DefaultKotlinPrettyPrinter(
     override fun <T : Any?> visitCtTypeReference(typeRef: CtTypeReference<T>) {
         if(typeRef.isImplicit) return
 
-        val name = TypeName.build(typeRef)
-        adapter write name.fQNameWithoutNullability
+        visitCtTypeReference(typeRef, true)
+    }
 
-        visitTypeArgumentsList(typeRef.actualTypeArguments, false)
+    private fun visitCtTypeReference(typeRef: CtTypeReference<*>, withGenerics: Boolean): Boolean {
+        if(typeRef.simpleName == topLvlClassName) {
+            if(typeRef.declaringType == null) {
+                if(typeRef.`package` == null) return false
+                visitCtPackageReference(typeRef.`package`)
+                return !typeRef.`package`.isUnnamedPackage
+            }
+            return visitCtTypeReference(typeRef.declaringType, false)
+        }
+
+        if(typeRef.declaringType != null) {
+            visitCtTypeReference(typeRef.declaringType, false)
+            adapter write '.'
+        } else if (typeRef.`package` != null && !typeRef.`package`.isUnnamedPackage) {
+            visitCtPackageReference(typeRef.`package`)
+            adapter write '.'
+        }
+        val name = TypeName.build(typeRef)
+        adapter write name.simpleNameWithoutNullability
+
+        if(withGenerics)
+            visitTypeArgumentsList(typeRef.actualTypeArguments, false)
 
         adapter write name.suffix
+        return true
     }
 
     override fun <T : Any?> visitCtVariableWrite(varWrite: CtVariableWrite<T>) {
