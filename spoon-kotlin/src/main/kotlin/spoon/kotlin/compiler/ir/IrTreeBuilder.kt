@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.ir.types.isNullableAny
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.load.java.descriptors.JavaMethodDescriptor
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
@@ -85,6 +86,7 @@ internal class IrTreeBuilder(
     }
 
     override fun visitFile(declaration: IrFile, data: ContextData): DefiniteTransformResult<CtCompilationUnit> {
+        sourceHelper = PsiSourceHelper(sourceManager, data.file) // FIXME
         val module = helper.getOrCreateModule()
         val compilationUnit = factory.CompilationUnit().getOrCreate(declaration.name)
 
@@ -483,10 +485,10 @@ internal class IrTreeBuilder(
 
         // Extension receiver
         val extensionReceiverRef = irFunction.extensionReceiverParameter?.type?.let {
-            referenceBuilder.getNewTypeReference<Any>(it)
+            createTypeAccess(it)
         }
         if(extensionReceiverRef != null) {
-            extensionReceiverRef.setParent<CtReference>(extensionReceiverRef)
+            extensionReceiverRef.setParent<CtElement>(ctMethod)
             ctMethod.putKtMetadata(KtMetadataKeys.EXTENSION_TYPE_REF,
                 KtMetadata.wrap(extensionReceiverRef)
             )
