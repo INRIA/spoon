@@ -57,5 +57,7 @@ object KtMetadataKeys {
 
     const val IS_DESTRUCTURED = "skt_key is destructured : Boolean"
     const val COMPONENTS = "skt_key components : List<CtLocalVariable>?"
+
+    const val STRING_CONCAT_ELEMENTS = "skt_key string concat elements: List<CtExpression<*>>"
 }
 

@@ -19,6 +19,7 @@ internal class KtMetadata<T> private constructor(val value: T) {
         fun wrap(kind: KtBinaryOperatorKind): KtMetadata<KtBinaryOperatorKind> = KtMetadata(kind)
         fun wrap(modifiers: List<KtModifierKind>): KtMetadata<Set<KtModifierKind>> = wrap(modifiers.toMutableSet())
         fun wrap(modifiers: MutableSet<KtModifierKind>): KtMetadata<Set<KtModifierKind>> = KtMetadata(modifiers)
+        fun elementList(list: List<CtElement>) = KtMetadata(list)
     }
 }
 

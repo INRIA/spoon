@@ -572,8 +572,21 @@ class DefaultKotlinPrettyPrinter(
         compilationUnit.declaredTypes.forEach { it.accept(this) }
     }
 
-    override fun <T : Any?> visitCtNewArray(p0: CtNewArray<T>?) {
-        TODO("Not yet implemented")
+    // Using CtNewArray as placeholder for string concat. CtNewArray is redundant for Kotlin and
+    // this way we can skip introducing a new element for now
+    override fun <T : Any?> visitCtNewArray(placeholder: CtNewArray<T>) {
+        val args = placeholder.getMetadata(KtMetadataKeys.STRING_CONCAT_ELEMENTS) as List<CtElement>
+        adapter write '"'
+        for(arg in args) {
+            if(arg is CtLiteral<*> && arg.value is String) {
+                adapter write (arg.value as String)
+            } else {
+                adapter write "\${"
+                arg.accept(this)
+                adapter write '}'
+            }
+        }
+        adapter write '"'
     }
 
     override fun visitCtComment(p0: CtComment?) {

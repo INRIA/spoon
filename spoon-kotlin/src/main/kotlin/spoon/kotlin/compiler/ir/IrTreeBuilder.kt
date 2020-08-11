@@ -233,6 +233,17 @@ internal class IrTreeBuilder(
         return ctLiteral.definite()
     }
 
+    override fun visitStringConcatenation(
+        expression: IrStringConcatenation,
+        data: ContextData
+    ): DefiniteTransformResult<CtNewArray<*>> {
+
+        val ctPlaceholder = core.createNewArray<Any>()
+        val args = expression.arguments.map { it.accept(this, data).resultUnsafe.apply { setParent(ctPlaceholder) } }
+        ctPlaceholder.putKtMetadata(KtMetadataKeys.STRING_CONCAT_ELEMENTS, KtMetadata.elementList(args))
+        return ctPlaceholder.definite()
+    }
+
     override fun visitFunctionExpression(
         expression: IrFunctionExpression,
         data: ContextData
