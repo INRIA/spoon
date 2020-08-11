@@ -345,6 +345,10 @@ public interface Factory {
 	 */
 	CtComment createComment(String content, CtComment.CommentType type);
 
+	/**
+	 *  @see CodeFactory#createJavaDocTag(String,CtJavaDocTag.TagType)
+	 */
+	CtJavaDocTag createJavaDocTag(String content, CtJavaDocTag.TagType type);
 
 	/**
 	 *  @see CodeFactory#createJavaDocTag(String,CtJavaDocTag.TagType,String)

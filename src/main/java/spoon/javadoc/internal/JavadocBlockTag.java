@@ -34,6 +34,12 @@ public class JavadocBlockTag implements Serializable {
 	private String tagName;
 	private String tagRealName;
 
+	public JavadocBlockTag(CtJavaDocTag.TagType type, String content) {
+		this.type = type;
+		this.tagName = type.getName();
+		this.content = Javadoc.parseText(content);
+	}
+
 	public JavadocBlockTag(CtJavaDocTag.TagType type, String tagRealName, String content) {
 		this.type = type;
 		this.tagName = type.getName();
