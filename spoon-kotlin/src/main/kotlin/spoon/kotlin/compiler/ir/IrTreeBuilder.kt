@@ -1030,6 +1030,7 @@ internal class IrTreeBuilder(
                     block.statements[1] as IrConstructorCall)
                 )
                 ctAnonClass.putKtMetadata(KtMetadataKeys.CLASS_IS_OBJECT, KtMetadata.bool(true))
+                theAnonClass.putKtMetadata(KtMetadataKeys.CLASS_IS_OBJECT, KtMetadata.bool(true))
                 return ctAnonClass.definite()
             }
             in INCREMENT_DECREMENT_OPERATORS -> {
