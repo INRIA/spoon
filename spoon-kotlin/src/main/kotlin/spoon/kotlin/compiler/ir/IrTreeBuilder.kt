@@ -101,8 +101,8 @@ internal class IrTreeBuilder(
             val ctDecl = subDeclaration.accept(this, Empty(declaration)).resultUnsafe
             ctDecl.setPosition<CtType<*>>(SourcePositionImpl(
                 compilationUnit,
-                declaration.startOffset,
-                declaration.endOffset,
+                subDeclaration.startOffset,
+                subDeclaration.endOffset,
                 lineSeparatorPositions)
             )
             when(ctDecl) {
