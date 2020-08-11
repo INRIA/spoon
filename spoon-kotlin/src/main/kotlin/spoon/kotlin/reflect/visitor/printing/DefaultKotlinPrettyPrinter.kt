@@ -569,7 +569,22 @@ class DefaultKotlinPrettyPrinter(
         compilationUnit.packageDeclaration?.accept(this)
         adapter.ensureNEmptyLines(1)
         compilationUnit.imports.forEach { it.accept(this) }
-        compilationUnit.declaredTypes.forEach { it.accept(this) }
+
+        val pkg = compilationUnit.factory.Package().get(compilationUnit.packageDeclaration?.reference?.qualifiedName)
+             ?: compilationUnit.factory.Package().rootPackage
+        val topLvl = pkg.getType<CtType<*>>(topLvlClassName)
+        val elements = ArrayList<CtElement>()
+        elements.addAll(compilationUnit.declaredTypes)
+        for(t in topLvl.typeMembers) {
+            if(t.position.compilationUnit === compilationUnit) {
+                elements.add(t)
+            }
+        }
+        elements.sortBy { it.position.sourceStart }
+        for(e in elements) {
+            e.accept(this)
+        }
+        //compilationUnit.declaredTypes.forEach { it.accept(this) }
     }
 
     // Using CtNewArray as placeholder for string concat. CtNewArray is redundant for Kotlin and
