@@ -52,7 +52,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         val irAbbreviation = irSimpleType.abbreviation
         if(irAbbreviation != null) {
             val abbreviation = getNewAbbreviatedTypeReference<Any>(irAbbreviation, false)
-            ctRef.putKtMetadata(KtMetadataKeys.TYPE_ALIAS, KtMetadata.wrap(abbreviation))
+            ctRef.putKtMetadata(KtMetadataKeys.TYPE_ALIAS, KtMetadata.element(abbreviation))
         }
         return ctRef
     }
@@ -80,7 +80,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
             is SimpleType -> typeRefFromDescriptor(kotlinType.constructor.declarationDescriptor!!, resolveGenerics)
             is FlexibleType -> TODO()
         } as CtTypeReference<T>
-        ctRef.putKtMetadata(KtMetadataKeys.TYPE_REF_NULLABLE, KtMetadata.wrap(kotlinType.isMarkedNullable))
+        ctRef.putKtMetadata(KtMetadataKeys.TYPE_REF_NULLABLE, KtMetadata.bool(kotlinType.isMarkedNullable))
         return ctRef
     }
 

@@ -74,7 +74,7 @@ internal class IrTreeBuilder(
             if(!isSet){
                 ctElement.putKtMetadata(
                     KtMetadataKeys.LABEL,
-                    KtMetadata.wrap(label)
+                    KtMetadata.string(label)
                 )
             }
         }
@@ -117,7 +117,7 @@ internal class IrTreeBuilder(
                         topLvlClass.setImplicit<CtClass<*>>(true)
                         topLvlClass.setSimpleName<CtClass<*>>(toplvlClassName)
                         pkg.addType<CtPackage>(topLvlClass)
-                        ctDecl.putKtMetadata<CtTypeMember>(KtMetadataKeys.TOP_LEVEL_DECLARING_CU, KtMetadata.wrap(compilationUnit))
+                        ctDecl.putKtMetadata<CtTypeMember>(KtMetadataKeys.TOP_LEVEL_DECLARING_CU, KtMetadata.element(compilationUnit))
                     })
                     topLvl.addTypeMember<CtClass<Any>>(ctDecl)
                 }
@@ -253,7 +253,7 @@ internal class IrTreeBuilder(
         ctLambda.setType<CtLambda<*>>(referenceBuilder.getNewTypeReference(expression.function.returnType))
         ctLambda.setParameters<CtLambda<Any>>(expression.function.valueParameters.map { visitValueParameter(it, data).resultSafe })
         ctLambda.putKtMetadata(KtMetadataKeys.LAMBDA_AS_ANONYMOUS_FUNCTION,
-            KtMetadata.wrap(expression.origin == IrStatementOrigin.ANONYMOUS_FUNCTION))
+            KtMetadata.bool(expression.origin == IrStatementOrigin.ANONYMOUS_FUNCTION))
         return ctLambda.definite()
     }
 
@@ -268,7 +268,7 @@ internal class IrTreeBuilder(
             val ctInitializer = visitExpressionBody(initializer, data).resultUnsafe
 
             if(backingField.origin == IrDeclarationOrigin.DELEGATE) {
-                ctField.putKtMetadata<CtElement>(KtMetadataKeys.PROPERTY_DELEGATE, KtMetadata.wrap(ctInitializer))
+                ctField.putKtMetadata<CtElement>(KtMetadataKeys.PROPERTY_DELEGATE, KtMetadata.element(ctInitializer))
                 ctInitializer.setParent(ctField)
             } else {
                 ctField.setDefaultExpression<CtField<Any>>(
@@ -299,13 +299,13 @@ internal class IrTreeBuilder(
             val getter = declaration.getter
             if(getter != null && getter.origin != IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR) {
                 ctField.putKtMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_GETTER,
-                    KtMetadata.wrap(createUnnamedFunction(getter, data)))
+                    KtMetadata.element(createUnnamedFunction(getter, data)))
             }
 
             val setter = declaration.setter
             if(setter != null && setter.origin != IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR) {
                 ctField.putKtMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_SETTER,
-                    KtMetadata.wrap(createUnnamedFunction(setter, data)))
+                    KtMetadata.element(createUnnamedFunction(setter, data)))
             }
         }
 
@@ -342,10 +342,10 @@ internal class IrTreeBuilder(
         )
         ctConstructor.putKtMetadata(
             KtMetadataKeys.KT_MODIFIERS,
-            KtMetadata.wrap(modifierList))
+            KtMetadata.modifierKind(modifierList))
         ctConstructor.putKtMetadata(
             KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY,
-            KtMetadata.wrap(declaration.isPrimary))
+            KtMetadata.bool(declaration.isPrimary))
 
         // Add body
         val body = declaration.body?.accept(this, data)?.resultOrNull as CtStatement?
@@ -521,7 +521,7 @@ internal class IrTreeBuilder(
         if(extensionReceiverRef != null) {
             extensionReceiverRef.setParent<CtElement>(ctMethod)
             ctMethod.putKtMetadata(KtMetadataKeys.EXTENSION_TYPE_REF,
-                KtMetadata.wrap(extensionReceiverRef)
+                KtMetadata.element(extensionReceiverRef)
             )
         }
 
@@ -586,7 +586,7 @@ internal class IrTreeBuilder(
     private fun createCheckNotNullAccess(call: IrCall, data: ContextData): TransformResult<CtElement> {
         val access = call.getValueArgument(0)!!.accept(this, data)
         return access.apply {
-            resultUnsafe.putKtMetadata(KtMetadataKeys.ACCESS_IS_CHECK_NOT_NULL, KtMetadata.wrap(true))
+            resultUnsafe.putKtMetadata(KtMetadataKeys.ACCESS_IS_CHECK_NOT_NULL, KtMetadata.bool(true))
         }
     }
 
@@ -614,7 +614,7 @@ internal class IrTreeBuilder(
                 } else {
                     createInvocation(irCall, data).also { it.resultSafe.putKtMetadata(
                         KtMetadataKeys.SET_AS_OPERATOR,
-                        KtMetadata.wrap(true)
+                        KtMetadata.bool(true)
                     ) }
                 }
             }
@@ -641,7 +641,7 @@ internal class IrTreeBuilder(
         val rhs = irRhs.accept(this, data).resultUnsafe
         val ctOp = core.createBinaryOperator<Boolean>()
         ctOp.putKtMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND,
-            KtMetadata.wrap(KtBinaryOperatorKind.OR))
+            KtMetadata.binOpKind(KtBinaryOperatorKind.OR))
         ctOp.setLeftHandOperand<CtBinaryOperator<Boolean>>(expressionOrWrappedInStatementExpression(lhs))
         ctOp.setRightHandOperand<CtBinaryOperator<Boolean>>(expressionOrWrappedInStatementExpression(rhs))
         ctOp.setType<CtBinaryOperator<Boolean>>(referenceBuilder.getNewTypeReference(expr.type))
@@ -656,7 +656,7 @@ internal class IrTreeBuilder(
         val rhs = irRhs.accept(this, data).resultUnsafe
         val ctOp = core.createBinaryOperator<Boolean>()
         ctOp.putKtMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND,
-            KtMetadata.wrap(KtBinaryOperatorKind.AND))
+            KtMetadata.binOpKind(KtBinaryOperatorKind.AND))
         ctOp.setLeftHandOperand<CtBinaryOperator<Boolean>>(expressionOrWrappedInStatementExpression(lhs))
         ctOp.setRightHandOperand<CtBinaryOperator<Boolean>>(expressionOrWrappedInStatementExpression(rhs))
         ctOp.setType<CtBinaryOperator<Boolean>>(referenceBuilder.getNewTypeReference(expr.type))
@@ -744,7 +744,7 @@ internal class IrTreeBuilder(
         }
 
         val type = referenceBuilder.getNewTypeReference<Any>(ifThenElse.type)
-        ctIf.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE, KtMetadata.wrap(type))
+        ctIf.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE, KtMetadata.element(type))
 
         return ctIf.definite()
     }
@@ -779,7 +779,7 @@ internal class IrTreeBuilder(
                     expressionOrWrappedInStatementExpression(irExpr.accept(this, data).resultUnsafe)
                 }
                 if(arg.first != null) {
-                    ctExpr.putKtMetadata(KtMetadataKeys.NAMED_ARGUMENT, KtMetadata.wrap(arg.first!!))
+                    ctExpr.putKtMetadata(KtMetadataKeys.NAMED_ARGUMENT, KtMetadata.string(arg.first!!))
                 }
                 arguments.add(ctExpr)
             }
@@ -794,7 +794,7 @@ internal class IrTreeBuilder(
                         val ctExpr = irExpr.accept(this, data).resultUnsafe
                         val name = getSourceHelper(data).getNamedArgumentIfAny(irExpr)
                         if(name != null) {
-                            ctExpr.putKtMetadata(KtMetadataKeys.NAMED_ARGUMENT, KtMetadata.wrap(name))
+                            ctExpr.putKtMetadata(KtMetadataKeys.NAMED_ARGUMENT, KtMetadata.string(name))
                         }
                         arguments.add(expressionOrWrappedInStatementExpression(ctExpr))
                     }
@@ -818,13 +818,13 @@ internal class IrTreeBuilder(
         if(detectInfix && irCall is IrCall) {
             invocation.putKtMetadata(
                 KtMetadataKeys.INVOCATION_IS_INFIX,
-                KtMetadata.wrap(helper.isInfixCall(irCall, data))
+                KtMetadata.bool(helper.isInfixCall(irCall, data))
             )
         }
         if(irCall.origin == IrStatementOrigin.INVOKE) {
             invocation.putKtMetadata(
                 KtMetadataKeys.INVOKE_AS_OPERATOR,
-                KtMetadata.wrap(true)
+                KtMetadata.bool(true)
             )
         }
 
@@ -855,7 +855,7 @@ internal class IrTreeBuilder(
             visitTypeParameter(it, data).resultSafe
         })
         ctClass.addModifiersAsMetadata(listOfNotNull(IrToModifierKind.convertVisibility(declaration.visibility)))
-        ctClass.putKtMetadata(KtMetadataKeys.TYPE_ALIAS, KtMetadata.wrap(referenceBuilder.getNewTypeReference<Any>(declaration.expandedType)))
+        ctClass.putKtMetadata(KtMetadataKeys.TYPE_ALIAS, KtMetadata.element(referenceBuilder.getNewTypeReference<Any>(declaration.expandedType)))
         return ctClass.definite()
     }
 
@@ -911,7 +911,7 @@ internal class IrTreeBuilder(
 
         ctOp.putKtMetadata(
             KtMetadataKeys.KT_BINARY_OPERATOR_KIND,
-            KtMetadata.wrap(opKind)
+            KtMetadata.binOpKind(opKind)
         )
         return ctOp.definite()
     }
@@ -955,7 +955,7 @@ internal class IrTreeBuilder(
         ctOperator.setLeftHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(lhs))
         ctOperator.setRightHandOperand<CtBinaryOperator<Any>>(expressionOrWrappedInStatementExpression(rhs))
         ctOperator.setType<CtBinaryOperator<Any>>(referenceBuilder.getNewTypeReference(rhsIf.type))
-        ctOperator.putKtMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND, KtMetadata.wrap(KtBinaryOperatorKind.ELVIS))
+        ctOperator.putKtMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND, KtMetadata.binOpKind(KtBinaryOperatorKind.ELVIS))
         return ctOperator.definite()
     }
 
@@ -966,11 +966,11 @@ internal class IrTreeBuilder(
         when (rhs) {
             is CtAssignment<*,*> -> {
                 (rhs.assigned as CtTargetedExpression<Any,CtExpression<Any>>).setTarget<CtTargetedExpression<Any,CtExpression<Any>>>(safeReceiver)
-                rhs.assigned.putKtMetadata(KtMetadataKeys.ACCESS_IS_SAFE, KtMetadata.wrap(true))
+                rhs.assigned.putKtMetadata(KtMetadataKeys.ACCESS_IS_SAFE, KtMetadata.bool(true))
             }
             is CtTargetedExpression<*,*> -> {
                 (rhs as CtTargetedExpression<Any,CtExpression<Any>>).setTarget<CtTargetedExpression<Any,CtExpression<Any>>>(safeReceiver)
-                rhs.putKtMetadata(KtMetadataKeys.ACCESS_IS_SAFE, KtMetadata.wrap(true))
+                rhs.putKtMetadata(KtMetadataKeys.ACCESS_IS_SAFE, KtMetadata.bool(true))
             }
             else -> {
                 throw SpoonIrBuildException("Unexpected target of safe call: ${rhs::class.simpleName}")
@@ -1013,7 +1013,7 @@ internal class IrTreeBuilder(
                 ctAnonClass.setExecutable<CtNewClass<Any>>(referenceBuilder.getNewConstructorExecutableReference(
                     block.statements[1] as IrConstructorCall)
                 )
-                ctAnonClass.putKtMetadata(KtMetadataKeys.CLASS_IS_OBJECT, KtMetadata.wrap(true))
+                ctAnonClass.putKtMetadata(KtMetadataKeys.CLASS_IS_OBJECT, KtMetadata.bool(true))
                 return ctAnonClass.definite()
             }
             in INCREMENT_DECREMENT_OPERATORS -> {
@@ -1083,7 +1083,7 @@ internal class IrTreeBuilder(
         val ctBlock = core.createBlock<Any>()
         ctBlock.setStatements<CtBlock<*>>(statements)
         ctBlock.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE,
-            KtMetadata.wrap(referenceBuilder.getNewTypeReference<CtBlock<*>>(expression.type)))
+            KtMetadata.element(referenceBuilder.getNewTypeReference<CtBlock<*>>(expression.type)))
         return ctBlock.definite()
 
     }
@@ -1191,7 +1191,7 @@ internal class IrTreeBuilder(
         val ctBinaryOperator = core.createBinaryOperator<Boolean>()
         val operatorKind = if(call.operator == IrTypeOperator.INSTANCEOF) KtBinaryOperatorKind.IS
             else KtBinaryOperatorKind.IS_NOT
-        ctBinaryOperator.putKtMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND, KtMetadata.wrap(operatorKind))
+        ctBinaryOperator.putKtMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND, KtMetadata.binOpKind(operatorKind))
         ctBinaryOperator.setType<CtExpression<*>>(referenceBuilder.getNewTypeReference(call.type))
         val lhs = call.argument.accept(this, data).resultOrNull
         val rhs = createTypeAccess(call.typeOperand)
@@ -1208,7 +1208,7 @@ internal class IrTreeBuilder(
         castedExpr.addTypeCast<CtExpression<Any>>(conversionTypeRef)
 
         val safe = call.operator == IrTypeOperator.SAFE_CAST
-        conversionTypeRef.putKtMetadata(KtMetadataKeys.TYPE_CAST_AS_SAFE, KtMetadata.wrap(safe))
+        conversionTypeRef.putKtMetadata(KtMetadataKeys.TYPE_CAST_AS_SAFE, KtMetadata.bool(safe))
         return castedExpr.definite()
     }
 
@@ -1349,7 +1349,7 @@ internal class IrTreeBuilder(
             if(arg is IrSpreadElement) {
                 val spreadElement = arg.expression.accept(this, data).resultUnsafe
                 result.add(expressionOrWrappedInStatementExpression(spreadElement))
-                spreadElement.putKtMetadata(KtMetadataKeys.SPREAD, KtMetadata.wrap(true))
+                spreadElement.putKtMetadata(KtMetadataKeys.SPREAD, KtMetadata.bool(true))
             } else {
                 result.add(expressionOrWrappedInStatementExpression(arg.accept(this, data).resultUnsafe))
             }
@@ -1374,7 +1374,7 @@ internal class IrTreeBuilder(
             'label1@ return@label2' is valid in Kotlin, but CtReturn only has one label inherited from CtStatement.
              We use metadata label for the target label, and the CtStatement label is reserved for the prefix label
              */
-            ctReturn.putKtMetadata(KtMetadataKeys.LABEL, KtMetadata.wrap(targetLabel))
+            ctReturn.putKtMetadata(KtMetadataKeys.LABEL, KtMetadata.string(targetLabel))
         }
         val transformResult = expression.value.accept(this, data).resultOrNull
         if(transformResult != null) {
@@ -1403,7 +1403,7 @@ internal class IrTreeBuilder(
         if(finalizer != null) {
             ctTry.setFinalizer<CtTry>(finalizer)
         }
-        ctTry.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE, KtMetadata.wrap(
+        ctTry.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE, KtMetadata.element(
             referenceBuilder.getNewTypeReference<Any>(aTry.type)
         ))
         return ctTry.definite()
@@ -1463,7 +1463,7 @@ internal class IrTreeBuilder(
                 switchStmt.setSelector<CtSwitch<Any>>(e.selector as CtExpression<Any>)
             }
             switchStmt.setCases<CtSwitch<Any>>(e.cases as List<CtCase<Any>>)
-            switchStmt.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE, KtMetadata.wrap(e.type))
+            switchStmt.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE, KtMetadata.element(e.type))
             switchStmt
         }
         is CtExpression<*> -> e.wrapInImplicitReturn()
@@ -1473,7 +1473,7 @@ internal class IrTreeBuilder(
     private fun List<CtLocalVariable<*>>.toDestructuredVariable(): CtLocalVariable<Any> {
         val placeHolder = core.createLocalVariable<Any>()
         placeHolder.setImplicit<CtElement>(true)
-        placeHolder.putKtMetadata(KtMetadataKeys.IS_DESTRUCTURED, KtMetadata.wrap(true))
+        placeHolder.putKtMetadata(KtMetadataKeys.IS_DESTRUCTURED, KtMetadata.bool(true))
         placeHolder.putMetadata<CtElement>(KtMetadataKeys.COMPONENTS, this)
         return placeHolder
     }
@@ -1484,7 +1484,7 @@ internal class IrTreeBuilder(
             val block = core.createBlock<Any>()
             if(this is CtExpression<*>) {
                 block.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE,
-                    KtMetadata.wrap(this.type)
+                    KtMetadata.element(this.type)
                     )
             }
             block.addStatement<CtBlock<*>>(statementOrWrappedInImplicitReturn(this))
