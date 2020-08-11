@@ -19,6 +19,8 @@ class PsiSourceHelper {
     private val labelOffSetMap = RangeMap()
     private val ktFile: KtFile
     private val previousStack = LinkedList<KtElement>()
+    val sourceText: String
+        get() = ktFile.text
 
     constructor(ktFile: KtFile) {
         this.ktFile = ktFile

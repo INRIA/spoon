@@ -576,7 +576,11 @@ class DefaultKotlinPrettyPrinter(
     // this way we can skip introducing a new element for now
     override fun <T : Any?> visitCtNewArray(placeholder: CtNewArray<T>) {
         val args = placeholder.getMetadata(KtMetadataKeys.STRING_CONCAT_ELEMENTS) as List<CtElement>
-        adapter write '"'
+        val multiLine = placeholder.getMetadata(KtMetadataKeys.STRING_LITERAL_MULTILINE) as Boolean? ?: false
+        val quote = if(multiLine) "\"\"\"" else "\""
+        val prevIndent = adapter.indentCount
+        if(multiLine) adapter.indentCount = 0
+        adapter write quote
         for(arg in args) {
             if(arg is CtLiteral<*> && arg.value is String) {
                 adapter write (arg.value as String)
@@ -586,7 +590,8 @@ class DefaultKotlinPrettyPrinter(
                 adapter write '}'
             }
         }
-        adapter write '"'
+        adapter write quote
+        if(multiLine) adapter.indentCount = prevIndent
     }
 
     override fun visitCtComment(p0: CtComment?) {
@@ -741,7 +746,15 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtLiteral(literal: CtLiteral<T>) {
         enterCtExpression(literal)
-        adapter write (LiteralToStringHelper.getLiteralToken(literal))
+        val multiLine = literal.getMetadata(KtMetadataKeys.STRING_LITERAL_MULTILINE) as Boolean? ?: false
+        if(multiLine && literal.value is String) {
+            adapter.withIndent(0) {
+                it.write(LiteralToStringHelper.getLiteralToken(literal))
+            }
+        } else {
+            adapter write (LiteralToStringHelper.getLiteralToken(literal))
+        }
+
         exitCtExpression(literal)
     }
 

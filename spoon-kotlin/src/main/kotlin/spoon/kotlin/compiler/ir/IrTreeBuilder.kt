@@ -228,6 +228,20 @@ internal class IrTreeBuilder(
             ctLiteral.setType<CtLiteral<T>>(referenceBuilder.getNewTypeReference(expression.type))
             if(value is Number) {
                 ctLiteral.setBase<CtLiteral<T>>(helper.getBaseOfConst(expression as IrConst<Number>, data.file))
+            } else if (value is String) {
+                var quotes = 0
+                var i = expression.startOffset
+                val text = getSourceHelper(data).sourceText
+                while(quotes < 3 && i > expression.startOffset - 5) {
+                    if(text[i] == '"') {
+                        quotes += 1
+                    } else if(quotes > 0) {
+                        break
+                    }
+                    i -= 1
+                }
+                val isMultiLine = quotes == 3
+                ctLiteral.putKtMetadata(KtMetadataKeys.STRING_LITERAL_MULTILINE, KtMetadata.bool(isMultiLine))
             }
         }
         return ctLiteral.definite()
@@ -240,6 +254,8 @@ internal class IrTreeBuilder(
 
         val ctPlaceholder = core.createNewArray<Any>()
         val args = expression.arguments.map { it.accept(this, data).resultUnsafe.apply { setParent(ctPlaceholder) } }
+        val isMultiLine = getSourceHelper(data).sourceTextIs(expression) { it.startsWith("\"\"\"") }
+        ctPlaceholder.putKtMetadata(KtMetadataKeys.STRING_LITERAL_MULTILINE, KtMetadata.bool(isMultiLine))
         ctPlaceholder.putKtMetadata(KtMetadataKeys.STRING_CONCAT_ELEMENTS, KtMetadata.elementList(args))
         return ctPlaceholder.definite()
     }

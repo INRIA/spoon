@@ -58,7 +58,7 @@ internal object LiteralToStringHelper {
         is Char -> "'${getCharLiteral(value)}'"
         is String -> {
             val multiline = literal.getMetadata(KtMetadataKeys.STRING_LITERAL_MULTILINE) as Boolean? ?: false
-            if(multiline) "\"\"\"${getStringLiteral(value)}\"\"\""
+            if(multiline) "\"\"\"${value}\"\"\""
             else "\"${getStringLiteral(value)}\""
         }
         is Class<*> -> value.name
