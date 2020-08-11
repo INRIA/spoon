@@ -16,7 +16,8 @@ class DefaultKotlinPrettyPrinter(
     private val adapter: DefaultPrinterAdapter,
     private val forceExplicitTypes: Boolean = false,
     private val topLvlClassName: String = "<top-level>",
-    private val localFunctionWrapperName: String = "<local>"
+    private val localFunctionWrapperName: String = "<local>",
+    private val arrowSyntaxForFunctionType: Boolean = true
     //     private val sourceCompilationUnit : CtCompilationUnit
 ) : CtVisitor, PrettyPrinter {
 
@@ -563,6 +564,17 @@ class DefaultKotlinPrettyPrinter(
         adapter.ensureNEmptyLines(0)
         adapter writeln RIGHT_CURL
 
+    }
+
+    private fun visitFunctionNType(typeRef: CtTypeReference<*>) {
+        val numParams = typeRef.actualTypeArguments.size-1
+        val params = typeRef.actualTypeArguments.subList(0, numParams)
+        val returnType = typeRef.actualTypeArguments.last()
+
+        adapter write LEFT_ROUND
+        visitCommaSeparatedList(params)
+        adapter write RIGHT_ROUND and " -> "
+        returnType.accept(this)
     }
 
     override fun visitCtCompilationUnit(compilationUnit: CtCompilationUnit) {
@@ -1209,6 +1221,10 @@ class DefaultKotlinPrettyPrinter(
     }
 
     private fun visitCtTypeReference(typeRef: CtTypeReference<*>, withGenerics: Boolean): Boolean {
+        if(arrowSyntaxForFunctionType && typeRef.qualifiedName.matches("kotlin.Function[0-9]+".toRegex())) {
+            visitFunctionNType(typeRef)
+            return true
+        }
         if(typeRef.simpleName == topLvlClassName) {
             if(typeRef.declaringType == null) {
                 if(typeRef.`package` == null) return false
