@@ -226,6 +226,26 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         return executableReference
     }
 
+    // IrFunctionReference should be subclass of IrFunctionAccessExpression, but isn't...???
+    fun <T> getNewExecutableReference(functionRef: IrFunctionReference): CtExecutableReference<T> {
+        val executableReference = irTreeBuilder.core.createExecutableReference<T>()
+        executableReference.setSimpleName<CtReference>(functionRef.symbol.descriptor.name.escaped())
+        executableReference.setType<CtExecutableReference<T>>(getNewTypeReference(functionRef.type))
+        executableReference.setDeclaringType<CtExecutableReference<T>>(getDeclaringTypeReference(
+            functionRef.symbol.descriptor.containingDeclaration
+        ))
+        if(functionRef.valueArgumentsCount > 0) {
+            val args = ArrayList<CtTypeReference<*>>()
+            // Using getArguments() includes receiver parameter
+            for(i in 0 until functionRef.valueArgumentsCount) {
+                val arg = functionRef.getValueArgument(i) ?: continue
+                args.add(getNewTypeReference<Any>(arg.type, true) )
+            }
+            executableReference.setParameters<CtExecutableReference<T>>(args)
+        }
+        return executableReference
+    }
+
     // Does not set declaring type as that requires subtypes of FunctionAccessExpression
     private fun <T> getConstructorExecutableReferenceWithoutDeclaringType(
         constructorCall: IrFunctionAccessExpression): CtExecutableReference<T> {

@@ -424,6 +424,26 @@ internal class IrTreeBuilder(
         return ctLocalVar.definite()
     }
 
+    override fun visitFunctionReference(
+        expression: IrFunctionReference,
+        data: ContextData
+    ): DefiniteTransformResult<CtExecutableReferenceExpression<*,CtExpression<*>>> {
+        val ctExpr = core.createExecutableReferenceExpression<Any, CtExpression<*>>()
+        ctExpr.setExecutable<CtExecutableReferenceExpression<Any, CtExpression<*>>>(
+            referenceBuilder.getNewExecutableReference<Any>(expression)
+        )
+        val receiver = expression.extensionReceiver ?: expression.dispatchReceiver
+        val target = receiver?.accept(this, data)?.resultUnsafe ?:
+            factory.Code().createTypeAccess(
+                referenceBuilder.getDeclaringTypeReference(
+                    expression.symbol.descriptor.containingDeclaration),
+                false)
+
+        ctExpr.setTarget<CtExecutableReferenceExpression<Any,CtExpression<*>>>(
+            expressionOrWrappedInStatementExpression(target))
+        return ctExpr.definite()
+    }
+
     override fun visitValueParameter(
         declaration: IrValueParameter,
         data: ContextData

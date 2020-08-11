@@ -867,8 +867,12 @@ class DefaultKotlinPrettyPrinter(
         TODO("Not yet implemented")
     }
 
-    override fun <T : Any?, E : CtExpression<*>?> visitCtExecutableReferenceExpression(p0: CtExecutableReferenceExpression<T, E>?) {
-        TODO("Not yet implemented")
+    override fun <T : Any?, E : CtExpression<*>?> visitCtExecutableReferenceExpression(execRef: CtExecutableReferenceExpression<T, E>) {
+        enterCtExpression(execRef)
+        execRef.target!!.accept(this)
+        
+        adapter write "::" and execRef.executable.simpleName
+        exitCtExpression(execRef)
     }
 
     override fun visitCtProvidedService(p0: CtProvidedService?) {
