@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassOrAny
 import org.jetbrains.kotlin.resolve.source.getPsi
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.reflect.code.LiteralBase
+import spoon.reflect.declaration.CtElement
 import spoon.reflect.declaration.CtModule
 import spoon.reflect.declaration.CtType
 
@@ -48,7 +49,9 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
             type.setSimpleName<CtType<*>>(irClass.name.identifier)
         }
         type.addModifiersAsMetadata(IrToModifierKind.fromClass(irClass))
-
+        if(irClass.annotations.isNotEmpty()) {
+            type.setAnnotations<CtElement>(irClass.annotations.map { irTreeBuilder.visitAnnotation(it).resultSafe })
+        }
         val superClassNotAny = irClass.descriptor.getSuperClassNotAny()
         val superClassOrAny = irClass.descriptor.getSuperClassOrAny()
         if(superClassNotAny != null) { // ==> superClassNotAny = superClassOrAny
