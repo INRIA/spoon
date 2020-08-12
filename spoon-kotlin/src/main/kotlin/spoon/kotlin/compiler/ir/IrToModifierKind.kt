@@ -4,7 +4,10 @@ import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.ir.declarations.*
+import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.calls.components.isVararg
+import org.jetbrains.kotlin.resolve.source.getPsi
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.utils.addIfNotNull
 import spoon.kotlin.reflect.KtModifierKind
@@ -44,11 +47,15 @@ object IrToModifierKind {
 
     fun fromFunctionDeclaration(f : IrFunction) = ArrayList<KtModifierKind>().apply {
         val d = f.descriptor
+        val source = f.descriptor.source.getPsi()
         addIfNotNull(convertVisibility(f.visibility))
         addIfNotNull(convertModality(f.descriptor.modality))
         if(d.isInfix) add(KtModifierKind.INFIX)
         if(d.isInline)      add(KtModifierKind.INLINE)
-        if(d.isOperator) add(KtModifierKind.OPERATOR)
+        if(source != null && source is KtNamedFunction) {
+            if(source.hasModifier(KtTokens.OPERATOR_KEYWORD)) add(KtModifierKind.OPERATOR)
+        }
+        else if(d.isOperator) add(KtModifierKind.OPERATOR)
         if(d.overriddenDescriptors.isNotEmpty())
             add(KtModifierKind.OVERRIDE)
         if(d.isTailrec)     add(KtModifierKind.TAILREC)

@@ -3,6 +3,7 @@ package spoon.test.binaryoperator
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import spoon.kotlin.ktMetadata.KtMetadataKeys
+import spoon.kotlin.reflect.KtModifierKind
 import spoon.kotlin.reflect.code.KtBinaryOperatorKind
 import spoon.kotlin.reflect.visitor.printing.DefaultKotlinPrettyPrinter
 import spoon.kotlin.reflect.visitor.printing.DefaultPrinterAdapter
@@ -384,5 +385,19 @@ class BinaryOperatorTest {
         assertEquals("kotlin.Boolean", midVar.type.qualifiedName)
         assertEquals("kotlin.Boolean", rhsVar.type.qualifiedName)
         assertEquals("x && (y || z)", op.asString())
+    }
+
+    @Test
+    fun testOverriddenEquals() {
+        val pkg = "spoon.test.binaryoperator.testclasses"
+        val f = TestBuildUtil.buildFile(pkg, "OverriddenEquals")
+        val withOp = f.Package().get(pkg).getType<CtType<*>>("OverriddenOperatorEquals").getMethodByName("equals")
+        val withoutOp = f.Package().get(pkg).getType<CtType<*>>("OverriddenNonOperatorEquals").getMethodByName("equals")
+
+        var modifiers = withOp.getMetadata(KtMetadataKeys.KT_MODIFIERS) as Set<KtModifierKind>
+        assertTrue(KtModifierKind.OPERATOR in modifiers)
+
+        modifiers = withoutOp.getMetadata(KtMetadataKeys.KT_MODIFIERS) as Set<KtModifierKind>
+        assertTrue(KtModifierKind.OPERATOR !in modifiers)
     }
 }
