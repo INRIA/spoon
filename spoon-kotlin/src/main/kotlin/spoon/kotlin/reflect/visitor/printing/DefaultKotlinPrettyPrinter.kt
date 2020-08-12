@@ -389,19 +389,21 @@ class DefaultKotlinPrettyPrinter(
         adapter writeln RIGHT_CURL
     }
 
-    private fun writeInheritanceList(ctClass: CtClass<*>) {
-        val primaryConstructor = ctClass.constructors.firstOrNull { it.isPrimary() }
-        if(primaryConstructor != null) {
-            visitCtConstructor(primaryConstructor)
+    private fun writeInheritanceList(ctType: CtType<*>) {
+        if(ctType is CtClass<*>) {
+            val primaryConstructor = ctType.constructors.firstOrNull { it.isPrimary() }
+            if (primaryConstructor != null) {
+                visitCtConstructor(primaryConstructor)
+            }
         }
 
-        if(ctClass.superInterfaces.isNotEmpty()) {
-            if(ctClass.superclass != null && ctClass.superclass.qualifiedName != "kotlin.Any") {
+        if(ctType.superInterfaces.isNotEmpty()) {
+            if(ctType !is CtInterface<*> && ctType.superclass != null && ctType.superclass.qualifiedName != "kotlin.Any") {
                 adapter write ", "
             } else {
                 adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
             }
-            visitCommaSeparatedList(ctClass.superInterfaces.toList()) { superInterface ->
+            visitCommaSeparatedList(ctType.superInterfaces.toList()) { superInterface ->
                 val delegate = superInterface.getMetadata(KtMetadataKeys.SUPER_TYPE_DELEGATE) as CtElement?
                 superInterface.accept(this)
                 if(delegate != null) {
@@ -441,11 +443,8 @@ class DefaultKotlinPrettyPrinter(
         }
 
         // Super interfaces
-        if(ctInterface.superInterfaces.isNotEmpty()) {
-            adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
-            adapter write ctInterface.superInterfaces.map(TypeName.Companion::build)
-                .joinToString(transform = { it.fQNameWithoutNullability })
-        }
+        writeInheritanceList(ctInterface)
+
         val whereClause = typeParamHandler.generateWhereClause()
         if(whereClause.isNotEmpty()) {
             adapter write " where "
