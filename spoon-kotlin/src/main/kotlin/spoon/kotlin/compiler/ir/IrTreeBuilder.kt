@@ -559,8 +559,11 @@ internal class IrTreeBuilder(
         val body = irFunction.body
         if(body != null) {
             val ctBody = visitBody(body, data).resultSafe
-            if(ctBody.statements.size == 1 && body.endOffset - body.startOffset == 1) {
-                ctBody.setImplicit<CtBlock<*>>(true)
+            if(ctBody.statements.size == 1) {
+                val expr = body.statements[0]
+                if(expr is IrReturn && expr.endOffset - expr.startOffset <= 1) {
+                    ctBody.setImplicit<CtBlock<*>>(true)
+                }
             }
             ctMethod.setBody<CtMethod<Any>>(ctBody)
         }
@@ -779,6 +782,15 @@ internal class IrTreeBuilder(
         return ctIf.definite()
     }
 
+    private fun getPossibleJavaReceiver(irCall: IrFunctionAccessExpression): CtTypeAccess<*>? {
+        val descriptor = irCall.symbol.descriptor
+        if(descriptor is JavaMethodDescriptor) {
+            val t = referenceBuilder.getDeclaringTypeReference(descriptor.containingDeclaration)
+            return t?.let { createTypeAccess(it) }
+        }
+        return null
+    }
+
     private fun createInvocation(irCall: IrFunctionAccessExpression, data: ContextData, namedArgs: List<Pair<String?,IrExpression>>? = null)
             : DefiniteTransformResult<CtInvocation<*>> {
         val invocation = core.createInvocation<Any>()
@@ -789,7 +801,7 @@ internal class IrTreeBuilder(
             if(target != null)
                 invocation.setTarget<CtInvocation<Any>>(createTypeAccess(target))
         } else {
-            val target = getReceiver(irCall, data)
+            val target = getReceiver(irCall, data) ?: getPossibleJavaReceiver(irCall)
             if (target is CtExpression<*>) {
                 invocation.setTarget<CtInvocation<Any>>(target)
             } else if (target != null) {

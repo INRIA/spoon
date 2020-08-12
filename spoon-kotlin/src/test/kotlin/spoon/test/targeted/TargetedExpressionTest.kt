@@ -9,6 +9,8 @@ import spoon.reflect.code.*
 import spoon.reflect.declaration.CtMethod
 import spoon.reflect.reference.CtFieldReference
 import spoon.reflect.visitor.filter.NamedElementFilter
+import spoon.test.asString
+import spoon.test.getMethodByName
 
 class TargetedExpressionTest {
 
@@ -51,5 +53,15 @@ class TargetedExpressionTest {
 
     }
 
+    @Test
+    fun testJavaStaticAccess() {
+        val c = util.buildClass("spoon.test.targeted.testclasses","JavaStaticAccess")
+        val invocation = c.getMethodByName("m").body.statements[0] as CtInvocation<*>
+        val executable = invocation.executable
+        val target = invocation.target as CtTypeAccess<*>
 
+        assertEquals("java.util.Objects", target.accessedType.qualifiedName)
+        assertEquals("java.util.Objects", executable.declaringType.qualifiedName)
+        assertEquals("java.util.Objects.isNull(null)", invocation.asString())
+    }
 }
