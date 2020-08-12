@@ -1097,7 +1097,7 @@ internal class IrTreeBuilder(
         val condition = loop.condition.accept(this, data).resultUnsafe as CtExpression<Boolean>
 
         val body = if(loop.body is IrComposite) { // Body of do-while is sometimes composite
-            visitBlock(loop.body as IrComposite, data, emptyList()).resultSafe
+            visitBlockInternal(loop.body as IrComposite, data).resultSafe
         } else {
             loop.body!!.accept(this, data).resultUnsafe.blockOrSingleStatementBlock()
         }
@@ -1107,11 +1107,10 @@ internal class IrTreeBuilder(
         return ctDo.definite()
     }
 
-    // TODO: Remove, skipIndex is not needed
-    private fun visitBlock(expression: IrContainerExpression, data: ContextData, skipIndices: List<Int>): DefiniteTransformResult<CtBlock<*>> {
+    
+    private fun visitBlockInternal(expression: IrContainerExpression, data: ContextData): DefiniteTransformResult<CtBlock<*>> {
         val statements = ArrayList<CtStatement>()
         for((i, statement) in expression.statements.withIndex()) {
-            if(i in skipIndices) continue
             val ctElement = statement.accept(this, data).resultOrNull ?: continue
             val ctStmt: CtStatement = when(ctElement) {
                 is CtMethod<*> -> {
@@ -1134,7 +1133,7 @@ internal class IrTreeBuilder(
     override fun visitBlock(expression: IrBlock, data: ContextData): DefiniteTransformResult<CtElement> {
         val composite = checkForCompositeElement(expression, data).resultOrNull
         if(composite != null) return composite.definite()
-        return visitBlock(expression, data, emptyList())
+        return visitBlockInternal(expression, data)
     }
 
     private fun createAugmentedAssignmentOperator(
