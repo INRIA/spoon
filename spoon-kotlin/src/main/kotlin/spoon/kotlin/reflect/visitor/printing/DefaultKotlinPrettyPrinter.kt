@@ -567,15 +567,31 @@ class DefaultKotlinPrettyPrinter(
 
     }
 
+    private fun shouldAddPar(typeRef: CtTypeReference<*>): Boolean {
+        val parentTypeAccess = typeRef.parent
+        val parent = parentTypeAccess.parent
+        if(parentTypeAccess is CtTypeAccess<*> && parent is CtMethod<*>) {
+            val extensionRef = parent.getMetadata(KtMetadataKeys.EXTENSION_TYPE_REF)
+            return extensionRef === parentTypeAccess
+        }
+        return false
+    }
+
     private fun visitFunctionNType(typeRef: CtTypeReference<*>) {
         val numParams = typeRef.actualTypeArguments.size-1
         val params = typeRef.actualTypeArguments.subList(0, numParams)
         val returnType = typeRef.actualTypeArguments.last()
-
+        val wrapped = shouldAddPar(typeRef)
+        if(wrapped) {
+            adapter write LEFT_ROUND
+        }
         adapter write LEFT_ROUND
         visitCommaSeparatedList(params)
         adapter write RIGHT_ROUND and " -> "
         returnType.accept(this)
+        if(wrapped) {
+            adapter write RIGHT_ROUND
+        }
     }
 
     override fun visitCtCompilationUnit(compilationUnit: CtCompilationUnit) {
