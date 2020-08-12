@@ -94,12 +94,14 @@ class DefaultKotlinPrettyPrinter(
 
         adapter write LEFT_ROUND
         for(i in 0 until list.size-1) {
+            if(i > 0) adapter write ", "
             list[i].acceptPossiblyNamed()
-            adapter write ", "
         }
         val closeParBefore = list.last().isMovableLambda()
         if(closeParBefore) {
             adapter write RIGHT_ROUND and SPACE
+        } else if(list.size > 1) {
+            adapter write ", "
         }
         list.last().acceptPossiblyNamed()
         if(!closeParBefore) {
