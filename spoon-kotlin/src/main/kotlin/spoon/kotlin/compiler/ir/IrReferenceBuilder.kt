@@ -263,6 +263,15 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         if(valueArgs.isNotEmpty()) {
             executableReference.setParameters<CtExecutableReference<T>>(valueArgs)
         }
+        val typeArgs = ArrayList<CtTypeReference<*>>()
+        for(i in 0 until constructorCall.typeArgumentsCount) {
+            val arg = constructorCall.getTypeArgument(i)!!
+            typeArgs.add(getNewTypeReference<Any>(arg))
+        }
+        if(typeArgs.isNotEmpty()) {
+            executableReference.type.setActualTypeArguments<CtExecutableReference<T>>(typeArgs)
+        }
+
         return executableReference
     }
 

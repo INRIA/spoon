@@ -59,7 +59,7 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
 
         type.setSuperInterfaces<CtType<Any>>(irClass.superTypes.
             filterNot {
-                it.classifierOrFail.descriptor === superClassOrAny // Check against Any, because it is listen in supertypes
+                it.classifierOrFail.descriptor === superClassOrAny // Check against Any, because it is listed in supertypes
             }.map {
                 referenceBuilder.getNewTypeReference<Any>(it)
             }.toSet())
