@@ -127,6 +127,12 @@ internal class IrTreeBuilder(
         return compilationUnit.definite()
     }
 
+    private fun filterModifiers(ctElement: CtElement, predicate: (KtModifierKind) -> Boolean) {
+        val modifiers = ctElement.getMetadata(KtMetadataKeys.KT_MODIFIERS) as Set<KtModifierKind>? ?: return
+        val newModifiers = modifiers.filter { predicate(it) }
+        ctElement.addModifiersAsMetadata(newModifiers)
+    }
+
     override fun visitClass(declaration: IrClass, data: ContextData): DefiniteTransformResult<CtType<*>> {
         val module = helper.getOrCreateModule()
         val type = helper.createType(declaration, data)
@@ -156,10 +162,18 @@ internal class IrTreeBuilder(
                 is CtEnumValue<*> -> {
                     (type as CtEnum<Enum<*>>).addEnumValue<CtEnum<Enum<*>>>(ctDecl)
                 }
-                is CtField<*> -> type.addField(ctDecl)
+                is CtField<*> -> {
+                    if(isObject) { // Ir object members are protected, but that's illegal in syntax
+                        filterModifiers(ctDecl) { it != KtModifierKind.PROTECTED }
+                    }
+                    type.addField(ctDecl)
+                }
                 is CtMethod<*> -> {
                     if (declaration.isInterface && ctDecl.body != null) {
                         ctDecl.setDefaultMethod<Nothing>(true)
+                    }
+                    if(isObject) {
+                        filterModifiers(ctDecl) { it != KtModifierKind.PROTECTED }
                     }
                     type.addMethod(ctDecl)
                 }
