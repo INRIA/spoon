@@ -345,8 +345,10 @@ class DefaultKotlinPrettyPrinter(
         }
 
         adapter.ensureNEmptyLines(1)
+
         // Annotations
-        // Not implemented
+        writeAnnotations(ctClass)
+        adapter.ensureNEmptyLines(0)
 
         enterCtStatement(ctClass)
         val modifiers = getModifiersMetadata(ctClass)
@@ -473,13 +475,18 @@ class DefaultKotlinPrettyPrinter(
             val modifierSet =
                 getModifiersMetadata(ctConstructor)?.filterIf(ctConstructor.parent is CtEnum<*>) { it != KtModifierKind.PRIVATE }
             if (primary) {
-                if (modifierSet != null && modifierSet.filterNot { it == KtModifierKind.PUBLIC }.isNotEmpty()) {
+                if ((modifierSet != null && modifierSet.filterNot { it == KtModifierKind.PUBLIC }.isNotEmpty())
+                    || ctConstructor.annotations.isNotEmpty()) {
                     adapter write SPACE
-                    adapter writeModifiers modifierSet
+                    writeAnnotations(ctConstructor)
+                    adapter.ensureSpaceOrNewlineBeforeNext()
+                    adapter writeModifiers modifierSet?.filterNot { it == KtModifierKind.PUBLIC }
                     adapter write "constructor"
                 }
             } else {
                 adapter.ensureNEmptyLines(1)
+                writeAnnotations(ctConstructor)
+                adapter.ensureSpaceOrNewlineBeforeNext()
                 adapter writeModifiers modifierSet and "constructor"
             }
             adapter write LEFT_ROUND
@@ -757,8 +764,15 @@ class DefaultKotlinPrettyPrinter(
         adapter write pkgRef.qualifiedName
     }
 
-    override fun <A : Annotation?> visitCtAnnotation(p0: CtAnnotation<A>?) {
-        TODO("Not yet implemented")
+    override fun <A : Annotation?> visitCtAnnotation(ctAnnotation: CtAnnotation<A>?) {
+        if(ctAnnotation == null) return
+        adapter write '@'
+        visitCtTypeReference(ctAnnotation.annotationType, false)
+        if(ctAnnotation.values.isNotEmpty()) {
+            adapter write LEFT_ROUND
+            visitCommaSeparatedList(ctAnnotation.values.values.toList())
+            adapter write RIGHT_ROUND
+        }
     }
 
     override fun <T : Any?> visitCtThisAccess(thisAccess: CtThisAccess<T>) {
@@ -823,7 +837,8 @@ class DefaultKotlinPrettyPrinter(
         adapter.ensureNEmptyLines(0)
 
         // Annotations
-        // Not implemented
+        writeAnnotations(field)
+        adapter.ensureNEmptyLines(0)
 
         // Modifiers
         // Filter out redundant modifiers: 'open' if method has override modifier, and
@@ -991,6 +1006,10 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtParameter(param: CtParameter<T>) {
         if(param.isImplicit) return
+
+        writeAnnotations(param)
+        adapter.ensureSpaceOrNewlineBeforeNext()
+
         val modifierSet = getModifiersMetadata(param)
         adapter writeModifiers modifierSet and param.simpleName
         if(!param.type.isImplicit) {
@@ -1349,12 +1368,21 @@ class DefaultKotlinPrettyPrinter(
         exitCtExpression(ctInvocation)
     }
 
+    private fun writeAnnotations(ctElement: CtElement): Boolean {
+        if(ctElement.annotations.isEmpty()) return false
+        for(a in ctElement.annotations) {
+            adapter.ensureNEmptyLines(0)
+            visitCtAnnotation(a)
+        }
+        return true
+    }
+
     override fun <T : Any?> visitCtMethod(method: CtMethod<T>) {
         if(method.isImplicit) return
         // Annotations not implemented
-
         adapter.ensureNEmptyLines(1)
-
+        writeAnnotations(method)
+        adapter.ensureNEmptyLines(0)
         // Modifiers
         val modifierSet = getModifiersMetadata(method)
         // Filter out redundant modifiers: 'open' if method has override modifier, and

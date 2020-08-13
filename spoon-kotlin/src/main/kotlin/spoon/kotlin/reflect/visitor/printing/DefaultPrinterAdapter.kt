@@ -122,6 +122,7 @@ open class DefaultPrinterAdapter(
         var overrideBreakPoint = false
         for(s in strings) {
             if(column + s.length < breakPoint || overrideBreakPoint) {
+                overrideBreakPoint = false
                 write(s)
             }
             else {
