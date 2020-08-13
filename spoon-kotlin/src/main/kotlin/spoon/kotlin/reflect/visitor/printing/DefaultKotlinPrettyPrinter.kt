@@ -478,15 +478,13 @@ class DefaultKotlinPrettyPrinter(
                 if (modifierSet.filterNot { it == KtModifierKind.PUBLIC }.isNotEmpty()
                     || ctConstructor.annotations.isNotEmpty()) {
                     adapter write SPACE
-                    writeAnnotations(ctConstructor)
-                    adapter.ensureSpaceOrNewlineBeforeNext()
+                    if(writeAnnotations(ctConstructor)) adapter.ensureSpaceOrNewlineBeforeNext()
                     adapter writeModifiers modifierSet.filterNot { it == KtModifierKind.PUBLIC }
                     adapter write "constructor"
                 }
             } else {
                 adapter.ensureNEmptyLines(1)
-                writeAnnotations(ctConstructor)
-                adapter.ensureSpaceOrNewlineBeforeNext()
+                if(writeAnnotations(ctConstructor)) adapter.ensureSpaceOrNewlineBeforeNext()
                 adapter writeModifiers modifierSet and "constructor"
             }
             adapter write LEFT_ROUND
@@ -841,8 +839,7 @@ class DefaultKotlinPrettyPrinter(
         adapter.ensureNEmptyLines(0)
 
         // Annotations
-        writeAnnotations(field)
-        adapter.ensureNEmptyLines(0)
+        if(writeAnnotations(field)) adapter.ensureNEmptyLines(0)
 
         // Modifiers
         // Filter out redundant modifiers: 'open' if method has override modifier, and
@@ -1011,8 +1008,7 @@ class DefaultKotlinPrettyPrinter(
     override fun <T : Any?> visitCtParameter(param: CtParameter<T>) {
         if(param.isImplicit) return
 
-        writeAnnotations(param)
-        adapter.ensureSpaceOrNewlineBeforeNext()
+        if(writeAnnotations(param)) adapter.ensureSpaceOrNewlineBeforeNext()
 
         val modifierSet = getModifiersMetadata(param)
         adapter writeModifiers modifierSet and param.simpleName
@@ -1391,9 +1387,8 @@ class DefaultKotlinPrettyPrinter(
         val modifierSet = getModifiersMetadata(method)
         // Filter out redundant modifiers: 'open' if method has override modifier, and
         // 'abstract' and 'open' modifiers if method is member of an interface
-        val modifiers = modifierSet?.filterIf(KtModifierKind.OVERRIDE in modifierSet) { it != KtModifierKind.OPEN }
-            ?.filterIf(method.parent is CtInterface<*>) { it != KtModifierKind.ABSTRACT && it != KtModifierKind.OPEN }
-            ?: emptySet<KtModifierKind>()
+        val modifiers = modifierSet.filterIf(KtModifierKind.OVERRIDE in modifierSet) { it != KtModifierKind.OPEN }
+            .filterIf(method.parent is CtInterface<*>) { it != KtModifierKind.ABSTRACT && it != KtModifierKind.OPEN }
 
         adapter writeModifiers modifiers and "fun"
 
