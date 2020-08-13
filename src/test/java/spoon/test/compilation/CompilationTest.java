@@ -60,6 +60,7 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.compiler.FileSystemFolder;
+import spoon.support.compiler.ProgressLogger;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.compiler.jdt.JDTBatchCompiler;
 import spoon.test.compilation.testclasses.Bar;
@@ -245,6 +246,8 @@ public class CompilationTest {
 			}
 		};
 
+		// contract: a progress logger can be used
+		launcher.getEnvironment().setSpoonProgress(new ProgressLogger(launcher.getEnvironment()));
 		launcher.addInputResource("./src/test/java/spoon/test/imports");
 		launcher.buildModel();
 		int n = 0;
