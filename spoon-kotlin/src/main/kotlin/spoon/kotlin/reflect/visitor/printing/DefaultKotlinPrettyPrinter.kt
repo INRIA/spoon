@@ -161,8 +161,8 @@ class DefaultKotlinPrettyPrinter(
 
 
     @Suppress("UNCHECKED_CAST")
-    private fun getModifiersMetadata(e : CtElement) : Set<KtModifierKind>? =
-        e.getMetadata(KtMetadataKeys.KT_MODIFIERS) as? Set<KtModifierKind>?
+    private fun getModifiersMetadata(e : CtElement) : Set<KtModifierKind> =
+        e.getMetadata(KtMetadataKeys.KT_MODIFIERS) as? Set<KtModifierKind>? ?: emptySet()
 
     override fun getResult(): String {
         return adapter.toString()
@@ -377,13 +377,12 @@ class DefaultKotlinPrettyPrinter(
         exitCtStatement(ctClass)
     }
 
-    private fun writeTypeMembersWithoutPrimaryConstructor(ctClass: CtClass<*>) {
+    private fun writeTypeMembersWithoutPrimaryConstructor(ctType: CtType<*>) {
         adapter write SPACE and LEFT_CURL
         adapter.newline()
         adapter.pushIndent()
 
-        //  ctClass.constructors.filterNot { it.isPrimary() }.forEach { it.accept(this) }
-        ctClass.typeMembers.filterNot { it is CtConstructor<*> && it.isPrimary() }.forEach {
+        ctType.typeMembers.filterNot { it is CtConstructor<*> && it.isPrimary() }.forEach {
             if(!it.isImplicit) { it.accept(this) }
         }
         adapter.popIndent()
@@ -392,14 +391,15 @@ class DefaultKotlinPrettyPrinter(
     }
 
     private fun writeInheritanceList(ctType: CtType<*>) {
+        val printSuperTypes = KtModifierKind.ANNOTATION !in getModifiersMetadata(ctType)
         if(ctType is CtClass<*>) {
             val primaryConstructor = ctType.constructors.firstOrNull { it.isPrimary() }
             if (primaryConstructor != null) {
-                visitCtConstructor(primaryConstructor)
+                visitCtConstructor(primaryConstructor, printSuperTypes)
             }
         }
 
-        if(ctType.superInterfaces.isNotEmpty()) {
+        if(printSuperTypes && ctType.superInterfaces.isNotEmpty()) {
             if(ctType !is CtInterface<*> && ctType.superclass != null && ctType.superclass.qualifiedName != "kotlin.Any") {
                 adapter write ", "
             } else {
@@ -466,21 +466,21 @@ class DefaultKotlinPrettyPrinter(
         adapter writeln RIGHT_CURL
     }
 
-    override fun <T : Any?> visitCtConstructor(ctConstructor : CtConstructor<T>) {
-        // Annotations not implemented
+    private fun visitCtConstructor(ctConstructor: CtConstructor<*>, printDelegate: Boolean) {
         val isObject = ctConstructor.parent.getBooleanMetadata(KtMetadataKeys.CLASS_IS_OBJECT, false)
         val primary = ctConstructor.getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as? Boolean? ?: false
         if (ctConstructor.isImplicit && !primary) return
         if(!isObject) {
             val modifierSet =
-                getModifiersMetadata(ctConstructor)?.filterIf(ctConstructor.parent is CtEnum<*>) { it != KtModifierKind.PRIVATE }
+                getModifiersMetadata(ctConstructor)
+                    .filterIf(ctConstructor.parent is CtEnum<*>) { it != KtModifierKind.PRIVATE }
             if (primary) {
-                if ((modifierSet != null && modifierSet.filterNot { it == KtModifierKind.PUBLIC }.isNotEmpty())
+                if (modifierSet.filterNot { it == KtModifierKind.PUBLIC }.isNotEmpty()
                     || ctConstructor.annotations.isNotEmpty()) {
                     adapter write SPACE
                     writeAnnotations(ctConstructor)
                     adapter.ensureSpaceOrNewlineBeforeNext()
-                    adapter writeModifiers modifierSet?.filterNot { it == KtModifierKind.PUBLIC }
+                    adapter writeModifiers modifierSet.filterNot { it == KtModifierKind.PUBLIC }
                     adapter write "constructor"
                 }
             } else {
@@ -494,17 +494,21 @@ class DefaultKotlinPrettyPrinter(
             adapter write RIGHT_ROUND
         }
         if(ctConstructor.body != null) {
-            visitConstructorBody(ctConstructor.body, primary)
+            visitConstructorBody(ctConstructor.body, primary, printDelegate)
         }
     }
 
-    private fun visitConstructorBody(block: CtBlock<*>, primary: Boolean) {
+    override fun <T : Any?> visitCtConstructor(ctConstructor : CtConstructor<T>) {
+        visitCtConstructor(ctConstructor, true)
+    }
+
+    private fun visitConstructorBody(block: CtBlock<*>, primary: Boolean, printDelegate: Boolean) {
         enterCtStatement(block)
         if(block.statements.isEmpty()) return
         val first = block.statements[0]
         val rest: List<CtStatement>
         rest = if(first is CtConstructorCall<*>) {
-            if(first.type.qualifiedName != "kotlin.Any") {
+            if(printDelegate && first.type.qualifiedName != "kotlin.Any") {
                 visitCtConstructorCall(first)
             }
             block.statements.drop(1)
