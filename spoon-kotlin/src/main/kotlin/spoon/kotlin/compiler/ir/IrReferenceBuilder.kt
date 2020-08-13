@@ -204,6 +204,12 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         return getNewVariableReference(irGetValue.symbol.owner)
     }
 
+    fun <T> getNewVariableReference(irGetEnumValue: IrGetEnumValue): CtFieldReference<T> {
+        val fieldReference = irTreeBuilder.core.createFieldReference<T>()
+        fieldReference.setDeclaringType<CtFieldReference<T>>(getNewTypeReference<Any>(irGetEnumValue.type))
+        fieldReference.setSimpleName<CtFieldReference<*>>(irGetEnumValue.symbol.descriptor.name.escaped())
+        return fieldReference
+    }
 
     // ========================== EXECUTABLE ==========================
 

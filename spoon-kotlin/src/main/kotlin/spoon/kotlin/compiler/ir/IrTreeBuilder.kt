@@ -930,6 +930,15 @@ internal class IrTreeBuilder(
         return ctClass.definite()
     }
 
+    override fun visitGetEnumValue(expression: IrGetEnumValue, data: ContextData): DefiniteTransformResult<CtFieldRead<*>> {
+        val fieldRead = core.createFieldRead<Any>()
+        fieldRead.setTarget<CtFieldRead<Any>>(createTypeAccess(expression.type))
+        fieldRead.setVariable<CtFieldRead<Any>>(
+            referenceBuilder.getNewVariableReference<Any>(expression)
+        )
+        return fieldRead.definite()
+    }
+
     override fun visitEnumEntry(declaration: IrEnumEntry, data: ContextData): DefiniteTransformResult<CtEnumValue<*>> {
         val ctEnum = core.createEnumValue<Any>()
         ctEnum.setSimpleName<CtEnumValue<*>>(declaration.name.escaped())
