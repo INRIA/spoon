@@ -96,7 +96,7 @@ internal class IrTreeBuilder(
         val lineSeparatorPositions = declaration.fileEntry.lineStartOffsets
         compilationUnit.declaredPackage = pkg
         compilationUnit.lineSeparatorPositions = lineSeparatorPositions
-        compilationUnit.transformAndAddAnnotations(declaration)
+        compilationUnit.transformAndAddAnnotations(declaration, data)
         for(subDeclaration in declaration.declarations) {
             val ctDecl = subDeclaration.accept(this, Empty(declaration)).resultUnsafe
             ctDecl.setPosition<CtType<*>>(SourcePositionImpl(
@@ -182,6 +182,8 @@ internal class IrTreeBuilder(
                         (type as CtClass<Any>).addConstructor<CtClass<Any>>(ctDecl as CtConstructor<Any>)
                         if(isObject)
                             ctDecl.setImplicit<CtElement>(true)
+                    } else if (type is CtAnnotationType<*>) {
+                        (type as CtAnnotationType<Annotation>).addTypeMember<CtAnnotationType<Annotation>>(ctDecl as CtConstructor<Any>)
                     }
                 }
                 is CtTypeMember -> {
@@ -200,7 +202,7 @@ internal class IrTreeBuilder(
         val ctAnonExecutable = core.createAnonymousExecutable()
         val body = visitBody(declaration.body, data).resultSafe
         ctAnonExecutable.setBody<CtAnonymousExecutable>(body)
-        ctAnonExecutable.transformAndAddAnnotations(declaration)
+        ctAnonExecutable.transformAndAddAnnotations(declaration, data)
         return ctAnonExecutable.definite()
     }
 
@@ -208,7 +210,7 @@ internal class IrTreeBuilder(
             DefiniteTransformResult<CtTypeParameter> {
         val ctTypeParam = factory.Core().createTypeParameter()
         ctTypeParam.setSimpleName<CtTypeParameter>(declaration.name.escaped())
-        ctTypeParam.transformAndAddAnnotations(declaration)
+        ctTypeParam.transformAndAddAnnotations(declaration, data)
         // Don't include default upper bound ("Any?")
         val bounds = declaration.superTypes.filterNot { it.isNullableAny() }.map { referenceBuilder.getNewTypeReference<Any>(it) }
         if(bounds.size == 1) {
@@ -248,7 +250,7 @@ internal class IrTreeBuilder(
                 var quotes = 0
                 var i = expression.startOffset
                 val text = getSourceHelper(data).sourceText
-                while(quotes < 3 && i > expression.startOffset - 5) {
+                while(quotes < 3 && i > kotlin.math.max(0, expression.startOffset - 5)) {
                     if(text[i] == '"') {
                         quotes += 1
                     } else if(quotes > 0) {
@@ -291,7 +293,7 @@ internal class IrTreeBuilder(
     override fun visitProperty(declaration: IrProperty, data: ContextData): DefiniteTransformResult<CtElement> {
         val ctField = core.createField<Any>()
         ctField.setSimpleName<CtField<*>>(declaration.name.escaped())
-        ctField.transformAndAddAnnotations(declaration)
+        ctField.transformAndAddAnnotations(declaration, data)
         // Initializer (if any) exists in backing field initializer
         val backingField = declaration.backingField
         val initializer = backingField?.initializer
@@ -364,7 +366,7 @@ internal class IrTreeBuilder(
     override fun visitConstructor(declaration: IrConstructor, data: ContextData): DefiniteTransformResult<CtElement> {
         val ctConstructor = core.createConstructor<Any>()
         ctConstructor.setSimpleName<CtConstructor<*>>(declaration.name.asString())
-        ctConstructor.transformAndAddAnnotations(declaration)
+        ctConstructor.transformAndAddAnnotations(declaration, data)
         val modifierList = listOfNotNull(KtModifierKind.convertVisibility(declaration.visibility))
         ctConstructor.setImplicit<CtConstructor<Any>>(declaration.isPrimary &&
                 declaration.valueParameters.isEmpty() &&
@@ -432,7 +434,7 @@ internal class IrTreeBuilder(
     override fun visitVariable(declaration: IrVariable, data: ContextData): DefiniteTransformResult<CtLocalVariable<*>> {
         val ctLocalVar = core.createLocalVariable<Any>()
         ctLocalVar.setSimpleName<CtVariable<*>>(declaration.name.escaped())
-        ctLocalVar.transformAndAddAnnotations(declaration)
+        ctLocalVar.transformAndAddAnnotations(declaration, data)
         // Initializer
         if(declaration.origin != IrDeclarationOrigin.FOR_LOOP_VARIABLE &&
                 data !is Destruct) {
@@ -480,8 +482,28 @@ internal class IrTreeBuilder(
         return ctExpr.definite()
     }
 
-    fun visitAnnotation(constructorCall: IrConstructorCall): DefiniteTransformResult<CtAnnotation<*>> {
-        return factory.Code().createAnnotation(referenceBuilder.getNewTypeReference(constructorCall.type)).definite()
+    fun visitAnnotation(constructorCall: IrConstructorCall, data: ContextData): DefiniteTransformResult<CtAnnotation<*>> {
+        val annotation = factory.Code().createAnnotation(referenceBuilder.getNewTypeReference(constructorCall.type))
+        if(constructorCall.valueArgumentsCount > 0) {
+            val m = mutableMapOf<String, CtExpression<*>>()
+            var n = 0
+            for(i in 0 until constructorCall.valueArgumentsCount) {
+                val arg = constructorCall.getValueArgument(i)!!
+                if(arg is IrVararg) {
+                    val vs = visitVararg(arg, data).compositeResultSafe
+                    for(v in vs) {
+                        m[n.toString()] = v
+                        n++
+                    }
+                } else {
+                    val v = expressionOrWrappedInStatementExpression(arg.accept(this, data).resultUnsafe)
+                    m[n.toString()] = v
+                    n++
+                }
+            }
+            annotation.setValues<CtAnnotation<Annotation>>(m)
+        }
+        return annotation.definite()
     }
 
     override fun visitValueParameter(
@@ -491,7 +513,7 @@ internal class IrTreeBuilder(
         val ctParam = core.createParameter<Any>()
         ctParam.setSimpleName<CtParameter<Any>>(declaration.name.escaped())
         ctParam.setInferred<CtParameter<Any>>(false) // Not allowed
-        ctParam.transformAndAddAnnotations(declaration)
+        ctParam.transformAndAddAnnotations(declaration, data)
 
         // Modifiers
         val modifierList = IrToModifierKind.fromValueParameter(declaration)
@@ -519,14 +541,14 @@ internal class IrTreeBuilder(
         return ctParam.definite()
     }
 
-    private fun CtElement.transformAndAddAnnotations(irElement: IrAnnotationContainer) {
-        setAnnotations<CtElement>(irElement.annotations.map { visitAnnotation(it).resultSafe })
+    private fun CtElement.transformAndAddAnnotations(irElement: IrAnnotationContainer, data: ContextData) {
+        setAnnotations<CtElement>(irElement.annotations.map { visitAnnotation(it, data).resultSafe })
     }
 
     private fun createUnnamedFunction(irFunction: IrFunction, data: ContextData): CtMethod<*> {
         val ctMethod = core.createMethod<Any>()
 
-        ctMethod.transformAndAddAnnotations(irFunction)
+        ctMethod.transformAndAddAnnotations(irFunction, data)
 
         // Value params
         if(irFunction.valueParameters.isNotEmpty()) {
@@ -902,7 +924,7 @@ internal class IrTreeBuilder(
         ctClass.setFormalCtTypeParameters<CtClass<*>>(declaration.typeParameters.map {
             visitTypeParameter(it, data).resultSafe
         })
-        ctClass.transformAndAddAnnotations(declaration)
+        ctClass.transformAndAddAnnotations(declaration, data)
         ctClass.addModifiersAsMetadata(listOfNotNull(IrToModifierKind.convertVisibility(declaration.visibility)))
         ctClass.putKtMetadata(KtMetadataKeys.TYPE_ALIAS, KtMetadata.element(referenceBuilder.getNewTypeReference<Any>(declaration.expandedType)))
         return ctClass.definite()
@@ -911,7 +933,7 @@ internal class IrTreeBuilder(
     override fun visitEnumEntry(declaration: IrEnumEntry, data: ContextData): DefiniteTransformResult<CtEnumValue<*>> {
         val ctEnum = core.createEnumValue<Any>()
         ctEnum.setSimpleName<CtEnumValue<*>>(declaration.name.escaped())
-        ctEnum.transformAndAddAnnotations(declaration)
+        ctEnum.transformAndAddAnnotations(declaration, data)
         val constructorCall = declaration.initializerExpression!! as IrEnumConstructorCall
         val anonClass = declaration.correspondingClass
         if(anonClass == null) {

@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassOrAny
 import org.jetbrains.kotlin.resolve.source.getPsi
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.reflect.code.LiteralBase
+import spoon.reflect.declaration.CtAnnotationType
 import spoon.reflect.declaration.CtElement
 import spoon.reflect.declaration.CtModule
 import spoon.reflect.declaration.CtType
@@ -35,12 +36,12 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     }
 
     fun createType(irClass: IrClass, context: ContextData): CtType<*> {
-        val type: CtType<Any> = when(irClass.kind) {
+        val type: CtType<*> = when(irClass.kind) {
             ClassKind.CLASS -> factory.Core().createClass()
             ClassKind.INTERFACE -> factory.Core().createInterface()
             ClassKind.ENUM_CLASS -> factory.Core().createEnum<Enum<*>>() as CtType<Any>
             ClassKind.ENUM_ENTRY -> factory.Core().createClass()
-            ClassKind.ANNOTATION_CLASS -> TODO()
+            ClassKind.ANNOTATION_CLASS -> factory.Core().createClass()
             ClassKind.OBJECT -> factory.Core().createClass<Any>().apply {
                 putMetadata<CtType<Any>>(KtMetadataKeys.CLASS_IS_OBJECT, true)
             }
@@ -50,27 +51,29 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
         }
         type.addModifiersAsMetadata(IrToModifierKind.fromClass(irClass))
         if(irClass.annotations.isNotEmpty()) {
-            type.setAnnotations<CtElement>(irClass.annotations.map { irTreeBuilder.visitAnnotation(it).resultSafe })
-        }
-        val superClassNotAny = irClass.descriptor.getSuperClassNotAny()
-        val superClassOrAny = irClass.descriptor.getSuperClassOrAny()
-        if(superClassNotAny != null) { // ==> superClassNotAny = superClassOrAny
-            type.setSuperclass<CtType<Any>>(
-                referenceBuilder.getNewTypeReference<Any>(
-                irClass.superTypes.first { it.classifierOrFail.descriptor === superClassNotAny }))
+            type.setAnnotations<CtElement>(irClass.annotations.map { irTreeBuilder.visitAnnotation(it, context).resultSafe })
         }
 
-        type.setSuperInterfaces<CtType<Any>>(irClass.superTypes.
-            filterNot {
+        if(type !is CtAnnotationType<*>) {
+            type as CtType<Any>
+            val superClassNotAny = irClass.descriptor.getSuperClassNotAny()
+            val superClassOrAny = irClass.descriptor.getSuperClassOrAny()
+            if (superClassNotAny != null) { // ==> superClassNotAny = superClassOrAny
+                type.setSuperclass<CtType<Any>>(
+                    referenceBuilder.getNewTypeReference<Any>(
+                        irClass.superTypes.first { it.classifierOrFail.descriptor === superClassNotAny })
+                )
+            }
+
+            type.setSuperInterfaces<CtType<Any>>(irClass.superTypes.filterNot {
                 it.classifierOrFail.descriptor === superClassOrAny // Check against Any, because it is listed in supertypes
             }.map {
                 referenceBuilder.getNewTypeReference<Any>(it)
             }.toSet())
-
+        }
         type.setFormalCtTypeParameters<CtType<*>>(irClass.typeParameters.map {
             irTreeBuilder.visitTypeParameter(it, context).resultUnsafe
         })
-
         return type
     }
 
