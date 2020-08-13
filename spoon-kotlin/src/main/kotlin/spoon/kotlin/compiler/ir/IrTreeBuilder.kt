@@ -948,7 +948,7 @@ internal class IrTreeBuilder(
             ))
             ctEnum.setDefaultExpression<CtEnumValue<Any>>(ctAnon)
         }
-
+        ctEnum.setType<CtTypedElement<*>>(referenceBuilder.getNewTypeReference(declaration.parentAsClass.descriptor))
         return ctEnum.definite()
     }
 
