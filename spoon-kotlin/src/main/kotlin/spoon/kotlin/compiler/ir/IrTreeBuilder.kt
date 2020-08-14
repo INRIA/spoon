@@ -403,14 +403,18 @@ internal class IrTreeBuilder(
         if(!declaration.isDelegated) { // Custom getter/setter is illegal for delegated properties
             val getter = declaration.getter
             if(getter != null && getter.origin != IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR) {
+                val getterFunction = createUnnamedFunction(getter, data)
                 ctField.putKtMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_GETTER,
-                    KtMetadata.element(createUnnamedFunction(getter, data)))
+                    KtMetadata.element(getterFunction))
+                getterFunction.setParent(ctField)
             }
 
             val setter = declaration.setter
             if(setter != null && setter.origin != IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR) {
+                val setterFunction = createUnnamedFunction(setter, data)
                 ctField.putKtMetadata<CtField<*>>(KtMetadataKeys.PROPERTY_SETTER,
-                    KtMetadata.element(createUnnamedFunction(setter, data)))
+                    KtMetadata.element(setterFunction))
+                setterFunction.setParent(ctField)
             }
         }
 
