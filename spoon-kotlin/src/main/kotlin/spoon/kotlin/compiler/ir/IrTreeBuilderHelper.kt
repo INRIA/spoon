@@ -29,7 +29,9 @@ import spoon.reflect.declaration.CtType
 internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     private val factory get() = irTreeBuilder.factory
     private val referenceBuilder get() = irTreeBuilder.referenceBuilder
-    private val keywords = KtTokens.KEYWORDS.types.map { (it as KtKeywordToken).value }
+    private val keywords = KtTokens.KEYWORDS.types.map { (it as KtKeywordToken).value }.toMutableList().also {
+        it.add("assert")
+    }
 
     private fun getKtFile(file: IrFile): KtFile {
         return irTreeBuilder.sourceManager.getKtFile(file.fileEntry as PsiSourceManager.PsiFileEntry)!!
