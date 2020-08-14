@@ -152,7 +152,8 @@ class DefaultKotlinPrettyPrinter(
 
     private fun enterCtStatement(s: CtStatement) {
         val label = s.label ?:
-            s.getMetadata(KtMetadataKeys.LABEL) as String?
+            if(s is CtReturn<*>) null
+            else s.getMetadata(KtMetadataKeys.LABEL) as String?
         if(label != null) {
             adapter write label and '@' and SPACE
         }
