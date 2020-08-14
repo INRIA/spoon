@@ -45,9 +45,9 @@ class DefaultKotlinPrettyPrinter(
     private fun CtElement.getBooleanMetadata(key: String, default: Boolean) =
         getMetadata(key) as Boolean? ?: default
 
-    private fun visitCommaSeparatedList(
-        list : List<CtElement>,
-        specialAction: ((CtElement) -> Unit)? = null) {
+    private fun <T: CtElement> visitCommaSeparatedList(
+        list : List<T>,
+        specialAction: ((T) -> Unit)? = null) {
         var commas = list.size-1
         for (it in list) {
             if(specialAction == null) {
@@ -218,7 +218,9 @@ class DefaultKotlinPrettyPrinter(
             visitAnonymousFunction(ctLambda)
         } else {
             adapter write LEFT_CURL and SPACE
-            val params = ctLambda.parameters.filterNot { it.isImplicit }
+            val params = ctLambda.parameters.filterNot {
+                it.isImplicit && !it.getBooleanMetadata(KtMetadataKeys.IS_DESTRUCTURED, false)
+            }
             if (params.isNotEmpty()) {
                 visitCommaSeparatedList(params)
                 adapter write " -> "
@@ -1006,7 +1008,15 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtParameter(param: CtParameter<T>) {
-        if(param.isImplicit) return
+        if(param.isImplicit) {
+            if(param.getBooleanMetadata(KtMetadataKeys.IS_DESTRUCTURED, false)) {
+                val components = param.getMetadata(KtMetadataKeys.COMPONENTS) as List<CtLocalVariable<*>>
+                adapter write LEFT_ROUND
+                visitCommaSeparatedList(components) { adapter write it.simpleName }
+                adapter write RIGHT_ROUND
+            }
+            return
+        }
 
         if(writeAnnotations(param)) adapter.ensureSpaceOrNewlineBeforeNext()
 

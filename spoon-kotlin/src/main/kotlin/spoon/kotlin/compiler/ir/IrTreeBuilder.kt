@@ -2,10 +2,13 @@ package spoon.kotlin.compiler.ir
 
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.descriptors.*
+import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
 import org.jetbrains.kotlin.ir.IrElement
+import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.descriptors.IrTemporaryVariableDescriptor
 import org.jetbrains.kotlin.ir.expressions.*
+import org.jetbrains.kotlin.ir.expressions.impl.IrBlockBodyImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrElseBranchImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrIfThenElseImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrWhenImpl
@@ -277,14 +280,75 @@ internal class IrTreeBuilder(
         return ctPlaceholder.definite()
     }
 
+    /**
+     * val l = listOf(Pair(1,2)) or any other data class type
+     * l.forEach { (k,v) -> ... }
+     * > translates to >
+     * l.forEach { <name for destructuring parameter 0> ->
+     *      val k = <name for destructuring parameter 0>.component1
+     *      val v = <name for destructuring parameter 0>.component2
+     *      ...
+     * }
+     */
+    private fun visitLambdaWithDestructuredValueParam(ctLambda: CtLambda<Any>, function: IrFunction, data: ContextData): CtLambda<*> {
+        val m = mutableMapOf<String, CtParameter<Any>>()
+        val body = ArrayList<IrStatement>()
+        for(stmt in function.body!!.statements) {
+            if(stmt is IrVariable
+                && stmt.initializer is IrCall
+                && (stmt.initializer as IrCall).origin is IrStatementOrigin.COMPONENT_N) {
+                val initializer = stmt.initializer as IrCall
+                val name = (helper.getReceiver(initializer) as IrGetValue).symbol.descriptor.name.asString()
+                val placeholder = m.getOrPut(name) {
+                    core.createParameter<Any>().also {
+                        it.setSimpleName<CtParameter<*>>(name)
+                        it.setType<CtParameter<*>>(referenceBuilder.getNewTypeReference(stmt.type))
+                        it.setImplicit<CtParameter<*>>(true)
+                        it.putKtMetadata(KtMetadataKeys.IS_DESTRUCTURED, KtMetadata.bool(true))
+                        it.putKtMetadata(KtMetadataKeys.COMPONENTS, KtMetadata.elementList(ArrayList<CtLocalVariable<*>>()))
+                    }
+                }
+                val components = placeholder.getMetadata(KtMetadataKeys.COMPONENTS) as ArrayList<CtLocalVariable<*>>
+                val component = visitVariable(stmt, data).resultSafe
+                components.add(component)
+            } else {
+                body.add(stmt)
+            }
+        }
+
+        val newBody = IrBlockBodyImpl(
+            function.body!!.startOffset,
+            function.body!!.endOffset,
+            body
+            )
+        ctLambda.setBody<CtLambda<*>>(visitBody(newBody, data).resultSafe)
+        val params = ArrayList<CtParameter<*>>()
+        for(param in function.valueParameters) {
+            val placeholder = m[param.name.asString()]
+            if(placeholder == null) {
+                params.add(visitValueParameter(param, data).resultSafe)
+            } else {
+                params.add(placeholder)
+            }
+        }
+        ctLambda.setParameters<CtLambda<Any>>(params)
+        return ctLambda
+    }
+
     override fun visitFunctionExpression(
         expression: IrFunctionExpression,
         data: ContextData
     ): DefiniteTransformResult<CtLambda<*>> {
         val ctLambda = core.createLambda<Any>()
-        ctLambda.setBody<CtLambda<*>>(visitBody(expression.function.body!!,data).resultSafe)
+        if(expression.function.valueParameters.any { it.descriptor is ValueParameterDescriptorImpl.WithDestructuringDeclaration }) {
+            visitLambdaWithDestructuredValueParam(ctLambda, expression.function, data)
+        } else {
+            ctLambda.setBody<CtLambda<*>>(visitBody(expression.function.body!!,data).resultSafe)
+            ctLambda.setParameters<CtLambda<Any>>(expression.function.valueParameters.map {
+                visitValueParameter(it, data).resultSafe
+            })
+        }
         ctLambda.setType<CtLambda<*>>(referenceBuilder.getNewTypeReference(expression.function.returnType))
-        ctLambda.setParameters<CtLambda<Any>>(expression.function.valueParameters.map { visitValueParameter(it, data).resultSafe })
         ctLambda.putKtMetadata(KtMetadataKeys.LAMBDA_AS_ANONYMOUS_FUNCTION,
             KtMetadata.bool(expression.origin == IrStatementOrigin.ANONYMOUS_FUNCTION))
         return ctLambda.definite()
