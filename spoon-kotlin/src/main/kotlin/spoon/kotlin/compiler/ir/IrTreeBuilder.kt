@@ -1071,8 +1071,8 @@ internal class IrTreeBuilder(
             }
             IrStatementOrigin.ARGUMENTS_REORDERING_FOR_CALL -> {
                 val map = helper.getNamedArgumentsMap(block, data)
-                return createInvocation(block.statements.firstIsInstance<IrCall>(),
-                    data, map)
+                val call = block.statements.first { it is IrCall || it is IrConstructorCall } as IrFunctionAccessExpression
+                return createInvocation(call, data, map)
             }
             IrStatementOrigin.ELVIS -> {
                 return visitElvisOperator(block, data)
@@ -1298,6 +1298,7 @@ internal class IrTreeBuilder(
             IrTypeOperator.CAST, IrTypeOperator.SAFE_CAST -> createTypeCast(expression, data)
             IrTypeOperator.INSTANCEOF, IrTypeOperator.NOT_INSTANCEOF -> createIsTypeOperation(expression, data)
             IrTypeOperator.IMPLICIT_COERCION_TO_UNIT,
+            IrTypeOperator.IMPLICIT_NOTNULL,
             IrTypeOperator.IMPLICIT_CAST -> expression.argument.accept(this, data)
             else -> throw SpoonIrBuildException("Unimplemented type operator: ${expression.operator}")
         }
