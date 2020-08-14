@@ -86,8 +86,8 @@ internal class IrTreeBuilder(
     }
 
     override fun visitElement(element: IrElement, data: ContextData): TransformResult<CtElement> {
-        //TODO("Not yet implemented")
-        return CtLiteralImpl<String>().setValue<CtLiteral<String>>("Unimplemented element $element").definite()
+        TODO("${element::class.simpleName} not implemented")
+      //  return CtLiteralImpl<String>().setValue<CtLiteral<String>>("Unimplemented element $element").definite()
     }
 
     override fun visitFile(declaration: IrFile, data: ContextData): DefiniteTransformResult<CtCompilationUnit> {
@@ -209,6 +209,16 @@ internal class IrTreeBuilder(
         ctAnonExecutable.setBody<CtAnonymousExecutable>(body)
         ctAnonExecutable.transformAndAddAnnotations(declaration, data)
         return ctAnonExecutable.definite()
+    }
+
+    override fun visitGetClass(expression: IrGetClass, data: ContextData): TransformResult<CtElement> {
+        return super.visitGetClass(expression, data)
+    }
+
+    override fun visitClassReference(expression: IrClassReference, data: ContextData): DefiniteTransformResult<CtElement> {
+        val access = createTypeAccess(expression.classType)
+        access.putKtMetadata(KtMetadataKeys.IS_CLASS_REFERENCE, KtMetadata.bool(true))
+        return access.definite()
     }
 
     override fun visitTypeParameter(declaration: IrTypeParameter, data: ContextData):

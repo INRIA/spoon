@@ -59,5 +59,6 @@ object KtMetadataKeys {
     const val COMPONENTS = "skt_key components : List<CtLocalVariable>?"
 
     const val STRING_CONCAT_ELEMENTS = "skt_key string concat elements: List<CtExpression<*>>"
+    const val IS_CLASS_REFERENCE = "skt_key is class reference: Boolean"
 }
 
