@@ -460,6 +460,7 @@ public class LambdaTest {
 
 	@Test
 	public void testCastLambdaWithIntersection() {
+		// contract: intersection types on lambda parameters are supported 
 		final CtLambda<?> lambda1 = intersection.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(1);
 		lambda1.getReference();
 		final CtLambda<?> lambda2 = intersection.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(2);
