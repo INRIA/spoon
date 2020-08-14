@@ -84,7 +84,7 @@ class DefaultKotlinPrettyPrinter(
         fun CtExpression<*>.acceptPossiblyNamed() {
             val name = getMetadata(KtMetadataKeys.NAMED_ARGUMENT) as String?
             if(name != null) {
-                adapter write name and " = "
+                adapter writeIdentifier name and " = "
             }
             if(this.getBooleanMetadata(KtMetadataKeys.SPREAD, default = false)) {
                 adapter write '*'
@@ -672,7 +672,7 @@ class DefaultKotlinPrettyPrinter(
             adapter write "field"
         }
         else {
-            adapter write fieldRef.simpleName
+            adapter writeIdentifier fieldRef.simpleName
         }
     }
 
@@ -701,7 +701,7 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtCatchVariable(catchVariable: CtCatchVariable<T>) {
-        adapter write catchVariable.simpleName
+        adapter writeIdentifier catchVariable.simpleName
         adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
         catchVariable.type.accept(this)
     }
@@ -716,7 +716,8 @@ class DefaultKotlinPrettyPrinter(
             ""
         }
 
-        adapter write modifiersString and typeParam.simpleName
+        adapter write modifiersString
+        adapter writeIdentifier typeParam.simpleName
 
         if(typeParam.superclass != null) {
             typeParam.superclass.accept(this)
@@ -741,7 +742,7 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtLocalVariableReference(localVarRef: CtLocalVariableReference<T>) {
-        adapter write localVarRef.simpleName
+        adapter writeIdentifier localVarRef.simpleName
     }
 
     override fun visitCtCodeSnippetStatement(p0: CtCodeSnippetStatement?) {
@@ -753,7 +754,7 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtCatchVariableReference(catchVarRef: CtCatchVariableReference<T>) {
-        adapter write catchVarRef.simpleName
+        adapter writeIdentifier catchVarRef.simpleName
     }
 
     override fun <T : Any?> visitCtSuperAccess(superAccess: CtSuperAccess<T>) {
@@ -854,7 +855,7 @@ class DefaultKotlinPrettyPrinter(
         adapter writeModifiers modifiers
 
         // Name
-        adapter write field.simpleName
+        adapter writeIdentifier field.simpleName
 
         // Type
         if(!field.type.isImplicit || forceExplicitTypes) {
@@ -910,7 +911,8 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtLocalVariable(localVar: CtLocalVariable<T>) {
         val modifiers = getModifiersMetadata(localVar)
-        adapter writeModifiers modifiers and localVar.simpleName
+        adapter writeModifiers modifiers
+        adapter writeIdentifier localVar.simpleName
 
         if(localVar.isImplicit) {
             if(localVar.getBooleanMetadata(KtMetadataKeys.IS_DESTRUCTURED) == true) {
@@ -959,7 +961,8 @@ class DefaultKotlinPrettyPrinter(
         enterCtExpression(execRef)
         execRef.target!!.accept(this)
         
-        adapter write "::" and execRef.executable.simpleName
+        adapter write "::"
+        adapter writeIdentifier execRef.executable.simpleName
         exitCtExpression(execRef)
     }
 
@@ -970,9 +973,9 @@ class DefaultKotlinPrettyPrinter(
     override fun visitCtTypeParameterReference(typeParam: CtTypeParameterReference) {
         val name = TypeName.build(typeParam)
         if(typeParam.isSimplyQualified) {
-            adapter write name.simpleNameWithNullability
+            adapter writeIdentifier name.simpleNameWithNullability
         } else {
-            adapter write name.fQNameWithNullability
+            adapter writeIdentifier name.fQNameWithNullability
         }
     }
 
@@ -990,7 +993,7 @@ class DefaultKotlinPrettyPrinter(
             else -> {
                 if(!defaultExpr.isImplicit) {
                     adapter.ensureNEmptyLines(0)
-                    adapter write enumValue.simpleName
+                    adapter writeIdentifier enumValue.simpleName
                     adapter write LEFT_ROUND
                     visitCommaSeparatedList((defaultExpr as CtInvocation<*>).arguments)
                     adapter write RIGHT_ROUND
@@ -1012,7 +1015,7 @@ class DefaultKotlinPrettyPrinter(
             if(param.getBooleanMetadata(KtMetadataKeys.IS_DESTRUCTURED, false)) {
                 val components = param.getMetadata(KtMetadataKeys.COMPONENTS) as List<CtLocalVariable<*>>
                 adapter write LEFT_ROUND
-                visitCommaSeparatedList(components) { adapter write it.simpleName }
+                visitCommaSeparatedList(components) { adapter writeIdentifier it.simpleName }
                 adapter write RIGHT_ROUND
             }
             return
@@ -1021,7 +1024,8 @@ class DefaultKotlinPrettyPrinter(
         if(writeAnnotations(param)) adapter.ensureSpaceOrNewlineBeforeNext()
 
         val modifierSet = getModifiersMetadata(param)
-        adapter writeModifiers modifierSet and param.simpleName
+        adapter writeModifiers modifierSet
+        adapter writeIdentifier param.simpleName
         if(!param.type.isImplicit) {
             adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
         }
@@ -1066,7 +1070,7 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtParameterReference(parameterRef: CtParameterReference<T>) {
-        adapter write parameterRef.simpleName
+        adapter writeIdentifier parameterRef.simpleName
     }
 
     override fun visitCtModuleReference(p0: CtModuleReference?) {
@@ -1204,13 +1208,13 @@ class DefaultKotlinPrettyPrinter(
                 override fun <T : Any?> visitMethodImport(execRef: CtExecutableReference<T>) {
                     val didWrite = visitCtTypeReference(execRef.declaringType, false)
                     if(didWrite) adapter write '.'
-                    adapter write execRef.simpleName
+                    adapter writeIdentifier execRef.simpleName
                 }
 
                 override fun <T : Any?> visitFieldImport(fieldRef: CtFieldReference<T>) {
                     val didWrite = visitCtTypeReference(fieldRef.declaringType, false)
                     if(didWrite) adapter write '.'
-                    adapter write fieldRef.simpleName
+                    adapter writeIdentifier fieldRef.simpleName
                 }
 
                 override fun visitAllTypesImport(pkgRef: CtPackageReference) {
@@ -1288,7 +1292,7 @@ class DefaultKotlinPrettyPrinter(
             adapter write '.'
         }
         val name = TypeName.build(typeRef)
-        adapter write name.simpleNameWithoutNullability
+        adapter writeIdentifier name.simpleNameWithoutNullability
 
         if(withGenerics)
             visitTypeArgumentsList(typeRef.actualTypeArguments, false)
@@ -1298,7 +1302,7 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtVariableWrite(varWrite: CtVariableWrite<T>) {
-        adapter write varWrite.variable.simpleName
+        adapter writeIdentifier varWrite.variable.simpleName
     }
 
     override fun <A : Annotation?> visitCtAnnotationType(p0: CtAnnotationType<A>?) {
@@ -1338,9 +1342,9 @@ class DefaultKotlinPrettyPrinter(
         if(!shouldIgnoreIdentifier(invocation)) { // If invoke operator, the name of the called function is omitted
             adapter write separator
             if(invocation.executable.isConstructor) {
-                adapter write invocation.executable.type.simpleName
+                adapter writeIdentifier invocation.executable.type.simpleName
             } else {
-                adapter write invocation.executable.simpleName
+                adapter writeIdentifier invocation.executable.simpleName
             }
         }
 
@@ -1373,7 +1377,8 @@ class DefaultKotlinPrettyPrinter(
     private fun <T> visitInfixInvocation(ctInvocation: CtInvocation<T>) {
         enterCtExpression(ctInvocation)
         ctInvocation.target.accept(this)
-        adapter write " ${ctInvocation.executable.simpleName} "
+        adapter write SPACE
+        adapter writeIdentifier ctInvocation.executable.simpleName and SPACE
         ctInvocation.arguments[0].accept(this)
         exitCtExpression(ctInvocation)
     }
@@ -1411,7 +1416,7 @@ class DefaultKotlinPrettyPrinter(
             adapter write '.'
         }
 
-        adapter write method.simpleName and LEFT_ROUND
+        adapter writeIdentifier method.simpleName and LEFT_ROUND
         visitCommaSeparatedList(method.parameters)
         adapter write RIGHT_ROUND
 

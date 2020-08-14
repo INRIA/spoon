@@ -156,5 +156,26 @@ open class DefaultPrinterAdapter(
             joinToString(separator = " ", postfix = " ") { it.token }?.let { this.write(it) }
     }
 
+    infix fun writeIdentifier(name: String): DefaultPrinterAdapter {
+        if(name.isEmpty()) return this
+        if(name.length < 3) {
+            write(name)
+            return this
+        }
+        if(name.startsWith('$') && (name.endsWith('$') || name.endsWith("$?"))) {
+            write('`')
+            if(name.endsWith('?')) {
+                write(name.substring(1, name.length-3))
+                write("`?")
+            } else {
+                write(name.substring(1, name.length-2))
+                write('`')
+            }
+        } else {
+            write(name)
+        }
+        return this
+    }
+
     private fun <T> List<T>.nullOrNotEmpty() = if(this.isEmpty()) null else this
 }
