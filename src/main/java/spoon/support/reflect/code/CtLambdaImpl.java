@@ -105,28 +105,33 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			//it can be null in noclasspath mode, so we do not know which method is called, by lambda
 			return null;
 		}
-		CtMethod<?> lambdaExecutableMethod = null;
 		if (!(lambdaTypeRef instanceof CtIntersectionTypeReference)) {
 			return getOverriddenAux(lambdaTypeRef);
-		} else {
-			CtElement parent = lambdaTypeRef.getParent();
-			CtTypeReference<?> parentTypeReference = null;
-			if (parent != null && parent instanceof CtLocalVariable) {
-				parentTypeReference = ((CtLocalVariable) parent).getType();
-			} else if (parent != null && parent instanceof CtAssignment) {
-				parentTypeReference = ((CtAssignment) parent).getAssigned().getType();
-			}
-			for (CtTypeReference<?> ctTypeReference : ((CtIntersectionTypeReference<?>) lambdaTypeRef).getBounds()) {
-				CtMethod<?> tmp = getOverriddenAux(ctTypeReference);
-				if (tmp != null && (lambdaExecutableMethod == null || ctTypeReference.equals(parentTypeReference))) {
-					lambdaExecutableMethod = tmp;
-				}
-			}
 		}
+		CtMethod<?> lambdaExecutableMethod = getOverriddenMethodForIntersectionType(lambdaTypeRef);
 		if (lambdaExecutableMethod == null) {
 			throw new SpoonException("The lambda can be based on interface, which has one method. But " + lambdaTypeRef.getQualifiedName() + " has no one");
 		}
 		return (CtMethod<R>) lambdaExecutableMethod;
+	}
+
+	private CtMethod<?> getOverriddenMethodForIntersectionType(CtTypeReference<T> lambdaTypeRef)
+			throws SpoonException {
+		CtMethod<?> lambdaExecutableMethod=null;
+		CtElement parent = lambdaTypeRef.getParent();
+		CtTypeReference<?> parentTypeReference = null;
+		if (parent != null && parent instanceof CtLocalVariable) {
+			parentTypeReference = ((CtLocalVariable) parent).getType();
+		} else if (parent != null && parent instanceof CtAssignment) {
+			parentTypeReference = ((CtAssignment) parent).getAssigned().getType();
+		}
+		for (CtTypeReference<?> ctTypeReference : ((CtIntersectionTypeReference<?>) lambdaTypeRef).getBounds()) {
+			CtMethod<?> tmp = getOverriddenAux(ctTypeReference);
+			if (tmp != null && (lambdaExecutableMethod == null || ctTypeReference.equals(parentTypeReference))) {
+				lambdaExecutableMethod = tmp;
+			}
+		}
+		return lambdaExecutableMethod;
 	}
 
 	private  <R> CtMethod<R> getOverriddenAux(CtTypeReference<?> lambdaTypeRef) throws SpoonException {
