@@ -3,6 +3,7 @@ package spoon.kotlin.compiler.ir
 import org.jetbrains.kotlin.descriptors.PropertySetterDescriptor
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.expressions.*
+import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
 import spoon.kotlin.reflect.code.KtBinaryOperatorKind
 import spoon.reflect.code.UnaryOperatorKind
 
@@ -26,6 +27,10 @@ object OperatorHelper {
     private val unaryOperatorOriginSet by lazy { setOf(
         IrStatementOrigin.UMINUS, IrStatementOrigin.UPLUS, IrStatementOrigin.EXCL
     )
+    }
+
+    private fun getReceiver(irCall: IrCall): IrExpression? {
+        return irCall.extensionReceiver ?: irCall.dispatchReceiver
     }
 
     fun isBinaryOperator(origin: IrStatementOrigin?): Boolean =
@@ -79,15 +84,15 @@ object OperatorHelper {
 
     fun getAugmentedAssignmentOperands(irExpr: IrExpression): Pair<IrElement, IrElement> {
         when(irExpr) {
-            is IrBlock -> { // LHS is property
-                return getAugmentedAssignmentOperands(irExpr.statements[1] as IrExpression)
+            is IrBlock -> {
+                return getAugmentedAssignmentOperands(irExpr.statements.firstIsInstance<IrCall>())
             }
             is IrCall -> { // LHS is local variable of type with opAssign
                 val symbol = irExpr.symbol
                 if(symbol.descriptor is PropertySetterDescriptor) {
                     return getAugmentedAssignmentOperands(irExpr.getValueArgument(0)!!)
                 }
-                return irExpr.dispatchReceiver!! to irExpr.getValueArgument(0)!!
+                return getReceiver(irExpr)!! to irExpr.getValueArgument(0)!!
             }
             is IrSetVariable -> {
                 return getAugmentedAssignmentOperands(irExpr.value)
