@@ -141,7 +141,10 @@ class DefaultKotlinPrettyPrinter(
             is CtBinaryOperator<*>, is CtUnaryOperator<*> ->
                 e is CtAssignment<*,*> || e is CtUnaryOperator<*> || e is CtBinaryOperator<*>
             is CtTargetedExpression<*,*> -> {
-                e.parent.target == e && (e is CtBinaryOperator<*> || e is CtAssignment<*,*> || e is CtUnaryOperator<*>)
+                e.parent.target == e && (e is CtBinaryOperator<*>
+                        || e is CtAssignment<*,*>
+                        || e is CtUnaryOperator<*>
+                        || (e is CtInvocation<*> && e.getBooleanMetadata(KtMetadataKeys.INVOCATION_IS_INFIX, false)))
             }
             else -> false
         }
@@ -615,9 +618,11 @@ class DefaultKotlinPrettyPrinter(
         val topLvl = pkg.getType<CtType<*>>(topLvlClassName)
         val elements = ArrayList<CtElement>()
         elements.addAll(compilationUnit.declaredTypes)
-        for(t in topLvl.typeMembers) {
-            if(t.position.compilationUnit === compilationUnit) {
-                elements.add(t)
+        if(topLvl != null) {
+            for(t in topLvl.typeMembers) {
+                if(t.position.compilationUnit === compilationUnit) {
+                    elements.add(t)
+                }
             }
         }
         elements.sortBy { it.position.sourceStart }
