@@ -138,7 +138,7 @@ class PsiSourceHelper {
     fun returnTargetLabelOrNull(irReturn: IrReturn): String? {
         val sourceText = ktFile.text.substring(irReturn.startOffset, irReturn.endOffset)
         if(sourceText.startsWith("return@")) {
-            val labelStart = sourceText.indexOf('@'+1)
+            val labelStart = sourceText.indexOf('@')+1
             val labelEnd = sourceText.indexOfOrNull(' ', labelStart) ?: sourceText.length
             return sourceText.substring(labelStart, labelEnd)
         }

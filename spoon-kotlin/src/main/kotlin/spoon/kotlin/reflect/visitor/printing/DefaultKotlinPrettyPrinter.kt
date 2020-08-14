@@ -789,7 +789,13 @@ class DefaultKotlinPrettyPrinter(
     override fun <T : Any?> visitCtThisAccess(thisAccess: CtThisAccess<T>) {
         if(thisAccess.isImplicit) return
         enterCtExpression(thisAccess)
+        val type = thisAccess.type
+        val parent = thisAccess.getParent(CtType::class.java)
+
         adapter write "this"
+        if(parent.qualifiedName != type.qualifiedName) {
+            adapter write "@${type.simpleName}"
+        }
         exitCtExpression(thisAccess)
     }
 

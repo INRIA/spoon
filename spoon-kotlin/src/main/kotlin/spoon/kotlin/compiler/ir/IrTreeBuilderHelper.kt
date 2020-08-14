@@ -96,7 +96,7 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
 
     fun isImplicitThis(irGetValue: IrGetValue, file: IrFile): Boolean {
         val text = getKtFile(file).text.substring(irGetValue.startOffset, irGetValue.endOffset)
-        return text != "this"
+        return !text.matches("this(@.+)?".toRegex())
     }
 
     fun isInfixCall(irCall: IrCall, context: ContextData): Boolean {
