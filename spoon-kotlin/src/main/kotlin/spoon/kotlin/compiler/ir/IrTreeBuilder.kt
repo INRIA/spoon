@@ -1352,7 +1352,7 @@ internal class IrTreeBuilder(
     }
 
     private fun createSetOperator(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtAssignment<Any,Any>> {
-        val receiver = irCall.dispatchReceiver!!.accept(this, data).resultUnsafe
+        val receiver = helper.getReceiver(irCall)!!.accept(this, data).resultUnsafe
         val ctArrayWrite = factory.Core().createArrayWrite<Any>()
         val ctAssignment = factory.Core().createAssignment<Any, Any>()
         val args = ArrayList<CtElement>()
@@ -1564,7 +1564,7 @@ internal class IrTreeBuilder(
         is CtBlock<*> -> this
         else -> {
             val block = core.createBlock<Any>()
-            if(this is CtExpression<*>) {
+            if(this is CtExpression<*> && this !is CtAssignment<*,*>) {
                 block.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE,
                     KtMetadata.element(this.type)
                     )
