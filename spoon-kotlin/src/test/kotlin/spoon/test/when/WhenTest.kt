@@ -59,12 +59,12 @@ class WhenTest {
         var cond = branch2.caseExpressions[0]
         assertTrue(cond is CtBinaryOperator<*>)
         assertEquals(KtBinaryOperatorKind.IN, cond.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND) as KtBinaryOperatorKind)
-        assertNull(cond.leftHandOperand)
+        assertTrue(cond.leftHandOperand.isImplicit)
 
         cond = branch2.caseExpressions[1]
         assertTrue(cond is CtBinaryOperator<*>)
         assertEquals(KtBinaryOperatorKind.IS, cond.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND) as KtBinaryOperatorKind)
-        assertNull(cond.leftHandOperand)
+        assertTrue(cond.leftHandOperand.isImplicit)
 
         assertEquals("in l, is kotlin.Number -> {}", branch2.asString())
 
@@ -73,12 +73,12 @@ class WhenTest {
         cond = branch3.caseExpressions[0]
         assertTrue(cond is CtBinaryOperator<*>)
         assertEquals(KtBinaryOperatorKind.NOT_IN, cond.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND) as KtBinaryOperatorKind)
-        assertNull(cond.leftHandOperand)
+        assertTrue(cond.leftHandOperand.isImplicit)
 
         cond = branch3.caseExpressions[1]
         assertTrue(cond is CtBinaryOperator<*>)
         assertEquals(KtBinaryOperatorKind.IS_NOT, cond.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND) as KtBinaryOperatorKind)
-        assertNull(cond.leftHandOperand)
+        assertTrue(cond.leftHandOperand.isImplicit)
 
         assertEquals("!in l, !is kotlin.Number -> {}", branch3.asString())
     }

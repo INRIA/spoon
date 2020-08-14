@@ -29,6 +29,8 @@ import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import org.jetbrains.kotlin.psi2ir.generators.AUGMENTED_ASSIGNMENTS
 import org.jetbrains.kotlin.psi2ir.generators.GeneratorContext
 import org.jetbrains.kotlin.psi2ir.generators.INCREMENT_DECREMENT_OPERATORS
+import org.jetbrains.kotlin.resolve.scopes.receivers.ExtensionReceiver
+import org.jetbrains.kotlin.resolve.scopes.receivers.ImplicitClassReceiver
 import org.jetbrains.kotlin.resolve.source.getPsi
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
@@ -298,7 +300,13 @@ internal class IrTreeBuilder(
                 && stmt.initializer is IrCall
                 && (stmt.initializer as IrCall).origin is IrStatementOrigin.COMPONENT_N) {
                 val initializer = stmt.initializer as IrCall
-                val name = (helper.getReceiver(initializer) as IrGetValue).symbol.descriptor.name.asString()
+                val receiverOrTypeOperator = helper.getReceiver(initializer)
+                val receiver = if(receiverOrTypeOperator is IrTypeOperatorCall) {
+                    receiverOrTypeOperator.argument
+                } else {
+                    receiverOrTypeOperator
+                }
+                val name = (receiver as IrGetValue).symbol.descriptor.name.asString()
                 val placeholder = m.getOrPut(name) {
                     core.createParameter<Any>().also {
                         it.setSimpleName<CtParameter<*>>(name)
@@ -586,9 +594,9 @@ internal class IrTreeBuilder(
 
         val defaultValue = declaration.defaultValue?.let { visitExpressionBody(it, data) }?.resultUnsafe
         if(defaultValue != null) {
-            ctParam.setDefaultExpression<CtParameter<Any>>(
-                expressionOrWrappedInStatementExpression(defaultValue)
-            )
+            ctParam.putKtMetadata(KtMetadataKeys.PARAMETER_DEFAULT_VALUE,
+               KtMetadata.element(defaultValue))
+            defaultValue.setParent(ctParam)
         }
 
         // Type
@@ -888,18 +896,14 @@ internal class IrTreeBuilder(
         val invocation = core.createInvocation<Any>()
         invocation.setExecutable<CtInvocation<Any>>(referenceBuilder.getNewExecutableReference(irCall))
 
-        if(irCall is IrConstructorCall) {
-            val target = referenceBuilder.getDeclaringTypeReference(irCall.symbol.descriptor.containingDeclaration.containingDeclaration)
-            if(target != null)
-                invocation.setTarget<CtInvocation<Any>>(createTypeAccess(target))
-        } else {
-            val target = getReceiver(irCall, data) ?: getPossibleJavaReceiver(irCall)
-            if (target is CtExpression<*>) {
-                invocation.setTarget<CtInvocation<Any>>(target)
-            } else if (target != null) {
-                throw RuntimeException("Function call target not CtExpression")
-            }
+
+        val target = getReceiver(irCall, data) ?: getPossibleJavaReceiver(irCall)
+        if (target is CtExpression<*>) {
+            invocation.setTarget<CtInvocation<Any>>(target)
+        } else if (target != null) {
+            throw RuntimeException("Function call target not CtExpression")
         }
+
         val arguments = ArrayList<CtExpression<*>>()
         if(namedArgs != null) {
             for(arg in namedArgs) {
@@ -1430,10 +1434,8 @@ internal class IrTreeBuilder(
                 return visitThisReceiver(expression, data).definite()
         }
 
-        val ref = referenceBuilder.getNewVariableReference<Any>(expression) ?: return TransformResult.nothing()
-        val varAccess = createVariableRead(ref)
-
-        return varAccess.definite()
+        val access = getThisAccessOrVariableRef(expression, data)
+        return access?.definite() ?: TransformResult.nothing()
     }
 
     private fun createSetOperator(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtAssignment<Any,Any>> {
