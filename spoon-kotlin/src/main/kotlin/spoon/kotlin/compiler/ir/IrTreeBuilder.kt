@@ -1398,6 +1398,27 @@ internal class IrTreeBuilder(
         return placeHolder.definite()
     }
 
+    private fun getThisAccessOrVariableRef(getValue: IrGetValue, data: ContextData): CtElement? {
+        val owner = getValue.symbol.owner
+        if(owner.origin == IrDeclarationOrigin.IR_TEMPORARY_VARIABLE && owner is IrVariable) {
+            val initializer = owner.initializer
+            return if(initializer is IrGetValue) {
+                 getThisAccessOrVariableRef(initializer, data)
+            }
+            else initializer?.accept(this, data)?.resultOrNull
+        }
+        val descriptor = owner.descriptor
+        if(descriptor is ReceiverParameterDescriptor) {
+            when(descriptor.value) {
+                is ExtensionReceiver, is ImplicitClassReceiver -> {
+                    return visitThisReceiver(getValue, data)
+                }
+            }
+        }
+        val ref = referenceBuilder.getNewVariableReference<Any>(getValue) ?: return null
+        return createVariableRead(ref)
+    }
+
     override fun visitGetValue(expression: IrGetValue, data: ContextData): TransformResult<CtElement> {
         val symbol = expression.symbol
         val descriptor = symbol.descriptor

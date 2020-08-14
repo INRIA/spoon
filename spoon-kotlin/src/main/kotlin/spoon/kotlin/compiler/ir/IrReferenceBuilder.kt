@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.descriptors.impl.LocalVariableDescriptor
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrTypeParameter
 import org.jetbrains.kotlin.ir.declarations.IrValueDeclaration
+import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.descriptors.IrTemporaryVariableDescriptor
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.types.*
@@ -78,7 +79,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
             is AbbreviatedType -> typeRefFromDescriptor(kotlinType.abbreviation.constructor.declarationDescriptor!!, resolveGenerics)
             is WrappedType -> typeRefFromDescriptor(kotlinType.unwrap().constructor.declarationDescriptor!!, resolveGenerics)
             is SimpleType -> typeRefFromDescriptor(kotlinType.constructor.declarationDescriptor!!, resolveGenerics)
-            is FlexibleType -> TODO()
+            is FlexibleType -> getNewTypeReference(kotlinType.upperBound)
         } as CtTypeReference<T>
         ctRef.putKtMetadata(KtMetadataKeys.TYPE_REF_NULLABLE, KtMetadata.bool(kotlinType.isMarkedNullable))
         return ctRef
@@ -194,6 +195,13 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         return if(valueDeclaration.origin == IrDeclarationOrigin.CATCH_PARAMETER) {
             irTreeBuilder.core.createCatchVariableReference<T>().also {
                 it.setNameAndType(valueDeclaration.descriptor)
+            }
+        } else if(valueDeclaration.origin == IrDeclarationOrigin.IR_TEMPORARY_VARIABLE && valueDeclaration is IrVariable) {
+            val initializer = valueDeclaration.initializer
+            if(initializer is IrGetValue) {
+                getNewVariableReference(initializer)
+            } else {
+                null
             }
         } else {
             getNewVariableReference<T>(valueDeclaration.descriptor)
