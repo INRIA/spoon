@@ -1056,7 +1056,18 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?> visitCtFieldWrite(fieldWrite: CtFieldWrite<T>) = visitFieldAccess(fieldWrite)
 
-    override fun <T : Any?> visitCtFieldRead(fieldRead: CtFieldRead<T>) = visitFieldAccess(fieldRead)
+    override fun <T : Any?> visitCtFieldRead(fieldRead: CtFieldRead<T>) {
+        if(fieldRead.getBooleanMetadata(KtMetadataKeys.IS_PROPERTY_REFERENCE, false)) {
+            val parent = fieldRead.getParent(CtType::class.java)
+            if(parent.qualifiedName == fieldRead.variable.declaringType.qualifiedName) {
+                adapter write "this"
+            } else {
+                fieldRead.variable.declaringType.accept(this)
+            }
+            adapter write "::"
+        }
+        visitFieldAccess(fieldRead)
+    }
 
     private fun visitFieldAccess(fieldAccess: CtFieldAccess<*>) {
         enterCtExpression(fieldAccess)

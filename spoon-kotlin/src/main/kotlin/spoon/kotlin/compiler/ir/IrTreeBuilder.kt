@@ -372,6 +372,16 @@ internal class IrTreeBuilder(
         return ctLambda.definite()
     }
 
+    override fun visitPropertyReference(
+        expression: IrPropertyReference,
+        data: ContextData
+    ): DefiniteTransformResult<CtFieldRead<*>> {
+        val field = referenceBuilder.getNewVariableReference<Any>(expression.symbol.descriptor)
+        val read = createVariableRead(field) as CtFieldRead<*>
+        read.putKtMetadata(KtMetadataKeys.IS_PROPERTY_REFERENCE, KtMetadata.bool(true))
+        return read.definite()
+    }
+
     override fun visitProperty(declaration: IrProperty, data: ContextData): DefiniteTransformResult<CtElement> {
         val ctField = core.createField<Any>()
         ctField.setSimpleName<CtField<*>>(declaration.name.escaped())

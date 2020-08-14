@@ -60,5 +60,6 @@ object KtMetadataKeys {
 
     const val STRING_CONCAT_ELEMENTS = "skt_key string concat elements: List<CtExpression<*>>"
     const val IS_CLASS_REFERENCE = "skt_key is class reference: Boolean"
+    const val IS_PROPERTY_REFERENCE = "skt_key is property reference: Boolean"
 }
 
