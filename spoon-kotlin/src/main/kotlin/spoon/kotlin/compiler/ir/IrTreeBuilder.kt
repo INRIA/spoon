@@ -1538,6 +1538,8 @@ internal class IrTreeBuilder(
         val ctThrow = core.createThrow()
         val throwExpr = expression.value.accept(this, data).resultUnsafe
         ctThrow.setThrownExpression<CtThrow>(expressionOrWrappedInStatementExpression(throwExpr)  as CtExpression<Throwable>)
+        ctThrow.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE,
+            KtMetadata.element(referenceBuilder.getNewTypeReference<Any>(expression.type)))
         return ctThrow.definite()
     }
 
