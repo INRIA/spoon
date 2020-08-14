@@ -16,6 +16,10 @@ public class DefaultTokenWriter implements TokenWriter {
 
 	private final PrinterHelper printerHelper;
 
+	public DefaultTokenWriter() {
+		this.printerHelper = new PrinterHelper();
+	}
+
 	public DefaultTokenWriter(PrinterHelper printerHelper) {
 		this.printerHelper = printerHelper;
 	}

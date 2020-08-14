@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import spoon.Launcher;
@@ -41,6 +42,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.prettyprinter.testclasses.MissingVariableDeclaration;
 import spoon.testing.utils.ModelUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +50,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.function.Supplier;
 
 public class PrinterTest {
 
@@ -575,4 +578,30 @@ public class PrinterTest {
 			assertEquals("(i++).toString()", invocations.get(1).toString());
 			assertEquals("(a + b).toString()", invocations.get(2).toString());
 		}
+
+	@Test
+	public void testCustomPrettyPrinter() throws Exception {
+		// contract: one can use Spoon to write a custom pretty-printer
+		// here the pretty-printer writes two spaces before each keyword of the language
+		Launcher spoon = new Launcher();
+		// Java file to be pretty-printed, can be a folder as well
+		spoon.addInputResource("src/test/resources/JavaCode.java");
+		spoon.getFactory().getEnvironment().setPrettyPrinterCreator(() -> {
+				DefaultJavaPrettyPrinter defaultJavaPrettyPrinter = new DefaultJavaPrettyPrinter(spoon.getFactory().getEnvironment());
+				// here we create the custom version of the token writer
+				defaultJavaPrettyPrinter.setPrinterTokenWriter(new DefaultTokenWriter() {
+					@Override
+					public DefaultTokenWriter writeKeyword(String token) {
+						// write two spaces and then the keyword
+						getPrinterHelper().write("   " + token);
+						return this;
+					}
+				});
+				return defaultJavaPrettyPrinter;
+		});
+		spoon.run();
+		// the pretty-printed code is in folder ./spooned (default value that can be set with setOutputDirectory)
+
+		assertTrue(FileUtils.readFileToString(new File("spooned/HelloWorld.java"), "UTF-8").contains("  class"));
+	}
 }

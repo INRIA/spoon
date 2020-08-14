@@ -26,7 +26,7 @@ module spoon.visualisation {
 	requires javafx.fxml;
 	requires javafx.controls;
 	requires org.eclipse.jdt.core;
-	requires annotations;
+	requires org.jetbrains.annotations;
 
 	exports spoon.visualisation to javafx.graphics;
 	exports spoon.visualisation.instrument to javafx.fxml;
