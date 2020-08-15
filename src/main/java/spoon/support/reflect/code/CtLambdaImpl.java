@@ -106,7 +106,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			return null;
 		}
 		if (!(lambdaTypeRef instanceof CtIntersectionTypeReference)) {
-			return getOverriddenAux(lambdaTypeRef);
+			return getOverriddenMethodForNormalType(lambdaTypeRef);
 		}
 		CtMethod<?> lambdaExecutableMethod = getOverriddenMethodForIntersectionType(lambdaTypeRef);
 		if (lambdaExecutableMethod == null) {
@@ -126,7 +126,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 			parentTypeReference = ((CtAssignment) parent).getAssigned().getType();
 		}
 		for (CtTypeReference<?> ctTypeReference : ((CtIntersectionTypeReference<?>) lambdaTypeRef).getBounds()) {
-			CtMethod<?> tmp = getOverriddenAux(ctTypeReference);
+			CtMethod<?> tmp = getOverriddenMethodForNormalType(ctTypeReference);
 			if (tmp != null && (lambdaExecutableMethod == null || ctTypeReference.equals(parentTypeReference))) {
 				lambdaExecutableMethod = tmp;
 			}
@@ -134,7 +134,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		return lambdaExecutableMethod;
 	}
 
-	private  <R> CtMethod<R> getOverriddenAux(CtTypeReference<?> lambdaTypeRef) throws SpoonException {
+	private <R> CtMethod<R> getOverriddenMethodForNormalType(CtTypeReference<?> lambdaTypeRef) throws SpoonException {
 		CtType<?> lambdaType = lambdaTypeRef.getTypeDeclaration();
 		if (lambdaType.isInterface() == false) {
 			throw new SpoonException("The lambda can be based on interface only. But type " + lambdaTypeRef.getQualifiedName() + " is not an interface");
