@@ -211,8 +211,10 @@ internal class IrTreeBuilder(
         return ctAnonExecutable.definite()
     }
 
-    override fun visitGetClass(expression: IrGetClass, data: ContextData): TransformResult<CtElement> {
-        return super.visitGetClass(expression, data)
+    override fun visitGetClass(expression: IrGetClass, data: ContextData): DefiniteTransformResult<CtElement> {
+        val target = expression.argument.accept(this, data).resultUnsafe
+        target.putKtMetadata(KtMetadataKeys.IS_CLASS_REFERENCE, KtMetadata.bool(true))
+        return target.definite()
     }
 
     override fun visitClassReference(expression: IrClassReference, data: ContextData): DefiniteTransformResult<CtElement> {

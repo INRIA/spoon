@@ -121,8 +121,11 @@ class DefaultKotlinPrettyPrinter(
         } else if(shouldAddPar(e)) {
             adapter write ')'
         }
-        if((e.getMetadata(KtMetadataKeys.ACCESS_IS_CHECK_NOT_NULL) as? Boolean?) == true) {
+        if(e.getBooleanMetadata(KtMetadataKeys.ACCESS_IS_CHECK_NOT_NULL, false)) {
             adapter write "!!"
+        }
+        if(e.getBooleanMetadata(KtMetadataKeys.IS_CLASS_REFERENCE, false)) {
+            adapter write "::class"
         }
     }
 
@@ -441,7 +444,7 @@ class DefaultKotlinPrettyPrinter(
 
         // Modifiers
         // Interfaces are abstract, but it shouldn't be printed
-        val modifiers = getModifiersMetadata(ctInterface)?.filterNot { it == KtModifierKind.ABSTRACT }
+        val modifiers = getModifiersMetadata(ctInterface).filterNot { it == KtModifierKind.ABSTRACT }
         adapter writeModifiers modifiers
 
         // Name
