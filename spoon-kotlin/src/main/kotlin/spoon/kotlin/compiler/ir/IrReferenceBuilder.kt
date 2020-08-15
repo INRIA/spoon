@@ -82,7 +82,16 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
             is FlexibleType -> getNewTypeReference(kotlinType.upperBound)
         } as CtTypeReference<T>
         ctRef.putKtMetadata(KtMetadataKeys.TYPE_REF_NULLABLE, KtMetadata.bool(kotlinType.isMarkedNullable))
+        val typeArgs = kotlinType.arguments.map { visitTypeProjection(it, resolveGenerics) }
+        ctRef.setActualTypeArguments<CtTypeReference<*>>(typeArgs)
         return ctRef
+    }
+
+    private fun visitTypeProjection(typeProjection: TypeProjection, resolveGenerics: Boolean): CtTypeReference<*> {
+        if(typeProjection.isStarProjection) {
+            return factory.Core().createWildcardReference()
+        }
+        return getNewTypeReference<Any>(typeProjection.type)
     }
 
     private fun typeRefFromDescriptor(descriptor: ClassifierDescriptor, resolveGenerics: Boolean) = when(descriptor) {

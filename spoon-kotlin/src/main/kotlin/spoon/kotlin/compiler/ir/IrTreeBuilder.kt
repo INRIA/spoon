@@ -429,7 +429,7 @@ internal class IrTreeBuilder(
         ctField.addModifiersAsMetadata(IrToModifierKind.fromProperty(declaration))
 
         // Type
-        val type = referenceBuilder.getNewTypeReference<Any>(declaration.descriptor.type)
+        val type = referenceBuilder.getNewTypeReference<Any>(declaration.getter!!.returnType)
 
         // Mark implicit/explicit type
         val implicitType = detectImplicitTypes &&
