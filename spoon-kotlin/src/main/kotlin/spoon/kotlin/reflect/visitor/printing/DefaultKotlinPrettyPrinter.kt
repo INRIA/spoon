@@ -1346,10 +1346,12 @@ class DefaultKotlinPrettyPrinter(
     override fun <T : Any?> visitCtArrayRead(arrayRead: CtArrayRead<T>) = visitCtArrayAccess(arrayRead)
 
     private fun visitCtArrayAccess(arrayAccess: CtArrayAccess<*,*>) {
+        enterCtExpression(arrayAccess)
         arrayAccess.target.accept(this)
         adapter write LEFT_SQUARE
         visitCommaSeparatedList(arrayAccess.getMetadata(KtMetadataKeys.ARRAY_ACCESS_INDEX_ARGS) as List<CtElement>)
         adapter write RIGHT_SQUARE
+        exitCtExpression(arrayAccess)
     }
 
     override fun <T : Any?> visitCtInvocation(invocation: CtInvocation<T>?) {
