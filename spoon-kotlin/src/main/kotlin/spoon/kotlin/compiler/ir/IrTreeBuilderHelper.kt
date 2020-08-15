@@ -99,6 +99,18 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
         return !text.matches("this(@.+)?".toRegex())
     }
 
+    fun getThisExtensionTarget(irGetValue: IrGetValue, file: IrFile): Pair<String?, String?> {
+        val text = getKtFile(file).text.substring(irGetValue.startOffset, irGetValue.endOffset)
+        if(text.matches("this(@.+)?".toRegex())) {
+            if(text.contains('@')) { // Target label, 'this@target'
+                return "this" to text.substring(text.indexOf('@')+1)
+            } else { // Just 'this'
+                return "this" to null
+            }
+        }
+        return null to null // Implicit this
+    }
+
     fun isInfixCall(irCall: IrCall, context: ContextData): Boolean {
         val psi = irCall.symbol.descriptor.source.getPsi() // Prefer using built in source
         if(psi != null)

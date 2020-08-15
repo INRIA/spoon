@@ -1527,11 +1527,15 @@ internal class IrTreeBuilder(
     }
 
     private fun visitThisReceiver(irGetValue: IrGetValue, data: ContextData): CtThisAccess<*> {
-        val implicit = helper.isImplicitThis(irGetValue, data.file)
+        val (explicitThis, targetLabel) = helper.getThisExtensionTarget(irGetValue, data.file)
         return factory.Code().createThisAccess<Any>(
             referenceBuilder.getNewTypeReference(irGetValue.type),
-            implicit
-        )
+            explicitThis == null
+        ). also {
+            if(targetLabel != null) {
+                it.putKtMetadata(KtMetadataKeys.EXTENSION_THIS_TARGET, KtMetadata.string(targetLabel))
+            }
+        }
     }
 
     private fun visitSuperTarget(symbol: IrClassSymbol): CtSuperAccess<*> {
