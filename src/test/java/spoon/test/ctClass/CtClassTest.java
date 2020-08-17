@@ -89,7 +89,6 @@ public class CtClassTest {
 		CtConstructor cons = foo.getConstructors().toArray(new CtConstructor[0])[0].clone();
 		foo.addConstructor(cons);
 		int position = foo.getTypeMembers().indexOf(cons);
-		System.out.println(position);
 		// as long as we have not changed the signature, getConstructors, which is based on signatures,
 		// thinks there is one single constructor (and that's OK)
 		assertEquals(3, foo.getConstructors().size());
