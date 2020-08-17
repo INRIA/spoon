@@ -117,7 +117,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	private CtMethod<?> getOverriddenMethodForIntersectionType(CtTypeReference<T> lambdaTypeRef)
 			throws SpoonException {
-		CtMethod<?> lambdaExecutableMethod=null;
+		CtMethod<?> lambdaExecutableMethod = null;
 		CtElement parent = lambdaTypeRef.getParent();
 		CtTypeReference<?> parentTypeReference = null;
 		if (parent != null && parent instanceof CtLocalVariable) {
