@@ -19,7 +19,6 @@ import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 import spoon.compiler.builder.EncodingProvider;
 import spoon.processing.FileGenerator;
-import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
@@ -263,11 +262,6 @@ public class StandardEnvironment implements Serializable, Environment {
 		}
 
 		print(buffer.toString(), level);
-	}
-
-	@Override
-	public void report(Processor<?> processor, Level level, CtElement element, String message, ProblemFixer<?>... fixes) {
-		report(processor, level, element, message);
 	}
 
 	@Override
