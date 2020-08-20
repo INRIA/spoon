@@ -26,7 +26,6 @@
     </properties>
 
     <repositories>
-        <!-- This repository is actually needed for revapi to compare against the last Spoon Snapshot -->
         <repository>
             <id>maven.inria.fr-snapshot</id>
             <name>Maven Repository for Spoon Snapshots</name>
@@ -213,35 +212,6 @@
                     <useReleaseProfile>false</useReleaseProfile>
                     <releaseProfiles>release</releaseProfiles>
                     <goals>deploy</goals>
-                </configuration>
-            </plugin>
-
-
-            <!-- Used for checking backward compatibility (binary and source) -->
-            <plugin>
-                <groupId>org.revapi</groupId>
-                <artifactId>revapi-maven-plugin</artifactId>
-                <!-- Lock down plugin version for build reproducibility -->
-                <version>0.11.5</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.revapi</groupId>
-                        <artifactId>revapi-java</artifactId>
-                        <version>0.21.2</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.revapi</groupId>
-                        <artifactId>revapi-reporter-text</artifactId>
-                        <version>0.11.1</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <failSeverity>breaking</failSeverity>
-                    <alwaysCheckForReleaseVersion>false</alwaysCheckForReleaseVersion>
-                    <oldVersion>LATEST</oldVersion>
-                    <analysisConfigurationFiles>
-                        <file>revapi.json</file>
-                    </analysisConfigurationFiles>
                 </configuration>
             </plugin>
         </plugins>
