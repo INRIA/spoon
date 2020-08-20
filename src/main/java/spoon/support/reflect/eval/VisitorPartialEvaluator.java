@@ -47,6 +47,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.support.util.RtHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -332,7 +333,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 
 		// Evaluate forInit
 		List<CtStatement> lst = forLoop.getForInit();
-		for (CtStatement s : lst) {
+		for (CtStatement s : new ArrayList<>(lst)) { // copying the list to avoid ConcurrentModificationException
 			CtStatement evaluateStatement = evaluate(s);
 			if (evaluateStatement != null) {
 				forLoop.addForInit(evaluateStatement);
@@ -344,7 +345,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 
 		// Evaluate forUpdate
 		lst = forLoop.getForUpdate();
-		for (CtStatement s : lst) {
+		for (CtStatement s : new ArrayList<>(lst)) { // copying the list to avoid ConcurrentModificationException
 			CtStatement evaluateStatement = evaluate(s);
 			if (evaluateStatement != null) {
 				forLoop.addForUpdate(evaluateStatement);

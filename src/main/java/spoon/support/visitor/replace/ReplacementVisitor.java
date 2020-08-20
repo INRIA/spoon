@@ -13,1200 +13,108 @@ package spoon.support.visitor.replace;
  */
 public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypedElementTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.declaration.CtTypedElement element;
+	class CtYieldStatementExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtYieldStatement element;
 
-		CtTypedElementTypeReplaceListener(spoon.reflect.declaration.CtTypedElement element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtTypeReference replace) {
-			this.element.setType(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtElementCommentsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.declaration.CtElement element;
-
-		CtElementCommentsReplaceListener(spoon.reflect.declaration.CtElement element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setComments(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAnnotationAnnotationTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.declaration.CtAnnotation element;
-
-		CtAnnotationAnnotationTypeReplaceListener(spoon.reflect.declaration.CtAnnotation element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtTypeReference replace) {
-			this.element.setAnnotationType(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtElementAnnotationsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.declaration.CtElement element;
-
-		CtElementAnnotationsReplaceListener(spoon.reflect.declaration.CtElement element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setAnnotations(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAnnotationValuesReplaceListener implements spoon.support.visitor.replace.ReplaceMapListener<java.util.Map> {
-		private final spoon.reflect.declaration.CtAnnotation element;
-
-		CtAnnotationValuesReplaceListener(spoon.reflect.declaration.CtAnnotation element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.Map replace) {
-			this.element.setValues(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypeTypeMembersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.declaration.CtType element;
-
-		CtTypeTypeMembersReplaceListener(spoon.reflect.declaration.CtType element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setTypeMembers(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExecutableBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
-		private final spoon.reflect.code.CtBodyHolder element;
-
-		CtExecutableBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtBlock replace) {
-			this.element.setBody(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExpressionTypeCastsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.code.CtExpression element;
-
-		CtExpressionTypeCastsReplaceListener(spoon.reflect.code.CtExpression element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setTypeCasts(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTargetedExpressionTargetReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtTargetedExpression element;
-
-		CtTargetedExpressionTargetReplaceListener(spoon.reflect.code.CtTargetedExpression element) {
+		CtYieldStatementExpressionReplaceListener(spoon.reflect.code.CtYieldStatement element) {
 			this.element = element;
 		}
 
 		@java.lang.Override
 		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setTarget(replace);
+			this.element.setExpression(replace);
 		}
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtArrayAccessIndexExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtArrayAccess element;
+	class CtTypeMemberWildcardImportReferenceTypeReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.reference.CtTypeMemberWildcardImportReference element;
 
-		CtArrayAccessIndexExpressionReplaceListener(spoon.reflect.code.CtArrayAccess element) {
+		CtTypeMemberWildcardImportReferenceTypeReferenceReplaceListener(spoon.reflect.reference.CtTypeMemberWildcardImportReference element) {
 			this.element = element;
 		}
 
 		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setIndexExpression(replace);
+		public void set(spoon.reflect.reference.CtTypeReference replace) {
+			this.element.setTypeReference(replace);
 		}
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypeReferencePackageReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
-		private final spoon.reflect.reference.CtTypeReference element;
+	class CtPackageDeclarationReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
+		private final spoon.reflect.declaration.CtPackageDeclaration element;
 
-		CtTypeReferencePackageReplaceListener(spoon.reflect.reference.CtTypeReference element) {
+		CtPackageDeclarationReferenceReplaceListener(spoon.reflect.declaration.CtPackageDeclaration element) {
 			this.element = element;
 		}
 
 		@java.lang.Override
 		public void set(spoon.reflect.reference.CtPackageReference replace) {
-			this.element.setPackage(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypeReferenceDeclaringTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.reference.CtTypeReference element;
-
-		CtTypeReferenceDeclaringTypeReplaceListener(spoon.reflect.reference.CtTypeReference element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtTypeReference replace) {
-			this.element.setDeclaringType(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtArrayTypeReferenceComponentTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.reference.CtArrayTypeReference element;
-
-		CtArrayTypeReferenceComponentTypeReplaceListener(spoon.reflect.reference.CtArrayTypeReference element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtTypeReference replace) {
-			this.element.setComponentType(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtActualTypeContainerActualTypeArgumentsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.reference.CtActualTypeContainer element;
-
-		CtActualTypeContainerActualTypeArgumentsReplaceListener(spoon.reflect.reference.CtActualTypeContainer element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setActualTypeArguments(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAssertAssertExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtAssert element;
-
-		CtAssertAssertExpressionReplaceListener(spoon.reflect.code.CtAssert element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setAssertExpression(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAssertExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtAssert element;
-
-		CtAssertExpressionReplaceListener(spoon.reflect.code.CtAssert element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setExpression(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAssignmentAssignedReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtAssignment element;
-
-		CtAssignmentAssignedReplaceListener(spoon.reflect.code.CtAssignment element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setAssigned(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtRHSReceiverAssignmentReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtRHSReceiver element;
-
-		CtRHSReceiverAssignmentReplaceListener(spoon.reflect.code.CtRHSReceiver element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setAssignment(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtBinaryOperatorLeftHandOperandReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtBinaryOperator element;
-
-		CtBinaryOperatorLeftHandOperandReplaceListener(spoon.reflect.code.CtBinaryOperator element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setLeftHandOperand(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtBinaryOperatorRightHandOperandReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtBinaryOperator element;
-
-		CtBinaryOperatorRightHandOperandReplaceListener(spoon.reflect.code.CtBinaryOperator element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setRightHandOperand(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtStatementListStatementsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.code.CtStatementList element;
-
-		CtStatementListStatementsReplaceListener(spoon.reflect.code.CtStatementList element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setStatements(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCaseCaseExpressionsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.code.CtCase element;
-
-		CtCaseCaseExpressionsReplaceListener(spoon.reflect.code.CtCase element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setCaseExpressions(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCatchParameterReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtCatchVariable> {
-		private final spoon.reflect.code.CtCatch element;
-
-		CtCatchParameterReplaceListener(spoon.reflect.code.CtCatch element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtCatchVariable replace) {
-			this.element.setParameter(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCatchBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
-		private final spoon.reflect.code.CtBodyHolder element;
-
-		CtCatchBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtBlock replace) {
-			this.element.setBody(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypeInformationSuperclassReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.declaration.CtType element;
-
-		CtTypeInformationSuperclassReplaceListener(spoon.reflect.declaration.CtType element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtTypeReference replace) {
-			this.element.setSuperclass(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypeInformationSuperInterfacesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
-		private final spoon.reflect.declaration.CtType element;
-
-		CtTypeInformationSuperInterfacesReplaceListener(spoon.reflect.declaration.CtType element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.Set replace) {
-			this.element.setSuperInterfaces(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.declaration.CtFormalTypeDeclarer element;
-
-		CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener(spoon.reflect.declaration.CtFormalTypeDeclarer element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setFormalCtTypeParameters(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtConditionalConditionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtConditional element;
-
-		CtConditionalConditionReplaceListener(spoon.reflect.code.CtConditional element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setCondition(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtConditionalThenExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtConditional element;
-
-		CtConditionalThenExpressionReplaceListener(spoon.reflect.code.CtConditional element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setThenExpression(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtConditionalElseExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtConditional element;
-
-		CtConditionalElseExpressionReplaceListener(spoon.reflect.code.CtConditional element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setElseExpression(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExecutableParametersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.declaration.CtExecutable element;
-
-		CtExecutableParametersReplaceListener(spoon.reflect.declaration.CtExecutable element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setParameters(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExecutableThrownTypesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
-		private final spoon.reflect.declaration.CtExecutable element;
-
-		CtExecutableThrownTypesReplaceListener(spoon.reflect.declaration.CtExecutable element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.Set replace) {
-			this.element.setThrownTypes(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtDoLoopingExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtDo element;
-
-		CtDoLoopingExpressionReplaceListener(spoon.reflect.code.CtDo element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setLoopingExpression(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtLoopBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtStatement> {
-		private final spoon.reflect.code.CtBodyHolder element;
-
-		CtLoopBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtStatement replace) {
-			this.element.setBody(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtEnumEnumValuesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.declaration.CtEnum element;
-
-		CtEnumEnumValuesReplaceListener(spoon.reflect.declaration.CtEnum element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setEnumValues(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExecutableReferenceDeclaringTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.reference.CtExecutableReference element;
-
-		CtExecutableReferenceDeclaringTypeReplaceListener(spoon.reflect.reference.CtExecutableReference element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtTypeReference replace) {
-			this.element.setDeclaringType(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExecutableReferenceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.reference.CtExecutableReference element;
-
-		CtExecutableReferenceTypeReplaceListener(spoon.reflect.reference.CtExecutableReference element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtTypeReference replace) {
-			this.element.setType(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExecutableReferenceParametersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.reference.CtExecutableReference element;
-
-		CtExecutableReferenceParametersReplaceListener(spoon.reflect.reference.CtExecutableReference element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setParameters(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtVariableDefaultExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.declaration.CtVariable element;
-
-		CtVariableDefaultExpressionReplaceListener(spoon.reflect.declaration.CtVariable element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setDefaultExpression(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAnnotationFieldAccessVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtFieldReference> {
-		private final spoon.reflect.code.CtVariableAccess element;
-
-		CtAnnotationFieldAccessVariableReplaceListener(spoon.reflect.code.CtVariableAccess element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtFieldReference replace) {
-			this.element.setVariable(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtFieldReferenceDeclaringTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.reference.CtFieldReference element;
-
-		CtFieldReferenceDeclaringTypeReplaceListener(spoon.reflect.reference.CtFieldReference element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtTypeReference replace) {
-			this.element.setDeclaringType(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtVariableReferenceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.reference.CtVariableReference element;
-
-		CtVariableReferenceTypeReplaceListener(spoon.reflect.reference.CtVariableReference element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtTypeReference replace) {
-			this.element.setType(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtForForInitReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.code.CtFor element;
-
-		CtForForInitReplaceListener(spoon.reflect.code.CtFor element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setForInit(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtForExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtFor element;
-
-		CtForExpressionReplaceListener(spoon.reflect.code.CtFor element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setExpression(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtForForUpdateReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.code.CtFor element;
-
-		CtForForUpdateReplaceListener(spoon.reflect.code.CtFor element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setForUpdate(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtForEachVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtLocalVariable> {
-		private final spoon.reflect.code.CtForEach element;
-
-		CtForEachVariableReplaceListener(spoon.reflect.code.CtForEach element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtLocalVariable replace) {
-			this.element.setVariable(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtForEachExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtForEach element;
-
-		CtForEachExpressionReplaceListener(spoon.reflect.code.CtForEach element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setExpression(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtIfConditionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtIf element;
-
-		CtIfConditionReplaceListener(spoon.reflect.code.CtIf element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setCondition(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtIfThenStatementReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtStatement> {
-		private final spoon.reflect.code.CtIf element;
-
-		CtIfThenStatementReplaceListener(spoon.reflect.code.CtIf element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtStatement replace) {
-			this.element.setThenStatement(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtIfElseStatementReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtStatement> {
-		private final spoon.reflect.code.CtIf element;
-
-		CtIfElseStatementReplaceListener(spoon.reflect.code.CtIf element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtStatement replace) {
-			this.element.setElseStatement(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAbstractInvocationExecutableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtExecutableReference> {
-		private final spoon.reflect.code.CtAbstractInvocation element;
-
-		CtAbstractInvocationExecutableReplaceListener(spoon.reflect.code.CtAbstractInvocation element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtExecutableReference replace) {
-			this.element.setExecutable(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAbstractInvocationArgumentsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.code.CtAbstractInvocation element;
-
-		CtAbstractInvocationArgumentsReplaceListener(spoon.reflect.code.CtAbstractInvocation element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setArguments(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtMultiTypedElementMultiTypesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.declaration.CtMultiTypedElement element;
-
-		CtMultiTypedElementMultiTypesReplaceListener(spoon.reflect.declaration.CtMultiTypedElement element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setMultiTypes(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAnnotationMethodDefaultExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.declaration.CtAnnotationMethod element;
-
-		CtAnnotationMethodDefaultExpressionReplaceListener(spoon.reflect.declaration.CtAnnotationMethod element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setDefaultExpression(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtNewArrayElementsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.code.CtNewArray element;
-
-		CtNewArrayElementsReplaceListener(spoon.reflect.code.CtNewArray element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setElements(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtNewArrayDimensionExpressionsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.code.CtNewArray element;
-
-		CtNewArrayDimensionExpressionsReplaceListener(spoon.reflect.code.CtNewArray element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setDimensionExpressions(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtNewClassAnonymousClassReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.declaration.CtClass> {
-		private final spoon.reflect.code.CtNewClass element;
-
-		CtNewClassAnonymousClassReplaceListener(spoon.reflect.code.CtNewClass element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.declaration.CtClass replace) {
-			this.element.setAnonymousClass(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtLambdaExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtLambda element;
-
-		CtLambdaExpressionReplaceListener(spoon.reflect.code.CtLambda element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setExpression(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExecutableReferenceExpressionExecutableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtExecutableReference> {
-		private final spoon.reflect.code.CtExecutableReferenceExpression element;
-
-		CtExecutableReferenceExpressionExecutableReplaceListener(spoon.reflect.code.CtExecutableReferenceExpression element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtExecutableReference replace) {
-			this.element.setExecutable(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtPackagePackagesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
-		private final spoon.reflect.declaration.CtPackage element;
-
-		CtPackagePackagesReplaceListener(spoon.reflect.declaration.CtPackage element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.Set replace) {
-			this.element.setPackages(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtPackageTypesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
-		private final spoon.reflect.declaration.CtPackage element;
-
-		CtPackageTypesReplaceListener(spoon.reflect.declaration.CtPackage element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.Set replace) {
-			this.element.setTypes(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtReturnReturnedExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtReturn element;
-
-		CtReturnReturnedExpressionReplaceListener(spoon.reflect.code.CtReturn element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setReturnedExpression(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAbstractSwitchSelectorReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtAbstractSwitch element;
-
-		CtAbstractSwitchSelectorReplaceListener(spoon.reflect.code.CtAbstractSwitch element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setSelector(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAbstractSwitchCasesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.code.CtAbstractSwitch element;
-
-		CtAbstractSwitchCasesReplaceListener(spoon.reflect.code.CtAbstractSwitch element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setCases(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtSynchronizedExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtSynchronized element;
-
-		CtSynchronizedExpressionReplaceListener(spoon.reflect.code.CtSynchronized element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setExpression(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtSynchronizedBlockReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
-		private final spoon.reflect.code.CtSynchronized element;
-
-		CtSynchronizedBlockReplaceListener(spoon.reflect.code.CtSynchronized element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtBlock replace) {
-			this.element.setBlock(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtThrowThrownExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtThrow element;
-
-		CtThrowThrownExpressionReplaceListener(spoon.reflect.code.CtThrow element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setThrownExpression(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTryBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
-		private final spoon.reflect.code.CtBodyHolder element;
-
-		CtTryBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtBlock replace) {
-			this.element.setBody(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTryCatchersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.code.CtTry element;
-
-		CtTryCatchersReplaceListener(spoon.reflect.code.CtTry element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setCatchers(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTryFinalizerReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
-		private final spoon.reflect.code.CtTry element;
-
-		CtTryFinalizerReplaceListener(spoon.reflect.code.CtTry element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtBlock replace) {
-			this.element.setFinalizer(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTryWithResourceResourcesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.code.CtTryWithResource element;
-
-		CtTryWithResourceResourcesReplaceListener(spoon.reflect.code.CtTryWithResource element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setResources(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtWildcardReferenceBoundingTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.reference.CtWildcardReference element;
-
-		CtWildcardReferenceBoundingTypeReplaceListener(spoon.reflect.reference.CtWildcardReference element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtTypeReference replace) {
-			this.element.setBoundingType(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtIntersectionTypeReferenceBoundsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.reference.CtIntersectionTypeReference element;
-
-		CtIntersectionTypeReferenceBoundsReplaceListener(spoon.reflect.reference.CtIntersectionTypeReference element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setBounds(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypeAccessAccessedTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.code.CtTypeAccess element;
-
-		CtTypeAccessAccessedTypeReplaceListener(spoon.reflect.code.CtTypeAccess element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtTypeReference replace) {
-			this.element.setAccessedType(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtUnaryOperatorOperandReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtUnaryOperator element;
-
-		CtUnaryOperatorOperandReplaceListener(spoon.reflect.code.CtUnaryOperator element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setOperand(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtVariableAccessVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtVariableReference> {
-		private final spoon.reflect.code.CtVariableAccess element;
-
-		CtVariableAccessVariableReplaceListener(spoon.reflect.code.CtVariableAccess element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtVariableReference replace) {
-			this.element.setVariable(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtWhileLoopingExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtWhile element;
-
-		CtWhileLoopingExpressionReplaceListener(spoon.reflect.code.CtWhile element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.code.CtExpression replace) {
-			this.element.setLoopingExpression(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtFieldAccessVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtFieldReference> {
-		private final spoon.reflect.code.CtVariableAccess element;
-
-		CtFieldAccessVariableReplaceListener(spoon.reflect.code.CtVariableAccess element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtFieldReference replace) {
-			this.element.setVariable(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtJavaDocTagsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.code.CtJavaDoc element;
-
-		CtJavaDocTagsReplaceListener(spoon.reflect.code.CtJavaDoc element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setTags(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtImportReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtReference> {
-		private final spoon.reflect.declaration.CtImport element;
-
-		CtImportReferenceReplaceListener(spoon.reflect.declaration.CtImport element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtReference replace) {
 			this.element.setReference(replace);
 		}
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtModuleModuleDirectivesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.declaration.CtModule element;
+	class CtCompilationUnitDeclaredTypeReferencesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.declaration.CtCompilationUnit element;
 
-		CtModuleModuleDirectivesReplaceListener(spoon.reflect.declaration.CtModule element) {
+		CtCompilationUnitDeclaredTypeReferencesReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
 			this.element = element;
 		}
 
 		@java.lang.Override
 		public void set(java.util.List replace) {
-			this.element.setModuleDirectives(replace);
+			this.element.setDeclaredTypeReferences(replace);
 		}
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtModuleRootPackageReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.declaration.CtPackage> {
-		private final spoon.reflect.declaration.CtModule element;
+	class CtCompilationUnitDeclaredModuleReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtModuleReference> {
+		private final spoon.reflect.declaration.CtCompilationUnit element;
 
-		CtModuleRootPackageReplaceListener(spoon.reflect.declaration.CtModule element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.declaration.CtPackage replace) {
-			this.element.setRootPackage(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtPackageExportPackageReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
-		private final spoon.reflect.declaration.CtPackageExport element;
-
-		CtPackageExportPackageReferenceReplaceListener(spoon.reflect.declaration.CtPackageExport element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.reference.CtPackageReference replace) {
-			this.element.setPackageReference(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtPackageExportTargetExportReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.declaration.CtPackageExport element;
-
-		CtPackageExportTargetExportReplaceListener(spoon.reflect.declaration.CtPackageExport element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.List replace) {
-			this.element.setTargetExport(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtModuleRequirementModuleReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtModuleReference> {
-		private final spoon.reflect.declaration.CtModuleRequirement element;
-
-		CtModuleRequirementModuleReferenceReplaceListener(spoon.reflect.declaration.CtModuleRequirement element) {
+		CtCompilationUnitDeclaredModuleReferenceReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
 			this.element = element;
 		}
 
 		@java.lang.Override
 		public void set(spoon.reflect.reference.CtModuleReference replace) {
-			this.element.setModuleReference(replace);
+			this.element.setDeclaredModuleReference(replace);
 		}
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtProvidedServiceServiceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.declaration.CtProvidedService element;
+	class CtCompilationUnitImportsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.Collection> {
+		private final spoon.reflect.declaration.CtCompilationUnit element;
 
-		CtProvidedServiceServiceTypeReplaceListener(spoon.reflect.declaration.CtProvidedService element) {
+		CtCompilationUnitImportsReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.Collection replace) {
+			this.element.setImports(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtCompilationUnitPackageDeclarationReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.declaration.CtPackageDeclaration> {
+		private final spoon.reflect.declaration.CtCompilationUnit element;
+
+		CtCompilationUnitPackageDeclarationReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.declaration.CtPackageDeclaration replace) {
+			this.element.setPackageDeclaration(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtUsedServiceServiceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.declaration.CtUsedService element;
+
+		CtUsedServiceServiceTypeReplaceListener(spoon.reflect.declaration.CtUsedService element) {
 			this.element = element;
 		}
 
@@ -1231,10 +139,10 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtUsedServiceServiceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.declaration.CtUsedService element;
+	class CtProvidedServiceServiceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.declaration.CtProvidedService element;
 
-		CtUsedServiceServiceTypeReplaceListener(spoon.reflect.declaration.CtUsedService element) {
+		CtProvidedServiceServiceTypeReplaceListener(spoon.reflect.declaration.CtProvidedService element) {
 			this.element = element;
 		}
 
@@ -1245,100 +153,1192 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCompilationUnitPackageDeclarationReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.declaration.CtPackageDeclaration> {
-		private final spoon.reflect.declaration.CtCompilationUnit element;
+	class CtModuleRequirementModuleReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtModuleReference> {
+		private final spoon.reflect.declaration.CtModuleRequirement element;
 
-		CtCompilationUnitPackageDeclarationReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(spoon.reflect.declaration.CtPackageDeclaration replace) {
-			this.element.setPackageDeclaration(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCompilationUnitImportsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.Collection> {
-		private final spoon.reflect.declaration.CtCompilationUnit element;
-
-		CtCompilationUnitImportsReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
-			this.element = element;
-		}
-
-		@java.lang.Override
-		public void set(java.util.Collection replace) {
-			this.element.setImports(replace);
-		}
-	}
-
-	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCompilationUnitDeclaredModuleReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtModuleReference> {
-		private final spoon.reflect.declaration.CtCompilationUnit element;
-
-		CtCompilationUnitDeclaredModuleReferenceReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
+		CtModuleRequirementModuleReferenceReplaceListener(spoon.reflect.declaration.CtModuleRequirement element) {
 			this.element = element;
 		}
 
 		@java.lang.Override
 		public void set(spoon.reflect.reference.CtModuleReference replace) {
-			this.element.setDeclaredModuleReference(replace);
+			this.element.setModuleReference(replace);
 		}
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCompilationUnitDeclaredTypeReferencesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
-		private final spoon.reflect.declaration.CtCompilationUnit element;
+	class CtPackageExportTargetExportReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.declaration.CtPackageExport element;
 
-		CtCompilationUnitDeclaredTypeReferencesReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
+		CtPackageExportTargetExportReplaceListener(spoon.reflect.declaration.CtPackageExport element) {
 			this.element = element;
 		}
 
 		@java.lang.Override
 		public void set(java.util.List replace) {
-			this.element.setDeclaredTypeReferences(replace);
+			this.element.setTargetExport(replace);
 		}
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtPackageDeclarationReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
-		private final spoon.reflect.declaration.CtPackageDeclaration element;
+	class CtPackageExportPackageReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
+		private final spoon.reflect.declaration.CtPackageExport element;
 
-		CtPackageDeclarationReferenceReplaceListener(spoon.reflect.declaration.CtPackageDeclaration element) {
+		CtPackageExportPackageReferenceReplaceListener(spoon.reflect.declaration.CtPackageExport element) {
 			this.element = element;
 		}
 
 		@java.lang.Override
 		public void set(spoon.reflect.reference.CtPackageReference replace) {
+			this.element.setPackageReference(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtModuleRootPackageReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.declaration.CtPackage> {
+		private final spoon.reflect.declaration.CtModule element;
+
+		CtModuleRootPackageReplaceListener(spoon.reflect.declaration.CtModule element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.declaration.CtPackage replace) {
+			this.element.setRootPackage(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtModuleModuleDirectivesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.declaration.CtModule element;
+
+		CtModuleModuleDirectivesReplaceListener(spoon.reflect.declaration.CtModule element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setModuleDirectives(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtImportReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtReference> {
+		private final spoon.reflect.declaration.CtImport element;
+
+		CtImportReferenceReplaceListener(spoon.reflect.declaration.CtImport element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtReference replace) {
 			this.element.setReference(replace);
 		}
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypeMemberWildcardImportReferenceTypeReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
-		private final spoon.reflect.reference.CtTypeMemberWildcardImportReference element;
+	class CtJavaDocTagsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.code.CtJavaDoc element;
 
-		CtTypeMemberWildcardImportReferenceTypeReferenceReplaceListener(spoon.reflect.reference.CtTypeMemberWildcardImportReference element) {
+		CtJavaDocTagsReplaceListener(spoon.reflect.code.CtJavaDoc element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setTags(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtFieldAccessVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtFieldReference> {
+		private final spoon.reflect.code.CtVariableAccess element;
+
+		CtFieldAccessVariableReplaceListener(spoon.reflect.code.CtVariableAccess element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtFieldReference replace) {
+			this.element.setVariable(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtWhileLoopingExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtWhile element;
+
+		CtWhileLoopingExpressionReplaceListener(spoon.reflect.code.CtWhile element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setLoopingExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtVariableAccessVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtVariableReference> {
+		private final spoon.reflect.code.CtVariableAccess element;
+
+		CtVariableAccessVariableReplaceListener(spoon.reflect.code.CtVariableAccess element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtVariableReference replace) {
+			this.element.setVariable(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtUnaryOperatorOperandReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtUnaryOperator element;
+
+		CtUnaryOperatorOperandReplaceListener(spoon.reflect.code.CtUnaryOperator element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setOperand(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtTypeAccessAccessedTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.code.CtTypeAccess element;
+
+		CtTypeAccessAccessedTypeReplaceListener(spoon.reflect.code.CtTypeAccess element) {
 			this.element = element;
 		}
 
 		@java.lang.Override
 		public void set(spoon.reflect.reference.CtTypeReference replace) {
-			this.element.setTypeReference(replace);
+			this.element.setAccessedType(replace);
 		}
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtYieldStatementExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
-		private final spoon.reflect.code.CtYieldStatement element;
+	class CtIntersectionTypeReferenceBoundsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.reference.CtIntersectionTypeReference element;
 
-		CtYieldStatementExpressionReplaceListener(spoon.reflect.code.CtYieldStatement element) {
+		CtIntersectionTypeReferenceBoundsReplaceListener(spoon.reflect.reference.CtIntersectionTypeReference element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setBounds(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtWildcardReferenceBoundingTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.reference.CtWildcardReference element;
+
+		CtWildcardReferenceBoundingTypeReplaceListener(spoon.reflect.reference.CtWildcardReference element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtTypeReference replace) {
+			this.element.setBoundingType(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtTryWithResourceResourcesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.code.CtTryWithResource element;
+
+		CtTryWithResourceResourcesReplaceListener(spoon.reflect.code.CtTryWithResource element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setResources(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtTryFinalizerReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
+		private final spoon.reflect.code.CtTry element;
+
+		CtTryFinalizerReplaceListener(spoon.reflect.code.CtTry element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtBlock replace) {
+			this.element.setFinalizer(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtTryCatchersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.code.CtTry element;
+
+		CtTryCatchersReplaceListener(spoon.reflect.code.CtTry element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setCatchers(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtTryBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
+		private final spoon.reflect.code.CtBodyHolder element;
+
+		CtTryBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtBlock replace) {
+			this.element.setBody(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtThrowThrownExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtThrow element;
+
+		CtThrowThrownExpressionReplaceListener(spoon.reflect.code.CtThrow element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setThrownExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtSynchronizedBlockReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
+		private final spoon.reflect.code.CtSynchronized element;
+
+		CtSynchronizedBlockReplaceListener(spoon.reflect.code.CtSynchronized element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtBlock replace) {
+			this.element.setBlock(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtSynchronizedExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtSynchronized element;
+
+		CtSynchronizedExpressionReplaceListener(spoon.reflect.code.CtSynchronized element) {
 			this.element = element;
 		}
 
 		@java.lang.Override
 		public void set(spoon.reflect.code.CtExpression replace) {
 			this.element.setExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtAbstractSwitchCasesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.code.CtAbstractSwitch element;
+
+		CtAbstractSwitchCasesReplaceListener(spoon.reflect.code.CtAbstractSwitch element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setCases(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtAbstractSwitchSelectorReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtAbstractSwitch element;
+
+		CtAbstractSwitchSelectorReplaceListener(spoon.reflect.code.CtAbstractSwitch element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setSelector(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtReturnReturnedExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtReturn element;
+
+		CtReturnReturnedExpressionReplaceListener(spoon.reflect.code.CtReturn element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setReturnedExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtPackageTypesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
+		private final spoon.reflect.declaration.CtPackage element;
+
+		CtPackageTypesReplaceListener(spoon.reflect.declaration.CtPackage element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.Set replace) {
+			this.element.setTypes(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtPackagePackagesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
+		private final spoon.reflect.declaration.CtPackage element;
+
+		CtPackagePackagesReplaceListener(spoon.reflect.declaration.CtPackage element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.Set replace) {
+			this.element.setPackages(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtExecutableReferenceExpressionExecutableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtExecutableReference> {
+		private final spoon.reflect.code.CtExecutableReferenceExpression element;
+
+		CtExecutableReferenceExpressionExecutableReplaceListener(spoon.reflect.code.CtExecutableReferenceExpression element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtExecutableReference replace) {
+			this.element.setExecutable(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtLambdaExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtLambda element;
+
+		CtLambdaExpressionReplaceListener(spoon.reflect.code.CtLambda element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtNewClassAnonymousClassReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.declaration.CtClass> {
+		private final spoon.reflect.code.CtNewClass element;
+
+		CtNewClassAnonymousClassReplaceListener(spoon.reflect.code.CtNewClass element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.declaration.CtClass replace) {
+			this.element.setAnonymousClass(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtNewArrayDimensionExpressionsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.code.CtNewArray element;
+
+		CtNewArrayDimensionExpressionsReplaceListener(spoon.reflect.code.CtNewArray element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setDimensionExpressions(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtNewArrayElementsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.code.CtNewArray element;
+
+		CtNewArrayElementsReplaceListener(spoon.reflect.code.CtNewArray element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setElements(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtAnnotationMethodDefaultExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.declaration.CtAnnotationMethod element;
+
+		CtAnnotationMethodDefaultExpressionReplaceListener(spoon.reflect.declaration.CtAnnotationMethod element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setDefaultExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtMultiTypedElementMultiTypesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.declaration.CtMultiTypedElement element;
+
+		CtMultiTypedElementMultiTypesReplaceListener(spoon.reflect.declaration.CtMultiTypedElement element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setMultiTypes(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtAbstractInvocationArgumentsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.code.CtAbstractInvocation element;
+
+		CtAbstractInvocationArgumentsReplaceListener(spoon.reflect.code.CtAbstractInvocation element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setArguments(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtAbstractInvocationExecutableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtExecutableReference> {
+		private final spoon.reflect.code.CtAbstractInvocation element;
+
+		CtAbstractInvocationExecutableReplaceListener(spoon.reflect.code.CtAbstractInvocation element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtExecutableReference replace) {
+			this.element.setExecutable(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtIfElseStatementReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtStatement> {
+		private final spoon.reflect.code.CtIf element;
+
+		CtIfElseStatementReplaceListener(spoon.reflect.code.CtIf element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtStatement replace) {
+			this.element.setElseStatement(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtIfThenStatementReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtStatement> {
+		private final spoon.reflect.code.CtIf element;
+
+		CtIfThenStatementReplaceListener(spoon.reflect.code.CtIf element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtStatement replace) {
+			this.element.setThenStatement(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtIfConditionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtIf element;
+
+		CtIfConditionReplaceListener(spoon.reflect.code.CtIf element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setCondition(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtForEachExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtForEach element;
+
+		CtForEachExpressionReplaceListener(spoon.reflect.code.CtForEach element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtForEachVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtLocalVariable> {
+		private final spoon.reflect.code.CtForEach element;
+
+		CtForEachVariableReplaceListener(spoon.reflect.code.CtForEach element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtLocalVariable replace) {
+			this.element.setVariable(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtForForUpdateReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.code.CtFor element;
+
+		CtForForUpdateReplaceListener(spoon.reflect.code.CtFor element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setForUpdate(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtForExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtFor element;
+
+		CtForExpressionReplaceListener(spoon.reflect.code.CtFor element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtForForInitReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.code.CtFor element;
+
+		CtForForInitReplaceListener(spoon.reflect.code.CtFor element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setForInit(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtVariableReferenceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.reference.CtVariableReference element;
+
+		CtVariableReferenceTypeReplaceListener(spoon.reflect.reference.CtVariableReference element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtTypeReference replace) {
+			this.element.setType(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtFieldReferenceDeclaringTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.reference.CtFieldReference element;
+
+		CtFieldReferenceDeclaringTypeReplaceListener(spoon.reflect.reference.CtFieldReference element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtTypeReference replace) {
+			this.element.setDeclaringType(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtAnnotationFieldAccessVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtFieldReference> {
+		private final spoon.reflect.code.CtVariableAccess element;
+
+		CtAnnotationFieldAccessVariableReplaceListener(spoon.reflect.code.CtVariableAccess element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtFieldReference replace) {
+			this.element.setVariable(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtVariableDefaultExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.declaration.CtVariable element;
+
+		CtVariableDefaultExpressionReplaceListener(spoon.reflect.declaration.CtVariable element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setDefaultExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtExecutableReferenceParametersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.reference.CtExecutableReference element;
+
+		CtExecutableReferenceParametersReplaceListener(spoon.reflect.reference.CtExecutableReference element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setParameters(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtExecutableReferenceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.reference.CtExecutableReference element;
+
+		CtExecutableReferenceTypeReplaceListener(spoon.reflect.reference.CtExecutableReference element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtTypeReference replace) {
+			this.element.setType(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtExecutableReferenceDeclaringTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.reference.CtExecutableReference element;
+
+		CtExecutableReferenceDeclaringTypeReplaceListener(spoon.reflect.reference.CtExecutableReference element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtTypeReference replace) {
+			this.element.setDeclaringType(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtEnumEnumValuesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.declaration.CtEnum element;
+
+		CtEnumEnumValuesReplaceListener(spoon.reflect.declaration.CtEnum element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setEnumValues(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtLoopBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtStatement> {
+		private final spoon.reflect.code.CtBodyHolder element;
+
+		CtLoopBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtStatement replace) {
+			this.element.setBody(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtDoLoopingExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtDo element;
+
+		CtDoLoopingExpressionReplaceListener(spoon.reflect.code.CtDo element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setLoopingExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtExecutableThrownTypesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
+		private final spoon.reflect.declaration.CtExecutable element;
+
+		CtExecutableThrownTypesReplaceListener(spoon.reflect.declaration.CtExecutable element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.Set replace) {
+			this.element.setThrownTypes(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtExecutableParametersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.declaration.CtExecutable element;
+
+		CtExecutableParametersReplaceListener(spoon.reflect.declaration.CtExecutable element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setParameters(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtConditionalElseExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtConditional element;
+
+		CtConditionalElseExpressionReplaceListener(spoon.reflect.code.CtConditional element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setElseExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtConditionalThenExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtConditional element;
+
+		CtConditionalThenExpressionReplaceListener(spoon.reflect.code.CtConditional element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setThenExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtConditionalConditionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtConditional element;
+
+		CtConditionalConditionReplaceListener(spoon.reflect.code.CtConditional element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setCondition(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.declaration.CtFormalTypeDeclarer element;
+
+		CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener(spoon.reflect.declaration.CtFormalTypeDeclarer element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setFormalCtTypeParameters(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtTypeInformationSuperInterfacesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
+		private final spoon.reflect.declaration.CtType element;
+
+		CtTypeInformationSuperInterfacesReplaceListener(spoon.reflect.declaration.CtType element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.Set replace) {
+			this.element.setSuperInterfaces(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtTypeInformationSuperclassReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.declaration.CtType element;
+
+		CtTypeInformationSuperclassReplaceListener(spoon.reflect.declaration.CtType element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtTypeReference replace) {
+			this.element.setSuperclass(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtCatchBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
+		private final spoon.reflect.code.CtBodyHolder element;
+
+		CtCatchBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtBlock replace) {
+			this.element.setBody(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtCatchParameterReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtCatchVariable> {
+		private final spoon.reflect.code.CtCatch element;
+
+		CtCatchParameterReplaceListener(spoon.reflect.code.CtCatch element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtCatchVariable replace) {
+			this.element.setParameter(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtCaseCaseExpressionsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.code.CtCase element;
+
+		CtCaseCaseExpressionsReplaceListener(spoon.reflect.code.CtCase element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setCaseExpressions(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtStatementListStatementsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.code.CtStatementList element;
+
+		CtStatementListStatementsReplaceListener(spoon.reflect.code.CtStatementList element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setStatements(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtBinaryOperatorRightHandOperandReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtBinaryOperator element;
+
+		CtBinaryOperatorRightHandOperandReplaceListener(spoon.reflect.code.CtBinaryOperator element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setRightHandOperand(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtBinaryOperatorLeftHandOperandReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtBinaryOperator element;
+
+		CtBinaryOperatorLeftHandOperandReplaceListener(spoon.reflect.code.CtBinaryOperator element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setLeftHandOperand(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtRHSReceiverAssignmentReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtRHSReceiver element;
+
+		CtRHSReceiverAssignmentReplaceListener(spoon.reflect.code.CtRHSReceiver element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setAssignment(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtAssignmentAssignedReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtAssignment element;
+
+		CtAssignmentAssignedReplaceListener(spoon.reflect.code.CtAssignment element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setAssigned(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtAssertExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtAssert element;
+
+		CtAssertExpressionReplaceListener(spoon.reflect.code.CtAssert element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtAssertAssertExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtAssert element;
+
+		CtAssertAssertExpressionReplaceListener(spoon.reflect.code.CtAssert element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setAssertExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtActualTypeContainerActualTypeArgumentsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.reference.CtActualTypeContainer element;
+
+		CtActualTypeContainerActualTypeArgumentsReplaceListener(spoon.reflect.reference.CtActualTypeContainer element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setActualTypeArguments(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtArrayTypeReferenceComponentTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.reference.CtArrayTypeReference element;
+
+		CtArrayTypeReferenceComponentTypeReplaceListener(spoon.reflect.reference.CtArrayTypeReference element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtTypeReference replace) {
+			this.element.setComponentType(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtTypeReferenceDeclaringTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.reference.CtTypeReference element;
+
+		CtTypeReferenceDeclaringTypeReplaceListener(spoon.reflect.reference.CtTypeReference element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtTypeReference replace) {
+			this.element.setDeclaringType(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtTypeReferencePackageReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
+		private final spoon.reflect.reference.CtTypeReference element;
+
+		CtTypeReferencePackageReplaceListener(spoon.reflect.reference.CtTypeReference element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtPackageReference replace) {
+			this.element.setPackage(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtArrayAccessIndexExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtArrayAccess element;
+
+		CtArrayAccessIndexExpressionReplaceListener(spoon.reflect.code.CtArrayAccess element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setIndexExpression(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtTargetedExpressionTargetReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+		private final spoon.reflect.code.CtTargetedExpression element;
+
+		CtTargetedExpressionTargetReplaceListener(spoon.reflect.code.CtTargetedExpression element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtExpression replace) {
+			this.element.setTarget(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtExpressionTypeCastsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.code.CtExpression element;
+
+		CtExpressionTypeCastsReplaceListener(spoon.reflect.code.CtExpression element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setTypeCasts(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtExecutableBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
+		private final spoon.reflect.code.CtBodyHolder element;
+
+		CtExecutableBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtBlock replace) {
+			this.element.setBody(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtTypeTypeMembersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.declaration.CtType element;
+
+		CtTypeTypeMembersReplaceListener(spoon.reflect.declaration.CtType element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setTypeMembers(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtAnnotationValuesReplaceListener implements spoon.support.visitor.replace.ReplaceMapListener<java.util.Map> {
+		private final spoon.reflect.declaration.CtAnnotation element;
+
+		CtAnnotationValuesReplaceListener(spoon.reflect.declaration.CtAnnotation element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.Map replace) {
+			this.element.setValues(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtElementAnnotationsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.declaration.CtElement element;
+
+		CtElementAnnotationsReplaceListener(spoon.reflect.declaration.CtElement element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setAnnotations(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtAnnotationAnnotationTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.declaration.CtAnnotation element;
+
+		CtAnnotationAnnotationTypeReplaceListener(spoon.reflect.declaration.CtAnnotation element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtTypeReference replace) {
+			this.element.setAnnotationType(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtElementCommentsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+		private final spoon.reflect.declaration.CtElement element;
+
+		CtElementCommentsReplaceListener(spoon.reflect.declaration.CtElement element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.List replace) {
+			this.element.setComments(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtTypedElementTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+		private final spoon.reflect.declaration.CtTypedElement element;
+
+		CtTypedElementTypeReplaceListener(spoon.reflect.declaration.CtTypedElement element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.reference.CtTypeReference replace) {
+			this.element.setType(replace);
 		}
 	}
 

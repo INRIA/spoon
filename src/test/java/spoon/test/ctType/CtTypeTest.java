@@ -237,4 +237,16 @@ public class CtTypeTest {
 
 		assertEquals(expectedInterfaceOrder, interfaces);
 	}
+	@Test
+	public void getUsedTypesWithWildcard() {
+		//contract: Wildcard types like "?" shouldn't create a NPE. For more context see issue#3514
+		String input = "src/test/resources/layornos/AllocationStorage.java";
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource(input);
+		CtModel model = launcher.buildModel();
+		model.getAllTypes().forEach(type -> {
+			type.getUsedTypes(false);
+			});
+	}
 }

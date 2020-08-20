@@ -59,6 +59,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -283,7 +284,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	private boolean shouldIncludeSamePackage(boolean includeSamePackage, CtTypeReference<?> typeRef) {
-		return includeSamePackage || (getPackage() != null && !getPackageReference(typeRef).equals(getPackage().getReference()));
+		return includeSamePackage || (getPackage() != null && !getPackageReference(typeRef).map(v -> v.equals(getPackage().getReference())).orElse(false));
 	}
 
 	private boolean isValidTypeReference(CtTypeReference<?> typeRef) {
@@ -305,13 +306,16 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	 * @see CtTypeReference#getPackage()
 	 * @since 4.0
 	 */
-	private static CtPackageReference getPackageReference(CtTypeReference<?> tref) {
+	private static Optional<CtPackageReference> getPackageReference(CtTypeReference<?> tref) {
 		CtPackageReference pref = tref.getPackage();
 		while (pref == null) {
 			tref = tref.getDeclaringType();
+			if (tref == null) {
+				return Optional.empty();
+			}
 			pref = tref.getPackage();
 		}
-		return pref;
+		return Optional.of(pref);
 	}
 
 	@Override

@@ -11,7 +11,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
@@ -597,6 +599,25 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			return rootFragment.getSourceFragmentOf(this, sp.getSourceStart(), sp.getSourceEnd() + 1);
 		} else {
 			return ElementSourceFragment.NO_SOURCE_FRAGMENT;
+		}
+	}
+
+	/**
+	 * Replace the statement with a CtComment having the statement as text
+	 */
+	public void comment() {
+		if (this instanceof CtStatement && getParent() instanceof CtBlock) {
+			if (this instanceof CtComment) {
+				return;
+			}
+			final String stmt = toString();
+			if (stmt.contains(CtComment.LINE_SEPARATOR)) {
+				this.replace(getFactory().Code().createComment(stmt, CtComment.CommentType.BLOCK)); // Multi line comment
+			} else {
+				this.replace(getFactory().Code().createInlineComment(stmt + ';')); // Single line comment
+			}
+		} else {
+			throw new UnsupportedOperationException("Only CtStatement within CtBlock or CtBlock as a method body can be commented out");
 		}
 	}
 
