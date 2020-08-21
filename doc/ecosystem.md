@@ -28,6 +28,7 @@ Here are some active projects already using Spoon:
 - [sourcegraph/lsif-java](https://github.com/sourcegraph/lsif-java) provides a [Language Server Index Format  (LSIF)](https://github.com/sourcegraph/lsif-java) implementation based on Spoon
 - [AutoJMH](https://github.com/DIVERSIFY-project/autojmh-source-code) generates code for microbenchmarking with [JMH](http://openjdk.java.net/projects/code-tools/jmh/)
 - [Java Call Hierarchy Printer](https://github.com/pbadenski/call-hierarchy-printer) prints a method call hierarchy in text format
+- [spork](https://github.com/KTH/spork): An AST based structured merge tool for Java. It uses [Gumtree Spoon AST diff](https://github.com/SpoonLabs/gumtree-spoon-ast-diff) to match trees.
 - Yours?
 
 [SpoonLabs](https://github.com/SpoonLabs) is a Github group for centralizing all projects and experiments that use Spoon.
