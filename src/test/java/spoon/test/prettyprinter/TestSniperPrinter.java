@@ -1,22 +1,15 @@
 /**
- * Copyright (C) 2006-2018 INRIA and contributors
- * Spoon - http://spoon.gforge.inria.fr/
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify
- * and/or redistribute the software under the terms of the CeCILL-C license as
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.test.prettyprinter;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.processing.Processor;
@@ -72,6 +65,9 @@ import static org.junit.Assert.fail;
 
 public class TestSniperPrinter {
 
+	@Rule
+	TemporaryFolder folder = new TemporaryFolder();
+	
 	@Test
 	public void testClassRename1() throws Exception {
 		// contract: one can sniper out of the box after Refactoring.changeTypeName
@@ -93,16 +89,13 @@ public class TestSniperPrinter {
 
 	public void testClassRename(Consumer<CtType<?>> renameTransfo) throws Exception {
 		// contract: sniper supports class rename
-
-		// clean the output dir
-		Runtime.getRuntime().exec(new String[]{"bash","-c", "rm -rf spooned"});
 		String testClass = ToBeChanged.class.getName();
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(getResourcePath(testClass));
 		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
-			SniperJavaPrettyPrinter printer = new SniperJavaPrettyPrinter(launcher.getEnvironment());
-			return printer;
+			return new SniperJavaPrettyPrinter(launcher.getEnvironment());
 		});
+		launcher.setBinaryOutputDirectory(folder.newFolder());
 		launcher.buildModel();
 		Factory f = launcher.getFactory();
 
