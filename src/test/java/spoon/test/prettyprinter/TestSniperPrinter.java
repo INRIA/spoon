@@ -93,7 +93,7 @@ public class TestSniperPrinter {
 
 	}
 
-	public void testClassRename(Consumer<CtType> renameTransfo) throws Exception {
+	public void testClassRename(Consumer<CtType<?>> renameTransfo) throws Exception {
 		// contract: sniper supports class rename
 
 		// clean the output dir
@@ -125,7 +125,7 @@ public class TestSniperPrinter {
 	@Test
 	public void testPrintInsertedThrow() {
 		testSniper(Throw.class.getName(), type -> {
-			CtConstructorCall ctConstructorCall = (CtConstructorCall) type.getMethodsByName("foo").get(0).getBody().getStatements().get(0);
+			CtConstructorCall<?> ctConstructorCall = (CtConstructorCall<?>) type.getMethodsByName("foo").get(0).getBody().getStatements().get(0);
 			CtThrow ctThrow = type.getFactory().createCtThrow(ctConstructorCall.toString());
 			ctConstructorCall.replace(ctThrow);
 		}, (type, printed) -> {
@@ -142,14 +142,14 @@ public class TestSniperPrinter {
 	@Test
 	public void testPrintReplacementOfInvocation() {
 		testSniper(InvocationReplacement.class.getName(), type -> {
-			CtLocalVariable localVariable = (CtLocalVariable) type.getMethodsByName("main").get(0).getBody().getStatements().get(0);
-			CtInvocation invocation = (CtInvocation) localVariable.getAssignment();
-			CtExpression prevTarget = invocation.getTarget();
-			CtCodeSnippetExpression newTarget = type.getFactory().Code().createCodeSnippetExpression("Arrays");
-			CtType arraysClass = type.getFactory().Class().get(Arrays.class);
-			CtMethod method = (CtMethod) arraysClass.getMethodsByName("toString").get(0);
-			CtExecutableReference refToMethod = type.getFactory().Executable().createReference(method);
-			CtInvocation newInvocation = type.getFactory().Code().createInvocation(newTarget, refToMethod, prevTarget);
+			CtLocalVariable<?> localVariable = (CtLocalVariable<?>) type.getMethodsByName("main").get(0).getBody().getStatements().get(0);
+			CtInvocation<?> invocation = (CtInvocation<?>) localVariable.getAssignment();
+			CtExpression<?> prevTarget = invocation.getTarget();
+			CtCodeSnippetExpression<?> newTarget = type.getFactory().Code().createCodeSnippetExpression("Arrays");
+			CtType<?> arraysClass = type.getFactory().Class().get(Arrays.class);
+			CtMethod<?> method = (CtMethod<?>) arraysClass.getMethodsByName("toString").get(0);
+			CtExecutableReference<?> refToMethod = type.getFactory().Executable().createReference(method);
+			CtInvocation<?> newInvocation = type.getFactory().Code().createInvocation(newTarget, refToMethod, prevTarget);
 			invocation.replace(newInvocation);
 		}, (type, printed) -> {
 			assertIsPrintedWithExpectedChanges(type, printed, "\\QString argStr = args.toString();", "String argStr = Arrays.toString(args);");
@@ -472,7 +472,7 @@ public class TestSniperPrinter {
 				//Contract, calling toString on unmodified AST elements should draw only from original.
 				String result = sp.getResult();
 
-				if (!sp.hasImplicitAncestor(el) && !(el instanceof CtPackage) && !(el instanceof CtReference)) {
+				if (!SniperJavaPrettyPrinter.hasImplicitAncestor(el) && !(el instanceof CtPackage) && !(el instanceof CtReference)) {
 					assertTrue(result.length() > 0);
 				}
 
