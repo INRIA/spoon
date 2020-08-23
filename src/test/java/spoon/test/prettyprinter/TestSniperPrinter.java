@@ -66,7 +66,7 @@ import static org.junit.Assert.fail;
 public class TestSniperPrinter {
 
 	@Rule
-	TemporaryFolder folder = new TemporaryFolder();
+	public TemporaryFolder folder = new TemporaryFolder();
 	
 	@Test
 	public void testClassRename1() throws Exception {
