@@ -109,7 +109,7 @@ public class TestSniperPrinter {
 		Factory f = launcher.getFactory();
 
 		final CtClass<?> type = f.Class().get(testClass);
-		
+
 		// performing the type rename
 		renameTransfo.accept(type);
 		//print the changed model
@@ -130,16 +130,16 @@ public class TestSniperPrinter {
 			ctConstructorCall.replace(ctThrow);
 		}, (type, printed) -> {
 			assertIsPrintedWithExpectedChanges(type, printed,
-					"\\Qvoid foo(int x) {\n" +
-					"\t\tnew IllegalArgumentException(\"x must be nonnegative\");\n" +
-					"\t}",
-					"void foo(int x) {\n" +
-					"\t\tthrow new java.lang.IllegalArgumentException(\"x must be nonnegative\");\n" +
-					"\t}");
+					"\\Qvoid foo(int x) {\n"
+					+ "\t\tnew IllegalArgumentException(\"x must be nonnegative\");\n"
+					+ "\t}",
+					"void foo(int x) {\n"
+					+ "\t\tthrow new java.lang.IllegalArgumentException(\"x must be nonnegative\");\n"
+					+ "\t}");
 		});
 	}
 
-  @Test
+	@Test
 	public void testPrintReplacementOfInvocation() {
 		testSniper(InvocationReplacement.class.getName(), type -> {
 			CtLocalVariable localVariable = (CtLocalVariable) type.getMethodsByName("main").get(0).getBody().getStatements().get(0);
@@ -160,17 +160,17 @@ public class TestSniperPrinter {
 	public void testPrintLocalVariableDeclaration() {
 		// contract: joint local declarations can be sniper-printed in whole unmodified method
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
-			type.getFields().stream().forEach(x -> {x.delete();});
+			type.getFields().stream().forEach(x -> { x.delete(); });
 		}, (type, printed) -> {
-			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
-					"\n" +
-					"public class OneLineMultipleVariableDeclaration {\n" +
-					"\n" +
-					"\tvoid foo(int a) {\n" +
-					"\t\tint b = 0, e = 1;\n" +
-					"\t\ta = a;\n" +
-					"\t}\n" +
-					"}", printed);
+			assertEquals("package spoon.test.prettyprinter.testclasses;\n"
+					+	"\n"
+					+	"public class OneLineMultipleVariableDeclaration {\n"
+					+	"\n"
+					+	"\tvoid foo(int a) {\n"
+					+ "\t\tint b = 0, e = 1;\n"
+					+ "\t\ta = a;\n"
+					+	"\t}\n"
+					+	"}", printed);
 		});
 	}
 
@@ -180,16 +180,16 @@ public class TestSniperPrinter {
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
 			type.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0).delete();
 		}, (type, printed) -> {
-			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
-					"\n" +
-					"public class OneLineMultipleVariableDeclaration {int a;\n" +
-					"\n" +
-					"\tint c;\n" +
-					"\n" +
-					"\tvoid foo(int a) {int e = 1;\n" +
-					"\t\ta = a;\n" +
-					"\t}\n" +
-					"}", printed);
+			assertEquals("package spoon.test.prettyprinter.testclasses;\n"
+					+	"\n"
+					+	"public class OneLineMultipleVariableDeclaration {int a;\n"
+					+ "\n"
+					+	"\tint c;\n"
+					+	"\n"
+					+ "\tvoid foo(int a) {int e = 1;\n"
+					+ "\t\ta = a;\n"
+					+ "\t}\n"
+					+	"}", printed);
 		});
 	}
 
@@ -200,12 +200,12 @@ public class TestSniperPrinter {
 			// we change something (anything would work)
 			type.getMethodsByName("foo").get(0).delete();
 		}, (type, printed) -> {
-			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
-					"\n" +
-					"public class OneLineMultipleVariableDeclaration {int a;\n" +
-					"\n" +
-					"\tint c;\n" +
-					"}", printed);
+			assertEquals("package spoon.test.prettyprinter.testclasses;\n"
+					+	"\n"
+					+	"public class OneLineMultipleVariableDeclaration {int a;\n"
+					+	"\n"
+					+ "\tint c;\n"
+					+ "}", printed);
 		});
 	}
 
@@ -438,8 +438,7 @@ public class TestSniperPrinter {
 	}
 
 	private static String fileAsString(String path, Charset encoding)
-			throws IOException
-	{
+			throws IOException	{
 		byte[] encoded = Files.readAllBytes(Paths.get(path));
 		return new String(encoded, encoding);
 	}
@@ -448,7 +447,7 @@ public class TestSniperPrinter {
 
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource(inputSourcePath);
-		String originalContent = fileAsString(inputSourcePath, StandardCharsets.UTF_8).replace("\t","");
+		String originalContent = fileAsString(inputSourcePath, StandardCharsets.UTF_8).replace("\t", "");
 		CtModel model = launcher.buildModel();
 
 		new SourceFragmentCreator().attachTo(launcher.getFactory().getEnvironment());
@@ -464,8 +463,8 @@ public class TestSniperPrinter {
 
 
 		ops.stream()
-				.filter(el -> !(el instanceof spoon.reflect.CtModelImpl.CtRootPackage) &&
-						!(el instanceof spoon.reflect.factory.ModuleFactory.CtUnnamedModule)
+				.filter(el -> !(el instanceof spoon.reflect.CtModelImpl.CtRootPackage)
+				&& !(el instanceof spoon.reflect.factory.ModuleFactory.CtUnnamedModule)
 				).forEach(el -> {
 			try {
 				sp.reset();
@@ -474,11 +473,11 @@ public class TestSniperPrinter {
 				String result = sp.getResult();
 
 				if (!sp.hasImplicitAncestor(el) && !(el instanceof CtPackage) && !(el instanceof CtReference)) {
-					assertTrue(result.length()>0);
+					assertTrue(result.length() > 0);
 				}
 
 				assertTrue("ToString() on element (" + el.getClass().getName() + ") =  \"" + el + "\" is not in original content",
-						originalContent.contains(result.replace("\t","")));
+						originalContent.contains(result.replace("\t", "")));
 			} catch (UnsupportedOperationException | SpoonException e) {
 				//Printer should not throw exception on printable element. (Unless there is a bug in the printer...)
 				fail("ToString() on Element (" + el.getClass().getName() + "): at " + el.getPath() + " lead to an exception: " + e);
