@@ -65,8 +65,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -376,7 +374,6 @@ public class TestSniperPrinter {
 	}
 
 	private String getContentOfPrettyPrintedClassFromDisk(CtType<?> type) {
-		Factory f = type.getFactory();
 		File outputFile = getFileForType(type);
 
 		byte[] content = new byte[(int) outputFile.length()];
@@ -426,16 +423,6 @@ public class TestSniperPrinter {
 		assertEquals(originSource, printedSource);
 	}
 
-	Pattern importRE = Pattern.compile("^(?:import|package)\\s.*;\\s*$", Pattern.MULTILINE);
-
-	private String sourceWithoutImports(String source) {
-		Matcher m = importRE.matcher(source);
-		int lastImportEnd = 0;
-		while (m.find()) {
-			lastImportEnd = m.end();
-		}
-		return source.substring(lastImportEnd).trim();
-	}
 
 	private static String fileAsString(String path, Charset encoding)
 			throws IOException	{
