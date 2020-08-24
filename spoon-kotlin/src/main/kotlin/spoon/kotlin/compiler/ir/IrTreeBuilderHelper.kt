@@ -1,6 +1,7 @@
 package spoon.kotlin.compiler.ir
 
 import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrFile
@@ -15,6 +16,7 @@ import org.jetbrains.kotlin.lexer.KtKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassOrAny
@@ -97,6 +99,17 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     fun isImplicitThis(irGetValue: IrGetValue, file: IrFile): Boolean {
         val text = getKtFile(file).text.substring(irGetValue.startOffset, irGetValue.endOffset)
         return !text.matches("this(@.+)?".toRegex())
+    }
+
+    fun isActualField(irElement: IrElement, file: IrFile): Boolean {
+        val psiCandidates = irTreeBuilder.getSourceHelper(Empty(file)).getSourceElements(irElement.startOffset, irElement.endOffset)
+        val psiElements = psiCandidates.filter {
+            it.getParentOfType<KtPropertyAccessor>(true, KtClassOrObject::class.java) != null
+        }
+        if(psiElements.isNotEmpty()) {
+            return psiElements.any { it.text == "field" }
+        }
+        return false
     }
 
     fun getThisExtensionTarget(irGetValue: IrGetValue, file: IrFile): Pair<String?, String?> {

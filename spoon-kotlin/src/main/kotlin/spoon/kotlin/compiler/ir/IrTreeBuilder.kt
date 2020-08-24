@@ -47,7 +47,6 @@ import spoon.reflect.code.*
 import spoon.reflect.declaration.*
 import spoon.reflect.factory.Factory
 import spoon.reflect.reference.*
-import spoon.support.reflect.code.CtLiteralImpl
 import spoon.support.reflect.cu.position.SourcePositionImpl
 
 internal class IrTreeBuilder(
@@ -403,7 +402,8 @@ internal class IrTreeBuilder(
                 (read as CtFieldRead<Any>).setTarget<CtFieldRead<Any>>(expressionOrWrappedInStatementExpression(receiver))
             }
         } else {
-            propertyRef.putKtMetadata(KtMetadataKeys.IS_ACTUAL_FIELD, KtMetadata.bool(true))
+            val isActualField = helper.isActualField(expression, data.file)
+            propertyRef.putKtMetadata(KtMetadataKeys.IS_ACTUAL_FIELD, KtMetadata.bool(isActualField))
         }
 
         return read.definite()
@@ -411,7 +411,8 @@ internal class IrTreeBuilder(
 
     override fun visitSetField(expression: IrSetField, data: ContextData): TransformResult<CtElement> {
         val propertyRef = referenceBuilder.getNewVariableReference<Any>(expression.symbol.descriptor) as CtFieldReference<*>
-        propertyRef.putKtMetadata(KtMetadataKeys.IS_ACTUAL_FIELD, KtMetadata.bool(true))
+        val isActualField = helper.isActualField(expression, data.file)
+        propertyRef.putKtMetadata(KtMetadataKeys.IS_ACTUAL_FIELD, KtMetadata.bool(isActualField))
         val write = createVariableWrite(null, propertyRef)
         val rhs = expression.value.accept(this, data).resultUnsafe
         return createAssignment(write, expressionOrWrappedInStatementExpression(rhs)).definite()
