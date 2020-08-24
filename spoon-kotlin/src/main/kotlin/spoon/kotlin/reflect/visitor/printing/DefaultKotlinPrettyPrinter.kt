@@ -307,9 +307,6 @@ class DefaultKotlinPrettyPrinter(
         if(typeAccess.isImplicit) return
         enterCtExpression(typeAccess)
         typeAccess.accessedType.accept(this)
-        if(typeAccess.getBooleanMetadata(KtMetadataKeys.IS_CLASS_REFERENCE, false)) {
-            adapter write "::class"
-        }
         exitCtExpression(typeAccess)
     }
 
