@@ -1519,8 +1519,10 @@ internal class IrTreeBuilder(
             return visitThisReceiver(expression, data).definite()
         }
         if(symbol is IrVariableSymbol && descriptor is IrTemporaryVariableDescriptor) {
-            if(descriptor.name.asString().matches("tmp\\d+_this".toRegex()))
-                return visitThisReceiver(expression, data).definite()
+            if(descriptor.name.asString().matches("tmp\\d+_this".toRegex())) {
+                return symbol.owner.initializer!!.accept(this,data) 
+            }
+
         }
 
         val access = getThisAccessOrVariableRef(expression, data)
