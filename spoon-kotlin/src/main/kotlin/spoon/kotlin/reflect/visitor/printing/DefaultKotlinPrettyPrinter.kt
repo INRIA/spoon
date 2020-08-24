@@ -872,6 +872,15 @@ class DefaultKotlinPrettyPrinter(
 
         adapter writeModifiers modifiers
 
+        // Extension receiver
+        val getter = field.getMetadata(KtMetadataKeys.PROPERTY_GETTER) as CtMethod<*>?
+        if(getter != null) {
+            val extensionType = getter.getMetadata(KtMetadataKeys.EXTENSION_TYPE_REF) as CtTypeAccess<*>?
+            if(extensionType != null) {
+                visitCtTypeAccess(extensionType)
+                adapter write '.'
+            }
+        }
         // Name
         adapter writeIdentifier field.simpleName
 
@@ -885,9 +894,7 @@ class DefaultKotlinPrettyPrinter(
         adapter.pushIndent()
         visitDefaultExpr(field)
 
-
-        val getter = field.getMetadata(KtMetadataKeys.PROPERTY_GETTER) as? CtMethod<*>?
-        val setter = field.getMetadata(KtMetadataKeys.PROPERTY_SETTER) as? CtMethod<*>?
+        val setter = field.getMetadata(KtMetadataKeys.PROPERTY_SETTER) as CtMethod<*>?
         if(getter != null) {
             adapter.ensureNEmptyLines(0)
             val getterModifiers = getModifiersMetadata(getter)
