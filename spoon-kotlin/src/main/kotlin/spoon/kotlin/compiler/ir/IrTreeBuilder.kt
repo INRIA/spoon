@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.load.java.descriptors.JavaMethodDescriptor
+import org.jetbrains.kotlin.load.java.descriptors.JavaPropertyDescriptor
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
@@ -392,8 +393,17 @@ internal class IrTreeBuilder(
 
     override fun visitGetField(expression: IrGetField, data: ContextData): TransformResult<CtElement> {
         val propertyRef = referenceBuilder.getNewVariableReference<Any>(expression.symbol.descriptor) as CtFieldReference<*>
-        propertyRef.putKtMetadata(KtMetadataKeys.IS_ACTUAL_FIELD, KtMetadata.bool(true))
         val read = createVariableRead(propertyRef)
+        val descriptor = expression.symbol.descriptor
+        if(descriptor is JavaPropertyDescriptor) {
+            val receiver = expression.receiver?.accept(this, data)?.resultUnsafe
+            if(receiver != null) {
+                (read as CtFieldRead<Any>).setTarget<CtFieldRead<Any>>(expressionOrWrappedInStatementExpression(receiver))
+            }
+        } else {
+            propertyRef.putKtMetadata(KtMetadataKeys.IS_ACTUAL_FIELD, KtMetadata.bool(true))
+        }
+
         return read.definite()
     }
 
