@@ -45,5 +45,7 @@ class KtStatementExpressionImpl<T>(override var statement: CtStatement) : CtExpr
 
     override fun getLabel(): String = statement.label
 
-
+    override fun getMetadata(key: String): Any? {
+        return statement.getMetadata(key)
+    }
 }
