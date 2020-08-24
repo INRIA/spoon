@@ -342,12 +342,28 @@ internal class IrTreeBuilder(
             body
             )
         ctLambda.setBody<CtLambda<*>>(visitBody(newBody, data).resultSafe)
+
+        fun addPotentialWildcards(placeholder: CtParameter<*>, param: IrValueParameter) {
+            val components = placeholder.getMetadata(KtMetadataKeys.COMPONENTS) as ArrayList<CtLocalVariable<*>>
+            val allComponents = sourceHelper.destructuredNames(param)
+            if("_" in allComponents) {
+                val newComponents = ArrayList<CtLocalVariable<*>>(components.size)
+                var oldComponentIndex = 0
+                for(c in allComponents) {
+                    if(c == "_") newComponents.add(createWildcardVariable())
+                    else newComponents.add(components[oldComponentIndex++])
+                }
+                placeholder.putKtMetadata(KtMetadataKeys.COMPONENTS, KtMetadata.elementList(newComponents))
+            }
+        }
+
         val params = ArrayList<CtParameter<*>>()
         for(param in function.valueParameters) {
             val placeholder = m[param.name.asString()]
             if(placeholder == null) {
                 params.add(visitValueParameter(param, data).resultSafe)
             } else {
+                addPotentialWildcards(placeholder, param)
                 params.add(placeholder)
             }
         }

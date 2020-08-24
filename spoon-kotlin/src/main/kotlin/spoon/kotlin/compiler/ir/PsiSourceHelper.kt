@@ -145,7 +145,7 @@ class PsiSourceHelper {
         return null
     }
 
-    fun destructuredNames(irComposite: IrComposite): List<String> {
+    fun destructuredNames(irComposite: IrElement): List<String> {
         val psi = getSourceElements(irComposite.startOffset, irComposite.endOffset).
             firstIsInstance<KtDestructuringDeclaration>()
         return psi.entries.map { it.text }
