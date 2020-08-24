@@ -179,4 +179,15 @@ class WhenTest {
         assertEquals("(b in listOf(false)) || (b is kotlin.Any)", conditions[1].asString())
         assertEquals("is kotlin.Any", conditions[2].asString())
     }
+
+    @Test
+    fun testExhaustiveWhenHasNoElseBranch() {
+        // Contract: An exhaustive when should not have an else branch
+        val c = TestBuildUtil.buildClass("spoon.test.when.testclasses", "ExhaustiveWhen")
+        val whenStmt = c.getMethodByName("m").body.statements[0]
+        assertTrue(whenStmt is CtAbstractSwitch<*>)
+        assertEquals(2, whenStmt.cases.size)
+        assertTrue(whenStmt.cases[0].caseExpressions.isNotEmpty())
+        assertTrue(whenStmt.cases[1].caseExpressions.isNotEmpty())
+    }
 }

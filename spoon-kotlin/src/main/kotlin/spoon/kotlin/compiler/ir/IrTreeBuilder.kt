@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.*
+import org.jetbrains.kotlin.ir.descriptors.IrBuiltInOperator
 import org.jetbrains.kotlin.ir.descriptors.IrTemporaryVariableDescriptor
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.IrBlockBodyImpl
@@ -893,7 +894,7 @@ internal class IrTreeBuilder(
         }
 
         ctSwitch.setCases<CtSwitchExpression<*,Any>>(
-            expression.branches.map { visitBranch(it, context).resultSafe }
+            expression.branches.mapNotNull { visitBranch(it, context).resultOrNull }
         )
 
         ctSwitch.setType<CtExpression<*>>(referenceBuilder.getNewTypeReference(expression.type))
@@ -901,7 +902,14 @@ internal class IrTreeBuilder(
         return ctSwitch.definite()
     }
 
-    override fun visitBranch(branch: IrBranch, data: ContextData): DefiniteTransformResult<CtCase<Any>> {
+    override fun visitBranch(branch: IrBranch, data: ContextData): MaybeTransformResult<CtCase<Any>> {
+        if(branch is IrElseBranch) {
+            val result = branch.result
+            if(result is IrCall && result.symbol.owner is IrBuiltInOperator) {
+                return EmptyTransformResult()
+            }
+        }
+
         fun markImplicitLHS(expr: CtElement) {
             when(expr) {
                 is CtBinaryOperator<*> -> {
