@@ -165,10 +165,10 @@ open class DefaultPrinterAdapter(
         if(name.startsWith('$') && (name.endsWith('$') || name.endsWith("$?"))) {
             write('`')
             if(name.endsWith('?')) {
-                write(name.substring(1, name.length-3))
+                write(name.substring(1, name.length-2))
                 write("`?")
             } else {
-                write(name.substring(1, name.length-2))
+                write(name.substring(1, name.length-1))
                 write('`')
             }
         } else {

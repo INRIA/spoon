@@ -30,7 +30,7 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     private val factory get() = irTreeBuilder.factory
     private val referenceBuilder get() = irTreeBuilder.referenceBuilder
     private val keywords = KtTokens.KEYWORDS.types.map { (it as KtKeywordToken).value }.toMutableList().also {
-        it.add("assert")
+        it.add("assert") // Escaped because Spoon doesn't allow assert
     }
 
     private fun getKtFile(file: IrFile): KtFile {
