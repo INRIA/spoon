@@ -18,6 +18,6 @@ class ThrowTest {
         assertEquals(c.factory.Type().createReference("java.lang.RuntimeException"),
             throwStmt.thrownExpression.type)
 
-        assertEquals("throw RuntimeException(\"Error\")", throwStmt.asString())
+        assertEquals("throw java.lang.RuntimeException(\"Error\")", throwStmt.asString())
     }
 }

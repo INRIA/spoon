@@ -76,7 +76,8 @@ class BinaryOperatorTest {
 
         val expectedOperators = listOf(BinaryOperatorKind.PLUS, BinaryOperatorKind.MINUS, BinaryOperatorKind.MUL, BinaryOperatorKind.DIV,
             BinaryOperatorKind.MOD)
-        val expectedStrings = listOf("x += 1", "x -= 2", "x *= 3", "x /= 4", "x %= 5", "x == HasOnlyAssignOperators(6)")
+        val expectedStrings = listOf("x += 1", "x -= 2", "x *= 3", "x /= 4", "x %= 5",
+            "x == spoon.test.binaryoperator.testclasses.HasOnlyAssignOperators(6)")
 
         for(i in 0..4) {
             assertEquals(expectedOperators[i], (statements[i] as CtOperatorAssignment<*,*>).kind)
@@ -103,7 +104,8 @@ class BinaryOperatorTest {
 
         val expectedOperators = listOf(BinaryOperatorKind.PLUS, BinaryOperatorKind.MINUS, BinaryOperatorKind.MUL, BinaryOperatorKind.DIV,
             BinaryOperatorKind.MOD)
-        val expectedStrings = listOf("x += 1", "x -= 2", "x *= 3", "x /= 4", "x %= 5", "x == HasOnlyNormalOperators(6)")
+        val expectedStrings = listOf("x += 1", "x -= 2", "x *= 3", "x /= 4", "x %= 5",
+            "x == spoon.test.binaryoperator.testclasses.HasOnlyNormalOperators(6)")
 
         for(i in 0..4) {
             assertEquals(expectedOperators[i], (statements[i] as CtOperatorAssignment<*,*>).kind)

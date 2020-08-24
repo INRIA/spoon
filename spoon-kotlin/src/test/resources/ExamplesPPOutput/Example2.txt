@@ -1,5 +1,5 @@
 class Example2(val n: kotlin.Int, val i: spoon.test.examples.testclasses.AnInterface) : spoon.test.examples.testclasses.Base2() {
-    val b = Base2()
+    val b = spoon.test.examples.testclasses.Base2()
     var q = 0
     var y = 0
 

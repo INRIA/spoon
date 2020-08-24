@@ -174,7 +174,7 @@ class GenericsTest {
         var invocation = (m.body.statements[0] as CtLocalVariable<*>).assignment as CtInvocation<*>
         assertEquals(1, invocation.actualTypeArguments.size)
         assertSame(t, invocation.actualTypeArguments[0].declaration)
-        assertEquals("ArrayList<T>()", invocation.asString())
+        assertTrue(invocation.asString().matches("((kotlin.collections.)|(java.util.))ArrayList<T>[(][)]".toRegex()))
 
         invocation = (m.body.statements[1] as CtLocalVariable<*>).assignment as CtInvocation<*>
         assertEquals(1, invocation.actualTypeArguments.size)

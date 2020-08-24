@@ -1371,16 +1371,22 @@ class DefaultKotlinPrettyPrinter(
 
         if(!shouldIgnoreIdentifier(invocation)) { // If invoke operator, the name of the called function is omitted
             adapter write separator
-            if(invocation.executable.isConstructor) {
+            adapter writeIdentifier invocation.executable.simpleName
+        } else if(invocation.executable.isConstructor) {
+            adapter write separator
+            val declaringType = invocation.executable.declaringType?.declaration
+            val modifiers = declaringType?.getMetadata(KtMetadataKeys.KT_MODIFIERS) as Set<KtModifierKind>?
+            if(modifiers != null && KtModifierKind.INNER in modifiers) {
                 adapter writeIdentifier invocation.executable.type.simpleName
             } else {
-                adapter writeIdentifier invocation.executable.simpleName
+                visitCtTypeReference(invocation.executable.type)
             }
         }
 
-        visitTypeArgumentsList(invocation.actualTypeArguments, false)
-
-
+        if(!invocation.executable.isConstructor) {
+            visitTypeArgumentsList(invocation.actualTypeArguments, false)
+        }
+        
         visitArgumentList(invocation.arguments) // Paren handled in call
 
         exitCtExpression(invocation)
@@ -1398,10 +1404,9 @@ class DefaultKotlinPrettyPrinter(
 
     private fun shouldIgnoreIdentifier(invocation: CtInvocation<*>): Boolean {
         if(invocation.executable.simpleName == "invoke") {
-            val asOperator = invocation.getMetadata(KtMetadataKeys.INVOKE_AS_OPERATOR) as Boolean?
-            return asOperator == true
+            return invocation.getBooleanMetadata(KtMetadataKeys.INVOKE_AS_OPERATOR, false)
         }
-        return false
+        return invocation.executable?.isConstructor ?: false
     }
 
     private fun <T> visitInfixInvocation(ctInvocation: CtInvocation<T>) {
