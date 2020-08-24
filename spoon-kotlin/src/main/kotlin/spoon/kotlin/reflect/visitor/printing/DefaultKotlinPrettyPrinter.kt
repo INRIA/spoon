@@ -650,7 +650,11 @@ class DefaultKotlinPrettyPrinter(
         adapter write quote
         for(arg in args) {
             if(arg is CtLiteral<*> && arg.value is String) {
-                adapter write (arg.value as String)
+                if(multiLine) {
+                    adapter write (arg.value as String)
+                } else {
+                    adapter write LiteralToStringHelper.getStringLiteral(arg.value as String)
+                }
             } else {
                 adapter write "\${"
                 arg.accept(this)
