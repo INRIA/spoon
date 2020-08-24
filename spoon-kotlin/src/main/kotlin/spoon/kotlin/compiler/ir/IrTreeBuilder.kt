@@ -30,6 +30,7 @@ import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import org.jetbrains.kotlin.psi2ir.generators.AUGMENTED_ASSIGNMENTS
 import org.jetbrains.kotlin.psi2ir.generators.GeneratorContext
 import org.jetbrains.kotlin.psi2ir.generators.INCREMENT_DECREMENT_OPERATORS
+import org.jetbrains.kotlin.resolve.calls.tower.isSynthesized
 import org.jetbrains.kotlin.resolve.scopes.receivers.ExtensionReceiver
 import org.jetbrains.kotlin.resolve.scopes.receivers.ImplicitClassReceiver
 import org.jetbrains.kotlin.resolve.source.getPsi
@@ -795,10 +796,14 @@ internal class IrTreeBuilder(
         if(callDescriptor is PropertyGetterDescriptor) {
             return visitPropertyAccess(irCall, data)
         }
-        if(irCall.origin == IrStatementOrigin.EQ && irCall.symbol.descriptor.name.asString() == "set" &&
-            irCall.symbol.descriptor.isOperator) {
-            // Can't be in 'when' because of multiple criteria. Will block potential matches
-            return createSetOperator(irCall, data)
+        if((irCall.origin == IrStatementOrigin.EQ || irCall.origin in AUGMENTED_ASSIGNMENTS)
+            && irCall.symbol.descriptor.name.asString() == "set"
+            && irCall.symbol.descriptor.isOperator
+        ) {
+            // Can't be in 'when' below because of multiple criteria. Will block potential matches
+            val operator = if(irCall.origin == IrStatementOrigin.EQ) null else
+                OperatorHelper.originToBinaryOperatorKind(irCall.origin!!)
+            return createSetOperator(irCall, data, operator)
         }
         when(irCall.origin) {
             IrStatementOrigin.EXCLEXCL -> return createCheckNotNullAccess(irCall, data)
@@ -954,6 +959,15 @@ internal class IrTreeBuilder(
         if(descriptor is JavaMethodDescriptor) {
             val t = referenceBuilder.getDeclaringTypeReference(descriptor.containingDeclaration)
             return t?.let { createTypeAccess(it) }
+        }
+        if(descriptor is SimpleFunctionDescriptor) {
+            if(descriptor.isSynthesized
+                && descriptor.containingDeclaration is ClassDescriptor
+                && (descriptor.containingDeclaration as ClassDescriptor).kind == ClassKind.ENUM_CLASS
+            ) {
+                val t = referenceBuilder.getDeclaringTypeReference(descriptor.containingDeclaration)
+                return t?.let { createTypeAccess(it) }
+            }
         }
         return null
     }
@@ -1250,6 +1264,14 @@ internal class IrTreeBuilder(
                 return ctUnaryOp.definite()
             }
             in AUGMENTED_ASSIGNMENTS -> {
+                val call = block.statements.firstIsInstanceOrNull<IrCall>()
+                if(call != null) {
+                    val assignmentFromCall = specialInvocation(call, data).resultOrNull
+                    if(assignmentFromCall != null && assignmentFromCall is CtAssignment<*,*>) {
+                        return assignmentFromCall.definite()
+                    }
+                }
+
                 return createAugmentedAssignmentOperator(block, block.origin!!, data).definite()
             }
         }
@@ -1505,13 +1527,29 @@ internal class IrTreeBuilder(
         return access?.definite() ?: TransformResult.nothing()
     }
 
-    private fun createSetOperator(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtAssignment<Any,Any>> {
+    private fun createSetOperator(irCall: IrCall, data: ContextData, operator: KtBinaryOperatorKind?): DefiniteTransformResult<CtAssignment<Any,Any>> {
         val receiver = helper.getReceiver(irCall)!!.accept(this, data).resultUnsafe
         val ctArrayWrite = factory.Core().createArrayWrite<Any>()
-        val ctAssignment = factory.Core().createAssignment<Any, Any>()
+        val ctAssignment = if(operator == null) core.createAssignment<Any, Any>()
+            else core.createOperatorAssignment<Any,Any>()
         val args = ArrayList<CtElement>()
-        for(i in 0 until irCall.valueArgumentsCount) {
-            val ctArg = irCall.getValueArgument(i)!!.accept(this, data).resultUnsafe
+        val argCount = irCall.valueArgumentsCount
+        for(i in 0 until argCount) {
+            val irArg = irCall.getValueArgument(i)!!
+            val ctArg = if(i == argCount - 1
+                && irArg is IrCall
+                && irArg.origin in AUGMENTED_ASSIGNMENTS
+            ) {
+                // If LHS is a set-operator of opassign, RHS is also marked with opassign origin.
+                // Disregard RHS receiver, which is a get-operator of LSH
+                // a[x,y] += b
+                // > translates to >
+                // a[x,y] = a[x,y] + b
+                irArg.getValueArgument(0)!!.accept(this, data).resultUnsafe
+            } else {
+                irArg.accept(this, data).resultUnsafe
+            }
+
             if(i == irCall.valueArgumentsCount - 1) {
                 ctAssignment.setAssignment<CtAssignment<Any,Any>>(expressionOrWrappedInStatementExpression(ctArg))
             }
@@ -1521,6 +1559,10 @@ internal class IrTreeBuilder(
             }
         }
 
+        if(operator != null) {
+            (ctAssignment as CtOperatorAssignment<Any,Any>)
+                .setKind<CtOperatorAssignment<Any,Any>>(operator.toJavaAssignmentOperatorKind())
+        }
         ctArrayWrite.setTarget<CtArrayWrite<Any>>(expressionOrWrappedInStatementExpression(receiver))
         ctArrayWrite.setType<CtArrayWrite<*>>(referenceBuilder.getNewTypeReference(irCall.type))
         ctArrayWrite.putMetadata<CtArrayWrite<*>>(KtMetadataKeys.ARRAY_ACCESS_INDEX_ARGS, args)
