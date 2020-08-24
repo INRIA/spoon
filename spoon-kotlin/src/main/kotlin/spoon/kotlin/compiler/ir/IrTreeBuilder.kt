@@ -182,7 +182,16 @@ internal class IrTreeBuilder(
                     if(isObject) {
                         filterModifiers(ctDecl) { it != KtModifierKind.PROTECTED }
                     }
-                    type.addMethod(ctDecl)
+                    /*
+                    Can't use addMethod() because of signature clash inside Spoon.
+                    addMethod removes an existing method if it has the same signature as the method to be added.
+                    If S and U are type parameters, then the two examples below have the same signature in Spoon
+                    fun T.m(s: S)
+                    fun m(s: U)
+
+                    Hence, the former will be removed when adding the latter with addMethod()
+                     */
+                    type.addTypeMember(ctDecl)
                 }
                 is CtConstructor<*> -> {
                     if (type is CtClass<*>) {
