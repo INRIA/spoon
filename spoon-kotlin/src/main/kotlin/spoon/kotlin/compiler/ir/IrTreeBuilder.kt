@@ -409,6 +409,9 @@ internal class IrTreeBuilder(
             val receiver = expression.receiver?.accept(this, data)?.resultUnsafe
             if(receiver != null) {
                 (read as CtFieldRead<Any>).setTarget<CtFieldRead<Any>>(expressionOrWrappedInStatementExpression(receiver))
+            } else if(expression.symbol.owner.isStatic) {
+                (read as CtFieldRead<Any>).setTarget<CtFieldRead<Any>>(createTypeAccess(
+                    referenceBuilder.getDeclaringTypeReference(descriptor.containingDeclaration)!!))
             }
         } else {
             val isActualField = helper.isActualField(expression, data.file)
