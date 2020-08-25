@@ -674,11 +674,54 @@ internal class IrTreeBuilder(
         ctParam.addModifiersAsMetadata(modifierList)
         ctParam.setVarArgs<CtParameter<Any>>(KtModifierKind.VARARG in modifierList)
 
-        val defaultValue = declaration.defaultValue?.let { visitExpressionBody(it, data) }?.resultUnsafe
-        if(defaultValue != null) {
-            ctParam.putKtMetadata(KtMetadataKeys.PARAMETER_DEFAULT_VALUE,
-               KtMetadata.element(defaultValue))
-            defaultValue.setParent(ctParam)
+        val transformedDefaultValue = declaration.defaultValue?.let { visitExpressionBody(it, data) }
+        if(transformedDefaultValue != null) {
+            if(transformedDefaultValue.isComposite) {
+                /*
+                 Array as default argument in annotation class
+                 Ex.
+                 annotation class A(val x: IntArray = intArrayOf(1,2,3)
+
+                 Determine type of array and if it's primitive, then create an invocation to the corresponding
+                 "arrayOf" function.
+                 */
+
+                val array = (declaration.defaultValue as IrExpressionBody).expression as IrVararg
+                val ctInvocation = core.createInvocation<Any>()
+                val ctExecutable = core.createExecutableReference<Any>()
+                ctExecutable.setType<CtExecutableReference<Any>>(referenceBuilder.getNewTypeReference(array.type))
+                val primitiveArrayType = context.irBuiltIns.primitiveArrayForType[array.varargElementType]
+                if(primitiveArrayType != null) {
+                    // Array is primitive ==> Convert "IntArray" to "intArrayOf"
+                    val name = primitiveArrayType.descriptor.name.asString()
+                    val sb = StringBuilder(name.length + 2)
+                    sb.append(name.first().toLowerCase())
+                    sb.append(name.substring(1))
+                    sb.append("Of")
+                    ctExecutable.setSimpleName<CtExecutableReference<*>>(sb.toString())
+                } else { // Array is not primitive ==> Normal "arrayOf" call
+                    ctExecutable.setSimpleName<CtExecutableReference<*>>("arrayOf")
+                    ctExecutable.setActualTypeArguments<CtExecutableReference<*>>(listOf(
+                        referenceBuilder.getNewTypeReference<Any>(array.varargElementType))
+                    )
+                }
+                @Suppress("UNCHECKED_CAST")
+                val args = (transformedDefaultValue as CompositeTransformResult<CtElement>).compositeResultSafe
+                ctExecutable.setParameters<CtExecutableReference<Any>>(args.map {
+                    referenceBuilder.getNewTypeReference<Any>(array.varargElementType)
+                })
+                ctInvocation.setArguments<CtInvocation<Any>>(args.map(this::expressionOrWrappedInStatementExpression))
+                ctInvocation.setExecutable<CtInvocation<Any>>(ctExecutable)
+                ctInvocation.setParent(ctParam)
+                ctParam.putKtMetadata(KtMetadataKeys.PARAMETER_DEFAULT_VALUE, KtMetadata.element(ctInvocation))
+            }
+            else {
+                transformedDefaultValue.resultOrNull?.let {
+                    ctParam.putKtMetadata(KtMetadataKeys.PARAMETER_DEFAULT_VALUE,
+                        KtMetadata.element(it))
+                    it.setParent<CtElement>(ctParam)
+                }
+            }
         }
 
         // Type
@@ -1659,6 +1702,8 @@ internal class IrTreeBuilder(
                 result.add(expressionOrWrappedInStatementExpression(arg.accept(this, data).resultUnsafe))
             }
         }
+
+
         return CompositeTransformResult(result)
     }
 
