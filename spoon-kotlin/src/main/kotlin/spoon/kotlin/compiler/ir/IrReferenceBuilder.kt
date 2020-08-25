@@ -17,20 +17,45 @@ import org.jetbrains.kotlin.types.typeUtil.representativeUpperBound
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.reflect.reference.*
 
+typealias TypeArgResult = Pair<List<CtTypeReference<*>>, List<CtTypeReference<*>>>
+
 internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
 
     private val factory get() = irTreeBuilder.factory
     private val helper get() = irTreeBuilder.helper
     private fun Name.escaped() = if(this.isSpecial) this.asString() else helper.escapedIdentifier(this)
 
-    private fun <T> getNewSimpleTypeReference(irType: IrSimpleType, resolveGenerics: Boolean): CtTypeReference<T> {
-        if(irType.abbreviation != null) {
-            return getNewAbbreviatedTypeReference(irType.abbreviation!!, resolveGenerics)
+    private fun <T> getNewSimpleTypeReference(irType: IrSimpleType, resolveGenerics: Boolean): CtTypeReference<T> =
+        getNewTypeReference(irType.toKotlinType(), resolveGenerics)
+
+    /**
+     * Returns type references of all type arguments. If the type is an inner class with a wrapping (declaring) class that also
+     * has type parameters, those parameters are returned as carry so that they can be added to the declaring type.
+     * (They are not visible from the descriptor returned from ContainingDeclaration)
+     * Ex.
+     * Example<A,B,C> {
+     *     inner class Inner<D> {}
+     * }
+     * Inner will internally have type parameters <D,A,B,C>.
+     * Example.Inner<D,A,B,C> is not correct, neither is
+     * Example.Inner<D>
+     * "Example" must either be removed or supplied with its actual type arguments:
+     * Inner<D>
+     * Example<A,B,C>.Inner<D>
+     * We go for the latter.
+     */
+    private fun visitTypeArguments(kotlinType: KotlinType): TypeArgResult {
+        var capturedStart = kotlinType.constructor.parameters.indexOfFirst { it.isCapturedFromOuterDeclaration }
+        if(capturedStart == -1) capturedStart = kotlinType.arguments.size
+        val typeArgs = ArrayList<CtTypeReference<*>>()
+        val carry = ArrayList<CtTypeReference<*>>()
+        for(i in 0 until capturedStart) {
+            typeArgs.add(visitTypeProjection(kotlinType.arguments[i], false))
         }
-        val ctRef = typeRefFromDescriptor(irType.classifier.descriptor, resolveGenerics)
-        ctRef.setActualTypeArguments<CtTypeReference<*>>(irType.arguments.map { visitTypeArgument(it) })
-        ctRef.putMetadata<CtReference>(KtMetadataKeys.TYPE_REF_NULLABLE, irType.hasQuestionMark)
-        return ctRef as CtTypeReference<T>
+        for(i in capturedStart until kotlinType.arguments.size) {
+            carry.add(visitTypeProjection(kotlinType.arguments[i], false))
+        }
+        return typeArgs to carry
     }
 
     /**
@@ -58,7 +83,14 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         return ctRef
     }
 
-    fun <T> getNewTypeReference(irType: IrType): CtTypeReference<T> = getNewTypeReference(irType, false)
+    private fun <T> CtTypeReference<T>.addCarry(carry: List<CtTypeReference<*>>): CtTypeReference<T> {
+        if(carry.isNotEmpty() && this.declaringType != null) {
+            this.declaringType.setActualTypeArguments<CtTypeReference<*>>(carry)
+        }
+        return this
+    }
+
+    fun <T> getNewTypeReference(irType: IrType): CtTypeReference<T> = getNewTypeReference<T>(irType, false)
 
     private fun <T> getNewTypeReference(irType: IrType, resolveGenerics: Boolean): CtTypeReference<T> = when(irType) {
         is IrSimpleType -> getNewSimpleTypeReference(irType, resolveGenerics)
@@ -79,19 +111,20 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
             is AbbreviatedType -> typeRefFromDescriptor(kotlinType.abbreviation.constructor.declarationDescriptor!!, resolveGenerics)
             is WrappedType -> typeRefFromDescriptor(kotlinType.unwrap().constructor.declarationDescriptor!!, resolveGenerics)
             is SimpleType -> typeRefFromDescriptor(kotlinType.constructor.declarationDescriptor!!, resolveGenerics)
-            is FlexibleType -> getNewTypeReference(kotlinType.upperBound)
+            is FlexibleType -> getNewTypeReference(kotlinType.lowerBound)
         } as CtTypeReference<T>
         ctRef.putKtMetadata(KtMetadataKeys.TYPE_REF_NULLABLE, KtMetadata.bool(kotlinType.isMarkedNullable))
-        val typeArgs = kotlinType.arguments.map { visitTypeProjection(it, resolveGenerics) }
+
+        val (typeArgs, carry) = visitTypeArguments(if(kotlinType is AbbreviatedType) kotlinType.abbreviation else kotlinType)
         ctRef.setActualTypeArguments<CtTypeReference<*>>(typeArgs)
-        return ctRef
+        return ctRef.addCarry(carry)
     }
 
     private fun visitTypeProjection(typeProjection: TypeProjection, resolveGenerics: Boolean): CtTypeReference<*> {
         if(typeProjection.isStarProjection) {
             return factory.Core().createWildcardReference()
         }
-        return getNewTypeReference<Any>(typeProjection.type)
+        return getNewTypeReference<Any>(typeProjection.type, resolveGenerics)
     }
 
     private fun typeRefFromDescriptor(descriptor: ClassifierDescriptor, resolveGenerics: Boolean) = when(descriptor) {
@@ -242,7 +275,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
             // Using getArguments() includes receiver parameter
             for(i in 0 until irCall.valueArgumentsCount) {
                 val arg = irCall.getValueArgument(i) ?: continue
-                args.add(getNewTypeReference<Any>(arg.type, true) )
+                args.add(getNewTypeReference<Any>(arg.type, true))
             }
             executableReference.setParameters<CtExecutableReference<T>>(args)
         }
