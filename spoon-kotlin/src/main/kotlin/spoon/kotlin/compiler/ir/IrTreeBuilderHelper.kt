@@ -76,7 +76,7 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
             }.toSet())
         }
         type.setFormalCtTypeParameters<CtType<*>>(irClass.typeParameters.map {
-            irTreeBuilder.visitTypeParameter(it, context).resultUnsafe
+            irTreeBuilder.visitTypeParameter(it, context).resultSafe
         })
         return type
     }
