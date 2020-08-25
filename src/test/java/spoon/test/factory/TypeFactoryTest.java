@@ -24,6 +24,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.test.factory.testclasses3.Cooking;
 import spoon.test.factory.testclasses3.Prepare;
@@ -62,6 +63,9 @@ public class TypeFactoryTest {
 		CtType s = new TypeFactory().get(String.class);
 		assertEquals("String", s.getSimpleName());
 		assertEquals("java.lang.String", s.getQualifiedName());
+		for (CtTypeReference testBar : s.getSuperInterfaces()) {
+			System.out.println(testBar.toString());
+		}
 		assertEquals(3, s.getSuperInterfaces().size());
 		assertEquals(2, s.getMethodsByName("toLowerCase").size());
 	}
