@@ -1321,7 +1321,7 @@ class DefaultKotlinPrettyPrinter(
         }
 
         if(typeRef.declaringType != null) {
-            visitCtTypeReference(typeRef.declaringType, false)
+            visitCtTypeReference(typeRef.declaringType, true)
             adapter write '.'
         } else if (typeRef.`package` != null && !typeRef.`package`.isUnnamedPackage) {
             visitCtPackageReference(typeRef.`package`)
