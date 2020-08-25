@@ -88,6 +88,9 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     fun getReceiver(irCall: IrFunctionAccessExpression) = irCall.extensionReceiver ?: irCall.dispatchReceiver
 
     fun getBaseOfConst(constExpression: IrConst<Number>, file: IrFile): LiteralBase {
+        if(constExpression.startOffset < 0 || constExpression.endOffset <= constExpression.startOffset) {
+            return LiteralBase.DECIMAL
+        }
         val ktFile = getKtFile(file)
         val text = ktFile.text.substring(constExpression.startOffset,constExpression.endOffset)
         if(text.startsWith("0x", ignoreCase = true)) return LiteralBase.HEXADECIMAL
