@@ -91,8 +91,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 							} else {
 								lastSlash += 1;
 							}
-							//TODO the module name parsed by JDK compiler is in `this.modNames`
-							compilationUnit.module = CharOperation.subarray(modulePath, lastSlash, modulePath.length);
+							compilationUnit.module = this.module.name();
 							pathToModName.put(String.valueOf(modulePath), compilationUnit.module);
 						}
 					} else {
