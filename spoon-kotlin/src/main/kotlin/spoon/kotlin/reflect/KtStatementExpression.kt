@@ -3,9 +3,7 @@ package spoon.kotlin.reflect
 import spoon.reflect.code.CtExpression
 import spoon.reflect.code.CtStatement
 import spoon.reflect.code.CtStatementList
-import spoon.reflect.declaration.CtTypedElement
-import spoon.reflect.path.CtRole
-import spoon.reflect.reference.CtTypeReference
+import spoon.reflect.declaration.CtElement
 import spoon.reflect.visitor.CtVisitor
 import spoon.support.reflect.code.CtExpressionImpl
 import spoon.support.reflect.code.CtStatementImpl
@@ -47,5 +45,9 @@ class KtStatementExpressionImpl<T>(override var statement: CtStatement) : CtExpr
 
     override fun getMetadata(key: String): Any? {
         return statement.getMetadata(key)
+    }
+
+    override fun <E : CtElement?> putMetadata(key: String, `val`: Any?): E {
+        return statement.putMetadata<E>(key, `val`)
     }
 }
