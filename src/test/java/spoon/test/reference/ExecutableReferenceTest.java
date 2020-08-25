@@ -137,6 +137,9 @@ public class ExecutableReferenceTest {
 
 		final CtClass<Bar> bar = launcher.getFactory().Class().get(Bar.class);
 		final List<CtExecutableReference<?>> barExecutables = bar.getAllExecutables().stream().collect(Collectors.toList());
+		for (CtExecutableReference testBar : barExecutables) {
+			System.out.println(testBar.toString());
+		}
 		assertEquals(12 /* object */ + 1 /* constructor */, barExecutables.size());
 
 		final CtInterface<Kuu> kuu = launcher.getFactory().Interface().get(Kuu.class);
