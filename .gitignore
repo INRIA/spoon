@@ -23,6 +23,9 @@ maven-eclipse.xml
 !.idea/codeStyleSettings.xml
 *.iml
 
+# VSCode
+.vscode
+
 # Spoon
 spooned-classes/
 spooned/
@@ -31,3 +34,6 @@ doc/_jekyll/_site/
 
 # Nodejs
 node_modules/
+
+# Gradle
+.gradle
