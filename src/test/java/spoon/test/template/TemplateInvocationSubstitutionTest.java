@@ -18,6 +18,7 @@ package spoon.test.template;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -27,6 +28,10 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.FileSystemFile;
+import spoon.support.template.Parameters;
+import spoon.support.template.UndefinedParameterException;
+import spoon.template.BlockTemplate;
+import spoon.template.Template;
 import spoon.test.template.testclasses.InvocationSubstitutionByExpressionTemplate;
 import spoon.test.template.testclasses.InvocationSubstitutionByStatementTemplate;
 import spoon.test.template.testclasses.SubstitutionByExpressionTemplate;
@@ -78,7 +83,17 @@ public class TemplateInvocationSubstitutionTest {
 		Factory factory = spoon.getFactory();
 
 		CtClass<?> resultKlass = factory.Class().create("Result");
-		CtBlock<?> result = new SubstitutionByExpressionTemplate(factory.createLiteral("abc")).apply(resultKlass);
+		BlockTemplate template = new SubstitutionByExpressionTemplate(factory.createLiteral("abc"));
+		CtBlock<?> result = template.apply(resultKlass);
 		assertEquals("java.lang.System.out.println(\"abc\".substring(1))", result.getStatement(0).toString());
+
+		// contract: the template code sends UndefinedParameterException
+		try {
+			Parameters.getValue(template, "oops", 3);
+			fail();
+		} catch (UndefinedParameterException expected) {
+			// everything OK
+		}
+
 	}
 }
