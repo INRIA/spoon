@@ -565,6 +565,9 @@ public class TypeFactory extends SubFactory {
 				} catch (Throwable e) {
 					throw new SpoonClassNotFoundException("cannot create shadow class: " + cl.getName(), e);
 				}
+				if (newShadowClass == null) {
+					return null;
+				}
 				newShadowClass.setFactory(factory);
 				newShadowClass.accept(new CtScanner() {
 					@Override

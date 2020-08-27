@@ -91,7 +91,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 							} else {
 								lastSlash += 1;
 							}
-							
+
 							if (this.module == null) {
 								compilationUnit.module = CharOperation.subarray(modulePath, lastSlash, modulePath.length);
 							} else {
