@@ -1735,6 +1735,9 @@ internal class IrTreeBuilder(
         if(expression.endOffset == expression.startOffset ||
                 getSourceHelper(data).sourceTextIs(expression) { !it.startsWith("return")})
             ctReturn.setImplicit<CtReturn<*>>(true)
+
+        ctReturn.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE,
+            KtMetadata.element(referenceBuilder.getNewTypeReference<Any>(expression.type)))
         return ctReturn.definite()
     }
 
