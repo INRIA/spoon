@@ -378,11 +378,11 @@ public class PositionTest {
 
 		BodyHolderSourcePosition position = (BodyHolderSourcePosition) foo.getPosition();
 
-		assertEquals(3, position.getLine());
-		assertEquals(31, position.getEndLine());
+		assertEquals(5, position.getLine());
+		assertEquals(37, position.getEndLine());
 
-		assertEquals(42, position.getSourceStart());
-		assertEquals(411, position.getSourceEnd());
+		assertEquals(66, position.getSourceStart());
+		assertEquals(492, position.getSourceEnd());
 
 		assertEquals("FooGeneric", contentAtPosition(classContent, position.getNameStart(), position.getNameEnd()));
 		assertEquals("public", contentAtPosition(classContent, position.getModifierSourceStart(), position.getModifierSourceEnd()));
@@ -390,11 +390,11 @@ public class PositionTest {
 
 		DeclarationSourcePosition position1 = (DeclarationSourcePosition) foo.getField("variable").getPosition();
 
-		assertEquals(5, position1.getLine());
-		assertEquals(5, position1.getEndLine());
+		assertEquals(7, position1.getLine());
+		assertEquals(7, position1.getEndLine());
 
-		assertEquals(88, position1.getSourceStart());
-		assertEquals(118, position1.getSourceEnd());
+		assertEquals(112, position1.getSourceStart());
+		assertEquals(142, position1.getSourceEnd());
 
 		assertEquals("public final T variable = null;", contentAtPosition(classContent, position1));
 		assertEquals("variable", contentAtPosition(classContent, position1.getNameStart(), position1.getNameEnd()));
@@ -411,6 +411,17 @@ public class PositionTest {
 
 		// /!\ the annotations can be between two modifiers
 		assertEquals("public @Deprecated static", contentAtPosition(classContent, position2.getModifierSourceStart(), position2.getModifierSourceEnd()));
+
+		CtMethod<?> method2 = foo.getMethodsByName("n").get(0);
+		BodyHolderSourcePosition position3 = (BodyHolderSourcePosition) method2
+				.getPosition();
+
+		assertEquals("protected static<S> S n(int parm2) {\n"
+				+ "\t\treturn null;\n"
+				+ "\t}", contentAtPosition(classContent, position3));
+		assertEquals("n", contentAtPosition(classContent, position3.getNameStart(), position3.getNameEnd()));
+
+		assertEquals("protected static", contentAtPosition(classContent, position3.getModifierSourceStart(), position3.getModifierSourceEnd()));
 	}
 
 	@Test
