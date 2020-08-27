@@ -85,6 +85,16 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
         return factory.Module().unnamedModule
     }
 
+    fun getOrCreateTopLvlClass(pkg: CtPackage): CtType<Any> {
+        return pkg.getType<CtType<Any>>(irTreeBuilder.toplvlClassName) ?:
+            irTreeBuilder.core.createClass<Any>().also {
+                    topLvlClass ->
+                topLvlClass.setImplicit<CtClass<*>>(true)
+                topLvlClass.setSimpleName<CtClass<*>>(irTreeBuilder.toplvlClassName)
+                pkg.addType<CtPackage>(topLvlClass)
+            }
+    }
+
     fun getReceiver(irCall: IrFunctionAccessExpression) = irCall.extensionReceiver ?: irCall.dispatchReceiver
 
     fun getBaseOfConst(constExpression: IrConst<Number>, file: IrFile): LiteralBase {

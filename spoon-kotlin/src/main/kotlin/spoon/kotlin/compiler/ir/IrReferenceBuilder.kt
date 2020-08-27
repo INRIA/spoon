@@ -155,11 +155,16 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         else -> TODO()
     }
 
-    private fun getDeclaringReference(descriptor: DeclarationDescriptor): CtReference {
+    fun getDeclaringReference(descriptor: DeclarationDescriptor): CtReference? {
         return when(descriptor) {
-            is ClassDescriptor -> getDeclaringTypeReference(descriptor)
+            is ClassDescriptor -> if(descriptor.visibility.name == "local") {
+                null
+            } else {
+                getDeclaringTypeReference(descriptor)
+            }
             is PackageFragmentDescriptor -> getPackageReference(descriptor.fqName)
             is FunctionDescriptor -> getDeclaringReference(descriptor.containingDeclaration)
+            is PropertyDescriptor -> getDeclaringReference(descriptor.containingDeclaration)
             is TypeAliasDescriptor -> getDeclaringReference(descriptor.containingDeclaration)
             else -> TODO()
         }
@@ -175,7 +180,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         return ctRef
     }
 
-    private fun <T> CtTypeReference<T>.setPackageOrDeclaringType(declaring: CtReference) {
+    private fun <T> CtTypeReference<T>.setPackageOrDeclaringType(declaring: CtReference?) {
         when(declaring) {
             is CtPackageReference -> setPackage<CtTypeReference<T>>(declaring)
             is CtTypeReference<*> -> setDeclaringType<CtTypeReference<T>>(declaring)

@@ -118,15 +118,8 @@ internal class IrTreeBuilder(
                     compilationUnit.addDeclaredType(ctDecl)
                 }
                 is CtTypeMember -> {
-                    val topLvl = pkg.getType<CtType<Any>>(toplvlClassName) ?:
-                    (core.createClass<Any>().also {
-                        topLvlClass ->
-                        topLvlClass.setImplicit<CtClass<*>>(true)
-                        topLvlClass.setSimpleName<CtClass<*>>(toplvlClassName)
-                        pkg.addType<CtPackage>(topLvlClass)
-                        ctDecl.putKtMetadata<CtTypeMember>(KtMetadataKeys.TOP_LEVEL_DECLARING_CU, KtMetadata.element(compilationUnit))
-                    })
-                    topLvl.addTypeMember<CtClass<Any>>(ctDecl)
+                    val topLvl = helper.getOrCreateTopLvlClass(pkg)
+                    topLvl.addTypeMember<CtType<Any>>(ctDecl)
                 }
             }
         }
@@ -228,7 +221,7 @@ internal class IrTreeBuilder(
         return target.definite()
     }
 
-    override fun visitClassReference(expression: IrClassReference, data: ContextData): DefiniteTransformResult<CtElement> {
+    override fun visitClassReference(expression: IrClassReference, data: ContextData): DefiniteTransformResult<CtTypeAccess<*>> {
         val access = createTypeAccess(expression.classType)
         access.putKtMetadata(KtMetadataKeys.IS_CLASS_REFERENCE, KtMetadata.bool(true))
         return access.definite()
@@ -626,14 +619,25 @@ internal class IrTreeBuilder(
             referenceBuilder.getNewExecutableReference<Any>(expression)
         )
         val receiver = expression.extensionReceiver ?: expression.dispatchReceiver
-        val target = receiver?.accept(this, data)?.resultUnsafe ?:
-            factory.Code().createTypeAccess(
-                referenceBuilder.getDeclaringTypeReference(
-                    expression.symbol.descriptor.containingDeclaration),
-                false)
+        var target = receiver?.accept(this, data)?.resultUnsafe
+        if(target == null) {
+            val containingDeclaration = referenceBuilder.getDeclaringReference(
+                expression.symbol.descriptor.containingDeclaration)
+            if(containingDeclaration is CtPackageReference) {
+                val pkg = factory.Package().getOrCreate(containingDeclaration.qualifiedName)
+                val topLvl = helper.getOrCreateTopLvlClass(pkg)
+                target = factory.Code().createTypeAccess(topLvl.reference)
+            } else if(containingDeclaration is CtTypeReference<*>) {
+                target = factory.Code().createTypeAccess(containingDeclaration)
+            }
+        }
+        if(target != null) {
+            ctExpr.setTarget<CtExecutableReferenceExpression<Any,CtExpression<*>>>(
+                expressionOrWrappedInStatementExpression(target))
+        }
 
-        ctExpr.setTarget<CtExecutableReferenceExpression<Any,CtExpression<*>>>(
-            expressionOrWrappedInStatementExpression(target))
+        ctExpr.setType<CtExecutableReferenceExpression<Any, CtExpression<*>>>(
+            referenceBuilder.getNewTypeReference(expression.type))
         return ctExpr.definite()
     }
 
