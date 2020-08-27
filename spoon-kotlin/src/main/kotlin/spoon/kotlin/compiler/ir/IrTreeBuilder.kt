@@ -51,7 +51,7 @@ import spoon.support.reflect.cu.position.SourcePositionImpl
 
 internal class IrTreeBuilder(
     val factory: Factory,
-    private val context: GeneratorContext,
+    val context: GeneratorContext,
     private val detectImplicitTypes: Boolean = true,
     private val detectInfix: Boolean = true
 ) : IrElementVisitor<TransformResult<CtElement>, ContextData> {
@@ -644,25 +644,30 @@ internal class IrTreeBuilder(
 
     fun visitAnnotation(constructorCall: IrConstructorCall, data: ContextData): DefiniteTransformResult<CtAnnotation<*>> {
         val annotation = factory.Code().createAnnotation(referenceBuilder.getNewTypeReference(constructorCall.type))
-        if(constructorCall.valueArgumentsCount > 0) {
-            val m = mutableMapOf<String, CtExpression<*>>()
-            var n = 0
-            for(i in 0 until constructorCall.valueArgumentsCount) {
-                val arg = constructorCall.getValueArgument(i)!!
-                if(arg is IrVararg) {
-                    val vs = visitVararg(arg, data).compositeResultSafe
-                    for(v in vs) {
-                        m[n.toString()] = v
-                        n++
-                    }
-                } else {
-                    val v = expressionOrWrappedInStatementExpression(arg.accept(this, data).resultUnsafe)
-                    m[n.toString()] = v
-                    n++
+        val arguments = constructorCall.getArgumentsWithIr()
+        val argumentNames = getSourceHelper(data).getNamedArgumentsOfAnnotation(constructorCall.startOffset, constructorCall.endOffset)
+        val m = mutableMapOf<String, CtExpression<*>>()
+        var n = 0
+        for((param, arg) in arguments) {
+            val argToAdd = if(arg is IrVararg) {
+                val elements = visitVararg(arg, data)
+                val arrayOfInvocation = helper.varargToArrayOf(arg, elements)
+                if(param.isVararg) {
+                    arrayOfInvocation.putKtMetadata(KtMetadataKeys.SPREAD, KtMetadata.bool(true))
                 }
+                arrayOfInvocation
+
+            } else {
+                expressionOrWrappedInStatementExpression(arg.accept(this, data).resultUnsafe)
             }
-            annotation.setValues<CtAnnotation<Annotation>>(m)
+            if(argumentNames[n] != null) {
+                argToAdd.putKtMetadata(KtMetadataKeys.NAMED_ARGUMENT, KtMetadata.string(argumentNames[n]!!))
+            }
+            m[n.toString()] = argToAdd
+            n++
         }
+        annotation.setValues<CtAnnotation<Annotation>>(m)
+        
         return annotation.definite()
     }
 
@@ -692,34 +697,10 @@ internal class IrTreeBuilder(
                  "arrayOf" function.
                  */
 
-                val array = (declaration.defaultValue as IrExpressionBody).expression as IrVararg
-                val ctInvocation = core.createInvocation<Any>()
-                val ctExecutable = core.createExecutableReference<Any>()
-                ctExecutable.setType<CtExecutableReference<Any>>(referenceBuilder.getNewTypeReference(array.type))
-                val primitiveArrayType = context.irBuiltIns.primitiveArrayForType[array.varargElementType]
-                if(primitiveArrayType != null) {
-                    // Array is primitive ==> Convert "IntArray" to "intArrayOf"
-                    val name = primitiveArrayType.descriptor.name.asString()
-                    val sb = StringBuilder(name.length + 2)
-                    sb.append(name.first().toLowerCase())
-                    sb.append(name.substring(1))
-                    sb.append("Of")
-                    ctExecutable.setSimpleName<CtExecutableReference<*>>(sb.toString())
-                } else { // Array is not primitive ==> Normal "arrayOf" call
-                    ctExecutable.setSimpleName<CtExecutableReference<*>>("arrayOf")
-                    ctExecutable.setActualTypeArguments<CtExecutableReference<*>>(listOf(
-                        referenceBuilder.getNewTypeReference<Any>(array.varargElementType))
-                    )
-                }
-                @Suppress("UNCHECKED_CAST")
-                val args = (transformedDefaultValue as CompositeTransformResult<CtElement>).compositeResultSafe
-                ctExecutable.setParameters<CtExecutableReference<Any>>(args.map {
-                    referenceBuilder.getNewTypeReference<Any>(array.varargElementType)
-                })
-                ctInvocation.setArguments<CtInvocation<Any>>(args.map(this::expressionOrWrappedInStatementExpression))
-                ctInvocation.setExecutable<CtInvocation<Any>>(ctExecutable)
-                ctInvocation.setParent(ctParam)
-                ctParam.putKtMetadata(KtMetadataKeys.PARAMETER_DEFAULT_VALUE, KtMetadata.element(ctInvocation))
+                val varargArray = (declaration.defaultValue as IrExpressionBody).expression as IrVararg
+                val arrayOfInvocation = helper.varargToArrayOf(varargArray, transformedDefaultValue as CompositeTransformResult<CtElement>)
+                arrayOfInvocation.setParent(ctParam)
+                ctParam.putKtMetadata(KtMetadataKeys.PARAMETER_DEFAULT_VALUE, KtMetadata.element(arrayOfInvocation))
             }
             else {
                 transformedDefaultValue.resultOrNull?.let {
@@ -1854,7 +1835,7 @@ internal class IrTreeBuilder(
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun expressionOrWrappedInStatementExpression(e: CtElement): CtExpression<Any> {
+    fun expressionOrWrappedInStatementExpression(e: CtElement): CtExpression<Any> {
         val statementExpression: KtStatementExpression<*>
         when (e) {
             is CtExpression<*> -> return e as CtExpression<Any>

@@ -23,11 +23,10 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassOrAny
 import org.jetbrains.kotlin.resolve.source.getPsi
 import spoon.kotlin.ktMetadata.IdentifierClashHelper
 import spoon.kotlin.ktMetadata.KtMetadataKeys
+import spoon.reflect.code.CtInvocation
 import spoon.reflect.code.LiteralBase
-import spoon.reflect.declaration.CtAnnotationType
-import spoon.reflect.declaration.CtElement
-import spoon.reflect.declaration.CtModule
-import spoon.reflect.declaration.CtType
+import spoon.reflect.declaration.*
+import spoon.reflect.reference.CtExecutableReference
 
 internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     private val factory get() = irTreeBuilder.factory
@@ -314,5 +313,34 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
             return irStatement.initializer!!
         }
         return irStatement
+    }
+
+    fun varargToArrayOf(irVararg: IrVararg, compositeTransformResult: CompositeTransformResult<CtElement>): CtInvocation<Any> {
+        val ctInvocation = irTreeBuilder.core.createInvocation<Any>()
+        val ctExecutable = irTreeBuilder.core.createExecutableReference<Any>()
+        ctExecutable.setType<CtExecutableReference<Any>>(referenceBuilder.getNewTypeReference(irVararg.type))
+        val primitiveArrayType = irTreeBuilder.context.irBuiltIns.primitiveArrayForType[irVararg.varargElementType]
+        if(primitiveArrayType != null) {
+            // Array is primitive ==> Convert "IntArray" to "intArrayOf"
+            val name = primitiveArrayType.descriptor.name.asString()
+            val sb = StringBuilder(name.length + 2)
+            sb.append(name.first().toLowerCase())
+            sb.append(name.substring(1))
+            sb.append("Of")
+            ctExecutable.setSimpleName<CtExecutableReference<*>>(sb.toString())
+        } else { // Array is not primitive ==> Normal "arrayOf" call
+            ctExecutable.setSimpleName<CtExecutableReference<*>>("arrayOf")
+            ctExecutable.setActualTypeArguments<CtExecutableReference<*>>(listOf(
+                referenceBuilder.getNewTypeReference<Any>(irVararg.varargElementType))
+            )
+        }
+        @Suppress("UNCHECKED_CAST")
+        val args = compositeTransformResult.compositeResultSafe
+        ctExecutable.setParameters<CtExecutableReference<Any>>(args.map {
+            referenceBuilder.getNewTypeReference<Any>(irVararg.varargElementType)
+        })
+        ctInvocation.setArguments<CtInvocation<Any>>(args.map(irTreeBuilder::expressionOrWrappedInStatementExpression))
+        ctInvocation.setExecutable<CtInvocation<Any>>(ctExecutable)
+        return ctInvocation
     }
 }

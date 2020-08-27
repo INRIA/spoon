@@ -787,9 +787,7 @@ class DefaultKotlinPrettyPrinter(
         adapter write '@'
         visitCtTypeReference(ctAnnotation.annotationType, false)
         if(ctAnnotation.values.isNotEmpty()) {
-            adapter write LEFT_ROUND
-            visitCommaSeparatedList(ctAnnotation.values.values.toList())
-            adapter write RIGHT_ROUND
+            visitArgumentList(ctAnnotation.values.values.toList())
         }
     }
 

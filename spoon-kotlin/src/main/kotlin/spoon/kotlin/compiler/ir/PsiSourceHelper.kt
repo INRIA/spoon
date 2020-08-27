@@ -168,6 +168,12 @@ class PsiSourceHelper {
     fun getNamedArgumentIfAny(irExpr: IrExpression): String? {
         return getValueArgumentPsi(irExpr)?.getArgumentName()?.text
     }
+
+    fun getNamedArgumentsOfAnnotation(startOffset: Int, endOffset: Int): List<String?> {
+        val psi = getSourceElements(startOffset, endOffset).firstIsInstance<KtAnnotationEntry>()
+        val args = psi.valueArguments
+        return args.map { it.getArgumentName()?.asName?.asString() }
+    }
 }
 
 /*
