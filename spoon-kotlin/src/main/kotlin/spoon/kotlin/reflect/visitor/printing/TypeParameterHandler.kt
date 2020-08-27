@@ -18,20 +18,38 @@ import spoon.reflect.reference.CtTypeReference
  * Any type parameter with more than one superclass will have its superclasses in the where clause
  * Those with 1 superclass will have it in the first list unless #allBoundsInWhereClause is set.
  */
-internal class TypeParameterHandler(
+
+internal abstract class TypeParameterHandler {
+    abstract fun generateTypeParamList(): List<String>
+    abstract fun generateTypeParamListString(): String
+    abstract fun generateWhereClauseString(): String
+    abstract fun generateWhereClause(): List<String>
+    abstract val isEmpty: Boolean
+    companion object {
+        fun create(ctFormalTypeDeclarer: CtFormalTypeDeclarer?,
+                   prettyPrinter: DefaultKotlinPrettyPrinter,
+                   allBoundsInWhereClause: Boolean = false
+        ): TypeParameterHandler {
+            if(ctFormalTypeDeclarer == null) return EmptyTypeParamHandler
+            return TypeParameterHandlerImpl(ctFormalTypeDeclarer, prettyPrinter, allBoundsInWhereClause)
+        }
+    }
+}
+
+internal class TypeParameterHandlerImpl(
     private val entity: CtFormalTypeDeclarer,
     private val prettyPrinter: DefaultKotlinPrettyPrinter,
     allBoundsInWhereClause: Boolean = false
-) {
+) : TypeParameterHandler() {
     private val printBoundInWhereClause: List<Boolean> = if(allBoundsInWhereClause) {
         entity.formalCtTypeParameters.map { it.superclass != null }
     } else {
         entity.formalCtTypeParameters.map { it.superclass is CtIntersectionTypeReference<*> }
     }
     private val hasWhereClause = printBoundInWhereClause.any { it }
-    val isEmpty get() = entity.formalCtTypeParameters.isEmpty()
+    override val isEmpty get() = entity.formalCtTypeParameters.isEmpty()
 
-    fun generateTypeParamList(): List<String> {
+    override fun generateTypeParamList(): List<String> {
         if(entity.formalCtTypeParameters.isEmpty()) return emptyList()
         val paramList = ArrayList<String>()
 
@@ -53,18 +71,18 @@ internal class TypeParameterHandler(
         return paramList
     }
 
-    fun generateTypeParamListString(): String {
+    override fun generateTypeParamListString(): String {
         if(entity.formalCtTypeParameters.isEmpty()) return ""
         return generateTypeParamList().joinToString(prefix = " <", separator = ", ", postfix = ">")
     }
 
 
-    fun generateWhereClauseString(): String {
+    override fun generateWhereClauseString(): String {
         if(!hasWhereClause || entity.formalCtTypeParameters.isEmpty()) return ""
-        return generateWhereClause().joinToString(prefix = " <", separator = ", ", postfix = ">")
+        return generateWhereClause().joinToString(prefix = " where ", separator = ", ")
     }
 
-    fun generateWhereClause(): List<String> {
+    override fun generateWhereClause(): List<String> {
         if(!hasWhereClause || entity.formalCtTypeParameters.isEmpty()) return emptyList()
 
         val params = ArrayList<String>()
@@ -84,4 +102,15 @@ internal class TypeParameterHandler(
             paramList.add("$name: ${prettyPrinter.printElement(boundRef)}")
         }
     }
+}
+
+internal object EmptyTypeParamHandler : TypeParameterHandler() {
+    override val isEmpty: Boolean = true
+    override fun generateTypeParamList(): List<String> = emptyList()
+
+    override fun generateTypeParamListString(): String = ""
+
+    override fun generateWhereClauseString(): String = ""
+
+    override fun generateWhereClause(): List<String> = emptyList()
 }

@@ -323,7 +323,7 @@ class DefaultKotlinPrettyPrinter(
         adapter.ensureNEmptyLines(1)
 
         adapter writeModifiers getModifiersMetadata(ctClass) and "typealias " and ctClass.simpleName
-        val typeParamHandler = TypeParameterHandler(ctClass, this, false)
+        val typeParamHandler = TypeParameterHandler.create(ctClass, this, false)
         if(!typeParamHandler.isEmpty) {
             adapter write typeParamHandler.generateTypeParamListString()
         }
@@ -369,7 +369,7 @@ class DefaultKotlinPrettyPrinter(
 
         adapter write "class" and SPACE and ctClass.simpleName
 
-        val typeParamHandler = TypeParameterHandler(ctClass, this, false)
+        val typeParamHandler = TypeParameterHandler.create(ctClass, this, false)
         if(!typeParamHandler.isEmpty) {
             adapter write typeParamHandler.generateTypeParamListString() and SPACE
         }
@@ -448,7 +448,7 @@ class DefaultKotlinPrettyPrinter(
         adapter write "interface" and SPACE and ctInterface.simpleName
 
         // Type parameters list
-        val typeParamHandler = TypeParameterHandler(ctInterface, this, false)
+        val typeParamHandler = TypeParameterHandler.create(ctInterface, this, false)
         if(!typeParamHandler.isEmpty) {
             adapter write typeParamHandler.generateTypeParamListString()
         }
@@ -870,8 +870,15 @@ class DefaultKotlinPrettyPrinter(
 
         adapter writeModifiers modifiers
 
-        // Extension receiver
         val getter = field.getMetadata(KtMetadataKeys.PROPERTY_GETTER) as CtMethod<*>?
+
+        val typeParamHandler = TypeParameterHandler.create(getter, this)
+        val paramList = typeParamHandler.generateTypeParamList()
+        if(paramList.isNotEmpty()) {
+            adapter write paramList.joinToString(prefix = "<", separator = ", ", postfix = "> ", transform = { it })
+        }
+
+        // Extension receiver
         if(getter != null) {
             val extensionType = getter.getMetadata(KtMetadataKeys.EXTENSION_TYPE_REF) as CtTypeAccess<*>?
             if(extensionType != null) {
@@ -887,6 +894,8 @@ class DefaultKotlinPrettyPrinter(
             adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
             visitCtTypeReference(field.type)
         }
+
+        adapter write typeParamHandler.generateWhereClauseString()
 
         // Initializer or delegate
         adapter.pushIndent()
@@ -1460,7 +1469,7 @@ class DefaultKotlinPrettyPrinter(
 
         adapter writeModifiers modifiers and "fun"
 
-        val typeParamHandler = TypeParameterHandler(method, this, false)
+        val typeParamHandler = TypeParameterHandler.create(method, this, false)
         adapter write typeParamHandler.generateTypeParamListString() and SPACE
 
         val extensionTypeRef = method.getMetadata(KtMetadataKeys.EXTENSION_TYPE_REF) as CtTypeAccess<*>?
