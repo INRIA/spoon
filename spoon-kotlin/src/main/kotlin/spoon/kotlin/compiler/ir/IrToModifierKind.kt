@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.calls.components.isVararg
 import org.jetbrains.kotlin.resolve.source.getPsi
+import org.jetbrains.kotlin.types.TypeProjection
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.utils.addIfNotNull
 import spoon.kotlin.reflect.KtModifierKind
@@ -76,6 +77,15 @@ object IrToModifierKind {
         ArrayList<KtModifierKind>().apply {
             if(typeParameter.isReified) add(KtModifierKind.REIFIED)
             when(typeParameter.variance) {
+                Variance.IN_VARIANCE -> add(KtModifierKind.TYPE_PROJECTION_IN)
+                Variance.OUT_VARIANCE -> add(KtModifierKind.TYPE_PROJECTION_OUT)
+                Variance.INVARIANT -> { /*Nothing*/ }
+            }
+        }
+
+    fun fromTypeVariable(typeParameter: TypeProjection) : List<KtModifierKind> =
+        ArrayList<KtModifierKind>().apply {
+            when(typeParameter.projectionKind) {
                 Variance.IN_VARIANCE -> add(KtModifierKind.TYPE_PROJECTION_IN)
                 Variance.OUT_VARIANCE -> add(KtModifierKind.TYPE_PROJECTION_OUT)
                 Variance.INVARIANT -> { /*Nothing*/ }

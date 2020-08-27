@@ -1319,6 +1319,8 @@ class DefaultKotlinPrettyPrinter(
             }
             return visitCtTypeReference(typeRef.declaringType, false)
         }
+        val projectionModifiers = typeRef.getMetadata(KtMetadataKeys.KT_MODIFIERS) as Set<KtModifierKind>?
+        adapter writeModifiers projectionModifiers
 
         if(typeRef.declaringType != null) {
             visitCtTypeReference(typeRef.declaringType, true)

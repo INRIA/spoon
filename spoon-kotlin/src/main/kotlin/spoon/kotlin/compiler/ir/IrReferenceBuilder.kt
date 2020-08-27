@@ -124,7 +124,9 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         if(typeProjection.isStarProjection) {
             return factory.Core().createWildcardReference()
         }
-        return getNewTypeReference<Any>(typeProjection.type, resolveGenerics)
+        val ctRef = getNewTypeReference<Any>(typeProjection.type, resolveGenerics)
+        ctRef.addModifiersAsMetadata(IrToModifierKind.fromTypeVariable(typeProjection))
+        return ctRef
     }
 
     private fun typeRefFromDescriptor(descriptor: ClassifierDescriptor, resolveGenerics: Boolean) = when(descriptor) {
