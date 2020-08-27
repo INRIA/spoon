@@ -622,14 +622,22 @@ internal class IrTreeBuilder(
         val receiver = expression.extensionReceiver ?: expression.dispatchReceiver
         var target = receiver?.accept(this, data)?.resultUnsafe
         if(target == null) {
-            val containingDeclaration = referenceBuilder.getDeclaringReference(
-                expression.symbol.descriptor.containingDeclaration)
-            if(containingDeclaration is CtPackageReference) {
-                val pkg = factory.Package().getOrCreate(containingDeclaration.qualifiedName)
-                val topLvl = helper.getOrCreateTopLvlClass(pkg)
-                target = factory.Code().createTypeAccess(topLvl.reference)
-            } else if(containingDeclaration is CtTypeReference<*>) {
-                target = factory.Code().createTypeAccess(containingDeclaration)
+            if(expression.symbol.descriptor is ClassConstructorDescriptor) {
+                val type = referenceBuilder.getDeclaringTypeReference(expression.symbol.descriptor)
+                if(type != null) target = createTypeAccess(type)
+            } else if(expression.symbol.descriptor.extensionReceiverParameter != null) {
+                val extensionReceiver = expression.symbol.descriptor.extensionReceiverParameter!!
+                target = createTypeAccess(referenceBuilder.getNewTypeReference(extensionReceiver.value.type))
+            } else {
+                val containingDeclaration = referenceBuilder.getDeclaringReference(
+                    expression.symbol.descriptor.containingDeclaration)
+                if(containingDeclaration is CtPackageReference) {
+                    val pkg = factory.Package().getOrCreate(containingDeclaration.qualifiedName)
+                    val topLvl = helper.getOrCreateTopLvlClass(pkg)
+                    target = factory.Code().createTypeAccess(topLvl.reference)
+                } else if(containingDeclaration is CtTypeReference<*>) {
+                    target = factory.Code().createTypeAccess(containingDeclaration)
+                }
             }
         }
         if(target != null) {
@@ -857,8 +865,8 @@ internal class IrTreeBuilder(
                 return createInvocation(irCall, data).resultSafe.target.definite()
             }
             in AUGMENTED_ASSIGNMENTS -> {
-                if(irCall.symbol.descriptor is JavaMethodDescriptor) {
-                    return createInvocation(irCall, data)
+                if(irCall.symbol.descriptor is JavaMethodDescriptor || data is IgnoreAugmentedOrigin) {
+                    return createInvocation(irCall, IgnoreAugmentedOrigin(data))
                 }
                 return createAugmentedAssignmentOperator(irCall, irCall.origin!!, data).definite()
             }
@@ -885,7 +893,7 @@ internal class IrTreeBuilder(
         if(OperatorHelper.isBinaryOperator(irCall.origin)) {
             return visitBinaryOperator(irCall, data)
         }
-        return TransformResult.nothing()
+        return EmptyTransformResult()
     }
 
     private fun createOrOperator(expr: IrIfThenElseImpl, data: ContextData): DefiniteTransformResult<CtBinaryOperator<Boolean>> {
@@ -1323,7 +1331,7 @@ internal class IrTreeBuilder(
                 val call = block.statements.firstIsInstanceOrNull<IrCall>()
                 if(call != null) {
                     val assignmentFromCall = specialInvocation(call, data).resultOrNull
-                    if(assignmentFromCall != null && assignmentFromCall is CtAssignment<*,*>) {
+                    if(assignmentFromCall != null ) { //&& assignmentFromCall is CtAssignment<*,*>
                         return assignmentFromCall.definite()
                     }
                 }
@@ -1395,8 +1403,8 @@ internal class IrTreeBuilder(
     ): CtOperatorAssignment<*,*> {
         val (irLhs, irRhs) = OperatorHelper.getAugmentedAssignmentOperands(expression)
         val ctAssignmentOp = core.createOperatorAssignment<Any,Any>()
-        val lhs = expressionOrWrappedInStatementExpression(irLhs.accept(this, data).resultUnsafe)
-        val rhs = expressionOrWrappedInStatementExpression(irRhs.accept(this, data).resultUnsafe)
+        val lhs = expressionOrWrappedInStatementExpression(irLhs.accept(this, IgnoreAugmentedOrigin(data)).resultUnsafe)
+        val rhs = expressionOrWrappedInStatementExpression(irRhs.accept(this, IgnoreAugmentedOrigin(data)).resultUnsafe)
         ctAssignmentOp.setKind<CtOperatorAssignment<Any,Any>>(
             OperatorHelper.originToBinaryOperatorKind(origin).toJavaAssignmentOperatorKind()
         )
