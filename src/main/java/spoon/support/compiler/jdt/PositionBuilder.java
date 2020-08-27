@@ -369,7 +369,7 @@ public class PositionBuilder {
 			TypeParameter[] typeParameters = methodDeclaration.typeParameters();
 			if (typeParameters != null && typeParameters.length > 0) {
 				// if there is no space between the modifier and the type parameter vs if there is a space
-				if (contents[typeParameters[0].declarationSourceStart-2] != ' ') {
+				if (contents[typeParameters[0].declarationSourceStart - 2] != ' ') {
 					modifiersSourceEnd = typeParameters[0].declarationSourceStart - 2;
 				} else {
 					modifiersSourceEnd = typeParameters[0].declarationSourceStart - 3;
