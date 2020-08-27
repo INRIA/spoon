@@ -7,6 +7,7 @@
  */
 package spoon.support.compiler.jdt;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.AbstractVariableDeclaration;
@@ -46,6 +47,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -577,6 +579,13 @@ public class PositionBuilder {
 			if (o2 == -1) {
 				o2 = end;
 			}
+
+			// this is the index into the modifier char array snippet, so must be +o1 if >-1
+			int chevronIndex = ArrayUtils.indexOf(Arrays.copyOfRange(contents, o1, o2), '<');
+			if (chevronIndex != -1) {
+				o2 = o1 + chevronIndex;
+			}
+
 			String modifierName = String.valueOf(contents, o1, o2 - o1);
 			CtExtendedModifier modifier = explicitModifiersByName.remove(modifierName);
 			if (modifier != null) {
