@@ -319,7 +319,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
 
         val valueArgs = ArrayList<CtTypeReference<*>>()
         for(i in 0 until constructorCall.valueArgumentsCount) {
-            val arg = constructorCall.getValueArgument(i)!!
+            val arg = constructorCall.getValueArgument(i) ?: continue
             valueArgs.add(getNewTypeReference<Any>(arg.type))
         }
         if(valueArgs.isNotEmpty()) {

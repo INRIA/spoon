@@ -502,7 +502,8 @@ internal class IrTreeBuilder(
 
         val valueArgs = ArrayList<CtExpression<*>>(expression.valueArgumentsCount)
         for(i in 0 until expression.valueArgumentsCount) {
-            val ctExpr = expression.getValueArgument(i)!!.accept(this, data).resultUnsafe
+            val arg = expression.getValueArgument(i) ?: continue
+            val ctExpr = arg.accept(this, data).resultUnsafe
             valueArgs.add(expressionOrWrappedInStatementExpression(ctExpr))
         }
         if(valueArgs.isNotEmpty()) {
