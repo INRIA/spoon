@@ -59,7 +59,6 @@ object KtMetadataKeys {
     const val IS_DESTRUCTURED = "skt_key is destructured : Boolean"
     const val COMPONENTS = "skt_key components : List<CtLocalVariable>?"
 
-    const val STRING_CONCAT_ELEMENTS = "skt_key string concat elements: List<CtExpression<*>>"
     const val IS_CLASS_REFERENCE = "skt_key is class reference: Boolean"
     const val IS_PROPERTY_REFERENCE = "skt_key is property reference: Boolean"
 }

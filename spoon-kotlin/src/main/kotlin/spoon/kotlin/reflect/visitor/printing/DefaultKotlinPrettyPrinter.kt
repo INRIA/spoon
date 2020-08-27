@@ -639,7 +639,7 @@ class DefaultKotlinPrettyPrinter(
     // Using CtNewArray as placeholder for string concat. CtNewArray is redundant for Kotlin and
     // this way we can skip introducing a new element for now
     override fun <T : Any?> visitCtNewArray(placeholder: CtNewArray<T>) {
-        val args = placeholder.getMetadata(KtMetadataKeys.STRING_CONCAT_ELEMENTS) as List<CtElement>
+        val args = placeholder.elements
         val multiLine = placeholder.getMetadata(KtMetadataKeys.STRING_LITERAL_MULTILINE) as Boolean? ?: false
         val quote = if(multiLine) "\"\"\"" else "\""
         val prevIndent = adapter.indentCount

@@ -294,7 +294,7 @@ internal class IrTreeBuilder(
         val args = expression.arguments.map { it.accept(this, data).resultUnsafe.apply { setParent(ctPlaceholder) } }
         val isMultiLine = getSourceHelper(data).sourceTextIs(expression) { it.startsWith("\"\"\"") }
         ctPlaceholder.putKtMetadata(KtMetadataKeys.STRING_LITERAL_MULTILINE, KtMetadata.bool(isMultiLine))
-        ctPlaceholder.putKtMetadata(KtMetadataKeys.STRING_CONCAT_ELEMENTS, KtMetadata.elementList(args))
+        ctPlaceholder.setElements<CtNewArray<Any>>(args.map(this::expressionOrWrappedInStatementExpression))
         ctPlaceholder.setType<CtNewArray<Any>>(referenceBuilder.getNewTypeReference(expression.type))
         return ctPlaceholder.definite()
     }
