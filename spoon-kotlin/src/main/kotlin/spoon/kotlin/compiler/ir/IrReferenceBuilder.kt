@@ -258,6 +258,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         val fieldReference = irTreeBuilder.core.createFieldReference<T>()
         fieldReference.setDeclaringType<CtFieldReference<T>>(getNewTypeReference<Any>(irGetEnumValue.type))
         fieldReference.setSimpleName<CtFieldReference<*>>(irGetEnumValue.symbol.descriptor.name.escaped())
+        fieldReference.setType<CtFieldReference<T>>(getNewTypeReference(irGetEnumValue.type))
         return fieldReference
     }
 
