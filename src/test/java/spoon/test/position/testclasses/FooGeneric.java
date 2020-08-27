@@ -1,10 +1,16 @@
 package spoon.test.position.testclasses;
 
+import java.util.List;
+
 public class FooGeneric<T extends Object> {
 
 	public final T variable = null;
 
 	public @Deprecated static <S> S m(int parm1) {
+		return null;
+	}
+
+	protected static<S> S n(int parm2) {
 		return null;
 	}
 
