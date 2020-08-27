@@ -982,8 +982,11 @@ class DefaultKotlinPrettyPrinter(
 
     override fun <T : Any?, E : CtExpression<*>?> visitCtExecutableReferenceExpression(execRef: CtExecutableReferenceExpression<T, E>) {
         enterCtExpression(execRef)
-        execRef.target!!.accept(this)
-        
+        val target = execRef.target
+        if(target !is CtTypeAccess<*> || target.accessedType.simpleName != topLvlClassName) {
+            execRef.target!!.accept(this)
+        }
+
         adapter write "::"
         adapter writeIdentifier execRef.executable.simpleName
         exitCtExpression(execRef)
