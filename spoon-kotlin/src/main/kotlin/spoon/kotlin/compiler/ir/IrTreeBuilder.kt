@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.descriptors.IrBuiltInOperator
+import org.jetbrains.kotlin.ir.descriptors.IrImplementingDelegateDescriptor
 import org.jetbrains.kotlin.ir.descriptors.IrTemporaryVariableDescriptor
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.IrBlockBodyImpl
@@ -32,6 +33,7 @@ import org.jetbrains.kotlin.psi2ir.generators.AUGMENTED_ASSIGNMENTS
 import org.jetbrains.kotlin.psi2ir.generators.GeneratorContext
 import org.jetbrains.kotlin.psi2ir.generators.INCREMENT_DECREMENT_OPERATORS
 import org.jetbrains.kotlin.resolve.calls.tower.isSynthesized
+import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.resolve.scopes.receivers.ExtensionReceiver
 import org.jetbrains.kotlin.resolve.scopes.receivers.ImplicitClassReceiver
 import org.jetbrains.kotlin.resolve.source.getPsi
@@ -152,10 +154,22 @@ internal class IrTreeBuilder(
             if(
                 decl.isFakeOverride ||
                 decl.origin == IrDeclarationOrigin.ENUM_CLASS_SPECIAL_MEMBER ||
-                decl.origin == IrDeclarationOrigin.GENERATED_DATA_CLASS_MEMBER
+                decl.origin == IrDeclarationOrigin.GENERATED_DATA_CLASS_MEMBER ||
+                decl.origin == IrDeclarationOrigin.DELEGATED_MEMBER
             ) {
                 continue
             }
+            if(decl is IrField) {
+                if(decl.descriptor is IrImplementingDelegateDescriptor) {
+                    val (superType, delegate) = visitSuperTypeDelegate(decl, data)
+                    type.superInterfaces.first { it.qualifiedName == superType }.apply {
+                        putKtMetadata(KtMetadataKeys.SUPER_TYPE_DELEGATE, KtMetadata.element(delegate))
+                        delegate.setParent(this)
+                    }
+                    continue
+                }
+            }
+
             val ctDecl = decl.accept(this, data).resultUnsafe
             ctDecl.setParent(type)
             when(ctDecl) {
@@ -202,6 +216,13 @@ internal class IrTreeBuilder(
         }
 
         return type.definite()
+    }
+
+    private fun visitSuperTypeDelegate(irField: IrField, data: ContextData): Pair<String, CtElement> {
+        val irDelegateDescriptor = irField.descriptor as IrImplementingDelegateDescriptor
+        val superType = irDelegateDescriptor.correspondingSuperType.constructor.declarationDescriptor!!.fqNameSafe.asString()
+        val expr = irField.initializer!!.accept(this, data).resultUnsafe
+        return superType to expr
     }
 
     override fun visitAnonymousInitializer(
@@ -395,7 +416,15 @@ internal class IrTreeBuilder(
         return ctLambda.definite()
     }
 
+    override fun visitField(declaration: IrField, data: ContextData): MaybeTransformResult<CtElement> {
+        return EmptyTransformResult()
+    }
+
     override fun visitGetField(expression: IrGetField, data: ContextData): TransformResult<CtElement> {
+        if(expression.symbol.descriptor is IrImplementingDelegateDescriptor) {
+            return expression.receiver?.accept(this, data) ?: EmptyTransformResult()
+        }
+
         val propertyRef = referenceBuilder.getNewVariableReference<Any>(expression.symbol.descriptor) as CtFieldReference<*>
         val read = createVariableRead(propertyRef)
         val descriptor = expression.symbol.descriptor
