@@ -856,7 +856,12 @@ internal class IrTreeBuilder(
             IrStatementOrigin.FOR_LOOP_ITERATOR -> {
                 return createInvocation(irCall, data).resultSafe.target.definite()
             }
-            in AUGMENTED_ASSIGNMENTS -> return createAugmentedAssignmentOperator(irCall, irCall.origin!!, data).definite()
+            in AUGMENTED_ASSIGNMENTS -> {
+                if(irCall.symbol.descriptor is JavaMethodDescriptor) {
+                    return createInvocation(irCall, data)
+                }
+                return createAugmentedAssignmentOperator(irCall, irCall.origin!!, data).definite()
+            }
             IrStatementOrigin.EQ -> {
                 return if(callDescriptor is PropertySetterDescriptor) {
                     createAssignment(irCall, data)
@@ -1459,7 +1464,7 @@ internal class IrTreeBuilder(
 
 
     private fun visitPropertyAccess(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtElement> {
-        if(irCall.symbol.descriptor is JavaMethodDescriptor)
+        if(irCall.symbol.descriptor is JavaMethodDescriptor || irCall.symbol.descriptor !is PropertyGetterDescriptor)
             return createInvocation(irCall, data)
         val descriptor = irCall.symbol.descriptor as PropertyGetterDescriptor
 
