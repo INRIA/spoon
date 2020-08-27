@@ -368,7 +368,12 @@ public class PositionBuilder {
 
 			TypeParameter[] typeParameters = methodDeclaration.typeParameters();
 			if (typeParameters != null && typeParameters.length > 0) {
-				modifiersSourceEnd = typeParameters[0].declarationSourceStart - 3;
+				// if there is no space between the modifier and the type parameter vs if there is a space
+				if (contents[typeParameters[0].declarationSourceStart - 2] != ' ') {
+					modifiersSourceEnd = typeParameters[0].declarationSourceStart - 2;
+				} else {
+					modifiersSourceEnd = typeParameters[0].declarationSourceStart - 3;
+				}
 			}
 
 			if (getModifiers(methodDeclaration.modifiers, false, true).isEmpty()) {
@@ -589,7 +594,11 @@ public class PositionBuilder {
 			String modifierName = String.valueOf(contents, o1, o2 - o1);
 			CtExtendedModifier modifier = explicitModifiersByName.remove(modifierName);
 			if (modifier != null) {
-				modifier.setPosition(cf.createSourcePosition(cu, o1, o2 - 1, jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions()));
+				/* if (chevronIndex > -1) {
+					modifier.setPosition(cf.createSourcePosition(cu, o1, o2, jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions()));
+				} else { */
+					modifier.setPosition(cf.createSourcePosition(cu, o1, o2 - 1, jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions()));
+				//}
 			}
 			start = o2;
 		}
