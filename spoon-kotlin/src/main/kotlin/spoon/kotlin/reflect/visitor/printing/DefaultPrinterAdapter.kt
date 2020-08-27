@@ -1,5 +1,6 @@
 package spoon.kotlin.reflect.visitor.printing
 
+import spoon.kotlin.ktMetadata.IdentifierClashHelper
 import spoon.kotlin.reflect.KtModifierKind
 
 open class DefaultPrinterAdapter(
@@ -163,13 +164,16 @@ open class DefaultPrinterAdapter(
             return this
         }
         if(name.startsWith('$') && (name.endsWith('$') || name.endsWith("$?"))) {
-            write('`')
-            if(name.endsWith('?')) {
-                write(name.substring(1, name.length-2))
-                write("`?")
+            val hasQuestionMark = name.endsWith("$?")
+            val unEscapedName = if(hasQuestionMark) { name.substring(1, name.length-2) }
+             else { name.substring(1, name.length-1) }
+            if(unEscapedName in IdentifierClashHelper.ILLEGAL_JAVA_IDENTIFIERS) {
+                write(unEscapedName)
             } else {
-                write(name.substring(1, name.length-1))
                 write('`')
+                write(unEscapedName)
+                write('`')
+                if(hasQuestionMark) write('?')
             }
         } else {
             write(name)

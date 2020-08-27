@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.psi2ir.PsiSourceManager
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassNotAny
 import org.jetbrains.kotlin.resolve.descriptorUtil.getSuperClassOrAny
 import org.jetbrains.kotlin.resolve.source.getPsi
+import spoon.kotlin.ktMetadata.IdentifierClashHelper
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.reflect.code.LiteralBase
 import spoon.reflect.declaration.CtAnnotationType
@@ -31,8 +32,8 @@ import spoon.reflect.declaration.CtType
 internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
     private val factory get() = irTreeBuilder.factory
     private val referenceBuilder get() = irTreeBuilder.referenceBuilder
-    private val keywords = KtTokens.KEYWORDS.types.map { (it as KtKeywordToken).value }.toMutableList().also {
-        it.add("assert") // Escaped because Spoon doesn't allow assert
+    private val keywords = KtTokens.KEYWORDS.types.map { (it as KtKeywordToken).value }.toMutableSet().also {
+        it.addAll(IdentifierClashHelper.ILLEGAL_JAVA_IDENTIFIERS)
     }
 
     private fun getKtFile(file: IrFile): KtFile {
