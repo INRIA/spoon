@@ -1212,7 +1212,7 @@ internal class IrTreeBuilder(
 
     private fun visitUnaryOperator(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtUnaryOperator<*>> {
         val ctOp = core.createUnaryOperator<Any>()
-        val operand = irCall.dispatchReceiver!!.accept(this, data).resultUnsafe
+        val operand = helper.getReceiver(irCall)!!.accept(this, data).resultUnsafe
         ctOp.setOperand<CtUnaryOperator<*>>(operand as CtExpression<Any>)
         ctOp.setKind<CtUnaryOperator<*>>(OperatorHelper.originToUnaryOperatorKind(irCall.origin!!))
         ctOp.setType<CtUnaryOperator<*>>(referenceBuilder.getNewTypeReference(irCall.type))
@@ -1640,7 +1640,7 @@ internal class IrTreeBuilder(
     }
 
     private fun createGetOperator(irCall: IrCall, data: ContextData): DefiniteTransformResult<CtArrayRead<Any>> {
-        val receiver = irCall.dispatchReceiver!!.accept(this, data).resultUnsafe
+        val receiver = helper.getReceiver(irCall)!!.accept(this, data).resultUnsafe
         val ctArrAccess = factory.Core().createArrayRead<Any>()
         ctArrAccess.setTarget<CtArrayRead<Any>>(expressionOrWrappedInStatementExpression(receiver))
         ctArrAccess.setType<CtArrayRead<Any>>(referenceBuilder.getNewTypeReference(irCall.type))
