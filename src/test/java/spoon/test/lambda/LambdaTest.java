@@ -458,6 +458,17 @@ public class LambdaTest {
 		assertIsWellPrinted("( elt) -> elt.test()", lambda);
 	}
 
+	@Test
+	public void testCastLambdaWithIntersection() {
+		// contract: intersection types on lambda parameters are supported 
+		final CtLambda<?> lambda1 = intersection.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(1);
+		lambda1.getReference();
+		final CtLambda<?> lambda2 = intersection.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(2);
+		lambda2.getReference();
+		final CtLambda<?> lambda3 = intersection.getElements(new TypeFilter<CtLambda<?>>(CtLambda.class)).get(3);
+		lambda3.getReference();
+	}
+
 	private void assertHasStrings(List<String> methodNames, String... strs) {
 		for (String str : strs) {
 			assertTrue("List should contain "+str+" but it is missing.", methodNames.remove(str));

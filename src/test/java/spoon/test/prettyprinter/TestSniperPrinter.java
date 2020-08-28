@@ -1,22 +1,15 @@
 /**
- * Copyright (C) 2006-2018 INRIA and contributors
- * Spoon - http://spoon.gforge.inria.fr/
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify
- * and/or redistribute the software under the terms of the CeCILL-C license as
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.test.prettyprinter;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.processing.Processor;
@@ -29,7 +22,6 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
@@ -64,12 +56,8 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -77,6 +65,9 @@ import static org.junit.Assert.fail;
 
 public class TestSniperPrinter {
 
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+	
 	@Test
 	public void testClassRename1() throws Exception {
 		// contract: one can sniper out of the box after Refactoring.changeTypeName
@@ -96,23 +87,20 @@ public class TestSniperPrinter {
 
 	}
 
-	public void testClassRename(Consumer<CtType> renameTransfo) throws Exception {
+	public void testClassRename(Consumer<CtType<?>> renameTransfo) throws Exception {
 		// contract: sniper supports class rename
-
-		// clean the output dir
-		Runtime.getRuntime().exec(new String[]{"bash","-c", "rm -rf spooned"});
 		String testClass = ToBeChanged.class.getName();
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(getResourcePath(testClass));
 		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
-			SniperJavaPrettyPrinter printer = new SniperJavaPrettyPrinter(launcher.getEnvironment());
-			return printer;
+			return new SniperJavaPrettyPrinter(launcher.getEnvironment());
 		});
+		launcher.setBinaryOutputDirectory(folder.newFolder());
 		launcher.buildModel();
 		Factory f = launcher.getFactory();
 
 		final CtClass<?> type = f.Class().get(testClass);
-		
+
 		// performing the type rename
 		renameTransfo.accept(type);
 		//print the changed model
@@ -128,31 +116,31 @@ public class TestSniperPrinter {
 	@Test
 	public void testPrintInsertedThrow() {
 		testSniper(Throw.class.getName(), type -> {
-			CtConstructorCall ctConstructorCall = (CtConstructorCall) type.getMethodsByName("foo").get(0).getBody().getStatements().get(0);
+			CtConstructorCall<?> ctConstructorCall = (CtConstructorCall<?>) type.getMethodsByName("foo").get(0).getBody().getStatements().get(0);
 			CtThrow ctThrow = type.getFactory().createCtThrow(ctConstructorCall.toString());
 			ctConstructorCall.replace(ctThrow);
 		}, (type, printed) -> {
 			assertIsPrintedWithExpectedChanges(type, printed,
-					"\\Qvoid foo(int x) {\n" +
-					"\t\tnew IllegalArgumentException(\"x must be nonnegative\");\n" +
-					"\t}",
-					"void foo(int x) {\n" +
-					"\t\tthrow new java.lang.IllegalArgumentException(\"x must be nonnegative\");\n" +
-					"\t}");
+					"\\Qvoid foo(int x) {\n"
+					+ "\t\tnew IllegalArgumentException(\"x must be nonnegative\");\n"
+					+ "\t}",
+					"void foo(int x) {\n"
+					+ "\t\tthrow new java.lang.IllegalArgumentException(\"x must be nonnegative\");\n"
+					+ "\t}");
 		});
 	}
 
-  @Test
+	@Test
 	public void testPrintReplacementOfInvocation() {
 		testSniper(InvocationReplacement.class.getName(), type -> {
-			CtLocalVariable localVariable = (CtLocalVariable) type.getMethodsByName("main").get(0).getBody().getStatements().get(0);
-			CtInvocation invocation = (CtInvocation) localVariable.getAssignment();
-			CtExpression prevTarget = invocation.getTarget();
-			CtCodeSnippetExpression newTarget = type.getFactory().Code().createCodeSnippetExpression("Arrays");
-			CtType arraysClass = type.getFactory().Class().get(Arrays.class);
-			CtMethod method = (CtMethod) arraysClass.getMethodsByName("toString").get(0);
-			CtExecutableReference refToMethod = type.getFactory().Executable().createReference(method);
-			CtInvocation newInvocation = type.getFactory().Code().createInvocation(newTarget, refToMethod, prevTarget);
+			CtLocalVariable<?> localVariable = (CtLocalVariable<?>) type.getMethodsByName("main").get(0).getBody().getStatements().get(0);
+			CtInvocation<?> invocation = (CtInvocation<?>) localVariable.getAssignment();
+			CtExpression<?> prevTarget = invocation.getTarget();
+			CtCodeSnippetExpression<?> newTarget = type.getFactory().Code().createCodeSnippetExpression("Arrays");
+			CtType<?> arraysClass = type.getFactory().Class().get(Arrays.class);
+			CtMethod<?> method = (CtMethod<?>) arraysClass.getMethodsByName("toString").get(0);
+			CtExecutableReference<?> refToMethod = type.getFactory().Executable().createReference(method);
+			CtInvocation<?> newInvocation = type.getFactory().Code().createInvocation(newTarget, refToMethod, prevTarget);
 			invocation.replace(newInvocation);
 		}, (type, printed) -> {
 			assertIsPrintedWithExpectedChanges(type, printed, "\\QString argStr = args.toString();", "String argStr = Arrays.toString(args);");
@@ -163,17 +151,17 @@ public class TestSniperPrinter {
 	public void testPrintLocalVariableDeclaration() {
 		// contract: joint local declarations can be sniper-printed in whole unmodified method
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
-			type.getFields().stream().forEach(x -> {x.delete();});
+			type.getFields().stream().forEach(x -> { x.delete(); });
 		}, (type, printed) -> {
-			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
-					"\n" +
-					"public class OneLineMultipleVariableDeclaration {\n" +
-					"\n" +
-					"\tvoid foo(int a) {\n" +
-					"\t\tint b = 0, e = 1;\n" +
-					"\t\ta = a;\n" +
-					"\t}\n" +
-					"}", printed);
+			assertEquals("package spoon.test.prettyprinter.testclasses;\n"
+					+	"\n"
+					+	"public class OneLineMultipleVariableDeclaration {\n"
+					+	"\n"
+					+	"\tvoid foo(int a) {\n"
+					+ "\t\tint b = 0, e = 1;\n"
+					+ "\t\ta = a;\n"
+					+	"\t}\n"
+					+	"}", printed);
 		});
 	}
 
@@ -183,16 +171,16 @@ public class TestSniperPrinter {
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
 			type.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0).delete();
 		}, (type, printed) -> {
-			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
-					"\n" +
-					"public class OneLineMultipleVariableDeclaration {int a;\n" +
-					"\n" +
-					"\tint c;\n" +
-					"\n" +
-					"\tvoid foo(int a) {int e = 1;\n" +
-					"\t\ta = a;\n" +
-					"\t}\n" +
-					"}", printed);
+			assertEquals("package spoon.test.prettyprinter.testclasses;\n"
+					+	"\n"
+					+	"public class OneLineMultipleVariableDeclaration {int a;\n"
+					+ "\n"
+					+	"\tint c;\n"
+					+	"\n"
+					+ "\tvoid foo(int a) {int e = 1;\n"
+					+ "\t\ta = a;\n"
+					+ "\t}\n"
+					+	"}", printed);
 		});
 	}
 
@@ -203,12 +191,12 @@ public class TestSniperPrinter {
 			// we change something (anything would work)
 			type.getMethodsByName("foo").get(0).delete();
 		}, (type, printed) -> {
-			assertEquals("package spoon.test.prettyprinter.testclasses;\n" +
-					"\n" +
-					"public class OneLineMultipleVariableDeclaration {int a;\n" +
-					"\n" +
-					"\tint c;\n" +
-					"}", printed);
+			assertEquals("package spoon.test.prettyprinter.testclasses;\n"
+					+	"\n"
+					+	"public class OneLineMultipleVariableDeclaration {int a;\n"
+					+	"\n"
+					+ "\tint c;\n"
+					+ "}", printed);
 		});
 	}
 
@@ -379,7 +367,6 @@ public class TestSniperPrinter {
 	}
 
 	private String getContentOfPrettyPrintedClassFromDisk(CtType<?> type) {
-		Factory f = type.getFactory();
 		File outputFile = getFileForType(type);
 
 		byte[] content = new byte[(int) outputFile.length()];
@@ -429,20 +416,9 @@ public class TestSniperPrinter {
 		assertEquals(originSource, printedSource);
 	}
 
-	Pattern importRE = Pattern.compile("^(?:import|package)\\s.*;\\s*$", Pattern.MULTILINE);
-
-	private String sourceWithoutImports(String source) {
-		Matcher m = importRE.matcher(source);
-		int lastImportEnd = 0;
-		while (m.find()) {
-			lastImportEnd = m.end();
-		}
-		return source.substring(lastImportEnd).trim();
-	}
 
 	private static String fileAsString(String path, Charset encoding)
-			throws IOException
-	{
+			throws IOException	{
 		byte[] encoded = Files.readAllBytes(Paths.get(path));
 		return new String(encoded, encoding);
 	}
@@ -451,7 +427,7 @@ public class TestSniperPrinter {
 
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource(inputSourcePath);
-		String originalContent = fileAsString(inputSourcePath, StandardCharsets.UTF_8).replace("\t","");
+		String originalContent = fileAsString(inputSourcePath, StandardCharsets.UTF_8).replace("\t", "");
 		CtModel model = launcher.buildModel();
 
 		new SourceFragmentCreator().attachTo(launcher.getFactory().getEnvironment());
@@ -467,8 +443,8 @@ public class TestSniperPrinter {
 
 
 		ops.stream()
-				.filter(el -> !(el instanceof spoon.reflect.CtModelImpl.CtRootPackage) &&
-						!(el instanceof spoon.reflect.factory.ModuleFactory.CtUnnamedModule)
+				.filter(el -> !(el instanceof spoon.reflect.CtModelImpl.CtRootPackage)
+				&& !(el instanceof spoon.reflect.factory.ModuleFactory.CtUnnamedModule)
 				).forEach(el -> {
 			try {
 				sp.reset();
@@ -476,12 +452,12 @@ public class TestSniperPrinter {
 				//Contract, calling toString on unmodified AST elements should draw only from original.
 				String result = sp.getResult();
 
-				if (!sp.hasImplicitAncestor(el) && !(el instanceof CtPackage) && !(el instanceof CtReference)) {
-					assertTrue(result.length()>0);
+				if (!SniperJavaPrettyPrinter.hasImplicitAncestor(el) && !(el instanceof CtPackage) && !(el instanceof CtReference)) {
+					assertTrue(result.length() > 0);
 				}
 
 				assertTrue("ToString() on element (" + el.getClass().getName() + ") =  \"" + el + "\" is not in original content",
-						originalContent.contains(result.replace("\t","")));
+						originalContent.contains(result.replace("\t", "")));
 			} catch (UnsupportedOperationException | SpoonException e) {
 				//Printer should not throw exception on printable element. (Unless there is a bug in the printer...)
 				fail("ToString() on Element (" + el.getClass().getName() + "): at " + el.getPath() + " lead to an exception: " + e);

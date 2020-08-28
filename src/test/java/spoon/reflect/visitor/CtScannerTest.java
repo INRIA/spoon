@@ -356,4 +356,22 @@ public class CtScannerTest {
 			fail();
 		}
 	}
+
+	@Test
+	public void testDequeSCanner() {
+		CtClass<?> c = Launcher.parseClass("class A { void m() { System.out.println(\\\"yeah\\\");} }");
+		ArrayList l = new ArrayList<Integer>();
+		new CtDequeScanner() {
+			@Override
+			public void scan(CtElement o) {
+				l.add(elementsDeque.size());
+				super.scan(o);
+			}
+		}.scan(c);
+		// contract: the CtDequeScanner has the context information of the parents
+		assertEquals(45, l.size()); // we visited the whole tree
+		assertEquals(0, l.get(0));
+		assertEquals(1, l.get(1)); // visiting a child
+		assertEquals(2, l.get(3)); // visiting a grand child
+	}
 }
