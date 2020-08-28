@@ -1578,7 +1578,9 @@ internal class IrTreeBuilder(
         }
         val placeHolder = components.toDestructuredVariable()
         placeHolder.setDefaultExpression<CtLocalVariable<Any>>(
-            (expression.statements[0] as IrVariable).initializer!!.accept(this, data).resultUnsafe as CtExpression<Any>
+            expressionOrWrappedInStatementExpression(
+                (expression.statements[0] as IrVariable).initializer!!.accept(this, data).resultUnsafe
+            )
         )
         placeHolder.addModifiersAsMetadata(IrToModifierKind.fromVariable(expression.statements[1] as IrVariable))
         return placeHolder.definite()
