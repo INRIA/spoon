@@ -401,15 +401,21 @@ class DefaultKotlinPrettyPrinter(
 
     private fun writeInheritanceList(ctType: CtType<*>) {
         val printSuperTypes = KtModifierKind.ANNOTATION !in getModifiersMetadata(ctType)
+        var didPrintSuperClass = false
         if(ctType is CtClass<*>) {
             val primaryConstructor = ctType.constructors.firstOrNull { it.isPrimary() }
             if (primaryConstructor != null) {
-                visitCtConstructor(primaryConstructor, printSuperTypes)
+                didPrintSuperClass = visitCtConstructor(primaryConstructor, printSuperTypes)
             }
+        }
+        if(!didPrintSuperClass && ctType.superclass != null) {
+            adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
+            visitCtTypeReference(ctType.superclass, true)
+            didPrintSuperClass = true
         }
 
         if(printSuperTypes && ctType.superInterfaces.isNotEmpty()) {
-            if(ctType !is CtInterface<*> && ctType.superclass != null && ctType.superclass.qualifiedName != "kotlin.Any") {
+            if(didPrintSuperClass) {
                 adapter write ", "
             } else {
                 adapter.writeColon(DefaultPrinterAdapter.ColonContext.OF_SUPERTYPE)
@@ -475,10 +481,10 @@ class DefaultKotlinPrettyPrinter(
         adapter writeln RIGHT_CURL
     }
 
-    private fun visitCtConstructor(ctConstructor: CtConstructor<*>, printDelegate: Boolean) {
+    private fun visitCtConstructor(ctConstructor: CtConstructor<*>, printDelegate: Boolean): Boolean {
         val isObject = ctConstructor.parent.getBooleanMetadata(KtMetadataKeys.CLASS_IS_OBJECT, false)
         val primary = ctConstructor.getMetadata(KtMetadataKeys.CONSTRUCTOR_IS_PRIMARY) as? Boolean? ?: false
-        if (ctConstructor.isImplicit && !primary) return
+        if (ctConstructor.isImplicit && !primary) return false
         if(!isObject) {
             val modifierSet =
                 getModifiersMetadata(ctConstructor)
@@ -501,22 +507,25 @@ class DefaultKotlinPrettyPrinter(
             adapter write RIGHT_ROUND
         }
         if(ctConstructor.body != null) {
-            visitConstructorBody(ctConstructor.body, primary, printDelegate)
+            return visitConstructorBody(ctConstructor.body, primary, printDelegate)
         }
+        return false
     }
 
     override fun <T : Any?> visitCtConstructor(ctConstructor : CtConstructor<T>) {
         visitCtConstructor(ctConstructor, true)
     }
 
-    private fun visitConstructorBody(block: CtBlock<*>, primary: Boolean, printDelegate: Boolean) {
+    private fun visitConstructorBody(block: CtBlock<*>, primary: Boolean, printDelegate: Boolean): Boolean {
         enterCtStatement(block)
-        if(block.statements.isEmpty()) return
+        if(block.statements.isEmpty()) return false
+        var didPrintDelegateCall = false
         val first = block.statements[0]
         val rest: List<CtStatement>
         rest = if(first is CtConstructorCall<*>) {
             if(printDelegate && first.type.qualifiedName != "kotlin.Any") {
                 visitCtConstructorCall(first)
+                didPrintDelegateCall = true
             }
             block.statements.drop(1)
         } else {
@@ -530,6 +539,7 @@ class DefaultKotlinPrettyPrinter(
             adapter write RIGHT_CURL
         }
         exitCtStatement(block)
+        return didPrintDelegateCall
     }
 
     override fun visitCtPackageExport(p0: CtPackageExport?) {
