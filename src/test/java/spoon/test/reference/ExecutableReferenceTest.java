@@ -127,19 +127,27 @@ public class ExecutableReferenceTest {
 	}
 
 	@Test
-	public void testSpecifyGetAllExecutablesMethod() {
+	public void testGetAllExecutablesMethodForInterface() {
+		// contract: As interfaces doesn't extend object, the Foo interface must have 1 method and no method from object.
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
 		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses");
 		launcher.run();
-
 		CtInterface<Foo> foo = launcher.getFactory().Interface().get(spoon.test.reference.testclasses.Foo.class);
 		Collection<CtExecutableReference<?>> fooExecutables = foo.getAllExecutables();
 		assertAll(
 				() ->assertEquals(1, fooExecutables.size()),
 				() ->assertEquals(foo.getSuperInterfaces().iterator().next().getTypeDeclaration().getMethod("m").getReference(),
-									launcher.getFactory().Interface().get(SuperFoo.class).getMethod("m").getReference()));
+						launcher.getFactory().Interface().get(SuperFoo.class).getMethod("m").getReference()));
+	}
 
+	@Test
+	public void testGetAllExecutablesMethodForClasses() {
+		// contract: As classes extend object and the Bar class has 1 method, getAllExecutables for Bar must return 12/13.
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
+		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses");
+		launcher.run();
 		CtClass<Bar> bar = launcher.getFactory().Class().get(Bar.class);
 		Collection<CtExecutableReference<?>> barExecutables = bar.getAllExecutables();
 		/*
