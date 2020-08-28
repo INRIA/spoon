@@ -111,7 +111,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
             is AbbreviatedType -> typeRefFromDescriptor(kotlinType.abbreviation.constructor.declarationDescriptor!!, resolveGenerics)
             is WrappedType -> typeRefFromDescriptor(kotlinType.unwrap().constructor.declarationDescriptor!!, resolveGenerics)
             is SimpleType -> typeRefFromDescriptor(kotlinType.constructor.declarationDescriptor!!, resolveGenerics)
-            is FlexibleType -> getNewTypeReference(kotlinType.lowerBound)
+            is FlexibleType -> getNewTypeReference(kotlinType.lowerBound, resolveGenerics)
         } as CtTypeReference<T>
         ctRef.putKtMetadata(KtMetadataKeys.TYPE_REF_NULLABLE, KtMetadata.bool(kotlinType.isMarkedNullable))
 
