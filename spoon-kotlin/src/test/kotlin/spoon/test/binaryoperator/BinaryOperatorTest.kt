@@ -39,6 +39,23 @@ class BinaryOperatorTest {
     }
 
     @Test
+    fun operatorComparison() {
+        val c = util.buildClass("spoon.test.binaryoperator.testclasses","OperatorComparison")
+        val expressions = c.getMethodByName("m").body.statements
+        assertEquals(3, expressions.size)
+        val binOps = expressions.map { (it as CtReturn<*>).returnedExpression } as List<CtBinaryOperator<*>>
+
+        assertEquals(KtBinaryOperatorKind.LT, binOps[0].ktKind())
+        assertEquals(KtBinaryOperatorKind.EQ, binOps[1].ktKind())
+        assertEquals(KtBinaryOperatorKind.GT, binOps[2].ktKind())
+
+        assertTrue(binOps.all { it.leftHandOperand is CtVariableRead<*> && it.rightHandOperand is CtVariableRead<*> })
+        assertEquals("x < y", binOps[0].asString())
+        assertEquals("x == y", binOps[1].asString())
+        assertEquals("x > y", binOps[2].asString())
+    }
+
+    @Test
     fun inOperatorTest() {
         val c = util.buildClass("spoon.test.binaryoperator.testclasses","InOperator")
 
