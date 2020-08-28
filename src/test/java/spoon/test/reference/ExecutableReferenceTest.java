@@ -18,6 +18,7 @@ package spoon.test.reference;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.OutputType;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtExecutable;
@@ -35,8 +36,9 @@ import spoon.test.reference.testclasses.Kuu;
 import spoon.test.reference.testclasses.Stream;
 import spoon.test.reference.testclasses.SuperFoo;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -44,6 +46,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class ExecutableReferenceTest {
 	@Test
@@ -125,24 +128,32 @@ public class ExecutableReferenceTest {
 
 	@Test
 	public void testSpecifyGetAllExecutablesMethod() {
-		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
 		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses");
 		launcher.run();
 
-		final CtInterface<spoon.test.reference.testclasses.Foo> foo = launcher.getFactory().Interface().get(spoon.test.reference.testclasses.Foo.class);
-		final List<CtExecutableReference<?>> fooExecutables = foo.getAllExecutables().stream().collect(Collectors.toList());
-		assertEquals(1, fooExecutables.size());
-		assertEquals(foo.getSuperInterfaces().stream().findFirst().get().getTypeDeclaration().getMethod("m").getReference(),  launcher.getFactory().Interface().get(SuperFoo.class).getMethod("m").getReference());
+		CtInterface<Foo> foo = launcher.getFactory().Interface().get(spoon.test.reference.testclasses.Foo.class);
+		Collection<CtExecutableReference<?>> fooExecutables = foo.getAllExecutables();
+		assertAll(
+				() ->assertEquals(1, fooExecutables.size()),
+				() ->assertEquals(foo.getSuperInterfaces().iterator().next().getTypeDeclaration().getMethod("m").getReference(),
+									launcher.getFactory().Interface().get(SuperFoo.class).getMethod("m").getReference()));
 
-		final CtClass<Bar> bar = launcher.getFactory().Class().get(Bar.class);
-		final List<CtExecutableReference<?>> barExecutables = bar.getAllExecutables().stream().collect(Collectors.toList());
-		assertEquals(12 /* object */ + 1 /* constructor */, barExecutables.size());
-
-		final CtInterface<Kuu> kuu = launcher.getFactory().Interface().get(Kuu.class);
-		final List<CtExecutableReference<?>> kuuExecutables = kuu.getAllExecutables().stream().collect(Collectors.toList());
-		assertEquals(1 /* default method in interface */, kuuExecutables.size());
-		assertEquals(kuu.getMethod("m").getReference(), kuuExecutables.get(0));
+		CtClass<Bar> bar = launcher.getFactory().Class().get(Bar.class);
+		Collection<CtExecutableReference<?>> barExecutables = bar.getAllExecutables();
+		/*
+		This assertion is needed because in java.lang.object the method registerNative was removed.
+		See https://bugs.openjdk.java.net/browse/JDK-8232801 for details.
+		To fit this change and support new jdks and the CI both values are correct.
+		In jdk8 object has 12 methods and in newer jdk object has 11
+		 */
+		assertTrue(barExecutables.size() == 12 || barExecutables.size() == 13);
+		CtInterface<Kuu> kuu = launcher.getFactory().Interface().get(Kuu.class);
+		List<CtExecutableReference<?>> kuuExecutables = new ArrayList<>(kuu.getAllExecutables());
+		assertAll(
+				() -> assertEquals(1 /* default method in interface */, kuuExecutables.size()),
+				() -> assertEquals(kuu.getMethod("m").getReference(), kuuExecutables.get(0)));
 	}
 
 	@Test
