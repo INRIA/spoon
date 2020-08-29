@@ -953,7 +953,7 @@ internal class IrTreeBuilder(
         ctOp.setType<CtBinaryOperator<Boolean>>(referenceBuilder.getNewTypeReference(expr.type))
         return ctOp.definite()
     }
-
+    // TODO: Remove When contextdata, can be handled in checkForComposite
     override fun visitWhen(expression: IrWhen, data: ContextData): DefiniteTransformResult<CtElement> {
         if(expression is IrIfThenElseImpl) {
             if(expression.origin == IrStatementOrigin.OROR) {
@@ -1099,7 +1099,7 @@ internal class IrTreeBuilder(
         } else {
             if(irCall.valueArgumentsCount > 0) {
                 for(i in 0 until irCall.valueArgumentsCount) {
-                    val irExpr = irCall.getValueArgument(i) ?: continue
+                    val irExpr = irCall.getValueArgumentNotReceiver(i) ?: continue
                     if(irExpr is IrVararg) {
                         arguments.addAll(visitVararg(irExpr, data).compositeResultSafe)
                     } else {

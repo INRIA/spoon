@@ -606,10 +606,15 @@ class DefaultKotlinPrettyPrinter(
     }
 
     private fun visitFunctionNType(typeRef: CtTypeReference<*>) {
+        val extensionFunctionType = typeRef.getMetadata(KtMetadataKeys.EXTENSION_TYPE_REF) as CtTypeReference<*>?
         val numParams = typeRef.actualTypeArguments.size-1
         val params = typeRef.actualTypeArguments.subList(0, numParams)
         val returnType = typeRef.actualTypeArguments.last()
-        val wrapped = shouldAddPar(typeRef)
+        val wrapped = extensionFunctionType == null && shouldAddPar(typeRef)
+        if(extensionFunctionType != null) {
+            visitCtTypeReference(extensionFunctionType, true)
+            adapter write '.'
+        }
         if(wrapped) {
             adapter write LEFT_ROUND
         }

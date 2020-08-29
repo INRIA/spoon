@@ -1,5 +1,8 @@
 package spoon.kotlin.compiler.ir
 
+import org.jetbrains.kotlin.builtins.functions.FunctionInvokeDescriptor
+import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.kotlin.reflect.code.KtBinaryOperatorKind
@@ -25,4 +28,9 @@ internal class KtMetadata<T> private constructor(val value: T) {
 
 internal fun <T: CtElement> T.putKtMetadata(s: String, d: KtMetadata<*>) {
     putMetadata<CtElement>(s, d.value)
+}
+
+internal fun IrMemberAccessExpression.getValueArgumentNotReceiver(i: Int): IrExpression? {
+    if(this.symbol.descriptor is FunctionInvokeDescriptor && i == 0) return null // Invoke has a receiver as param[0]
+    return getValueArgument(i) ?: return null
 }
