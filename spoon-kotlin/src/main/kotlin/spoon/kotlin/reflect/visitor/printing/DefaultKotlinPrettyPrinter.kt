@@ -306,7 +306,9 @@ class DefaultKotlinPrettyPrinter(
     override fun <T : Any?> visitCtTypeAccess(typeAccess: CtTypeAccess<T>) {
         if(typeAccess.isImplicit) return
         enterCtExpression(typeAccess)
-        typeAccess.accessedType.accept(this)
+        visitCtTypeReference(typeAccess.accessedType,
+            !typeAccess.getBooleanMetadata(KtMetadataKeys.IS_CLASS_REFERENCE, false)
+        )
         exitCtExpression(typeAccess)
     }
 
@@ -1420,6 +1422,7 @@ class DefaultKotlinPrettyPrinter(
             val modifiers = declaringType?.getMetadata(KtMetadataKeys.KT_MODIFIERS) as Set<KtModifierKind>?
             if(modifiers != null && KtModifierKind.INNER in modifiers) {
                 adapter writeIdentifier invocation.executable.type.simpleName
+                visitTypeArgumentsList(invocation.actualTypeArguments, false)
             } else {
                 visitCtTypeReference(invocation.executable.type)
             }
