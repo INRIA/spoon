@@ -29,8 +29,3 @@ internal class KtMetadata<T> private constructor(val value: T) {
 internal fun <T: CtElement> T.putKtMetadata(s: String, d: KtMetadata<*>) {
     putMetadata<CtElement>(s, d.value)
 }
-
-internal fun IrMemberAccessExpression.getValueArgumentNotReceiver(i: Int): IrExpression? {
-    if(this.symbol.descriptor is FunctionInvokeDescriptor && i == 0) return null // Invoke has a receiver as param[0]
-    return getValueArgument(i) ?: return null
-}

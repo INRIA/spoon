@@ -1,5 +1,6 @@
 package spoon.kotlin.compiler.ir
 
+import org.jetbrains.kotlin.builtins.functions.FunctionInvokeDescriptor
 import org.jetbrains.kotlin.com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
@@ -24,6 +25,7 @@ import org.jetbrains.kotlin.ir.visitors.IrElementVisitor
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.load.java.descriptors.JavaMethodDescriptor
 import org.jetbrains.kotlin.load.java.descriptors.JavaPropertyDescriptor
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
@@ -714,7 +716,15 @@ internal class IrTreeBuilder(
     ): DefiniteTransformResult<CtParameter<*>> {
         val ctParam = core.createParameter<Any>()
         ctParam.setSimpleName<CtParameter<Any>>(declaration.name.escaped())
-        ctParam.setInferred<CtParameter<Any>>(false) // Not allowed
+        val psi = getSourceHelper(data)
+            .getSourceElements(declaration.startOffset, declaration.endOffset).firstOrNull {
+                it is KtParameter || it is KtValueArgument
+            }
+
+        ctParam.setImplicit<CtParameter<Any>>(psi == null)
+        ctParam.setInferred<CtParameter<Any>>(false)
+
+
         ctParam.transformAndAddAnnotations(declaration, data)
 
         // Modifiers
@@ -1098,8 +1108,19 @@ internal class IrTreeBuilder(
             invocation.setArguments<CtInvocation<Any>>(arguments)
         } else {
             if(irCall.valueArgumentsCount > 0) {
-                for(i in 0 until irCall.valueArgumentsCount) {
-                    val irExpr = irCall.getValueArgumentNotReceiver(i) ?: continue
+                var start = 0
+                if(irCall.symbol.descriptor is FunctionInvokeDescriptor) {
+                    val receiver = helper.getReceiver(irCall)
+                    if(receiver == null || !receiver.type.hasAnnotation(FqName("kotlin.ExtensionFunctionType"))) {
+                        val psi =
+                            getSourceHelper(data).getSourceElements(irCall.startOffset, irCall.endOffset).firstIsInstanceOrNull<KtCallExpression>()
+                        val psiValArgCount = psi?.valueArguments?.size ?: irCall.valueArgumentsCount
+                        start = if(psiValArgCount == irCall.valueArgumentsCount - 1) 1 else 0
+                    }
+                }
+
+                for(i in start until irCall.valueArgumentsCount) {
+                    val irExpr = irCall.getValueArgument(i) ?: continue
                     if(irExpr is IrVararg) {
                         arguments.addAll(visitVararg(irExpr, data).compositeResultSafe)
                     } else {

@@ -134,6 +134,7 @@ internal class IrTreeBuilderHelper(private val irTreeBuilder: IrTreeBuilder) {
                 return "this" to null
             }
         }
+        if(text.matches("this([.].+)?".toRegex())) return "this" to null
         return null to null // Implicit this
     }
 

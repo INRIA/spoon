@@ -131,6 +131,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
 
         val (typeArgs, carry) = visitTypeArguments(if(kotlinType is AbbreviatedType) kotlinType.abbreviation else kotlinType)
         ctRef.setActualTypeArguments<CtTypeReference<*>>(typeArgs)
+        if(ctRef.simpleName.contains("[<>]".toRegex())) ctRef.setImplicit<CtTypeReference<*>>(true)
         return ctRef.addCarry(carry)
     }
 
@@ -294,9 +295,9 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         ))
         if(irCall.valueArgumentsCount > 0) {
             val args = ArrayList<CtTypeReference<*>>()
-            // Using getArguments() includes receiver parameter
+
             for(i in 0 until irCall.valueArgumentsCount) {
-                val arg = irCall.getValueArgumentNotReceiver(i) ?: continue
+                val arg = irCall.getValueArgument(i) ?: continue
                 args.add(getNewTypeReference<Any>(arg.type, true))
             }
             executableReference.setParameters<CtExecutableReference<T>>(args)
@@ -314,9 +315,9 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         ))
         if(functionRef.valueArgumentsCount > 0) {
             val args = ArrayList<CtTypeReference<*>>()
-            // Using getArguments() includes receiver parameter
+
             for(i in 0 until functionRef.valueArgumentsCount) {
-                val arg = functionRef.getValueArgumentNotReceiver(i) ?: continue
+                val arg = functionRef.getValueArgument(i) ?: continue
                 args.add(getNewTypeReference<Any>(arg.type, true) )
             }
             executableReference.setParameters<CtExecutableReference<T>>(args)

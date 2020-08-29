@@ -62,7 +62,8 @@ class DefaultKotlinPrettyPrinter(
         }
     }
 
-    private fun visitArgumentList(list: List<CtExpression<*>>) {
+    private fun visitArgumentList(listWithImplicits: List<CtExpression<*>>) {
+        val list = listWithImplicits.filterNot { it.isImplicit }
         if(list.isEmpty()) {
             adapter write LEFT_ROUND and RIGHT_ROUND
             return
@@ -1088,10 +1089,10 @@ class DefaultKotlinPrettyPrinter(
         val modifierSet = getModifiersMetadata(param)
         adapter writeModifiers modifierSet
         adapter writeIdentifier param.simpleName
-        if(!param.type.isImplicit) {
+        if(!param.type.isImplicit && !param.isInferred) {
             adapter.writeColon(DefaultPrinterAdapter.ColonContext.DECLARATION_TYPE)
+            visitCtTypeReference(param.type)
         }
-        visitCtTypeReference(param.type)
 
         val defaultValue = param.getMetadata(KtMetadataKeys.PARAMETER_DEFAULT_VALUE) as? CtExpression<*>?
         if(defaultValue != null) {
@@ -1119,7 +1120,7 @@ class DefaultKotlinPrettyPrinter(
     private fun visitFieldAccess(fieldAccess: CtFieldAccess<*>) {
         enterCtExpression(fieldAccess)
         visitTarget(fieldAccess)
-        fieldAccess.variable.accept(this)
+        visitCtFieldReference(fieldAccess.variable)
         exitCtExpression(fieldAccess)
     }
 
