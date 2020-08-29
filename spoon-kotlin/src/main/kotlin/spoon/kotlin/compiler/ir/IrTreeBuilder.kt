@@ -448,9 +448,14 @@ internal class IrTreeBuilder(
 
     override fun visitSetField(expression: IrSetField, data: ContextData): TransformResult<CtElement> {
         val propertyRef = referenceBuilder.getNewVariableReference<Any>(expression.symbol.descriptor) as CtFieldReference<*>
+        val target = expression.receiver?.accept(this, data)?.resultUnsafe
         val isActualField = helper.isActualField(expression, data.file)
+
         propertyRef.putKtMetadata(KtMetadataKeys.IS_ACTUAL_FIELD, KtMetadata.bool(isActualField))
         val write = createVariableWrite(null, propertyRef)
+        if(target != null) {
+            (write as CtFieldWrite<Any>).setTarget<CtFieldWrite<Any>>(expressionOrWrappedInStatementExpression(target))
+        }
         val rhs = expression.value.accept(this, data).resultUnsafe
         return createAssignment(write, expressionOrWrappedInStatementExpression(rhs)).definite()
     }
