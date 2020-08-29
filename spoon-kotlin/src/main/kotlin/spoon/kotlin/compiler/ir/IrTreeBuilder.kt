@@ -979,6 +979,9 @@ internal class IrTreeBuilder(
             }
             return visitIfThenElse(expression, data)
         }
+        if(expression.origin == IrStatementOrigin.IF) {
+            return visitCascadingIf(expression, data)
+        }
 
         // Use only when as expression
         val ctSwitch = core.createSwitchExpression<Any,Any>()
@@ -1042,14 +1045,36 @@ internal class IrTreeBuilder(
         return case.definite()
     }
 
-    fun visitIfThenElse(ifThenElse: IrIfThenElseImpl, data: ContextData): DefiniteTransformResult<CtIf> {
+    private fun visitCascadingIf(irWhen: IrWhen, data: ContextData, currentBranch: Int = 0): DefiniteTransformResult<CtIf> {
+        val ctIf = core.createIf()
+        val branch = irWhen.branches[currentBranch]
+        ctIf.setCondition<CtIf>(
+            expressionOrWrappedInStatementExpression(branch.condition.accept(this, data).resultUnsafe) as CtExpression<Boolean>
+        )
+        ctIf.setThenStatement<CtIf>(statementOrWrappedInImplicitReturn(branch.result.accept(this, data).resultUnsafe))
+
+        val elseBranch: CtStatement? = if(currentBranch < irWhen.branches.size - 1) {
+             if(irWhen.branches[currentBranch+1] is IrElseBranch) {
+                statementOrWrappedInImplicitReturn(
+                    irWhen.branches[currentBranch + 1].result.accept(this, data).resultUnsafe)
+            } else {
+                visitCascadingIf(irWhen, data, currentBranch+1).resultSafe
+            }
+        } else null
+        ctIf.setElseStatement<CtIf>(elseBranch)
+        val type = referenceBuilder.getNewTypeReference<Any>(irWhen.branches[currentBranch].result.type)
+        ctIf.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE, KtMetadata.element(type))
+        return ctIf.definite()
+    }
+
+    private fun visitIfThenElse(ifThenElse: IrIfThenElseImpl, data: ContextData): DefiniteTransformResult<CtIf> {
         val ctIf = core.createIf()
         val thenBranch = ifThenElse.branches.first { it !is IrElseBranch }
         val elseBranch = ifThenElse.branches.firstIsInstanceOrNull<IrElseBranch>()
         val condition = thenBranch.condition.accept(this, data).resultUnsafe
         val thenResult = thenBranch.result.accept(this, data).resultUnsafe
 
-        ctIf.setCondition<CtIf>(condition as CtExpression<Boolean>)
+        ctIf.setCondition<CtIf>(expressionOrWrappedInStatementExpression(condition) as CtExpression<Boolean>)
         ctIf.setThenStatement<CtIf>(statementOrWrappedInImplicitReturn(thenResult))
         if(elseBranch != null) {
             val elseResult = elseBranch.result.accept(this,data).resultUnsafe
