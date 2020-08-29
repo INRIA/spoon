@@ -131,7 +131,7 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
 
         val (typeArgs, carry) = visitTypeArguments(if(kotlinType is AbbreviatedType) kotlinType.abbreviation else kotlinType)
         ctRef.setActualTypeArguments<CtTypeReference<*>>(typeArgs)
-        if(ctRef.simpleName.contains("[<>]".toRegex())) ctRef.setImplicit<CtTypeReference<*>>(true)
+        if(ctRef.simpleName.contains("[<>]".toRegex()) || kotlinType is FlexibleType) ctRef.setImplicit<CtTypeReference<*>>(true)
         return ctRef.addCarry(carry)
     }
 
