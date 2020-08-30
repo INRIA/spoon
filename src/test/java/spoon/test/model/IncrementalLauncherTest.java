@@ -49,7 +49,6 @@ public class IncrementalLauncherTest {
 	final File CHANGED_FILES_DIR = new File(RESOURCES_DIR, "changed-files");
 	final File WORKING_DIR = new File(RESOURCES_DIR, "temp");
 	final File CACHE_DIR = new File(WORKING_DIR, "cache");
-
 	private CtType<?> getTypeByName(Collection<CtType<?>> types, String name) {
 		return types.stream().filter(t -> t.getSimpleName().equals(name)).findFirst().get();
 	}
@@ -221,6 +220,20 @@ public class IncrementalLauncherTest {
 		CtExpression<?> lhs2 = assignment2.getAssigned();
 		assertTrue("float".equals(assignment2.getType().getSimpleName()));
 		assertTrue("float".equals(lhs2.getType().getSimpleName()));
+	}
+
+	@Test
+	public void testSaveCacheIssue3404() {
+		Set<File> inputResources = new HashSet<>();
+		inputResources.add(new File("./src/test/resources/incremental/saveCacheIssue3404/A.java"));
+		
+		//Set<String> sourceClasspath = Collections.singleton("./src/test/resources/incremental/saveCacheIssue3404/soot_jar/sootclasses-trunk-jar-with-dependencies.jar");
+		Set<String> sourceClasspath = Collections.EMPTY_SET;
+		
+		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+		assertTrue(launcher1.changesPresent());
+		CtModel originalModel = launcher1.buildModel();
+		launcher1.saveCache();
 	}
 
 	@Before
