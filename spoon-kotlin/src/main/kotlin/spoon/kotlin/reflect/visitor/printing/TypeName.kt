@@ -2,6 +2,7 @@ package spoon.kotlin.reflect.visitor.printing
 
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.reflect.reference.CtTypeReference
+import spoon.reflect.reference.CtWildcardReference
 
 /**
  * Convenience class for handling type names.
@@ -30,7 +31,8 @@ internal data class TypeName(val packageName: String, val simpleName: String, va
             val prefix = type.`package`?.qualifiedName ?: ""
             val nullable = type.getMetadata(KtMetadataKeys.TYPE_REF_NULLABLE) as? Boolean? ?: false
             val suffix = if(nullable) "?" else ""
-            return TypeName(prefix, type.simpleName, suffix)
+            val simpleName = if(type is CtWildcardReference) "*" else type.simpleName
+            return TypeName(prefix, simpleName, suffix)
         }
     }
 }
