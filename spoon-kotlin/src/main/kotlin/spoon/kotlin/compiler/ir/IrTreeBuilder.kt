@@ -1264,7 +1264,11 @@ internal class IrTreeBuilder(
                 // Ignore the trailing comparison and make a binary operator out of the compareTo-call
                 return visitBinaryOperator(tempLhs, data)
             }
-            tempRhs = irCall.getValueArgument(1)!!
+            tempRhs = if(irCall.getValueArgument(1) == null) {
+                irCall.extensionReceiver!!
+            } else {
+                irCall.getValueArgument(1)!!
+            }
         } else if(irCall.valueArgumentsCount == 1) {
             tempLhs = irCall.dispatchReceiver ?: irCall.extensionReceiver!!
             tempRhs = irCall.getValueArgument(0)!!
