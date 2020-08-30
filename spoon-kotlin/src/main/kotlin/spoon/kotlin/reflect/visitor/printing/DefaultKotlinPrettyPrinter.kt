@@ -1339,12 +1339,11 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun <T : Any?> visitCtTypeReference(typeRef: CtTypeReference<T>) {
-        if(typeRef.isImplicit) return
-
         visitCtTypeReference(typeRef, true)
     }
 
-    private fun visitCtTypeReference(typeRef: CtTypeReference<*>, withGenerics: Boolean): Boolean {
+    private fun visitCtTypeReference(typeRef: CtTypeReference<*>, withGenerics: Boolean, forceGenerics: Boolean = false): Boolean {
+        if(!forceGenerics && typeRef.isImplicit) return false
         if(arrowSyntaxForFunctionType && typeRef.qualifiedName.matches("kotlin.Function[0-9]+".toRegex())) {
             visitFunctionNType(typeRef)
             return true
@@ -1371,7 +1370,7 @@ class DefaultKotlinPrettyPrinter(
         adapter writeIdentifier name.simpleNameWithoutNullability
 
         if(withGenerics)
-            visitTypeArgumentsList(typeRef.actualTypeArguments, false)
+            visitTypeArgumentsList(typeRef.actualTypeArguments, forceGenerics)
 
         adapter write name.suffix
         return true
@@ -1446,7 +1445,7 @@ class DefaultKotlinPrettyPrinter(
         if(typeArguments.isNotEmpty() &&
             (forceExplicitTypeArgs || forceExplicitTypes || typeArguments.any { !it.isImplicit })) {
             adapter write LEFT_ANGLE
-            visitCommaSeparatedList(typeArguments)
+            visitCommaSeparatedList(typeArguments) { visitCtTypeReference(it, true, true) }
             adapter write RIGHT_ANGLE
         }
     }
