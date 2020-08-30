@@ -50,4 +50,8 @@ class KtStatementExpressionImpl<T>(override var statement: CtStatement) : CtExpr
     override fun <E : CtElement?> putMetadata(key: String, `val`: Any?): E {
         return statement.putMetadata<E>(key, `val`)
     }
+
+    override fun isImplicit(): Boolean {
+        return statement.isImplicit
+    }
 }
