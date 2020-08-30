@@ -1872,6 +1872,9 @@ internal class IrTreeBuilder(
         if(label != null) {
             ctContinue.setTargetLabel<CtContinue>(label)
         }
+        ctContinue.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE, KtMetadata.element(
+            referenceBuilder.getNewTypeReference<Any>(jump.type)
+        ))
         return ctContinue.definite()
     }
 
@@ -1881,6 +1884,9 @@ internal class IrTreeBuilder(
         if(label != null) {
             ctBreak.setTargetLabel<CtBreak>(jump.label)
         }
+        ctBreak.putKtMetadata(KtMetadataKeys.KT_STATEMENT_TYPE, KtMetadata.element(
+            referenceBuilder.getNewTypeReference<Any>(jump.type)
+        ))
         return ctBreak.definite()
     }
 
