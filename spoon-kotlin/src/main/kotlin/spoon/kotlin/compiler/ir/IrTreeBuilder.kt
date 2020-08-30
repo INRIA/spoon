@@ -1506,7 +1506,7 @@ internal class IrTreeBuilder(
 
         if(expression.origin != IrStatementOrigin.EQ) TODO()
         val lhs = createVariableWrite(null, referenceBuilder.getNewVariableReference<Any>(expression.symbol.descriptor)!!)
-        val rhs = expression.value.accept(this, data).resultUnsafe as CtExpression<Any>
+        val rhs = expressionOrWrappedInStatementExpression(expression.value.accept(this, data).resultUnsafe)
         return createAssignment(lhs, rhs).also {
             it.setType<CtExpression<*>>(referenceBuilder.getNewTypeReference(expression.type))
         }.definite()
