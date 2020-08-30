@@ -72,6 +72,13 @@ class DefaultKotlinPrettyPrinter(
         // Check if a lambda can be moved out of parenthesis if it's the last argument
         fun CtElement.isMovableLambda(): Boolean {
             val parent = this.parent
+            if(parent is CtInvocation<*> &&
+                 parent.executable.declaringType?.typeDeclaration?.getMethodsByName(
+                    parent.executable.simpleName
+                )?.any { it.parameters.any { param -> param.isVarArgs } } == true) {
+                return false
+            }
+
             return this is CtLambda<*> &&
                     parent !is CtConstructorCall<*> &&
                     !(parent is CtInvocation<*> && parent.executable.isConstructor) &&
