@@ -49,6 +49,7 @@ public class IncrementalLauncherTest {
 	final File CHANGED_FILES_DIR = new File(RESOURCES_DIR, "changed-files");
 	final File WORKING_DIR = new File(RESOURCES_DIR, "temp");
 	final File CACHE_DIR = new File(WORKING_DIR, "cache");
+
 	private CtType<?> getTypeByName(Collection<CtType<?>> types, String name) {
 		return types.stream().filter(t -> t.getSimpleName().equals(name)).findFirst().get();
 	}
