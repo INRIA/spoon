@@ -222,6 +222,8 @@ public class IncrementalLauncherTest {
 		assertTrue("float".equals(lhs2.getType().getSimpleName()));
 	}
 
+	@GitHubIssue("3404")
+	@Ignore("UnresolvedBug")
 	@Test
 	public void testSaveCacheIssue3404() {
 		Set<File> inputResources = new HashSet<>();
