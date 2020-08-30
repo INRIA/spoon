@@ -1259,7 +1259,7 @@ internal class IrTreeBuilder(
         val tempRhs: IrExpression
         if(irCall.valueArgumentsCount == 2) {
             tempLhs = irCall.getValueArgument(0)!!
-            if(tempLhs is IrCall && tempLhs.symbol.descriptor.name.asString() == "compareTo") {
+            if(tempLhs is IrCall && tempLhs.origin != null && tempLhs.symbol.descriptor.name.asString() == "compareTo") {
                 // Ex. a < b. If type of a implements compareTo operator that translates to a.compareTo(b) < 0
                 // Ignore the trailing comparison and make a binary operator out of the compareTo-call
                 return visitBinaryOperator(tempLhs, data)

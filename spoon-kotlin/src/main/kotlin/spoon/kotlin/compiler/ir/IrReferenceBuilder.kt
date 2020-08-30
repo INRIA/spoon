@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.IrTypeProjectionImpl
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.resolve.DescriptorUtils
 import org.jetbrains.kotlin.types.*
 import org.jetbrains.kotlin.types.typeUtil.representativeUpperBound
 import spoon.kotlin.ktMetadata.KtMetadataKeys
@@ -131,6 +132,11 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
 
         val (typeArgs, carry) = visitTypeArguments(if(kotlinType is AbbreviatedType) kotlinType.abbreviation else kotlinType)
         ctRef.setActualTypeArguments<CtTypeReference<*>>(typeArgs)
+        if(kotlinType.constructor.declarationDescriptor != null) {
+            if(DescriptorUtils.isLocal(kotlinType.constructor.declarationDescriptor!!)) {
+                ctRef.setSimpleName<CtTypeReference<*>>("1" + ctRef.simpleName)
+            }
+        }
         if(ctRef.simpleName.contains("[<>]".toRegex()) || kotlinType is FlexibleType) ctRef.setImplicit<CtTypeReference<*>>(true)
         return ctRef.addCarry(carry)
     }

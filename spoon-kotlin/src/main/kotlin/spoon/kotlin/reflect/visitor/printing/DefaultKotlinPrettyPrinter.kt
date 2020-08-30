@@ -1358,19 +1358,22 @@ class DefaultKotlinPrettyPrinter(
         }
         val projectionModifiers = typeRef.getMetadata(KtMetadataKeys.KT_MODIFIERS) as Set<KtModifierKind>?
         adapter writeModifiers projectionModifiers
-
-        if(typeRef.declaringType != null) {
-            visitCtTypeReference(typeRef.declaringType, true)
-            adapter write '.'
-        } else if (typeRef.`package` != null && !typeRef.`package`.isUnnamedPackage) {
-            visitCtPackageReference(typeRef.`package`)
-            adapter write '.'
+        
+        if(!typeRef.isLocalType) {
+            if(typeRef.declaringType != null) {
+                visitCtTypeReference(typeRef.declaringType, true)
+                adapter write '.'
+            } else if (typeRef.`package` != null && !typeRef.`package`.isUnnamedPackage) {
+                visitCtPackageReference(typeRef.`package`)
+                adapter write '.'
+            }
         }
+
         val name = TypeName.build(typeRef)
         adapter writeIdentifier name.simpleNameWithoutNullability
 
-        if(withGenerics)
-            visitTypeArgumentsList(typeRef.actualTypeArguments, forceGenerics)
+        if(withGenerics || forceGenerics)
+            visitTypeArgumentsList(typeRef.actualTypeArguments, true)
 
         adapter write name.suffix
         return true

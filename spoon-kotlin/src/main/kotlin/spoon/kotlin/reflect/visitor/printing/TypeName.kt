@@ -31,7 +31,7 @@ internal data class TypeName(val packageName: String, val simpleName: String, va
             val prefix = type.`package`?.qualifiedName ?: ""
             val nullable = type.getMetadata(KtMetadataKeys.TYPE_REF_NULLABLE) as? Boolean? ?: false
             val suffix = if(nullable) "?" else ""
-            val simpleName = if(type is CtWildcardReference) "*" else type.simpleName
+            val simpleName = if(type is CtWildcardReference) "*" else type.simpleName.dropWhile { it.isDigit() }
             return TypeName(prefix, simpleName, suffix)
         }
     }
