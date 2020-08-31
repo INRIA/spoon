@@ -194,7 +194,6 @@ public class ReplaceScanner extends CtScanner {
 		// for some reason, parseClass adds an empty static block
 		((CtAnonymousExecutable) listener.getAnonymousExecutables().get(0)).delete();
 		listener.setSimpleName(listenerName);
-		listener.setParent(null);
 		target.addNestedType(listener);
 		final List<CtTypeReference> references = listener.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
