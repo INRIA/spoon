@@ -1,18 +1,9 @@
 /**
- * Copyright (C) 2006-2018 INRIA and contributors
- * Spoon - http://spoon.gforge.inria.fr/
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify
- * and/or redistribute the software under the terms of the CeCILL-C license as
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.test.model;
 
@@ -25,11 +16,9 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeInformation;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.TypeFactory;
-import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -37,25 +26,33 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class TypeTest {
 
 	@Test
-	public void testGetAllExecutables() throws Exception {
+	public void testGetDifferentElements() throws Exception {
+		// contract: All elements of a model must be found.
 		CtClass<?> type = build("spoon.test.model", "Foo");
-		assertEquals(1, type.getDeclaredFields().size());
-		assertEquals(3, type.getMethods().size());
-		assertEquals(4, type.getDeclaredExecutables().size());
-		assertEquals(2, type.getAllFields().size());
-		assertEquals(1, type.getConstructors().size());
-		assertEquals(16, type.getAllMethods().size());
-		assertEquals(12, type.getFactory().Type().get(Object.class).getAllMethods().size());
+		assertAll(
+				() -> assertEquals(1, type.getDeclaredFields().size()),
+				() -> assertEquals(3, type.getMethods().size()),
+				() -> assertEquals(4, type.getDeclaredExecutables().size()),
+				() -> assertEquals(2, type.getAllFields().size()),
+				() -> assertEquals(1, type.getConstructors().size()),
+				() -> assertEquals(16, type.getAllMethods().size()),
+				() -> assertEquals(12, type.getFactory().Type().get(Object.class).getAllMethods().size()));
 
 		// we have 3  methods in Foo + 2 in Baz - 1 common in Foo.bar (m) + 12 in Object + 1 explicit constructor in Foo
-		Collection<CtExecutableReference<?>> allExecutables = type.getAllExecutables();
-		assertEquals(17, allExecutables.size());
+		/*
+		This assertion is needed because in java.lang.object the method registerNative was removed.
+		See https://bugs.openjdk.java.net/browse/JDK-8232801 for details.
+		To fit this change and support new jdks and the CI both values are correct.
+		In jdk8 object has 12 methods and in newer jdk object has 11
+		 */
+		assertTrue(17 == type.getAllExecutables().size() || 16 == type.getAllExecutables().size());
 	}
 
 	@Test
