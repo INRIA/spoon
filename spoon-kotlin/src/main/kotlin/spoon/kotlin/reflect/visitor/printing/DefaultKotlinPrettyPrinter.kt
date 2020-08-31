@@ -146,6 +146,13 @@ class DefaultKotlinPrettyPrinter(
         }
     }
 
+    private fun shouldAddPar(e: CtStatement): Boolean {
+        if(e.parent is KtStatementExpression<*>) {
+            return shouldAddPar(e.parent as CtExpression<*>)
+        }
+        return false
+    }
+
     private fun shouldAddPar(e: CtExpression<*>): Boolean {
         if(e.typeCasts.isNotEmpty()) return true
         if((e.getMetadata(KtMetadataKeys.ACCESS_IS_CHECK_NOT_NULL) as? Boolean?) == true) return true
@@ -154,6 +161,7 @@ class DefaultKotlinPrettyPrinter(
             is CtForEach -> false
             is CtBinaryOperator<*>, is CtUnaryOperator<*> ->
                 e is CtAssignment<*,*> || e is CtUnaryOperator<*> || e is CtBinaryOperator<*>
+                        || (e is KtStatementExpression<*> && e.statement is CtIf)
             is CtTargetedExpression<*,*> -> {
                 e.parent.target == e && (e is CtBinaryOperator<*>
                         || e is CtAssignment<*,*>
@@ -171,10 +179,15 @@ class DefaultKotlinPrettyPrinter(
         if(label != null) {
             adapter write label and '@' and SPACE
         }
+        if(shouldAddPar(s)) {
+            adapter write LEFT_ROUND
+        }
     }
 
     private fun exitCtStatement(s: CtStatement) {
-        // Do nothing
+        if(shouldAddPar(s)) {
+            adapter write RIGHT_ROUND
+        }
     }
 
 
@@ -695,6 +708,7 @@ class DefaultKotlinPrettyPrinter(
     }
 
     override fun visitCtIf(ctIf: CtIf) {
+        enterCtStatement(ctIf)
         adapter write "if" and SPACE and LEFT_ROUND
         ctIf.condition.accept(this)
         adapter write RIGHT_ROUND and SPACE
@@ -706,6 +720,7 @@ class DefaultKotlinPrettyPrinter(
             adapter write " else "
             elseStmt.accept(this)
         }
+        exitCtStatement(ctIf)
     }
 
     override fun <T : Any?> visitCtFieldReference(fieldRef: CtFieldReference<T>) {

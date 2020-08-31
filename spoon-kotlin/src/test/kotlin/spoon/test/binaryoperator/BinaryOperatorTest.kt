@@ -193,7 +193,7 @@ class BinaryOperatorTest {
         op = c.getInitializer("b2") as CtBinaryOperator<*>
         assertEquals(c.factory.Type().createReference<CtTypeReference<Int>>("kotlin.Int"), op.type)
         assertEquals(KtBinaryOperatorKind.ELVIS, op.getMetadata(KtMetadataKeys.KT_BINARY_OPERATOR_KIND))
-        assertEquals("b ?: if (b == null) 1 else b1", pp.prettyprint(op))
+        assertEquals("b ?: (if (b == null) 1 else b1)", pp.prettyprint(op))
     }
 
     @Test
