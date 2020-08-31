@@ -16,6 +16,7 @@
  */
 package spoon.generating.replace;
 
+import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.generating.ReplacementVisitorGenerator;
 import spoon.reflect.code.CtAssignment;
@@ -27,8 +28,10 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -43,6 +46,7 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.util.ModelList;
 import spoon.support.util.ModelSet;
+import spoon.support.visitor.replace.ReplaceListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -185,8 +189,11 @@ public class ReplaceScanner extends CtScanner {
 
 	private CtClass createListenerClass(Factory factory, String listenerName, CtTypeReference getterType, Type type) {
 		CtClass listener;
-		listener = factory.Class().get(TARGET_REPLACE_PACKAGE + ".CtListener").clone();
+		// prototype class to use, we'll change its name and code later
+		listener = Launcher.parseClass("class CtListener implements ReplaceListener<CtElement> { \n private final CtElement element CtListener(CtElement element) { this.element = element; }} \n \n @java.lang.Override public void set(CtElement replace) {}");
+		((CtAnonymousExecutable) listener.getAnonymousExecutables().get(0)).delete();
 		listener.setSimpleName(listenerName);
+		listener.setParent(null);
 		target.addNestedType(listener);
 		final List<CtTypeReference> references = listener.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
 			@Override
