@@ -261,6 +261,18 @@ public class CompilationTest {
 	}
 
 	@Test
+	public void testModuleResolution() throws InterruptedException {
+		Launcher launcher = new Launcher();
+
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.getEnvironment().setSpoonProgress(new ProgressLogger(launcher.getEnvironment()));
+		launcher.addInputResource("./src/test/resources/simple-module");
+		launcher.buildModel();
+		
+		assertTrue(launcher.getModel().getAllModules().iterator().next().getSimpleName().equals("spoonmod"));
+	}
+
+	@Test
 	public void testFilterResourcesDir() {
 		// shows how to filter input java dir
 		// only in package called "reference"
