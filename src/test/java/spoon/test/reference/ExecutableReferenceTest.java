@@ -1,23 +1,15 @@
 /**
- * Copyright (C) 2006-2018 INRIA and contributors
- * Spoon - http://spoon.gforge.inria.fr/
+ * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
- * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify
- * and/or redistribute the software under the terms of the CeCILL-C license as
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ * Copyright (C) 2006-2019 INRIA and contributors
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.test.reference;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.OutputType;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtExecutable;
@@ -35,8 +27,9 @@ import spoon.test.reference.testclasses.Kuu;
 import spoon.test.reference.testclasses.Stream;
 import spoon.test.reference.testclasses.SuperFoo;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -44,6 +37,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class ExecutableReferenceTest {
 	@Test
@@ -124,25 +118,41 @@ public class ExecutableReferenceTest {
 	}
 
 	@Test
-	public void testSpecifyGetAllExecutablesMethod() {
-		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput" });
+	public void testGetAllExecutablesMethodForInterface() {
+		// contract: As interfaces doesn't extend object, the Foo interface must have 1 method and no method from object.
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
 		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses");
 		launcher.run();
+		CtInterface<Foo> foo = launcher.getFactory().Interface().get(spoon.test.reference.testclasses.Foo.class);
+		Collection<CtExecutableReference<?>> fooExecutables = foo.getAllExecutables();
+		assertAll(
+				() ->assertEquals(1, fooExecutables.size()),
+				() ->assertEquals(foo.getSuperInterfaces().iterator().next().getTypeDeclaration().getMethod("m").getReference(),
+						launcher.getFactory().Interface().get(SuperFoo.class).getMethod("m").getReference()));
+	}
 
-		final CtInterface<spoon.test.reference.testclasses.Foo> foo = launcher.getFactory().Interface().get(spoon.test.reference.testclasses.Foo.class);
-		final List<CtExecutableReference<?>> fooExecutables = foo.getAllExecutables().stream().collect(Collectors.toList());
-		assertEquals(1, fooExecutables.size());
-		assertEquals(foo.getSuperInterfaces().stream().findFirst().get().getTypeDeclaration().getMethod("m").getReference(),  launcher.getFactory().Interface().get(SuperFoo.class).getMethod("m").getReference());
-
-		final CtClass<Bar> bar = launcher.getFactory().Class().get(Bar.class);
-		final List<CtExecutableReference<?>> barExecutables = bar.getAllExecutables().stream().collect(Collectors.toList());
-		assertEquals(12 /* object */ + 1 /* constructor */, barExecutables.size());
-
-		final CtInterface<Kuu> kuu = launcher.getFactory().Interface().get(Kuu.class);
-		final List<CtExecutableReference<?>> kuuExecutables = kuu.getAllExecutables().stream().collect(Collectors.toList());
-		assertEquals(1 /* default method in interface */, kuuExecutables.size());
-		assertEquals(kuu.getMethod("m").getReference(), kuuExecutables.get(0));
+	@Test
+	public void testGetAllExecutablesMethodForClasses() {
+		// contract: As classes extend object and the Bar class has 1 method, getAllExecutables for Bar must return 12/13.
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
+		launcher.addInputResource("./src/test/java/spoon/test/reference/testclasses");
+		launcher.run();
+		CtClass<Bar> bar = launcher.getFactory().Class().get(Bar.class);
+		Collection<CtExecutableReference<?>> barExecutables = bar.getAllExecutables();
+		/*
+		This assertion is needed because in java.lang.object the method registerNative was removed.
+		See https://bugs.openjdk.java.net/browse/JDK-8232801 for details.
+		To fit this change and support new jdks and the CI both values are correct.
+		In jdk8 object has 12 methods and in newer jdk object has 11
+		 */
+		assertTrue(barExecutables.size() == 12 || barExecutables.size() == 13);
+		CtInterface<Kuu> kuu = launcher.getFactory().Interface().get(Kuu.class);
+		List<CtExecutableReference<?>> kuuExecutables = new ArrayList<>(kuu.getAllExecutables());
+		assertAll(
+				() -> assertEquals(1 /* default method in interface */, kuuExecutables.size()),
+				() -> assertEquals(kuu.getMethod("m").getReference(), kuuExecutables.get(0)));
 	}
 
 	@Test
