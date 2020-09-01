@@ -195,7 +195,7 @@ public class ReplaceScanner extends CtScanner {
 					       + "@java.lang.Override public void set(CtElement replace) {}\n"
 					       + "}");
 		// for some reason, parseClass adds an empty static block
-		((CtAnonymousExecutable) listener.getAnonymousExecutables().get(0)).delete();
+		//((CtAnonymousExecutable) listener.getAnonymousExecutables().get(0)).delete();
 		listener.setSimpleName(listenerName);
 		target.addNestedType(listener);
 		final List<CtTypeReference> references = listener.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
