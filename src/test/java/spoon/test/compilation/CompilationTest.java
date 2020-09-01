@@ -262,10 +262,13 @@ public class CompilationTest {
 
 	@Test
 	public void testModuleResolution() throws InterruptedException {
+		// contract: module name is set from the info extract from the module-info.java file
+		// when such file exists
 		Launcher launcher = new Launcher();
 
+		// contract: ComplianceLevel must be >=9 to build a model from an input resource
+		// that contains module-info.java file(s)
 		launcher.getEnvironment().setComplianceLevel(9);
-		launcher.getEnvironment().setSpoonProgress(new ProgressLogger(launcher.getEnvironment()));
 		launcher.addInputResource("./src/test/resources/simple-module");
 		launcher.buildModel();
 		
