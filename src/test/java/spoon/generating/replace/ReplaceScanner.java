@@ -192,7 +192,7 @@ public class ReplaceScanner extends CtScanner {
 		// prototype class to use, we'll change its name and code later
 		listener = Launcher.parseClass("class XXX implements ReplaceListener<CtElement> { \n"
 					       + "private final CtElement element XXX(CtElement element) { this.element = element; }\n"
-					       + "@java.lang.Override public void set(CtElement replace) {}
+					       + "@java.lang.Override public void set(CtElement replace) {}\n"
 					       + "}");
 		// for some reason, parseClass adds an empty static block
 		((CtAnonymousExecutable) listener.getAnonymousExecutables().get(0)).delete();
