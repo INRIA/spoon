@@ -19,17 +19,31 @@ package spoon.test.factory;
 import com.mysema.query.types.expr.ComparableExpressionBase;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.MavenLauncher;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtJavaDoc;
+import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.cu.position.NoSourcePosition;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtScanner;
 import spoon.test.factory.testclasses3.Cooking;
 import spoon.test.factory.testclasses3.Prepare;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -54,6 +68,51 @@ public class TypeFactoryTest {
 		ctTypeReference = launcher.getFactory().Code().createCtTypeReference(CtJavaDoc.CommentType.class);
 		assertEquals("CommentType", ctTypeReference.getSimpleName());
 		assertEquals("spoon.reflect.code.CtComment$CommentType", ctTypeReference.getQualifiedName());
+	}
+
+	@Test
+	public void gsonTestCase() throws ClassNotFoundException {
+		String projectRoot = "./src/test/resources/gsontest";
+		Launcher launcher = new MavenLauncher(projectRoot, MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
+		launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.buildModel();
+
+		Map<String, CtElement> typeByFile = new HashMap<>();
+        for (CtElement el : launcher.getModel().getAllTypes()) {
+            typeByFile.put(el.getPosition().getFile().getPath(), el);
+        }
+
+        Map<String, DocumentIndexer> indexers = new HashMap<>();
+        for (Map.Entry<String, CtElement> pathname : typeByFile.entrySet()) {
+            indexers.put(pathname.getKey(), new DocumentIndexer(pathname.getValue()));
+		}
+		
+		for (DocumentIndexer indexer : indexers.values()) {
+            indexer.visitReferences();
+        }
+	}
+
+	public class DocumentIndexer {
+		private CtElement spoonElement;
+	
+		public DocumentIndexer(CtElement spoonElement) {
+			this.spoonElement = spoonElement;
+		}
+
+		public void visitReferences() {
+			this.spoonElement.accept(new ReferencesVisitor());
+		}
+
+		private class ReferencesVisitor extends CtScanner {
+			@Override
+			public <T> void visitCtVariableRead(CtVariableRead<T> el) {
+				super.visitCtVariableRead(el);
+				if (el.getVariable().getDeclaration() == null) {
+					return;
+				}
+			}
+		}
 	}
 
 	@Test
