@@ -9,6 +9,7 @@ package spoon.support.visitor.replace;
 
 import spoon.reflect.declaration.CtElement;
 
+/** Interface for the AST node replacement infrastructure. The implementing subclasses are generated in internal classes in {@link spoon.support.visitor.replace.ReplacementVisitor} */
 public interface ReplaceListener<T extends CtElement> {
 	void set(T replace);
 }
