@@ -133,7 +133,7 @@ public class SpoonPom implements SpoonResource {
 		}
 	}
 
-	private void addModule(SpoonPom module) {
+	public void addModule(SpoonPom module) {
 		modules.add(module);
 	}
 
