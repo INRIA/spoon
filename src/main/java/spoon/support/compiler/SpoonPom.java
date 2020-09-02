@@ -35,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -165,9 +166,20 @@ public class SpoonPom implements SpoonResource {
 			sourcePath = build.getSourceDirectory();
 		}
 		if (sourcePath == null) {
-			sourcePath = Paths.get("src/main/java").toString();
+			sourcePath = getSourceDirectoryFromParent(getParentPom());
+			if (sourcePath == null) {
+				sourcePath = Paths.get("src/main/java").toString();
+			}
 		}
-		String absoluteSourcePath = Paths.get(directory.getAbsolutePath(), sourcePath).toString();
+		sourcePath = extractVariable(sourcePath);
+		Path path = Paths.get(sourcePath);
+
+		String absoluteSourcePath;
+		if (path.isAbsolute()) {
+			absoluteSourcePath = path.toString();
+		} else {
+			absoluteSourcePath = Paths.get(directory.getAbsolutePath(), sourcePath).toString();
+		}
 		File source = new File(absoluteSourcePath);
 		if (source.exists()) {
 			output.add(source);
@@ -183,6 +195,28 @@ public class SpoonPom implements SpoonResource {
 	}
 
 	/**
+	 * Climbs the pom.xml hierarchy until a model is found in which
+	 * a source directory is declared.
+	 * @return the uninterpolated source directory declared in the nearest ancestor
+	 */
+	private String getSourceDirectoryFromParent(SpoonPom parent) {
+		if (parent == null) {
+			return null;
+		}
+		String sourcePath = null;
+		Build build = parent.model.getBuild();
+		if (build != null) {
+			sourcePath = build.getSourceDirectory();
+			if (sourcePath == null && parent.getParentPom() != null) {
+				return getSourceDirectoryFromParent(parent.getParentPom());
+			}
+		} else if (parent.getParentPom() != null) {
+			return getSourceDirectoryFromParent(parent.getParentPom());
+		}
+		return sourcePath;
+	}
+
+	/**
 	 * Get the list of test directories of the project
 	 * @return the list of test directories
 	 */
@@ -195,9 +229,20 @@ public class SpoonPom implements SpoonResource {
 			sourcePath = build.getTestSourceDirectory();
 		}
 		if (sourcePath == null) {
-			sourcePath = Paths.get("src/test/java").toString();
+			sourcePath = getTestSourceDirectoryFromParent(getParentPom());
+			if (sourcePath == null) {
+				sourcePath = Paths.get("src/test/java").toString();
+			}
 		}
-		String absoluteSourcePath = Paths.get(directory.getAbsolutePath(), sourcePath).toString();
+		sourcePath = extractVariable(sourcePath);
+		Path path = Paths.get(sourcePath);
+
+		String absoluteSourcePath;
+		if (path.isAbsolute()) {
+			absoluteSourcePath = path.toString();
+		} else {
+			absoluteSourcePath = Paths.get(directory.getAbsolutePath(), sourcePath).toString();
+		}
 		File source = new File(absoluteSourcePath);
 		if (source.exists()) {
 			output.add(source);
@@ -210,6 +255,28 @@ public class SpoonPom implements SpoonResource {
 			output.addAll(module.getTestDirectories());
 		}
 		return output;
+	}
+
+	/**
+	 * Climbs the pom.xml hierarchy until a model is found in which
+	 * a test source directory is declared.
+	 * @return the uninterpolated test source directory declared in the nearest ancestor
+	 */
+	private String getTestSourceDirectoryFromParent(SpoonPom parent) {
+		if (parent == null) {
+			return null;
+		}
+		String sourcePath = null;
+		Build build = parent.model.getBuild();
+		if (build != null) {
+			sourcePath = build.getTestSourceDirectory();
+			if (sourcePath == null && parent.getParentPom() != null) {
+				return getTestSourceDirectoryFromParent(parent.getParentPom());
+			}
+		} else if (parent.getParentPom() != null) {
+			return getTestSourceDirectoryFromParent(parent.getParentPom());
+		}
+		return sourcePath;
 	}
 
 	/**
@@ -247,29 +314,31 @@ public class SpoonPom implements SpoonResource {
 	}
 
 	/**
-	 * Get the value of a property
+	 * Get the value of a property. Reference: https://maven.apache.org/ref/3.6.3/maven-model-builder/#Model_Interpolation
 	 * @param key the key of the property
 	 * @return the property value if key exists or null
 	 */
 	private String getProperty(String key) {
-		if ("project.version".equals(key)  || "pom.version".equals(key)) {
+		if ("project.version".equals(key) || "pom.version".equals(key) || "version".equals(key)) {
 			if (model.getVersion() != null) {
 				return model.getVersion();
 			} else if (model.getParent() != null) {
 				return model.getParent().getVersion();
 			}
-		} else if ("project.groupId".equals(key) || "pom.groupId".equals(key)) {
+		} else if ("project.groupId".equals(key) || "pom.groupId".equals(key) || "groupId".equals(key)) {
 			if (model.getGroupId() != null) {
 				return model.getGroupId();
 			} else if (model.getParent() != null) {
 				return model.getParent().getGroupId();
 			}
-		} else if ("project.artifactId".equals(key)  || "pom.artifactId".equals(key)) {
+		} else if ("project.artifactId".equals(key) || "pom.artifactId".equals(key) || "artifactId".equals(key)) {
 			if (model.getArtifactId() != null) {
 				return model.getArtifactId();
 			} else if (model.getParent() != null) {
 				return model.getParent().getArtifactId();
 			}
+		} else if ("project.basedir".equals(key) || "pom.basedir".equals(key) || "basedir".equals(key)) {
+			return pomFile.getParent();
 		}
 		String value = extractVariable(model.getProperties().getProperty(key));
 		if (value == null) {
