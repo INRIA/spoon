@@ -627,6 +627,29 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
+	public void testInnerClass() {
+		// contract: JavaReflectionTreeBuilder works on internal named classes
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/java/spoon/support/visitor/java/JavaReflectionTreeBuilderTest.java");
+		launcher.buildModel();
+		CtType ctType = launcher.getFactory().Type().get(Diff.class);
+		assertEquals("Diff", ctType.getSimpleName());
+		assertEquals(false, ctType.isAnonymous());
+		assertEquals(false, ctType.isShadow());
+
+		Class<?> klass = ctType.getActualClass();
+		assertEquals("spoon.support.visitor.java.JavaReflectionTreeBuilderTest$Diff", klass.getName());
+		assertEquals(false, klass.isAnonymousClass());
+
+		CtType<?> ctClass = new JavaReflectionTreeBuilder(launcher.getFactory()).scan(klass);
+		assertEquals("Diff", ctClass.getSimpleName());
+		assertEquals(false, ctClass.isAnonymous());
+		assertEquals(true, ctClass.isShadow());
+		assertEquals("element", ctClass.getFields().toArray(new CtField[0])[0].getSimpleName());
+	}
+
+
+	@Test
 	public void testAnonymousClass() {
 		// contract: JavaReflectionTreeBuilder works on anonymous classes
 
@@ -649,15 +672,14 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals(true, ctType.isAnonymous());
 		assertEquals(false, ctType.isShadow());
 
-		Class<?> klass =
-				ctType.getActualClass();
+		Class<?> klass = ctType.getActualClass();
 		assertEquals("spoon.support.visitor.java.JavaReflectionTreeBuilderTest$1", klass.getName());
 		assertEquals(true, klass.isAnonymousClass());
+
 		CtType<?> ctClass = new JavaReflectionTreeBuilder(launcher.getFactory()).scan(klass);
 		assertEquals("", ctClass.getSimpleName());
 		assertEquals(true, ctClass.isAnonymous());
 		assertEquals(true, ctClass.isShadow());
 		assertEquals("foo", ctClass.getMethods().toArray(new CtMethod[0])[0].getSimpleName());
-
 	}
 }
