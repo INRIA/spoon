@@ -644,18 +644,20 @@ public class JavaReflectionTreeBuilderTest {
 			public boolean matches(CtType element) {
 				return super.matches(element) && element.isAnonymous();
 			}
-		}).get(1);
-		assertEquals("2", ctType.getSimpleName());
+		}).get(0);
+		assertEquals("1", ctType.getSimpleName());
 		assertEquals(true, ctType.isAnonymous());
 		assertEquals(false, ctType.isShadow());
 
 		Class<?> klass =
 				ctType.getActualClass();
-		assertEquals("spoon.support.visitor.java.JavaReflectionTreeBuilderTest$2", klass.getName());
+		assertEquals("spoon.support.visitor.java.JavaReflectionTreeBuilderTest$1", klass.getName());
 		assertEquals(true, klass.isAnonymousClass());
 		CtType<?> ctClass = new JavaReflectionTreeBuilder(launcher.getFactory()).scan(klass);
 		assertEquals("", ctClass.getSimpleName());
 		assertEquals(true, ctClass.isAnonymous());
 		assertEquals(true, ctClass.isShadow());
+		assertEquals("foo", ctClass.getMethods().toArray(new CtMethod[0])[0].getSimpleName());
+
 	}
 }
