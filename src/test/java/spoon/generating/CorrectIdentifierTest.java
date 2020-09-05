@@ -73,6 +73,7 @@ public class CorrectIdentifierTest {
 		assertDoesNotThrow(() -> localVariableRef.setSimpleName("処理"));
 	}
 
+	@Ignore
 	@GitHubIssue(issueNumber = 3564)
 	@Test
 	public void fooTest() {
