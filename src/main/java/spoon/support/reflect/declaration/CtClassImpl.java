@@ -172,6 +172,11 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 
 	@Override
 	public boolean isAnonymous() {
+		// case 1: the java.lang.Class convention
+		if ("".equals(getSimpleName())) {
+			return true;
+		}
+		// case 2: the Spoon convention (the number in the class file)
 		try {
 			Integer.parseInt(getSimpleName());
 		} catch (NumberFormatException e) {
