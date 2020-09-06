@@ -52,8 +52,6 @@ object KtMetadataKeys {
 
     const val SUPER_TYPE_DELEGATE = "skt_key super type delegate : CtElement?"
 
-    const val TOP_LEVEL_DECLARING_CU = "skt_key top level declaring CU : CtCompilationUnit"
-
     const val LABEL = "skt_key label : String?"
 
     const val IS_DESTRUCTURED = "skt_key is destructured : Boolean"
@@ -61,5 +59,7 @@ object KtMetadataKeys {
 
     const val IS_CLASS_REFERENCE = "skt_key is class reference: Boolean"
     const val IS_PROPERTY_REFERENCE = "skt_key is property reference: Boolean"
+
+    const val PARAM_IS_VARARG = "skt_key param is vararg: Boolean"
 }
 
