@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.ir.types.impl.IrTypeProjectionImpl
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.DescriptorUtils
+import org.jetbrains.kotlin.resolve.calls.components.isVararg
 import org.jetbrains.kotlin.types.*
 import org.jetbrains.kotlin.types.typeUtil.representativeUpperBound
 import spoon.kotlin.ktMetadata.KtMetadataKeys
@@ -299,15 +300,16 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         executableReference.setDeclaringType<CtExecutableReference<T>>(getDeclaringTypeReference(
             irCall.symbol.descriptor.containingDeclaration
         ))
-        if(irCall.valueArgumentsCount > 0) {
-            val args = ArrayList<CtTypeReference<*>>()
 
-            for(i in 0 until irCall.valueArgumentsCount) {
-                val arg = irCall.getValueArgument(i) ?: continue
-                args.add(getNewTypeReference<Any>(arg.type, true))
+        executableReference.setParameters<CtExecutableReference<T>>(
+            irCall.symbol.descriptor.valueParameters.map { param ->
+                getNewTypeReference<Any>(param.type, true).also { ctRef ->
+                    if(param.isVararg) {
+                        ctRef.putKtMetadata(KtMetadataKeys.PARAM_IS_VARARG, KtMetadata.bool(true))
+                    }
+                }
             }
-            executableReference.setParameters<CtExecutableReference<T>>(args)
-        }
+        )
         return executableReference
     }
 
@@ -319,15 +321,9 @@ internal class IrReferenceBuilder(private val irTreeBuilder: IrTreeBuilder) {
         executableReference.setDeclaringType<CtExecutableReference<T>>(getDeclaringTypeReference(
             functionRef.symbol.descriptor.containingDeclaration
         ))
-        if(functionRef.valueArgumentsCount > 0) {
-            val args = ArrayList<CtTypeReference<*>>()
-
-            for(i in 0 until functionRef.valueArgumentsCount) {
-                val arg = functionRef.getValueArgument(i) ?: continue
-                args.add(getNewTypeReference<Any>(arg.type, true) )
-            }
-            executableReference.setParameters<CtExecutableReference<T>>(args)
-        }
+        executableReference.setParameters<CtExecutableReference<T>>(
+            functionRef.symbol.descriptor.valueParameters.map { getNewTypeReference<Any>(it.type, true) }
+        )
         return executableReference
     }
 

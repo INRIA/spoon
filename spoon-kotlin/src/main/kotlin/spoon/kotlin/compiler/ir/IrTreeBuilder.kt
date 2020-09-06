@@ -1258,17 +1258,20 @@ internal class IrTreeBuilder(
         val tempLhs: IrExpression
         val tempRhs: IrExpression
         if(irCall.valueArgumentsCount == 2) {
-            tempLhs = irCall.getValueArgument(0)!!
+            if(irCall.getValueArgument(1) == null) {
+                tempLhs = irCall.extensionReceiver!!
+                tempRhs = irCall.getValueArgument(0)!!
+            } else {
+                tempLhs = irCall.getValueArgument(0)!!
+                tempRhs = irCall.getValueArgument(1)!!
+            }
+
             if(tempLhs is IrCall && tempLhs.origin != null && tempLhs.symbol.descriptor.name.asString() == "compareTo") {
                 // Ex. a < b. If type of a implements compareTo operator that translates to a.compareTo(b) < 0
                 // Ignore the trailing comparison and make a binary operator out of the compareTo-call
                 return visitBinaryOperator(tempLhs, data)
             }
-            tempRhs = if(irCall.getValueArgument(1) == null) {
-                irCall.extensionReceiver!!
-            } else {
-                irCall.getValueArgument(1)!!
-            }
+
         } else if(irCall.valueArgumentsCount == 1) {
             tempLhs = irCall.dispatchReceiver ?: irCall.extensionReceiver!!
             tempRhs = irCall.getValueArgument(0)!!
