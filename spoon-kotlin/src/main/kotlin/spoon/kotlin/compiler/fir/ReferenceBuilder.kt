@@ -12,13 +12,11 @@ import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import spoon.SpoonException
-import spoon.kotlin.compiler.PrintingMsgCollector
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.reflect.reference.*
 
 internal class ReferenceBuilder(val firTreeBuilder: FirTreeBuilder) {
-    private val msgCollector = PrintingMsgCollector()
 
     fun <T> buildTypeReference(typeRef: ConeClassLikeType) : CtTypeReference<T> {
         val ctRef = firTreeBuilder.factory.Core().createTypeReference<T>()

@@ -22,7 +22,6 @@ import org.jetbrains.kotlin.modules.Module
 import java.io.File
 
 class SpoonKtEnvironment(sourceFiles : List<File>, mName: String?, val args : K2JVMCompilerArguments) {
-    private val msgCollector: MsgCollector = SilentMsgCollector()// TODO Remove
 
     private val collector = MessageCollector.NONE
        // PrintingMessageCollector(System.err, MessageRenderer.PLAIN_RELATIVE_PATHS, true)
@@ -70,8 +69,6 @@ class SpoonKtEnvironment(sourceFiles : List<File>, mName: String?, val args : K2
             ModuleChunk(listOf(m))
         }
         configureSourceRoots(config, moduleChunk.modules)
-        if(moduleChunk.modules.isEmpty()) msgCollector.report(Message("Unable to generate Kotlin module", MessageType.WARN))
-        else msgCollector.report(Message("Module source roots: ${moduleChunk.modules[0].getClasspathRoots()}", MessageType.COMMON))
     }
 
 

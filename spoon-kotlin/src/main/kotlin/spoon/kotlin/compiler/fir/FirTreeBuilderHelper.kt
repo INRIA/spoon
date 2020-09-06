@@ -96,7 +96,6 @@ internal class FirTreeBuilderHelper(private val firTreeBuilder: FirTreeBuilder, 
             }
 
         }
-        if(didUseDelegateMap) firTreeBuilder.warn("Super type delegate detected")
 
         return type
     }

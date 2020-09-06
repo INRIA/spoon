@@ -33,8 +33,6 @@ import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstance
 import spoon.SpoonException
 import spoon.kotlin.compiler.*
-import spoon.kotlin.compiler.MsgCollector
-import spoon.kotlin.compiler.PrintingMsgCollector
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
 import spoon.kotlin.reflect.KtStatementExpression
@@ -56,29 +54,6 @@ class FirTreeBuilder(val factory : Factory,
     internal val helper = FirTreeBuilderHelper(this, spoonKtEnvironment)
     internal val toplvlClassName = "<top-level>"
 
-    // Temporary printing, remove later
-    private var msgCollector: MsgCollector =
-        PrintingMsgCollector()
-    internal constructor(factory : Factory, session: FirSession,
-                         delegateMap: Map<ClassId, MutableMap<ClassId, FirStatement>>,
-                         spoonKtEnvironment: SpoonKtEnvironment, m: MsgCollector
-    ) : this(factory, session, delegateMap, spoonKtEnvironment)
-    {
-        msgCollector = m
-    }
-    fun report(m : Message) = msgCollector.report(m)
-    fun report(s : String) = report(
-        Message(
-            s,
-            MessageType.COMMON
-        )
-    )
-    fun warn(s : String) = report(
-        Message(
-            s,
-            MessageType.WARN
-        )
-    )
 
     override fun visitElement(element: FirElement, data: ContextData?): CompositeTransformResult<CtElement> {
         //throw SpoonException("Element type not implemented $element")
@@ -658,10 +633,6 @@ class FirTreeBuilder(val factory : Factory,
     }
 
     fun visitIfExpression(ifExpression : FirWhenExpression) : CompositeTransformResult.Single<CtIf> {
-        // Sanity check
-        if(ifExpression.branches.size > 2) {
-            warn("WhenExpression misplaced as if")
-        }
 
         val ctIf = factory.Core().createIf()
         val condition = ifExpression.branches[0].condition.accept(this,null).single
@@ -1089,7 +1060,7 @@ class FirTreeBuilder(val factory : Factory,
                     initializer.setParent(ctProperty)
                     statementExpression.setParent(ctProperty)
                 }
-                else -> warn("Property initializer not a CtExpression or if-statement: $initializer")
+                else -> { /* TODO */  }
             }
         }
 
@@ -1224,7 +1195,7 @@ class FirTreeBuilder(val factory : Factory,
                     initializer.setParent(localVar)
                     statementExpression.setParent(localVar)
                 }
-                else -> warn("Local variable initializer not a CtExpression or if-statement: $initializer")
+                else -> { /* TODO */}
             }
         }
 
