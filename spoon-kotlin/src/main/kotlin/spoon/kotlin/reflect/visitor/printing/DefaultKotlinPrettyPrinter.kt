@@ -4,6 +4,7 @@ import spoon.experimental.CtUnresolvedImport
 import spoon.kotlin.compiler.ir.SpoonIrBuildException
 import spoon.kotlin.ktMetadata.KtMetadataKeys
 import spoon.kotlin.reflect.KtModifierKind
+import spoon.kotlin.reflect.KtStatementExpression
 import spoon.kotlin.reflect.code.KtBinaryOperatorKind
 import spoon.reflect.code.*
 import spoon.reflect.declaration.*
@@ -70,20 +71,19 @@ class DefaultKotlinPrettyPrinter(
         }
 
         // Check if a lambda can be moved out of parenthesis if it's the last argument
-        fun CtElement.isMovableLambda(): Boolean {
+        fun CtElement.isMovableLambda(): Boolean { // Assumes lambda is last argument
             val parent = this.parent
-            if(parent is CtInvocation<*> &&
-                 parent.executable.declaringType?.typeDeclaration?.getMethodsByName(
-                    parent.executable.simpleName
-                )?.any { it.parameters.any { param -> param.isVarArgs } } == true) {
+            if(this !is CtLambda<*>
+                || this.getBooleanMetadata(KtMetadataKeys.LAMBDA_AS_ANONYMOUS_FUNCTION, false)
+                || this.getMetadata(KtMetadataKeys.NAMED_ARGUMENT) as String? != null
+                || parent is CtConstructorCall<*>
+                || (parent is CtInvocation<*> && parent.executable.isConstructor) ) {
                 return false
             }
 
-            return this is CtLambda<*> &&
-                    parent !is CtConstructorCall<*> &&
-                    !(parent is CtInvocation<*> && parent.executable.isConstructor) &&
-                    this.getBooleanMetadata(KtMetadataKeys.LAMBDA_AS_ANONYMOUS_FUNCTION) == false &&
-                    this.getMetadata(KtMetadataKeys.NAMED_ARGUMENT) as String? == null
+            return (parent is CtInvocation<*>
+                    && parent.executable.parameters.last().qualifiedName.matches("kotlin.Function[0-9]+".toRegex()))
+
         }
 
         if(list.size == 1 && list[0].isMovableLambda()) {
