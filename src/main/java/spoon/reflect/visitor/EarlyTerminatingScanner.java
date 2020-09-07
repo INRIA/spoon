@@ -142,7 +142,6 @@ public class EarlyTerminatingScanner<T> extends CtScanner {
 		}
 		if (mode.visitChildren) {
 			//do not call scan(CtElement) nor scan(CtRole, CtElement), because they would cause StackOverflowError
-			System.out.println(element.getPosition()); // Remove this line
 			element.accept(this);
 		}
 	}
