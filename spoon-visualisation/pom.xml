@@ -143,7 +143,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>7.6.0</version>
+            <version>8.2.0</version>
             <exclusions>
                     <exclusion>
                         <artifactId>*</artifactId>
@@ -198,7 +198,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>16.0.1</version>
+            <version>20.1.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

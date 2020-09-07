@@ -1,18 +1,16 @@
 /**
- * Copyright (C) 2006-2018 INRIA and contributors
- * Spoon - http://spoon.gforge.inria.fr/
+ * Copyright (C) 2006-2018 INRIA and contributors Spoon - http://spoon.gforge.inria.fr/
  *
- * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify
- * and/or redistribute the software under the terms of the CeCILL-C license as
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ * This software is governed by the CeCILL-C License under French law and abiding by the rules of
+ * distribution of free software. You can use, modify and/or redistribute the software under the
+ * terms of the CeCILL-C license as circulated by CEA, CNRS and INRIA at http://www.cecill.info.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * CeCILL-C License for more details.
  *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
+ * The fact that you are presently reading this means that you have had knowledge of the CeCILL-C
+ * license and that you accept its terms.
  */
 package spoon.test.factory;
 
@@ -34,6 +32,8 @@ import java.io.File;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TypeFactoryTest {
 
@@ -59,11 +59,17 @@ public class TypeFactoryTest {
 	@Test
 	public void reflectionAPI() {
 		// Spoon can be used as reflection API
-		CtType s = new TypeFactory().get(String.class);
-		assertEquals("String", s.getSimpleName());
-		assertEquals("java.lang.String", s.getQualifiedName());
-		assertEquals(3, s.getSuperInterfaces().size());
-		assertEquals(2, s.getMethodsByName("toLowerCase").size());
+		CtType<?> s = new TypeFactory().get(String.class);
+		assertAll(
+			() -> assertEquals("String", s.getSimpleName()),
+			() -> assertEquals("java.lang.String", s.getQualifiedName()),
+			/*
+			In java 12 string got 2 new interfaces (see https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/lang/String.html)
+			Constable, ConstantDesc. To support the CI with jdk8 and newer CIs for local testing this assertion is needed.
+			*/
+			() -> assertTrue(3 == s.getSuperInterfaces().size() || 5 == s.getSuperInterfaces().size()),
+			() -> assertEquals(3, s.getSuperInterfaces().size()),
+			() -> assertEquals(2, s.getMethodsByName("toLowerCase").size()));
 	}
 
 	@Test

@@ -56,6 +56,11 @@ public interface CtStatement extends CtCodeElement {
 	@PropertySetter(role = LABEL)
 	<T extends CtStatement> T setLabel(String label);
 
+	/**
+	 * Comments the statement (eg `// call()`). Implemented as a replacement of the statement with a CtComment having the statement as text.
+	 */
+	void comment();
+
 	@Override
 	CtStatement clone();
 }

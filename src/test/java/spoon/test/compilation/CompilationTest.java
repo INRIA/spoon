@@ -60,6 +60,7 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.compiler.FileSystemFolder;
+import spoon.support.compiler.ProgressLogger;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.compiler.jdt.JDTBatchCompiler;
 import spoon.test.compilation.testclasses.Bar;
@@ -245,6 +246,8 @@ public class CompilationTest {
 			}
 		};
 
+		// contract: a progress logger can be used
+		launcher.getEnvironment().setSpoonProgress(new ProgressLogger(launcher.getEnvironment()));
 		launcher.addInputResource("./src/test/java/spoon/test/imports");
 		launcher.buildModel();
 		int n = 0;
@@ -255,6 +258,21 @@ public class CompilationTest {
 		}
 		assertTrue(n >= 2);
 
+	}
+
+	@Test
+	public void testModuleResolution() throws InterruptedException {
+		// contract: module name is set from the info extract from the module-info.java file
+		// when such file exists
+		Launcher launcher = new Launcher();
+
+		// contract: ComplianceLevel must be >=9 to build a model from an input resource
+		// that contains module-info.java file(s)
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.addInputResource("./src/test/resources/simple-module");
+		launcher.buildModel();
+		
+		assertTrue(launcher.getModel().getAllModules().iterator().next().getSimpleName().equals("spoonmod"));
 	}
 
 	@Test

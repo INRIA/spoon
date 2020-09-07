@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Level;
 import spoon.OutputType;
 import spoon.compiler.builder.EncodingProvider;
 import spoon.processing.FileGenerator;
-import spoon.processing.ProblemFixer;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.processing.ProcessorProperties;
@@ -119,26 +118,6 @@ public interface Environment {
 	 *            The message to report
 	 */
 	void report(Processor<?> processor, Level level, CtElement element, String message);
-
-	/**
-	 * Helper method called by a processor to report an error, warning or
-	 * message as dictated by the severity parameter. Note that this does not
-	 * stop the processing or any remaining task. To do so, use
-	 * {@link #setProcessingStopped(boolean)}.
-	 *
-	 * @param processor
-	 *            The processor that report this message. Can be null.
-	 * @param level
-	 *            The level of the report
-	 * @param element
-	 *            The CtElement to which the report is associated
-	 * @param message
-	 *            The message to report
-	 * @param fixes
-	 *            The problem fixer(s) to correct this problem
-	 */
-	void report(Processor<?> processor, Level level,
-				CtElement element, String message, ProblemFixer<?>... fixes);
 
 	/**
 	 * This method should be called to print out a message during the
