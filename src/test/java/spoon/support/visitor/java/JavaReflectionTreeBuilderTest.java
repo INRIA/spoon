@@ -54,6 +54,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Root;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.reflect.code.CtAssignmentImpl;
@@ -623,5 +624,62 @@ public class JavaReflectionTreeBuilderTest {
 
 		//contract: the annotation is correctly read
 		assertEquals("Bidon", annotatedParameter.getAnnotations().get(0).getAnnotationType().getSimpleName());
+	}
+
+	@Test
+	public void testInnerClass() {
+		// contract: JavaReflectionTreeBuilder works on internal named classes
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/java/spoon/support/visitor/java/JavaReflectionTreeBuilderTest.java");
+		launcher.buildModel();
+		CtType ctType = launcher.getFactory().Type().get(Diff.class);
+		assertEquals("Diff", ctType.getSimpleName());
+		assertEquals(false, ctType.isAnonymous());
+		assertEquals(false, ctType.isShadow());
+
+		Class<?> klass = ctType.getActualClass();
+		assertEquals("spoon.support.visitor.java.JavaReflectionTreeBuilderTest$Diff", klass.getName());
+		assertEquals(false, klass.isAnonymousClass());
+
+		CtType<?> ctClass = new JavaReflectionTreeBuilder(launcher.getFactory()).scan(klass);
+		assertEquals("Diff", ctClass.getSimpleName());
+		assertEquals(false, ctClass.isAnonymous());
+		assertEquals(true, ctClass.isShadow());
+		assertEquals("element", ctClass.getFields().toArray(new CtField[0])[0].getSimpleName());
+	}
+
+
+	@Test
+	public void testAnonymousClass() {
+		// contract: JavaReflectionTreeBuilder works on anonymous classes
+
+		// the test object: an anonymous class
+		Object o = new Object() {
+			void foo() {
+
+			}
+		};
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/java/spoon/support/visitor/java/JavaReflectionTreeBuilderTest.java");
+		launcher.buildModel();
+		CtType ctType = launcher.getModel().getElements(new TypeFilter<CtType>(CtType.class) {
+			@Override
+			public boolean matches(CtType element) {
+				return super.matches(element) && element.isAnonymous();
+			}
+		}).get(0);
+		assertEquals("1", ctType.getSimpleName());
+		assertEquals(true, ctType.isAnonymous());
+		assertEquals(false, ctType.isShadow());
+
+		Class<?> klass = ctType.getActualClass();
+		assertEquals("spoon.support.visitor.java.JavaReflectionTreeBuilderTest$1", klass.getName());
+		assertEquals(true, klass.isAnonymousClass());
+
+		CtType<?> ctClass = new JavaReflectionTreeBuilder(launcher.getFactory()).scan(klass);
+		assertEquals("", ctClass.getSimpleName());
+		assertEquals(true, ctClass.isAnonymous());
+		assertEquals(true, ctClass.isShadow());
+		assertEquals("foo", ctClass.getMethods().toArray(new CtMethod[0])[0].getSimpleName());
 	}
 }
