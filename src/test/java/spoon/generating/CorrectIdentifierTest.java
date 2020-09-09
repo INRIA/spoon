@@ -69,4 +69,10 @@ public class CorrectIdentifierTest {
 		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
 		assertDoesNotThrow(() -> localVariableRef.setSimpleName("処理"));
 	}
+
+	@Test
+	public void correctSquareBrackets() {
+		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		assertDoesNotThrow(() -> localVariableRef.setSimpleName("List<String>[]"));
+	}
 }
