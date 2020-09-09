@@ -113,7 +113,7 @@ public class FilterTest {
 	@Test
 	public void testNameFilter() throws Exception {
 		// contract: legacy NameFilter is tested and works
-		CtClass<?> foo = factory.Package().get("spoon.test.filters").getType("Foo");
+		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
 		List<CtNamedElement> elements = foo.getElements(new NameFilter<>("i"));
 		assertEquals(1, elements.size());
