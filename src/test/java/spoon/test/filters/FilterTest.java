@@ -19,6 +19,7 @@ package spoon.test.filters;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.legacy.NameFilter;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
