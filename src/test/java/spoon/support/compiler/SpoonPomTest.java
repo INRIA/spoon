@@ -6,12 +6,9 @@ import spoon.MavenLauncher;
 import spoon.support.StandardEnvironment;
 
 import java.io.IOException;
-<<<<<<< HEAD
 import java.util.List;
 import java.util.regex.Pattern;
-=======
 import java.nio.file.Paths;
->>>>>>> 7c8b18599... Added test for getting maven source directory from ancestors
 
 import static org.junit.Assert.*;
 
@@ -69,6 +66,6 @@ public class SpoonPomTest {
 		SpoonPom childModel = pomModel.getModules().get(0);
 		//contract: source directory is derived from parent pom.xml if not declared in the current
 		// (childModel) SpoonPom
-		assertEquals(expected, childModel.getSourceDirectories().get(0).getAbsolutePath(), expected);
+		assertEquals(expected, childModel.getSourceDirectories().get(0).getAbsolutePath());
 	}
 }
