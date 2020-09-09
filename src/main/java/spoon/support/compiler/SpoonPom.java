@@ -39,8 +39,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,21 +78,53 @@ public class SpoonPom implements SpoonResource {
 	 * @throws XmlPullParserException when the file is corrupted
 	 */
 	public SpoonPom(String path, SpoonPom parent, MavenLauncher.SOURCE_TYPE sourceType, Environment environment) throws IOException, XmlPullParserException {
+		this(path, parent, sourceType, environment, Pattern.compile("^$"));
+	}
+
+	/**
+	 * Extract the information from the pom
+	 * @param path the path to the pom
+	 * @param parent the parent pom
+	 * @param profileFilter regex pattern to filter profiles when expanding defined modules. Only modules in matching profiles are expanded
+	 * @throws IOException when the file does not exist
+	 * @throws XmlPullParserException when the file is corrupted
+	 */
+	public SpoonPom(String path, SpoonPom parent, MavenLauncher.SOURCE_TYPE sourceType, Environment environment, Pattern profileFilter) throws IOException, XmlPullParserException {
 		this.parent = parent;
 		this.sourceType = sourceType;
 		this.environment = environment;
-		if (!path.endsWith(".xml") && !path.endsWith(".pom")) {
+
+		// directory may end in .xml|.pom so don't skip if thats the case
+		if ((!path.endsWith(".xml") && !path.endsWith(".pom")) || Paths.get(path).toFile().isDirectory()) {
 			path = Paths.get(path, "pom.xml").toString();
 		}
-		this.pomFile = new File(path);
+		this.pomFile = new File(path).getCanonicalFile();
 		if (!pomFile.exists()) {
 			throw new IOException("Pom does not exists.");
 		}
 		this.directory = pomFile.getParentFile();
+
 		MavenXpp3Reader pomReader = new MavenXpp3Reader();
 		try (FileReader reader = new FileReader(pomFile)) {
 			this.model = pomReader.read(reader);
+
+			Set<String> allModules = new HashSet<>();
+
+			for (Profile profile : model.getProfiles()) {
+				if (!profileFilter.matcher(profile.getId()).matches()) {
+					continue;
+				}
+				for (String module : profile.getModules()) {
+					allModules.add(module);
+					addModule(new SpoonPom(Paths.get(pomFile.getParent(), module).toString(), this, sourceType, environment));
+				}
+			}
+
+			// recursively build the POM hierarchy for modules not built from profiles
 			for (String module : model.getModules()) {
+				if (allModules.contains(module)) {
+					continue;
+				}
 				addModule(new SpoonPom(Paths.get(pomFile.getParent(), module).toString(), this, sourceType, environment));
 			}
 		} catch (FileNotFoundException e) {
@@ -506,7 +540,7 @@ public class SpoonPom implements SpoonResource {
 
 	@Override
 	public String getName() {
-		return "pom";
+		return model.getName();
 	}
 
 	@Override
