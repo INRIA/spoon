@@ -19,21 +19,22 @@ package spoon.processing;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.Environment;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.code.CtAssert;
+import spoon.support.compiler.FileSystemFile;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.processing.processors.MyProcessor;
-import spoon.test.properties.SimpleProcessor;
+import spoon.test.template.testclasses.AssertToIfAssertedStatementTemplate;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.testing.Assert.assertThat;
 
 public class ProcessingTest {
 
@@ -93,5 +94,34 @@ public class ProcessingTest {
 		l.addInputResource("src/test/resources/compilation5/A.java");
 		l.setSourceOutputDirectory(path.toFile());
 		l.run();
+	}
+	
+	@Test
+	public void testTemplateNotInOutput() throws IOException {
+		// https://github.com/INRIA/spoon/issues/2987
+		class AssertProcessor extends AbstractProcessor<CtAssert<?>> {
+			public void process(CtAssert<?> element) {
+				element.replace(new AssertToIfAssertedStatementTemplate(element).apply(null));
+			}
+		}
+		
+		String templatePath = "src/test/java/spoon/test/template/testclasses/AssertToIfAssertedStatementTemplate.java";
+		String resourcePath = "src/test/resources/spoon/test/template/";
+		
+		final Launcher l = new Launcher();
+		Path path = Files.createTempDirectory("emptydir");
+		
+		l.addProcessor(new AssertProcessor());
+		l.addTemplateResource(new FileSystemFile(templatePath));
+		
+		l.addInputResource(resourcePath + "SimpleAssert.java");
+		l.setSourceOutputDirectory(path.toFile());
+		l.run();
+
+		// If template is applied to itself then there will be modified spoon/...Template.java on output
+		assertArrayEquals("Template source found in output", new String[]{"SimpleAssert.java"}, path.toFile().list());
+		// Check that the template worked as intended
+		assertThat(path.toString() + "/SimpleAssert.java")
+			.isEqualTo(resourcePath + "SimpleIfAsserted.java");
 	}
 }
