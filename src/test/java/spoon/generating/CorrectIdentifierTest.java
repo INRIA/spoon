@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.Ignore;
 import org.junit.Test;
+import spoon.FluentLauncher;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -68,5 +69,11 @@ public class CorrectIdentifierTest {
 	public void correctIdentiferUtfChinese() {
 		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
 		assertDoesNotThrow(() -> localVariableRef.setSimpleName("処理"));
+	}
+
+	@Test
+	public void intersectionTypeIdentifierTest() {
+		//contract: intersectionTypes can have simpleNames with '?' for wildcards.
+		assertDoesNotThrow(() -> new FluentLauncher().inputResource("./src/test/resources/identifier/InliningImplementationMatcher.java").buildModel());
 	}
 }

@@ -116,6 +116,10 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		for (String simpleName:simplenameParts) {
 			//because arrays use e.g. int[] and @Number is used for instances of an object e.g. foo@1
 			simpleName = simpleName.replaceAll("\\[\\]|@", "");
+			if (isWildCard(simpleName)) {
+				// because in intersection types a typeReference sometimes has '?' as simplename
+				return false;
+			}
 			if (isKeyword(simpleName) || checkIdentifierChars(simpleName)) {
 				return true;
 		}
@@ -132,5 +136,13 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	"transient", "catch", "extends", "try", "final", "interface", "static", "finally",  "strictfp", "volatile",
 	"const",  "native", "super", "while", "_")
 	.collect(Collectors.toCollection(HashSet::new));
+	}
+
+	/**
+	 * checks if the input is a wildcard '?'. The method is not null safe.
+	 * @return boolean true is input wildcard, false otherwise
+	 */
+	private boolean isWildCard(String name) {
+		return name.equals("?");
 	}
 }
