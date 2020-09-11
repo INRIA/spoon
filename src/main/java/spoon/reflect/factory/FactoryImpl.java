@@ -626,6 +626,11 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
+	public CtJavaDocTag createJavaDocTag(String content, CtJavaDocTag.TagType type, String realName) {
+		return Code().createJavaDocTag(content, type, realName);
+	}
+
+	@Override
 	public CtJavaDocTag createJavaDocTag() {
 		return Core().createJavaDocTag();
 	}
