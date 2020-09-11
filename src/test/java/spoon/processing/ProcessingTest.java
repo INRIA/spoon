@@ -109,19 +109,19 @@ public class ProcessingTest {
 		String resourcePath = "src/test/resources/spoon/test/template/";
 		
 		final Launcher l = new Launcher();
-		Path path = Files.createTempDirectory("emptydir");
+		Path outputPath = Files.createTempDirectory("emptydir");
 		
 		l.addProcessor(new AssertProcessor());
 		l.addTemplateResource(new FileSystemFile(templatePath));
 		
 		l.addInputResource(resourcePath + "SimpleAssert.java");
-		l.setSourceOutputDirectory(path.toFile());
+		l.setSourceOutputDirectory(outputPath.toFile());
 		l.run();
 
 		// If template is applied to itself then there will be modified spoon/...Template.java on output
-		assertArrayEquals("Template source found in output", new String[]{"SimpleAssert.java"}, path.toFile().list());
+		assertArrayEquals("Template source found in output", new String[]{"SimpleAssert.java"}, outputPath.toFile().list());
 		// Check that the template worked as intended
-		assertThat(path.toString() + "/SimpleAssert.java")
+		assertThat(outputPath.toString() + "/SimpleAssert.java")
 			.isEqualTo(resourcePath + "SimpleIfAsserted.java");
 	}
 }
