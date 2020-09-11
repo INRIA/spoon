@@ -96,6 +96,9 @@ public class RoleHandlersGenerator extends AbstractManualProcessor {
 				TARGET_PACKAGE + ".ModelRoleHandlers",
 				template,
 				new HashMap<>());
+		if (modelRoleHandlersClass == null) {
+			throw new NullPointerException("no role handler class");
+		}
 		CtNewArray<?> roleHandlersFieldExpr = (CtNewArray<?>) modelRoleHandlersClass.getField("roleHandlers").getDefaultExpression();
 		superFields.forEach(rim -> {
 			Map<String, Object> params = new HashMap<>();

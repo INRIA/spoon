@@ -754,30 +754,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtJavaDocTag_DOCUMENTATION_TYPE_REALNAME_RoleHandler extends SingleHandler<CtJavaDocTag, String> {
-		private CtJavaDocTag_DOCUMENTATION_TYPE_REALNAME_RoleHandler() {
-			super(CtRole.DOCUMENTATION_TYPE_REALNAME, CtJavaDocTag.class, String.class);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getRealName())));
-		}
-
-		@Override
-		public <T, U> void setValue(T element, U value) {
-			castTarget(element).setRealName(castValue(value));
-		}
-	}
-
-	static class CtConditional_ELSE_RoleHandler extends SingleHandler<CtConditional, CtExpression<?>> {
-		private CtConditional_ELSE_RoleHandler() {
-			super(CtRole.ELSE, CtConditional.class, CtExpression.class);
-    }
-  }
-
-  static class CtOperatorAssignment_OPERATOR_KIND_RoleHandler extends SingleHandler<CtOperatorAssignment, BinaryOperatorKind> {
+	static class CtOperatorAssignment_OPERATOR_KIND_RoleHandler extends SingleHandler<CtOperatorAssignment, BinaryOperatorKind> {
 		private CtOperatorAssignment_OPERATOR_KIND_RoleHandler() {
 			super(CtRole.OPERATOR_KIND, CtOperatorAssignment.class, BinaryOperatorKind.class);
 		}
@@ -1796,6 +1773,23 @@ class ModelRoleHandlers {
 		@Override
 		public <T, U> void setValue(T element, U value) {
 			castTarget(element).setElseExpression(castValue(value));
+		}
+	}
+
+	static class CtJavaDocTag_DOCUMENTATION_TYPE_REALNAME_RoleHandler extends SingleHandler<CtJavaDocTag, String> {
+		private CtJavaDocTag_DOCUMENTATION_TYPE_REALNAME_RoleHandler() {
+			super(CtRole.DOCUMENTATION_TYPE_REALNAME, CtJavaDocTag.class, String.class);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T, U> U getValue(T element) {
+			return ((U) ((Object) (castTarget(element).getRealName())));
+		}
+
+		@Override
+		public <T, U> void setValue(T element, U value) {
+			castTarget(element).setRealName(castValue(value));
 		}
 	}
 
