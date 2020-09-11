@@ -237,7 +237,6 @@ public class IncrementalLauncherTest {
 		
 		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
 		assertTrue(launcher1.changesPresent());
-		CtModel originalModel = launcher1.buildModel();
 		launcher1.saveCache();
 	}
 
