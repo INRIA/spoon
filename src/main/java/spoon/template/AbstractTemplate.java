@@ -20,6 +20,12 @@ import spoon.support.template.Parameters;
 public abstract class AbstractTemplate<T extends CtElement> implements Template<T> {
 
 	private boolean addGeneratedBy = false;
+
+	@Override
+	public boolean withPartialEvaluation() {
+		return false;
+	}
+
 	/**
 	 * verifies whether there is at least one template parameter.
 	 */

@@ -97,7 +97,7 @@ class TemplateBuilder {
 			pb = new PatternBuilder(Collections.singletonList(templateRoot));
 		}
 		Map<String, Object> templateParameters = template == null ? null : Parameters.getTemplateParametersAsMap(f, null, template);
-		pb.setAutoSimplifySubstitutions(false);
+		pb.setAutoSimplifySubstitutions(template.withPartialEvaluation());
 		pb.configurePatternParameters(pc -> {
 			pc.byTemplateParameter(templateParameters);
 			pc.byParameterValues(templateParameters);
