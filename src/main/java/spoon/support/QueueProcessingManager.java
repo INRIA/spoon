@@ -105,9 +105,7 @@ public class QueueProcessingManager implements ProcessingManager {
 		// copy so that one can reuse the processing manager
 		// among different processing steps
 		Queue<Processor<?>> processors = new LinkedList<>(getProcessors());
-		if (factory.getEnvironment().getSpoonProgress() != null) {
-			factory.getEnvironment().getSpoonProgress().start(SpoonProgress.Process.PROCESS);
-		}
+		factory.getEnvironment().getSpoonProgress().start(SpoonProgress.Process.PROCESS);
 		int i = 0;
 		while ((p = processors.poll()) != null) {
 			try {
@@ -122,14 +120,10 @@ public class QueueProcessingManager implements ProcessingManager {
 			} catch (ProcessInterruption ignore) {
 			} finally {
 				p.processingDone();
-				if (factory.getEnvironment().getSpoonProgress() != null) {
-					factory.getEnvironment().getSpoonProgress().step(SpoonProgress.Process.PROCESS, p.getClass().getName(), ++i, getProcessors().size());
-				}
+				factory.getEnvironment().getSpoonProgress().step(SpoonProgress.Process.PROCESS, p.getClass().getName(), ++i, getProcessors().size());
 			}
 		}
-		if (factory.getEnvironment().getSpoonProgress() != null) {
-			factory.getEnvironment().getSpoonProgress().end(SpoonProgress.Process.PROCESS);
-		}
+		factory.getEnvironment().getSpoonProgress().end(SpoonProgress.Process.PROCESS);
 	}
 
 	@Override

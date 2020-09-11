@@ -200,9 +200,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	@Override
 	public void generateProcessedSourceFiles(OutputType outputType, Filter<CtType<?>> typeFilter) {
-		if (getEnvironment().getSpoonProgress() != null) {
-			getEnvironment().getSpoonProgress().start(SpoonProgress.Process.PRINT);
-		}
+		getEnvironment().getSpoonProgress().start(SpoonProgress.Process.PRINT);
 		switch (outputType) {
 		case CLASSES:
 			generateProcessedSourceFilesUsingTypes(typeFilter);
@@ -212,9 +210,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			break;
 		case NO_OUTPUT:
 		}
-		if (getEnvironment().getSpoonProgress() != null) {
-			getEnvironment().getSpoonProgress().end(SpoonProgress.Process.PRINT);
-		}
+		getEnvironment().getSpoonProgress().end(SpoonProgress.Process.PRINT);
 	}
 
 	@Override
@@ -452,9 +448,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	private void forEachCompilationUnit(List<CompilationUnitDeclaration> unitList, SpoonProgress.Process process, Consumer<CompilationUnitDeclaration> consumer) {
-		if (getEnvironment().getSpoonProgress() != null) {
-			getEnvironment().getSpoonProgress().start(process);
-		}
+		getEnvironment().getSpoonProgress().start(process);
 		int i = 0;
 		for (CompilationUnitDeclaration unit : unitList) {
 			if (unit.isModuleInfo() && factory.getEnvironment().getComplianceLevel() < 9) {
@@ -465,14 +459,10 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 				if (canProcessCompilationUnit(unitPath)) {
 					consumer.accept(unit);
 				}
-				if (getEnvironment().getSpoonProgress() != null) {
 					getEnvironment().getSpoonProgress().step(process, unitPath, ++i, unitList.size());
-				}
 			}
 		}
-		if (getEnvironment().getSpoonProgress() != null) {
 			getEnvironment().getSpoonProgress().end(process);
-		}
 	}
 
 	private boolean canProcessCompilationUnit(String unitPath) {
