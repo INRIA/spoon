@@ -1,13 +1,16 @@
 package spoon.generating;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.Ignore;
 import org.junit.Test;
 import spoon.FluentLauncher;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtTypeReference;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 /**
  * for correct identifier see JLS chapter 3.8 and for keywords 3.9.
  * Ignored tests because we have to cut some corners between spec and jdt.
@@ -75,5 +78,11 @@ public class CorrectIdentifierTest {
 	public void intersectionTypeIdentifierTest() {
 		//contract: intersectionTypes can have simpleNames with '?' for wildcards.
 		assertDoesNotThrow(() -> new FluentLauncher().inputResource("./src/test/resources/identifier/InliningImplementationMatcher.java").buildModel());
+	}
+
+	@Test
+	public void correctSquareBrackets() {
+		CtTypeReference localVariableRef = new Launcher().getFactory().createTypeReference();
+		assertDoesNotThrow(() -> localVariableRef.setSimpleName("List<String>[]"));
 	}
 }
