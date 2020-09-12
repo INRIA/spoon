@@ -136,15 +136,6 @@ public class FactoryImpl implements Factory, Serializable {
 
 	private transient Factory parentFactory;
 
-	/**
-	 * Returns the parent of this factory. When an element is not found in a
-	 * factory, it can be looked up in its parent factory using a delegation
-	 * model.
-	 */
-	public Factory getParentFactory() {
-		return parentFactory;
-	}
-
 	private transient AnnotationFactory annotation;
 
 	/**
@@ -371,14 +362,27 @@ public class FactoryImpl implements Factory, Serializable {
 		return module;
 	}
 
+	private transient Factory templates;
+
+	@Override
+	public Factory Templates() {
+		// we are already the template factory
+		if (parentFactory != null && parentFactory.Templates() == this) {
+			return this;
+		}
+		// lazy creation
+		if (templates == null) {
+			templates = new FactoryImpl(this);
+		}
+		return templates;
+	}
+
 
 	/**
 	 * A constructor that takes the parent factory
 	 */
-	public FactoryImpl(CoreFactory coreFactory, Environment environment, Factory parentFactory) {
-		this.environment = environment;
-		this.core = coreFactory;
-		this.core.setMainFactory(this);
+	public FactoryImpl(Factory parentFactory) {
+		this(parentFactory.Core(), parentFactory.getEnvironment());
 		this.parentFactory = parentFactory;
 	}
 
@@ -386,7 +390,12 @@ public class FactoryImpl implements Factory, Serializable {
 	 * Should not be called directly. Use {@link spoon.Launcher#createFactory()} instead.
 	 */
 	public FactoryImpl(CoreFactory coreFactory, Environment environment) {
-		this(coreFactory, environment, null);
+		this.environment = environment;
+		this.core = coreFactory;
+		// when creating subfactories (eg for templates), we don't want to replace the link between the code factory and the master factory
+		if (coreFactory.getMainFactory() == null) {
+			coreFactory.setMainFactory(this);
+		}
 	}
 
 	// Deduplication

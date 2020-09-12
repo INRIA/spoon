@@ -181,6 +181,9 @@ public interface Factory {
 	/** Access to {@link ModuleFactory} subfactory for Java 9 modules */
 	ModuleFactory Module();
 
+	/** Access to templates */
+	Factory Templates();
+
 	/**
 	 *  @see CodeFactory#createAnnotation(CtTypeReference)
 	 */
