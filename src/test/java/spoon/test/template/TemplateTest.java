@@ -452,7 +452,7 @@ public class TemplateTest {
 				.build();
 
 		{// testing matcher1
-			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher1")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
@@ -466,7 +466,7 @@ public class TemplateTest {
 		}
 
 		{// testing matcher2
-			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher2")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
@@ -479,7 +479,7 @@ public class TemplateTest {
 		}
 
 		{// testing matcher3
-			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher3")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
@@ -493,7 +493,7 @@ public class TemplateTest {
 		}
 
 		{// testing matcher4
-			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher4")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
@@ -515,7 +515,7 @@ public class TemplateTest {
 		}
 
 		{// testing matcher5
-			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher5")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
@@ -552,7 +552,7 @@ public class TemplateTest {
 		}
 
 		{// testing matcher6
-			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher6")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
@@ -589,7 +589,7 @@ public class TemplateTest {
 		}
 
 		{// testing matcher7
-			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
 			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher7")).get(0)).getBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
@@ -606,7 +606,7 @@ public class TemplateTest {
 
 		// testing with named elements, at the method level
 		{
-			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
 			CtMethod meth = (CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher3")).get(0);
 
@@ -620,7 +620,7 @@ public class TemplateTest {
 
 		{
 			// contract: the name to be matched does not have to be an exact match
-			CtClass<?> templateKlass = factory.Class().get(CheckBoundMatcher.class);
+			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
 			CtMethod meth = (CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher5")).get(0);
 
@@ -718,7 +718,7 @@ public class TemplateTest {
 		spoon.buildModel();
 		Factory factory = spoon.getFactory();
 
-		CtClass<?> templateKlass = factory.Class().get(SecurityCheckerTemplate.class);
+		CtClass<?> templateKlass = factory.Templates().Class().get(SecurityCheckerTemplate.class);
 		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher1")).get(0);
 		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
 		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
@@ -761,7 +761,7 @@ public class TemplateTest {
 		spoon.buildModel();
 		Factory factory = spoon.getFactory();
 
-		CtClass<?> templateKlass = factory.Class().get(SecurityCheckerTemplate.class);
+		CtClass<?> templateKlass = factory.Templates().Class().get(SecurityCheckerTemplate.class);
 		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher1")).get(0);
 		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
 		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
@@ -847,7 +847,7 @@ public class TemplateTest {
 		Factory factory = spoon.getFactory();
 
 		CtClass<?> resultKlass = factory.Class().create("Result");
-		CtClass<?> templateClass = factory.Class().get(ArrayAccessTemplate.class);
+		CtClass<?> templateClass = factory.Templates().Class().get(ArrayAccessTemplate.class);
 		//create array of template parameters, which contains CtBlocks
 		TemplateParameter[] params = templateClass.getMethod("sampleBlocks").getBody().getStatements().toArray(new TemplateParameter[0]);
 		new ArrayAccessTemplate(params).apply(resultKlass);
@@ -896,7 +896,7 @@ public class TemplateTest {
 		spoon.buildModel();
 		Factory factory = spoon.getFactory();
 
-		CtClass<?> templateClass = factory.Class().get(SubstituteRootTemplate.class);
+		CtClass<?> templateClass = factory.Templates().Class().get(SubstituteRootTemplate.class);
 		CtBlock<Void> templateParam = (CtBlock) templateClass.getMethod("sampleBlock").getBody();
 		
 		CtClass<?> resultKlass = factory.Class().create("Result");
@@ -913,7 +913,7 @@ public class TemplateTest {
 		spoon.buildModel();
 		Factory factory = spoon.getFactory();
 
-		CtClass<? extends ExpressionTemplate<?>> templateClass = factory.Class().get(AnExpressionTemplate.class);
+		CtClass<? extends ExpressionTemplate<?>> templateClass = factory.Templates().Class().get(AnExpressionTemplate.class);
 
 		assertEquals("new java.lang.String(exp.S())", ExpressionTemplate.getExpression(templateClass).toString());
 
@@ -939,10 +939,10 @@ public class TemplateTest {
 		parameters.put("someMethod", "genMethod");
 		
 		//contract: we can generate interface
-		final CtType<?> aIfaceModel = launcher.getFactory().Interface().get(AnIfaceModel.class);
+		final CtType<?> aIfaceModel = launcher.getFactory().Templates().Interface().get(AnIfaceModel.class);
 		CtType<?> genIface = Substitution.createTypeFromTemplate("generated.GenIface", aIfaceModel, parameters);
 		assertNotNull(genIface);
-		assertSame(genIface, factory.Type().get("generated.GenIface"));
+		assertSame(genIface, factory.Templates().Type().get("generated.GenIface"));
 		CtMethod<?> generatedIfaceMethod = genIface.getMethod("genMethod");
 		assertNotNull(generatedIfaceMethod);
 		assertNull(genIface.getMethod("someMethod"));
@@ -953,7 +953,7 @@ public class TemplateTest {
 		final CtType<?> aClassModel = launcher.getFactory().Class().get(AClassModel.class);
 		CtType<?> genClass = Substitution.createTypeFromTemplate("generated.GenClass", aClassModel, parameters);
 		assertNotNull(genClass);
-		assertSame(genClass, factory.Type().get("generated.GenClass"));
+		assertSame(genClass, factory.Templates().Type().get("generated.GenClass"));
 		CtMethod<?> generatedClassMethod = genClass.getMethod("genMethod");
 		assertNotNull(generatedClassMethod);
 		assertNull(genClass.getMethod("someMethod"));
@@ -966,7 +966,7 @@ public class TemplateTest {
 		final CtType<?> aEnumModel = launcher.getFactory().Type().get(AnEnumModel.class);
 		CtEnum<?> genEnum = (CtEnum<?>) Substitution.createTypeFromTemplate("generated.GenEnum", aEnumModel, parameters);
 		assertNotNull(genEnum);
-		assertSame(genEnum, factory.Type().get("generated.GenEnum"));
+		assertSame(genEnum, factory.Templates().Type().get("generated.GenEnum"));
 		assertEquals(2, genEnum.getEnumValues().size());
 		assertEquals("GOOD", genEnum.getEnumValues().get(0).getSimpleName());
 		assertEquals("BETTER", genEnum.getEnumValues().get(1).getSimpleName());
@@ -1190,7 +1190,7 @@ public class TemplateTest {
 				SpoonResourceHelper.resources("./src/test/java/spoon/test/template/testclasses/FlowMatcher.java"))
 				.build();
 
-		CtClass<?> templateKlass = factory.Class().get(FlowMatcher.class);
+		CtClass<?> templateKlass = factory.Templates().Class().get(FlowMatcher.class);
 		CtClass<?> klass = factory.Class().get(Flow.class);
 
 		CtMethod<?> method = (CtMethod<?>) templateKlass.getElements(new NamedElementFilter(CtMethod.class, "subFlowMatcher")).get(0);
