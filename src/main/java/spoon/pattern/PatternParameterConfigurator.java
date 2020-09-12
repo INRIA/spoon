@@ -827,9 +827,6 @@ public class PatternParameterConfigurator {
 		patternBuilder.setNodeOfElement(pep.element, new ParameterNode(pep.parameter), conflictResolutionMode);
 		if (patternBuilder.isAutoSimplifySubstitutions() && pep.element.isParentInitialized()) {
 			RootNode node = patternBuilder.getOptionalPatternNode(pep.element.getParent());
-			if (node != null) {
-				node.setSimplifyGenerated(true);
-			}
 		}
 	}
 

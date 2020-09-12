@@ -96,7 +96,7 @@ class TemplateBuilder {
 		} else {
 			pb = new PatternBuilder(Collections.singletonList(templateRoot));
 		}
-		Map<String, Object> templateParameters = template == null ? null : Parameters.getTemplateParametersAsMap(f, null, template);
+		Map<String, Object> templateParameters = template == null ? null : Parameters.getTemplateParametersAsMap(f, template);
 		//legacy templates always automatically simplifies generated code
 		pb.setAutoSimplifySubstitutions(true);
 		pb.configurePatternParameters(pc -> {
@@ -150,7 +150,11 @@ class TemplateBuilder {
 	 */
 	public Map<String, Object> getTemplateParameters(CtType<?> targetType) {
 		Factory f = templateType.getFactory();
-		return Parameters.getTemplateParametersAsMap(f, targetType, template);
+		Map<String, Object> templateParametersAsMap = Parameters.getTemplateParametersAsMap(f, template);
+		if (targetType != null) {
+			templateParametersAsMap.put(spoon.pattern.PatternBuilder.TARGET_TYPE, targetType.getReference());
+		}
+		return templateParametersAsMap;
 	}
 
 	/**
