@@ -113,8 +113,8 @@ public class ValueConvertorImpl implements ValueConvertor {
 				return val == null ? null : (T) val.toString();
 			} else if (value instanceof Enum) {
 				return (T) ((Enum) value).name();
-			} else if (value instanceof Number) {
-				return (T) ((Integer) value).toString();
+			} else if (value != null) {
+				return (T) value.toString();
 			} else if (value == null) {
 				throw new SpoonException("Missing parameter value for parameter `" + parameterName + "`");
 			}
