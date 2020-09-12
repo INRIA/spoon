@@ -195,7 +195,7 @@ Generator gen = t.generator();
 params = new HashMap<>();
 params.put("targetType", aTargetType.getReference());
 // see all methods generate in Generator
-List<CtMethod> aMethods = pattern.generator().generate(CtMethod.class, params);
+List<CtMethod> aMethods = pattern.generator().generate(params);
 ```
 
 

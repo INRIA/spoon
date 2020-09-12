@@ -28,20 +28,21 @@ public interface Generator {
 
 
 	/**
-	 * Main method to generate a new AST made from substituting of parameters by values in `params`
-	 * @param valueType - the expected type of returned items
+	 * Main method to generate a new AST made from substituting of parameters by
+	 * the values in `params`
 	 * @param params - the substitution parameters, it can be CtElement, primitive literals like String, Integer, ... and or List or Set of them.
 	 * @return List of generated elements
 	 */
-	<T extends CtElement> List<T> generate(Class<T> valueType, Map<String, Object> params);
+	<T extends CtElement> List<T> generate(Map<String, Object> params);
 
-	/** Utility method that provides the same feature as {@link #generate(Class, Map)}, but with a {@link ImmutableMap} as parameter (a Spoon elegant utility type) */
-	<T extends CtElement> List<T> generate(Class<T> valueType, ImmutableMap params);
+	/** Utility method that provides the same feature as {@link #generate(Map)}, but with a {@link ImmutableMap} as parameter (a Spoon elegant utility type) */
+	<T extends CtElement> List<T> generate(ImmutableMap params);
 
 	/**
-	 * Generates type with qualified name `typeQualifiedName` the provided `params`.
+	 * Generates a type with qualified name `typeQualifiedName`
+	 * by replacing the generator parameters with the arguments given in `params`.
 	 *
-	 * Note: the root element of pattern must be one type.
+	 * Note: the root element of pattern must be a CtType.
 	 *
 	 * @param typeQualifiedName the qualified name of to be generated type
 	 * @param params the pattern parameters

@@ -7,13 +7,18 @@
  */
 package spoon.pattern.internal;
 
+import spoon.SpoonException;
 import spoon.pattern.Generator;
 import spoon.pattern.PatternBuilder;
+import spoon.pattern.internal.node.ElementNode;
 import spoon.pattern.internal.node.ListOfNodes;
+import spoon.pattern.internal.node.ParameterNode;
 import spoon.pattern.internal.node.RootNode;
+import spoon.pattern.internal.node.SwitchNode;
 import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
@@ -220,13 +225,27 @@ public class DefaultGenerator implements Generator {
 	}
 
 	@Override
-	public <T extends CtElement> List<T> generate(Class<T> valueType, ImmutableMap params) {
+	public <T extends CtElement> List<T> generate(ImmutableMap params) {
+		Class valueType = null;
+		RootNode node = nodes.getNodes().get(0);
+		if (node instanceof ElementNode) {
+			valueType = ((ElementNode) node).getElementType().getMetamodelInterface().getActualClass();
+		} else if (node instanceof ParameterNode) {
+			valueType = ((ParameterNode) node).getParameterInfo().getParameterValueType();
+		} else if (node instanceof SwitchNode) {
+			valueType = CtStatement.class;
+		} else  { // if (node instanceof ConstantNode)
+			throw new SpoonException("node type not known " + node.getClass());
+		}
+		if (valueType == null) {
+			valueType = Object.class;
+		}
 		return setAddGeneratedBy(isAddGeneratedBy()).generateTargets(nodes, params, valueType);
 	}
 
 	@Override
-	public <T extends CtElement> List<T> generate(Class<T> valueType, Map<String, Object> params) {
-		return generate(valueType, new ImmutableMapImpl(params));
+	public <T extends CtElement> List<T> generate(Map<String, Object> params) {
+		return generate(new ImmutableMapImpl(params));
 	}
 
 	@Override
@@ -249,7 +268,7 @@ public class DefaultGenerator implements Generator {
 	@SuppressWarnings("unchecked")
 	private <T extends CtType<?>> T createType(CtPackage ownerPackage, String typeSimpleName, Map<String, Object> params) {
 		@SuppressWarnings({ "rawtypes" })
-		List<CtType> types = generate(CtType.class, new ImmutableMapImpl(params,
+		List<CtType> types = generate(new ImmutableMapImpl(params,
 				PatternBuilder.TARGET_TYPE, ownerPackage.getFactory().Type().createReference(getQualifiedName(ownerPackage, typeSimpleName))));
 		T result = null;
 		for (CtType<?> type : types) {

@@ -252,13 +252,13 @@ public class PatternTest {
 				.build();
 
 		{
-			List<CtStatement> statements = pattern.generator().generate(CtStatement.class, 
+			List<CtStatement> statements = pattern.generator().generate(
 					new ImmutableMapImpl().putValue("option", true).putValue("value", "spoon"));
 			assertEquals(1, statements.size());
 			assertEquals("java.lang.System.out.print(\"spoon\")", statements.get(0).toString());
 		}
 		{
-			List<CtStatement> statements = pattern.generator().generate(CtStatement.class, 
+			List<CtStatement> statements = pattern.generator().generate(
 					new ImmutableMapImpl().putValue("option", false).putValue("value", 2.1));
 			assertEquals(1, statements.size());
 			assertEquals("java.lang.System.out.println(2.1)", statements.get(0).toString());
@@ -291,7 +291,7 @@ public class PatternTest {
 		// created in "MatchMultiple.createPattern", matching a method "statements"
 		params = params.putValue("statements", statementsToBeAdded);
 
-		List<CtStatement> generated = pattern.generator().generate(CtStatement.class, params);
+		List<CtStatement> generated = pattern.generator().generate(params);
 		assertEquals(Arrays.asList(
 				//these statements comes from `statements` parameter value
 				"int foo = 0",
@@ -1394,7 +1394,7 @@ public class PatternTest {
 
 		Map<String, Object> params = new HashMap<>();
 		params.put("targetType", generatedType.getReference());
-		CtMethod m = (CtMethod) pattern.generator().generate(CtMethod.class, params).get(0);
+		CtMethod m = (CtMethod) pattern.generator().generate(params).get(0);
 		generatedType.addMethod(m);
 
 		//contract: the foo method has been added
@@ -1567,9 +1567,7 @@ public class PatternTest {
 				.configurePatternParameters()
 				.build();
 
-		params = new HashMap<>();
-		params.put("targetType", aTargetType.getReference());
-		final List<CtMethod> aMethods = pattern.generator().generate(CtMethod.class, params);
+		final List<CtMethod> aMethods = pattern.generator().generate(params);
 		assertEquals(1, aMethods.size());
 		final CtMethod<?> aMethod = aMethods.get(0);
 		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);
