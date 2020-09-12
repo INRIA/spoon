@@ -585,19 +585,19 @@ public abstract class Substitution {
 	}
 
 	/**
-	 * @param targetType - the element which is going to receive the model produced by the template.
+	 * @param target - the element which is going to receive the model produced by the template.
 	 * It is needed here just to provide the spoon factory, which contains the model of the template
 	 *
 	 * @param template - java instance of the template
 	 *
 	 * @return - CtClass from the already built spoon model, which represents the template
 	 */
-	static <T> CtClass<T> getTemplateCtClass(CtType<?> targetType, Template<?> template) {
+	static <T> CtClass<T> getTemplateCtClass(CtElement target, Template<?> template) {
 		Factory factory;
 		// we first need a factory
-		if (targetType != null) {
+		if (target != null) {
 			// if it's template with reference replacement
-			factory = targetType.getFactory();
+			factory = target.getFactory();
 		} else {
 			// else we have at least one template parameter with a factory
 			factory = getFactory(template);
@@ -613,9 +613,16 @@ public abstract class Substitution {
 	 * @return - CtClass from the already built spoon model, which represents the template
 	 */
 	public static <T> CtClass<T> getTemplateCtClass(Factory factory, Template<?> template) {
-		CtClass<T> c = factory.Class().get(template.getClass());
+		// we first look in the template factory
+		CtClass<T> c = factory.Templates().Class().get(template.getClass());
 		if (c.isShadow()) {
-			throw new SpoonException("The template " + template.getClass().getName() + " is not part of model. Add template sources to spoon template path.");
+			// maybe the template was put as regular input source
+			CtClass<T> creg = factory.Class().get(template.getClass());
+			if (creg.isShadow()) {
+				throw new SpoonException("The template " + template.getClass().getName() + " is not part of model. Add template sources to spoon template path.");
+			} else {
+				c = creg;
+			}
 		}
 		checkTemplateContracts(c);
 		return c;
