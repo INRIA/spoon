@@ -104,7 +104,7 @@ public abstract class Substitution {
 				})
 				.build()
 				.generator()
-				.generateType(qualifiedTypeName, templateParameters);
+				.generate(qualifiedTypeName, templateParameters);
 	}
 
 	/**

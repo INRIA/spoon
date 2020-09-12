@@ -230,7 +230,7 @@ public class DefaultGenerator implements Generator {
 	}
 
 	@Override
-	public <T extends CtType<?>> T generateType(String typeQualifiedName, Map<String, Object> params) {
+	public <T extends CtType<?>> T generate(String typeQualifiedName, Map<String, Object> params) {
 		CtTypeReference<?> newTypeRef = factory.Type().createReference(typeQualifiedName);
 		CtPackage ownerPackage = newTypeRef.getFactory().Package().getOrCreate(newTypeRef.getPackage().getQualifiedName());
 		return createType(ownerPackage, newTypeRef.getSimpleName(), params);
@@ -259,17 +259,6 @@ public class DefaultGenerator implements Generator {
 			}
 		}
 		return result;
-	}
-
-	@Override
-	public <T extends CtTypeMember> List<T> addToType(Class<T> valueType, Map<String, Object> params, CtType<?> targetType) {
-		List<T> results = generate(valueType, new ImmutableMapImpl(params, PatternBuilder.TARGET_TYPE, targetType.getReference()));
-		for (T result : results) {
-			if (result instanceof CtTypeMember) {
-				targetType.addTypeMember((CtTypeMember) result);
-			}
-		}
-		return results;
 	}
 
 	private static String getQualifiedName(CtPackage pckg, String simpleName) {

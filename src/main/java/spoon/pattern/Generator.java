@@ -12,7 +12,6 @@ import java.util.Map;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
 import spoon.support.Experimental;
 import spoon.support.util.ImmutableMap;
@@ -40,18 +39,6 @@ public interface Generator {
 	<T extends CtElement> List<T> generate(Class<T> valueType, ImmutableMap params);
 
 	/**
-	 * Adds type members (fields and methods) to `targetType`.
-	 *
-	 * The root elements of the pattern must be type members.
-	 *
-	 * @param valueType the type of generated elements
-	 * @param params the pattern parameters
-	 * @param targetType the existing type, which will contain the added generated {@link CtElement}s
-	 * @return List of generated elements
-	 */
-	<T extends CtTypeMember> List<T> addToType(Class<T> valueType, Map<String, Object> params, CtType<?> targetType);
-
-	/**
 	 * Generates type with qualified name `typeQualifiedName` the provided `params`.
 	 *
 	 * Note: the root element of pattern must be one type.
@@ -60,6 +47,6 @@ public interface Generator {
 	 * @param params the pattern parameters
 	 * @return the generated type
 	 */
-	<T extends CtType<?>> T generateType(String typeQualifiedName, Map<String, Object> params);
+	<T extends CtType<?>> T generate(String typeQualifiedName, Map<String, Object> params);
 
 }

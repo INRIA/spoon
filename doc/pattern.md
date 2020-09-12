@@ -186,6 +186,19 @@ is understood as inline statement
 
 All patterns can be used for code generation. The idea is that one calls `#generator()` on a pattern object to get a `Generator`. This class contains methods that takes as input a map of string,objects where each string key points to a pattern parameter name and each map value contains the element to be put in place of the pattern parameter.
 
+
+```java
+Pattern t = ....
+Generator gen = t.generator();
+
+// the parameters to bind in the generator
+params = new HashMap<>();
+params.put("targetType", aTargetType.getReference());
+// see all methods generate in Generator
+List<CtMethod> aMethods = pattern.generator().generate(CtMethod.class, params);
+```
+
+
 ### Notes on patterns
 
 The unique feature of Spoon pattern matching is that we are matching on AST trees and not source code text. It means that:

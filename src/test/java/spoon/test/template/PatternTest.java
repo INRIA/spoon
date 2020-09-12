@@ -1342,7 +1342,7 @@ public class PatternTest {
 		Pattern pattern = PatternBuilder.create(templateModel).setAddGeneratedBy(true).build();
 
 		final String newQName = "spoon.test.generated.ACloneOfAClassWithMethodsAndRefs";
-		CtClass<?> generatedType = pattern.generator().generateType(newQName, Collections.emptyMap());
+		CtClass<?> generatedType = pattern.generator().generate(newQName, Collections.emptyMap());
 		assertNotNull(generatedType);
 
 		// sanity check that the new type contains all the expected methods
@@ -1392,7 +1392,10 @@ public class PatternTest {
 
 		CtClass<?> generatedType = factory.createClass("spoon.test.generated.ACloneOfAClassWithMethodsAndRefs");
 
-		pattern.generator().addToType(CtMethod.class, Collections.emptyMap(), generatedType);
+		Map<String, Object> params = new HashMap<>();
+		params.put("targetType", generatedType.getReference());
+		CtMethod m = (CtMethod) pattern.generator().generate(CtMethod.class, params).get(0);
+		generatedType.addMethod(m);
 
 		//contract: the foo method has been added
 		assertEquals(Arrays.asList("foo"),
@@ -1563,7 +1566,10 @@ public class PatternTest {
 				//as pattern parameters
 				.configurePatternParameters()
 				.build();
-		final List<CtMethod> aMethods = pattern.generator().addToType(CtMethod.class, params, aTargetType);
+
+		params = new HashMap<>();
+		params.put("targetType", aTargetType.getReference());
+		final List<CtMethod> aMethods = pattern.generator().generate(CtMethod.class, params);
 		assertEquals(1, aMethods.size());
 		final CtMethod<?> aMethod = aMethods.get(0);
 		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);
