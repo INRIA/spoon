@@ -18,4 +18,9 @@ public class SubstituteArrayLengthTemplate extends StatementTemplate {
 	public SubstituteArrayLengthTemplate(String[] anArray) {
 		this.anArray = anArray;
 	}
+
+	@Override
+	public boolean withPartialEvaluation() {
+		return true;
+	}
 }
