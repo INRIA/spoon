@@ -12,7 +12,6 @@ import java.util.Map;
 
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
 import spoon.support.Experimental;
 import spoon.support.util.ImmutableMap;
@@ -29,37 +28,26 @@ public interface Generator {
 
 
 	/**
-	 * Main method to generate a new AST made from substituting of parameters by values in `params`
-	 * @param valueType - the expected type of returned items
+	 * Main method to generate a new AST made from substituting of parameters by
+	 * the values in `params`
 	 * @param params - the substitution parameters, it can be CtElement, primitive literals like String, Integer, ... and or List or Set of them.
 	 * @return List of generated elements
 	 */
-	<T extends CtElement> List<T> generate(Class<T> valueType, Map<String, Object> params);
+	<T extends CtElement> List<T> generate(Map<String, Object> params);
 
-	/** Utility method that provides the same feature as {@link #generate(Class, Map)}, but with a {@link ImmutableMap} as parameter (a Spoon elegant utility type) */
-	<T extends CtElement> List<T> generate(Class<T> valueType, ImmutableMap params);
-
-	/**
-	 * Adds type members (fields and methods) to `targetType`.
-	 *
-	 * The root elements of the pattern must be type members.
-	 *
-	 * @param valueType the type of generated elements
-	 * @param params the pattern parameters
-	 * @param targetType the existing type, which will contain the added generated {@link CtElement}s
-	 * @return List of generated elements
-	 */
-	<T extends CtTypeMember> List<T> addToType(Class<T> valueType, Map<String, Object> params, CtType<?> targetType);
+	/** Utility method that provides the same feature as {@link #generate(Map)}, but with a {@link ImmutableMap} as parameter (a Spoon elegant utility type) */
+	<T extends CtElement> List<T> generate(ImmutableMap params);
 
 	/**
-	 * Generates type with qualified name `typeQualifiedName` the provided `params`.
+	 * Generates a type with qualified name `typeQualifiedName`
+	 * by replacing the generator parameters with the arguments given in `params`.
 	 *
-	 * Note: the root element of pattern must be one type.
+	 * Note: the root element of pattern must be a CtType.
 	 *
 	 * @param typeQualifiedName the qualified name of to be generated type
 	 * @param params the pattern parameters
 	 * @return the generated type
 	 */
-	<T extends CtType<?>> T generateType(String typeQualifiedName, Map<String, Object> params);
+	<T extends CtType<?>> T generate(String typeQualifiedName, Map<String, Object> params);
 
 }
