@@ -8,13 +8,11 @@
 package spoon.support.template;
 
 import spoon.SpoonException;
-import spoon.pattern.PatternBuilder;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
@@ -203,10 +201,10 @@ public abstract class Parameters {
 		//use linked hash map to assure same order of parameter names. There are cases during substitution of parameters when substitution order matters. E.g. SubstitutionVisitor#substituteName(...)
 		Map<String, Object> params = new LinkedHashMap<>();
 		try {
-			for (CtFieldReference<?> f : templateType.getAllFields()) {
+			for (Field f : template.getClass().getDeclaredFields()) {
 				if (isParameterSource(f)) {
 					String parameterName = getParameterName(f);
-					params.put(parameterName, getValue(template, parameterName, (Field) f.getActualField()));
+					params.put(parameterName, getValue(template, parameterName, f));
 				}
 			}
 		} catch (Exception e) {
@@ -225,11 +223,12 @@ public abstract class Parameters {
 	 * @param template
 	 * 		the template that holds the parameter values
 	 */
-	public static Map<String, Object> getTemplateParametersAsMap(Factory f, CtType<?> targetType, Template<?> template) {
-		Map<String, Object> params = new HashMap<>(getNamesToValues(template, (CtClass) f.Class().get(template.getClass())));
+	public static Map<String, Object> getTemplateParametersAsMap(Factory f, Template<?> template) {
+		CtClass templateType = f.Class().get(template.getClass());
+		Map<String, Object> params = new HashMap<>(getNamesToValues(template, templateType));
 		//detect reference to to be generated type
-		CtTypeReference<?> targetTypeRef = targetType == null ? null : targetType.getReference();
-		if (targetType == null) {
+		CtTypeReference<?> targetTypeRef = templateType == null ? null : templateType.getReference();
+		if (templateType == null) {
 			//legacy templates has target type stored under variable whose name was equal to simple name of template type
 			Object targetTypeObject = params.get(template.getClass().getSimpleName());
 			if (targetTypeObject != null) {
@@ -243,13 +242,6 @@ public abstract class Parameters {
 					throw new SpoonException("Unsupported definition of target type by value of class " + targetTypeObject.getClass());
 				}
 			}
-		}
-		/*
-		 * there is required to replace all template model references by target type reference.
-		 * Handle that request as template parameter too
-		 */
-		if (targetTypeRef != null) {
-			params.put(PatternBuilder.TARGET_TYPE, targetTypeRef);
 		}
 		return params;
 	}
