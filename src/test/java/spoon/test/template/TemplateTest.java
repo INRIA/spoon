@@ -204,14 +204,14 @@ public class TemplateTest {
 
 		// contract: foreach in block is inlined into that wrapping block
 		CtBlock templatedForEach = methodWithTemplatedParameters.getBody().getStatement(4);
-		assertEquals("java.lang.System.out.println(0)// will be inlined\n", templatedForEach.getStatement(0).toString());
-		assertEquals("java.lang.System.out.println(1)// will be inlined\n", templatedForEach.getStatement(1).toString());
+		assertEquals("java.lang.System.out.println(0)", templatedForEach.getStatement(0).toString());
+		assertEquals("java.lang.System.out.println(1)", templatedForEach.getStatement(1).toString());
 		// contract: foreach with single body block are inlined without extra block
-		assertEquals("java.lang.System.out.println(0)// will be inlined\n", methodWithTemplatedParameters.getBody().getStatement(5).toString());
-		assertEquals("java.lang.System.out.println(1)// will be inlined\n", methodWithTemplatedParameters.getBody().getStatement(6).toString());
+		assertEquals("java.lang.System.out.println(0)", methodWithTemplatedParameters.getBody().getStatement(5).toString());
+		assertEquals("java.lang.System.out.println(1)", methodWithTemplatedParameters.getBody().getStatement(6).toString());
 		// contract: foreach with double body block are inlined with one extra block for each inlined statement
-		assertEquals("java.lang.System.out.println(0)// will be inlined\n", ((CtBlock) methodWithTemplatedParameters.getBody().getStatement(7)).getStatement(0).toString());
-		assertEquals("java.lang.System.out.println(1)// will be inlined\n", ((CtBlock) methodWithTemplatedParameters.getBody().getStatement(8)).getStatement(0).toString());
+		assertEquals("java.lang.System.out.println(0)", ((CtBlock) methodWithTemplatedParameters.getBody().getStatement(7)).getStatement(0).toString());
+		assertEquals("java.lang.System.out.println(1)", ((CtBlock) methodWithTemplatedParameters.getBody().getStatement(8)).getStatement(0).toString());
 		// contract: foreach with statement are inlined without extra (implicit) block
 		assertFalse(methodWithTemplatedParameters.getBody().getStatement(9) instanceof CtBlock);
 		assertEquals("java.lang.System.out.println(0)", methodWithTemplatedParameters.getBody().getStatement(9).toString());
