@@ -192,13 +192,13 @@ public class TemplateTest {
 		assertEquals("{@link SuperClass#toBeOverriden()}", varMethod.getComments().get(2).getContent());
 
 		// contract: variable are renamed
-		assertEquals("java.util.List newVarName = null// will be replaced by List newVarName = null;\n", methodWithTemplatedParameters.getBody().getStatement(0).toString());
+		assertEquals("java.util.List newVarName = null// will be replaced by List newVarName = null;" + newLine, methodWithTemplatedParameters.getBody().getStatement(0).toString());
 
 		// contract: types are replaced by other types
-		assertEquals("java.util.LinkedList l = null// will be replaced by LinkedList l = null;\n", methodWithTemplatedParameters.getBody().getStatement(1).toString());
+		assertEquals("java.util.LinkedList l = null// will be replaced by LinkedList l = null;" + newLine, methodWithTemplatedParameters.getBody().getStatement(1).toString());
 
 		// contract: casts are replaced by substitution types
-		assertEquals("java.util.List o = ((java.util.LinkedList) (new java.util.LinkedList()))// will be replaced by List o = (LinkedList) new LinkedList();\n", methodWithTemplatedParameters.getBody().getStatement(2).toString());
+		assertEquals("java.util.List o = ((java.util.LinkedList) (new java.util.LinkedList()))// will be replaced by List o = (LinkedList) new LinkedList();" + newLine, methodWithTemplatedParameters.getBody().getStatement(2).toString());
 
 		// contract: invocations are replaced by actual invocations
 		assertEquals("toBeOverriden()", methodWithTemplatedParameters.getBody().getStatement(3).toString());
@@ -222,10 +222,10 @@ public class TemplateTest {
 		assertTrue(methodWithTemplatedParameters.getBody().getStatement(11) instanceof CtForEach);
 
 		// contract: local variable write are replaced by local variable write with modified local variable name
-		assertEquals("newVarName = o// will be replaced by newVarName = o\n", methodWithTemplatedParameters.getBody().getStatement(12).toString());
+		assertEquals("newVarName = o// will be replaced by newVarName = o" + newLine, methodWithTemplatedParameters.getBody().getStatement(12).toString());
 
 		// contract: local variable read are replaced by local variable read with modified local variable name
-		assertEquals("l = ((java.util.LinkedList) (newVarName))// will be replaced by l = (LinkedList) newVarName\n", methodWithTemplatedParameters.getBody().getStatement(13).toString());
+		assertEquals("l = ((java.util.LinkedList) (newVarName))// will be replaced by l = (LinkedList) newVarName" + newLine, methodWithTemplatedParameters.getBody().getStatement(13).toString());
 		
 		// contract; field access is handled same like local variable access
 		CtMethod<?> methodWithFieldAccess = subc.getElements(
@@ -237,7 +237,7 @@ public class TemplateTest {
 		assertEquals("newVarName = o", methodWithFieldAccess.getBody().getStatement(2).toString());
 
 		// contract: field read are replaced by field read with modified field name
-		assertEquals("l = ((java.util.LinkedList) (newVarName))// will be replaced by l = (LinkedList) newVarName\n", methodWithFieldAccess.getBody().getStatement(3).toString());
+		assertEquals("l = ((java.util.LinkedList) (newVarName))// will be replaced by l = (LinkedList) newVarName" + newLine, methodWithFieldAccess.getBody().getStatement(3).toString());
 		
 
 		class Context {
