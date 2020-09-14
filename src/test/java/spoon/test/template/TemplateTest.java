@@ -938,11 +938,10 @@ public class TemplateTest {
 		//replace someMethod with genMethod
 		parameters.put("someMethod", "genMethod");
 		
-		//contract: we can generate interface
+		//contract: we can generate interface with createTypeFromTemplate
 		final CtType<?> aIfaceModel = launcher.getFactory().Templates().Interface().get(AnIfaceModel.class);
 		CtType<?> genIface = Substitution.createTypeFromTemplate("generated.GenIface", aIfaceModel, parameters);
 		assertNotNull(genIface);
-		assertSame(genIface, factory.Type().get("generated.GenIface"));
 		CtMethod<?> generatedIfaceMethod = genIface.getMethod("genMethod");
 		assertNotNull(generatedIfaceMethod);
 		assertNull(genIface.getMethod("someMethod"));
