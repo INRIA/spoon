@@ -372,7 +372,7 @@ public class FactoryImpl implements Factory, Serializable {
 		}
 		// lazy creation
 		if (templates == null) {
-			templates = new FactoryImpl(this);
+			templates = new FactoryImpl(new DefaultCoreFactory(), getEnvironment());
 		}
 		return templates;
 	}
@@ -392,10 +392,7 @@ public class FactoryImpl implements Factory, Serializable {
 	public FactoryImpl(CoreFactory coreFactory, Environment environment) {
 		this.environment = environment;
 		this.core = coreFactory;
-		// when creating subfactories (eg for templates), we don't want to replace the link between the code factory and the master factory
-		if (coreFactory.getMainFactory() == null) {
-			coreFactory.setMainFactory(this);
-		}
+		coreFactory.setMainFactory(this);
 	}
 
 	// Deduplication

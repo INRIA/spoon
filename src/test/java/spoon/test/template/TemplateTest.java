@@ -186,32 +186,33 @@ public class TemplateTest {
 		CtMethod<?> varMethod = subc.getMethodsByName("newVarName").get(0);
 		elementToGeneratedByMember.put(varMethod, "#var");
 		// contract: parameters are replaced in comments too. The Class parameter value is converted to String
-		//assertEquals("newVarName", varMethod.getComments().get(0).getContent().split("[\\n\\r]+")[0]);
-		//assertEquals("{@link LinkedList}", varMethod.getComments().get(1).getContent());
-		//assertEquals("{@link SuperClass#toBeOverriden()}", varMethod.getComments().get(2).getContent());
+		System.out.println(varMethod.getComments());
+		assertEquals("newVarName", varMethod.getComments().get(0).getContent().split("[\\n\\r]+")[0]);
+		assertEquals("{@link LinkedList}", varMethod.getComments().get(1).getContent());
+		assertEquals("{@link SuperClass#toBeOverriden()}", varMethod.getComments().get(2).getContent());
 
 		// contract: variable are renamed
-		assertEquals("java.util.List newVarName = null", methodWithTemplatedParameters.getBody().getStatement(0).toString());
+		assertEquals("java.util.List newVarName = null// will be replaced by List newVarName = null;\n", methodWithTemplatedParameters.getBody().getStatement(0).toString());
 
 		// contract: types are replaced by other types
-		assertEquals("java.util.LinkedList l = null", methodWithTemplatedParameters.getBody().getStatement(1).toString());
+		assertEquals("java.util.LinkedList l = null// will be replaced by LinkedList l = null;\n", methodWithTemplatedParameters.getBody().getStatement(1).toString());
 
 		// contract: casts are replaced by substitution types
-		assertEquals("java.util.List o = ((java.util.LinkedList) (new java.util.LinkedList()))", methodWithTemplatedParameters.getBody().getStatement(2).toString());
+		assertEquals("java.util.List o = ((java.util.LinkedList) (new java.util.LinkedList()))// will be replaced by List o = (LinkedList) new LinkedList();\n", methodWithTemplatedParameters.getBody().getStatement(2).toString());
 
 		// contract: invocations are replaced by actual invocations
 		assertEquals("toBeOverriden()", methodWithTemplatedParameters.getBody().getStatement(3).toString());
 
 		// contract: foreach in block is inlined into that wrapping block
 		CtBlock templatedForEach = methodWithTemplatedParameters.getBody().getStatement(4);
-		assertEquals("java.lang.System.out.println(0)", templatedForEach.getStatement(0).toString());
-		assertEquals("java.lang.System.out.println(1)", templatedForEach.getStatement(1).toString());
+		assertEquals("java.lang.System.out.println(0)// will be inlined\n", templatedForEach.getStatement(0).toString());
+		assertEquals("java.lang.System.out.println(1)// will be inlined\n", templatedForEach.getStatement(1).toString());
 		// contract: foreach with single body block are inlined without extra block
-		assertEquals("java.lang.System.out.println(0)", methodWithTemplatedParameters.getBody().getStatement(5).toString());
-		assertEquals("java.lang.System.out.println(1)", methodWithTemplatedParameters.getBody().getStatement(6).toString());
+		assertEquals("java.lang.System.out.println(0)// will be inlined\n", methodWithTemplatedParameters.getBody().getStatement(5).toString());
+		assertEquals("java.lang.System.out.println(1)// will be inlined\n", methodWithTemplatedParameters.getBody().getStatement(6).toString());
 		// contract: foreach with double body block are inlined with one extra block for each inlined statement
-		assertEquals("java.lang.System.out.println(0)", ((CtBlock) methodWithTemplatedParameters.getBody().getStatement(7)).getStatement(0).toString());
-		assertEquals("java.lang.System.out.println(1)", ((CtBlock) methodWithTemplatedParameters.getBody().getStatement(8)).getStatement(0).toString());
+		assertEquals("java.lang.System.out.println(0)// will be inlined\n", ((CtBlock) methodWithTemplatedParameters.getBody().getStatement(7)).getStatement(0).toString());
+		assertEquals("java.lang.System.out.println(1)// will be inlined\n", ((CtBlock) methodWithTemplatedParameters.getBody().getStatement(8)).getStatement(0).toString());
 		// contract: foreach with statement are inlined without extra (implicit) block
 		assertFalse(methodWithTemplatedParameters.getBody().getStatement(9) instanceof CtBlock);
 		assertEquals("java.lang.System.out.println(0)", methodWithTemplatedParameters.getBody().getStatement(9).toString());
@@ -221,10 +222,10 @@ public class TemplateTest {
 		assertTrue(methodWithTemplatedParameters.getBody().getStatement(11) instanceof CtForEach);
 
 		// contract: local variable write are replaced by local variable write with modified local variable name
-		assertEquals("newVarName = o", methodWithTemplatedParameters.getBody().getStatement(12).toString());
+		assertEquals("newVarName = o// will be replaced by newVarName = o\n", methodWithTemplatedParameters.getBody().getStatement(12).toString());
 
 		// contract: local variable read are replaced by local variable read with modified local variable name
-		assertEquals("l = ((java.util.LinkedList) (newVarName))", methodWithTemplatedParameters.getBody().getStatement(13).toString());
+		assertEquals("l = ((java.util.LinkedList) (newVarName))// will be replaced by l = (LinkedList) newVarName\n", methodWithTemplatedParameters.getBody().getStatement(13).toString());
 		
 		// contract; field access is handled same like local variable access
 		CtMethod<?> methodWithFieldAccess = subc.getElements(
@@ -236,7 +237,7 @@ public class TemplateTest {
 		assertEquals("newVarName = o", methodWithFieldAccess.getBody().getStatement(2).toString());
 
 		// contract: field read are replaced by field read with modified field name
-		assertEquals("l = ((java.util.LinkedList) (newVarName))", methodWithFieldAccess.getBody().getStatement(3).toString());
+		assertEquals("l = ((java.util.LinkedList) (newVarName))// will be replaced by l = (LinkedList) newVarName\n", methodWithFieldAccess.getBody().getStatement(3).toString());
 		
 
 		class Context {
