@@ -85,4 +85,7 @@ public interface Template<T extends CtElement> {
 	 */
 	T apply(CtType<?> targetType);
 
+	/** if true, the result of the template evaluation is simplified with partial evaluation */
+	boolean withPartialEvaluation();
+
 }
