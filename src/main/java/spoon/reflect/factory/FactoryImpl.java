@@ -377,15 +377,6 @@ public class FactoryImpl implements Factory, Serializable {
 		return templates;
 	}
 
-
-	/**
-	 * A constructor that takes the parent factory
-	 */
-	public FactoryImpl(Factory parentFactory) {
-		this(parentFactory.Core(), parentFactory.getEnvironment());
-		this.parentFactory = parentFactory;
-	}
-
 	/**
 	 * Should not be called directly. Use {@link spoon.Launcher#createFactory()} instead.
 	 */

@@ -186,7 +186,6 @@ public class TemplateTest {
 		CtMethod<?> varMethod = subc.getMethodsByName("newVarName").get(0);
 		elementToGeneratedByMember.put(varMethod, "#var");
 		// contract: parameters are replaced in comments too. The Class parameter value is converted to String
-		System.out.println(varMethod.getComments());
 		assertEquals("newVarName", varMethod.getComments().get(0).getContent().split("[\\n\\r]+")[0]);
 		assertEquals("{@link LinkedList}", varMethod.getComments().get(1).getContent());
 		assertEquals("{@link SuperClass#toBeOverriden()}", varMethod.getComments().get(2).getContent());
