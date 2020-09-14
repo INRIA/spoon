@@ -587,7 +587,7 @@ public class PositionBuilder {
 
 			// this is the index into the modifier char array snippet, so must be +o1 if >-1
 			int chevronIndex = ArrayUtils.indexOf(Arrays.copyOfRange(contents, o1, o2), '<');
-			if (chevronIndex != -1) {
+			if (chevronIndex > 0) {
 				o2 = o1 + chevronIndex;
 			}
 
