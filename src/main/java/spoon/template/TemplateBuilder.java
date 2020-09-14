@@ -97,8 +97,7 @@ class TemplateBuilder {
 			pb = new PatternBuilder(Collections.singletonList(templateRoot));
 		}
 		Map<String, Object> templateParameters = template == null ? null : Parameters.getTemplateParametersAsMap(f, template);
-		//legacy templates always automatically simplifies generated code
-		pb.setAutoSimplifySubstitutions(true);
+		pb.setAutoSimplifySubstitutions(template == null ? false : template.withPartialEvaluation());
 		pb.configurePatternParameters(pc -> {
 			pc.byTemplateParameter(templateParameters);
 			pc.byParameterValues(templateParameters);
@@ -150,7 +149,11 @@ class TemplateBuilder {
 	 */
 	public Map<String, Object> getTemplateParameters(CtType<?> targetType) {
 		Factory f = templateType.getFactory();
-		return Parameters.getTemplateParametersAsMap(f, template);
+		Map<String, Object> templateParametersAsMap = Parameters.getTemplateParametersAsMap(f, template);
+		if (targetType != null) {
+			templateParametersAsMap.put(spoon.pattern.PatternBuilder.TARGET_TYPE, targetType.getReference());
+		}
+		return templateParametersAsMap;
 	}
 
 	/**
@@ -159,7 +162,7 @@ class TemplateBuilder {
 	 * @return a substituted element
 	 */
 	public <T extends CtElement> T substituteSingle(CtType<?> targetType, Class<T> itemType) {
-		return build().generator().generate(itemType, new ImmutableMapImpl(getTemplateParameters(targetType))).get(0);
+		return (T) build().generator().<CtElement>generate(new ImmutableMapImpl(getTemplateParameters(targetType))).get(0);
 	}
 	/**
 	 * generates a new AST nodes made by cloning of `patternModel` and by substitution of parameters by their values
@@ -168,6 +171,6 @@ class TemplateBuilder {
 	 * @return List of substituted elements
 	 */
 	public <T extends CtElement> List<T> substituteList(Factory factory, CtType<?> targetType, Class<T> itemType) {
-		return build().generator().generate(itemType, getTemplateParameters(targetType));
+		return build().generator().generate(getTemplateParameters(targetType));
 	}
 }

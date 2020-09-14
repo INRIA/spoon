@@ -348,11 +348,15 @@ public interface Factory {
 	 */
 	CtComment createComment(String content, CtComment.CommentType type);
 
-
 	/**
 	 *  @see CodeFactory#createJavaDocTag(String,CtJavaDocTag.TagType)
 	 */
 	CtJavaDocTag createJavaDocTag(String content, CtJavaDocTag.TagType type);
+
+	/**
+	 *  @see CodeFactory#createJavaDocTag(String,CtJavaDocTag.TagType,String)
+	 */
+	CtJavaDocTag createJavaDocTag(String content, CtJavaDocTag.TagType type, String realName);
 
 	/**
 	 * @see CoreFactory#createJavaDoc()
@@ -361,7 +365,7 @@ public interface Factory {
 
 
 	/**
-	 *  @see CodeFactory#createJavaDocTag(String,CtJavaDocTag.TagType)
+	 *  @see CodeFactory#createJavaDocTag()
 	 */
 	CtJavaDocTag createJavaDocTag();
 

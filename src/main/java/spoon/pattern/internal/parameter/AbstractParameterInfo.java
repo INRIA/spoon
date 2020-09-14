@@ -63,7 +63,8 @@ public abstract class AbstractParameterInfo implements ParameterInfo {
 		if (cca != null) {
 			return cca.getWrappedName(getPlainName());
 		}
-		return getPlainName();
+		// this string can be used later in setSimpleName, which does not allow square brackets, so we replace them
+		return getPlainName().replace("[", "_").replace("]", "_");
 	}
 
 	protected abstract String getPlainName();

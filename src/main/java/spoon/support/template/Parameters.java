@@ -8,7 +8,6 @@
 package spoon.support.template;
 
 import spoon.SpoonException;
-import spoon.pattern.PatternBuilder;
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLiteral;
@@ -243,13 +242,6 @@ public abstract class Parameters {
 					throw new SpoonException("Unsupported definition of target type by value of class " + targetTypeObject.getClass());
 				}
 			}
-		}
-		/*
-		 * there is required to replace all template model references by target type reference.
-		 * Handle that request as template parameter too
-		 */
-		if (targetTypeRef != null) {
-			params.put(PatternBuilder.TARGET_TYPE, targetTypeRef);
 		}
 		return params;
 	}

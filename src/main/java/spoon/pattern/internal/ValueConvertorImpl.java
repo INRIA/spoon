@@ -122,7 +122,7 @@ public class ValueConvertorImpl implements ValueConvertor {
 		}
 		if (CtTypeReference.class.isAssignableFrom(valueClass)) {
 			if (value == null) {
-				throw new SpoonException("The null value is not valid substitution for CtTypeReference");
+				throw new SpoonException("The null value is not valid substitution for CtTypeReference for " + parameterName);
 			}
 			if (value instanceof Class) {
 				return (T) factory.Type().createReference((Class<?>) value);

@@ -9,17 +9,22 @@ package spoon.support.reflect.code;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtJavaDocTag;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
-import static spoon.reflect.path.CtRole.JAVADOC_TAG_VALUE;
 import static spoon.reflect.path.CtRole.DOCUMENTATION_TYPE;
+import static spoon.reflect.path.CtRole.COMMENT_CONTENT;
+import static spoon.reflect.path.CtRole.DOCUMENTATION_TYPE_REALNAME;
+import static spoon.reflect.path.CtRole.JAVADOC_TAG_VALUE;
+
 
 public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
 	@MetamodelPropertyField(role = DOCUMENTATION_TYPE)
 	private TagType type;
+	@MetamodelPropertyField(role = DOCUMENTATION_TYPE_REALNAME)
+	private String realName;
 	@MetamodelPropertyField(role = COMMENT_CONTENT)
 	private String content;
 	@MetamodelPropertyField(role = JAVADOC_TAG_VALUE)
@@ -33,14 +38,27 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 	@Override
 	public <E extends CtJavaDocTag> E setType(String type) {
 		this.setType(TagType.tagFromName(type));
+		this.setRealName(type);
 		return (E) this;
 	}
 
 	@Override
 	public <E extends CtJavaDocTag> E setType(TagType type) {
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DOCUMENTATION_TYPE, type, this.type);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.DOCUMENTATION_TYPE, type, this.type);
 		this.type = type;
 		return (E) this;
+	}
+
+	@Override
+	public <E extends CtJavaDocTag> E setRealName(String realName) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, DOCUMENTATION_TYPE_REALNAME, type, this.type);
+		this.realName = realName;
+		return (E) this;
+	}
+
+	@Override
+	public String getRealName() {
+		return realName;
 	}
 
 	@Override
@@ -79,7 +97,7 @@ public class CtJavaDocTagImpl extends CtElementImpl implements CtJavaDocTag {
 
 	@Override
 	public String toString()	{
-		return this.getType().toString()	//Tag type, with @ sign included
+		return JAVADOC_TAG_PREFIX + this.realName // Tag type, with @ sign included, Use realname instead of UNKNOWN
 				+ " "	//Space required between tag type and parameter
 				+ this.param + System.lineSeparator()	//Tag parameter
 				+ "\t\t" + this.content + System.lineSeparator();

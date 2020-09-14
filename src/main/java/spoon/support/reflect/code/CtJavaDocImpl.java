@@ -114,7 +114,7 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 
 		javadoc = Javadoc.parse(cleanComment(content));
 		for (JavadocBlockTag tag: javadoc.getBlockTags()) {
-			addTag(getFactory().createJavaDocTag(tag.getContent().toText(), CtJavaDocTag.TagType.tagFromName(tag.getTagName())));
+			addTag(getFactory().createJavaDocTag(tag.getContent().toText(), CtJavaDocTag.TagType.tagFromName(tag.getTagName()), tag.getTagRealName()));
 		}
 
 		// we cannot call super.setContent because it calls cleanComment (which has already been done above)

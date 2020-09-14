@@ -252,13 +252,13 @@ public class PatternTest {
 				.build();
 
 		{
-			List<CtStatement> statements = pattern.generator().generate(CtStatement.class, 
+			List<CtStatement> statements = pattern.generator().generate(
 					new ImmutableMapImpl().putValue("option", true).putValue("value", "spoon"));
 			assertEquals(1, statements.size());
 			assertEquals("java.lang.System.out.print(\"spoon\")", statements.get(0).toString());
 		}
 		{
-			List<CtStatement> statements = pattern.generator().generate(CtStatement.class, 
+			List<CtStatement> statements = pattern.generator().generate(
 					new ImmutableMapImpl().putValue("option", false).putValue("value", 2.1));
 			assertEquals(1, statements.size());
 			assertEquals("java.lang.System.out.println(2.1)", statements.get(0).toString());
@@ -291,7 +291,7 @@ public class PatternTest {
 		// created in "MatchMultiple.createPattern", matching a method "statements"
 		params = params.putValue("statements", statementsToBeAdded);
 
-		List<CtStatement> generated = pattern.generator().generate(CtStatement.class, params);
+		List<CtStatement> generated = pattern.generator().generate(params);
 		assertEquals(Arrays.asList(
 				//these statements comes from `statements` parameter value
 				"int foo = 0",
@@ -1342,7 +1342,7 @@ public class PatternTest {
 		Pattern pattern = PatternBuilder.create(templateModel).setAddGeneratedBy(true).build();
 
 		final String newQName = "spoon.test.generated.ACloneOfAClassWithMethodsAndRefs";
-		CtClass<?> generatedType = pattern.generator().generateType(newQName, Collections.emptyMap());
+		CtClass<?> generatedType = pattern.generator().generate(newQName, Collections.emptyMap());
 		assertNotNull(generatedType);
 
 		// sanity check that the new type contains all the expected methods
@@ -1392,7 +1392,10 @@ public class PatternTest {
 
 		CtClass<?> generatedType = factory.createClass("spoon.test.generated.ACloneOfAClassWithMethodsAndRefs");
 
-		pattern.generator().addToType(CtMethod.class, Collections.emptyMap(), generatedType);
+		Map<String, Object> params = new HashMap<>();
+		params.put("targetType", generatedType.getReference());
+		CtMethod m = (CtMethod) pattern.generator().generate(params).get(0);
+		generatedType.addMethod(m);
 
 		//contract: the foo method has been added
 		assertEquals(Arrays.asList("foo"),
@@ -1563,7 +1566,8 @@ public class PatternTest {
 				//as pattern parameters
 				.configurePatternParameters()
 				.build();
-		final List<CtMethod> aMethods = pattern.generator().addToType(CtMethod.class, params, aTargetType);
+
+		final List<CtMethod> aMethods = pattern.generator().generate(params);
 		assertEquals(1, aMethods.size());
 		final CtMethod<?> aMethod = aMethods.get(0);
 		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);
