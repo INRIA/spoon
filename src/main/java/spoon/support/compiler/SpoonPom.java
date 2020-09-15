@@ -74,6 +74,17 @@ public class SpoonPom implements SpoonResource {
 	/**
 	 * Extract the information from the pom
 	 * @param path the path to the pom
+	 * @param profileFilter regex pattern to filter profiles when expanding defined modules. Only modules in matching profiles are expanded
+	 * @throws IOException when the file does not exist
+	 * @throws XmlPullParserException when the file is corrupted
+	 */
+	public SpoonPom(String path, MavenLauncher.SOURCE_TYPE sourceType, Environment environment, Pattern profileFilter) throws IOException, XmlPullParserException {
+		this(path, null, sourceType, environment, profileFilter);
+	}
+
+	/**
+	 * Extract the information from the pom
+	 * @param path the path to the pom
 	 * @param parent the parent pom
 	 * @throws IOException when the file does not exist
 	 * @throws XmlPullParserException when the file is corrupted

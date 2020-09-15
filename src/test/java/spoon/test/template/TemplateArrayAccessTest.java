@@ -46,7 +46,7 @@ public class TemplateArrayAccessTest {
 
 	@Test
 	public void testArrayLengthAccess() {
-		//contract: the template engine replaces length of collection of parameter values by number
+		//contract: the template engine can use partial evaluation, and here, replaces the statically known length of an array by its length
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SubstituteArrayLengthTemplate.java"));
 
@@ -54,6 +54,7 @@ public class TemplateArrayAccessTest {
 		Factory factory = spoon.getFactory();
 
 		CtClass<?> resultKlass = factory.Class().create("Result");
+		// in SubstituteArrayLengthTemplate, withPartialEvaluation returns true
 		CtStatement result = new SubstituteArrayLengthTemplate(new String[]{"a",null,"b"}).apply(resultKlass);
 		assertEquals("if (3 > 0);", result.toString());
 	}

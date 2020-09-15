@@ -90,6 +90,7 @@ import spoon.test.position.testclasses.FooLabel;
 import spoon.test.position.testclasses.FooLambda;
 import spoon.test.position.testclasses.FooMethod;
 import spoon.test.position.testclasses.FooStatement;
+import spoon.test.position.testclasses.AnnotationWithAngleBracket;
 import spoon.test.position.testclasses.FooSwitch;
 import spoon.test.position.testclasses.Kokos;
 import spoon.test.position.testclasses.NoMethodModifiers;
@@ -107,6 +108,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
@@ -422,6 +424,13 @@ public class PositionTest {
 		assertEquals("n", contentAtPosition(classContent, position3.getNameStart(), position3.getNameEnd()));
 
 		assertEquals("protected static", contentAtPosition(classContent, position3.getModifierSourceStart(), position3.getModifierSourceEnd()));
+	}
+
+	@Test(timeout=10000)
+	public void testPositionTerminates() {
+		assertDoesNotThrow(() -> {
+			final Factory build = build(AnnotationWithAngleBracket.class);
+		});
 	}
 
 	@Test

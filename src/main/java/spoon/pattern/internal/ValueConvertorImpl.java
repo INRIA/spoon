@@ -113,6 +113,8 @@ public class ValueConvertorImpl implements ValueConvertor {
 				return val == null ? null : (T) val.toString();
 			} else if (value instanceof Enum) {
 				return (T) ((Enum) value).name();
+			} else if (value != null) {
+				return (T) value.toString();
 			} else if (value == null) {
 				throw new SpoonException("Missing parameter value for parameter `" + parameterName + "`");
 			}
@@ -120,7 +122,7 @@ public class ValueConvertorImpl implements ValueConvertor {
 		}
 		if (CtTypeReference.class.isAssignableFrom(valueClass)) {
 			if (value == null) {
-				throw new SpoonException("The null value is not valid substitution for CtTypeReference");
+				throw new SpoonException("The null value is not valid substitution for CtTypeReference for " + parameterName);
 			}
 			if (value instanceof Class) {
 				return (T) factory.Type().createReference((Class<?>) value);

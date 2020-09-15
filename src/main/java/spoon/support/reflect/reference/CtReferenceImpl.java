@@ -93,22 +93,22 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		return false;
 	}
 	private void checkIdentiferForJLSCorrectness(String simplename) {
-	/*
-  * At the level of the Java Virtual Machine, every constructor written in the Java programming language (JLS §8.8)
-  * appears as an instance initialization method that has the special name <init>.
-  * This name is supplied by a compiler. Because the name is not a valid identifier,
-  * it cannot be used directly in a program written in the Java programming language.
-  */
-	//JDTTreeBuilderHelper.computeAnonymousName returns "$numbers$Name" so we have to skip them if they start with numbers
-	//allow empty identifier because they are sometimes used.
+		/*
+		 * At the level of the Java Virtual Machine, every constructor written in the Java programming language (JLS §8.8)
+		 * appears as an instance initialization method that has the special name <init>.
+		 * This name is supplied by a compiler. Because the name is not a valid identifier,
+		 * it cannot be used directly in a program written in the Java programming language.
+		 */
+		//JDTTreeBuilderHelper.computeAnonymousName returns "$numbers$Name" so we have to skip them if they start with numbers
+		//allow empty identifier because they are sometimes used.
 		if (!simplename.matches("<.*>|\\d.*|^.{0}$")) {
 			//split at "<" and ">" because "Iterator<Cache.Entry<K,Store.ValueHolder<V>>>" submits setSimplename ("Cache.Entry<K")
 			String[] splittedSimplename = simplename.split("\\.|<|>");
 			if (checkAllParts(splittedSimplename)) {
 				throw new SpoonException("Not allowed javaletter or keyword in identifier found. See JLS for correct identifier. Identifier: " + simplename);
 			}
+		}
 	}
-}
 	private boolean isKeyword(String simplename) {
 		return keywords.contains(simplename);
 	}
@@ -116,21 +116,39 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		for (String simpleName:simplenameParts) {
 			//because arrays use e.g. int[] and @Number is used for instances of an object e.g. foo@1
 			simpleName = simpleName.replaceAll("\\[\\]|@", "");
+			if (isWildCard(simpleName)) {
+				// because in intersection types a typeReference sometimes has '?' as simplename
+				return false;
+			}
 			if (isKeyword(simpleName) || checkIdentifierChars(simpleName)) {
 				return true;
+			}
 		}
-	}
-	return false;
+		return false;
 	}
 	private boolean checkIdentifierChars(String simplename) {
-		return (!Character.isJavaIdentifierStart(simplename.charAt(0))) || simplename.chars().anyMatch(letter -> !Character.isJavaIdentifierPart(letter));
+		if (simplename.length() == 0) {
+			return false;
+		}
+		return (!Character.isJavaIdentifierStart(simplename.charAt(0)))
+			|| simplename.chars().anyMatch(letter -> !Character.isJavaIdentifierPart(letter)
+		);
 	}
+
 	private static Collection<String> fillWithKeywords() {
-	//removed types because needed as ref: "int","short", "char", "void", "byte","float", "true","false","boolean","double","long","class", "null"
-	return Stream.of("abstract", "continue", "for", "new", "switch", "assert", "default", "if", "package", "synchronized",  "do", "goto", "private",
-	"this", "break",  "implements", "protected", "throw", "else", "import", "public", "throws", "case", "enum", "instanceof", "return",
-	"transient", "catch", "extends", "try", "final", "interface", "static", "finally",  "strictfp", "volatile",
-	"const",  "native", "super", "while", "_")
-	.collect(Collectors.toCollection(HashSet::new));
+		//removed types because needed as ref: "int","short", "char", "void", "byte","float", "true","false","boolean","double","long","class", "null"
+		return Stream.of("abstract", "continue", "for", "new", "switch", "assert", "default", "if", "package", "synchronized",  "do", "goto", "private",
+			"this", "break",  "implements", "protected", "throw", "else", "import", "public", "throws", "case", "enum", "instanceof", "return",
+			"transient", "catch", "extends", "try", "final", "interface", "static", "finally",  "strictfp", "volatile",
+			"const",  "native", "super", "while", "_")
+			.collect(Collectors.toCollection(HashSet::new));
+	}
+
+	/**
+	 * checks if the input is a wildcard '?'. The method is not null safe.
+	 * @return boolean true is input wildcard, false otherwise
+	 */
+	private boolean isWildCard(String name) {
+		return name.equals("?");
 	}
 }

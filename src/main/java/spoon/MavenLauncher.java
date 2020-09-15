@@ -11,6 +11,7 @@ import spoon.support.compiler.SpoonPom;
 
 import java.io.File;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Create a Spoon launcher from a maven pom file
@@ -57,10 +58,35 @@ public class MavenLauncher extends Launcher {
 	 *
 	 * @param mavenProject the path to the root of the project
 	 * @param sourceType the source type (App, test, or all)
+	 * @param profileFilter regular expression of profiles to <b>include</b> in the built model
+	 */
+	public MavenLauncher(String mavenProject, SOURCE_TYPE sourceType, Pattern profileFilter) {
+		this(mavenProject, sourceType, System.getenv().get("M2_HOME"), false, profileFilter);
+	}
+
+	/**
+	 * MavenLauncher constructor assuming either an environment
+	 * variable M2_HOME, or that mvn command exists in PATH.
+	 *
+	 * @param mavenProject the path to the root of the project
+	 * @param sourceType the source type (App, test, or all)
 	 * @param forceRefresh force the regeneration of classpath
 	 */
 	public MavenLauncher(String mavenProject, SOURCE_TYPE sourceType, boolean forceRefresh) {
 		this(mavenProject, sourceType, System.getenv().get("M2_HOME"), forceRefresh);
+	}
+
+	/**
+	 * MavenLauncher constructor assuming either an environment
+	 * variable M2_HOME, or that mvn command exists in PATH.
+	 *
+	 * @param mavenProject the path to the root of the project
+	 * @param sourceType the source type (App, test, or all)
+	 * @param forceRefresh force the regeneration of classpath
+	 * @param profileFilter regular expression of profiles to <b>include</b> in the built model
+	 */
+	public MavenLauncher(String mavenProject, SOURCE_TYPE sourceType, boolean forceRefresh, Pattern profileFilter) {
+		this(mavenProject, sourceType, System.getenv().get("M2_HOME"), forceRefresh, profileFilter);
 	}
 
 	/**
@@ -76,13 +102,37 @@ public class MavenLauncher extends Launcher {
 	 * @param mavenProject the path to the root of the project
 	 * @param sourceType the source type (App, test, or all)
 	 * @param mvnHome Path to maven install
+	 * @param profileFilter regular expression of profiles to <b>include</b> in the built model
+	 */
+	public MavenLauncher(String mavenProject, SOURCE_TYPE sourceType, String mvnHome, Pattern profileFilter) {
+		this(mavenProject, sourceType, mvnHome, false, profileFilter);
+	}
+
+	/**
+	 * @param mavenProject the path to the root of the project
+	 * @param sourceType the source type (App, test, or all)
+	 * @param mvnHome Path to maven install
 	 * @param forceRefresh force the regeneration of classpath
 	 */
 	public MavenLauncher(String mavenProject, SOURCE_TYPE sourceType, String mvnHome, boolean forceRefresh) {
 		this.sourceType = sourceType;
 		this.mvnHome = mvnHome;
 		this.forceRefresh = forceRefresh;
-		init(mavenProject, null);
+		init(mavenProject, null, Pattern.compile("^$"));
+	}
+
+	/**
+	 * @param mavenProject the path to the root of the project
+	 * @param sourceType the source type (App, test, or all)
+	 * @param mvnHome Path to maven install
+	 * @param forceRefresh force the regeneration of classpath
+	 * @param profileFilter regular expression of profiles to <b>include</b> in the built model
+	 */
+	public MavenLauncher(String mavenProject, SOURCE_TYPE sourceType, String mvnHome, boolean forceRefresh, Pattern profileFilter) {
+		this.sourceType = sourceType;
+		this.mvnHome = mvnHome;
+		this.forceRefresh = forceRefresh;
+		init(mavenProject, null, profileFilter);
 	}
 
 	/**
@@ -95,17 +145,31 @@ public class MavenLauncher extends Launcher {
 	 */
 	public MavenLauncher(String mavenProject, SOURCE_TYPE sourceType, String[] classpath) {
 		this.sourceType = sourceType;
-		init(mavenProject, classpath);
+		init(mavenProject, classpath, Pattern.compile("^$"));
 	}
 
-	private void init(String mavenProject, String[] classpath) {
+	/**
+	 * MavenLauncher constructor that skips maven invocation building
+	 * classpath.
+	 *
+	 * @param mavenProject the path to the root of the project
+	 * @param sourceType the source type (App, test, or all)
+	 * @param classpath String array containing the classpath elements
+	 * @param profileFilter regular expression of profiles to <b>include</b> in the built model
+	 */
+	public MavenLauncher(String mavenProject, SOURCE_TYPE sourceType, String[] classpath, Pattern profileFilter) {
+		this.sourceType = sourceType;
+		init(mavenProject, classpath, profileFilter);
+	}
+
+	private void init(String mavenProject, String[] classpath, Pattern profileFilter) {
 		File mavenProjectFile = new File(mavenProject);
 		if (!mavenProjectFile.exists()) {
 			throw new SpoonException(mavenProject + " does not exist.");
 		}
 
 		try {
-			model = new SpoonPom(mavenProject, sourceType, getEnvironment());
+			model = new SpoonPom(mavenProject, sourceType, getEnvironment(), profileFilter);
 		} catch (Exception e) {
 			throw new SpoonException("Unable to read the pom", e);
 		}

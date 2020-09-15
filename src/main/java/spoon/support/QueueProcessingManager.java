@@ -118,10 +118,9 @@ public class QueueProcessingManager implements ProcessingManager {
 					getVisitor().scan(e);
 				}
 			} catch (ProcessInterruption ignore) {
-			} finally {
-				p.processingDone();
-				factory.getEnvironment().getSpoonProgress().step(SpoonProgress.Process.PROCESS, p.getClass().getName(), ++i, getProcessors().size());
 			}
+			p.processingDone();
+			factory.getEnvironment().getSpoonProgress().step(SpoonProgress.Process.PROCESS, p.getClass().getName(), ++i, getProcessors().size());
 		}
 		factory.getEnvironment().getSpoonProgress().end(SpoonProgress.Process.PROCESS);
 	}
