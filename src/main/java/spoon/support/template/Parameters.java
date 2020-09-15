@@ -224,7 +224,7 @@ public abstract class Parameters {
 	 * 		the template that holds the parameter values
 	 */
 	public static Map<String, Object> getTemplateParametersAsMap(Factory f, Template<?> template) {
-		CtClass templateType = f.Class().get(template.getClass());
+		CtClass templateType = f.Templates().Class().get(template.getClass());
 		Map<String, Object> params = new HashMap<>(getNamesToValues(template, templateType));
 		//detect reference to to be generated type
 		CtTypeReference<?> targetTypeRef = templateType == null ? null : templateType.getReference();

@@ -1557,7 +1557,7 @@ public class PatternTest {
 		params.put("_methodName_", factory.Code().createLiteral(toBeLoggedMethod.getSimpleName()));
 		params.put("_block_", toBeLoggedMethod.getBody());
 		//create a patter from the LoggerModel#block
-		CtType<?> type = factory.Type().get(LoggerModel.class);
+		CtType<?> type = factory.Templates().Type().get(LoggerModel.class);
 
 
 		// creating a pattern from method "block"

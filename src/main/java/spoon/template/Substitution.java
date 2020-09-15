@@ -592,9 +592,16 @@ public abstract class Substitution {
 	 * @return - CtClass from the already built spoon model, which represents the template
 	 */
 	public static <T> CtClass<T> getTemplateCtClass(Factory factory, Template<?> template) {
-		CtClass<T> c = factory.Class().get(template.getClass());
+		// we first look in the template factory
+		CtClass<T> c = factory.Templates().Class().get(template.getClass());
 		if (c.isShadow()) {
-			throw new SpoonException("The template " + template.getClass().getName() + " is not part of model. Add template sources to spoon template path.");
+			// maybe the template was put as regular input source
+			CtClass<T> creg = factory.Class().get(template.getClass());
+			if (creg.isShadow()) {
+				throw new SpoonException("The template " + template.getClass().getName() + " is not part of model. Add template sources to spoon template path.");
+			} else {
+				c = creg;
+			}
 		}
 		checkTemplateContracts(c);
 		return c;
