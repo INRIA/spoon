@@ -426,7 +426,7 @@ public class TemplateTest {
 		assertTrue(t.isValid());
 
 		// getting the final AST
-		CtStatement injectedCode = (t.apply(null));
+		CtStatement injectedCode = (t.apply(c));
 
 		assertTrue(injectedCode instanceof CtIf);
 
