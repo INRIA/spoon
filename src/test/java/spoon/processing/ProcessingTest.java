@@ -20,6 +20,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtAssert;
+import spoon.reflect.declaration.CtClass;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.processing.processors.MyProcessor;
@@ -101,7 +102,10 @@ public class ProcessingTest {
 		// https://github.com/INRIA/spoon/issues/2987
 		class AssertProcessor extends AbstractProcessor<CtAssert<?>> {
 			public void process(CtAssert<?> element) {
-				element.replace(new AssertToIfAssertedStatementTemplate(element).apply(null));
+				element.replace(
+						new AssertToIfAssertedStatementTemplate(element)
+								.apply(element.getParent(CtClass.class))
+				);
 			}
 		}
 		
