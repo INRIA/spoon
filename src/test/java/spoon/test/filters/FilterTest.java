@@ -19,6 +19,7 @@ package spoon.test.filters;
 import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.legacy.NameFilter;
 import spoon.reflect.code.CtCFlowBreak;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
@@ -107,6 +108,15 @@ public class FilterTest {
 	@Before
 	public void setup() throws Exception {
 		factory = build(Foo.class);
+	}
+
+	@Test
+	public void testNameFilter() throws Exception {
+		// contract: legacy NameFilter is tested and works
+		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
+		assertEquals("Foo", foo.getSimpleName());
+		List<CtNamedElement> elements = foo.getElements(new NameFilter<>("i"));
+		assertEquals(1, elements.size());
 	}
 
 	@Test

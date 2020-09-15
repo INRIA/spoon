@@ -354,7 +354,9 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	protected boolean buildTemplates(JDTBuilder jdtBuilder) {
-		return buildUnitsAndModel(jdtBuilder, templates, getTemplateClasspath(), "template ");
+		CompilationUnitDeclaration[] units = buildUnits(jdtBuilder, templates, getTemplateClasspath(), "template ");
+		buildModel(units, factory.Templates());
+		return true;
 	}
 
 	/**
@@ -369,7 +371,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		CompilationUnitDeclaration[] units = buildUnits(jdtBuilder, sourcesFolder, classpath, debugMessagePrefix);
 
 		// here we build the model in the template factory
-		buildModel(units);
+		buildModel(units, factory);
 
 		return probs.isEmpty();
 	}
@@ -428,8 +430,8 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		return unitList;
 	}
 
-	protected void buildModel(CompilationUnitDeclaration[] units) {
-		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
+	protected void buildModel(CompilationUnitDeclaration[] units, Factory aFactory) {
+		JDTTreeBuilder builder = new JDTTreeBuilder(aFactory);
 		List<CompilationUnitDeclaration> unitList = this.sortCompilationUnits(units);
 
 		forEachCompilationUnit(unitList, SpoonProgress.Process.MODEL, unit -> {
@@ -438,12 +440,12 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		});
 		//we need first imports before we can place comments. Mainly comments on imports need that
 		forEachCompilationUnit(unitList, SpoonProgress.Process.IMPORT, unit -> {
-			new JDTImportBuilder(unit, factory).build();
+			new JDTImportBuilder(unit, aFactory).build();
 		});
 		if (getFactory().getEnvironment().isCommentsEnabled()) {
 			forEachCompilationUnit(unitList, SpoonProgress.Process.COMMENT_LINKING, unit -> {
 				try {
-					new JDTCommentBuilder(unit, factory).build();
+					new JDTCommentBuilder(unit, aFactory).build();
 				} catch (Exception e) {
 					getEnvironment().report(null, Level.ERROR, "JDTCommentBuilder crashed with the error, some comments may be missing in the model: " + e.toString());
 				}

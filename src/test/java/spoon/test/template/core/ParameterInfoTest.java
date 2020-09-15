@@ -39,10 +39,10 @@ public class ParameterInfoTest {
 		assertEquals("year", ((ParameterInfo) new MapParameterInfo("year").setContainerKind(ContainerKind.LIST)).getName());
 		assertEquals("year", new ListParameterInfo(new MapParameterInfo("year")).getName());
 		assertEquals("year", new ListParameterInfo(new MapParameterInfo("year").setContainerKind(ContainerKind.LIST)).getName());
-		assertEquals("year[7]", new ListParameterInfo(7, new MapParameterInfo("year")).getName());
-		assertEquals("year[7]", new ListParameterInfo(new ListParameterInfo(7, new MapParameterInfo("year"))).getName());
-		assertEquals("year[7][2]", new ListParameterInfo(2, new ListParameterInfo(7, new MapParameterInfo("year"))).getName());
-		assertEquals("year[7][2].age", new MapParameterInfo("age", new ListParameterInfo(2, new ListParameterInfo(7, new MapParameterInfo("year")))).getName());
+		assertEquals("year_7_", new ListParameterInfo(7, new MapParameterInfo("year")).getName());
+		assertEquals("year_7_", new ListParameterInfo(new ListParameterInfo(7, new MapParameterInfo("year"))).getName());
+		assertEquals("year_7__2_", new ListParameterInfo(2, new ListParameterInfo(7, new MapParameterInfo("year"))).getName());
+		assertEquals("year_7__2_.age", new MapParameterInfo("age", new ListParameterInfo(2, new ListParameterInfo(7, new MapParameterInfo("year")))).getName());
 		
 		assertEquals("year", ((ParameterInfo) new MapParameterInfo("year").setContainerKind(ContainerKind.SET)).getName());
 		assertEquals("year", new SetParameterInfo(new MapParameterInfo("year")).getName());
