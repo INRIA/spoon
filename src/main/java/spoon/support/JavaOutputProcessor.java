@@ -132,9 +132,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 		} catch (IOException e) {
 			Launcher.LOGGER.error(e.getMessage(), e);
 		}
-		if (getEnvironment().getSpoonProgress() != null) {
 			getEnvironment().getSpoonProgress().step(SpoonProgress.Process.PRINT, element.getQualifiedName());
-		}
 	}
 
 	@Override

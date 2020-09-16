@@ -226,12 +226,10 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 
 			@Override
 			public void setTaskName(String s) {
-				if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
-					String strToFind = "Processing ";
-					int processingPosition = s.indexOf(strToFind);
-					if (processingPosition != -1) {
-						currentElement = s.substring(processingPosition + strToFind.length());
-					}
+				String strToFind = "Processing ";
+				int processingPosition = s.indexOf(strToFind);
+				if (processingPosition != -1) {
+					currentElement = s.substring(processingPosition + strToFind.length());
 				}
 			}
 
@@ -240,9 +238,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 				if (totalTask == -1) {
 					totalTask = remaining + 1;
 				}
-				if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
-					jdtCompiler.getEnvironment().getSpoonProgress().step(SpoonProgress.Process.COMPILE, currentElement, totalTask - remaining, totalTask);
-				}
+				jdtCompiler.getEnvironment().getSpoonProgress().step(SpoonProgress.Process.COMPILE, currentElement, totalTask - remaining, totalTask);
 			}
 		});
 		if (jdtCompiler.getEnvironment().getNoClasspath()) {
@@ -255,19 +251,13 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 			};
 			treeBuilderCompiler.lookupEnvironment.mayTolerateMissingType = true;
 		}
-		if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
 			jdtCompiler.getEnvironment().getSpoonProgress().start(SpoonProgress.Process.COMPILE);
-		}
 		// they have to be done all at once
 		final CompilationUnitDeclaration[] result = treeBuilderCompiler.buildUnits(getCompilationUnits());
-		if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
-			jdtCompiler.getEnvironment().getSpoonProgress().end(SpoonProgress.Process.COMPILE);
-		}
+		jdtCompiler.getEnvironment().getSpoonProgress().end(SpoonProgress.Process.COMPILE);
 		// now adding the doc
 		if (jdtCompiler.getEnvironment().isCommentsEnabled()) {
-			if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
-				jdtCompiler.getEnvironment().getSpoonProgress().start(SpoonProgress.Process.COMMENT);
-			}
+			jdtCompiler.getEnvironment().getSpoonProgress().start(SpoonProgress.Process.COMMENT);
 			//compile comments only if they are needed
 			for (int i = 0; i < result.length; i++) {
 				CompilationUnitDeclaration unit = result[i];
@@ -285,14 +275,9 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 				final CompilationResult compilationResult = new CompilationResult(sourceUnit, 0, 0, compilerOptions.maxProblemsPerUnit);
 				CompilationUnitDeclaration tmpDeclForComment = parser.dietParse(sourceUnit, compilationResult);
 				unit.comments = tmpDeclForComment.comments;
-
-				if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
-					jdtCompiler.getEnvironment().getSpoonProgress().step(SpoonProgress.Process.COMMENT, new String(unit.getFileName()), i + 1, result.length);
-				}
+				jdtCompiler.getEnvironment().getSpoonProgress().step(SpoonProgress.Process.COMMENT, new String(unit.getFileName()), i + 1, result.length);
 			}
-			if (jdtCompiler.getEnvironment().getSpoonProgress() != null) {
-				jdtCompiler.getEnvironment().getSpoonProgress().end(SpoonProgress.Process.COMMENT);
-			}
+			jdtCompiler.getEnvironment().getSpoonProgress().end(SpoonProgress.Process.COMMENT);
 		}
 		return result;
 	}

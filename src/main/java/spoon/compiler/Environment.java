@@ -392,7 +392,10 @@ public interface Environment {
 	 * Get the output type
 	 */
 	OutputType getOutputType();
-
+	/**
+	 * Get the spoonProgress logger. This method mustn't return null.
+	 * @return the spoonProgress
+	 */
 	SpoonProgress getSpoonProgress();
 
 	void setSpoonProgress(SpoonProgress spoonProgress);

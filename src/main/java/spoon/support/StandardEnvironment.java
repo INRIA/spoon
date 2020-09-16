@@ -120,7 +120,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private Boolean noclasspath = null;
 
-	private transient SpoonProgress spoonProgress = null;
+	private transient SpoonProgress spoonProgress = new SpoonProgress() { /*anonymous class with empty methods*/ };
 
 	private CompressionType compressionType = CompressionType.GZIP;
 
