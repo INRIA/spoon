@@ -38,9 +38,9 @@ class TemplateBuilder {
 	 * 			because parameter value types influences which AST nodes will be the target of substitution
 	 * @return {@link TemplateBuilder}
 	 */
-	public static TemplateBuilder createPattern(CtElement templateRoot, Template<?> template) {
+	public static TemplateBuilder createTemplateBuilder(CtElement templateRoot, Template<?> template) {
 		CtClass<? extends Template<?>> templateType = Substitution.getTemplateCtClass(templateRoot.getFactory(), template);
-		return createPattern(templateRoot, templateType, template);
+		return createTemplateBuilder(templateRoot, templateType, template);
 	}
 	//needed to provide access to protected members
 	private static class PatternBuilder extends spoon.pattern.PatternBuilder {
@@ -62,7 +62,7 @@ class TemplateBuilder {
 	 * 			because parameter value types influences which AST nodes will be the target of substitution
 	 * @return
 	 */
-	public static TemplateBuilder createPattern(CtElement templateRoot, CtClass<?> templateType, Template<?> template) {
+	public static TemplateBuilder createTemplateBuilder(CtElement templateRoot, CtClass<?> templateType, Template<?> template) {
 		Factory f = templateRoot.getFactory();
 
 		if (template != null && templateType.getQualifiedName().equals(template.getClass().getName()) == false) {

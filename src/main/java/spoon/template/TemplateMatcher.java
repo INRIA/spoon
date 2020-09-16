@@ -60,7 +60,7 @@ public class TemplateMatcher implements Filter<CtElement> {
 	 * @param templateType the class of the template, which contains all the template parameters
 	 */
 	public TemplateMatcher(CtElement templateRoot, CtClass<?> templateType) {
-		this.pattern = TemplateBuilder.createPattern(templateRoot, templateType, null).build(nodes -> this.patternModel = nodes);
+		this.pattern = TemplateBuilder.createTemplateBuilder(templateRoot, templateType, null).build(nodes -> this.patternModel = nodes);
 		this.templateRoot = templateRoot;
 	}
 
