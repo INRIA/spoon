@@ -587,7 +587,7 @@ public class TypeFactory extends SubFactory {
 	private Factory getShadowFactory() {
 		if (shadowFactory == null) {
 			//use existing environment to use correct class loader
-			shadowFactory =new FactoryImpl(new DefaultCoreFactory(), factory.getEnvironment());
+			shadowFactory = new FactoryImpl(new DefaultCoreFactory(), factory.getEnvironment());
 		}
 		return shadowFactory;
 	}
