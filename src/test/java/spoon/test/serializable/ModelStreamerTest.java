@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -45,21 +47,22 @@ public class ModelStreamerTest {
 
 	@BeforeClass
     public static void setUp() {
-		System.out.println("Testing factory serialization with different "
-						 + "compressors with source folder: " + SOURCE_DIRECTORY);
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(SOURCE_DIRECTORY);
 		launcher.buildModel();
 		factory = launcher.getFactory();
 		outputFile = new File(OUTPUT_FILENAME);
-		outputFile.deleteOnExit();
     }
+
+	@After
+	public void tearDown() {
+		outputFile.delete();
+	}
 
 	@Test
 	public void testDefaultCompressionType() throws IOException {
 		new SerializationModelStreamer().save(factory, new FileOutputStream(outputFile));
 		FileInputStream in = new FileInputStream(outputFile);
-		System.out.println(in.getChannel().size() + " bytes for default");
 		Factory factoryFromFile = new SerializationModelStreamer().load(in);
 		compareFactoryModels(factory, factoryFromFile);
 	}
@@ -69,7 +72,6 @@ public class ModelStreamerTest {
 		factory.getEnvironment().setCompressionType(CompressionType.GZIP);
 		new SerializationModelStreamer().save(factory, new FileOutputStream(outputFile));
 		FileInputStream in = new FileInputStream(outputFile);
-		System.out.println(in.getChannel().size() + " bytes for " + CompressionType.GZIP);
 		Factory factoryFromFile = new SerializationModelStreamer().load(in);
 		compareFactoryModels(factory, factoryFromFile);
 	}
@@ -79,7 +81,6 @@ public class ModelStreamerTest {
 		factory.getEnvironment().setCompressionType(CompressionType.BZIP2);
 		new SerializationModelStreamer().save(factory, new FileOutputStream(outputFile));
 		FileInputStream in = new FileInputStream(outputFile);
-		System.out.println(in.getChannel().size() + " bytes for " + CompressionType.BZIP2);
 		Factory factoryFromFile = new SerializationModelStreamer().load(in);
 		compareFactoryModels(factory, factoryFromFile);
 	}
@@ -89,7 +90,6 @@ public class ModelStreamerTest {
 		factory.getEnvironment().setCompressionType(CompressionType.NONE);
 		new SerializationModelStreamer().save(factory, new FileOutputStream(outputFile));
 		FileInputStream in = new FileInputStream(outputFile);
-		System.out.println(in.getChannel().size() + " bytes for " + CompressionType.NONE);
 		Factory factoryFromFile = new SerializationModelStreamer().load(in);
 		compareFactoryModels(factory, factoryFromFile);
 	}
@@ -99,7 +99,6 @@ public class ModelStreamerTest {
 		factory.getEnvironment().setCompressionType(CompressionType.LZMA);
 		new SerializationModelStreamer().save(factory, new FileOutputStream(outputFile));
 		FileInputStream in = new FileInputStream(outputFile);
-		System.out.println(in.getChannel().size() + " bytes for " + CompressionType.LZMA);
 		Factory factoryFromFile = new SerializationModelStreamer().load(in);
 		compareFactoryModels(factory, factoryFromFile);
 	}
