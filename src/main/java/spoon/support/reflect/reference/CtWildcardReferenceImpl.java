@@ -33,7 +33,6 @@ public class CtWildcardReferenceImpl extends CtTypeParameterReferenceImpl implem
 
 	public CtWildcardReferenceImpl() {
 		simplename = "?";
-		setBoundingType(null);
 	}
 
 	@Override
