@@ -561,7 +561,7 @@ public class TypeFactory extends SubFactory {
 			if (shadowClass == null) {
 				CtType<T> newShadowClass;
 				try {
-					newShadowClass = new JavaReflectionTreeBuilder(createFactory()).scan((Class<T>) cl);
+					newShadowClass = new JavaReflectionTreeBuilder(getShadowFactory()).scan((Class<T>) cl);
 				} catch (Throwable e) {
 					throw new SpoonClassNotFoundException("cannot create shadow class: " + cl.getName(), e);
 				}
@@ -583,9 +583,13 @@ public class TypeFactory extends SubFactory {
 		return aType;
 	}
 
-	private Factory createFactory() {
-		//use existing environment to use correct class loader
-		return new FactoryImpl(new DefaultCoreFactory(), factory.getEnvironment());
+	private transient Factory shadowFactory;
+	private Factory getShadowFactory() {
+		if (shadowFactory == null) {
+			//use existing environment to use correct class loader
+			shadowFactory =new FactoryImpl(new DefaultCoreFactory(), factory.getEnvironment());
+		}
+		return shadowFactory;
 	}
 
 	/**
