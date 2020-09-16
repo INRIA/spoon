@@ -41,7 +41,7 @@ import spoon.support.SerializationModelStreamer;
 public class ModelStreamerTest {
 
 	private static final String SOURCE_DIRECTORY = "./src/main/java/spoon/reflect/declaration";
-	private static final String OUTPUT_FILENAME = "./src/test/resources/serialization/factory.ser";
+	private static final String OUTPUT_FILENAME = "./target/factory.ser";
 	private static File outputFile;
 	private static Factory factory;
 

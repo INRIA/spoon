@@ -91,7 +91,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		return list.isEmpty() ? Collections.<T>emptyList() : Collections.unmodifiableList(list);
 	}
 
-	Factory factory;
+	// this must be transient in order to allow proper serialization
+	transient Factory factory;
 
 	protected CtElement parent;
 
