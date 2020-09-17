@@ -56,7 +56,7 @@ public abstract class ExpressionTemplate<T> extends AbstractTemplate<CtExpressio
 	@SuppressWarnings("unchecked")
 	public CtExpression<T> apply(CtType<?> targetType) {
 		CtClass<? extends ExpressionTemplate<?>> c = Substitution.getTemplateCtClass(targetType.getFactory(), this);
-		return TemplateBuilder.createPattern(
+		return TemplateBuilder.createTemplateBuilder(
 				new PatternBuilderHelper(c).setReturnExpressionOfMethod("expression").getPatternElements().get(0), this)
 				.setAddGeneratedBy(isAddGeneratedBy()).substituteSingle(targetType, CtExpression.class);
 	}

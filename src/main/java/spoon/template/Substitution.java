@@ -517,7 +517,7 @@ public abstract class Substitution {
 		if (targetType == null) {
 			throw new RuntimeException("target is null in substitution");
 		}
-		TemplateBuilder tb = TemplateBuilder.createPattern(code, template);
+		TemplateBuilder tb = TemplateBuilder.createTemplateBuilder(code, template);
 		if (template instanceof AbstractTemplate) {
 			tb.setAddGeneratedBy(((AbstractTemplate) template).isAddGeneratedBy());
 		}
@@ -538,7 +538,7 @@ public abstract class Substitution {
 	@SuppressWarnings("unchecked")
 	public static <T extends CtType<?>> T substitute(Template<?> template, T templateType) {
 		// result.setParent(templateType.getParent());
-		CtType<?> result = TemplateBuilder.createPattern(templateType, template).substituteSingle(null, CtType.class);
+		CtType<?> result = TemplateBuilder.createTemplateBuilder(templateType, template).substituteSingle(null, CtType.class);
 		//TODO check if it is still needed
 		result.setPositions(null);
 		return (T) result;
