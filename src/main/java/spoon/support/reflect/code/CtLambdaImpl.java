@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.LovecraftException;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtAssignment;
@@ -262,7 +263,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	@Override
 	public <C extends CtLambda<T>> C setExpression(CtExpression<T> expression) {
 		if (body != null && expression != null) {
-			throw new SpoonException("A lambda can't have two bodies.");
+			throw new LovecraftException("A lambda can't have two bodies.");
 		} else {
 			if (expression != null) {
 				expression.setParent(this);
