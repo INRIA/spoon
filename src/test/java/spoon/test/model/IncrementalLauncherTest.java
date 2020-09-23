@@ -71,6 +71,7 @@ public class IncrementalLauncherTest {
 		launcher1.saveCache();
 
 		IncrementalLauncher launcher2 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+
 		assertFalse(launcher2.changesPresent());
 		CtModel cachedModel = launcher2.buildModel();
 		launcher2.saveCache();
@@ -235,6 +236,7 @@ public class IncrementalLauncherTest {
 		Set<String> sourceClasspath = Collections.EMPTY_SET;
 		
 		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+		launcher1.getEnvironment().setShouldCompile(false);
 		// in noclasspath we are
 		assertEquals(true, launcher1.getEnvironment().getNoClasspath());
 		assertTrue(launcher1.changesPresent());
