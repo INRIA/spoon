@@ -16,6 +16,7 @@
  */
 package spoon.test.model;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -225,17 +226,17 @@ public class IncrementalLauncherTest {
 		assertTrue("float".equals(lhs2.getType().getSimpleName()));
 	}
 
-	@GitHubIssue(issueNumber = 3404)
-	@Ignore("UnresolvedBug")
 	@Test
 	public void testSaveCacheIssue3404() {
+		// contract: IncrementalLauncher does not crash with classnotfound in noclasspath
+		// see isse 3404
 		Set<File> inputResources = new HashSet<>();
 		inputResources.add(new File("./src/test/resources/incremental/saveCacheIssue3404/A.java"));
-		
-		//Set<String> sourceClasspath = Collections.singleton("./src/test/resources/incremental/saveCacheIssue3404/soot_jar/sootclasses-trunk-jar-with-dependencies.jar");
 		Set<String> sourceClasspath = Collections.EMPTY_SET;
 		
 		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+		// in noclasspath we are
+		assertEquals(true, launcher1.getEnvironment().getNoClasspath());
 		assertTrue(launcher1.changesPresent());
 		launcher1.saveCache();
 	}
