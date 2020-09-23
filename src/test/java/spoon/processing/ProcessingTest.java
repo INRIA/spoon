@@ -61,18 +61,23 @@ public class ProcessingTest {
 
 	@Test
 	public void testRuntimeProcessorManager() {
+		// contract: RuntimeProcessorManager can be run without exception with several processors
+
+		// collecting the processors
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/java/spoon/test/processing/processors");
 		launcher.buildModel();
 
 
+		// running on test classes
 		final Launcher launcher2 = new Launcher();
 		launcher2.getEnvironment().setNoClasspath(true);
 		launcher2.addInputResource("./src/test/java/spoon/test/processing/testclasses");
 		launcher2.buildModel();
 
-		ProcessingManager processing = new RuntimeProcessingManager(launcher2.getFactory());
+		// we only the API of interface ProcessingManager
+ 		ProcessingManager processing = new RuntimeProcessingManager(launcher2.getFactory());
 		for (CtType processor: launcher.getModel().getAllTypes()) {
 			if (processor.getSimpleName().equals("MyProcessor")) {
 				continue;
