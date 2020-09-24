@@ -236,6 +236,8 @@ public class IncrementalLauncher extends Launcher {
 		}
 
 		getEnvironment().setSourceClasspath(mSourceClasspath.toArray(new String[0]));
+
+		this.getEnvironment().setShouldCompile(true);
 	}
 
 	/**
@@ -266,7 +268,9 @@ public class IncrementalLauncher extends Launcher {
 			throw new SpoonException("factory is null");
 		}
 
-		getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
+		if (this.getEnvironment().shouldCompile()) {
+			getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
+		}
 
 		saveFactory(factory, mModelFile);
 

@@ -16,6 +16,7 @@
  */
 package spoon.test.model;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -32,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.After;
 
 import spoon.IncrementalLauncher;
@@ -41,6 +43,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.test.GitHubIssue;
 
 public class IncrementalLauncherTest {
 
@@ -68,6 +71,7 @@ public class IncrementalLauncherTest {
 		launcher1.saveCache();
 
 		IncrementalLauncher launcher2 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+
 		assertFalse(launcher2.changesPresent());
 		CtModel cachedModel = launcher2.buildModel();
 		launcher2.saveCache();
@@ -221,6 +225,22 @@ public class IncrementalLauncherTest {
 		CtExpression<?> lhs2 = assignment2.getAssigned();
 		assertTrue("float".equals(assignment2.getType().getSimpleName()));
 		assertTrue("float".equals(lhs2.getType().getSimpleName()));
+	}
+
+	@Test
+	public void testSaveCacheIssue3404() {
+		// contract: IncrementalLauncher does not crash with classnotfound in noclasspath
+		// see isse 3404
+		Set<File> inputResources = new HashSet<>();
+		inputResources.add(new File("./src/test/resources/incremental/saveCacheIssue3404/A.java"));
+		Set<String> sourceClasspath = Collections.EMPTY_SET;
+		
+		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+		launcher1.getEnvironment().setShouldCompile(false);
+		// in noclasspath we are
+		assertEquals(true, launcher1.getEnvironment().getNoClasspath());
+		assertTrue(launcher1.changesPresent());
+		launcher1.saveCache();
 	}
 
 	@Before
