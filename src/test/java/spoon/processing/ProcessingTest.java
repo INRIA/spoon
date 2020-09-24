@@ -21,6 +21,10 @@ import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
+import spoon.support.QueueProcessingManager;
+import spoon.support.RuntimeProcessingManager;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.processing.processors.MyProcessor;
@@ -44,7 +48,7 @@ public class ProcessingTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
-		launcher.addInputResource("./src/test/java/spoon/processing/");
+		launcher.addInputResource("./src/test/java/spoon/test/processing/testclasses");
 		final MyProcessor processor = new MyProcessor();
 		launcher.addProcessor(processor);
 		try {
@@ -53,6 +57,34 @@ public class ProcessingTest {
 			fail("ProcessInterrupt exception must be catch in the ProcessingManager.");
 		}
 		assertFalse(processor.isShouldStayAtFalse());
+	}
+
+	@Test
+	public void testRuntimeProcessorManager() {
+		// contract: RuntimeProcessorManager can be run without exception with several processors
+
+		// collecting the processors
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/java/spoon/test/processing/processors");
+		launcher.buildModel();
+
+
+		// running on test classes
+		final Launcher launcher2 = new Launcher();
+		launcher2.getEnvironment().setNoClasspath(true);
+		launcher2.addInputResource("./src/test/java/spoon/test/processing/testclasses");
+		launcher2.buildModel();
+
+		// we only the API of interface ProcessingManager
+ 		ProcessingManager processing = new RuntimeProcessingManager(launcher2.getFactory());
+		for (CtType processor: launcher.getModel().getAllTypes()) {
+			if (processor.getSimpleName().equals("MyProcessor")) {
+				continue;
+			}
+			processing.addProcessor(processor.getQualifiedName());
+		}
+		processing.process(launcher2.getModel().getRootPackage());
 	}
 
 	@Test
