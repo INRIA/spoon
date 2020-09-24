@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Generate LSIF data
-        uses: sourcegraph/lsif-java-action@master
+        uses: sourcegraph/lsif-java-action@2de844423a3d94075b845b9d18b30b883b8b967c
         with:
           verbose: true
       - name: Upload LSIF data
