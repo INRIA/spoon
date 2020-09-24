@@ -7,7 +7,6 @@
  */
 package spoon.support.template;
 
-import spoon.SpoonException;
 import spoon.template.TemplateException;
 
 public class UndefinedParameterException extends TemplateException {
