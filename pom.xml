@@ -34,7 +34,10 @@
   
   <properties>
     <java.src.version>1.8</java.src.version>
-  </properties>
+    <sonar.coverage.exclusions>
+        **/support/gui/*
+    </sonar.coverage.exclusions>
+  </properties> 
 
   <dependencies>
     <dependency>
