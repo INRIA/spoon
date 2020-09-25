@@ -43,8 +43,8 @@ import java.util.Stack;
  * Visitor that generates factory calls to recreate the AST visited.
  *
  */
-public class SpoonifyVisitor extends CtScanner {
-//public class SpoonifyVisitor extends CtInheritanceScanner {
+public class SpoonifierVisitor extends CtScanner {
+//public class SpoonifierVisitor extends CtInheritanceScanner {
 	StringBuilder result = new StringBuilder();
 	Map<String, Integer> variableCount = new HashMap<>();
 	Stack<String> parentName = new Stack<>();
@@ -56,17 +56,17 @@ public class SpoonifyVisitor extends CtScanner {
 	int tabs = 0;
 
 	/**
-	 * Default constructor for SpoonifyVisitor.
+	 * Default constructor for SpoonifierVisitor.
 	 * Print with tabulations.
 	 */
-	public SpoonifyVisitor() {
+	public SpoonifierVisitor() {
 		this(true);
 	}
 
 	/**
 	 * @param printTabs if set to true, tabulations will be printed to match the structure of the AST constructed.
 	 */
-	public SpoonifyVisitor(boolean printTabs) {
+	public SpoonifierVisitor(boolean printTabs) {
 		this.printTabs = printTabs;
 	}
 
