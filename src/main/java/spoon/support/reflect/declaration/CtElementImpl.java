@@ -14,9 +14,9 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtShadowable;
@@ -596,7 +596,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public ElementSourceFragment getOriginalSourceFragment() {
 		SourcePosition sp = this.getPosition();
-		CompilationUnit compilationUnit = sp.getCompilationUnit();
+		CtCompilationUnit compilationUnit = sp.getCompilationUnit();
 		if (compilationUnit != null) {
 			ElementSourceFragment rootFragment = compilationUnit.getOriginalSourceFragment();
 			return rootFragment.getSourceFragmentOf(this, sp.getSourceStart(), sp.getSourceEnd() + 1);
