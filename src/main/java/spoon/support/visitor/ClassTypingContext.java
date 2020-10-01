@@ -586,14 +586,14 @@ public class ClassTypingContext extends AbstractTypingContext {
 		if (superArg instanceof CtWildcardReference) {
 			CtWildcardReference wr = (CtWildcardReference) superArg;
 			CtTypeReference<?> superBound = wr.getBoundingType();
-			if (superBound.equals(wr.getFactory().Type().OBJECT)) {
+			if (superBound.equals(wr.getFactory().Type().OBJECT.get())) {
 				//everything extends from object, nothing is super of Object
 				return wr.isUpper();
 			}
 			if (subArg instanceof CtWildcardReference) {
 				CtWildcardReference subWr = (CtWildcardReference) subArg;
 				CtTypeReference<?> subBound = subWr.getBoundingType();
-				if (subBound.equals(wr.getFactory().Type().OBJECT)) {
+				if (subBound.equals(wr.getFactory().Type().OBJECT.get())) {
 					//nothing is super of object
 					return false;
 				}

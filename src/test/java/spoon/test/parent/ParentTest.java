@@ -235,7 +235,7 @@ public class ParentTest {
 		final CtMethod<?> aMethod = aTacos.getMethodsByName("m").get(0);
 
 		assertNotNull(aMethod.getType().getParent());
-		assertEquals(factory.Type().INTEGER_PRIMITIVE, aMethod.getType());
+		assertEquals(factory.Type().INTEGER_PRIMITIVE.get(), aMethod.getType());
 		assertEquals(aMethod, aMethod.getType().getParent());
 	}
 

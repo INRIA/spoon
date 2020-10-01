@@ -1047,7 +1047,7 @@ public class TemplateTest {
 		}
 		{
 			//contract: Type reference value name is substituted in substring of literal, named element and reference
-			final CtClass<?> result = (CtClass<?>) new SubStringTemplate(factory.Type().OBJECT).apply(factory.createClass());
+			final CtClass<?> result = (CtClass<?>) new SubStringTemplate(factory.Type().OBJECT.get()).apply(factory.createClass());
 			assertEquals("java.lang.String m_Object = \"Object is here more times: Object\";", result.getField("m_Object").toString());
 			//contract: the parameter of type string replaces substring in method name
 			CtMethod<?> method1 = result.getMethodsByName("setObject").get(0);

@@ -79,31 +79,31 @@ public class LiteralTest {
 		CtLiteral<?> literal = (CtLiteral<?>) ctType.getField("a").getDefaultExpression();
 		assertEquals(0, literal.getValue());
 		assertTrue(literal.getType().isPrimitive());
-		assertEquals(typeFactory.INTEGER_PRIMITIVE, literal.getType());
+		assertEquals(typeFactory.INTEGER_PRIMITIVE.get(), literal.getType());
 
 
 		literal = (CtLiteral<?>) ctType.getField("b").getDefaultExpression();
 		assertEquals(0x0, literal.getValue());
 		assertTrue(literal.getType().isPrimitive());
-		assertEquals(typeFactory.INTEGER_PRIMITIVE, literal.getType());
+		assertEquals(typeFactory.INTEGER_PRIMITIVE.get(), literal.getType());
 
 
 		literal = (CtLiteral<?>) ctType.getField("c").getDefaultExpression();
 		assertEquals(0f, literal.getValue());
 		assertTrue(literal.getType().isPrimitive());
-		assertEquals(typeFactory.FLOAT_PRIMITIVE, literal.getType());
+		assertEquals(typeFactory.FLOAT_PRIMITIVE.get(), literal.getType());
 
 
 		literal = (CtLiteral<?>) ctType.getField("d").getDefaultExpression();
 		assertEquals(0L, literal.getValue());
 		assertTrue(literal.getType().isPrimitive());
-		assertEquals(typeFactory.LONG_PRIMITIVE, literal.getType());
+		assertEquals(typeFactory.LONG_PRIMITIVE.get(), literal.getType());
 
 
 		literal = (CtLiteral<?>) ctType.getField("e").getDefaultExpression();
 		assertEquals(0d, literal.getValue());
 		assertTrue(literal.getType().isPrimitive());
-		assertEquals(typeFactory.DOUBLE_PRIMITIVE, literal.getType());
+		assertEquals(typeFactory.DOUBLE_PRIMITIVE.get(), literal.getType());
 
 
 		literal = (CtLiteral<?>) ctType.getField("f").getDefaultExpression();
@@ -115,12 +115,12 @@ public class LiteralTest {
 		literal = (CtLiteral<?>) ctType.getField("g").getDefaultExpression();
 		assertEquals("0", literal.getValue());
 		assertFalse(literal.getType().isPrimitive());
-		assertEquals(typeFactory.STRING, literal.getType());
+		assertEquals(typeFactory.STRING.get(), literal.getType());
 
 		literal = (CtLiteral<?>) ctType.getField("h").getDefaultExpression();
 		assertNull(literal.getValue());
 		assertFalse(literal.getType().isPrimitive());
-		assertEquals(typeFactory.NULL_TYPE, literal.getType());
+		assertEquals(typeFactory.NULL_TYPE.get(), literal.getType());
 
 	}
 

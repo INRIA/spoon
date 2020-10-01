@@ -43,9 +43,9 @@ public class AnnotationLoopTest {
 		assertEquals("p", ((CtLocalVariable) aLoop.getForInit().get(1)).getSimpleName());
 		assertEquals("e", ((CtLocalVariable) aLoop.getForInit().get(2)).getSimpleName());
 
-		assertEquals(aPozole.getFactory().Type().STRING, ((CtLocalVariable) aLoop.getForInit().get(0)).getType());
-		assertEquals(aPozole.getFactory().Type().STRING, ((CtLocalVariable) aLoop.getForInit().get(1)).getType());
-		assertEquals(aPozole.getFactory().Type().STRING, ((CtLocalVariable) aLoop.getForInit().get(2)).getType());
+		assertEquals(aPozole.getFactory().Type().STRING.get(), ((CtLocalVariable) aLoop.getForInit().get(0)).getType());
+		assertEquals(aPozole.getFactory().Type().STRING.get(), ((CtLocalVariable) aLoop.getForInit().get(1)).getType());
+		assertEquals(aPozole.getFactory().Type().STRING.get(), ((CtLocalVariable) aLoop.getForInit().get(2)).getType());
 
 		final String nl = System.lineSeparator();
 		final String expected = "for (@java.lang.SuppressWarnings(\"rawtypes\")" + nl + "java.lang.String u = \"\", p = \"\", e = \"\"; u != e; u = p , p = \"\") {" + nl + "}";

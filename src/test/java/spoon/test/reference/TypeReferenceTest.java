@@ -525,20 +525,20 @@ public class TypeReferenceTest {
 		final CtWildcardReference reference = factory.createWildcardReference();
 		reference.setBoundingType(factory.Type().createReference(String.class));
 
-		assertEquals(factory.Type().STRING, reference.getBoundingType());
+		assertEquals(factory.Type().STRING.get(), reference.getBoundingType());
 
 		reference.setBoundingType(null);
 
-		assertEquals(factory.Type().OBJECT, reference.getBoundingType());
+		assertEquals(factory.Type().OBJECT.get(), reference.getBoundingType());
 		assertTrue(reference.isDefaultBoundingType());
 
 		reference.setBoundingType(factory.Type().createReference(String.class));
 
-		assertEquals(factory.Type().STRING, reference.getBoundingType());
+		assertEquals(factory.Type().STRING.get(), reference.getBoundingType());
 
 		reference.setBoundingType(factory.Type().objectType());
 
-		assertEquals(factory.Type().OBJECT, reference.getBoundingType());
+		assertEquals(factory.Type().OBJECT.get(), reference.getBoundingType());
 		assertTrue(reference.isDefaultBoundingType());
 	}
 

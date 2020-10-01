@@ -69,10 +69,10 @@ public class VariableTest {
         TypeFactory typeFactory = launcher.getFactory().Type();
 
         assertTrue(localVariables.get(0).isInferred());
-        assertEquals(typeFactory.STRING, localVariables.get(0).getType());
+        assertEquals(typeFactory.STRING.get(), localVariables.get(0).getType());
 
         assertFalse(localVariables.get(1).isInferred());
-        assertEquals(typeFactory.STRING, localVariables.get(1).getType());
+        assertEquals(typeFactory.STRING.get(), localVariables.get(1).getType());
 
         assertTrue(localVariables.get(2).isInferred());
         assertEquals("java.io.FileReader", localVariables.get(2).getType().getQualifiedName());
@@ -81,16 +81,16 @@ public class VariableTest {
         assertEquals("java.io.FileReader", localVariables.get(3).getType().getQualifiedName());
 
         assertTrue(localVariables.get(4).isInferred());
-        assertEquals(typeFactory.BOOLEAN_PRIMITIVE, localVariables.get(4).getType());
+        assertEquals(typeFactory.BOOLEAN_PRIMITIVE.get(), localVariables.get(4).getType());
 
         assertFalse(localVariables.get(5).isInferred());
-        assertEquals(typeFactory.BOOLEAN_PRIMITIVE, localVariables.get(5).getType());
+        assertEquals(typeFactory.BOOLEAN_PRIMITIVE.get(), localVariables.get(5).getType());
 
         assertTrue(localVariables.get(6).isInferred());
-        assertEquals(typeFactory.INTEGER_PRIMITIVE, localVariables.get(6).getType());
+        assertEquals(typeFactory.INTEGER_PRIMITIVE.get(), localVariables.get(6).getType());
 
         assertFalse(localVariables.get(7).isInferred());
-        assertEquals(typeFactory.INTEGER_PRIMITIVE, localVariables.get(7).getType());
+        assertEquals(typeFactory.INTEGER_PRIMITIVE.get(), localVariables.get(7).getType());
     }
 
     @Test
