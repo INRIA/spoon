@@ -97,7 +97,7 @@ public class SnippetCompilationHelper {
 
 	public static CtStatement compileStatement(CtCodeSnippetStatement st)
 			throws SnippetCompilationError {
-		return internalCompileStatement(st, st.getFactory().Type().VOID_PRIMITIVE);
+		return internalCompileStatement(st, st.getFactory().Type().voidType());
 	}
 
 	public static CtStatement compileStatement(CtCodeSnippetStatement st, CtTypeReference returnType)
@@ -140,7 +140,7 @@ public class SnippetCompilationHelper {
 	public static <T> CtExpression<T> compileExpression(
 			CtCodeSnippetExpression<T> expr) throws SnippetCompilationError {
 
-		CtReturn<T> ret = (CtReturn<T>) internalCompileStatement(expr, expr.getFactory().Type().OBJECT);
+		CtReturn<T> ret = (CtReturn<T>) internalCompileStatement(expr, expr.getFactory().Type().OBJECT.get());
 
 		CtExpression<T> returnedExpression = ret.getReturnedExpression();
 

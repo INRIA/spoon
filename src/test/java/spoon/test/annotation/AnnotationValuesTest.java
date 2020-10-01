@@ -126,7 +126,7 @@ public class AnnotationValuesTest {
 	public void testAnnotateWithEnum() {
 		final Factory factory = createFactory();
 		final CtClass<Object> target = factory.Class().create("org.example.Tacos");
-		final CtField<String> field = factory.Field().create(target, new HashSet<>(), factory.Type().STRING, "field");
+		final CtField<String> field = factory.Field().create(target, new HashSet<>(), factory.Type().STRING.get(), "field");
 		target.addField(field);
 
 		final CtAnnotation<BoundNumber> byteOrder = factory.Annotation().annotate(field, BoundNumber.class, "byteOrder", BoundNumber.ByteOrder.LittleEndian);

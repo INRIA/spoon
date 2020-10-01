@@ -25,7 +25,7 @@ public class AnnotationPositionTest {
 		Factory factory = launcher.getFactory();
 		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get(AnnoUser.class);
 
-		CtMethod m1 = ctClass.getMethod("m1", factory.Type().STRING);
+		CtMethod m1 = ctClass.getMethod("m1", factory.Type().STRING.get());
 		CtParameter pm1 = (CtParameter) m1.getParameters().get(0);
 		SourcePosition paramPos1 = pm1.getType().getPosition();
 		SourcePosition typeRefPos1 = pm1.getType().getPosition();
@@ -33,7 +33,7 @@ public class AnnotationPositionTest {
 		assertTrue(contains(paramPos1,annoPos1));
 		assertTrue(contains(typeRefPos1,annoPos1));
 
-		CtMethod m2 = ctClass.getMethod("m2", factory.Type().STRING);
+		CtMethod m2 = ctClass.getMethod("m2", factory.Type().STRING.get());
 		CtParameter pm2 = (CtParameter) m2.getParameters().get(0);
 		SourcePosition paramPos2 = pm2.getPosition();
 		SourcePosition typeRefPos2 = pm2.getType().getPosition();
@@ -41,7 +41,7 @@ public class AnnotationPositionTest {
 		assertTrue(contains(paramPos2,annoPos2));
 		assertFalse(contains(typeRefPos2,annoPos2));
 
-		CtMethod m3 = ctClass.getMethod("m3", factory.Type().STRING);
+		CtMethod m3 = ctClass.getMethod("m3", factory.Type().STRING.get());
 		CtParameter pm3 = (CtParameter) m3.getParameters().get(0);
 		SourcePosition paramPos3 = pm3.getType().getPosition();
 		SourcePosition typeRefPos3 = pm3.getType().getPosition();
@@ -51,7 +51,7 @@ public class AnnotationPositionTest {
 		assertTrue(contains(paramPos3,annoPos32));
 		assertTrue(contains(typeRefPos3,annoPos32));
 
-		CtMethod m4 = ctClass.getMethod("m4", factory.Type().STRING);
+		CtMethod m4 = ctClass.getMethod("m4", factory.Type().STRING.get());
 		CtParameter pm4 = (CtParameter) m4.getParameters().get(0);
 		SourcePosition paramPos4 = pm4.getType().getPosition();
 		SourcePosition typeRefPos4 = pm4.getType().getPosition();
@@ -59,7 +59,7 @@ public class AnnotationPositionTest {
 		assertTrue(contains(paramPos4,annoPos4));
 		assertTrue(contains(typeRefPos4,annoPos4));
 
-		CtMethod m5 = ctClass.getMethod("m5", factory.Type().STRING);
+		CtMethod m5 = ctClass.getMethod("m5", factory.Type().STRING.get());
 		CtParameter pm5 = (CtParameter) m5.getParameters().get(0);
 		SourcePosition paramPos5 = pm5.getType().getPosition();
 		SourcePosition typeRefPos5 = pm5.getType().getPosition();
@@ -83,7 +83,7 @@ public class AnnotationPositionTest {
 
 
 
-		CtMethod m6 = ctClass.getMethod("m6", factory.Type().STRING);
+		CtMethod m6 = ctClass.getMethod("m6", factory.Type().STRING.get());
 		CtParameter pm6 = (CtParameter) m6.getParameters().get(0);
 
 		SourcePosition paramPos6 = pm6.getType().getPosition();

@@ -127,7 +127,7 @@ public class ExecutableFactory extends SubFactory {
 			}
 		}
 		if (paramType == null) {
-			paramType = factory.Type().OBJECT;
+			paramType = factory.Type().OBJECT.get();
 		}
 		return paramType.clone();
 	}

@@ -511,8 +511,8 @@ public class TypeReferenceTest {
 	@Test
 	public void testShortTypeReference() {
 
-		CtTypeReference<Short> aShort = createFactory().Type().SHORT;
-		CtTypeReference<Short> shortPrimitive = createFactory().Type().SHORT_PRIMITIVE;
+		CtTypeReference<Short> aShort = createFactory().Type().SHORT.get();
+		CtTypeReference<Short> shortPrimitive = createFactory().Type().SHORT_PRIMITIVE.get();
 
 		assertSame(Short.class, aShort.getActualClass());
 		assertSame(short.class, shortPrimitive.getActualClass());

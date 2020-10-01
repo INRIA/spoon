@@ -412,7 +412,7 @@ public class PatternParameterConfigurator {
 
 				CtTypeReference<?> paramType = paramField.getType();
 
-				if (paramType.isSubtypeOf(f.Type().ITERABLE) || paramType instanceof CtArrayTypeReference<?>) {
+				if (paramType.isSubtypeOf(f.Type().ITERABLE.get()) || paramType instanceof CtArrayTypeReference<?>) {
 					//parameter is a multivalue
 					// here we need to replace all named element and all references whose simpleName == stringMarker
 					parameter(parameterName).setContainerKind(ContainerKind.LIST).byNamedElement(stringMarker).byReferenceName(stringMarker);

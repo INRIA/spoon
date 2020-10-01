@@ -327,7 +327,7 @@ public class ReplaceTest {
 
 		assertEquals(factory.Type().INTEGER_PRIMITIVE, aMethod.getType());
 
-		aMethod.getType().replace(factory.Type().DOUBLE_PRIMITIVE);
+		aMethod.getType().replace(factory.Type().DOUBLE_PRIMITIVE.get());
 
 		assertEquals(factory.Type().DOUBLE_PRIMITIVE, aMethod.getType());
 	}

@@ -36,7 +36,7 @@ public class CtElementAssertTest {
 		final Factory factory = createFactory();
 		final CtField<Integer> expected = factory.Core().createField();
 		expected.setSimpleName("i");
-		expected.setType(factory.Type().INTEGER_PRIMITIVE);
+		expected.setType(factory.Type().INTEGER_PRIMITIVE.get());
 		expected.addModifier(ModifierKind.PUBLIC);
 		CtField<?> f = type.getField("i");
 		assertThat(f).isEqualTo(expected);
@@ -64,7 +64,7 @@ public class CtElementAssertTest {
 		}
 		final Factory build = buildNoClasspath(CtElementAssertTest.class);
 		final CtFieldAccess<Class<String>> actual = build.Code().createClassAccess(build.Type().<String>get(String.class).getReference());
-		final CtFieldAccess<Class<java.lang.String>> expected = createFactory().Code().createClassAccess(createFactory().Type().STRING);
+		final CtFieldAccess<Class<java.lang.String>> expected = createFactory().Code().createClassAccess(createFactory().Type().STRING.get());
 		assertThat(actual).isEqualTo(expected);
 	}
 }

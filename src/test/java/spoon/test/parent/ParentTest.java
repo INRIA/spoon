@@ -395,11 +395,11 @@ public class ParentTest {
 			 */
 			private CtBinaryOperator<Boolean> createCheckNull(CtParameter<?> ctParameter) {
 				final CtLiteral nullLiteral = factory.Code().createLiteral(null);
-				nullLiteral.setType(factory.Type().NULL_TYPE.clone());
+				nullLiteral.setType(factory.Type().NULL_TYPE.get().clone());
 				final CtBinaryOperator<Boolean> operator = factory.Code().createBinaryOperator( //
 						factory.Code().createVariableRead(ctParameter.getReference(), true), //
 						nullLiteral, BinaryOperatorKind.EQ);
-				operator.setType(factory.Type().BOOLEAN_PRIMITIVE);
+				operator.setType(factory.Type().BOOLEAN_PRIMITIVE.get());
 				return operator;
 			}
 

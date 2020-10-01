@@ -382,7 +382,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		if (contexts.contains(runtimeBuilderContext)) {
 			// we are in the case of a loop
 			exit();
-			enter(new TypeReferenceRuntimeBuilderContext(Object.class, factory.Type().OBJECT));
+			enter(new TypeReferenceRuntimeBuilderContext(Object.class, factory.Type().OBJECT.get()));
 			return;
 		}
 

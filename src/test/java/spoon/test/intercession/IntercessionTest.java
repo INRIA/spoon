@@ -348,7 +348,7 @@ public class IntercessionTest {
 				nullLiteral.setType(factory.Type().nullType());
 
 				final CtBinaryOperator<Boolean> checkNull = factory.Code().createBinaryOperator(variableRead, nullLiteral, BinaryOperatorKind.EQ);
-				checkNull.setType(factory.Type().BOOLEAN_PRIMITIVE);
+				checkNull.setType(factory.Type().BOOLEAN_PRIMITIVE.get());
 
 				final CtMethod<Boolean> isEmptyMethod = ctParameter.getType().getTypeDeclaration().getMethod(factory.Type().booleanPrimitiveType(), "isEmpty");
 				final CtInvocation<Boolean> isEmpty = factory.Code().createInvocation(variableRead, isEmptyMethod.getReference());

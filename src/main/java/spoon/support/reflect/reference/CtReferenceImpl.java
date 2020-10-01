@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.IdentifierVerifier;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
@@ -24,6 +25,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import static spoon.reflect.path.CtRole.NAME;
@@ -48,16 +50,23 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 
 	@Override
 	public <T extends CtReference> T setSimpleName(String simplename) {
+		String nameBefore = this.simplename;
+		this.simplename = simplename;
+		Optional<SpoonException> error = new IdentifierVerifier().checkIdentifier(this);
+		if (error.isPresent()) {
+			this.simplename = nameBefore;
+			if (!getFactory().getEnvironment().checksAreSkipped()) {
+			throw error.get();
+			}
+		}
 		Factory factory = getFactory();
-		checkIdentiferForJLSCorrectness(simplename);
 		if (factory == null) {
-			this.simplename = simplename;
 			return (T) this;
 		}
 		if (factory instanceof FactoryImpl) {
 			simplename = ((FactoryImpl) factory).dedup(simplename);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simplename, this.simplename);
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simplename, nameBefore);
 		this.simplename = simplename;
 		return (T) this;
 	}

@@ -45,7 +45,7 @@ public class CtTypeAccessImpl<A> extends CtExpressionImpl<Void> implements CtTyp
 
 	@Override
 	public CtTypeReference<Void> getType() {
-		return (CtTypeReference<Void>) getFactory().Type().VOID_PRIMITIVE.clone().<CtTypeAccess>setParent(this);
+		return (CtTypeReference<Void>) getFactory().Type().VOID_PRIMITIVE.get().clone().<CtTypeAccess>setParent(this);
 	}
 
 	@Override

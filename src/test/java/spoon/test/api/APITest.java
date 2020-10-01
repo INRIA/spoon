@@ -298,7 +298,7 @@ public class APITest {
 
 		final CtMethod aMethod = spoon.getFactory().Core().createMethod();
 		aMethod.setSimpleName("foo");
-		aMethod.setType(spoon.getFactory().Type().BOOLEAN_PRIMITIVE);
+		aMethod.setType(spoon.getFactory().Type().BOOLEAN_PRIMITIVE.get());
 		aMethod.setBody(spoon.getFactory().Core().createBlock());
 		aClass.addMethod(aMethod);
 

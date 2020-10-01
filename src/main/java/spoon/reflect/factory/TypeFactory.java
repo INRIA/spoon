@@ -3,7 +3,9 @@
  *
  * Copyright (C) 2006-2019 INRIA and contributors
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the
+ * Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms
+ * under which to adopt Spoon.
  */
 package spoon.reflect.factory;
 
@@ -65,35 +67,35 @@ public class TypeFactory extends SubFactory {
 					// TODO (leventov) it is questionable to me that nulltype should also be here
 					CtTypeReference.NULL_TYPE_NAME)));
 
-	public final CtTypeReference<?> NULL_TYPE = createReference(CtTypeReference.NULL_TYPE_NAME);
-	public final CtTypeReference<Void> VOID = createReference(Void.class);
-	public final CtTypeReference<String> STRING = createReference(String.class);
-	public final CtTypeReference<Boolean> BOOLEAN = createReference(Boolean.class);
-	public final CtTypeReference<Byte> BYTE = createReference(Byte.class);
-	public final CtTypeReference<Character> CHARACTER = createReference(Character.class);
-	public final CtTypeReference<Integer> INTEGER = createReference(Integer.class);
-	public final CtTypeReference<Long> LONG = createReference(Long.class);
-	public final CtTypeReference<Float> FLOAT = createReference(Float.class);
-	public final CtTypeReference<Double> DOUBLE = createReference(Double.class);
-	public final CtTypeReference<Void> VOID_PRIMITIVE = createReference(void.class);
-	public final CtTypeReference<Boolean> BOOLEAN_PRIMITIVE = createReference(boolean.class);
-	public final CtTypeReference<Byte> BYTE_PRIMITIVE = createReference(byte.class);
-	public final CtTypeReference<Character> CHARACTER_PRIMITIVE = createReference(char.class);
-	public final CtTypeReference<Integer> INTEGER_PRIMITIVE = createReference(int.class);
-	public final CtTypeReference<Long> LONG_PRIMITIVE = createReference(long.class);
-	public final CtTypeReference<Float> FLOAT_PRIMITIVE = createReference(float.class);
-	public final CtTypeReference<Double> DOUBLE_PRIMITIVE = createReference(double.class);
-	public final CtTypeReference<Short> SHORT = createReference(Short.class);
-	public final CtTypeReference<Short> SHORT_PRIMITIVE = createReference(short.class);
-	public final CtTypeReference<Date> DATE = createReference(Date.class);
-	public final CtTypeReference<Object> OBJECT = createReference(Object.class);
-	public final CtTypeReference<Iterable> ITERABLE = createReference(Iterable.class);
-	public final CtTypeReference<Collection> COLLECTION = createReference(Collection.class);
-	public final CtTypeReference<List> LIST = createReference(List.class);
-	public final CtTypeReference<Set> SET = createReference(Set.class);
-	public final CtTypeReference<Map> MAP = createReference(Map.class);
-	public final CtTypeReference<Enum> ENUM = createReference(Enum.class);
-	public final CtTypeReference<?> OMITTED_TYPE_ARG_TYPE = createReference(CtTypeReference.OMITTED_TYPE_ARG_NAME);
+	public final Supplier<CtTypeReference<?>> NULL_TYPE = lazily(() -> createReference(CtTypeReference.NULL_TYPE_NAME));
+	public final Supplier<CtTypeReference<Void>> VOID = lazily(() -> createReference(Void.class));
+	public final Supplier<CtTypeReference<String>> STRING = lazily(() -> createReference(String.class));
+	public final Supplier<CtTypeReference<Boolean>> BOOLEAN =	lazily(() -> createReference(Boolean.class));
+	public final Supplier<CtTypeReference<Byte>> BYTE = lazily(() -> createReference(Byte.class));
+	public final Supplier<CtTypeReference<Character>> CHARACTER =	lazily(() -> createReference(Character.class));
+	public final Supplier<CtTypeReference<Integer>> INTEGER =	lazily(() -> createReference(Integer.class));
+	public final Supplier<CtTypeReference<Long>> LONG = lazily(() -> createReference(Long.class));
+	public final Supplier<CtTypeReference<Float>> FLOAT = lazily(() -> createReference(Float.class));
+	public final Supplier<CtTypeReference<Double>> DOUBLE = lazily(() -> createReference(Double.class));
+	public final Supplier<CtTypeReference<Void>> VOID_PRIMITIVE = lazily(() -> createReference(void.class));
+	public final Supplier<CtTypeReference<Boolean>> BOOLEAN_PRIMITIVE = lazily(() -> createReference(boolean.class));
+	public final Supplier<CtTypeReference<Byte>> BYTE_PRIMITIVE =	lazily(() -> createReference(byte.class));
+	public final Supplier<CtTypeReference<Character>> CHARACTER_PRIMITIVE =	lazily(() -> createReference(char.class));
+	public final Supplier<CtTypeReference<Integer>> INTEGER_PRIMITIVE =	lazily(() -> createReference(int.class));
+	public final Supplier<CtTypeReference<Long>> LONG_PRIMITIVE =	lazily(() -> createReference(long.class));
+	public final Supplier<CtTypeReference<Float>> FLOAT_PRIMITIVE = lazily(() -> createReference(float.class));
+	public final Supplier<CtTypeReference<Double>> DOUBLE_PRIMITIVE = lazily(() -> createReference(double.class));
+	public final Supplier<CtTypeReference<Short>> SHORT = lazily(() -> createReference(Short.class));
+	public final Supplier<CtTypeReference<Short>> SHORT_PRIMITIVE =	lazily(() -> createReference(short.class));
+	public final Supplier<CtTypeReference<Date>> DATE = lazily(() -> createReference(Date.class));
+	public final Supplier<CtTypeReference<Object>> OBJECT =	lazily(() -> createReference(Object.class));
+	public final Supplier<CtTypeReference<Iterable>> ITERABLE = lazily(() -> createReference(Iterable.class));
+	public final Supplier<CtTypeReference<Collection>> COLLECTION = lazily(() -> createReference(Collection.class));
+	public final Supplier<CtTypeReference<List>> LIST = lazily(() -> createReference(List.class));
+	public final Supplier<CtTypeReference<Set>> SET = lazily(() -> createReference(Set.class));
+	public final Supplier<CtTypeReference<Map>> MAP = lazily(() -> createReference(Map.class));
+	public final Supplier<CtTypeReference<Enum>> ENUM = lazily(() -> createReference(Enum.class));
+	public final Supplier<CtTypeReference<?>> OMITTED_TYPE_ARG_TYPE =	lazily(() -> createReference(CtTypeReference.OMITTED_TYPE_ARG_NAME));
 
 	private final Map<Class<?>, CtType<?>> shadowCache = new ConcurrentHashMap<>();
 
@@ -101,154 +103,154 @@ public class TypeFactory extends SubFactory {
 	 * Returns a reference on the null type (type of null).
 	 */
 	public CtTypeReference<?> nullType() {
-		return NULL_TYPE.clone();
+		return NULL_TYPE.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the void type.
 	 */
 	public CtTypeReference<Void> voidType() {
-		return VOID.clone();
+		return VOID.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the void primitive type.
 	 */
 	public CtTypeReference<Void> voidPrimitiveType() {
-		return VOID_PRIMITIVE.clone();
+		return VOID_PRIMITIVE.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the string type.
 	 */
 	public CtTypeReference<String> stringType() {
-		return STRING.clone();
+		return STRING.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the boolean type.
 	 */
 	public CtTypeReference<Boolean> booleanType() {
-		return BOOLEAN.clone();
+		return BOOLEAN.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the boolean primitive type.
 	 */
 	public CtTypeReference<Boolean> booleanPrimitiveType() {
-		return BOOLEAN_PRIMITIVE.clone();
+		return BOOLEAN_PRIMITIVE.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the byte type.
 	 */
 	public CtTypeReference<Byte> byteType() {
-		return BYTE.clone();
+		return BYTE.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the byte primitive type.
 	 */
 	public CtTypeReference<Byte> bytePrimitiveType() {
-		return BYTE_PRIMITIVE.clone();
+		return BYTE_PRIMITIVE.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the character type.
 	 */
 	public CtTypeReference<Character> characterType() {
-		return CHARACTER.clone();
+		return CHARACTER.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the character primitive type.
 	 */
 	public CtTypeReference<Character> characterPrimitiveType() {
-		return CHARACTER_PRIMITIVE.clone();
+		return CHARACTER_PRIMITIVE.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the integer type.
 	 */
 	public CtTypeReference<Integer> integerType() {
-		return INTEGER.clone();
+		return INTEGER.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the integer primitive type.
 	 */
 	public CtTypeReference<Integer> integerPrimitiveType() {
-		return INTEGER_PRIMITIVE.clone();
+		return INTEGER_PRIMITIVE.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the long type.
 	 */
 	public CtTypeReference<Long> longType() {
-		return LONG.clone();
+		return LONG.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the long primitive type.
 	 */
 	public CtTypeReference<Long> longPrimitiveType() {
-		return LONG_PRIMITIVE.clone();
+		return LONG_PRIMITIVE.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the float type.
 	 */
 	public CtTypeReference<Float> floatType() {
-		return FLOAT.clone();
+		return FLOAT.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the float primitive type.
 	 */
 	public CtTypeReference<Float> floatPrimitiveType() {
-		return FLOAT_PRIMITIVE.clone();
+		return FLOAT_PRIMITIVE.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the double type.
 	 */
 	public CtTypeReference<Double> doubleType() {
-		return DOUBLE.clone();
+		return DOUBLE.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the double primitive type.
 	 */
 	public CtTypeReference<Double> doublePrimitiveType() {
-		return DOUBLE_PRIMITIVE.clone();
+		return DOUBLE_PRIMITIVE.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the short type.
 	 */
 	public CtTypeReference<Short> shortType() {
-		return SHORT.clone();
+		return SHORT.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the short primitive type.
 	 */
 	public CtTypeReference<Short> shortPrimitiveType() {
-		return SHORT_PRIMITIVE.clone();
+		return SHORT_PRIMITIVE.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the date type.
 	 */
 	public CtTypeReference<Date> dateType() {
-		return DATE.clone();
+		return DATE.get().clone();
 	}
 
 	/**
 	 * Returns a reference on the object type.
 	 */
 	public CtTypeReference<Object> objectType() {
-		return OBJECT.clone();
+		return OBJECT.get().clone();
 	}
 
 	/**
@@ -721,7 +723,7 @@ public class TypeFactory extends SubFactory {
 	 * Returns the default bounding type value
 	 */
 	public CtTypeReference getDefaultBoundingType() {
-		return OBJECT;
+		return OBJECT.get();
 	}
 
 	/**
@@ -749,5 +751,19 @@ public class TypeFactory extends SubFactory {
 		ctUnresolvedImport.setUnresolvedReference(reference);
 		ctUnresolvedImport.setStatic(isStatic);
 		return ctUnresolvedImport;
+	}
+
+	static <Z> Supplier<Z> lazily(Supplier<Z> supplier) {
+		return new Supplier<Z>() {
+			Z value; // = null
+
+			@Override
+			public Z get() {
+				if (value == null) {
+					value = supplier.get();
+				}
+				return value;
+			}
+		};
 	}
 }

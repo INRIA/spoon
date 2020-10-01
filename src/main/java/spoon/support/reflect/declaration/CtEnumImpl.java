@@ -179,7 +179,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 			valueOfMethod.addThrownType(
 				getFactory().Type().createReference(IllegalArgumentException.class));
 			valueOfMethod.setType(getReference());
-			factory.Method().createParameter(valueOfMethod, factory.Type().STRING, "name");
+			factory.Method().createParameter(valueOfMethod, factory.Type().STRING.get(), "name");
 		}
 		return valueOfMethod;
 	}

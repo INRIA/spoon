@@ -382,7 +382,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements CtE
 
 	@Override
 	public CtExecutableReference<?> getOverridingExecutable() {
-		CtTypeReference<Object> objectType = getFactory().Type().OBJECT;
+		CtTypeReference<Object> objectType = getFactory().Type().OBJECT.get();
 		CtTypeReference<?> declaringType = getDeclaringType();
 		if (declaringType == null) {
 			return getOverloadedExecutable(objectType, objectType);

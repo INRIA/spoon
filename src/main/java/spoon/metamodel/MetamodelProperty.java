@@ -203,7 +203,7 @@ public class MetamodelProperty {
 		if (valueType instanceof CtTypeParameterReference) {
 			valueType = ((CtTypeParameterReference) valueType).getBoundingType();
 			if (valueType == null) {
-				valueType = f.Type().OBJECT;
+				valueType = f.Type().OBJECT.get();
 			}
 		}
 		if (valueType.isImplicit()) {
@@ -342,8 +342,8 @@ public class MetamodelProperty {
 		CtTypeReference<?> returnType1 = methods.get(0).getActualCtMethod().getType();
 		CtTypeReference<?> returnType2 = methods.get(1).getActualCtMethod().getType();
 		Factory f = returnType1.getFactory();
-		boolean is1Iterable = returnType1.isSubtypeOf(f.Type().ITERABLE);
-		boolean is2Iterable = returnType2.isSubtypeOf(f.Type().ITERABLE);
+		boolean is1Iterable = returnType1.isSubtypeOf(f.Type().ITERABLE.get());
+		boolean is2Iterable = returnType2.isSubtypeOf(f.Type().ITERABLE.get());
 		if (is1Iterable != is2Iterable) {
 			// they are not some. Only one of them is iterable
 			if (is1Iterable) {
@@ -423,7 +423,7 @@ public class MetamodelProperty {
 		if (itemValueType instanceof CtTypeParameterReference) {
 			itemValueType = ((CtTypeParameterReference) itemValueType).getBoundingType();
 			if (itemValueType == null) {
-				itemValueType = valueType.getFactory().Type().OBJECT;
+				itemValueType = valueType.getFactory().Type().getDefaultBoundingType();
 			}
 		}
 		return itemValueType;
@@ -468,7 +468,7 @@ public class MetamodelProperty {
 	private CtTypeReference<?> getMapValueType(CtTypeReference<?> valueType) {
 		if (valueType != null) {
 			Factory f = valueType.getFactory();
-			if (valueType.isSubtypeOf(f.Type().MAP) && valueType.getActualTypeArguments().size() == 2) {
+			if (valueType.isSubtypeOf(f.Type().MAP.get()) && valueType.getActualTypeArguments().size() == 2) {
 				return valueType.getActualTypeArguments().get(1);
 			}
 		}

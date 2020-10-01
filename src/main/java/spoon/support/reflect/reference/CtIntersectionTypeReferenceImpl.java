@@ -79,7 +79,7 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 	@Override
 	public CtTypeReference<?> getTypeErasure() {
 		if (bounds == null || bounds.isEmpty()) {
-			return getFactory().Type().OBJECT;
+			return getFactory().Type().OBJECT.get();
 		}
 		return bounds.get(0).getTypeErasure();
 	}

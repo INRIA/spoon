@@ -177,7 +177,7 @@ public class PathTest {
 
 		CtLiteral<String> literal = factory.Core().createLiteral();
 		literal.setValue("salut");
-		literal.setType(literal.getFactory().Type().STRING);
+		literal.setType(literal.getFactory().Type().STRING.get());
 		equals(new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.toto#defaultExpression"), literal);
 	}
 

@@ -796,7 +796,7 @@ public class TemplateTest {
 		Factory factory = spoon.getFactory();
 
 		CtClass<?> resultKlass = factory.Class().create("Result");
-		new InvocationTemplate(factory.Type().OBJECT, "hashCode").apply(resultKlass);
+		new InvocationTemplate(factory.Type().OBJECT.get(), "hashCode").apply(resultKlass);
 		CtMethod<?> templateMethod = (CtMethod<?>) resultKlass.getElements(new NamedElementFilter<>(CtMethod.class,"invoke")).get(0);
 		CtStatement templateRoot = (CtStatement) templateMethod.getBody().getStatement(0);
 		//iface.$method$() becomes iface.hashCode()
@@ -1036,7 +1036,7 @@ public class TemplateTest {
 		}
 		{
 			//contract: Type value name is substituted in substring of literal, named element and reference
-			final CtClass<?> result = (CtClass<?>) new SubStringTemplate(factory.Type().OBJECT.getTypeDeclaration()).apply(factory.createClass());
+			final CtClass<?> result = (CtClass<?>) new SubStringTemplate(factory.Type().OBJECT.get().getTypeDeclaration()).apply(factory.createClass());
 			assertEquals("java.lang.String m_Object = \"Object is here more times: Object\";", result.getField("m_Object").toString());
 			//contract: the parameter of type string replaces substring in method name
 			CtMethod<?> method1 = result.getMethodsByName("setObject").get(0);
@@ -1161,7 +1161,7 @@ public class TemplateTest {
 
 		//contract: String value is substituted in substring of literal, named element and reference
 		CtTypeReference<?> typeRef = factory.Type().createReference("spoon.test.template.TypeReferenceClassAccess$Example");
-		typeRef.addActualTypeArgument(factory.Type().DATE);
+		typeRef.addActualTypeArgument(factory.Type().DATE.get());
 		
 		final CtClass<?> result = (CtClass<?>) new TypeReferenceClassAccessTemplate(typeRef).apply(factory.Class().create("spoon.test.template.TypeReferenceClassAccess"));
 		spoon.prettyprint();

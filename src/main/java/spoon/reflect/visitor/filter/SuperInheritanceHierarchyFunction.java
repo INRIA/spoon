@@ -245,7 +245,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 				visitSuperInterfaces(typeRef, outputConsumer);
 				if (interfacesExtendObject) {
 					//last visit Object.class, because interface inherits all public type members of Object.class
-					sendResultWithListener(typeRef.getFactory().Type().OBJECT, isClass, outputConsumer, (ref) -> { });
+					sendResultWithListener(typeRef.getFactory().Type().getDefaultBoundingType(), isClass, outputConsumer, (ref) -> { });
 				}
 			} else {
 				//call visitSuperClasses only for input of type class. The contract of visitSuperClasses requires that
@@ -276,7 +276,7 @@ public class SuperInheritanceHierarchyFunction implements CtConsumableFunction<C
 		if (superClassRef == null) {
 			//only CtClasses extend object,
 			//this method is called only for classes (not for interfaces) so we know we can visit java.lang.Object now too
-			superClassRef = superTypeRef.getFactory().Type().OBJECT;
+			superClassRef = superTypeRef.getFactory().Type().OBJECT.get();
 		}
 		sendResultWithListener(superClassRef, true,
 				outputConsumer, (classRef) -> visitSuperClasses(classRef, outputConsumer, includingInterfaces));

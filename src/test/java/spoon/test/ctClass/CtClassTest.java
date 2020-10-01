@@ -92,7 +92,7 @@ public class CtClassTest {
 		// as long as we have not changed the signature, getConstructors, which is based on signatures,
 		// thinks there is one single constructor (and that's OK)
 		assertEquals(3, foo.getConstructors().size());
-		cons.addParameter(cons.getFactory().createParameter().setType(cons.getFactory().Type().OBJECT));
+		cons.addParameter(cons.getFactory().createParameter().setType(cons.getFactory().Type().OBJECT.get()));
 		// now that we have changed the signature we can call getConstructors safely
 		assertEquals(4, foo.getConstructors().size());
 		// we cloned the first constructor, so it has the same position, and comes before the 2nd and 3rd constructor

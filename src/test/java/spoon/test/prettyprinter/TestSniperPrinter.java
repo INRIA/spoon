@@ -306,7 +306,7 @@ public class TestSniperPrinter {
 		testSniper(ToBeChanged.class.getName(), type -> {
 			Factory f = type.getFactory();
 			//create new type member
-			context.newField = f.createField(type, Collections.singleton(ModifierKind.PRIVATE), f.Type().DATE, "dateField");
+			context.newField = f.createField(type, Collections.singleton(ModifierKind.PRIVATE), f.Type().DATE.get(), "dateField");
 			type.addTypeMember(context.newField);
 		}, (type, printed) -> {
 			String lastMemberString = "new List<?>[7][];";

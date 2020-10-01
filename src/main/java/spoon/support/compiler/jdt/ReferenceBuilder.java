@@ -601,7 +601,7 @@ public class ReferenceBuilder {
 		if (alloc.expectedType() == null || !(alloc.expectedType() instanceof ParameterizedTypeBinding)) {
 			// the expected type is not available/parameterized if the constructor call occurred in e.g. an unresolved
 			// method, or in a method that did not expect a parameterized argument
-			type.addActualTypeArgument(jdtTreeBuilder.getFactory().Type().OMITTED_TYPE_ARG_TYPE.clone());
+			type.addActualTypeArgument(jdtTreeBuilder.getFactory().Type().OMITTED_TYPE_ARG_TYPE.get().clone());
 		} else {
 			ParameterizedTypeBinding expectedType = (ParameterizedTypeBinding) alloc.expectedType();
 			// type arguments can be recovered from the expected type
@@ -1190,7 +1190,7 @@ public class ReferenceBuilder {
 			paramType = ((CtTypeParameterReference) paramType).getBoundingType();
 		}
 		if (paramType == null) {
-			paramType = param.getFactory().Type().OBJECT;
+			paramType = param.getFactory().Type().getDefaultBoundingType();
 		}
 		return paramType.clone();
 	}
