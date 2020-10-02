@@ -16,9 +16,27 @@
  */
 package spoon.test.prettyprinter;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Logger;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Plugin;
+import org.apache.maven.model.Profile;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
+import org.apache.maven.shared.invoker.DefaultInvocationRequest;
+import org.apache.maven.shared.invoker.DefaultInvoker;
+import org.apache.maven.shared.invoker.InvocationRequest;
+import org.apache.maven.shared.invoker.InvocationResult;
+import org.apache.maven.shared.invoker.Invoker;
+import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.MavenLauncher;
+import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResource;
@@ -42,19 +60,32 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
+import spoon.support.compiler.SpoonPom;
 import spoon.test.imports.ImportTest;
 import spoon.test.prettyprinter.testclasses.AClass;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -415,5 +446,71 @@ public class DefaultPrettyPrinterTest {
 				"    }\n" +
 				"}";
 		assertEquals(expected, result);
+	}
+
+	@Ignore
+	@Test
+	public void testCheckstyleCompliance() throws IOException, XmlPullParserException {
+		File tmpDir = new File("./target/tmp-checkstyle");
+		if(tmpDir.exists()) {
+			FileUtils.deleteDirectory(tmpDir);
+		}
+
+		//Build spoon AST and pretty print it in tmpDir
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/main/java");
+		launcher.setSourceOutputDirectory(tmpDir.getPath() + "/src/main/java");
+		launcher.buildModel();
+		launcher.prettyprint();
+
+		//copy pom and modify relative path
+		File originalPom = new File("pom.xml");
+		File tmpPom = new File(tmpDir, "pom.xml");
+
+		MavenXpp3Reader pomReader = new MavenXpp3Reader();
+		try (FileReader reader = new FileReader(originalPom)) {
+			Model model = pomReader.read(reader);
+			model.getParent().setRelativePath("../../" + model.getParent().getRelativePath());
+			Plugin checkstyle = null;
+			for(Plugin p : model.getBuild().getPlugins()) {
+				if(p.getArtifactId().equals("maven-checkstyle-plugin")) {
+					checkstyle = p;
+					break;
+				}
+			}
+			assertNotNull(checkstyle);
+			Xpp3Dom config = (Xpp3Dom) checkstyle.getConfiguration();
+			config.getChild("configLocation").setValue("../../checkstyle.xml");
+			//config.setAttribute("configLocation", "../../checkstyle.xml");
+
+			MavenXpp3Writer writer = new MavenXpp3Writer();
+			writer.write(new FileOutputStream(tmpPom), model);
+
+			//run checkstyle
+
+			//contract: PrettyPrinted sources should not contain errors
+			assertTrue(runCheckstyle(new File(SpoonPom.guessMavenHome()),tmpPom));
+
+		} catch (FileNotFoundException e) {
+			throw new IOException("Pom does not exists.");
+		}
+
+	}
+
+	private boolean runCheckstyle(File mvnHome, File pomFile) {
+		InvocationRequest request = new DefaultInvocationRequest();
+		request.setBatchMode(true);
+		request.setPomFile(pomFile);
+		request.setGoals(Collections.singletonList("checkstyle:checkstyle"));
+
+		Invoker invoker = new DefaultInvoker();
+		invoker.setMavenHome(mvnHome);
+		invoker.setWorkingDirectory(pomFile.getParentFile());
+		try {
+			InvocationResult result = invoker.execute(request);
+			return result.getExitCode() == 0;
+		} catch (MavenInvocationException e) {
+			return false;
+		}
 	}
 }

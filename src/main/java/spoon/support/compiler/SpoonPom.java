@@ -516,7 +516,7 @@ public class SpoonPom implements SpoonResource {
 		return classpathElements.toArray(new String[0]);
 	}
 
-	private static String guessMavenHome() {
+	public static String guessMavenHome() {
 		String mvnHome = null;
 		try {
 			String[] cmd;
