@@ -97,7 +97,7 @@ public class SnippetCompilationHelper {
 
 	public static CtStatement compileStatement(CtCodeSnippetStatement st)
 			throws SnippetCompilationError {
-		return internalCompileStatement(st, st.getFactory().Type().voidType());
+		return internalCompileStatement(st, st.getFactory().Type().VOID_PRIMITIVE.get());
 	}
 
 	public static CtStatement compileStatement(CtCodeSnippetStatement st, CtTypeReference returnType)
