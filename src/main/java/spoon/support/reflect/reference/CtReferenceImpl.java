@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.IdentifierVerifier;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
@@ -24,6 +25,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import static spoon.reflect.path.CtRole.NAME;
@@ -32,7 +34,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 
 	private static final long serialVersionUID = 1L;
 	private static Collection<String> keywords = fillWithKeywords();
-
+	private static IdentifierVerifier verifier = new IdentifierVerifier();
 	@MetamodelPropertyField(role = NAME)
 	protected String simplename = "";
 
@@ -49,7 +51,15 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	@Override
 	public <T extends CtReference> T setSimpleName(String simplename) {
 		Factory factory = getFactory();
-		checkIdentiferForJLSCorrectness(simplename);
+		String nameBefore = this.simplename;
+		this.simplename = simplename;
+		Optional<SpoonException> error = verifier.checkIdentifier(this);
+		if (error.isPresent()) {
+			this.simplename = nameBefore;
+			if  (factory == null || !factory.getEnvironment().checksAreSkipped()) {
+				throw error.get();
+			}
+		}
 		if (factory == null) {
 			this.simplename = simplename;
 			return (T) this;
