@@ -30,7 +30,7 @@ public class TextBlockTest{
 		
 		CtStatement stmt1 = m1.getBody().getStatement(0);
 		CtLiteral l1 = (CtLiteral) stmt1.getValueByRole(CtRole.ASSIGNMENT);
-		assertEquals(l1.getValue(), "<html>\n    <body>\n        <p>Hello, world</p>\n    </body>\n</html>\n");
+		assertEquals(l1.getValue(), "<html>\n    <body>\n        <p>Hello, world जाँच</p>\n    </body>\n</html>\n");
 	}
 
 	@Test
@@ -64,5 +64,17 @@ public class TextBlockTest{
 				+ "\n"
 				+ "hello();\n"
 				+ "");
+	}
+
+	@Test
+	public void testTextBlockEmpty(){
+		//contract: Test Text Block containing empty string ""
+		Launcher launcher = setUpTest();
+		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("textBlock.TextBlockTestClass");
+		CtMethod<?> m4 =  allstmt.getMethod("m4");
+		
+		CtStatement stmt1 = m4.getBody().getStatement(0);
+		CtLiteral l1 = (CtLiteral) stmt1.getValueByRole(CtRole.ASSIGNMENT);
+		assertEquals(l1.getValue(), "");
 	}
 }

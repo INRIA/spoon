@@ -8,7 +8,7 @@ public class TextBlockTestClass{
 		String html = """
 	                  <html>
 	                      <body>
-	                          <p>Hello, world</p>
+	                          <p>Hello, world जाँच</p>
 	                      </body>
 	                  </html>
 	                  """;
@@ -34,5 +34,10 @@ public class TextBlockTestClass{
 			                         """);
 		}catch(Exception e) {}
 		System.out.println(query);
+	}
+
+	void m4() {
+		String empty = """
+		""";
 	}
 }
