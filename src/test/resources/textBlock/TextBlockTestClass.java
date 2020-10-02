@@ -12,11 +12,17 @@ public class TextBlockTestClass{
 	                      </body>
 	                  </html>
 	                  """;
+	}
+
+	void m2(){
 		String query = """
 	                       SELECT "EMP_ID", "LAST_NAME" FROM "EMPLOYEE_TB"
 	                       WHERE "CITY" = 'INDIANAPOLIS'
 	                       ORDER BY "EMP_ID", "LAST_NAME";
 	                       """;
+	}
+
+	void m3(){
 		ScriptEngine engine = new ScriptEngineManager().getEngineByName("js");
 		try {
 			Object obj = engine.eval("""
