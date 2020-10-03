@@ -77,13 +77,12 @@ public enum MMMethodKind {
 	private final Predicate<CtMethod<?>> detector;
 	private final int level;
 	private final boolean multi;
-	private final int valueParameterIndex;
 
 	MMMethodKind(int valueParameterIndex, boolean multi, int level, Predicate<CtMethod<?>> detector) {
 		this.multi = multi;
 		this.level = level;
 		this.detector = detector;
-		this.valueParameterIndex = valueParameterIndex;
+		// valueParameterindex is never used
 	}
 
 	/**
