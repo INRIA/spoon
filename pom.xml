@@ -43,7 +43,7 @@
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.20.0</version>
+      <version>3.23.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.platform</groupId>
