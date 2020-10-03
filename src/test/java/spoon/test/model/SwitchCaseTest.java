@@ -52,6 +52,7 @@ public class SwitchCaseTest {
 	}
 	private static CtModel createModelFromString(String code) {
 		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(14);
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource(new VirtualFile(code));
 		return launcher.buildModel();
