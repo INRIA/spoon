@@ -52,7 +52,7 @@ public class PrinterHelper {
 	 * Not used yet, but this shows the advantage of encapsulating all sbf.append in calls to {@link #write(char)} or {@link #write(String)}.
 	 * This will be used for sniper mode later
 	 */
-	private int column = 1;
+	// private int column = 1;
 
 	/**
 	 * Mapping for line numbers.
