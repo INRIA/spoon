@@ -75,7 +75,6 @@ public class JDTCommentBuilder {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final CompilationUnitDeclaration declarationUnit;
-	private String filePath;
 	private CompilationUnit spoonUnit;
 	private Factory factory;
 	private ICompilationUnit sourceUnit;
