@@ -8,7 +8,7 @@ public class TextBlockTestClass{
 		String html = """
 	                  <html>
 	                      <body>
-	                          <p>Hello, world जाँच</p>
+	                          <p>Hello, कसौटी 🥲</p>
 	                      </body>
 	                  </html>
 	                  """;

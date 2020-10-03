@@ -30,7 +30,7 @@ public class TextBlockTest{
 		
 		CtStatement stmt1 = m1.getBody().getStatement(0);
 		CtLiteral l1 = (CtLiteral) stmt1.getValueByRole(CtRole.ASSIGNMENT);
-		assertEquals(l1.getValue(), "<html>\n    <body>\n        <p>Hello, world जाँच</p>\n    </body>\n</html>\n");
+		assertEquals(l1.getValue(), "<html>\n    <body>\n        <p>Hello, कसौटी 🥲</p>\n    </body>\n</html>\n");
 	}
 
 	@Test
