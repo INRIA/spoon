@@ -22,7 +22,6 @@ import spoon.Launcher;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.PrettyPrinter;
-import spoon.test.main.MainTest;
 import spoon.test.variable.testclasses.Tacos;
 
 import java.util.ArrayList;

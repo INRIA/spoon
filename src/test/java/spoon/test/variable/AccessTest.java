@@ -38,7 +38,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.test.main.MainTest;
 import spoon.test.variable.testclasses.ArrayAccessSample;
 import spoon.test.variable.testclasses.FieldAccessSample;
 import spoon.test.variable.testclasses.RHSSample;

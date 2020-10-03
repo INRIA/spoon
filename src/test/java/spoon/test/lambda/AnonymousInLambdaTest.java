@@ -3,7 +3,6 @@ package spoon.test.lambda;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
 
 import java.util.HashSet;

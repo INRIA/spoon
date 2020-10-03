@@ -33,7 +33,6 @@ import spoon.testing.utils.ModelUtils;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;

@@ -89,7 +89,6 @@ import spoon.test.filters.testclasses.Tostada;
 import spoon.test.imports.testclasses.internal4.Constants;
 import spoon.testing.utils.ModelUtils;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

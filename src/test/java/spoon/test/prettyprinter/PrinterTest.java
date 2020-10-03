@@ -50,7 +50,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.function.Supplier;
 
 public class PrinterTest {
 
