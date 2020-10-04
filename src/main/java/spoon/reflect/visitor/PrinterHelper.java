@@ -84,7 +84,8 @@ public class PrinterHelper {
 		sbf.setLength(0);
 		nbTabs = 0;
 		line = 1;
-		column = 1;
+		// Commented out, because unused but for feature reserved.
+		// column = 1;
 		shouldWriteTabs = true;
 		//create new map, because clients keeps reference to it
 		lineNumberMapping = new HashMap<>();
@@ -111,7 +112,7 @@ public class PrinterHelper {
 			sbf.append(c);
 			line++;
 			// reset the column index
-			column = 1;
+			// column = 1;
 			shouldWriteTabs = true;
 			lastCharWasCR = true;
 			return this;
@@ -125,8 +126,8 @@ public class PrinterHelper {
 				//increment line only once in sequence of \r\n.
 				//last was NOT \r, so do it now
 				line++;
-				// reset the column index
-				column = 1;
+				// reset the column index. Commented out, because unused but for feature reserved.
+				// column = 1;
 				shouldWriteTabs = true;
 			}
 			lastCharWasCR = false;
@@ -134,7 +135,8 @@ public class PrinterHelper {
 		}
 		autoWriteTabs();
 		sbf.append(c);
-		column += 1;
+		// Commented out, because unused but for feature reserved.
+		// column += 1;
 		lastCharWasCR = false;
 		return this;
 	}
@@ -151,7 +153,8 @@ public class PrinterHelper {
 		for (int i = 0; i < nbTabs; i++) {
 			if (env != null && env.isUsingTabulations()) {
 				sbf.append('\t');
-				column += 1;
+				// Commented out, because unused but for feature reserved.
+				// column += 1;
 			} else {
 				int indentationSize = 2;
 				if (env != null) {
@@ -159,7 +162,8 @@ public class PrinterHelper {
 				}
 				for (int j = 0; j < indentationSize; j++) {
 					sbf.append(' ');
-					column += 1;
+					// Commented out, because unused but for feature reserved.
+					// column += 1;
 				}
 			}
 		}
