@@ -41,6 +41,7 @@ import spoon.SpoonModelBuilder;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.pattern.Match;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConstructorCall;
@@ -76,8 +77,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -506,8 +510,33 @@ public class DefaultPrettyPrinterTest {
 		Invoker invoker = new DefaultInvoker();
 		invoker.setMavenHome(mvnHome);
 		invoker.setWorkingDirectory(pomFile.getParentFile());
+
+		Map<String, List<String>> errors = new HashMap<>();
+		Pattern checkstylViolationPattern = Pattern.compile("\\[ERROR] [^\\s]* .* \\[[^\\s]*]");
+
+
+		invoker.setOutputHandler(s -> {
+			Matcher m = checkstylViolationPattern.matcher(s);
+			//System.out.println("r: " + s);
+			if(m.matches()) {
+				String fileName = s.split(" ")[1];
+				String violationName = "[" + s.split("\\[")[2];
+				List<String> files = errors.computeIfAbsent(violationName, str -> new LinkedList<>());
+				files.add(fileName);
+			}
+		});
+
+
 		try {
 			InvocationResult result = invoker.execute(request);
+
+
+			System.err.println("Violations: ");
+			for(String violationName: errors.keySet()) {
+				System.err.println("V: " + violationName + " -> " + errors.get(violationName).size());
+				System.err.println("   Ex: " +  errors.get(violationName).get(0));
+			}
+
 			return result.getExitCode() == 0;
 		} catch (MavenInvocationException e) {
 			return false;
