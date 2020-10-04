@@ -13,6 +13,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.path.CtRole;
 
+// Test for the new Java 15 text block feature
 public class TextBlockTest{
 	private Launcher setUpTest() {
 		Launcher launcher = new Launcher();
