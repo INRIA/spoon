@@ -130,6 +130,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private Supplier<PrettyPrinter> prettyPrinterCreator;
 
+	private boolean skipPrintingEmptyTypes;
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -707,5 +708,15 @@ private transient  ClassLoader inputClassloader;
 	@Override
 	public void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations) {
 		this.ignoreDuplicateDeclarations = ignoreDuplicateDeclarations;
+	}
+
+	@Override
+	public void skipEmptyTypePrinting() {
+		skipPrintingEmptyTypes = true;
+	}
+
+	@Override
+	public boolean isSkipEmptyTypePrinting() {
+		return skipPrintingEmptyTypes;
 	}
 }
