@@ -33,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.After;
 
 import spoon.IncrementalLauncher;
@@ -43,7 +42,6 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
-import spoon.test.GitHubIssue;
 
 public class IncrementalLauncherTest {
 

@@ -33,7 +33,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
 
 @RunWith(Parameterized.class)
 public class LogTest {

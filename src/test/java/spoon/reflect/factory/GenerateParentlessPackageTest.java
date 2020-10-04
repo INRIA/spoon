@@ -3,7 +3,6 @@ package spoon.reflect.factory;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.factory.Factory;
 
 import java.io.IOException;
 import java.nio.file.Files;

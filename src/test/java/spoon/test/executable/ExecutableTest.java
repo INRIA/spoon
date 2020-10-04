@@ -31,7 +31,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.executable.testclasses.A;
 import spoon.test.executable.testclasses.Pozole;
 import spoon.test.executable.testclasses.WithEnum;
-import spoon.test.main.MainTest;
 import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
