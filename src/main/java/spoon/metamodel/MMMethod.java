@@ -29,6 +29,7 @@ public class MMMethod {
 	private final String signature;
 	private final MMMethodKind methodKind;
 
+	
 	/**
 	 * Creates a {@link MMMethod} of a {@link MetamodelProperty}
 	 * @param field a owner field
