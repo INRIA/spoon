@@ -55,6 +55,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -471,61 +472,43 @@ public class TestSniperPrinter {
 		testToStringWithSniperPrinter("src/test/java/spoon/test/prettyprinter/testclasses/ElementScan.java");
 	}
 
+
 	@Test
-	public void testSkipEmptyTypeMode() throws IOException {
-		// contract: in skipEmptyTypeMode empty types, here ABCQ, are not printed
+	public void testOmitDeletedTypesModeDelete() throws IOException {
+		// contract: if omitDeletedTypes ddeleted types, here ABCQ, are printed
 		File outputFolder = folder.newFolder();
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(new VirtualFile("class ABCQ {}"));
-		launcher.getEnvironment().skipEmptyTypePrinting();
 		launcher.setSourceOutputDirectory(outputFolder.getPath().toString());
-		launcher.run();
+		launcher.getEnvironment().omitDeletedTypes();
+		CtModel model = launcher.buildModel();
+		// remove all types
+		Collection<CtType<?>> types = model.getAllTypes();
+		types.forEach(CtElement::delete);
+		// run process and print output
+		launcher.process();
+		launcher.prettyprint();
+		// now the type shouldn't be printed
 		assertTrue(outputFolder.list((dir, name) -> name.equals("ABCQ.java")).length == 0);
 	}
 
 	@Test
-	public void testNoSkipEmptyTypeMode() throws IOException {
-		// contract: if not skipEmptyTypeMode empty types, here ABCQ, are printed
+	public void testtestOmitDeletedTypesModeReadd() throws IOException {
+		// contract: if not omitDeletedTypesMode deleted types, here ABCQ, are printed
 		File outputFolder = folder.newFolder();
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(new VirtualFile("class ABCQ {}"));
 		launcher.setSourceOutputDirectory(outputFolder.getPath().toString());
-		launcher.run();
-		assertTrue(outputFolder.list((dir, name) -> name.equals("ABCQ.java")).length == 1);
-	}
-
-	@Test
-	public void testNoSkipEmptyTypeModeWithMember() throws IOException {
-		// contract: if not skipEmptyTypeMode empty types, here ABCQ, are printed
-		File outputFolder = folder.newFolder();
-		Launcher launcher = new Launcher();
-		launcher.addInputResource(new VirtualFile("class ABCQ {int a;}"));
-		launcher.setSourceOutputDirectory(outputFolder.getPath().toString());
-		launcher.run();
-		assertTrue(outputFolder.list((dir, name) -> name.equals("ABCQ.java")).length == 1);
-	}
-
-	@Test
-	public void testnoSkipEmptyTypeModeWithMemberInConstructor() throws IOException {
-		// contract: if not skipEmptyTypeMode empty types, here ABCQ, are printed
-		File outputFolder = folder.newFolder();
-		Launcher launcher = new Launcher();
-		launcher.addInputResource(new VirtualFile("class ABCQ {ABCQ(){int a = 3;}}"));
-		launcher.setSourceOutputDirectory(outputFolder.getPath().toString());
-		launcher.getEnvironment().skipEmptyTypePrinting();
-		launcher.run();
-		assertTrue(outputFolder.list((dir, name) -> name.equals("ABCQ.java")).length == 1);
-	}
-
-	@Test
-	public void testSkipEmptyTypeModeWithInnerType() throws IOException {
-		// contract: in skipEmptyTypeMode empty types, here ABCQ, are not printed. But if a type has a inner type we print it.
-		File outputFolder = folder.newFolder();
-		Launcher launcher = new Launcher();
-		launcher.addInputResource(new VirtualFile("class ABCQ {class ABCD{}}"));
-		launcher.getEnvironment().skipEmptyTypePrinting();
-		launcher.setSourceOutputDirectory(outputFolder.getPath().toString());
-		launcher.run();
+		launcher.getEnvironment().omitDeletedTypes();
+		CtModel model = launcher.buildModel();
+		// remove all types and readd them
+		Collection<CtType<?>> types = model.getAllTypes();
+		types.forEach(CtElement::delete);
+		types.forEach(model.getRootPackage()::addType);
+		// run process and print output
+		launcher.process();
+		launcher.prettyprint();
+		// now the type should be printed
 		assertTrue(outputFolder.list((dir, name) -> name.equals("ABCQ.java")).length == 1);
 	}
 }

@@ -102,8 +102,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 	 */
 	public void createJavaFile(CtType<?> element) {
 		Path typePath = getElementPath(element);
-		if (hasOnlyDefaultConstructor(element) && getFactory().getEnvironment().isSkipEmptyTypePrinting()) {
-			// 1 means only default constructor
+		if (element.isRemoved() && getEnvironment().isOmitDeletedTypes()) {
 			return;
 		}
 		// we only create a file for top-level classes
@@ -138,13 +137,6 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 			getEnvironment().getSpoonProgress().step(SpoonProgress.Process.PRINT, element.getQualifiedName());
 	}
 
-	private boolean hasOnlyDefaultConstructor(CtType<?> element) {
-		if (element.getTypeMembers().size() == 1) {
-			// now we check if the element is implicit => it is the default ctor
-			return element.getTypeMembers().get(0).isImplicit();
-		}
-		return false;
-	}
 
 	@Override
 	public boolean isToBeProcessed(CtNamedElement candidate) {

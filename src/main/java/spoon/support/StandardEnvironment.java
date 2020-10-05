@@ -130,7 +130,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private Supplier<PrettyPrinter> prettyPrinterCreator;
 
-	private boolean skipPrintingEmptyTypes;
+	private boolean omitDeletedTypes;
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -711,12 +711,12 @@ private transient  ClassLoader inputClassloader;
 	}
 
 	@Override
-	public void skipEmptyTypePrinting() {
-		skipPrintingEmptyTypes = true;
+	public void omitDeletedTypes() {
+		omitDeletedTypes = true;
 	}
 
 	@Override
-	public boolean isSkipEmptyTypePrinting() {
-		return skipPrintingEmptyTypes;
+	public boolean isOmitDeletedTypes() {
+		return omitDeletedTypes;
 	}
 }

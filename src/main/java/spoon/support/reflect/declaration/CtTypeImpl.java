@@ -16,6 +16,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
@@ -34,6 +35,7 @@ import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.reflect.visitor.Query;
@@ -80,6 +82,8 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@MetamodelPropertyField(role = {CtRole.TYPE_MEMBER, CtRole.FIELD, CtRole.CONSTRUCTOR, CtRole.ANNONYMOUS_EXECUTABLE, CtRole.METHOD, CtRole.NESTED_TYPE})
 	List<CtTypeMember> typeMembers = emptyList();
+
+	private boolean isRemoved;
 
 	public CtTypeImpl() {
 	}
@@ -1002,4 +1006,22 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		cu.addDeclaredType(this);
 		return printer.printCompilationUnit(cu);
 	}
+
+	@Override
+	public boolean isRemoved() {
+		return isRemoved;
+	}
+
+	@Override
+	public void delete() {
+		isRemoved = true;
+		super.delete();
+	}
+
+	@Override
+	public <E extends CtElement> E setParent(E parent) {
+		isRemoved = false;
+		return super.setParent(parent);
+	}
+
 }

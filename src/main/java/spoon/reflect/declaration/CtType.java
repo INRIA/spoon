@@ -355,4 +355,10 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 * A new unique method name is given for each copy, and this method can be called several times.
 	 */
 	CtType<?> copyType();
+
+	/**
+	 * Returns the state of a type. If a type is removed, top level and omitDeletedTypes is on, it isn't printed.
+	 * @return true if the type is removed, false otherwise.
+	 */
+	boolean isRemoved();
 }

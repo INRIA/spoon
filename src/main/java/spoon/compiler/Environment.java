@@ -452,18 +452,14 @@ public interface Environment {
 	}
 
 	/**
-	 * Sets the printer to skip printing empty Types.
-	 * A type is empty if it has no inner classes and no members.
-	 * Empty interfaces are not skipped, because they could be marker interfaces.
+	 * Sets the printer to skip printing deleted types.
 	 */
-	void skipEmptyTypePrinting();
+	void omitDeletedTypes();
 
 	/**
-	 * Returns if empty types are printed.
-	 * A type is empty if it has no inner classes and no members.
-	 * Empty interfaces are not skipped, because they could be marker interfaces.
-	 * @return true if empty types are not printed, false otherwise
+	 * Returns if deleted types are printed.
+	 * @return true if deleted types are not printed, false otherwise.
 	 */
-	boolean isSkipEmptyTypePrinting();
+	boolean isOmitDeletedTypes();
 
 }
