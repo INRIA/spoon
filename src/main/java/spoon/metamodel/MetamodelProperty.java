@@ -462,20 +462,6 @@ public class MetamodelProperty {
 	}
 
 	/**
-	 * @param valueType whose Map value type is needed
-	 * @return Map value type If valueType is an Map. null if it is not
-	 */
-	private CtTypeReference<?> getMapValueType(CtTypeReference<?> valueType) {
-		if (valueType != null) {
-			Factory f = valueType.getFactory();
-			if (valueType.isSubtypeOf(f.Type().MAP) && valueType.getActualTypeArguments().size() == 2) {
-				return valueType.getActualTypeArguments().get(1);
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * @return true if this {@link MetamodelProperty} is derived in owner concept, ig has the annotation @{@link DerivedProperty}.
 	 */
 	public boolean isDerived() {

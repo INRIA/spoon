@@ -1,18 +1,16 @@
 /**
- * Copyright (C) 2006-2018 INRIA and contributors
- * Spoon - http://spoon.gforge.inria.fr/
+ * Copyright (C) 2006-2018 INRIA and contributors Spoon - http://spoon.gforge.inria.fr/
  *
- * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify
- * and/or redistribute the software under the terms of the CeCILL-C license as
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ * This software is governed by the CeCILL-C License under French law and abiding by the rules of
+ * distribution of free software. You can use, modify and/or redistribute the software under the
+ * terms of the CeCILL-C license as circulated by CEA, CNRS and INRIA at http://www.cecill.info.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * CeCILL-C License for more details.
  *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
+ * The fact that you are presently reading this means that you have had knowledge of the CeCILL-C
+ * license and that you accept its terms.
  */
 package spoon.test.architecture;
 
@@ -23,10 +21,14 @@ import spoon.SpoonAPI;
 import spoon.metamodel.Metamodel;
 import spoon.processing.AbstractManualProcessor;
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtExecutableReferenceExpression;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -41,11 +43,13 @@ import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-
+import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -151,7 +155,7 @@ public class SpoonArchitectureEnforcerTest {
 		spoon.addInputResource("src/main/java/");
 
 		// contract: all non-trivial public methods should be documented with proper API Javadoc
-		spoon.buildModel();
+		CtModel model = spoon.buildModel();
 		List<String> notDocumented = new ArrayList<>();
 		for (CtMethod method : spoon.getModel().getElements(new TypeFilter<>(CtMethod.class))) {
 
@@ -200,6 +204,8 @@ public class SpoonArchitectureEnforcerTest {
 		}).list();
 
 		assertEquals(0, treeSetWithoutComparators.size());
+		// contract: every private method in spoon must be called.
+		checkPrivateMethodInvocations(model);
 	}
 
 	@Test
@@ -459,4 +465,35 @@ public class SpoonArchitectureEnforcerTest {
 		}
 		return StringUtils.join(results, "\n");
 	}
+
+	private void checkPrivateMethodInvocations(CtModel model) {
+		List<CtMethod<?>> methods = model.getElements(new TypeFilter<>(CtMethod.class));
+		// only look at private methods
+		methods.removeIf(v -> !v.isPrivate());
+		// remove methods for serialization gods
+		methods.removeIf(v -> v.getSimpleName().matches("(readObject)|(readResolve)|(getTypeName)"));
+		// some CtInvocation have no declaration in model
+		List<CtInvocation<?>> methodInvocations =
+				model.getElements(new TypeFilter<>(CtInvocation.class));
+		methodInvocations.removeIf(v -> v.getExecutable().getExecutableDeclaration() == null);
+		List<CtExecutableReferenceExpression<?, ?>> executableReferences =
+				model.getElements(new TypeFilter<>(CtExecutableReferenceExpression.class));
+		// convert to HashSet for faster lookup. We trade memory for lookup speed.
+		HashSet<CtExecutable<?>> lookUp = methodInvocations.stream()
+				.map(CtInvocation::getExecutable)
+				.map(v -> v.getExecutableDeclaration())
+				.collect(Collectors.toCollection(HashSet::new));
+		// add executableReferences to our lookup
+		executableReferences.stream()
+				.map(v -> v.getExecutable().getExecutableDeclaration())
+				.filter(Objects::nonNull)
+				.forEach(lookUp::add);
+		List<CtMethod<?>> methodsWithInvocation = methods.stream()
+				// 	 every method must have an invocation
+				.filter(method -> lookUp.contains(method))
+				.collect(Collectors.toList());
+		methods.removeAll(methodsWithInvocation);
+		assertEquals("Some methods have no invocation", Collections.emptyList(), methods);
+	}
+
 }
