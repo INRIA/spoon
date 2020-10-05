@@ -83,7 +83,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@MetamodelPropertyField(role = {CtRole.TYPE_MEMBER, CtRole.FIELD, CtRole.CONSTRUCTOR, CtRole.ANNONYMOUS_EXECUTABLE, CtRole.METHOD, CtRole.NESTED_TYPE})
 	List<CtTypeMember> typeMembers = emptyList();
 
-	private boolean isRemoved;
+	private transient boolean isRemoved;
 
 	public CtTypeImpl() {
 	}
