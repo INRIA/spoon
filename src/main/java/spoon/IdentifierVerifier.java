@@ -119,7 +119,7 @@ public class IdentifierVerifier {
 	private static Set<String> keywords = fillWithKeywords();
 	private static Set<String> typeKeywords = fillWithTypeKeywords();
 	private boolean lenient;
-	private boolean removeLocalPrefixAlways;
+	private boolean strictMode;
 	private SpoonException exception;
 
 	private static String identifierError =
@@ -166,7 +166,7 @@ public class IdentifierVerifier {
 		@Override
 		public <A extends Annotation> void visitCtAnnotationType(CtAnnotationType<A> annotationType) {
 			String identifier = annotationType.getSimpleName();
-			if (annotationType.isLocalType() || removeLocalPrefixAlways) {
+			if (!strictMode || annotationType.isLocalType()) {
 				// local types have a numeric prefix, we need to remove.
 				identifier = convertLocalTypeIdentifier(identifier);
 			}
@@ -201,7 +201,7 @@ public class IdentifierVerifier {
 			String identifier = reference.getSimpleName();
 			// arrayTypeReferences have one or multiple [] at the end
 			identifier = identifier.replaceAll(ARRAY_SUFFIX_REGEX, "");
-			if (reference.isLocalType() || removeLocalPrefixAlways) {
+			if (!strictMode || reference.isLocalType()) {
 				// local types have a numeric prefix, we need to remove.
 				identifier = convertLocalTypeIdentifier(identifier);
 			}
@@ -259,7 +259,7 @@ public class IdentifierVerifier {
 				// anonymous classes have no identifier but only numbers. No reason to check it.
 				return;
 			}
-			if (ctClass.isLocalType() || removeLocalPrefixAlways) {
+			if (!strictMode || ctClass.isLocalType()) {
 				// local types have a numeric prefix, we need to remove.
 				identifier = convertLocalTypeIdentifier(identifier);
 			}
@@ -277,7 +277,7 @@ public class IdentifierVerifier {
 		@Override
 		public void visitCtTypeParameter(CtTypeParameter typeParameter) {
 			String identifier = typeParameter.getSimpleName();
-			if (typeParameter.isLocalType() || removeLocalPrefixAlways) {
+			if (!strictMode || typeParameter.isLocalType()) {
 				// local types have a numeric prefix, we need to remove.
 				identifier = convertLocalTypeIdentifier(identifier);
 			}
@@ -322,7 +322,7 @@ public class IdentifierVerifier {
 				// anonymous classes have no identifier but only numbers. No reason to check it.
 				return;
 			}
-			if (ctEnum.isLocalType() || removeLocalPrefixAlways) {
+			if (!strictMode || ctEnum.isLocalType()) {
 				// local types have a numeric prefix, we need to remove.
 				identifier = convertLocalTypeIdentifier(identifier);
 			}
@@ -435,7 +435,7 @@ public class IdentifierVerifier {
 		@Override
 		public <T> void visitCtInterface(CtInterface<T> intrface) {
 			String identifier = intrface.getSimpleName();
-			if (intrface.isLocalType() || removeLocalPrefixAlways) {
+			if (!strictMode || intrface.isLocalType()) {
 				// local types have a numeric prefix, we need to remove.
 				identifier = convertLocalTypeIdentifier(identifier);
 			}
@@ -715,7 +715,7 @@ public class IdentifierVerifier {
 		@Override
 		public void visitCtWildcardReference(CtWildcardReference wildcardReference) {
 			String identifier = wildcardReference.getSimpleName();
-			if (wildcardReference.isLocalType() || removeLocalPrefixAlways) {
+			if (!strictMode || wildcardReference.isLocalType()) {
 				// local types have a numeric prefix, we need to remove.
 				identifier = convertLocalTypeIdentifier(identifier);
 			}
@@ -735,7 +735,7 @@ public class IdentifierVerifier {
 			String identifier = reference.getSimpleName();
 			// arrayTypeReferences have one or multiple [] at the end
 			identifier = identifier.replaceAll(ARRAY_SUFFIX_REGEX, "");
-			if (reference.isLocalType() || removeLocalPrefixAlways) {
+			if (strictMode || reference.isLocalType()) {
 				// local types have a numeric prefix, we need to remove.
 				identifier = convertLocalTypeIdentifier(identifier);
 			}
@@ -758,11 +758,11 @@ public class IdentifierVerifier {
 				// we need to allow null and omitted type
 				return;
 			}
-			if (reference.isArray()) {
+			if (strictMode || reference.isArray()) {
 				// remove array []
 				identifier = identifier.replaceAll(ARRAY_SUFFIX_REGEX, "");
 			}
-			if (reference.isGenerics() || reference.isParameterized()) {
+			if (!strictMode || reference.isGenerics() || reference.isParameterized()) {
 				// remove generic argument. Generics are checked in {#visitCtTypeParameterReference(CtTypeParameterReference)}
 				identifier = identifier.replaceAll("<.*>", "");
 			}
@@ -771,7 +771,7 @@ public class IdentifierVerifier {
 				// TODO: is there a reason to check it?
 				return;
 			}
-			if (reference.isLocalType() || removeLocalPrefixAlways) {
+			if (!strictMode || reference.isLocalType()) {
 				// local types have a numeric prefix, we need to remove.
 				identifier = convertLocalTypeIdentifier(identifier);
 			}
