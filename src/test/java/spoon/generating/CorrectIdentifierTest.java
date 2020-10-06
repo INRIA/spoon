@@ -1,6 +1,5 @@
 package spoon.generating;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import spoon.FluentLauncher;
 import spoon.Launcher;
@@ -10,6 +9,7 @@ import spoon.reflect.reference.CtTypeReference;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.Ignore;
 
 /**
  * for correct identifier see JLS chapter 3.8 and for keywords 3.9.
@@ -28,7 +28,6 @@ public class CorrectIdentifierTest {
 		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
 		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName(";tacos"));
 	}
-
 	@Ignore
 	@Test
 	public void keyWord() {
@@ -36,14 +35,12 @@ public class CorrectIdentifierTest {
 		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("class"));
 	}
 
-	@Ignore
 	@Test
 	public void keyWord2() {
 		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
 		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("null"));
 	}
 
-	@Ignore
 	@Test
 	public void keyWord3() {
 		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
@@ -84,5 +81,11 @@ public class CorrectIdentifierTest {
 	public void correctSquareBrackets() {
 		CtTypeReference localVariableRef = new Launcher().getFactory().createTypeReference();
 		assertDoesNotThrow(() -> localVariableRef.setSimpleName("List<String>[]"));
+	}
+
+	@Test
+	public void mainTest() {
+		//contract: TODO:
+		assertDoesNotThrow(() -> new FluentLauncher().inputResource("./src/main/java").buildModel());
 	}
 }

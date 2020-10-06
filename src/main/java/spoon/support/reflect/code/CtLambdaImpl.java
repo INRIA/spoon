@@ -7,6 +7,17 @@
  */
 package spoon.support.reflect.code;
 
+import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
+import static spoon.reflect.path.CtRole.BODY;
+import static spoon.reflect.path.CtRole.EXPRESSION;
+import static spoon.reflect.path.CtRole.NAME;
+import static spoon.reflect.path.CtRole.PARAMETER;
+import static spoon.reflect.path.CtRole.THROWN;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import spoon.IdentifierVerifier;
 import spoon.LovecraftException;
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
@@ -18,12 +29,15 @@ import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -33,18 +47,10 @@ import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.visitor.SignaturePrinter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import static spoon.reflect.ModelElementContainerDefaultCapacities.PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
-import static spoon.reflect.path.CtRole.BODY;
-import static spoon.reflect.path.CtRole.EXPRESSION;
-import static spoon.reflect.path.CtRole.NAME;
-import static spoon.reflect.path.CtRole.PARAMETER;
-import static spoon.reflect.path.CtRole.THROWN;
-
 public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> {
+	
+	private static IdentifierVerifier verifier = new IdentifierVerifier(false);
+
 	@MetamodelPropertyField(role = NAME)
 	String simpleName = "";
 	@MetamodelPropertyField(role = EXPRESSION)
@@ -68,7 +74,26 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simpleName, this.simpleName);
+		Factory factory = getFactory();
+		String nameBefore = this.simpleName;
+		this.simpleName = simpleName;
+		Optional<SpoonException> error = verifier.checkIdentifier(this);
+		if (error.isPresent()) {
+			this.simpleName = nameBefore;
+			if (factory == null || !factory.getEnvironment().checksAreSkipped()) {
+				throw error.get();
+			}
+		}
+		if (factory == null) {
+			this.simpleName = simpleName;
+			return (C) this;
+		}
+		if (factory instanceof FactoryImpl) {
+			simpleName = ((FactoryImpl) factory).dedup(simpleName);
+		}
+		getFactory().getEnvironment()
+				.getModelChangeListener()
+				.onObjectUpdate(this,  CtRole.NAME, simpleName, nameBefore);
 		this.simpleName = simpleName;
 		return (C) this;
 	}

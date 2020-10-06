@@ -7,6 +7,8 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.IdentifierVerifier;
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.factory.Factory;
@@ -14,10 +16,12 @@ import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
 
 import static spoon.reflect.path.CtRole.NAME;
+import java.util.Optional;
 
 public abstract class CtNamedElementImpl extends CtElementImpl implements CtNamedElement {
 
 	private static final long serialVersionUID = 1L;
+	private static IdentifierVerifier verifier = new IdentifierVerifier(false);
 
 	@MetamodelPropertyField(role = NAME)
 	String simpleName = "";
@@ -35,6 +39,19 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 	@Override
 	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
 		Factory factory = getFactory();
+
+		String nameBefore = this.simpleName;
+		this.simpleName = simpleName;
+		//verifier is null. Why?
+		if(verifier != null){
+		Optional<SpoonException> error = verifier.checkIdentifier(this);
+		if (error.isPresent()) {
+			this.simpleName = nameBefore;
+			if (factory == null || !factory.getEnvironment().checksAreSkipped()) {
+				throw error.get();
+			}
+		}
+	}
 		if (factory == null) {
 			this.simpleName = simpleName;
 			return (T) this;
@@ -42,7 +59,9 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 		if (factory instanceof FactoryImpl) {
 			simpleName = ((FactoryImpl) factory).dedup(simpleName);
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simpleName, this.simpleName);
+		getFactory().getEnvironment()
+				.getModelChangeListener()
+				.onObjectUpdate(this, NAME, simpleName, nameBefore);
 		this.simpleName = simpleName;
 		return (T) this;
 	}

@@ -7,6 +7,10 @@
  */
 package spoon.support.reflect.code;
 
+import java.util.Optional;
+import java.util.Set;
+import spoon.IdentifierVerifier;
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
@@ -17,6 +21,8 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -26,10 +32,9 @@ import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 
-import java.util.Set;
-
 public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVariable<T> {
 	private static final long serialVersionUID = 1L;
+	private static IdentifierVerifier verifier = new IdentifierVerifier(false);
 
 	@MetamodelPropertyField(role = CtRole.DEFAULT_EXPRESSION)
 	CtExpression<T> defaultExpression;
@@ -107,7 +112,26 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 
 	@Override
 	public <C extends CtNamedElement> C setSimpleName(String simpleName) {
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.NAME, simpleName, this.name);
+		Factory factory = getFactory();
+		String nameBefore = this.name;
+		this.name = simpleName;
+		Optional<SpoonException> error = verifier.checkIdentifier(this);
+		if (error.isPresent()) {
+			this.name = nameBefore;
+			if (factory == null || !factory.getEnvironment().checksAreSkipped()) {
+				throw error.get();
+			}
+		}
+		if (factory == null) {
+			this.name = simpleName;
+			return (C) this;
+		}
+		if (factory instanceof FactoryImpl) {
+			simpleName = ((FactoryImpl) factory).dedup(simpleName);
+		}
+		getFactory().getEnvironment()
+				.getModelChangeListener()
+				.onObjectUpdate(this,  CtRole.NAME, simpleName, nameBefore);
 		this.name = simpleName;
 		return (C) this;
 	}

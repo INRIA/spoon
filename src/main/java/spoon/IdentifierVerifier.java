@@ -784,7 +784,8 @@ public class IdentifierVerifier {
 				exception = createException(identifierError, reference);
 				return;
 			}
-			if (isKeyword(identifier) || isNullLiteral(identifier) || isBooleanLiteral(identifier)) {
+			// some type references have simpleName null. TODO: Why and not NULL_TYPE_NAME?
+			if (isKeyword(identifier) || isBooleanLiteral(identifier)) {
 				exception = createException(keywordError, reference);
 				return;
 			}

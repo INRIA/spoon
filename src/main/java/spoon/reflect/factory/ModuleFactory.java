@@ -78,7 +78,7 @@ public class ModuleFactory extends SubFactory {
 			if (name == null) {
 				return (T) this;
 			}
-
+			//TODO: MartinWitt checker einnbauen
 			if (name.equals(CtModule.TOP_LEVEL_MODULE_NAME)) {
 				return super.setSimpleName(name);
 			}

@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.reference;
 
+import spoon.IdentifierVerifier;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtReference;
@@ -20,6 +21,7 @@ import static spoon.reflect.path.CtRole.TYPE;
 
 public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTypeReference<T> {
 	private static final long serialVersionUID = 1L;
+	private static IdentifierVerifier verifier = new IdentifierVerifier(false);
 
 	@MetamodelPropertyField(role = TYPE)
 	CtTypeReference<?> componentType;

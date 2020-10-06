@@ -59,7 +59,7 @@ public class CtModelImpl implements CtModel {
 			if (name == null) {
 				return (T) this;
 			}
-
+			//TODO: checker
 			if (name.equals(CtPackage.TOP_LEVEL_PACKAGE_NAME)) {
 				return super.setSimpleName(name);
 			}
