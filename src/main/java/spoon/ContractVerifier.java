@@ -593,7 +593,7 @@ public class ContractVerifier {
 
 	/** checks that the identifiers are valid */
 	public void checkJavaIdentifiers() {
-		IdentifierVerifier verifier = new IdentifierVerifier();
+		IdentifierVerifier verifier = new IdentifierVerifier(true);
 		Collection<SpoonException> errors = _rootPackage.getElements(new TypeFilter<>(CtElement.class)).stream()
 		.map(verifier::checkIdentifier)
 		.filter(Optional::isPresent)

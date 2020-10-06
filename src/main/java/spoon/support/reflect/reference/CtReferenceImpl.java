@@ -34,7 +34,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 
 	private static final long serialVersionUID = 1L;
 	private static Collection<String> keywords = fillWithKeywords();
-	private static IdentifierVerifier verifier = new IdentifierVerifier();
+	private static IdentifierVerifier verifier = new IdentifierVerifier(false);
 	@MetamodelPropertyField(role = NAME)
 	protected String simplename = "";
 

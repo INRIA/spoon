@@ -144,6 +144,9 @@ public class IdentifierVerifier {
 	 * - We still need to allow an empty identifier.
 	 */
 
+	public IdentifierVerifier(boolean strictMode) {
+		this.strictMode = strictMode;
+	}
 
 	private CtVisitor identifierVisitor = new CtAbstractVisitor() {
 
