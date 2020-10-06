@@ -452,6 +452,13 @@ public class DefaultPrettyPrinterTest {
 		assertEquals(expected, result);
 	}
 
+	/**
+	 * This test parses Spoon sources (src/main/java) and pretty prints them in a temporary directory 
+	 * to check the compliance of the pretty printer to the set of checkstyle rules used by the Spoon repo.
+	 * As the test takes a long time to run, it is only meant to detect exemples of violation that can, then, be
+	 * used as unit test.
+	 * Note that this test can be reused to check the compliance of any pretty printer with any set of styling rules.
+	*/
 	@Ignore
 	@Test
 	public void testCheckstyleCompliance() throws IOException, XmlPullParserException {
@@ -491,7 +498,6 @@ public class DefaultPrettyPrinterTest {
 			writer.write(new FileOutputStream(tmpPom), model);
 
 			//run checkstyle
-
 			//contract: PrettyPrinted sources should not contain errors
 			assertTrue(runCheckstyle(new File(SpoonPom.guessMavenHome()),tmpPom));
 
