@@ -133,7 +133,9 @@ public class IdentifierVerifier {
 			if (lenient) {
 				throw exception;
 			} else {
-				return Optional.of(exception);
+				Optional<SpoonException> error = Optional.of(exception);
+				exception = null;
+				return error;
 			}
 		}
 		return Optional.empty();
