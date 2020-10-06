@@ -28,6 +28,7 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
@@ -158,6 +159,7 @@ public class SpoonArchitectureEnforcerTest {
 
 		// contract: all non-trivial public methods should be documented with proper API Javadoc
 		CtModel model = spoon.buildModel();
+
 		List<String> notDocumented = new ArrayList<>();
 		for (CtMethod method : spoon.getModel().getElements(new TypeFilter<>(CtMethod.class))) {
 
@@ -208,6 +210,9 @@ public class SpoonArchitectureEnforcerTest {
 		assertEquals(0, treeSetWithoutComparators.size());
 		// contract: every private method in spoon must be called.
 		checkPrivateMethodInvocations(model);
+		// contract: every private field in spoons code is useful. Useful means it has a read.
+		checkFields(model);
+
 	}
 
 	@Test
@@ -468,6 +473,7 @@ public class SpoonArchitectureEnforcerTest {
 		return StringUtils.join(results, "\n");
 	}
 
+
 	private void checkPrivateMethodInvocations(CtModel model) {
 		List<CtMethod<?>> methods = model.getElements(new TypeFilter<>(CtMethod.class));
 		// only look at private methods
@@ -498,4 +504,27 @@ public class SpoonArchitectureEnforcerTest {
 		assertEquals("Some methods have no invocation", Collections.emptyList(), methods);
 	}
 
+
+	private void checkFields(CtModel model) {
+		// implNote: we can skip checking for writes, because a read without a write will never happen.
+		List<CtField<?>> fields = model.getElements(new TypeFilter<>(CtField.class));
+		// only look at private fields
+		fields.removeIf(v -> !v.isPrivate());
+		// remove fields for serialization gods
+		fields.removeIf(v -> v.getSimpleName().equals("serialVersionUID"));
+		// some fieldReads have no variable declaration
+		List<CtFieldRead<?>> fieldRead = model.getElements(new TypeFilter<>(CtFieldRead.class));
+		fieldRead.removeIf(v -> v.getVariable().getFieldDeclaration() == null);
+		// convert to HashSet for faster lookup. We trade memory for lookup speed.
+		HashSet<CtField<?>> lookUp = fieldRead.stream()
+				.map(CtFieldRead::getVariable)
+				.map(v -> v.getFieldDeclaration())
+				.collect(Collectors.toCollection(HashSet::new));
+		List<CtField<?>> fieldsWithRead = fields.stream()
+				// 	 every field must have a read
+				.filter(field -> lookUp.contains(field))
+		.collect(Collectors.toList());
+		fields.removeAll(fieldsWithRead);
+		assertEquals("Some Fields have no read/write", Collections.emptyList(), fields);
+	}
 }
