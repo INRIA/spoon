@@ -396,7 +396,7 @@ public class IdentifierVerifier {
 
 		@Override
 		public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-			String identifier = reference.getSimpleName();
+			String identifier = isFullQName(reference) ? removeFQName(reference):reference.getSimpleName();
 			if (!isJavaIdentifier(identifier)) {
 				exception = createException(identifierError, reference);
 				return;
@@ -407,6 +407,7 @@ public class IdentifierVerifier {
 				return;
 			}
 		}
+
 
 		@Override
 		public <T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference) {
@@ -1028,6 +1029,18 @@ public class IdentifierVerifier {
 		private boolean isWildcard(String identifier) {
 			return identifier.equals(WILDCARD_STRING);
 		}
+		//TODO: Doc
+		private <T> boolean isFullQName(CtFieldReference<T> reference) {
+			String fqName = reference.getQualifiedName();
+			// the last part is the identifier
+			return fqName.split("#").length != 1;
+		}
+		//TODO: Doc
+		private <T>  String removeFQName(CtFieldReference<T> reference) {
+			String name = reference.getSimpleName();
+			int index = name.lastIndexOf(".");
+			return index >=0 ? name.substring(index+1) : name;
+		}
 
 		/**
 		 * Creates a formatted exception from input.
@@ -1066,6 +1079,8 @@ public class IdentifierVerifier {
 						"strictfp", "volatile", "const", "native", "super", "while", "_")
 				.collect(Collectors.toCollection(HashSet::new));
 	}
+
+
 
 	private static Set<String> fillWithTypeKeywords() {
 		return Stream.of("int", "short", "char", "void", "byte", "float", TRUE_LITERAL, FALSE_LITERAL,

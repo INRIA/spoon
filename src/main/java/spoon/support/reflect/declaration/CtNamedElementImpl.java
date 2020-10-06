@@ -42,8 +42,8 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 
 		String nameBefore = this.simpleName;
 		this.simpleName = simpleName;
-		//verifier is null. Why?
-		if(verifier != null){
+		//TODO: MartinWitt verifier is null. Why?
+		if (verifier != null) {
 		Optional<SpoonException> error = verifier.checkIdentifier(this);
 		if (error.isPresent()) {
 			this.simpleName = nameBefore;
