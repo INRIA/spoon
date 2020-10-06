@@ -459,7 +459,7 @@ public class DefaultPrettyPrinterTest {
 	 * used as unit test.
 	 * Note that this test can be reused to check the compliance of any pretty printer with any set of styling rules.
 	*/
-	@Ignore
+	@Ignore // ignored as long as 1) it is too long 2) we don't implement a SpoonCompliantPrettyPrinter
 	@Test
 	public void testCheckstyleCompliance() throws IOException, XmlPullParserException {
 		File tmpDir = new File("./target/tmp-checkstyle");
