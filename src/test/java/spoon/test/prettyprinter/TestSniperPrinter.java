@@ -493,7 +493,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
-	public void testtestOmitDeletedTypesModeReadd() throws IOException {
+	public void testOmitDeletedTypesModeReadd() throws IOException {
 		// contract: if not omitDeletedTypesMode deleted types, here ABCQ, are printed
 		File outputFolder = folder.newFolder();
 		Launcher launcher = new Launcher();
