@@ -22,16 +22,18 @@ public enum MMMethodKind {
 	 * Getter.
 	 * T get()
 	 */
-	GET(-1, false, 1, m -> m.getParameters().isEmpty() && (m.getSimpleName().startsWith("get") || m.getSimpleName().startsWith("is"))),
+	GET(false, 1, m -> m.getParameters().isEmpty()
+			&& (m.getSimpleName().startsWith("get") || m.getSimpleName().startsWith("is"))),
 	/**
 	 * Setter
 	 * void set(T)
 	 */
-	SET(0, false, 1, m -> m.getParameters().size() == 1 && m.getSimpleName().startsWith("set")),
+	SET(false, 1, m -> m.getParameters().size() == 1 && m.getSimpleName().startsWith("set")),
 	/**
 	 * void addFirst(T)
 	 */
-	ADD_FIRST(0, true, 10, m -> {
+	ADD_FIRST(true, 10, m ->
+		{
 		if (m.getParameters().size() == 1) {
 			if (m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert")) {
 				return m.getSimpleName().endsWith("AtTop") || m.getSimpleName().endsWith("Begin");
@@ -42,7 +44,8 @@ public enum MMMethodKind {
 	/**
 	 * void add(T)
 	 */
-	ADD_LAST(0, true,  1, m -> {
+	ADD_LAST(true, 1, m ->
+		{
 		if (m.getParameters().size() == 1) {
 			return m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert");
 		}
@@ -51,7 +54,8 @@ public enum MMMethodKind {
 	/**
 	 * void addOn(int, T)
 	 */
-	ADD_ON(1, true, 1, m -> {
+	ADD_ON(true, 1, m ->
+		{
 		if (m.getParameters().size() == 2 && "int".equals(m.getParameters().get(0).getType().getSimpleName())) {
 			return m.getSimpleName().startsWith("add") || m.getSimpleName().startsWith("insert");
 		}
@@ -60,30 +64,28 @@ public enum MMMethodKind {
 	/**
 	 * void remove(T)
 	 */
-	REMOVE(0, true, 1, m -> m.getParameters().size() == 1 && m.getSimpleName().startsWith("remove")),
+	REMOVE(true, 1, m -> m.getParameters().size() == 1 && m.getSimpleName().startsWith("remove")),
 
 	/**
 	 * Return element by its name
 	 * T get(String)
 	 */
-	GET_BY(-1, true, 1, m -> m.getSimpleName().startsWith("get")
+	GET_BY(true, 1, m -> m.getSimpleName().startsWith("get")
 			&& m.getParameters().size() == 1  && m.getParameters().get(0).getType().getQualifiedName().equals(String.class.getName())),
 
 	/**
 	 * The not matching method
 	 */
-	OTHER(-2, false, 0, m -> true);
+	OTHER(false, 0, m -> true);
 
 	private final Predicate<CtMethod<?>> detector;
 	private final int level;
 	private final boolean multi;
-	private final int valueParameterIndex;
 
-	MMMethodKind(int valueParameterIndex, boolean multi, int level, Predicate<CtMethod<?>> detector) {
+	MMMethodKind(boolean multi, int level, Predicate<CtMethod<?>> detector) {
 		this.multi = multi;
 		this.level = level;
 		this.detector = detector;
-		this.valueParameterIndex = valueParameterIndex;
 	}
 
 	/**

@@ -17,5 +17,4 @@ import spoon.support.reflect.declaration.CtCompilationUnitImpl;
 public class CompilationUnitImpl extends CtCompilationUnitImpl implements CompilationUnit {
 	private static final long serialVersionUID = 2L;
 
-	private boolean autoImport = true;
 }

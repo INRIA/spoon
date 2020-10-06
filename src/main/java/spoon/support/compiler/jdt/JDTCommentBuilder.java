@@ -9,7 +9,6 @@ package spoon.support.compiler.jdt;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import spoon.SpoonException;
@@ -75,7 +74,6 @@ public class JDTCommentBuilder {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final CompilationUnitDeclaration declarationUnit;
-	private String filePath;
 	private CompilationUnit spoonUnit;
 	private Factory factory;
 	private ICompilationUnit sourceUnit;
@@ -94,7 +92,6 @@ public class JDTCommentBuilder {
 		this.factory = factory;
 		this.sourceUnit = declarationUnit.compilationResult.compilationUnit;
 		this.contents = sourceUnit.getContents();
-		this.filePath = CharOperation.charToString(sourceUnit.getFileName());
 		this.spoonUnit = JDTTreeBuilder.getOrCreateCompilationUnit(declarationUnit, factory);
 	}
 

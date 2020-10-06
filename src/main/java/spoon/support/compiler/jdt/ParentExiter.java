@@ -788,7 +788,6 @@ public class ParentExiter extends CtInheritanceScanner {
 		return parent.type != null && parent.type.equals(childJDT);
 	}
 
-	private static final String KEYWORD_NEW = "new";
 
 	@Override
 	public <T> void visitCtNewClass(CtNewClass<T> newClass) {
