@@ -219,8 +219,6 @@ public class AnnotationValuesTest {
 		annotation.addValue("title", "First summary");
 		annotation.addValue("date", "2020-10-05");
 
-		Set set =annotation.getAllValues().entrySet();
-
 		//contract: All added values are added to the annotations
 		assertEquals(2, annotation.getAllValues().size());
 		assertTrue(annotation.getAllValues().containsKey("title"));
