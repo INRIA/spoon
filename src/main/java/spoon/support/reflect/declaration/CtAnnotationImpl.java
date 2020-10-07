@@ -34,7 +34,6 @@ import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.reflect.code.CtExpressionImpl;
 import spoon.support.reflect.eval.EvalHelper;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -44,7 +43,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
