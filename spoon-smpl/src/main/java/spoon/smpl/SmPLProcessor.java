@@ -101,15 +101,18 @@ public class SmPLProcessor extends AbstractProcessor<CtExecutable<?>> {
         // Call spoon.Launcher with remaining arguments
         Launcher.main(reverse.apply(new ArrayList<>(argStack)).toArray(new String[0]));
 
+        if (diffCommand != null) {
+            procTimer.start();
+            printDiffs();
+            procTimer.stop();
+        }
+
         totalTimer.stop();
 
         double totaltime = totalTimer.getAccumulatedTime() / 1E9;
         double proctime = procTimer.getAccumulatedTime() / 1E9;
         double greptime = grepTimer.getAccumulatedTime() / 1E9;
         double patchtime = patchTimer.getAccumulatedTime() / 1E9;
-
-        double smpltime = greptime + patchtime;
-        double spoontime = totaltime - proctime;
 
         System.out.println("grepCounter: " + grepCounter);
         System.out.println("grepTimer: " + greptime + " s.");
@@ -118,12 +121,6 @@ public class SmPLProcessor extends AbstractProcessor<CtExecutable<?>> {
         System.out.println("patchTimer: " + patchtime + " s.");
         System.out.println("totalTimer: " + totaltime + " s.");
         System.out.println("procTimer: " + proctime + " s.");
-        System.out.println("SmPL processing: " + smpltime + " s.");
-        System.out.println("Spoon processing: " + spoontime + " s.");
-
-        if (diffCommand != null) {
-            printDiffs();
-        }
     }
 
     /**
