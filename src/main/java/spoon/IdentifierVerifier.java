@@ -1039,7 +1039,7 @@ public class IdentifierVerifier {
 		private <T>  String removeFQName(CtFieldReference<T> reference) {
 			String name = reference.getSimpleName();
 			int index = name.lastIndexOf(".");
-			return index >=0 ? name.substring(index+1) : name;
+			return index >= 0 ? name.substring(index+1) : name;
 		}
 
 		/**
