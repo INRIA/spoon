@@ -189,28 +189,28 @@
                     <goals>
                         <goal>report</goal>
                     </goals>
-                  </execution>
+                </execution>
                 <execution>
-              <id>check-coverage</id>
-              <goals>
-                <goal>check</goal>
-              </goals>
-              <configuration>
-                <rules>
-              <rule implementation="org.jacoco.maven.RuleConfiguration">
-                <element>BUNDLE</element>
-                <limits>
-                  <limit implementation="org.jacoco.report.check.Limit">
-                    <counter>CLASS</counter>
-                    <value>MISSEDCOUNT</value>
-                    <maximum>0</maximum>
-                  </limit>
-                </limits>
-              </rule>
-              </rules>
-              </configuration>
-              </execution>
-        </executions>
+                  <id>check-coverage</id>
+                  <goals>
+                    <goal>check</goal>
+                  </goals>
+                  <configuration>
+                    <rules>
+                    <rule implementation="org.jacoco.maven.RuleConfiguration">
+                      <element>BUNDLE</element>
+                      <limits>
+                        <limit implementation="org.jacoco.report.check.Limit">
+                          <counter>CLASS</counter>
+                          <value>MISSEDCOUNT</value>
+                          <maximum>0</maximum>
+                        </limit>
+                      </limits>
+                    </rule>
+                  </rules>
+                  </configuration>
+                </execution>
+          </executions>
       </plugin>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -265,3 +265,4 @@
     </plugins>
   </build>
 </project>
+
