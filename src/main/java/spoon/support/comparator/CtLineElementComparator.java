@@ -19,14 +19,14 @@ import spoon.reflect.declaration.CtElement;
 public class CtLineElementComparator implements Comparator<CtElement>, Serializable {
 
 	/**
-	 * Returns 0 if o1 has the same position as o2, or both positions are invalid.
-	 * Returns -1 if o1 is before o2 in the file, or o1 has no valid position.
+	 * Returns 0 if o1 has the same position as o2, or both positions are invalid and o1.equals(o2).
+	 * Returns -1 if o1 is before o2 in the file, or o1 has no valid position or both positions are invalid !o1.equals(o2).
 	 * Returns 1 if o2 is after o1 in the file, or o2 has no valid position.
 	 */
 	@Override
 	public int compare(CtElement o1, CtElement o2) {
 		if (!o1.getPosition().isValidPosition() && !o2.getPosition().isValidPosition()) {
-			return 0;
+			return o1.equals(o2) ? 0 : -1;
 		}
 		if (!o1.getPosition().isValidPosition()) {
 			return -1;
