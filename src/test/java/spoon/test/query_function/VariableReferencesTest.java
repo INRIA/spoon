@@ -196,8 +196,6 @@ public class VariableReferencesTest {
 				CtElement[] real = var.map(new VariableScopeFunction()).list().toArray(new CtElement[0]);
 				if(var instanceof CtLocalVariable) {
 					assertArrayEquals(var.map(new LocalVariableScopeFunction()).list().toArray(new CtElement[0]), real);
-				} else if(var instanceof CtField) {
-					assertArrayEquals(var.map(new FieldScopeFunction()).list().toArray(new CtElement[0]), real);
 				} else if(var instanceof CtParameter) {
 					assertArrayEquals(var.map(new ParameterScopeFunction()).list().toArray(new CtElement[0]), real);
 				} else if(var instanceof CtCatchVariable) {
@@ -212,6 +210,14 @@ public class VariableReferencesTest {
 		assertFalse(list.isEmpty());
 	}
 
+	@Test
+	public void testFieldScopeFunction() {
+		// contract: FieldScopeFunction matches the right elements
+		CtElement[] real0 = modelClass.getFields().get(0).map(new FieldScopeFunction()).list().toArray(new CtElement[0]);
+		assertTrue(real0.length > 0);
+		CtElement[] real1 = modelClass.getFields().get(1).map(new FieldScopeFunction()).list().toArray(new CtElement[0]);
+		assertTrue(real1.length > 0);
+	}
 	@Test
 	public void testLocalVariableReferenceDeclarationFunction() {
 		modelClass.filterChildren((CtLocalVariableReference<?> varRef)->{

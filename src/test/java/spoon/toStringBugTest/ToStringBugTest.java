@@ -1,12 +1,10 @@
 package spoon.toStringBugTest;
 
 
-import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtType;
-import spoon.test.GitHubIssue;
 
 import java.util.List;
 

@@ -19,7 +19,6 @@ package spoon.test.factory;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
-import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
@@ -41,7 +40,6 @@ import spoon.support.reflect.declaration.CtMethodImpl;
 import spoon.test.SpoonTestHelpers;
 import spoon.test.factory.testclasses.Foo;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import static org.junit.Assert.assertEquals;

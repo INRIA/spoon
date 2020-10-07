@@ -1,5 +1,11 @@
 package spoon.test.prettyprinter;
 
+import static org.junit.Assert.assertThat;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.BeforeClass;
@@ -7,25 +13,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.Environment;
-import spoon.processing.AbstractManualProcessor;
 import spoon.processing.AbstractProcessor;
-import spoon.processing.Processor;
-import spoon.processing.ProcessorProperties;
-import spoon.processing.TraversalStrategy;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLoop;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.factory.Factory;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Set;
-
-import static org.junit.Assert.assertThat;
 
 public class LoopSniperJavaPrettyPrinterTest {
 

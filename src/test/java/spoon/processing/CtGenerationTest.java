@@ -18,7 +18,6 @@ package spoon.processing;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ComparisonFailure;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.generating.CloneVisitorGenerator;

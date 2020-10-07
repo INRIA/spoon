@@ -20,7 +20,6 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.factory.Factory;

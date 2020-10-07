@@ -8,6 +8,10 @@ public class FooGeneric<T extends Object> {
 		return null;
 	}
 
+	protected static<S> S n(int parm2) {
+		return null;
+	}
+
 	/**
 	 * Method with javadoc
 	 * @param parm1 the parameter

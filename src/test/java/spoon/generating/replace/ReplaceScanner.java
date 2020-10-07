@@ -16,6 +16,7 @@
  */
 package spoon.generating.replace;
 
+import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.generating.ReplacementVisitorGenerator;
 import spoon.reflect.code.CtAssignment;
@@ -185,7 +186,12 @@ public class ReplaceScanner extends CtScanner {
 
 	private CtClass createListenerClass(Factory factory, String listenerName, CtTypeReference getterType, Type type) {
 		CtClass listener;
-		listener = factory.Class().get(TARGET_REPLACE_PACKAGE + ".CtListener").clone();
+		// prototype class to use, we'll change its name and code later
+		listener = Launcher.parseClass("class XXX implements ReplaceListener<CtElement> { \n"
+					       + "private final CtElement element XXX(CtElement element) { this.element = element; }\n"
+					       + "@java.lang.Override public void set(CtElement replace) {}\n"
+					       + "}");
+		
 		listener.setSimpleName(listenerName);
 		target.addNestedType(listener);
 		final List<CtTypeReference> references = listener.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {

@@ -3,8 +3,8 @@ plugins {
 
     // always depends on the latest snapshot of Spoon
     // https://github.com/patrikerdes/gradle-use-latest-versions-plugin
-    id 'se.patrikerdes.use-latest-versions' version '0.2.14'
-    id 'com.github.ben-manes.versions' version '0.29.0'
+    id 'se.patrikerdes.use-latest-versions' version '0.2.15'
+    id 'com.github.ben-manes.versions' version '0.33.0'
 }
 
 group 'fr.inria.gforge.spoon'

@@ -1,12 +1,9 @@
 package spoon.test.issue3321;
 
 import org.junit.Test;
-import org.junit.Ignore;
 import spoon.Launcher;
 import spoon.compiler.Environment;
-import spoon.reflect.CtModel;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
-import spoon.test.GitHubIssue;
 
 /**
  * @author Gibah Joseph

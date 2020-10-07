@@ -19,21 +19,25 @@ package spoon.processing;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.Environment;
-import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtAssert;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
+import spoon.support.RuntimeProcessingManager;
+import spoon.support.compiler.FileSystemFile;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.processing.processors.MyProcessor;
-import spoon.test.properties.SimpleProcessor;
+import spoon.test.template.testclasses.AssertToIfAssertedStatementTemplate;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.testing.Assert.assertThat;
 
 public class ProcessingTest {
 
@@ -42,7 +46,7 @@ public class ProcessingTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
-		launcher.addInputResource("./src/test/java/spoon/processing/");
+		launcher.addInputResource("./src/test/java/spoon/test/processing/testclasses");
 		final MyProcessor processor = new MyProcessor();
 		launcher.addProcessor(processor);
 		try {
@@ -51,6 +55,34 @@ public class ProcessingTest {
 			fail("ProcessInterrupt exception must be catch in the ProcessingManager.");
 		}
 		assertFalse(processor.isShouldStayAtFalse());
+	}
+
+	@Test
+	public void testRuntimeProcessorManager() {
+		// contract: RuntimeProcessorManager can be run without exception with several processors
+
+		// collecting the processors
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/java/spoon/test/processing/processors");
+		launcher.buildModel();
+
+
+		// running on test classes
+		final Launcher launcher2 = new Launcher();
+		launcher2.getEnvironment().setNoClasspath(true);
+		launcher2.addInputResource("./src/test/java/spoon/test/processing/testclasses");
+		launcher2.buildModel();
+
+		// we only the API of interface ProcessingManager
+ 		ProcessingManager processing = new RuntimeProcessingManager(launcher2.getFactory());
+		for (CtType processor: launcher.getModel().getAllTypes()) {
+			if (processor.getSimpleName().equals("MyProcessor")) {
+				continue;
+			}
+			processing.addProcessor(processor.getQualifiedName());
+		}
+		processing.process(launcher2.getModel().getRootPackage());
 	}
 
 	@Test
@@ -93,5 +125,37 @@ public class ProcessingTest {
 		l.addInputResource("src/test/resources/compilation5/A.java");
 		l.setSourceOutputDirectory(path.toFile());
 		l.run();
+	}
+	
+	@Test
+	public void testTemplateNotInOutput() throws IOException {
+		// https://github.com/INRIA/spoon/issues/2987
+		class AssertProcessor extends AbstractProcessor<CtAssert<?>> {
+			public void process(CtAssert<?> element) {
+				element.replace(
+						new AssertToIfAssertedStatementTemplate(element)
+								.apply(element.getParent(CtClass.class))
+				);
+			}
+		}
+		
+		String templatePath = "src/test/java/spoon/test/template/testclasses/AssertToIfAssertedStatementTemplate.java";
+		String resourcePath = "src/test/resources/spoon/test/template/";
+		
+		final Launcher l = new Launcher();
+		Path outputPath = Files.createTempDirectory("emptydir");
+		
+		l.addProcessor(new AssertProcessor());
+		l.addTemplateResource(new FileSystemFile(templatePath));
+		
+		l.addInputResource(resourcePath + "SimpleAssert.java");
+		l.setSourceOutputDirectory(outputPath.toFile());
+		l.run();
+
+		// If template is applied to itself then there will be modified spoon/...Template.java on output
+		assertArrayEquals("Template source found in output", new String[]{"SimpleAssert.java"}, outputPath.toFile().list());
+		// Check that the template worked as intended
+		assertThat(outputPath.toString() + "/SimpleAssert.java")
+			.isEqualTo(resourcePath + "SimpleIfAsserted.java");
 	}
 }

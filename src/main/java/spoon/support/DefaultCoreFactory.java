@@ -645,6 +645,7 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	public CtWildcardReference createWildcardReference() {
 		CtWildcardReference e = new CtWildcardReferenceImpl();
 		e.setFactory(getMainFactory());
+		e.setBoundingType(null);
 		return e;
 	}
 

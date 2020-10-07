@@ -35,12 +35,15 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,26 +74,69 @@ public class SpoonPom implements SpoonResource {
 	/**
 	 * Extract the information from the pom
 	 * @param path the path to the pom
+	 * @param profileFilter regex pattern to filter profiles when expanding defined modules. Only modules in matching profiles are expanded
+	 * @throws IOException when the file does not exist
+	 * @throws XmlPullParserException when the file is corrupted
+	 */
+	public SpoonPom(String path, MavenLauncher.SOURCE_TYPE sourceType, Environment environment, Pattern profileFilter) throws IOException, XmlPullParserException {
+		this(path, null, sourceType, environment, profileFilter);
+	}
+
+	/**
+	 * Extract the information from the pom
+	 * @param path the path to the pom
 	 * @param parent the parent pom
 	 * @throws IOException when the file does not exist
 	 * @throws XmlPullParserException when the file is corrupted
 	 */
 	public SpoonPom(String path, SpoonPom parent, MavenLauncher.SOURCE_TYPE sourceType, Environment environment) throws IOException, XmlPullParserException {
+		this(path, parent, sourceType, environment, Pattern.compile("^$"));
+	}
+
+	/**
+	 * Extract the information from the pom
+	 * @param path the path to the pom
+	 * @param parent the parent pom
+	 * @param profileFilter regex pattern to filter profiles when expanding defined modules. Only modules in matching profiles are expanded
+	 * @throws IOException when the file does not exist
+	 * @throws XmlPullParserException when the file is corrupted
+	 */
+	public SpoonPom(String path, SpoonPom parent, MavenLauncher.SOURCE_TYPE sourceType, Environment environment, Pattern profileFilter) throws IOException, XmlPullParserException {
 		this.parent = parent;
 		this.sourceType = sourceType;
 		this.environment = environment;
-		if (!path.endsWith(".xml") && !path.endsWith(".pom")) {
+
+		// directory may end in .xml|.pom so don't skip if thats the case
+		if ((!path.endsWith(".xml") && !path.endsWith(".pom")) || Paths.get(path).toFile().isDirectory()) {
 			path = Paths.get(path, "pom.xml").toString();
 		}
-		this.pomFile = new File(path);
+		this.pomFile = new File(path).getCanonicalFile();
 		if (!pomFile.exists()) {
 			throw new IOException("Pom does not exists.");
 		}
 		this.directory = pomFile.getParentFile();
+
 		MavenXpp3Reader pomReader = new MavenXpp3Reader();
 		try (FileReader reader = new FileReader(pomFile)) {
 			this.model = pomReader.read(reader);
+
+			Set<String> allModules = new HashSet<>();
+
+			for (Profile profile : model.getProfiles()) {
+				if (!profileFilter.matcher(profile.getId()).matches()) {
+					continue;
+				}
+				for (String module : profile.getModules()) {
+					allModules.add(module);
+					addModule(new SpoonPom(Paths.get(pomFile.getParent(), module).toString(), this, sourceType, environment));
+				}
+			}
+
+			// recursively build the POM hierarchy for modules not built from profiles
 			for (String module : model.getModules()) {
+				if (allModules.contains(module)) {
+					continue;
+				}
 				addModule(new SpoonPom(Paths.get(pomFile.getParent(), module).toString(), this, sourceType, environment));
 			}
 		} catch (FileNotFoundException e) {
@@ -131,9 +177,20 @@ public class SpoonPom implements SpoonResource {
 			sourcePath = build.getSourceDirectory();
 		}
 		if (sourcePath == null) {
-			sourcePath = Paths.get("src/main/java").toString();
+			sourcePath = getSourceDirectoryFromParent(getParentPom());
+			if (sourcePath == null) {
+				sourcePath = Paths.get("src/main/java").toString();
+			}
 		}
-		String absoluteSourcePath = Paths.get(directory.getAbsolutePath(), sourcePath).toString();
+		sourcePath = extractVariable(sourcePath);
+		Path path = Paths.get(sourcePath);
+
+		String absoluteSourcePath;
+		if (path.isAbsolute()) {
+			absoluteSourcePath = path.toString();
+		} else {
+			absoluteSourcePath = Paths.get(directory.getAbsolutePath(), sourcePath).toString();
+		}
 		File source = new File(absoluteSourcePath);
 		if (source.exists()) {
 			output.add(source);
@@ -149,6 +206,28 @@ public class SpoonPom implements SpoonResource {
 	}
 
 	/**
+	 * Climbs the pom.xml hierarchy until a model is found in which
+	 * a source directory is declared.
+	 * @return the uninterpolated source directory declared in the nearest ancestor
+	 */
+	private String getSourceDirectoryFromParent(SpoonPom parent) {
+		if (parent == null) {
+			return null;
+		}
+		String sourcePath = null;
+		Build build = parent.model.getBuild();
+		if (build != null) {
+			sourcePath = build.getSourceDirectory();
+			if (sourcePath == null && parent.getParentPom() != null) {
+				return getSourceDirectoryFromParent(parent.getParentPom());
+			}
+		} else if (parent.getParentPom() != null) {
+			return getSourceDirectoryFromParent(parent.getParentPom());
+		}
+		return sourcePath;
+	}
+
+	/**
 	 * Get the list of test directories of the project
 	 * @return the list of test directories
 	 */
@@ -161,9 +240,20 @@ public class SpoonPom implements SpoonResource {
 			sourcePath = build.getTestSourceDirectory();
 		}
 		if (sourcePath == null) {
-			sourcePath = Paths.get("src/test/java").toString();
+			sourcePath = getTestSourceDirectoryFromParent(getParentPom());
+			if (sourcePath == null) {
+				sourcePath = Paths.get("src/test/java").toString();
+			}
 		}
-		String absoluteSourcePath = Paths.get(directory.getAbsolutePath(), sourcePath).toString();
+		sourcePath = extractVariable(sourcePath);
+		Path path = Paths.get(sourcePath);
+
+		String absoluteSourcePath;
+		if (path.isAbsolute()) {
+			absoluteSourcePath = path.toString();
+		} else {
+			absoluteSourcePath = Paths.get(directory.getAbsolutePath(), sourcePath).toString();
+		}
 		File source = new File(absoluteSourcePath);
 		if (source.exists()) {
 			output.add(source);
@@ -176,6 +266,28 @@ public class SpoonPom implements SpoonResource {
 			output.addAll(module.getTestDirectories());
 		}
 		return output;
+	}
+
+	/**
+	 * Climbs the pom.xml hierarchy until a model is found in which
+	 * a test source directory is declared.
+	 * @return the uninterpolated test source directory declared in the nearest ancestor
+	 */
+	private String getTestSourceDirectoryFromParent(SpoonPom parent) {
+		if (parent == null) {
+			return null;
+		}
+		String sourcePath = null;
+		Build build = parent.model.getBuild();
+		if (build != null) {
+			sourcePath = build.getTestSourceDirectory();
+			if (sourcePath == null && parent.getParentPom() != null) {
+				return getTestSourceDirectoryFromParent(parent.getParentPom());
+			}
+		} else if (parent.getParentPom() != null) {
+			return getTestSourceDirectoryFromParent(parent.getParentPom());
+		}
+		return sourcePath;
 	}
 
 	/**
@@ -213,29 +325,31 @@ public class SpoonPom implements SpoonResource {
 	}
 
 	/**
-	 * Get the value of a property
+	 * Get the value of a property. Reference: https://maven.apache.org/ref/3.6.3/maven-model-builder/#Model_Interpolation
 	 * @param key the key of the property
 	 * @return the property value if key exists or null
 	 */
 	private String getProperty(String key) {
-		if ("project.version".equals(key)  || "pom.version".equals(key)) {
+		if ("project.version".equals(key) || "pom.version".equals(key) || "version".equals(key)) {
 			if (model.getVersion() != null) {
 				return model.getVersion();
 			} else if (model.getParent() != null) {
 				return model.getParent().getVersion();
 			}
-		} else if ("project.groupId".equals(key) || "pom.groupId".equals(key)) {
+		} else if ("project.groupId".equals(key) || "pom.groupId".equals(key) || "groupId".equals(key)) {
 			if (model.getGroupId() != null) {
 				return model.getGroupId();
 			} else if (model.getParent() != null) {
 				return model.getParent().getGroupId();
 			}
-		} else if ("project.artifactId".equals(key)  || "pom.artifactId".equals(key)) {
+		} else if ("project.artifactId".equals(key) || "pom.artifactId".equals(key) || "artifactId".equals(key)) {
 			if (model.getArtifactId() != null) {
 				return model.getArtifactId();
 			} else if (model.getParent() != null) {
 				return model.getParent().getArtifactId();
 			}
+		} else if ("project.basedir".equals(key) || "pom.basedir".equals(key) || "basedir".equals(key)) {
+			return pomFile.getParent();
 		}
 		String value = extractVariable(model.getProperties().getProperty(key));
 		if (value == null) {
@@ -402,7 +516,11 @@ public class SpoonPom implements SpoonResource {
 		return classpathElements.toArray(new String[0]);
 	}
 
-	private static String guessMavenHome() {
+	/**
+	 * Try to guess Maven home when none is provided.
+	 * @return the path toward maven install on the local machine.
+	 */
+	public static String guessMavenHome() {
 		String mvnHome = null;
 		try {
 			String[] cmd;
@@ -506,7 +624,7 @@ public class SpoonPom implements SpoonResource {
 
 	@Override
 	public String getName() {
-		return "pom";
+		return model.getName();
 	}
 
 	@Override

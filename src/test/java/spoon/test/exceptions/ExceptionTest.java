@@ -24,7 +24,6 @@ import spoon.compiler.ModelBuildingException;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.declaration.CtMultiTypedElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;

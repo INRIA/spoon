@@ -87,7 +87,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public <T, R extends CtType<T>> R scan(Class<T> clazz) {
 		CtPackage ctPackage;
 		CtType<?> ctEnclosingClass;
-		if (clazz.getEnclosingClass() != null) {
+		if (clazz.getEnclosingClass() != null && !clazz.isAnonymousClass()) {
 			ctEnclosingClass = scan(clazz.getEnclosingClass());
 			return ctEnclosingClass.getNestedType(clazz.getSimpleName());
 		} else {

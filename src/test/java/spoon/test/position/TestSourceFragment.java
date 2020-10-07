@@ -39,6 +39,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
@@ -79,7 +80,17 @@ public class TestSourceFragment {
 	@Test
 	public void testSourcePositionFragment() {
 		SourcePosition sp = new SourcePositionImpl(DUMMY_COMPILATION_UNIT, 10, 20, null);
-		ElementSourceFragment sf = new ElementSourceFragment(() -> sp, null);
+		ElementSourceFragment sf = new ElementSourceFragment(new SourcePositionHolder() {
+			@Override
+			public SourcePosition getPosition() {
+				return sp;
+			}
+
+			@Override
+			public SourceFragment getOriginalSourceFragment() {
+				return null;
+			}
+		}, null);
 		assertEquals(10, sf.getStart());
 		assertEquals(21, sf.getEnd());
 		assertSame(sp, sf.getSourcePosition());
@@ -186,7 +197,17 @@ public class TestSourceFragment {
 	
 	private ElementSourceFragment createFragment(int start, int end) {
 		SourcePosition sp = new SourcePositionImpl(DUMMY_COMPILATION_UNIT, start, end - 1, null);
-		return new ElementSourceFragment(() -> sp, null);
+		return new ElementSourceFragment(new SourcePositionHolder() {
+			@Override
+			public SourcePosition getPosition() {
+				return sp;
+			}
+
+			@Override
+			public SourceFragment getOriginalSourceFragment() {
+				return null;
+			}
+		}, null);
 	}
 
 	@Test

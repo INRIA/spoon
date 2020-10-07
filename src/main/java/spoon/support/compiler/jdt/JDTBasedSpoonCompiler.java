@@ -200,9 +200,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	@Override
 	public void generateProcessedSourceFiles(OutputType outputType, Filter<CtType<?>> typeFilter) {
-		if (getEnvironment().getSpoonProgress() != null) {
-			getEnvironment().getSpoonProgress().start(SpoonProgress.Process.PRINT);
-		}
+		getEnvironment().getSpoonProgress().start(SpoonProgress.Process.PRINT);
 		switch (outputType) {
 		case CLASSES:
 			generateProcessedSourceFilesUsingTypes(typeFilter);
@@ -212,9 +210,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			break;
 		case NO_OUTPUT:
 		}
-		if (getEnvironment().getSpoonProgress() != null) {
-			getEnvironment().getSpoonProgress().end(SpoonProgress.Process.PRINT);
-		}
+		getEnvironment().getSpoonProgress().end(SpoonProgress.Process.PRINT);
 	}
 
 	@Override
@@ -354,7 +350,9 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	protected boolean buildTemplates(JDTBuilder jdtBuilder) {
-		return buildUnitsAndModel(jdtBuilder, templates, getTemplateClasspath(), "template ");
+		CompilationUnitDeclaration[] units = buildUnits(jdtBuilder, templates, getTemplateClasspath(), "template ");
+		buildModel(units, factory.Templates());
+		return true;
 	}
 
 	/**
@@ -369,7 +367,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		CompilationUnitDeclaration[] units = buildUnits(jdtBuilder, sourcesFolder, classpath, debugMessagePrefix);
 
 		// here we build the model in the template factory
-		buildModel(units);
+		buildModel(units, factory);
 
 		return probs.isEmpty();
 	}
@@ -428,8 +426,8 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		return unitList;
 	}
 
-	protected void buildModel(CompilationUnitDeclaration[] units) {
-		JDTTreeBuilder builder = new JDTTreeBuilder(factory);
+	protected void buildModel(CompilationUnitDeclaration[] units, Factory aFactory) {
+		JDTTreeBuilder builder = new JDTTreeBuilder(aFactory);
 		List<CompilationUnitDeclaration> unitList = this.sortCompilationUnits(units);
 
 		forEachCompilationUnit(unitList, SpoonProgress.Process.MODEL, unit -> {
@@ -438,12 +436,12 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 		});
 		//we need first imports before we can place comments. Mainly comments on imports need that
 		forEachCompilationUnit(unitList, SpoonProgress.Process.IMPORT, unit -> {
-			new JDTImportBuilder(unit, factory).build();
+			new JDTImportBuilder(unit, aFactory).build();
 		});
 		if (getFactory().getEnvironment().isCommentsEnabled()) {
 			forEachCompilationUnit(unitList, SpoonProgress.Process.COMMENT_LINKING, unit -> {
 				try {
-					new JDTCommentBuilder(unit, factory).build();
+					new JDTCommentBuilder(unit, aFactory).build();
 				} catch (Exception e) {
 					getEnvironment().report(null, Level.ERROR, "JDTCommentBuilder crashed with the error, some comments may be missing in the model: " + e.toString());
 				}
@@ -452,9 +450,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	private void forEachCompilationUnit(List<CompilationUnitDeclaration> unitList, SpoonProgress.Process process, Consumer<CompilationUnitDeclaration> consumer) {
-		if (getEnvironment().getSpoonProgress() != null) {
-			getEnvironment().getSpoonProgress().start(process);
-		}
+		getEnvironment().getSpoonProgress().start(process);
 		int i = 0;
 		for (CompilationUnitDeclaration unit : unitList) {
 			if (unit.isModuleInfo() && factory.getEnvironment().getComplianceLevel() < 9) {
@@ -465,14 +461,10 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 				if (canProcessCompilationUnit(unitPath)) {
 					consumer.accept(unit);
 				}
-				if (getEnvironment().getSpoonProgress() != null) {
 					getEnvironment().getSpoonProgress().step(process, unitPath, ++i, unitList.size());
-				}
 			}
 		}
-		if (getEnvironment().getSpoonProgress() != null) {
 			getEnvironment().getSpoonProgress().end(process);
-		}
 	}
 
 	private boolean canProcessCompilationUnit(String unitPath) {
