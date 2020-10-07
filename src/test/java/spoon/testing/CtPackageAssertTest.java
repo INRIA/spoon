@@ -57,7 +57,7 @@ public class CtPackageAssertTest {
 
 	@Test(expected = AssertionError.class)
 	public void testEqualityBetweenTwoDifferentCtPackage() {
-		assertThat(build(new File("./src/test/java/spoon/testing/testclasses/")).Package().getRootPackage()).isEqualTo(createFactory().Package().getOrCreate("another.package"));
+		assertThat(build(new File("./src/test/java/spoon/testing/testclasses/")).Package().getRootPackage()).isEqualTo(createFactory().Package().getOrCreate("another.foo"));
 	}
 
 	@Test(expected = AssertionError.class)
