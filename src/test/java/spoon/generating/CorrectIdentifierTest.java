@@ -1,15 +1,17 @@
 package spoon.generating;
 
-import org.junit.Test;
-import spoon.FluentLauncher;
-import spoon.Launcher;
-import spoon.SpoonException;
-import spoon.reflect.reference.CtLocalVariableReference;
-import spoon.reflect.reference.CtTypeReference;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.Ignore;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import spoon.FluentLauncher;
+import spoon.Launcher;
+import spoon.SpoonException;
+import spoon.reflect.CtModel;
+import spoon.reflect.reference.CtLocalVariableReference;
+import spoon.reflect.reference.CtTypeReference;
 
 /**
  * for correct identifier see JLS chapter 3.8 and for keywords 3.9.
@@ -87,5 +89,31 @@ public class CorrectIdentifierTest {
 	public void mainTest() {
 		//contract: TODO:
 		assertDoesNotThrow(() -> new FluentLauncher().inputResource("./src/main/java").buildModel());
+	}
+
+	@Nested
+	class AnnotationType {
+
+		private String topLevelAnnotation = "public @interface %s { }";
+
+		@Test
+		public void testInnerAnnotation() {
+			String path = "src/test/resources/identifier/annotationType/InnerAnnotation.java";
+			assertDoesNotThrow(() -> createModelFromPath(path));
+		}
+
+		@Test
+		public void keywordsAnnotation() {
+				assertThrows(SpoonException.class, () -> createModelFromString(String.format(topLevelAnnotation, "null")));
+				assertThrows(SpoonException.class, () -> createModelFromString(String.format(topLevelAnnotation, "int")));
+				assertThrows(SpoonException.class, () -> createModelFromString(String.format(topLevelAnnotation, "false")));
+		}
+	}
+
+private static CtModel createModelFromPath(String path) {
+		return new FluentLauncher().inputResource(path).noClasspath(false).buildModel();
+	}
+	private static CtModel createModelFromString(String path) {
+		return new FluentLauncher().inputResource(path).noClasspath(false).buildModel();
 	}
 }

@@ -7,11 +7,14 @@
  */
 package spoon;
 
+import static spoon.reflect.reference.CtExecutableReference.CONSTRUCTOR_NAME;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import spoon.reflect.code.CtAnnotationFieldAccess;
@@ -112,6 +115,7 @@ public class IdentifierVerifier {
 	private static final String FALSE_LITERAL = "false";
 	private static final String TRUE_LITERAL = "true";
 	private static final String NULL_LITERAL = "null";
+	private static final String CLASS_LITERAL = "class";
 	private static final String PACKAGE_SEPARATOR_REGEX = "\\.";
 	private static final String ARRAY_SUFFIX_REGEX = "(\\[\\])+$";
 	private static final String NUMERIC_PREFIX = "^\\d+";
@@ -128,14 +132,13 @@ public class IdentifierVerifier {
 			"The identifier %s in %s at %s violates contract defined in jls 3.8 for identifier, because it is a keyword.";
 
 	public Optional<SpoonException> checkIdentifier(CtElement element) {
-		element.accept(identifierVisitor);
-		if (exception != null) {
+		try {
+			element.accept(identifierVisitor);
+		} catch (SpoonException e) {
 			if (lenient) {
 				throw exception;
 			} else {
-				Optional<SpoonException> error = Optional.of(exception);
-				exception = null;
-				return error;
+				return Optional.of(e);
 			}
 		}
 		return Optional.empty();
@@ -152,53 +155,48 @@ public class IdentifierVerifier {
 
 	private CtVisitor identifierVisitor = new CtAbstractVisitor() {
 
+		@NoIdentifier
 		@Override
 		public <A extends Annotation> void visitCtAnnotation(CtAnnotation<A> annotation) {
-			// no check needed.
-			// an annotation usage refers to a type. We check if the type has a correct name and not the usage.
 		}
 
+		@NoIdentifier
 		@Override
 		public <T> void visitCtCodeSnippetExpression(CtCodeSnippetExpression<T> expression) {
 			// no check needed, because not a single identifier but more combined code.
 		}
 
+		@NoIdentifier
 		@Override
 		public void visitCtCodeSnippetStatement(CtCodeSnippetStatement statement) {
 			// no check needed, because not a single identifier but more combined code.
 		}
-
+		@SupportedIdentifiers()
 		@Override
 		public <A extends Annotation> void visitCtAnnotationType(CtAnnotationType<A> annotationType) {
+			// A java annoation is never a localType => there is no prefix
 			String identifier = annotationType.getSimpleName();
-			if (!strictMode || annotationType.isLocalType()) {
-				// local types have a numeric prefix, we need to remove.
-				identifier = convertLocalTypeIdentifier(identifier);
-			}
-			if (!isJavaIdentifier(identifier)) {
-				exception = createException(identifierError, annotationType);
-				return;
-			}
-			if (isKeyword(identifier) || isNullLiteral(identifier) || isBooleanLiteral(identifier)) {
-				exception = createException(keywordError, annotationType);
-				return;
-			}
+			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, annotationType));
+
+			checkCondition(this::isKeyword, identifier, () -> createException(keywordError, annotationType));
+			checkCondition(this::isTypeKeyword, identifier, () -> createException(keywordError, annotationType));
+			checkCondition(this::isNullLiteral, identifier, () -> createException(keywordError, annotationType));
+			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, annotationType));
 		}
 
+		@NoIdentifier
 		@Override
 		public void visitCtAnonymousExecutable(CtAnonymousExecutable anonymousExec) {
-			//TODO: ??? identifier makes no sense here
-			// CtAnonymousExecutable have no identifier => no check needed
 		}
 
+		@NoIdentifier
 		@Override
 		public <T> void visitCtArrayRead(CtArrayRead<T> arrayRead) {
-			// CtArrayRead have no identifier => no check needed
 		}
 
+		@NoIdentifier
 		@Override
 		public <T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite) {
-			// CtArrayWrite have no identifier => no check needed
 		}
 
 		@Override
@@ -210,11 +208,8 @@ public class IdentifierVerifier {
 				// local types have a numeric prefix, we need to remove.
 				identifier = convertLocalTypeIdentifier(identifier);
 			}
-			if (!isJavaIdentifier(identifier) && !isWildcard(identifier)) {
-				//wildcard identifiers "?" happen for typeReferences.
-				exception = createException(identifierError, reference);
-				return;
-			}
+			//wildcard identifiers "?" happen for typeReferences.
+			checkInvertedCondition((name) -> isJavaIdentifier(name) && isWildcard(name), identifier, () -> createException(identifierError, reference));
 			if (isKeyword(identifier) || isNullLiteral(identifier)) {
 				exception = createException(keywordError, reference);
 				return;
@@ -304,10 +299,7 @@ public class IdentifierVerifier {
 		@Override
 		public <T> void visitCtConstructor(CtConstructor<T> c) {
 			// maybe check here for consistency reasons, even if the case shouldn't exist.
-			if (!c.getSimpleName().equals(CtExecutableReference.CONSTRUCTOR_NAME)) {
-				exception = createException(identifierError, c);
-				return;
-			}
+			checkInvertedCondition((name) -> name.equals(CONSTRUCTOR_NAME), c.getSimpleName(), () -> createException(identifierError, c));
 		}
 
 		@Override
@@ -346,7 +338,7 @@ public class IdentifierVerifier {
 		@Override
 		public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
 			String identifier = reference.getSimpleName();
-			if (identifier.equals(CtExecutableReference.CONSTRUCTOR_NAME)) {
+			if (identifier.equals(CONSTRUCTOR_NAME)) {
 				// we allow <init> method references
 				return;
 			}
@@ -396,7 +388,7 @@ public class IdentifierVerifier {
 
 		@Override
 		public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
-			String identifier = isFullQName(reference) ? removeFQName(reference):reference.getSimpleName();
+			String identifier = isFullQName(reference) ? removeFQName(reference) : reference.getSimpleName();
 			if (!isJavaIdentifier(identifier)) {
 				exception = createException(identifierError, reference);
 				return;
@@ -986,7 +978,14 @@ public class IdentifierVerifier {
 		private boolean isNullLiteral(String identifier) {
 			return identifier.equals(NULL_LITERAL);
 		}
-
+		/**
+		 * Checks if an identifier is the class keyword. As defined in jls 3.8 an identifier is never the class keyword.
+		 * @param identifier to check
+		 * @return true if the identifier is the class literal, false otherwise.
+		 */
+		private boolean isClassLiteral(String identifier) {
+			return identifier.equals(CLASS_LITERAL);
+		}
 		/**
 		 * Checks if an identifier is a legal java identifier. See {@link #isJavaLetterStart(String)} and {@link #isJavaIdentifierPart(String)} for details.
 		 * @param identifier to check
@@ -1039,7 +1038,17 @@ public class IdentifierVerifier {
 		private <T>  String removeFQName(CtFieldReference<T> reference) {
 			String name = reference.getSimpleName();
 			int index = name.lastIndexOf(".");
-			return index >= 0 ? name.substring(index+1) : name;
+			return index >= 0 ? name.substring(index + 1) : name;
+		}
+		//TODO: doc
+		private void checkCondition(Predicate<String> check, String identifier, Supplier<SpoonException> error) {
+			if (check.test(identifier)) {
+				throw error.get();
+			}
+		}
+		//TODO: doc
+		private void checkInvertedCondition(Predicate<String> check, String identifier, Supplier<SpoonException> error) {
+			checkCondition(check.negate(), identifier, error);
 		}
 
 		/**
@@ -1086,4 +1095,29 @@ public class IdentifierVerifier {
 		return Stream.of("int", "short", "char", "void", "byte", "float", TRUE_LITERAL, FALSE_LITERAL,
 				"boolean", "double", "long", NULL_LITERAL).collect(Collectors.toCollection(HashSet::new));
 	}
+
+	private @interface SupportedIdentifiers {
+		/** Element can have generic brackets <>*/
+		boolean generics = false;
+		/** Element can have array ending as suffix in identifier */
+		boolean arrays = false;
+		/** Element identifier can be a FQ Name */
+		boolean fqName = false;
+		/** Element can be a localType and have a numeric prefix in identifier */
+		boolean localType = false;
+		/** Element identifier can be a wildCard '?' */
+		boolean wildCard = false;
+		/** Element identifier can be a type keyword */
+		boolean typeKeyword = false;
+		/** Element identifier can be class keyword */
+		boolean classKeyword = false;
+		/** Element identifier can be "null" */
+		boolean nullLiteral = false;
+		/** Element identifier can be boolean literal */
+		boolean booleanLiteral = false;
+
+	}
+	/** Element has no checkable identifier, no rules or a static identifier */
+	private @interface NoIdentifier {
+	};
 }
