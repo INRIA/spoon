@@ -3,6 +3,12 @@ package spoon.generating;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -103,17 +109,71 @@ public class CorrectIdentifierTest {
 		}
 
 		@Test
-		public void keywordsAnnotation() {
-				assertThrows(SpoonException.class, () -> createModelFromString(String.format(topLevelAnnotation, "null")));
-				assertThrows(SpoonException.class, () -> createModelFromString(String.format(topLevelAnnotation, "int")));
-				assertThrows(SpoonException.class, () -> createModelFromString(String.format(topLevelAnnotation, "false")));
+		public void testKeywordsAnnotation() {
+			for (String keyword : keywords) {
+				assertThrows(SpoonException.class,
+						() -> createModelFromString(String.format(topLevelAnnotation, keyword)));
+			}
+		}
+		@Test
+		public void testNullLiteralAnnotation() {
+			for (String input : nullLiteral) {
+				assertThrows(SpoonException.class,
+						() -> createModelFromString(String.format(topLevelAnnotation, input)));
+			}
+		}
+		@Test
+		public void testBooleanLiteralsAnnotation() {
+			for (String input : booleanLiterals) {
+				assertThrows(SpoonException.class,
+						() -> createModelFromString(String.format(topLevelAnnotation, input)));
+			}
+		}
+		@Test
+		public void testWrongLiteralsAnnotation() {
+			List<String> inputs = new ArrayList<>();
+			inputs.addAll(combineTwoLists(correctIdentifier, arrayIdentifier));
+			inputs.addAll(combineTwoLists(correctIdentifier, genericSuffixes));
+			for (String input : inputs) {
+				assertThrows(SpoonException.class,
+						() -> createModelFromString(String.format(topLevelAnnotation, input)));
+			}
+		}
+
+		@Test
+		public void testCorrectLiteralsAnnotation() {
+			for (String input : correctIdentifier) {
+				assertDoesNotThrow(() -> createModelFromString(String.format(topLevelAnnotation, input)));
+			}
 		}
 	}
 
-private static CtModel createModelFromPath(String path) {
-		return new FluentLauncher().inputResource(path).noClasspath(false).buildModel();
+
+	private CtModel createModelFromPath(String path) {
+		return new FluentLauncher().inputResource(path).buildModel();
 	}
-	private static CtModel createModelFromString(String path) {
-		return new FluentLauncher().inputResource(path).noClasspath(false).buildModel();
+
+	private CtModel createModelFromString(String path) {
+		return new FluentLauncher().inputResource(path).buildModel();
 	}
+
+	private static Collection<String> combineTwoLists(Collection<String> input1,
+			Collection<String> input2) {
+		Set<String> result = new HashSet<>();
+		for (String string : input1) {
+			for (String string2 : result) {
+				result.add(string + string2);
+			}
+		}
+		return result;
+	}
+
+	private static Collection<String> arrayIdentifier = Arrays.asList("[]", "[][]", "[][][][]");
+	private static Collection<String> correctIdentifier =
+			Arrays.asList("fii", "bar", "batz", "hahjashjashjdsaj");
+	private static List<String> keywords = Arrays.asList("package", "new", "_");
+	private static Collection<String> booleanLiterals = Arrays.asList("true", "false");
+	private static Collection<String> nullLiteral = Arrays.asList("null");
+	private static Collection<String> genericSuffixes =
+			Arrays.asList("<?>", "<? extends Foo>", "<? super X>", "<? extends <X super Y>>");
 }

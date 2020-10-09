@@ -122,14 +122,14 @@ public class IdentifierVerifier {
 	private static final String WILDCARD_STRING = "?";
 	private static Set<String> keywords = fillWithKeywords();
 	private static Set<String> typeKeywords = fillWithTypeKeywords();
-	private boolean lenient;
+	private boolean lenient = true;
 	private boolean strictMode;
 	private SpoonException exception;
 
 	private static String identifierError =
-			"The identifier %s in %s at %s violates contract defined in jls 3.8 for identifier, because it has illegal chars.";
+			"The identifier %s for element %s violates contract defined in jls 3.8 for identifier, because it has illegal chars.";
 	private static String keywordError =
-			"The identifier %s in %s at %s violates contract defined in jls 3.8 for identifier, because it is a keyword.";
+			"The identifier %s for element %s violates contract defined in jls 3.8 for identifier, because it is a keyword.";
 
 	public Optional<SpoonException> checkIdentifier(CtElement element) {
 		try {
@@ -199,57 +199,43 @@ public class IdentifierVerifier {
 		public <T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite) {
 		}
 
+		@NoIdentifier
 		@Override
 		public <T> void visitCtArrayTypeReference(CtArrayTypeReference<T> reference) {
-			String identifier = reference.getSimpleName();
-			// arrayTypeReferences have one or multiple [] at the end
-			identifier = identifier.replaceAll(ARRAY_SUFFIX_REGEX, "");
-			if (!strictMode || reference.isLocalType()) {
-				// local types have a numeric prefix, we need to remove.
-				identifier = convertLocalTypeIdentifier(identifier);
-			}
-			//wildcard identifiers "?" happen for typeReferences.
-			checkInvertedCondition((name) -> isJavaIdentifier(name) && isWildcard(name), identifier, () -> createException(identifierError, reference));
-			if (isKeyword(identifier) || isNullLiteral(identifier)) {
-				exception = createException(keywordError, reference);
-				return;
-			}
-
 		}
 
+		@NoIdentifier
 		@Override
 		public <T> void visitCtAssert(CtAssert<T> asserted) {
-			// CtAssert have no identifier => no check needed
 		}
 
+		@NoIdentifier
 		@Override
 		public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignement) {
-			// CtAssignment have no identifier => no check needed
 		}
 
+		@NoIdentifier
 		@Override
 		public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
-			// CtBinaryOperator have no identifier => no check needed
 		}
 
+		@NoIdentifier
 		@Override
 		public <R> void visitCtBlock(CtBlock<R> block) {
-			// CtBlock have no identifier => no check needed
 		}
 
+		@NoIdentifier
 		@Override
 		public void visitCtBreak(CtBreak breakStatement) {
-			// CtBreak have no identifier => no check needed
 		}
 
+		@NoIdentifier
 		@Override
 		public <S> void visitCtCase(CtCase<S> caseStatement) {
-			// CtCase have no identifier => no check needed
 		}
 
 		@Override
 		public void visitCtCatch(CtCatch catchBlock) {
-			// CtCatch have no identifier => no check needed
 		}
 
 		@Override
@@ -1058,8 +1044,7 @@ public class IdentifierVerifier {
 		 * @return a @link{spoon.SpoonException.SpoonException(String)}, with the reason.
 		 */
 		private SpoonException createException(String rawOutput, CtNamedElement element) {
-			return new SpoonException(String.format(identifierError, element.getSimpleName(),
-					element.getPath(), element.getPosition().toString()));
+			return new SpoonException(String.format(identifierError, element.getSimpleName(), element));
 		}
 
 		/**
@@ -1069,11 +1054,7 @@ public class IdentifierVerifier {
 		 * @return a @link{spoon.SpoonException.SpoonException(String)}, with the reason.
 		 */
 		private SpoonException createException(String rawOutput, CtReference element) {
-			return element.isParentInitialized()
-					? new SpoonException(String.format(identifierError, element.getSimpleName(),
-							element.getPath(), element.getPosition().toString()))
-					: new SpoonException(String.format(identifierError, element.getSimpleName(), "",
-							element.getPosition().toString()));
+			return new SpoonException(String.format(identifierError, element.getSimpleName(), element));
 		}
 	};
 
