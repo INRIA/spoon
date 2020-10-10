@@ -235,7 +235,7 @@ public class IdentifierVerifier {
 		public void visitCtCatch(CtCatch catchBlock) {
 		}
 
-		@SupportedIdentifiers(localType = true)
+		@SupportedIdentifiers(localType = true, typeKeyword = true)
 		@Override
 		public <T> void visitCtClass(CtClass<T> ctClass) {
 			String identifier = ctClass.getSimpleName();
@@ -253,7 +253,6 @@ public class IdentifierVerifier {
 			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, ctClass));
 
 			checkCondition(this::isKeyword, identifier, () -> createException(keywordError, ctClass));
-			checkCondition(this::isTypeKeyword, identifier, () -> createException(keywordError, ctClass));
 			checkCondition(this::isNullLiteral, identifier, () -> createException(keywordError, ctClass));
 			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, ctClass));
 			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, ctClass));
@@ -367,7 +366,7 @@ public class IdentifierVerifier {
 		public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 			String identifier = reference.getSimpleName();
 			for (String identifierPart : identifier.split("\\.")) {
-				checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, reference));
+				checkInvertedCondition(this::isJavaIdentifier, identifierPart, () -> createException(identifierError, reference));
 
 				checkCondition(this::isKeyword, identifierPart, () -> createException(keywordError, reference));
 				checkCondition(this::isTypeKeyword, identifierPart, () -> createException(keywordError, reference));
@@ -379,13 +378,14 @@ public class IdentifierVerifier {
 		@Override
 		public <T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference) {
 			String identifier = reference.getSimpleName();
-			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, reference));
+			for (String identifierPart : identifier.split("\\.")) {
+				checkInvertedCondition(this::isJavaIdentifier, identifierPart, () -> createException(identifierError, reference));
 
-			checkCondition(this::isKeyword, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isTypeKeyword, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isNullLiteral, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, reference));
+				checkCondition(this::isKeyword, identifierPart, () -> createException(keywordError, reference));
+				checkCondition(this::isTypeKeyword, identifierPart, () -> createException(keywordError, reference));
+				checkCondition(this::isNullLiteral, identifierPart, () -> createException(keywordError, reference));
+				checkCondition(this::isBooleanLiteral, identifierPart, () -> createException(keywordError, reference));
+			}
 		}
 		@NoIdentifier
 		@Override
@@ -448,13 +448,14 @@ public class IdentifierVerifier {
 		@Override
 		public <T> void visitCtLocalVariableReference(CtLocalVariableReference<T> reference) {
 			String identifier = reference.getSimpleName();
-			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, reference));
+			for (String identifierPart : identifier.split("\\.")) {
+				checkInvertedCondition(this::isJavaIdentifier, identifierPart, () -> createException(identifierError, reference));
 
-			checkCondition(this::isKeyword, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isTypeKeyword, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isNullLiteral, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, reference));
+				checkCondition(this::isKeyword, identifierPart, () -> createException(keywordError, reference));
+				checkCondition(this::isTypeKeyword, identifierPart, () -> createException(keywordError, reference));
+				checkCondition(this::isNullLiteral, identifierPart, () -> createException(keywordError, reference));
+				checkCondition(this::isBooleanLiteral, identifierPart, () -> createException(keywordError, reference));
+			}
 		}
 
 		@Override
@@ -472,13 +473,14 @@ public class IdentifierVerifier {
 		@Override
 		public <T> void visitCtCatchVariableReference(CtCatchVariableReference<T> reference) {
 			String identifier = reference.getSimpleName();
-			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, reference));
+			for (String identifierPart : identifier.split("\\.")) {
+				checkInvertedCondition(this::isJavaIdentifier, identifierPart, () -> createException(identifierError, reference));
 
-			checkCondition(this::isKeyword, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isTypeKeyword, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isNullLiteral, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, reference));
+				checkCondition(this::isKeyword, identifierPart, () -> createException(keywordError, reference));
+				checkCondition(this::isTypeKeyword, identifierPart, () -> createException(keywordError, reference));
+				checkCondition(this::isNullLiteral, identifierPart, () -> createException(keywordError, reference));
+				checkCondition(this::isBooleanLiteral, identifierPart, () -> createException(keywordError, reference));
+			}
 		}
 
 		@Override
@@ -587,6 +589,9 @@ public class IdentifierVerifier {
 		@Override
 		public <T> void visitCtParameter(CtParameter<T> parameter) {
 			String identifier = parameter.getSimpleName();
+			if (identifier.equals("this")) {
+				return;
+			}
 			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, parameter));
 
 			checkCondition(this::isKeyword, identifier, () -> createException(keywordError, parameter));
@@ -599,14 +604,15 @@ public class IdentifierVerifier {
 		@Override
 		public <T> void visitCtParameterReference(CtParameterReference<T> reference) {
 			String identifier = reference.getSimpleName();
-			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, reference));
+			// sometime parameterReference is this
+			for (String identifierPart : identifier.split("\\.")) {
+				checkInvertedCondition(this::isJavaIdentifier, identifierPart, () -> createException(identifierError, reference));
 
-			checkCondition(this::isKeyword, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isTypeKeyword, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isNullLiteral, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, reference));
-			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, reference));
-
+				checkCondition(this::isKeyword, identifierPart, () -> createException(keywordError, reference));
+				checkCondition(this::isTypeKeyword, identifierPart, () -> createException(keywordError, reference));
+				checkCondition(this::isNullLiteral, identifierPart, () -> createException(keywordError, reference));
+				checkCondition(this::isBooleanLiteral, identifierPart, () -> createException(keywordError, reference));
+			}
 		}
 		@NoIdentifier
 		@Override
@@ -651,13 +657,13 @@ public class IdentifierVerifier {
 		public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
 			// CtTryWithResource have no identifier => no check needed
 		}
-		@SupportedIdentifiers(fqName = true)
+		@SupportedIdentifiers(fqName = true, generics = true)
 		@Override
 		public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
-
-			//TODO: can generic refer to a local type???
-			// when dont check for wildcard here, because a generic Type cant refere to wildcard. class Foo<?> is not legal java.
+			// when dont check for wildcard here, because a generic Type cant refer to wildcard. class Foo<?> is not legal java.
 			String identifier = ref.getSimpleName();
+			// sometimes we have Cache.Entry<K or V>
+			identifier = identifier.replaceAll("(<.*)|>", "");
 			for (String part : identifier.split("\\.")) {
 				checkInvertedCondition(this::isJavaIdentifier, part, () -> createException(identifierError, ref));
 
@@ -734,16 +740,12 @@ public class IdentifierVerifier {
 				// local types have a numeric prefix, we need to remove.
 				identifier = convertLocalTypeIdentifier(identifier);
 			}
-			if (!isJavaIdentifier(identifier)) {
-				exception = createException(identifierError, reference);
-				return;
+			for (String identifierPart : identifier.split("\\.")) {
+				checkInvertedCondition(this::isJavaIdentifier, identifierPart, () -> createException(identifierError, reference));
+				// type references can reference to types => dont check them
+				checkCondition(this::isKeyword, identifierPart, () -> createException(keywordError, reference));
+				checkCondition(this::isBooleanLiteral, identifierPart, () -> createException(keywordError, reference));
 			}
-			// some type references have simpleName null. TODO: Why and not NULL_TYPE_NAME?
-			if (isKeyword(identifier) || isBooleanLiteral(identifier)) {
-				exception = createException(keywordError, reference);
-				return;
-			}
-
 		}
 		@NoIdentifier
 		@Override
@@ -818,25 +820,29 @@ public class IdentifierVerifier {
 				// unnamend module is allowed
 				return;
 			}
-			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, module));
+			for (String part : identifier.split("\\.")) {
+				checkInvertedCondition(this::isJavaIdentifier, part, () -> createException(identifierError, module));
 
-			checkCondition(this::isKeyword, identifier, () -> createException(keywordError, module));
-			checkCondition(this::isTypeKeyword, identifier, () -> createException(keywordError, module));
-			checkCondition(this::isNullLiteral, identifier, () -> createException(keywordError, module));
-			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, module));
-			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, module));
+				checkCondition(this::isKeyword, part, () -> createException(keywordError, module));
+				checkCondition(this::isTypeKeyword, part, () -> createException(keywordError, module));
+				checkCondition(this::isNullLiteral, part, () -> createException(keywordError, module));
+				checkCondition(this::isBooleanLiteral, part, () -> createException(keywordError, module));
+				checkCondition(this::isClassLiteral, part, () -> createException(keywordError, module));
+			}
 		}
 
 		@Override
 		public void visitCtModuleReference(CtModuleReference moduleReference) {
 			String identifier = moduleReference.getSimpleName();
-			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, moduleReference));
+			for (String part : identifier.split("\\.")) {
+				checkInvertedCondition(this::isJavaIdentifier, part, () -> createException(identifierError, moduleReference));
 
-			checkCondition(this::isKeyword, identifier, () -> createException(keywordError, moduleReference));
-			checkCondition(this::isTypeKeyword, identifier, () -> createException(keywordError, moduleReference));
-			checkCondition(this::isNullLiteral, identifier, () -> createException(keywordError, moduleReference));
-			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, moduleReference));
-			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, moduleReference));
+				checkCondition(this::isKeyword, part, () -> createException(keywordError, moduleReference));
+				checkCondition(this::isTypeKeyword, part, () -> createException(keywordError, moduleReference));
+				checkCondition(this::isNullLiteral, part, () -> createException(keywordError, moduleReference));
+				checkCondition(this::isBooleanLiteral, part, () -> createException(keywordError, moduleReference));
+				checkCondition(this::isClassLiteral, part, () -> createException(keywordError, moduleReference));
+			}
 
 		}
 		@NoIdentifier
