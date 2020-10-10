@@ -168,7 +168,7 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 			return objects;
 		}
 		if (String.class.isAssignableFrom(c)) {
-			return "42";
+			return "FooBar";
 		}
 		if (int.class.isAssignableFrom(c)) {
 			return 42;
