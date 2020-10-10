@@ -43,23 +43,22 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 		String nameBefore = this.simpleName;
 		this.simpleName = simpleName;
 		//TODO: MartinWitt verifier is null. Why?
-		if (verifier != null) {
-		Optional<SpoonException> error = verifier.checkIdentifier(this);
-		if (error.isPresent()) {
-			this.simpleName = nameBefore;
-			if (factory == null || !factory.getEnvironment().checksAreSkipped()) {
-				throw error.get();
+		if (verifier != null && !factory.getEnvironment().checksAreSkipped()) {
+			Optional<SpoonException> error = verifier.checkIdentifier(this);
+			if (error.isPresent()) {
+				this.simpleName = nameBefore;
+				if (factory == null || !factory.getEnvironment().checksAreSkipped()) {
+					throw error.get();
+				}
 			}
 		}
-	}
 		if (factory == null) {
-			this.simpleName = simpleName;
 			return (T) this;
 		}
 		if (factory instanceof FactoryImpl) {
 			simpleName = ((FactoryImpl) factory).dedup(simpleName);
 		}
-		getFactory().getEnvironment()
+		factory.getEnvironment()
 				.getModelChangeListener()
 				.onObjectUpdate(this, NAME, simpleName, nameBefore);
 		this.simpleName = simpleName;

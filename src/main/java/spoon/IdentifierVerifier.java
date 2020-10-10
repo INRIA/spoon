@@ -122,7 +122,6 @@ public class IdentifierVerifier {
 	private static final String WILDCARD_STRING = "?";
 	private static Set<String> keywords = fillWithKeywords();
 	private static Set<String> typeKeywords = fillWithTypeKeywords();
-	private boolean lenient = true;
 	private boolean strictMode;
 	private SpoonException exception;
 
@@ -135,11 +134,7 @@ public class IdentifierVerifier {
 		try {
 			element.accept(identifierVisitor);
 		} catch (SpoonException e) {
-			if (lenient) {
-				throw exception;
-			} else {
 				return Optional.of(e);
-			}
 		}
 		return Optional.empty();
 	}
@@ -174,7 +169,7 @@ public class IdentifierVerifier {
 		@SupportedIdentifiers()
 		@Override
 		public <A extends Annotation> void visitCtAnnotationType(CtAnnotationType<A> annotationType) {
-			// A java annoation is never a localType => there is no prefix
+			// A java annotation is never a localType => there is no prefix
 			String identifier = annotationType.getSimpleName();
 			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, annotationType));
 
@@ -182,6 +177,7 @@ public class IdentifierVerifier {
 			checkCondition(this::isTypeKeyword, identifier, () -> createException(keywordError, annotationType));
 			checkCondition(this::isNullLiteral, identifier, () -> createException(keywordError, annotationType));
 			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, annotationType));
+			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, annotationType));
 		}
 
 		@NoIdentifier
@@ -234,10 +230,12 @@ public class IdentifierVerifier {
 		public <S> void visitCtCase(CtCase<S> caseStatement) {
 		}
 
+		@NoIdentifier
 		@Override
 		public void visitCtCatch(CtCatch catchBlock) {
 		}
 
+		@SupportedIdentifiers(localType = true)
 		@Override
 		public <T> void visitCtClass(CtClass<T> ctClass) {
 			String identifier = ctClass.getSimpleName();
@@ -249,108 +247,99 @@ public class IdentifierVerifier {
 				// local types have a numeric prefix, we need to remove.
 				identifier = convertLocalTypeIdentifier(identifier);
 			}
-			if (!isJavaIdentifier(identifier)) {
-				exception = createException(identifierError, ctClass);
-				return;
-			}
-			if (isKeyword(identifier) || isNullLiteral(identifier) || isBooleanLiteral(identifier)
-					|| isTypeKeyword(identifier)) {
-				exception = createException(keywordError, ctClass);
-				return;
-			}
-		}
 
+			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, ctClass));
+
+			checkCondition(this::isKeyword, identifier, () -> createException(keywordError, ctClass));
+			checkCondition(this::isTypeKeyword, identifier, () -> createException(keywordError, ctClass));
+			checkCondition(this::isNullLiteral, identifier, () -> createException(keywordError, ctClass));
+			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, ctClass));
+			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, ctClass));
+
+		}
+		@SupportedIdentifiers(localType = true)
 		@Override
 		public void visitCtTypeParameter(CtTypeParameter typeParameter) {
+			// a type parameter is like 'class Foo<A>' "A"
 			String identifier = typeParameter.getSimpleName();
 			if (!strictMode || typeParameter.isLocalType()) {
 				// local types have a numeric prefix, we need to remove.
 				identifier = convertLocalTypeIdentifier(identifier);
 			}
-			if (!isJavaIdentifier(identifier)) {
-				exception = createException(identifierError, typeParameter);
-				return;
-			}
-			if (isKeyword(identifier) || isNullLiteral(identifier) || isBooleanLiteral(identifier)) {
-				exception = createException(keywordError, typeParameter);
-				return;
-			}
+
+			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, typeParameter));
+
+			checkCondition(this::isKeyword, identifier, () -> createException(keywordError, typeParameter));
+			checkCondition(this::isTypeKeyword, identifier, () -> createException(keywordError, typeParameter));
+			checkCondition(this::isNullLiteral, identifier, () -> createException(keywordError, typeParameter));
+			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, typeParameter));
+			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, typeParameter));
 		}
 
+		@NoIdentifier
 		@Override
 		public <T> void visitCtConditional(CtConditional<T> conditional) {
 			// CtConditional have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public <T> void visitCtConstructor(CtConstructor<T> c) {
 			// maybe check here for consistency reasons, even if the case shouldn't exist.
 			checkInvertedCondition((name) -> name.equals(CONSTRUCTOR_NAME), c.getSimpleName(), () -> createException(identifierError, c));
 		}
 
+		@NoIdentifier
 		@Override
 		public void visitCtContinue(CtContinue continueStatement) {
 			// CtContinue have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtDo(CtDo doLoop) {
 			// CtDo have no identifier => no check needed
 		}
 
+		@SupportedIdentifiers()
 		@Override
 		public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
 			String identifier = ctEnum.getSimpleName();
-			if (ctEnum.isAnonymous()) {
-				// anonymous classes have no identifier but only numbers. No reason to check it.
-				return;
-			}
-			if (!strictMode || ctEnum.isLocalType()) {
-				// local types have a numeric prefix, we need to remove.
-				identifier = convertLocalTypeIdentifier(identifier);
-			}
-			if (!isJavaIdentifier(identifier)) {
-				exception = createException(identifierError, ctEnum);
-				return;
-			}
-			if (isKeyword(identifier) || isNullLiteral(identifier) || isBooleanLiteral(identifier)
-					|| isTypeKeyword(identifier)) {
-				exception = createException(keywordError, ctEnum);
-				return;
-			}
+			// enums are never a local type or anonymous
+			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, ctEnum));
 
+			checkCondition(this::isKeyword, identifier, () -> createException(keywordError, ctEnum));
+			checkCondition(this::isTypeKeyword, identifier, () -> createException(keywordError, ctEnum));
+			checkCondition(this::isNullLiteral, identifier, () -> createException(keywordError, ctEnum));
+			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, ctEnum));
+			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, ctEnum));
 		}
 
 		@Override
 		public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
 			String identifier = reference.getSimpleName();
-			if (identifier.equals(CONSTRUCTOR_NAME)) {
+			if (identifier.equals(CONSTRUCTOR_NAME) && reference.isConstructor()) {
 				// we allow <init> method references
 				return;
 			}
-			if (!isJavaIdentifier(identifier)) {
-				exception = createException(identifierError, reference);
-				return;
-			}
-			if (isKeyword(identifier) || isNullLiteral(identifier) || isBooleanLiteral(identifier)
-					|| isTypeKeyword(identifier)) {
-				exception = createException(keywordError, reference);
-				return;
-			}
+			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, reference));
+
+			checkCondition(this::isKeyword, identifier, () -> createException(keywordError, reference));
+			checkCondition(this::isTypeKeyword, identifier, () -> createException(keywordError, reference));
+			checkCondition(this::isNullLiteral, identifier, () -> createException(keywordError, reference));
+			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, reference));
+			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, reference));
 		}
 
 		@Override
 		public <T> void visitCtField(CtField<T> f) {
 			String identifier = f.getSimpleName();
-			if (!isJavaIdentifier(identifier)) {
-				exception = createException(identifierError, f);
-				return;
-			}
-			if (isKeyword(identifier) || isNullLiteral(identifier) || isBooleanLiteral(identifier)
-					|| isTypeKeyword(identifier)) {
-				exception = createException(keywordError, f);
-				return;
-			}
+
+			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, f));
+
+			checkCondition(this::isKeyword, identifier, () -> createException(keywordError, f));
+			checkCondition(this::isTypeKeyword, identifier, () -> createException(keywordError, f));
+			checkCondition(this::isNullLiteral, identifier, () -> createException(keywordError, f));
+			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, f));
+			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, f));
 		}
 
 		@Override
@@ -367,6 +356,7 @@ public class IdentifierVerifier {
 			}
 		}
 
+		@NoIdentifier
 		@Override
 		public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
 			// CtThisAccess have no identifier => no check needed
@@ -386,7 +376,6 @@ public class IdentifierVerifier {
 			}
 		}
 
-
 		@Override
 		public <T> void visitCtUnboundVariableReference(CtUnboundVariableReference<T> reference) {
 			String identifier = reference.getSimpleName();
@@ -400,17 +389,18 @@ public class IdentifierVerifier {
 				return;
 			}
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtFor(CtFor forLoop) {
 			// CtFor have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtForEach(CtForEach foreach) {
 			// CtForEach have no identifier => no check needed
 		}
 
+		@NoIdentifier
 		@Override
 		public void visitCtIf(CtIf ifElement) {
 			// CtIf have no identifier => no check needed
@@ -434,10 +424,12 @@ public class IdentifierVerifier {
 			}
 		}
 
+		@NoIdentifier
 		@Override
 		public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 			// CtInvocation have no identifier => no check needed
 		}
+		@NoIdentifier
 
 		@Override
 		public <T> void visitCtLiteral(CtLiteral<T> literal) {
@@ -530,17 +522,19 @@ public class IdentifierVerifier {
 			}
 
 		}
-
+		@NoIdentifier
 		@Override
 		public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 			// CtNewArray have no identifier => no check needed
 		}
 
+		@NoIdentifier
 		@Override
 		public <T> void visitCtConstructorCall(CtConstructorCall<T> ctConstructorCall) {
 			// CtConstructorCall have no identifier => no check needed
 		}
 
+		@NoIdentifier
 		@Override
 		public <T> void visitCtNewClass(CtNewClass<T> newClass) {
 			// CtNewClass have no identifier => no check needed
@@ -555,12 +549,14 @@ public class IdentifierVerifier {
 			}
 		}
 
+		@NoIdentifier
 		@Override
 		public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(
 				CtExecutableReferenceExpression<T, E> expression) {
 			// CtExecutableReferenceExpression have no identifier => no check needed
 		}
 
+		@NoIdentifier
 		@Override
 		public <T, A extends T> void visitCtOperatorAssignment(CtOperatorAssignment<T, A> assignment) {
 			// CtOperatorAssignment have no identifier => no check needed
@@ -636,45 +632,45 @@ public class IdentifierVerifier {
 			}
 
 		}
-
+		@NoIdentifier
 		@Override
 		public <R> void visitCtReturn(CtReturn<R> returnStatement) {
 			// CtReturn have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public <R> void visitCtStatementList(CtStatementList statements) {
 			// CtStatementList have no identifier => no check needed
 
 		}
-
+		@NoIdentifier
 		@Override
 		public <S> void visitCtSwitch(CtSwitch<S> switchStatement) {
 			// CtSwitch have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public <T, S> void visitCtSwitchExpression(CtSwitchExpression<T, S> switchExpression) {
 			// CtSwitchExpression have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtSynchronized(CtSynchronized synchro) {
 			// CtSynchronized have no identifier => no check needed
 
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtThrow(CtThrow throwStatement) {
 			// CtThrow have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtTry(CtTry tryBlock) {
 			// CtTry have no identifier => no check needed
 
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
 			// CtTryWithResource have no identifier => no check needed
@@ -719,7 +715,7 @@ public class IdentifierVerifier {
 			String identifier = reference.getSimpleName();
 			// arrayTypeReferences have one or multiple [] at the end
 			identifier = identifier.replaceAll(ARRAY_SUFFIX_REGEX, "");
-			if (strictMode || reference.isLocalType()) {
+			if (!strictMode || reference.isLocalType()) {
 				// local types have a numeric prefix, we need to remove.
 				identifier = convertLocalTypeIdentifier(identifier);
 			}
@@ -770,67 +766,67 @@ public class IdentifierVerifier {
 			}
 
 		}
-
+		@NoIdentifier
 		@Override
 		public <T> void visitCtTypeAccess(CtTypeAccess<T> typeAccess) {
 			// CtTypeAccess have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
 			// CtUnaryOperator have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
 			// CtVariableRead have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
 			// CtVariableWrite have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtWhile(CtWhile whileLoop) {
 			// CtWhile have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public <T> void visitCtAnnotationFieldAccess(CtAnnotationFieldAccess<T> annotationFieldAccess) {
 			// CtAnnotationFieldAccess have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public <T> void visitCtFieldRead(CtFieldRead<T> fieldRead) {
 			// CtSuperAccess have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public <T> void visitCtFieldWrite(CtFieldWrite<T> fieldWrite) {
 			// CtFieldWrite have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public <T> void visitCtSuperAccess(CtSuperAccess<T> f) {
 			// CtSuperAccess have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtComment(CtComment comment) {
 			// CtComment have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtJavaDoc(CtJavaDoc comment) {
 			// CtJavaDoc have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtJavaDocTag(CtJavaDocTag docTag) {
 			//TODO: do they have limitations?
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtImport(CtImport ctImport) {
 			// CtImport have no identifier => no check needed
@@ -868,32 +864,32 @@ public class IdentifierVerifier {
 			}
 
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtPackageExport(CtPackageExport moduleExport) {
 			// CtPackageExport have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtModuleRequirement(CtModuleRequirement moduleRequirement) {
 			// CtModuleRequirement have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtProvidedService(CtProvidedService moduleProvidedService) {
 			// CtProvidedService have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtUsedService(CtUsedService usedService) {
 			// CtUsedService have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtCompilationUnit(CtCompilationUnit compilationUnit) {
 			// CtCompilationUnit have no identifier => no check needed
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtPackageDeclaration(CtPackageDeclaration packageDeclaration) {
 			// CtPackageDeclaration have no identifier => no check needed
@@ -920,7 +916,7 @@ public class IdentifierVerifier {
 				return;
 			}
 		}
-
+		@NoIdentifier
 		@Override
 		public void visitCtYieldStatement(CtYieldStatement statement) {
 			// CtYieldStatement have no identifier => no check needed
@@ -1044,7 +1040,7 @@ public class IdentifierVerifier {
 		 * @return a @link{spoon.SpoonException.SpoonException(String)}, with the reason.
 		 */
 		private SpoonException createException(String rawOutput, CtNamedElement element) {
-			return new SpoonException(String.format(identifierError, element.getSimpleName(), element));
+			return new SpoonException(String.format(identifierError, element.getSimpleName(), element.getPosition()));
 		}
 
 		/**
@@ -1054,7 +1050,7 @@ public class IdentifierVerifier {
 		 * @return a @link{spoon.SpoonException.SpoonException(String)}, with the reason.
 		 */
 		private SpoonException createException(String rawOutput, CtReference element) {
-			return new SpoonException(String.format(identifierError, element.getSimpleName(), element));
+			return new SpoonException(String.format(identifierError, element.getSimpleName(), element.getPosition()));
 		}
 	};
 
@@ -1079,23 +1075,23 @@ public class IdentifierVerifier {
 
 	private @interface SupportedIdentifiers {
 		/** Element can have generic brackets <>*/
-		boolean generics = false;
+		boolean generics() default false;
 		/** Element can have array ending as suffix in identifier */
-		boolean arrays = false;
+		boolean arrays() default false;;
 		/** Element identifier can be a FQ Name */
-		boolean fqName = false;
+		boolean fqName() default false;;
 		/** Element can be a localType and have a numeric prefix in identifier */
-		boolean localType = false;
+		boolean localType() default false;;
 		/** Element identifier can be a wildCard '?' */
-		boolean wildCard = false;
+		boolean wildCard() default false;;
 		/** Element identifier can be a type keyword */
-		boolean typeKeyword = false;
+		boolean typeKeyword() default false;;
 		/** Element identifier can be class keyword */
-		boolean classKeyword = false;
+		boolean classKeyword() default false;;
 		/** Element identifier can be "null" */
-		boolean nullLiteral = false;
+		boolean nullLiteral() default false;;
 		/** Element identifier can be boolean literal */
-		boolean booleanLiteral = false;
+		boolean booleanLiteral() default false;;
 
 	}
 	/** Element has no checkable identifier, no rules or a static identifier */
