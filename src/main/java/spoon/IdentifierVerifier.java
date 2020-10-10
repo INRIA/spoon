@@ -243,6 +243,8 @@ public class IdentifierVerifier {
 				// anonymous classes have no identifier but only numbers. No reason to check it.
 				return;
 			}
+			// we have classes like int[]
+			identifier = identifier.replaceAll(ARRAY_SUFFIX_REGEX, "");
 			if (!strictMode || ctClass.isLocalType()) {
 				// local types have a numeric prefix, we need to remove.
 				identifier = convertLocalTypeIdentifier(identifier);
@@ -328,6 +330,7 @@ public class IdentifierVerifier {
 			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, reference));
 			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, reference));
 		}
+
 		@SupportedIdentifiers()
 		@Override
 		public <T> void visitCtField(CtField<T> f) {
@@ -648,19 +651,22 @@ public class IdentifierVerifier {
 		public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
 			// CtTryWithResource have no identifier => no check needed
 		}
-
+		@SupportedIdentifiers(fqName = true)
 		@Override
 		public void visitCtTypeParameterReference(CtTypeParameterReference ref) {
+
 			//TODO: can generic refer to a local type???
 			// when dont check for wildcard here, because a generic Type cant refere to wildcard. class Foo<?> is not legal java.
 			String identifier = ref.getSimpleName();
-			checkInvertedCondition(this::isJavaIdentifier, identifier, () -> createException(identifierError, ref));
+			for (String part : identifier.split("\\.")) {
+				checkInvertedCondition(this::isJavaIdentifier, part, () -> createException(identifierError, ref));
 
-			checkCondition(this::isKeyword, identifier, () -> createException(keywordError, ref));
-			checkCondition(this::isTypeKeyword, identifier, () -> createException(keywordError, ref));
-			checkCondition(this::isNullLiteral, identifier, () -> createException(keywordError, ref));
-			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, ref));
-			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, ref));
+				checkCondition(this::isKeyword, part, () -> createException(keywordError, ref));
+				checkCondition(this::isTypeKeyword, part, () -> createException(keywordError, ref));
+				checkCondition(this::isNullLiteral, part, () -> createException(keywordError, ref));
+				checkCondition(this::isBooleanLiteral, part, () -> createException(keywordError, ref));
+				checkCondition(this::isClassLiteral, part, () -> createException(keywordError, ref));
+			}
 		}
 
 		@Override
