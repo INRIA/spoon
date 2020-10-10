@@ -21,6 +21,7 @@ import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtLocalVariableReference;
@@ -493,6 +494,85 @@ public class CorrectIdentifierTest {
 			}
 		}
 	}
+	@Nested
+	class CtFieldTest {
+
+		private String fieldTestString = "public class Foo { int %s;}";
+		private String innerFieldTest = "public class Foo { class Bar { int %s}}";
+
+		@Test
+		public void testKeywordsCtField() {
+			CtField<?> field = new Launcher().getFactory().createField();
+			String nameBefore = field.getSimpleName();
+			for (String keyword : keywords) {
+				assertThrows(SpoonException.class, () -> field.setSimpleName(keyword));
+				// name mustn't change, after setting an invalid
+				assertEquals(field.getSimpleName(), nameBefore);
+			}
+		}
+
+		@Test
+		public void testNullLiteralCtField() {
+			CtField<?> field = new Launcher().getFactory().createField();
+			String nameBefore = field.getSimpleName();
+			for (String input : nullLiteral) {
+				assertThrows(SpoonException.class, () -> field.setSimpleName(input));
+				// name mustn't change, after setting an invalid
+				assertEquals(field.getSimpleName(), nameBefore);
+			}
+		}
+
+
+		@Test
+		public void testClassLiteralCtField() {
+			CtField<?> field = new Launcher().getFactory().createField();
+			String nameBefore = field.getSimpleName();
+			for (String input : classLiteral) {
+				assertThrows(SpoonException.class, () -> field.setSimpleName(input));
+				// name mustn't change, after setting an invalid
+				assertEquals(field.getSimpleName(), nameBefore);
+			}
+		}
+
+		@Test
+		public void testBooleanLiteralsCtField() {
+			CtField<?> field = new Launcher().getFactory().createField();
+			String nameBefore = field.getSimpleName();
+			for (String input : booleanLiterals) {
+				assertThrows(SpoonException.class, () -> field.setSimpleName(input));
+				// name mustn't change, after setting an invalid
+				assertEquals(field.getSimpleName(), nameBefore);
+			}
+		}
+
+		@Test
+		public void testWrongLiteralsCtField() {
+			List<String> inputs = new ArrayList<>();
+			inputs.addAll(combineTwoLists(correctIdentifier, arrayIdentifier));
+			inputs.addAll(combineTwoLists(correctIdentifier, genericSuffixes));
+			CtField<?> field = new Launcher().getFactory().createField();
+			String nameBefore = field.getSimpleName();
+			for (String input : inputs) {
+				assertThrows(SpoonException.class, () -> field.setSimpleName(input));
+				// name mustn't change, after setting an invalid
+				assertEquals(field.getSimpleName(), nameBefore);
+			}
+		}
+
+		@Test
+		public void testCorrectLiteralsCtField() {
+			List<String> inputs = new ArrayList<>();
+			inputs.addAll(combineTwoLists(correctIdentifier, genericSuffixes));
+			inputs.addAll(combineTwoLists(correctIdentifier, correctIdentifier));
+
+			for (String input : inputs) {
+				assertDoesNotThrow(() -> createModelFromString(String.format(fieldTestString, input)));
+				assertDoesNotThrow(() -> createModelFromString(String.format(innerFieldTest, input)));
+
+			}
+		}
+	}
+
 	private CtModel createModelFromPath(String path) {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(path);

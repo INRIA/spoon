@@ -312,7 +312,7 @@ public class IdentifierVerifier {
 			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, ctEnum));
 			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, ctEnum));
 		}
-
+		@SupportedIdentifiers()
 		@Override
 		public <T> void visitCtExecutableReference(CtExecutableReference<T> reference) {
 			String identifier = reference.getSimpleName();
@@ -328,7 +328,7 @@ public class IdentifierVerifier {
 			checkCondition(this::isBooleanLiteral, identifier, () -> createException(keywordError, reference));
 			checkCondition(this::isClassLiteral, identifier, () -> createException(keywordError, reference));
 		}
-
+		@SupportedIdentifiers()
 		@Override
 		public <T> void visitCtField(CtField<T> f) {
 			String identifier = f.getSimpleName();
@@ -359,7 +359,7 @@ public class IdentifierVerifier {
 		public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
 			// CtThisAccess have no identifier => no check needed
 		}
-
+		@SupportedIdentifiers(classKeyword = true, fqName = true)
 		@Override
 		public <T> void visitCtFieldReference(CtFieldReference<T> reference) {
 			String identifier = reference.getSimpleName();
@@ -370,7 +370,6 @@ public class IdentifierVerifier {
 				checkCondition(this::isTypeKeyword, identifierPart, () -> createException(keywordError, reference));
 				checkCondition(this::isNullLiteral, identifierPart, () -> createException(keywordError, reference));
 				checkCondition(this::isBooleanLiteral, identifierPart, () -> createException(keywordError, reference));
-				checkCondition(this::isClassLiteral, identifierPart, () -> createException(keywordError, reference));
 			}
 		}
 
