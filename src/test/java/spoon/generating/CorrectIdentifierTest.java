@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -305,71 +304,32 @@ public class CorrectIdentifierTest {
 
 		@Test
 		public void testKeywordsCtEnum() {
-			CtClass<?> type = new Launcher().getFactory().createClass();
-			String nameBefore = type.getSimpleName();
-			for (String keyword : keywords) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(keyword));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+
 		}
 
 		@Test
 		public void testNullLiteralCtEnum() {
-			CtClass<?> type = new Launcher().getFactory().createClass();
-			String nameBefore = type.getSimpleName();
-			for (String input : nullLiteral) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+
 		}
 
 
 		@Test
 		public void testClassLiteralCtEnum() {
-			CtClass<?> type = new Launcher().getFactory().createClass();
-			String nameBefore = type.getSimpleName();
-			for (String input : nullLiteral) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+
 		}
 
 		@Test
 		public void testBooleanLiteralsCtEnum() {
-			CtClass<?> type = new Launcher().getFactory().createClass();
-			String nameBefore = type.getSimpleName();
-			for (String input : booleanLiterals) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+
 		}
 
 		@Test
 		public void testWrongLiteralsCtEnum() {
-			List<String> inputs = new ArrayList<>();
-			inputs.addAll(combineTwoLists(correctIdentifier, arrayIdentifier));
-			inputs.addAll(combineTwoLists(correctIdentifier, genericSuffixes));
-			CtClass<?> type = new Launcher().getFactory().createClass();
-			String nameBefore = type.getSimpleName();
-			for (String input : inputs) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+
 		}
 
 		@Test
 		public void testCorrectLiteralsCtEnum() {
-			List<String> inputs = new ArrayList<>();
-			inputs.addAll(combineTwoLists(correctIdentifier, correctIdentifier));
-
-			for (String input : inputs) {
-				assertDoesNotThrow(() -> createModelFromString(String.format(topLevelCtEnum, input)));
-			}
 		}
 	}
 
