@@ -534,7 +534,8 @@ public class IdentifierVerifier {
 		@Override
 		public <T> void visitCtLambda(CtLambda<T> lambda) {
 			String identifier = lambda.getSimpleName();
-			checkInvertedCondition((name) -> name.startsWith(CtExecutableReference.LAMBDA_NAME_PREFIX), identifier, () -> createException(identifierError, lambda));
+			checkInvertedCondition((name) -> name.isEmpty() || name.startsWith(CtExecutableReference.LAMBDA_NAME_PREFIX),
+															identifier, () -> createException(identifierError, lambda));
 		}
 
 		@NoIdentifier
