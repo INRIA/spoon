@@ -289,29 +289,6 @@ public abstract class Parameters {
 	}
 
 	/**
-	 * Creates an empty template parameter of the <code>T</code> type where
-	 * {@link TemplateParameter#S()} does not return <code>null</code> in case
-	 * the template code needs to be executed such as in static initializers.
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> TemplateParameter<T> NIL(Class<? extends T> type) {
-		if (Number.class.isAssignableFrom(type)) {
-			return (TemplateParameter<T>) new TemplateParameter<Number>() {
-				@Override
-				public Number S() {
-					return 0;
-				}
-			};
-		}
-		return new TemplateParameter<T>() {
-			@Override
-			public T S() {
-				return null;
-			}
-		};
-	}
-
-	/**
 	 * returns all the runtime fields of a template representing a template parameter
 	 */
 	public static List<Field> getAllTemplateParameterFields(Class<? extends Template> clazz) {
