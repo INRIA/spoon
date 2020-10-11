@@ -123,13 +123,18 @@ public class IdentifierVerifier {
 	private static Set<String> keywords = fillWithKeywords();
 	private static Set<String> typeKeywords = fillWithTypeKeywords();
 	private boolean strictMode;
-	private SpoonException exception;
 
 	private static String identifierError =
 			"The identifier %s for element %s violates contract defined in jls 3.8 for identifier, because it has illegal chars.";
 	private static String keywordError =
 			"The identifier %s for element %s violates contract defined in jls 3.8 for identifier, because it is a keyword.";
 
+			/**
+			 * //TODO: doc!!
+			 * Checks an identifier for correctnes.
+			 * @param element todo
+			 * @return todo
+			 */
 	public Optional<SpoonException> checkIdentifier(CtElement element) {
 		try {
 			element.accept(identifierVisitor);
@@ -529,10 +534,7 @@ public class IdentifierVerifier {
 		@Override
 		public <T> void visitCtLambda(CtLambda<T> lambda) {
 			String identifier = lambda.getSimpleName();
-			if (!identifier.startsWith(CtExecutableReference.LAMBDA_NAME_PREFIX)) {
-				exception = createException(identifierError, lambda);
-				return;
-			}
+			checkInvertedCondition((name) -> name.startsWith(CtExecutableReference.LAMBDA_NAME_PREFIX), identifier, () -> createException(identifierError, lambda));
 		}
 
 		@NoIdentifier
@@ -890,10 +892,9 @@ public class IdentifierVerifier {
 				checkCondition(this::isBooleanLiteral, part, () -> createException(keywordError, wildcardReference));
 				checkCondition(this::isClassLiteral, part, () -> createException(keywordError, wildcardReference));
 			}
-			if (!identifierParts[identifierParts.length - 1].equals(ASTERISK_LITERAL)) {
-				exception = createException(identifierError, wildcardReference);
-				return;
-			}
+			checkInvertedCondition((string) -> string.equals(ASTERISK_LITERAL),
+														identifierParts[identifierParts.length - 1],
+														() -> createException(keywordError, wildcardReference));
 		}
 		@NoIdentifier
 		@Override
@@ -989,18 +990,7 @@ public class IdentifierVerifier {
 		private boolean isWildcard(String identifier) {
 			return identifier.equals(WILDCARD_STRING);
 		}
-		//TODO: Doc
-		private <T> boolean isFullQName(CtFieldReference<T> reference) {
-			String fqName = reference.getQualifiedName();
-			// the last part is the identifier
-			return fqName.split("#").length != 1;
-		}
-		//TODO: Doc
-		private <T>  String removeFQName(CtFieldReference<T> reference) {
-			String name = reference.getSimpleName();
-			int index = name.lastIndexOf(".");
-			return index >= 0 ? name.substring(index + 1) : name;
-		}
+
 		//TODO: doc
 		private void checkCondition(Predicate<String> check, String identifier, Supplier<SpoonException> error) {
 			if (check.test(identifier)) {

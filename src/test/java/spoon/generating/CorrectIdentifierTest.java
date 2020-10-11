@@ -11,16 +11,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 import org.junit.Ignore;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import spoon.FluentLauncher;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -31,7 +25,6 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -132,6 +125,11 @@ public class CorrectIdentifierTest {
 
 		private String topLevelAnnotation = "public @interface %s { }";
 
+		private CtAnnotationType<?> type;
+		@BeforeEach
+		private void createAnnotation() {
+			type = new Launcher().getFactory().createAnnotationType();;
+		}
 		@Test
 		public void testInnerAnnotation() {
 			String path = "src/test/resources/identifier/annotationType/InnerAnnotation.java";
@@ -140,61 +138,31 @@ public class CorrectIdentifierTest {
 
 		@Test
 		public void testKeywordsAnnotation() {
-			CtAnnotationType<?> type = new Launcher().getFactory().createAnnotationType();
-			String nameBefore = type.getSimpleName();
-			for (String keyword : keywords) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(keyword));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+			checkKeywordsAsIdentifier(type);
 		}
-
+		@Test
+		public void testTypeNamesAnnotation() {
+			checkTypeLiteralAsIdentifier(type);
+		}
 		@Test
 		public void testNullLiteralAnnotation() {
-			CtAnnotationType<?> type = new Launcher().getFactory().createAnnotationType();
-			String nameBefore = type.getSimpleName();
-			for (String input : nullLiteral) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+			checkNullLiteralAsIdentifier(type);
 		}
 
 
 		@Test
 		public void testClassLiteralAnnotation() {
-			CtAnnotationType<?> type = new Launcher().getFactory().createAnnotationType();
-			String nameBefore = type.getSimpleName();
-			for (String input : classLiteral) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+			checkClassLiteralAsIdentifier(type);
 		}
 
 		@Test
 		public void testBooleanLiteralsAnnotation() {
-			CtAnnotationType<?> type = new Launcher().getFactory().createAnnotationType();
-			String nameBefore = type.getSimpleName();
-			for (String input : booleanLiterals) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+			checkBooleanLiteralAsIdentifier(type);
 		}
 
 		@Test
 		public void testWrongLiteralsAnnotation() {
-			List<String> inputs = new ArrayList<>();
-			inputs.addAll(combineTwoLists(correctIdentifier, arrayIdentifier));
-			inputs.addAll(combineTwoLists(correctIdentifier, genericSuffixes));
-			CtAnnotationType<?> type = new Launcher().getFactory().createAnnotationType();
-			String nameBefore = type.getSimpleName();
-			for (String input : inputs) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+			checkWrongLiterals(type);
 		}
 
 		@Test
@@ -207,76 +175,38 @@ public class CorrectIdentifierTest {
 	@Nested
 	class CtClassTest {
 
-		private String topLevelCtClass = "public class %s { }";
-
+		private CtClass<?> type;
+		@BeforeEach
+		private void createCtClass() {
+			type = new Launcher().getFactory().createClass();
+		}
 		@Test
 		public void testKeywordsCtClass() {
-			CtClass<?> type = new Launcher().getFactory().createClass();
-			String nameBefore = type.getSimpleName();
-			for (String keyword : keywords) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(keyword));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+			checkKeywordsAsIdentifier(type);
 		}
-
+		@Test
+		public void testTypeNamesCtClass() {
+			checkTypeLiteralAsIdentifier(type);
+		}
 		@Test
 		public void testNullLiteralCtClass() {
-			CtClass<?> type = new Launcher().getFactory().createClass();
-			String nameBefore = type.getSimpleName();
-			for (String input : nullLiteral) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+			checkNullLiteralAsIdentifier(type);
 		}
 
 
 		@Test
 		public void testClassLiteralCtClass() {
-			CtClass<?> type = new Launcher().getFactory().createClass();
-			String nameBefore = type.getSimpleName();
-			for (String input : classLiteral) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+			checkClassLiteralAsIdentifier(type);
 		}
 
 		@Test
 		public void testBooleanLiteralsCtClass() {
-			CtClass<?> type = new Launcher().getFactory().createClass();
-			String nameBefore = type.getSimpleName();
-			for (String input : booleanLiterals) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+			checkBooleanLiteralAsIdentifier(type);
 		}
 
 		@Test
 		public void testWrongLiteralsCtClass() {
-			List<String> inputs = new ArrayList<>();
-			inputs.addAll(combineTwoLists(correctIdentifier, arrayIdentifier));
-			inputs.addAll(combineTwoLists(correctIdentifier, genericSuffixes));
-			CtClass<?> type = new Launcher().getFactory().createClass();
-			String nameBefore = type.getSimpleName();
-			for (String input : inputs) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
-		}
-
-		@Test
-		public void testCorrectLiteralsCtClass() {
-			List<String> inputs = new ArrayList<>();
-			inputs.addAll(combineTwoLists(correctIdentifier, genericSuffixes));
-			inputs.addAll(combineTwoLists(correctIdentifier, correctIdentifier));
-
-			for (String input : inputs) {
-				assertDoesNotThrow(() -> createModelFromString(String.format(topLevelCtClass, input)));
-			}
+			checkWrongLiterals(type);
 		}
 	}
 	@Nested
@@ -594,21 +524,7 @@ public class CorrectIdentifierTest {
 		}
 	}
 
-	@Nested
-	class KeywordTests {
-		@DisplayName("Setting a keyword as identifier should throw an exception")
-		@ArgumentsSource(NamedElementProvider.class)
-		@ParameterizedTest(name = "Testing Element: {1}")
-		public void testKeywordsNamedElements(CtNamedElement element, String elementType) {
-			String nameBefore = element.getSimpleName();
-			for (String input : keywords) {
-				System.out.println(input + "" + element);
-				assertThrows(SpoonException.class, () -> element.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(element.getSimpleName(), nameBefore);
-			}
-		}
-	}
+
 
 	private CtModel createModelFromPath(String path) {
 		Launcher launcher = new Launcher();
@@ -644,30 +560,51 @@ public class CorrectIdentifierTest {
 	private static Collection<String> genericSuffixes =
 			Arrays.asList("<?>", "<? extends Foo>", "<? super X>", "<? extends <X super Y>>");
 
-	static class NamedElementProvider implements ArgumentsProvider {
-
-		@Override
-		public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-			return createNamedElements();
-		}
-		private Stream<Arguments> createNamedElements() {
-			List<CtNamedElement> elements = new ArrayList<>();
-			Factory factory = new Launcher().getFactory();
-			elements.add(factory.createAnnotationType());
-			elements.add(factory.createClass());
-			elements.add(factory.createTypeParameter());
-			elements.add(factory.createEnum());
-			elements.add(factory.createField());
-			elements.add(factory.createEnumValue());
-			elements.add(factory.createInterface());
-			elements.add(factory.createLocalVariable());
-			elements.add(factory.createCatchVariable());
-			elements.add(factory.createMethod());
-			elements.add(factory.createLambda());
-			elements.add(factory.createParameter());
-			return elements.stream().map(v -> Arguments.of(v, v.getClass().getSimpleName()));
-		}
-
+	private void checkKeywordsAsIdentifier(CtNamedElement element) {
+		String nameBefore = element.getSimpleName();
+		assertThrows(SpoonException.class, () -> element.setSimpleName("package"));
+		assertEquals(element.getSimpleName(), nameBefore);
+		assertThrows(SpoonException.class, () -> element.setSimpleName("_"));
+		assertEquals(element.getSimpleName(), nameBefore);
+		assertThrows(SpoonException.class, () -> element.setSimpleName("strictfp"));
+		assertEquals(element.getSimpleName(), nameBefore);
+	}
+	private void checkBooleanLiteralAsIdentifier(CtNamedElement element) {
+		String nameBefore = element.getSimpleName();
+		assertThrows(SpoonException.class, () -> element.setSimpleName("true"));
+		assertEquals(element.getSimpleName(), nameBefore);
+		assertThrows(SpoonException.class, () -> element.setSimpleName("false"));
+		assertEquals(element.getSimpleName(), nameBefore);
 	}
 
+	private void checkNullLiteralAsIdentifier(CtNamedElement element) {
+		String nameBefore = element.getSimpleName();
+		assertThrows(SpoonException.class, () -> element.setSimpleName("null"));
+		assertEquals(element.getSimpleName(), nameBefore);
+	}
+	private void checkClassLiteralAsIdentifier(CtNamedElement element) {
+		String nameBefore = element.getSimpleName();
+		assertThrows(SpoonException.class, () -> element.setSimpleName("class"));
+		assertEquals(element.getSimpleName(), nameBefore);
+	}
+	private void checkTypeLiteralAsIdentifier(CtNamedElement element) {
+		String nameBefore = element.getSimpleName();
+		assertThrows(SpoonException.class, () -> element.setSimpleName("int"));
+		assertEquals(element.getSimpleName(), nameBefore);
+		assertThrows(SpoonException.class, () -> element.setSimpleName("float"));
+		assertEquals(element.getSimpleName(), nameBefore);
+		assertThrows(SpoonException.class, () -> element.setSimpleName("double"));
+		assertEquals(element.getSimpleName(), nameBefore);
+	}
+	private void checkWrongLiterals(CtNamedElement element) {
+		String nameBefore = element.getSimpleName();
+		assertThrows(SpoonException.class, () -> element.setSimpleName("fobar["));
+		assertEquals(element.getSimpleName(), nameBefore);
+		assertThrows(SpoonException.class, () -> element.setSimpleName("fobar[][]"));
+		assertEquals(element.getSimpleName(), nameBefore);
+		assertThrows(SpoonException.class, () -> element.setSimpleName("fobar<"));
+		assertEquals(element.getSimpleName(), nameBefore);
+		assertThrows(SpoonException.class, () -> element.setSimpleName("fobar<klmdfaskmldsakl>><y<<"));
+		assertEquals(element.getSimpleName(), nameBefore);
+	}
 }
