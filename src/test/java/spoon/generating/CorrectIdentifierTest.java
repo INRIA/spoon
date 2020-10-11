@@ -11,9 +11,16 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.junit.Ignore;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import spoon.FluentLauncher;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -22,7 +29,9 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -36,62 +45,74 @@ public class CorrectIdentifierTest {
 
 	@Test
 	public void wrongIdentifer() {
-		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		CtLocalVariableReference<Object> localVariableRef =
+				new Launcher().getFactory().createLocalVariableReference();
 		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("tacos.EatIt()"));
 	}
 
 	@Test
 	public void wrongIdentifer2() {
-		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		CtLocalVariableReference<Object> localVariableRef =
+				new Launcher().getFactory().createLocalVariableReference();
 		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName(";tacos"));
 	}
+
 	@Ignore
 	@Test
 	public void keyWord() {
-		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		CtLocalVariableReference<Object> localVariableRef =
+				new Launcher().getFactory().createLocalVariableReference();
 		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("class"));
 	}
 
 	@Test
 	public void keyWord2() {
-		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		CtLocalVariableReference<Object> localVariableRef =
+				new Launcher().getFactory().createLocalVariableReference();
 		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("null"));
 	}
 
 	@Test
 	public void keyWord3() {
-		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		CtLocalVariableReference<Object> localVariableRef =
+				new Launcher().getFactory().createLocalVariableReference();
 		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("true"));
 	}
 
 	@Test
 	public void correctIdentifer() {
-		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		CtLocalVariableReference<Object> localVariableRef =
+				new Launcher().getFactory().createLocalVariableReference();
 		assertDoesNotThrow(() -> localVariableRef.setSimpleName("EatIt"));
 	}
 
 	@Test
 	public void correctIdentifer2() {
-		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		CtLocalVariableReference<Object> localVariableRef =
+				new Launcher().getFactory().createLocalVariableReference();
 		assertDoesNotThrow(() -> localVariableRef.setSimpleName("ClassFoo"));
 	}
 
 	@Test
 	public void correctIdentiferUtfFrench() {
-		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		CtLocalVariableReference<Object> localVariableRef =
+				new Launcher().getFactory().createLocalVariableReference();
 		assertDoesNotThrow(() -> localVariableRef.setSimpleName("UneClasseFrançaiseEtAccentuéeVoilà"));
 	}
 
 	@Test
 	public void correctIdentiferUtfChinese() {
-		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
+		CtLocalVariableReference<Object> localVariableRef =
+				new Launcher().getFactory().createLocalVariableReference();
 		assertDoesNotThrow(() -> localVariableRef.setSimpleName("処理"));
 	}
 
 	@Test
 	public void intersectionTypeIdentifierTest() {
 		//contract: intersectionTypes can have simpleNames with '?' for wildcards.
-		assertDoesNotThrow(() -> new FluentLauncher().inputResource("./src/test/resources/identifier/InliningImplementationMatcher.java").buildModel());
+		assertDoesNotThrow(() -> new FluentLauncher()
+				.inputResource("./src/test/resources/identifier/InliningImplementationMatcher.java")
+				.buildModel());
 	}
 
 	@Test
@@ -573,6 +594,22 @@ public class CorrectIdentifierTest {
 		}
 	}
 
+	@Nested
+	class KeywordTests {
+		@DisplayName("Setting a keyword as identifier should throw an exception")
+		@ArgumentsSource(NamedElementProvider.class)
+		@ParameterizedTest(name = "Testing Element: {1}")
+		public void testKeywordsNamedElements(CtNamedElement element, String elementType) {
+			String nameBefore = element.getSimpleName();
+			for (String input : keywords) {
+				System.out.println(input + "" + element);
+				assertThrows(SpoonException.class, () -> element.setSimpleName(input));
+				// name mustn't change, after setting an invalid
+				assertEquals(element.getSimpleName(), nameBefore);
+			}
+		}
+	}
+
 	private CtModel createModelFromPath(String path) {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(path);
@@ -587,8 +624,7 @@ public class CorrectIdentifierTest {
 		return launcher.getModel();
 	}
 
-	private Collection<String> combineTwoLists(Collection<String> input1,
-			Collection<String> input2) {
+	private Collection<String> combineTwoLists(Collection<String> input1, Collection<String> input2) {
 		Set<String> result = new HashSet<>();
 		for (String string : input1) {
 			for (String string2 : input2) {
@@ -601,10 +637,37 @@ public class CorrectIdentifierTest {
 	private static Collection<String> arrayIdentifier = Arrays.asList("[]", "[][]", "[][][][]");
 	private static Collection<String> correctIdentifier =
 			Arrays.asList("fii", "bar", "batz", "hahjashjashjdsaj");
-	private static List<String> keywords = Arrays.asList("package", "new", "_");
+	private static List<String> keywords = Arrays.asList("package", "new", "_", "strictfp");
 	private static Collection<String> booleanLiterals = Arrays.asList("true", "false");
 	private static Collection<String> nullLiteral = Arrays.asList("null");
 	private static Collection<String> classLiteral = Arrays.asList("class");
 	private static Collection<String> genericSuffixes =
 			Arrays.asList("<?>", "<? extends Foo>", "<? super X>", "<? extends <X super Y>>");
+
+	static class NamedElementProvider implements ArgumentsProvider {
+
+		@Override
+		public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+			return createNamedElements();
+		}
+		private Stream<Arguments> createNamedElements() {
+			List<CtNamedElement> elements = new ArrayList<>();
+			Factory factory = new Launcher().getFactory();
+			elements.add(factory.createAnnotationType());
+			elements.add(factory.createClass());
+			elements.add(factory.createTypeParameter());
+			elements.add(factory.createEnum());
+			elements.add(factory.createField());
+			elements.add(factory.createEnumValue());
+			elements.add(factory.createInterface());
+			elements.add(factory.createLocalVariable());
+			elements.add(factory.createCatchVariable());
+			elements.add(factory.createMethod());
+			elements.add(factory.createLambda());
+			elements.add(factory.createParameter());
+			return elements.stream().map(v -> Arguments.of(v, v.getClass().getSimpleName()));
+		}
+
+	}
+
 }
