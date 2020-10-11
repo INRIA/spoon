@@ -37,7 +37,6 @@ import spoon.reflect.visitor.CtAbstractImportVisitor;
 import spoon.reflect.visitor.CtImportVisitor;
 import spoon.support.StandardEnvironment;
 import spoon.support.reflect.cu.CompilationUnitImpl;
-import spoon.support.util.ModelList;
 
 public class JDTImportBuilderTest {
 

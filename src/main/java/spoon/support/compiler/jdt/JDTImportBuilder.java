@@ -7,7 +7,6 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
@@ -31,7 +30,6 @@ import java.util.Set;
 class JDTImportBuilder {
 
 	private final CompilationUnitDeclaration declarationUnit;
-	private String filePath;
 	private CompilationUnit spoonUnit;
 	private ICompilationUnit sourceUnit;
 	private Factory factory;
@@ -41,7 +39,6 @@ class JDTImportBuilder {
 		this.declarationUnit = declarationUnit;
 		this.factory = factory;
 		this.sourceUnit = declarationUnit.compilationResult.compilationUnit;
-		this.filePath = CharOperation.charToString(sourceUnit.getFileName());
 		// get the CU: it has already been built during model building in JDTBasedSpoonCompiler
 		this.spoonUnit = JDTTreeBuilder.getOrCreateCompilationUnit(declarationUnit, factory);
 		this.imports = new HashSet<>();

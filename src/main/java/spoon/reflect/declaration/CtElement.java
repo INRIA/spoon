@@ -23,6 +23,7 @@ import spoon.support.DerivedProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 import spoon.support.Experimental;
+import spoon.support.sniper.internal.ElementSourceFragment;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -413,4 +414,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	@Experimental
 	String prettyprint();
 
+	// overriding the return type
+	@Override
+	ElementSourceFragment getOriginalSourceFragment();
 }

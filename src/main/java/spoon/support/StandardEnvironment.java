@@ -124,8 +124,6 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private CompressionType compressionType = CompressionType.GZIP;
 
-	private boolean sniperMode = false;
-
 	private boolean ignoreDuplicateDeclarations = false;
 
 	private Supplier<PrettyPrinter> prettyPrinterCreator;

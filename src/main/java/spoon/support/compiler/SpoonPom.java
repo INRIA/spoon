@@ -516,7 +516,11 @@ public class SpoonPom implements SpoonResource {
 		return classpathElements.toArray(new String[0]);
 	}
 
-	private static String guessMavenHome() {
+	/**
+	 * Try to guess Maven home when none is provided.
+	 * @return the path toward maven install on the local machine.
+	 */
+	public static String guessMavenHome() {
 		String mvnHome = null;
 		try {
 			String[] cmd;

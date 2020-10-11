@@ -31,7 +31,6 @@ import spoon.support.compiler.FileSystemFile;
 import spoon.support.template.Parameters;
 import spoon.support.template.UndefinedParameterException;
 import spoon.template.BlockTemplate;
-import spoon.template.Template;
 import spoon.test.template.testclasses.InvocationSubstitutionByExpressionTemplate;
 import spoon.test.template.testclasses.InvocationSubstitutionByStatementTemplate;
 import spoon.test.template.testclasses.SubstitutionByExpressionTemplate;

@@ -43,7 +43,7 @@
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.20.0</version>
+      <version>3.23.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.platform</groupId>
@@ -103,7 +103,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.11.2</version>
+      <version>2.11.3</version>
     </dependency>
     <dependency>
       <!-- support for compressed serialized ASTs -->
@@ -170,7 +170,7 @@
         <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.5</version>
+            <version>0.8.6</version>
             <configuration>
                 <excludes>
                     <!-- we exclude the GUI classes, because we don't want Swing GUI tests in Travis and SonarQube--> 

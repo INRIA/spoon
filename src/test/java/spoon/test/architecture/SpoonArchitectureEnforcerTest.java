@@ -23,10 +23,15 @@ import spoon.SpoonAPI;
 import spoon.metamodel.Metamodel;
 import spoon.processing.AbstractManualProcessor;
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtExecutableReferenceExpression;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -41,11 +46,13 @@ import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-
+import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -151,7 +158,8 @@ public class SpoonArchitectureEnforcerTest {
 		spoon.addInputResource("src/main/java/");
 
 		// contract: all non-trivial public methods should be documented with proper API Javadoc
-		spoon.buildModel();
+		CtModel model = spoon.buildModel();
+
 		List<String> notDocumented = new ArrayList<>();
 		for (CtMethod method : spoon.getModel().getElements(new TypeFilter<>(CtMethod.class))) {
 
@@ -200,6 +208,11 @@ public class SpoonArchitectureEnforcerTest {
 		}).list();
 
 		assertEquals(0, treeSetWithoutComparators.size());
+		// contract: every private method in spoon must be called.
+		checkPrivateMethodInvocations(model);
+		// contract: every private field in spoons code is useful. Useful means it has a read.
+		checkFields(model);
+
 	}
 
 	@Test
@@ -458,5 +471,60 @@ public class SpoonArchitectureEnforcerTest {
 			results.add("Package " + o + " presents in computed but not expected set.");
 		}
 		return StringUtils.join(results, "\n");
+	}
+
+
+	private void checkPrivateMethodInvocations(CtModel model) {
+		List<CtMethod<?>> methods = model.getElements(new TypeFilter<>(CtMethod.class));
+		// only look at private methods
+		methods.removeIf(v -> !v.isPrivate());
+		// remove methods for serialization gods
+		methods.removeIf(v -> v.getSimpleName().matches("(readObject)|(readResolve)"));
+		// some CtInvocation have no declaration in model
+		List<CtInvocation<?>> methodInvocations =
+				model.getElements(new TypeFilter<>(CtInvocation.class));
+		methodInvocations.removeIf(v -> v.getExecutable().getExecutableDeclaration() == null);
+		List<CtExecutableReferenceExpression<?, ?>> executableReferences =
+				model.getElements(new TypeFilter<>(CtExecutableReferenceExpression.class));
+		// convert to HashSet for faster lookup. We trade memory for lookup speed.
+		HashSet<CtExecutable<?>> lookUp = methodInvocations.stream()
+				.map(CtInvocation::getExecutable)
+				.map(v -> v.getExecutableDeclaration())
+				.collect(Collectors.toCollection(HashSet::new));
+		// add executableReferences to our lookup
+		executableReferences.stream()
+				.map(v -> v.getExecutable().getExecutableDeclaration())
+				.filter(Objects::nonNull)
+				.forEach(lookUp::add);
+		List<CtMethod<?>> methodsWithInvocation = methods.stream()
+				// 	 every method must have an invocation
+				.filter(method -> lookUp.contains(method))
+				.collect(Collectors.toList());
+		methods.removeAll(methodsWithInvocation);
+		assertEquals("Some methods have no invocation", Collections.emptyList(), methods);
+	}
+
+
+	private void checkFields(CtModel model) {
+		// implNote: we can skip checking for writes, because a read without a write will never happen.
+		List<CtField<?>> fields = model.getElements(new TypeFilter<>(CtField.class));
+		// only look at private fields
+		fields.removeIf(v -> !v.isPrivate());
+		// remove fields for serialization gods
+		fields.removeIf(v -> v.getSimpleName().equals("serialVersionUID"));
+		// some fieldReads have no variable declaration
+		List<CtFieldRead<?>> fieldRead = model.getElements(new TypeFilter<>(CtFieldRead.class));
+		fieldRead.removeIf(v -> v.getVariable().getFieldDeclaration() == null);
+		// convert to HashSet for faster lookup. We trade memory for lookup speed.
+		HashSet<CtField<?>> lookUp = fieldRead.stream()
+				.map(CtFieldRead::getVariable)
+				.map(v -> v.getFieldDeclaration())
+				.collect(Collectors.toCollection(HashSet::new));
+		List<CtField<?>> fieldsWithRead = fields.stream()
+				// 	 every field must have a read
+				.filter(field -> lookUp.contains(field))
+		.collect(Collectors.toList());
+		fields.removeAll(fieldsWithRead);
+		assertEquals("Some Fields have no read/write", Collections.emptyList(), fields);
 	}
 }

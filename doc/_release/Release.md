@@ -45,7 +45,7 @@ This article is a short summary of the [official documentation of sonatype](http
 
 **Before release**
 
-- Prepare changelog with [changelog_generator](https://github.com/INRIA/spoon/tree/master/doc/_release/changelog_generator)
+- Prepare changelog with the changelog_generator, see folder `doc/_release/changelog_generator`
 - Abnnounce the release with a new issue, a few days in advance (eg #2489)
 
 **After release**
