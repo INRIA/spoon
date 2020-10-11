@@ -48,7 +48,7 @@ import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.visitor.SignaturePrinter;
 
 public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> {
-	
+
 	private static IdentifierVerifier verifier = new IdentifierVerifier(false);
 
 	@MetamodelPropertyField(role = NAME)
