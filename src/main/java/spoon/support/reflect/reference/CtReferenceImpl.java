@@ -51,7 +51,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	@Override
 	public <T extends CtReference> T setSimpleName(String simplename) {
 		// just here till new class is inplace
-		checkIdentifierChars(simplename);
+		checkIdentiferForJLSCorrectness(simplename);
 		Factory factory = getFactory();
 		String nameBefore = this.simplename;
 		this.simplename = simplename;
