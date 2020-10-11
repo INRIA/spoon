@@ -212,77 +212,47 @@ public class CorrectIdentifierTest {
 	}
 	@Nested
 	class CtTypeParameterTest {
+		private String code = "public class bar<%s> { }";
+		private String innerClass = "public class fobar { class bar<%s> {}}";
+		private String localClass = "public class fobar { fobar(){class bar<%s> {}}}";
 
-		private String topLevelCtClass = "public class bar<%s> { }";
-
+		private CtTypeParameter type;
+		@BeforeEach
+		private void createCtClass() {
+			type = new Launcher().getFactory().createTypeParameter();
+		}
 		@Test
 		public void testKeywordsCtTypeParameter() {
-			CtTypeParameter type = new Launcher().getFactory().createTypeParameter();
-			String nameBefore = type.getSimpleName();
-			for (String keyword : keywords) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(keyword));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+			checkKeywordsAsIdentifier(type);
 		}
 
 		@Test
 		public void testNullLiteralCtTypeParameter() {
-			CtTypeParameter type = new Launcher().getFactory().createTypeParameter();
-			String nameBefore = type.getSimpleName();
-			for (String input : nullLiteral) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+			checkNullLiteralAsIdentifier(type);
 		}
 
 
 		@Test
 		public void testClassLiteralCtTypeParameter() {
-			CtTypeParameter type = new Launcher().getFactory().createTypeParameter();
-			String nameBefore = type.getSimpleName();
-			for (String input : classLiteral) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+			checkClassLiteralAsIdentifier(type);
 		}
 
 		@Test
 		public void testBooleanLiteralsCtTypeParameter() {
-			CtTypeParameter type = new Launcher().getFactory().createTypeParameter();
-			String nameBefore = type.getSimpleName();
-			for (String input : booleanLiterals) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+			checkClassLiteralAsIdentifier(type);
 		}
 
 		@Test
 		public void testWrongLiteralsCtTypeParameter() {
-			List<String> inputs = new ArrayList<>();
-			inputs.addAll(combineTwoLists(correctIdentifier, arrayIdentifier));
-			inputs.addAll(combineTwoLists(correctIdentifier, genericSuffixes));
-			CtTypeParameter type = new Launcher().getFactory().createTypeParameter();
-			String nameBefore = type.getSimpleName();
-			for (String input : inputs) {
-				assertThrows(SpoonException.class, () -> type.setSimpleName(input));
-				// name mustn't change, after setting an invalid
-				assertEquals(type.getSimpleName(), nameBefore);
-			}
+			checkWrongLiterals(type);
 		}
 
 		@Test
 		public void testCorrectLiteralsCtTypeParameter() {
-			List<String> inputs = new ArrayList<>();
-			inputs.addAll(combineTwoLists(correctIdentifier, genericSuffixes));
-			inputs.addAll(combineTwoLists(correctIdentifier, correctIdentifier));
-
-			for (String input : inputs) {
-				assertDoesNotThrow(() -> createModelFromString(String.format(topLevelCtClass, input)));
-			}
+			assertDoesNotThrow(() -> type.setSimpleName("foo"));
+			assertDoesNotThrow(() -> createModelFromString(String.format(code, "Foo")));
+			assertDoesNotThrow(() -> createModelFromString(String.format(innerClass, "Foo")));
+			assertDoesNotThrow(() -> createModelFromString(String.format(localClass, "Foo")));
 		}
 	}
 
