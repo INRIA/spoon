@@ -50,13 +50,6 @@ public class CorrectIdentifierTest {
 		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName(";tacos"));
 	}
 
-	@Ignore
-	@Test
-	public void keyWord() {
-		CtLocalVariableReference<Object> localVariableRef =
-				new Launcher().getFactory().createLocalVariableReference();
-		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("class"));
-	}
 
 	@Test
 	public void keyWord2() {
@@ -609,7 +602,7 @@ public class CorrectIdentifierTest {
 		String nameBefore = element.getSimpleName();
 		assertThrows(SpoonException.class, () -> element.setSimpleName("fobar["));
 		assertEquals(element.getSimpleName(), nameBefore);
-		assertThrows(SpoonException.class, () -> element.setSimpleName("fobar[][]"));
+		assertThrows(SpoonException.class, () -> element.setSimpleName("fobar[[]"));
 		assertEquals(element.getSimpleName(), nameBefore);
 		assertThrows(SpoonException.class, () -> element.setSimpleName("fobar<"));
 		assertEquals(element.getSimpleName(), nameBefore);
