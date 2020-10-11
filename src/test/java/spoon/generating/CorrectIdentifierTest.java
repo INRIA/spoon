@@ -175,24 +175,24 @@ public class CorrectIdentifierTest {
 	@Nested
 	class CtClassTest {
 
+		private String code = "public class %s {}";
+		private String innerClass = "public class fobar { class %s {}}";
+		private String localClass = "public class fobar { fobar(){class %s {}}}";
 		private CtClass<?> type;
 		@BeforeEach
 		private void createCtClass() {
 			type = new Launcher().getFactory().createClass();
 		}
+
 		@Test
 		public void testKeywordsCtClass() {
 			checkKeywordsAsIdentifier(type);
 		}
-		@Test
-		public void testTypeNamesCtClass() {
-			checkTypeLiteralAsIdentifier(type);
-		}
+
 		@Test
 		public void testNullLiteralCtClass() {
 			checkNullLiteralAsIdentifier(type);
 		}
-
 
 		@Test
 		public void testClassLiteralCtClass() {
@@ -207,6 +207,15 @@ public class CorrectIdentifierTest {
 		@Test
 		public void testWrongLiteralsCtClass() {
 			checkWrongLiterals(type);
+		}
+		@Test
+		public void checkCorrectLiterals() {
+			assertDoesNotThrow(() -> type.setSimpleName("foo"));
+			assertDoesNotThrow(() -> type.setSimpleName("foo[]"));
+			assertDoesNotThrow(() -> type.setSimpleName("foo[][][]"));
+			assertDoesNotThrow(() -> createModelFromString(String.format(code, "Foo")));
+			assertDoesNotThrow(() -> createModelFromString(String.format(innerClass, "Foo")));
+			assertDoesNotThrow(() -> createModelFromString(String.format(localClass, "Foo")));
 		}
 	}
 	@Nested
