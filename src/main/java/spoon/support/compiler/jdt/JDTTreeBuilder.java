@@ -109,7 +109,6 @@ import org.eclipse.jdt.internal.compiler.lookup.MethodScope;
 import org.eclipse.jdt.internal.compiler.lookup.ModuleBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
-import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
@@ -226,20 +225,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	// an abstract class here is better because the method is actually package-protected, as the type, (and not public as in the case of interface methods in Java)
 	abstract static class OnAccessListener {
 		abstract boolean onAccess(char[][] tokens, int index);
-	}
-
-	class SpoonReferenceBinding extends ReferenceBinding {
-		private ReferenceBinding enclosingType;
-
-		SpoonReferenceBinding(char[] sourceName, ReferenceBinding enclosingType) {
-			this.sourceName = sourceName;
-			this.enclosingType = enclosingType;
-		}
-
-		@Override
-		public ReferenceBinding enclosingType() {
-			return enclosingType;
-		}
 	}
 
 	private LiteralBase getBase(NumberLiteral numberLiteral) {
