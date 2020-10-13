@@ -44,8 +44,10 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
@@ -105,6 +107,12 @@ public class CtClassTest {
 		// without position, it has been addded at the end
 		assertSame(cons2, foo.getTypeMembers().get(4));
 
+		// contract: setPositions sets the position of all children
+		NoSourcePosition position1 = new NoSourcePosition();
+		cons2.setPositions(position1);
+		for(CtElement el: cons2.getDirectChildren()) {
+			assertSame(position1, el.getPosition());
+		}
 	}
 
 	@Test

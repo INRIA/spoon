@@ -253,23 +253,6 @@ public class MethodTypingContext extends AbstractTypingContext {
 		return scopeBound.getQualifiedName().equals(superBoundAdapted.getQualifiedName());
 	}
 
-	/*
-	 * @param declared
-	 * @param typeRef
-	 * @return index of type parameter in formal type parameters of `declarer` if typeRef is reference refers type parameter of that declarer.
-	 *  Returns -1 if it is not.
-	 */
-	private int getIndexOfTypeParam(CtFormalTypeDeclarer declarer, CtTypeReference<?> typeRef) {
-		if (typeRef instanceof CtTypeParameterReference) {
-			CtTypeParameter typeParam = ((CtTypeParameterReference) typeRef).getDeclaration();
-			if (typeParam != null) {
-				if (declarer == typeParam.getTypeParameterDeclarer()) {
-					return declarer.getFormalCtTypeParameters().indexOf(typeParam);
-				}
-			}
-		}
-		return -1;
-	}
 
 	private static CtTypeReference<?> getBound(CtTypeParameter typeParam) {
 		CtTypeReference<?> bound = typeParam.getSuperclass();

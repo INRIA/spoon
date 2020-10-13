@@ -971,10 +971,6 @@ public class ReferenceBuilder {
 			ref.setSimpleName(sb.toString());
 			final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
 			setPackageOrDeclaringType(ref, declaring);
-		} else if (binding instanceof JDTTreeBuilder.SpoonReferenceBinding) {
-			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-			ref.setSimpleName(new String(binding.sourceName()));
-			ref.setDeclaringType(getTypeReference(binding.enclosingType()));
 		} else if (binding instanceof IntersectionTypeBinding18) {
 			List<CtTypeReference<?>> bounds = new ArrayList<>();
 			for (ReferenceBinding superInterface : binding.getIntersectingTypes()) {
