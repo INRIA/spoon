@@ -196,13 +196,12 @@
                     </excludes>
                     <rules>
                     <rule implementation="org.jacoco.maven.RuleConfiguration">
-                      <element>BUNDLE</element>
+                      <element>CLASS</element>
                       <limits>
                         <limit implementation="org.jacoco.report.check.Limit">
-                          <counter>CLASS</counter>
+                          <counter>LINE</counter>
                           <value>MISSEDCOUNT</value>
-                          <!-- some classes are not covered in Travis, and I haven't found the way to list them -Martin -->
-                          <maximum>6</maximum>
+                          <maximum>3</maximum>
                         </limit>
                       </limits>
                     </rule>
