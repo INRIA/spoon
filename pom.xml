@@ -200,6 +200,8 @@
                       <excludes>
                         <!-- we exclude the GUI classes, because we don't have Swing GUI tests in CI --> 
                         <exclude>spoon.support.gui.*</exclude>
+                        <!-- we exclude the generated inner classes of ReplacementVisitor -->
+                        <exclude>spoon.support.visitor.replace.ReplacementVisitor.*</exclude>
                       </excludes>
                       <limits>
                         <limit implementation="org.jacoco.report.check.Limit">
