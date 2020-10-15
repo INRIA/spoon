@@ -171,12 +171,6 @@
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>0.8.6</version>
-            <configuration>
-                <excludes>
-                    <!-- we exclude the GUI classes, because we don't want Swing GUI tests in Travis and SonarQube--> 
-                    <exclude>**/support/gui/*</exclude>
-                </excludes>
-            </configuration>
             <executions>
                 <execution>
                     <goals>
@@ -198,6 +192,10 @@
                   <configuration>
                     <rules>
                     <rule implementation="org.jacoco.maven.RuleConfiguration">
+                      <excludes>
+                        <!-- we exclude the GUI classes, because we don't have Swing GUI tests in CI --> 
+                        <exclude>**/support/gui/*</exclude>
+                      </excludes>
                       <element>BUNDLE</element>
                       <limits>
                         <limit implementation="org.jacoco.report.check.Limit">
