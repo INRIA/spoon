@@ -185,23 +185,27 @@
                     </goals>
                 </execution>
                 <execution>
+                  <!-- reference: 
+                  * https://www.jacoco.org/jacoco/trunk/doc/check-mojo.html
+                  * https://stackoverflow.com/questions/41891739/how-to-fail-a-maven-build-if-junit-coverage-falls-below-certain-threshold
+                  -->
                   <id>check-coverage</id>
                   <goals>
                     <goal>check</goal>
                   </goals>
                   <configuration>
-                    <excludes>
-                      <!-- we exclude the GUI classes, because we don't have Swing GUI tests in CI --> 
-                      <exclude>**/support/gui/*</exclude>
-                    </excludes>
                     <rules>
                     <rule implementation="org.jacoco.maven.RuleConfiguration">
-                      <element>CLASS</element>
+                      <element>PACKAGE</element>
+                      <excludes>
+                        <!-- we exclude the GUI classes, because we don't have Swing GUI tests in CI --> 
+                        <exclude>**/support/gui/*</exclude>
+                      </excludes>
                       <limits>
                         <limit implementation="org.jacoco.report.check.Limit">
-                          <counter>LINE</counter>
+                          <counter>CLASS</counter>
                           <value>MISSEDCOUNT</value>
-                          <maximum>3</maximum>
+                          <maximum>0</maximum>
                         </limit>
                       </limits>
                     </rule>
