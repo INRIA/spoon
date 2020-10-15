@@ -190,19 +190,19 @@
                     <goal>check</goal>
                   </goals>
                   <configuration>
+                    <excludes>
+                      <!-- we exclude the GUI classes, because we don't have Swing GUI tests in CI --> 
+                      <exclude>**/support/gui/*</exclude>
+                    </excludes>
                     <rules>
                     <rule implementation="org.jacoco.maven.RuleConfiguration">
-                      <excludes>
-                        <!-- we exclude the GUI classes, because we don't have Swing GUI tests in CI --> 
-                        <exclude>**/support/gui/*</exclude>
-                      </excludes>
                       <element>BUNDLE</element>
                       <limits>
                         <limit implementation="org.jacoco.report.check.Limit">
                           <counter>CLASS</counter>
                           <value>MISSEDCOUNT</value>
                           <!-- in theory we would like to have MISSEDCOUNT=0 but in some cases, Jacoco counts one phantom missed instruction, so ze go for one -->
-                          <maximum>1</maximum>
+                          <maximum>10</maximum>
                         </limit>
                       </limits>
                     </rule>
