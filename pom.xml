@@ -201,8 +201,8 @@
                         <limit implementation="org.jacoco.report.check.Limit">
                           <counter>CLASS</counter>
                           <value>MISSEDCOUNT</value>
-                          <!-- in theory we would like to have MISSEDCOUNT=0 but in some cases, Jacoco counts one phantom missed instruction, so ze go for one -->
-                          <maximum>7</maximum>
+                          <!-- some classes are not covered in Travis, and I haven't found the way to list them -Martin -->
+                          <maximum>6</maximum>
                         </limit>
                       </limits>
                     </rule>
