@@ -196,16 +196,16 @@
                   <configuration>
                     <rules>
                     <rule implementation="org.jacoco.maven.RuleConfiguration">
-                      <element>PACKAGE</element>
+                      <element>CLASS</element>
                       <excludes>
                         <!-- we exclude the GUI classes, because we don't have Swing GUI tests in CI --> 
-                        <exclude>**/support/gui/*</exclude>
+                        <exclude>spoon.support.gui.*</exclude>
                       </excludes>
                       <limits>
                         <limit implementation="org.jacoco.report.check.Limit">
-                          <counter>CLASS</counter>
-                          <value>MISSEDCOUNT</value>
-                          <maximum>0</maximum>
+                          <counter>LINE</counter>
+                          <value>COVEREDRATIO</value>
+                          <minimum>0.1</minimum>
                         </limit>
                       </limits>
                     </rule>
