@@ -27,9 +27,9 @@
 
     <repositories>
         <repository>
-            <id>maven.inria.fr-snapshot</id>
+            <id>ow2-nexus</id>
             <name>Maven Repository for Spoon Snapshots</name>
-            <url>https://maven.irisa.fr/artifactory/spoon-public-snapshot</url>
+            <url>https://repository.ow2.org/nexus/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 
@@ -89,9 +89,9 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
         <snapshotRepository>
-            <id>maven.inria.fr-snapshot</id>
+            <id>ow2-nexus</id>
             <name>Maven Repository for Spoon Snapshots</name>
-            <url>http://maven.inria.fr/artifactory/spoon-public-snapshot</url>
+            <url>https://repository.ow2.org/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
         <site>
             <id>gforge.inria.fr-site</id>
