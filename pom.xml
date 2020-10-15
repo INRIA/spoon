@@ -202,7 +202,7 @@
                           <counter>CLASS</counter>
                           <value>MISSEDCOUNT</value>
                           <!-- in theory we would like to have MISSEDCOUNT=0 but in some cases, Jacoco counts one phantom missed instruction, so ze go for one -->
-                          <maximum>10</maximum>
+                          <maximum>1</maximum>
                         </limit>
                       </limits>
                     </rule>
