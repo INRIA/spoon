@@ -171,12 +171,6 @@
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>0.8.6</version>
-            <configuration>
-                <excludes>
-                    <!-- we exclude the GUI classes, because we don't want Swing GUI tests in Travis and SonarQube--> 
-                    <exclude>**/support/gui/*</exclude>
-                </excludes>
-            </configuration>
             <executions>
                 <execution>
                     <goals>
@@ -190,8 +184,38 @@
                         <goal>report</goal>
                     </goals>
                 </execution>
-            </executions>
-        </plugin>
+                <execution>
+                  <!-- reference: 
+                  * https://www.jacoco.org/jacoco/trunk/doc/check-mojo.html
+                  * https://stackoverflow.com/questions/41891739/how-to-fail-a-maven-build-if-junit-coverage-falls-below-certain-threshold
+                  -->
+                  <id>check-coverage</id>
+                  <goals>
+                    <goal>check</goal>
+                  </goals>
+                  <configuration>
+                    <rules>
+                    <rule implementation="org.jacoco.maven.RuleConfiguration">
+                      <element>CLASS</element>
+                      <excludes>
+                        <!-- we exclude the GUI classes, because we don't have Swing GUI tests in CI --> 
+                        <exclude>spoon.support.gui.*</exclude>
+                        <!-- we exclude the generated inner classes of ReplacementVisitor -->
+                        <exclude>spoon.support.visitor.replace.ReplacementVisitor.*</exclude>
+                      </excludes>
+                      <limits>
+                        <limit implementation="org.jacoco.report.check.Limit">
+                          <counter>LINE</counter>
+                          <value>COVEREDRATIO</value>
+                          <minimum>0.1</minimum>
+                        </limit>
+                      </limits>
+                    </rule>
+                  </rules>
+                  </configuration>
+                </execution>
+          </executions>
+      </plugin>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
@@ -245,3 +269,4 @@
     </plugins>
   </build>
 </project>
+
