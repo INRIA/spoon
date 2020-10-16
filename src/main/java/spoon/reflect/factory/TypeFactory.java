@@ -34,7 +34,6 @@ import spoon.reflect.visitor.CtAbstractVisitor;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
-import spoon.support.SpoonClassNotFoundException;
 import spoon.support.StandardEnvironment;
 import spoon.support.util.internal.MapUtils;
 import spoon.support.visitor.ClassTypingContext;
