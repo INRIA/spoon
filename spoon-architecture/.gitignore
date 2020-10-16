@@ -1,0 +1,36 @@
+# Maven
+build/
+dist/
+nbproject/
+target/
+dependency-reduced-pom.xml
+
+# Netbeans
+nb-configuration.xml
+nb-actions.xml
+
+# Eclipse
+.settings/
+.project
+.classpath
+.checkstyle
+.externalToolBuilders/
+bin/
+maven-eclipse.xml
+
+# IntelliJ IDEA
+.idea/
+!.idea/codeStyleSettings.xml
+*.iml
+
+# VSCode
+.vscode
+
+# Spoon
+spooned-classes/
+spooned/
+doc/_jekyll/_site/
+*.tmp
+
+# Nodejs
+node_modules/
