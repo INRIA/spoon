@@ -1,13 +1,12 @@
 package fr.inria.gforge.spoon.architecture.simpleChecks;
 
 import org.junit.Test;
-import fr.inria.gforge.spoon.architecture.runner.CheckerRunner;
+import fr.inria.gforge.spoon.architecture.runner.SpoonArchitecturalCheckerImpl;
 
 public class CheckerRunnerTest {
 
 	@Test
 	public void allChecksMustRun() {
-		CheckerRunner runner = new CheckerRunner();
-		runner.runChecks("./src/main/java", "./src/test/java");
+		SpoonArchitecturalCheckerImpl.createChecker().runChecks();
 	}
 }
