@@ -24,6 +24,14 @@ public class Precondition<T extends CtElement> implements Function<CtModel, Coll
 		}
 		return new Precondition<T>(elementFilter, startValue);
 	}
+	
+	public static <T extends CtElement> Precondition<T> of(TypeFilter<T> elementFilter, Iterable<Predicate<? super T>> conditions) {
+		Predicate<T> startValue = (value) -> true;
+		for (Predicate<? super T> condition : conditions) {
+			startValue = startValue.and(condition);
+		}
+		return new Precondition<T>(elementFilter, startValue);
+	}
 
 	public static <T extends CtElement> Precondition<T> of(TypeFilter<T> elementFilter, Predicate<? super T> conditions) {
 		return new Precondition<T>(elementFilter, conditions);

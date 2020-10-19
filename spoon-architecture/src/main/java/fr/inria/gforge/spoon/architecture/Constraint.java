@@ -23,6 +23,15 @@ public class Constraint<T> implements IConstraint<T> {
 	}
 
 	public static <T extends CtElement> Constraint<T> of(IError<T> errorHandler,
+			Iterable<Predicate<T>> conditions) {
+		Predicate<T> startValue = (value) -> true;
+		for (Predicate<T> condition : conditions) {
+			startValue = startValue.and(condition);
+		}
+		return new Constraint<T>(errorHandler, startValue);
+	}
+
+	public static <T extends CtElement> Constraint<T> of(IError<T> errorHandler,
 			Predicate<T> condition) {
 		return new Constraint<T>(errorHandler, condition);
 	}
