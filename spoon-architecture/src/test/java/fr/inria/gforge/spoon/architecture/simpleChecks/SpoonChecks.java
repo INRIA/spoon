@@ -3,6 +3,7 @@ package fr.inria.gforge.spoon.architecture.simpleChecks;
 import fr.inria.gforge.spoon.architecture.ArchitectureTest;
 import fr.inria.gforge.spoon.architecture.Constraint;
 import fr.inria.gforge.spoon.architecture.DefaultElementFilter;
+import fr.inria.gforge.spoon.architecture.ElementFilter;
 import fr.inria.gforge.spoon.architecture.Precondition;
 import fr.inria.gforge.spoon.architecture.errorhandling.NopError;
 import fr.inria.gforge.spoon.architecture.preconditions.Modifier;
@@ -31,17 +32,15 @@ public class SpoonChecks {
 	// @Architecture
 	public void testFactorySubFactory(CtModel srcModel, CtModel testModel) {
 		Precondition<CtClass<?>> pre =
-				Precondition.of(DefaultElementFilter.CLASSES.getFilter(), Naming.contains("Factory"),
-						(clazz) -> clazz.getSuperclass().getSimpleName().equals("SubFactory"));
-
-		//TODO: simplify to getClassWithName,SuperClass,Interface
-		CtClass<?> factory = srcModel.getElements(DefaultElementFilter.CLASSES.<CtClass<?>>getFilter())
-				.stream().filter(v -> v.getSimpleName().equals("Factory")).findFirst().get();
-
-		//TOOD: allow assertions for all methods
+				Precondition.of(DefaultElementFilter.CLASSES.getFilter(),
+				Naming.contains("Factory"),
+				(clazz) -> clazz.getSuperclass().getSimpleName().equals("SubFactory"));
+		CtClass<?> factory = srcModel.getElements(ElementFilter.ofClassObject(CtClass.class, Naming.equal("Factory"))).get(0);
 		Constraint<CtClass<?>> con = Constraint.of(new NopError<CtClass<?>>(),
-				(clazz) -> clazz.getMethods().stream().filter(v -> v.getSimpleName().startsWith("create"))
-						.allMatch(v -> factory.getMethods().contains(v)));
+				(clazz) -> clazz.getMethods()
+				.stream()
+				.filter(Naming.startsWith("create"))
+				.allMatch(v -> factory.getMethods().contains(v)));
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
 	}
 
