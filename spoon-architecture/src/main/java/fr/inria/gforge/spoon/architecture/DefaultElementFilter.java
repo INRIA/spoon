@@ -5,6 +5,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public enum DefaultElementFilter {
@@ -33,6 +34,13 @@ public enum DefaultElementFilter {
 			return new TypeFilter<CtInterface<?>>(CtInterface.class);
 
 		}
+	},
+	TYPES() {
+			@Override
+			public TypeFilter<CtType<?>> getFilter() {
+				return new TypeFilter<CtType<?>>(CtType.class);
+	
+			}
 	};
 
 	public abstract <T extends CtElement> TypeFilter<T> getFilter();

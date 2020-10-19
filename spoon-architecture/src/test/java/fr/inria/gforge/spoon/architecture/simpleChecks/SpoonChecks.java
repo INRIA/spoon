@@ -1,5 +1,7 @@
 package fr.inria.gforge.spoon.architecture.simpleChecks;
 
+import java.util.Arrays;
+import java.util.List;
 import fr.inria.gforge.spoon.architecture.ArchitectureTest;
 import fr.inria.gforge.spoon.architecture.Constraint;
 import fr.inria.gforge.spoon.architecture.DefaultElementFilter;
@@ -15,6 +17,7 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class SpoonChecks {
@@ -51,7 +54,7 @@ public class SpoonChecks {
 	@Architecture(modelNames = "srcModel")
 	public void testDocumentation(CtModel srcModel) {
 		// Contract:
-		// Precondition: Get all method expect setters etc.
+		// Precondition: Get all methods except setters etc.
 		Precondition<CtMethod<?>> pre = 
 		Precondition.of(DefaultElementFilter.METHODS.getFilter(),
 		Naming.startsWith("get").negate(),
@@ -67,6 +70,34 @@ public class SpoonChecks {
 		Constraint<CtMethod<?>> con = Constraint.of((method) -> System.out.println(method.getDeclaringType().getQualifiedName()+ "#"+ method.getSignature()),
 		(method) -> method.getDocComment().length() > 15);
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
+	}
 
+	@Architecture(modelNames = "srcModel")
+	public void metamodelPackageRule(CtModel srcModel) {
+		List<String> exceptions = Arrays.asList("CtTypeMemberWildcardImportReferenceImpl", "InvisibleArrayConstructorImpl");
+
+		Precondition<CtType<?>> pre = 
+		Precondition.of(DefaultElementFilter.TYPES.getFilter(),
+		(type) -> !exceptions.contains(type.getSimpleName()),
+		(type) -> Naming.equal("spoon.reflect.declaration")
+		.or(Naming.equal("spoon.reflect.code"))
+		.or(Naming.equal("spoon.reflect.reference")).test(type.getPackage()));
+
+		List<CtType<?>> interfaces = srcModel.getElements(ElementFilter.ofTypeFilter(DefaultElementFilter.TYPES.getFilter(),
+		(type) -> Naming.equal("spoon.reflect.declaration")
+		.or(Naming.equal("spoon.reflect.code"))
+		.or(Naming.equal("spoon.reflect.reference"))
+		.test(type.getPackage())));
+		List<CtType<?>> defaultCoreFactory = srcModel.getElements(ElementFilter.ofTypeFilter(DefaultElementFilter.TYPES.getFilter(),
+		Naming.equal("DefaultCoreFactory")));
+		interfaces.addAll(defaultCoreFactory);
+
+		Constraint<CtType<?>> con = Constraint.of((v) -> System.out.println(v), 
+		(type) -> {
+			String implName = type.getQualifiedName().replace(".support", "").replace("Impl", "");
+			CtType<?> impl = interfaces.stream().filter(v -> v.getQualifiedName().equals(implName)).findFirst().get();
+			return type.getReference().isSubtypeOf(impl.getReference());
+		});
+		ArchitectureTest.of(pre, con).runCheck(srcModel);
 	}
 }
