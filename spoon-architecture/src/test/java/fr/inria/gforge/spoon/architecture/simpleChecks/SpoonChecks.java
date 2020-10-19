@@ -8,10 +8,14 @@ import fr.inria.gforge.spoon.architecture.Precondition;
 import fr.inria.gforge.spoon.architecture.errorhandling.NopError;
 import fr.inria.gforge.spoon.architecture.preconditions.Modifier;
 import fr.inria.gforge.spoon.architecture.preconditions.Naming;
+import fr.inria.gforge.spoon.architecture.preconditions.Visibility;
 import fr.inria.gforge.spoon.architecture.runner.Architecture;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 public class SpoonChecks {
 
@@ -44,8 +48,25 @@ public class SpoonChecks {
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
 	}
 
-	@Architecture
-	public void testDocumentation(CtModel srcModel, CtModel testModel) {
-		//TODO:_
+	@Architecture(modelNames = "srcModel")
+	public void testDocumentation(CtModel srcModel) {
+		// Contract:
+		// Precondition: Get all method expect setters etc.
+		Precondition<CtMethod<?>> pre = 
+		Precondition.of(DefaultElementFilter.METHODS.getFilter(),
+		Naming.startsWith("get").negate(),
+		Naming.startsWith("set").negate(),
+		Naming.startsWith("is").negate(),
+		Naming.startsWith("add").negate(),
+		Naming.startsWith("remove").negate(),
+		// only the top declarations should be documented (not the overriding methods which are lower in the hierarchy)
+		(method) -> method.getTopDefinitions().isEmpty(),
+		 // means that only large methods must be documented),
+		Modifier.ABSTRACT.or(method -> method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 33), 
+		Visibility.PUBLIC);
+		Constraint<CtMethod<?>> con = Constraint.of((method) -> System.out.println(method.getDeclaringType().getQualifiedName()+ "#"+ method.getSignature()),
+		(method) -> method.getDocComment().length() > 15);
+		ArchitectureTest.of(pre, con).runCheck(srcModel);
+
 	}
 }
