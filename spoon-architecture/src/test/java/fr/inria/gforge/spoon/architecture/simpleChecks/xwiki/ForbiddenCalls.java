@@ -15,7 +15,8 @@ public class ForbiddenCalls {
 
   @Architecture
   public void forbiddenCallsTest(CtModel srcModel, CtModel testModel) {
-    methodsByType.put("java.lang.System.out", Arrays.asList("println"));
+    methodsByType.put("java.io.PrintStream", Arrays.asList("println"));
     ForbiddenInvocation.forbiddenInvocationCheck(methodsByType, System.out::println).runCheck(srcModel);
+    ForbiddenInvocation.forbiddenInvocationCheck(methodsByType, System.out::println).runCheck(testModel);
   }
 }

@@ -40,26 +40,26 @@ public class SpoonArchitecturalCheckerImpl extends AbstractSpoonArchitecturalChe
     return builder.getModelByName();
   }
 
-  static class Builder {
+  public static class Builder {
 
     private SpoonArchitecturalCheckerImpl checker; 
     public Builder() {
       checker = new SpoonArchitecturalCheckerImpl();
     }
-    Builder addModelBuilder(AbstractModelBuilder modelBuilder) {
+    public Builder addModelBuilder(AbstractModelBuilder modelBuilder) {
       checker.builder = modelBuilder;
       return this;
     }
-    Builder addReportPrinter(IReportPrinter printer) {
+    public Builder addReportPrinter(IReportPrinter printer) {
       checker.printer = printer;
       return this;
     }
-    Builder useDefaultPath() {
+    public Builder useDefaultPath() {
       checker.builder.insertInputPath(defaultSrcPath.getKey(), defaultSrcPath.getValue());
       checker.builder.insertInputPath(defaultTestPath.getKey(), defaultTestPath.getValue());
       return this;
     }
-    SpoonArchitecturalCheckerImpl build() {
+    public SpoonArchitecturalCheckerImpl build() {
       return checker;
     }
   } 
