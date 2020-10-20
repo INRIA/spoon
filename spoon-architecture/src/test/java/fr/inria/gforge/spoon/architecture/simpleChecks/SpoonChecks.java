@@ -91,7 +91,7 @@ public class SpoonChecks {
 		(type) -> !exceptions.contains(type.getSimpleName()),
 		(type) -> Naming.equal("spoon.reflect.declaration")
 		.or(Naming.equal("spoon.reflect.code"))
-		.or(Naming.equal("spoon.reflect.reference")).test(type.getPackage()));
+		.or(Naming.equal("spoon.reflect.reference")).test(type.getTopLevelType().getPackage()));
 		List<CtType<?>> interfaces = srcModel.getElements(ElementFilter.ofTypeFilter(DefaultElementFilter.TYPES.getFilter(),
 		(type) -> type.isTopLevel() && 
 		Naming.equal("spoon.reflect.declaration")
