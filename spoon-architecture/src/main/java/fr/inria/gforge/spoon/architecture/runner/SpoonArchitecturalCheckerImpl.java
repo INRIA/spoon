@@ -1,48 +1,65 @@
 package fr.inria.gforge.spoon.architecture.runner;
 
-import java.util.HashMap;
 import java.util.Map;
-import spoon.Launcher;
 import spoon.reflect.CtModel;
 
 public class SpoonArchitecturalCheckerImpl extends AbstractSpoonArchitecturalChecker {
 
 
-  private Map<String, CtModel> modelByName;
   private static Map.Entry<String,String> defaultSrcPath = Map.entry("srcmodel", "src/main/java");
   private static Map.Entry<String,String> defaultTestPath = Map.entry("testmodel", "src/test/java");
-  @Override
-  Map<String, CtModel> getModelByName() {
-    return modelByName;
-  }
-
+  private AbstractModelBuilder builder;
+  private IReportPrinter printer;
   private SpoonArchitecturalCheckerImpl() {
-    modelByName = new HashMap<>();
+    builder = new ModelBuilder();
+    //use as default a NOP printer
+    printer = new IReportPrinter(){ };
   }
 
-  @Override
-  public void insertInputPath(String name, String path) {
-    Launcher launcher = new Launcher();
-    launcher.addInputResource(path);
-    CtModel model = launcher.buildModel();
-
-    modelByName.put(name.toLowerCase(), model);
-  }
-
-  @Override
-  public void insertInputPath(String name, CtModel model) {
-    modelByName.put(name.toLowerCase(), model);
-  }
 
   public static SpoonArchitecturalCheckerImpl createChecker() {
     SpoonArchitecturalCheckerImpl checker = new SpoonArchitecturalCheckerImpl();
-    checker.insertInputPath(defaultSrcPath.getKey(), defaultSrcPath.getValue());
-    checker.insertInputPath(defaultTestPath.getKey(), defaultTestPath.getValue());
-
+    checker.builder.insertInputPath(defaultSrcPath.getKey(), defaultSrcPath.getValue());
+    checker.builder.insertInputPath(defaultTestPath.getKey(), defaultTestPath.getValue());
     return checker;
   }
 
   public static SpoonArchitecturalCheckerImpl createCheckerWithoutDefault() {
     return new SpoonArchitecturalCheckerImpl();
   }
+
+  /**
+   * @return the printer
+   */
+  public IReportPrinter getPrinter() {
+    return printer;
+  }
+  @Override
+  Map<String, CtModel> getModelByName() {
+    return builder.getModelByName();
+  }
+
+  static class Builder {
+
+    private SpoonArchitecturalCheckerImpl checker; 
+    public Builder() {
+      checker = new SpoonArchitecturalCheckerImpl();
+    }
+    Builder addModelBuilder(AbstractModelBuilder modelBuilder) {
+      checker.builder = modelBuilder;
+      return this;
+    }
+    Builder addReportPrinter(IReportPrinter printer) {
+      checker.printer = printer;
+      return this;
+    }
+    Builder useDefaultPath() {
+      checker.builder.insertInputPath(defaultSrcPath.getKey(), defaultSrcPath.getValue());
+      checker.builder.insertInputPath(defaultTestPath.getKey(), defaultTestPath.getValue());
+      return this;
+    }
+    SpoonArchitecturalCheckerImpl build() {
+      return checker;
+    }
+  } 
 }

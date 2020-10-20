@@ -17,28 +17,31 @@ public abstract class AbstractSpoonArchitecturalChecker {
 	final static Logger logger = LoggerFactory.getLogger(AbstractSpoonArchitecturalChecker.class);
 	abstract Map<String,CtModel> getModelByName();
 	public void runChecks() {
-		logger.debug("Starting checks");
 		CtModel testModel = getModelByName().get("testmodel");
+		getPrinter().startPrinting();
 		testModel.getElements(new TypeFilter<CtMethod<?>>(CtMethod.class)).stream()
 				.filter(v -> v.hasAnnotation(Architecture.class))
 				.map(v -> v.getReference().getActualMethod())
 				.filter(Objects::nonNull)
 				.forEach(clazz -> invokeMethod(clazz));
+				getPrinter().finishPrinting();
 	}
 
 	public void runChecks(String testPath) {
-		logger.debug("Starting checks");
 		CtModel testModel = getModelByName().get(testPath.toLowerCase());
+		getPrinter().startPrinting();
 		testModel.getElements(new TypeFilter<CtMethod<?>>(CtMethod.class)).stream()
 				.filter(v -> v.hasAnnotation(Architecture.class))
 				.map(v -> v.getReference().getActualMethod())
 				.filter(Objects::nonNull)
 				.forEach(clazz -> invokeMethod(clazz));
+		getPrinter().finishPrinting();
 	}
 	private void invokeMethod(Method method) {
-		System.out.println("Running check: " + method.getName());
+		getPrinter().beforeMethod(method);
 		try {
 			method.invoke(createCallTarget(method), createArguments(method));
+			getPrinter().afterMethod(method);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| InstantiationException | NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
@@ -58,6 +61,6 @@ public abstract class AbstractSpoonArchitecturalChecker {
 		}
 		return modelParameter.toArray();
 	}
-	public abstract void insertInputPath(String name, String path);
-	public abstract void insertInputPath(String name, CtModel model);
+
+	public abstract IReportPrinter getPrinter();
 }
