@@ -97,7 +97,7 @@ public class SpoonChecks {
 		Naming.equal("spoon.reflect.declaration")
 		.or(Naming.equal("spoon.reflect.code"))
 		.or(Naming.equal("spoon.reflect.reference"))
-		.test(type.getPackage())));
+		.test(type.getTopLevelType().getPackage())));
 		List<CtType<?>> defaultCoreFactory = srcModel.getElements(ElementFilter.ofTypeFilter(DefaultElementFilter.TYPES.getFilter(),
 		Naming.equal("DefaultCoreFactory")));
 		interfaces.addAll(defaultCoreFactory);
