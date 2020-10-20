@@ -6,18 +6,18 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.reflect.visitor.filter.AbstractFilter;
 
 public class Precondition<T extends CtElement> implements Function<CtModel, Collection<T>> {
 
-	private TypeFilter<T> typeFilter;
+	private AbstractFilter<T> typeFilter;
 	private Predicate<? super T> condition;
-	private Precondition(TypeFilter<T> typeFilter, Predicate<? super T> condition) {
+	private Precondition(AbstractFilter<T> typeFilter, Predicate<? super T> condition) {
 		this.typeFilter = typeFilter;
 		this.condition = condition;
 	}
 
-	public static <T extends CtElement> Precondition<T> of(TypeFilter<T> elementFilter, Predicate<? super T>...conditions) {
+	public static <T extends CtElement> Precondition<T> of(AbstractFilter<T> elementFilter, Predicate<? super T>...conditions) {
 		Predicate<T> startValue = (value) -> true;
 		for (Predicate<? super T> condition : conditions) {
 			startValue = startValue.and(condition);
@@ -25,7 +25,7 @@ public class Precondition<T extends CtElement> implements Function<CtModel, Coll
 		return new Precondition<T>(elementFilter, startValue);
 	}
 	
-	public static <T extends CtElement> Precondition<T> of(TypeFilter<T> elementFilter, Iterable<Predicate<? super T>> conditions) {
+	public static <T extends CtElement> Precondition<T> of(AbstractFilter<T> elementFilter, Iterable<Predicate<? super T>> conditions) {
 		Predicate<T> startValue = (value) -> true;
 		for (Predicate<? super T> condition : conditions) {
 			startValue = startValue.and(condition);
@@ -33,11 +33,11 @@ public class Precondition<T extends CtElement> implements Function<CtModel, Coll
 		return new Precondition<T>(elementFilter, startValue);
 	}
 
-	public static <T extends CtElement> Precondition<T> of(TypeFilter<T> elementFilter, Predicate<? super T> conditions) {
+	public static <T extends CtElement> Precondition<T> of(AbstractFilter<T> elementFilter, Predicate<? super T> conditions) {
 		return new Precondition<T>(elementFilter, conditions);
 	}
 
-	public static <T extends CtElement> Precondition<T> of(TypeFilter<T> elementFilter) {
+	public static <T extends CtElement> Precondition<T> of(AbstractFilter<T> elementFilter) {
 		Predicate<T> startValue = (value) -> true;
 		return new Precondition<T>(elementFilter, startValue);
 	}
