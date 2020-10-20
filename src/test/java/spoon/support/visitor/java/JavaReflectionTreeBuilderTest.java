@@ -63,6 +63,7 @@ import spoon.support.reflect.declaration.CtEnumValueImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
+import spoon.support.visitor.java.testclasses.NPEInStaticInit;
 import spoon.test.generics.testclasses3.ComparableComparatorBug;
 
 import java.io.File;
@@ -89,6 +90,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class JavaReflectionTreeBuilderTest {
@@ -681,5 +683,15 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals(true, ctClass.isAnonymous());
 		assertEquals(true, ctClass.isShadow());
 		assertEquals("foo", ctClass.getMethods().toArray(new CtMethod[0])[0].getSimpleName());
+	}
+
+	@Test
+	public void testExpectedExceptionInInitializerError() {
+		try {
+			new JavaReflectionTreeBuilder(createFactory()).scan(NPEInStaticInit.class);
+			fail();
+		}
+		catch (ExceptionInInitializerError expected) {
+		}
 	}
 }
