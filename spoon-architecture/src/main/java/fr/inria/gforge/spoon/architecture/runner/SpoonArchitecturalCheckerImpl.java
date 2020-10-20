@@ -1,6 +1,7 @@
 package fr.inria.gforge.spoon.architecture.runner;
 
 import java.util.Map;
+import fr.inria.gforge.spoon.architecture.report.IReportPrinter;
 import spoon.reflect.CtModel;
 
 public class SpoonArchitecturalCheckerImpl extends AbstractSpoonArchitecturalChecker {

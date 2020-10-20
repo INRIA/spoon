@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import fr.inria.gforge.spoon.architecture.report.IReportPrinter;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.filter.TypeFilter;

@@ -1,4 +1,4 @@
-package fr.inria.gforge.spoon.architecture.runner;
+package fr.inria.gforge.spoon.architecture.report;
 
 import java.lang.reflect.Method;
 
