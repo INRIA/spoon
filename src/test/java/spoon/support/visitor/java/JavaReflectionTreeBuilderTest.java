@@ -63,7 +63,6 @@ import spoon.support.reflect.declaration.CtEnumValueImpl;
 import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
-import spoon.support.visitor.java.testclasses.NPEInStaticInit;
 import spoon.test.generics.testclasses3.ComparableComparatorBug;
 
 import java.io.File;
@@ -688,7 +687,7 @@ public class JavaReflectionTreeBuilderTest {
 	@Test
 	public void testExpectedExceptionInInitializerError() {
 		try {
-			new JavaReflectionTreeBuilder(createFactory()).scan(NPEInStaticInit.class);
+			new JavaReflectionTreeBuilder(createFactory()).scan(spoon.support.visitor.java.testclasses.NPEInStaticInit.class);
 			fail();
 		}
 		catch (ExceptionInInitializerError expected) {
