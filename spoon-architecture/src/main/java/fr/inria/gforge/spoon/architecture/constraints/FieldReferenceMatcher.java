@@ -1,5 +1,6 @@
 package fr.inria.gforge.spoon.architecture.constraints;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -13,6 +14,7 @@ public class FieldReferenceMatcher implements Predicate<CtField<?>> {
 	private Set<CtField<?>> lookUp;
 
 	public FieldReferenceMatcher(CtModel model) {
+		lookUp = new HashSet<>();
 		model.getElements(new TypeFilter<>(CtFieldReference.class)).stream().map(v -> v.getDeclaration()).filter(Objects::nonNull).map(lookUp::add);
 	}
 
