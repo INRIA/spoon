@@ -89,7 +89,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class JavaReflectionTreeBuilderTest {
@@ -685,12 +684,18 @@ public class JavaReflectionTreeBuilderTest {
 	}
 
 	@Test
-	public void testExpectedExceptionInInitializerError() {
-		try {
-			new JavaReflectionTreeBuilder(createFactory()).scan(spoon.support.visitor.java.testclasses.NPEInStaticInit.class);
-			fail();
-		}
-		catch (ExceptionInInitializerError expected) {
-		}
+	public void testCannotGetDefaultExpressionBecauseOfException() {
+		/*
+		 * contract:
+		 * 				JavaReflectionTreeBuilder can't set defaultExpression for the field (public static primitive),
+		 * 				as Reflection API throws the exception ExceptionInInitializerError when attempting to get it.
+		 * 				{@link JavaReflectionTreeBuilder#visitField(Filed)} ignores any exceptions.
+		 */
+		CtType<spoon.support.visitor.java.testclasses.NPEInStaticInit> ctType =
+				new JavaReflectionTreeBuilder(createFactory()).scan(spoon.support.visitor.java.testclasses.NPEInStaticInit.class);
+
+		CtField<?> value = ctType.getField("VALUE");
+		// should have gotten '1'
+		assertNull(value.getDefaultExpression());
 	}
 }
