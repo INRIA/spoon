@@ -42,7 +42,7 @@ public class SpoonChecks {
 	}
 
 	private boolean stateless(CtField<?> field) {
-		return Naming.equal("factory").test(field)
+		return Naming.equals("factory").test(field)
 				|| (Modifier.FINAL.test(field) && Modifier.TRANSIENT.test(field));
 	}
 	// commented out because the lookup for the factory fails, because test resources are missing
@@ -52,7 +52,7 @@ public class SpoonChecks {
 				Precondition.of(DefaultElementFilter.CLASSES.getFilter(),
 				Naming.contains("Factory"),
 				(clazz) -> clazz.getSuperclass().getSimpleName().equals("SubFactory"));
-		CtClass<?> factory = srcModel.getElements(ElementFilter.ofClassObject(CtClass.class, Naming.equal("Factory"))).get(0);
+		CtClass<?> factory = srcModel.getElements(ElementFilter.ofClassObject(CtClass.class, Naming.equals("Factory"))).get(0);
 		Constraint<CtClass<?>> con = Constraint.of(new NopError<CtClass<?>>(),
 				(clazz) -> clazz.getMethods()
 				.stream()
@@ -89,17 +89,17 @@ public class SpoonChecks {
 		Precondition<CtType<?>> pre = Precondition.of(
 		DefaultElementFilter.TYPES.getFilter(),
 		(type) -> !exceptions.contains(type.getSimpleName()),
-		(type) -> Naming.equal("spoon.reflect.declaration")
-		.or(Naming.equal("spoon.reflect.code"))
-		.or(Naming.equal("spoon.reflect.reference")).test(type.getTopLevelType().getPackage()));
+		(type) -> Naming.equals("spoon.reflect.declaration")
+		.or(Naming.equals("spoon.reflect.code"))
+		.or(Naming.equals("spoon.reflect.reference")).test(type.getTopLevelType().getPackage()));
 		List<CtType<?>> interfaces = srcModel.getElements(ElementFilter.ofTypeFilter(DefaultElementFilter.TYPES.getFilter(),
 		(type) -> type.isTopLevel() && 
-		Naming.equal("spoon.reflect.declaration")
-		.or(Naming.equal("spoon.reflect.code"))
-		.or(Naming.equal("spoon.reflect.reference"))
+		Naming.equals("spoon.reflect.declaration")
+		.or(Naming.equals("spoon.reflect.code"))
+		.or(Naming.equals("spoon.reflect.reference"))
 		.test(type.getTopLevelType().getPackage())));
 		List<CtType<?>> defaultCoreFactory = srcModel.getElements(ElementFilter.ofTypeFilter(DefaultElementFilter.TYPES.getFilter(),
-		Naming.equal("DefaultCoreFactory")));
+		Naming.equals("DefaultCoreFactory")));
 		interfaces.addAll(defaultCoreFactory);
 
 		Constraint<CtType<?>> con = Constraint.of((v) -> System.out.println(v), 
@@ -188,8 +188,8 @@ public class SpoonChecks {
 		InvocationMatcher matcher = new InvocationMatcher(srcModel);
 		Precondition<CtMethod<?>> pre = Precondition.of(DefaultElementFilter.METHODS.getFilter(),
 		Visibility.PRIVATE,
-		Naming.equal("readObject").negate(),
-		Naming.equal("readResolve").negate());
+		Naming.equals("readObject").negate(),
+		Naming.equals("readResolve").negate());
 		Constraint<CtMethod<?>> con = Constraint.of(new NopError<CtMethod<?>>(), matcher);
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
 	}
@@ -199,8 +199,8 @@ public class SpoonChecks {
 		FieldReferenceMatcher matcher = new FieldReferenceMatcher(srcModel);
 		Precondition<CtField<?>> pre = Precondition.of(DefaultElementFilter.FIELDS.getFilter(),
 		Visibility.PRIVATE,
-		Naming.equal("readObject").negate(),
-		Naming.equal("readResolve").negate());
+		Naming.equals("readObject").negate(),
+		Naming.equals("readResolve").negate());
 		Constraint<CtField<?>> con = Constraint.of(new NopError<CtField<?>>(), matcher);
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
 	}
