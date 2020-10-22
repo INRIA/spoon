@@ -146,7 +146,7 @@ public class DecompilerArchitectureTest {
 		// contract: when a pull-request introduces a new package, it is made explicit during code review
 		// when a pull-request introduces a new package, this test fails and the author has to explicitly declare the new package here
 
-		Set<String> officialPackages = new TreeSet<>();
+		Set<String> officialPackages = new HashSet<>();
 		officialPackages.add("spoon.decompiler");
 		officialPackages.add("spoon");
 		officialPackages.add(""); // root package
@@ -154,7 +154,7 @@ public class DecompilerArchitectureTest {
 		SpoonAPI spoon = new Launcher();
 		spoon.addInputResource("src/main/java/");
 		spoon.buildModel();
-		final Set<String> currentPackages = new TreeSet<>();
+		final Set<String> currentPackages = new HashSet<>();
 		spoon.getModel().processWith(new AbstractProcessor<CtPackage>() {
 			@Override
 			public void process(CtPackage element) {
