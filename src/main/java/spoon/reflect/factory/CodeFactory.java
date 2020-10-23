@@ -29,6 +29,7 @@ import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTypeAccess;
@@ -267,6 +268,19 @@ public class CodeFactory extends SubFactory {
 			literal.setType((CtTypeReference<T>) factory.Type().nullType());
 		}
 		return literal;
+	}
+
+	/**
+	 * Creates a TextBlock with the given string value.
+	 * @param value
+	 * 		the string value of the literal
+	 * @return a new literal
+	 */
+	public CtTextBlock createTextBlock(String value) {
+		CtTextBlock textblock = factory.Core().createTextBlock();
+		textblock.setValue(value);
+		// TODO set textblock.setType
+		return textblock;
 	}
 
 	/**
@@ -759,5 +773,4 @@ public class CodeFactory extends SubFactory {
 		}
 		return docTag.setContent(content.trim()).setType(type).setRealName(realName);
 	}
-
 }

@@ -49,6 +49,7 @@ import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
@@ -143,6 +144,7 @@ import spoon.support.reflect.code.CtSuperAccessImpl;
 import spoon.support.reflect.code.CtSwitchExpressionImpl;
 import spoon.support.reflect.code.CtSwitchImpl;
 import spoon.support.reflect.code.CtSynchronizedImpl;
+import spoon.support.reflect.code.CtTextBlockImpl;
 import spoon.support.reflect.code.CtThisAccessImpl;
 import spoon.support.reflect.code.CtThrowImpl;
 import spoon.support.reflect.code.CtTryImpl;
@@ -463,6 +465,13 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		CtLiteral<T> e = new CtLiteralImpl<>();
 		e.setFactory(getMainFactory());
 		return e;
+	}
+
+	@Override
+	public CtTextBlock createTextBlock() {
+		CtTextBlock textblock = new CtTextBlockImpl();
+		textblock.setFactory(getMainFactory());
+		return textblock;
 	}
 
 	@Override

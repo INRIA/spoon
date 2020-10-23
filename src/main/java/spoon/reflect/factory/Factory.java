@@ -52,6 +52,7 @@ import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
@@ -518,6 +519,16 @@ public interface Factory {
 	 *  @see CoreFactory#createLiteral()
 	 */
 	<T> CtLiteral<T> createLiteral();
+
+	/**
+	 *  @see CoreFactory#createTextBlock()
+	 */
+	CtTextBlock createTextBlock();
+
+	/**
+	 *  @see CoreFactory#createTextBlock()
+	 */
+	CtTextBlock createTextBlock(String value);
 
 	/**
 	 *  @see CoreFactory#createLocalVariable()
