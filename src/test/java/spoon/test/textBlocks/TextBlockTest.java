@@ -78,4 +78,10 @@ public class TextBlockTest{
 		CtLiteral l1 = (CtLiteral) stmt1.getValueByRole(CtRole.ASSIGNMENT);
 		assertEquals(l1.getValue(), "");
 	}
+
+	@Test
+	public void testTextBlockCreation(){
+		// TODO contract: 
+		
+	}
 }
