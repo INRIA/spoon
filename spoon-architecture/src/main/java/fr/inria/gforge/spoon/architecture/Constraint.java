@@ -4,7 +4,7 @@ import java.util.function.Predicate;
 import fr.inria.gforge.spoon.architecture.errorhandling.IError;
 import spoon.reflect.declaration.CtElement;
 
-public class Constraint<T> implements IConstraint<T> {
+public class Constraint<T extends CtElement> implements IConstraint<T> {
 	private Predicate<T> condition;
 	private IError<T> errorHandler;
 

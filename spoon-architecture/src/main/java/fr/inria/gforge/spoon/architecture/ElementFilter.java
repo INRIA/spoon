@@ -21,7 +21,7 @@ public class ElementFilter {
     };
   }
 
-  public static <T extends CtElement> Filter<T> ofTypeFilter(AbstractFilter<T> typeFilter,
+  public static <T extends CtElement> Filter<T> ofTypeFilter(Filter<T> typeFilter,
       Predicate<? super T> predicate) {
     return new Filter<T>() {
       @Override

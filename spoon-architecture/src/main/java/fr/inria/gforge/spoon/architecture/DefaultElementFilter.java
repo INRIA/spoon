@@ -9,6 +9,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -16,26 +17,26 @@ import spoon.reflect.visitor.filter.TypeFilter;
 public enum DefaultElementFilter {
 	METHODS() {
 		@Override
-		public TypeFilter<CtMethod<?>> getFilter() {
+		public Filter<CtMethod<?>> getFilter() {
 			return new TypeFilter<CtMethod<?>>(CtMethod.class);
 		}
 	},
 	FIELDS() {
 		@Override
-		public TypeFilter<CtField<?>> getFilter() {
+		public Filter<CtField<?>> getFilter() {
 			return new TypeFilter<CtField<?>>(CtField.class);
 		}
 	},
 	CLASSES() {
 		@Override
-		public TypeFilter<CtClass<?>> getFilter() {
+		public Filter<CtClass<?>> getFilter() {
 			return new TypeFilter<CtClass<?>>(CtClass.class);
 
 		}
 	},
 	INTERFACES() {
 		@Override
-		public TypeFilter<CtInterface<?>> getFilter() {
+		public Filter<CtInterface<?>> getFilter() {
 			return new TypeFilter<CtInterface<?>>(CtInterface.class);
 
 		}
@@ -58,18 +59,18 @@ public enum DefaultElementFilter {
 	},
 	PACKAGES() {
 		@Override
-		public TypeFilter<CtPackage> getFilter() {
+		public Filter<CtPackage> getFilter() {
 			return new TypeFilter<CtPackage>(CtPackage.class);
 
 		}
 	},
 	TYPE_REFERENCE() {
 		@Override
-		public TypeFilter<CtTypeReference<?>> getFilter() {
+		public Filter<CtTypeReference<?>> getFilter() {
 			return new TypeFilter<CtTypeReference<?>>(CtTypeReference.class);
 
 		}
 };
 
-	public abstract <T extends CtElement> AbstractFilter<T> getFilter();
+	public abstract <T extends CtElement> Filter<T> getFilter();
 }
