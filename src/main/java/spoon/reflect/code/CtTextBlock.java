@@ -19,5 +19,7 @@ package spoon.reflect.code;
  * The example above shows a TextBlock literal, in which the string is represented by CtTextBlock
  */
 public interface CtTextBlock extends CtLiteral<String> {
-
+	/** Overriding return type, a clone of a CtTextBlock returns a CtTextBlock */
+	@Override
+	CtTextBlock clone();
 }
