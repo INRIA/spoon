@@ -296,7 +296,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 				CtLiteral<Object> defaultExpression = factory.createLiteral(field.get(null));
 				ctField.setDefaultExpression(defaultExpression);
 			}
-		} catch (Throwable e) {
+		} catch (IllegalAccessException | ExceptionInInitializerError | UnsatisfiedLinkError e) {
 			// ignore
 		}
 

@@ -687,14 +687,25 @@ public class JavaReflectionTreeBuilderTest {
 	public void testCannotGetDefaultExpressionBecauseOfException() {
 		/*
 		 * contract:
-		 * 				JavaReflectionTreeBuilder can't set defaultExpression for the field (public static primitive),
-		 * 				as Reflection API throws the exception ExceptionInInitializerError when attempting to get it.
-		 * 				{@link JavaReflectionTreeBuilder#visitField(Filed)} ignores any exceptions.
+		 *    JavaReflectionTreeBuilder can't set defaultExpression for the field (public static primitive),
+		 *    as Reflection API throws the exception ExceptionInInitializerError when attempting to get it.
+		 *    {@link JavaReflectionTreeBuilder#visitField(Filed)} ignores this exception.
 		 */
-		CtType<spoon.support.visitor.java.testclasses.NPEInStaticInit> ctType =
-				new JavaReflectionTreeBuilder(createFactory()).scan(spoon.support.visitor.java.testclasses.NPEInStaticInit.class);
+		CtType<?> ctType = new JavaReflectionTreeBuilder(createFactory()).scan(spoon.support.visitor.java.testclasses.NPEInStaticInit.class);
 
 		CtField<?> value = ctType.getField("VALUE");
+		// should have gotten '1'
+		assertNull(value.getDefaultExpression());
+
+		/*
+		 * contract:
+		 *    JavaReflectionTreeBuilder can't set defaultExpression for the field (public static primitive),
+		 *    as Reflection API throws the exception UnsatisfiedLinkError when attempting to get it.
+		 *    {@link JavaReflectionTreeBuilder#visitField(Filed)} ignores this exception.
+		 */
+		ctType = new JavaReflectionTreeBuilder(createFactory()).scan(spoon.support.visitor.java.testclasses.UnsatisfiedLinkErrorInStaticInit.class);
+
+		value = ctType.getField("VALUE");
 		// should have gotten '1'
 		assertNull(value.getDefaultExpression());
 	}
