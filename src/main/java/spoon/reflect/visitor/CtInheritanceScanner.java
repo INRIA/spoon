@@ -59,6 +59,7 @@ import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
@@ -657,6 +658,14 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	public <T> void visitCtLiteral(CtLiteral<T> e) {
+		scanCtExpression(e);
+		scanCtCodeElement(e);
+		scanCtTypedElement(e);
+		scanCtElement(e);
+		scanCtVisitable(e);
+	}
+
+	public void visitCtTextBlock(CtTextBlock e) {
 		scanCtExpression(e);
 		scanCtCodeElement(e);
 		scanCtTypedElement(e);

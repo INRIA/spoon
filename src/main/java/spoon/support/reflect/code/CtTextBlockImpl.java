@@ -20,14 +20,7 @@ public class CtTextBlockImpl extends CtLiteralImpl<String> implements CtTextBloc
 	}
 
 	@Override
-	public String prettyprint() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void accept(CtVisitor visitor) {
-		// TODO Auto-generated method stub
-
+		visitor.visitCtTextBlock(this);
 	}
 }

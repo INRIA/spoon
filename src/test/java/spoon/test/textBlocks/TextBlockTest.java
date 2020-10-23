@@ -5,12 +5,15 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
 
 /** Test for the new Java 15 text block feature with */
@@ -21,7 +24,13 @@ public class TextBlockTest{
 		launcher.run();
 		return launcher;
 	}
-	
+
+	private Factory getSpoonFactory() {
+		final Launcher launcher = new Launcher();
+		launcher.run();
+		return launcher.getFactory();
+	}
+
 	@Test
 	public void testTextBlock1(){
 		//contract: Test Text Block usage introduced in Java 15
@@ -82,6 +91,12 @@ public class TextBlockTest{
 	@Test
 	public void testTextBlockCreation(){
 		// TODO contract: 
-		
+		Factory factory = getSpoonFactory();
+		CtClass<?> c = Launcher.parseClass("class Test{public String m1(){String s = \"\";}}");
+		CtBlock<?> body = c.getMethod("m1").getBody();
+		CtReturn ret = factory.createReturn();
+		ret.setValueByRole(CtRole.EXPRESSION, factory.createTextBlock("Hello, World!"));
+		body.insertEnd(ret);
+		System.out.println(c);
 	}
 }

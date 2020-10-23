@@ -60,6 +60,7 @@ import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
@@ -116,6 +117,7 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.printer.CommentOffset;
+import spoon.support.reflect.code.CtTextBlockImpl;
 import spoon.support.util.ModelList;
 
 import java.lang.annotation.Annotation;
@@ -1340,6 +1342,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		enterCtExpression(literal);
 		printer.writeLiteral(LiteralHelper.getLiteralToken(literal));
 		exitCtExpression(literal);
+	}
+
+	@Override
+	public void visitCtTextBlock(CtTextBlock ctTextBlock) {
+		enterCtExpression(ctTextBlock);
+		printer.writeLiteral(LiteralHelper.getLiteralToken(ctTextBlock));
+		exitCtExpression(ctTextBlock);
 	}
 
 	@Override

@@ -6,6 +6,9 @@
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.clone;
+
+import spoon.reflect.code.CtTextBlock;
+
 /**
  * Used to set all data in the cloned element.
  *
@@ -168,6 +171,12 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	public <T> void visitCtLiteral(spoon.reflect.code.CtLiteral<T> e) {
 		((spoon.reflect.code.CtLiteral<T>) (other)).setValue(e.getValue());
 		((spoon.reflect.code.CtLiteral<T>) (other)).setBase(e.getBase());
+		super.visitCtLiteral(e);
+	}
+
+	@Override
+	public void visitCtTextBlock(CtTextBlock e) {
+		((spoon.reflect.code.CtTextBlock) (other)).setValue(e.getValue());
 		super.visitCtLiteral(e);
 	}
 

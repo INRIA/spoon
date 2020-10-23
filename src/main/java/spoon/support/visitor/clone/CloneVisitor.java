@@ -6,6 +6,9 @@
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.clone;
+
+import spoon.reflect.code.CtTextBlock;
+
 /**
  * Used to clone a given element.
  *
@@ -433,6 +436,18 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtLiteral.setComments(this.cloneHelper.clone(literal.getComments()));
 		this.cloneHelper.tailor(literal, aCtLiteral);
 		this.other = aCtLiteral;
+	}
+
+	@Override
+	public void visitCtTextBlock(CtTextBlock ctTextBlock) {
+		spoon.reflect.code.CtTextBlock aCtTextBlock = ctTextBlock.getFactory().Core().createTextBlock();
+		this.builder.copy(ctTextBlock, aCtTextBlock);
+		aCtTextBlock.setAnnotations(this.cloneHelper.clone(ctTextBlock.getAnnotations()));
+		aCtTextBlock.setType(this.cloneHelper.clone(ctTextBlock.getType()));
+		aCtTextBlock.setTypeCasts(this.cloneHelper.clone(ctTextBlock.getTypeCasts()));
+		aCtTextBlock.setComments(this.cloneHelper.clone(ctTextBlock.getComments()));
+		this.cloneHelper.tailor(ctTextBlock, aCtTextBlock);
+		this.other = aCtTextBlock;
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
