@@ -39,7 +39,7 @@ public interface CtLiteral<T> extends CtExpression<T> {
 	<C extends CtLiteral<T>> C setValue(T value);
 
 	/**
-	 * Gets the base ot the numeric literal (2, 8, 10 or 16).
+	 * Gets the base of the numeric literal (2, 8, 10 or 16).
 	 */
 	@PropertyGetter(role = LITERAL_BASE)
 	LiteralBase getBase();
