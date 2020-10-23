@@ -1347,7 +1347,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void visitCtTextBlock(CtTextBlock ctTextBlock) {
 		enterCtExpression(ctTextBlock);
-		printer.writeLiteral(LiteralHelper.getLiteralToken(ctTextBlock));
+		printer.writeLiteral(LiteralHelper.getTextBlockToken(
+				ctTextBlock, 
+				printer.getPrinterHelper().getTabCount())
+		);		
 		exitCtExpression(ctTextBlock);
 	}
 

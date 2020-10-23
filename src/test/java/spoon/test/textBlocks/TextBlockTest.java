@@ -90,13 +90,24 @@ public class TextBlockTest{
 
 	@Test
 	public void testTextBlockCreation(){
-		// TODO contract: 
+		// contract: Test creation of TextBlock and prettyprinting
 		Factory factory = getSpoonFactory();
 		CtClass<?> c = Launcher.parseClass("class Test{public String m1(){String s = \"\";}}");
 		CtBlock<?> body = c.getMethod("m1").getBody();
 		CtReturn ret = factory.createReturn();
-		ret.setValueByRole(CtRole.EXPRESSION, factory.createTextBlock("Hello, World!"));
+		ret.setValueByRole(CtRole.EXPRESSION, factory.createTextBlock("Hello, \"World\"!\nTesting\n\tTabs"));
 		body.insertEnd(ret);
-		System.out.println(c);
+		assertEquals(
+				"class Test {\n"
+				+ "    public String m1() {\n"
+				+ "        String s = \"\";\n"
+				+ "        return \"\"\"\n"
+				+ "        Hello, \"World\"!\n"
+				+ "        Testing\n"
+				+ "        	Tabs\"\"\";\n"
+				+ "    }\n"
+				+ "}",
+				c.toString()
+		);
 	}
 }

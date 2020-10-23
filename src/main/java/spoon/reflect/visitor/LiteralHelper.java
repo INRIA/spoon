@@ -8,6 +8,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.LiteralBase;
 import spoon.reflect.cu.SourcePosition;
 
@@ -53,6 +54,24 @@ abstract class LiteralHelper {
 			return Double.toHexString(value);
 		}
 		return Double.toString(value);
+	}
+
+	/**
+	 * @param literal CtTextBlock to be converted
+	 * @param numTabs 
+	 * @return source code representation of the literal
+	 */
+	public static String getTextBlockToken(CtTextBlock literal, int numTabs) {
+		String initTabs = "";
+		// String initTabs = "\t";
+		// for(int i = 0; i < numTabs; ++i) initTabs += "\t";
+		String token = "\"\"\"\n" +
+				initTabs +
+				literal.getValue().replace(
+						"\n", 
+						"\n" + initTabs
+				) + "\"\"\"";
+		return token;
 	}
 
 	/**
