@@ -666,6 +666,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	public void visitCtTextBlock(CtTextBlock e) {
+		visitCtLiteral(e);
 		scanCtExpression(e);
 		scanCtCodeElement(e);
 		scanCtTypedElement(e);

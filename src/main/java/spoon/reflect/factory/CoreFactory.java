@@ -615,5 +615,8 @@ public interface CoreFactory {
 	 */
 	CtYieldStatement createYieldStatement();
 
+	/**
+	 * Creates a TextBlock String Literal
+	 */
 	CtTextBlock createTextBlock();
 }

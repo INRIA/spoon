@@ -15,8 +15,8 @@ public class CtTextBlockImpl extends CtLiteralImpl<String> implements CtTextBloc
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public CtLiteral<String> clone() {
-		return (CtTextBlockImpl) super.clone();
+	public CtTextBlock clone() {
+		return (CtTextBlock) super.clone();
 	}
 
 	@Override

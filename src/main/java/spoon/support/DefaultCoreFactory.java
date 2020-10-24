@@ -920,6 +920,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.code.CtLiteral.class)) {
 			return createLiteral();
 		}
+		if (klass.equals(spoon.reflect.code.CtTextBlock.class)) {
+			return createTextBlock();
+		}
 		if (klass.equals(spoon.reflect.code.CtLocalVariable.class)) {
 			return createLocalVariable();
 		}
