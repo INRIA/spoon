@@ -6,7 +6,7 @@ import java.util.Map;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 
-public class ModelBuilder extends AbstractModelBuilder {
+public class ModelBuilder implements IModelBuilder<CtModel> {
 
   private Map<String, CtModel> modelByName;
   //default value for non set is -1
@@ -38,8 +38,10 @@ public class ModelBuilder extends AbstractModelBuilder {
   }
 
   @Override
-  public Map<String, CtModel> getModelByName() {
-    return Collections.unmodifiableMap(modelByName);
+  public CtModel getModelWithIdentifier(String identifier) {
+    return modelByName.get(identifier);
   }
+
+
   
 }
