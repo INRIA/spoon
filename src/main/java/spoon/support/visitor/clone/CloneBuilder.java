@@ -177,7 +177,7 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	@Override
 	public void visitCtTextBlock(CtTextBlock e) {
 		((spoon.reflect.code.CtTextBlock) (other)).setValue(e.getValue());
-		super.visitCtLiteral(e);
+		super.visitCtTextBlock(e);
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
