@@ -20,7 +20,7 @@ We already have predefined filters for faster start. We want all filter that giv
 ```java
 Precondition<CtMethod<?>> pre =	Precondition.of(
               DefaultElementFilter.METHODS.getFilter(),
-              Visibility.PUBLIC,
+              VisibilityFilter.isPublic(),
               AnnotationHelper.hasAnnotationMatcher(Test.class));
 ```
 You can ignore the CtMethod generic for now. We create a precondition with the static method `of` having 2 arguments. The first an element selector, here `DefaultElementFilter.METHODS.getFilter()` and the second argument is varargs of Predicates. These predicates help filtering the elements before checking the condition. We have 2 Predicates here, the first checks if the method is public. A junit testcase is always public. The second method checks if the method has the `@Test` annotation.
@@ -51,7 +51,7 @@ The full example rule is the following:
 ````java
 	@Architecture
 	public void methodNameStartsWithTest(CtModel srcModel, CtModel testModel) {
-		Precondition<CtMethod<?>> pre =	Precondition.of(DefaultElementFilter.METHODS.getFilter(), Visibility.PUBLIC, AnnotationHelper.hasAnnotationMatcher(Test.class));
+		Precondition<CtMethod<?>> pre =	Precondition.of(DefaultElementFilter.METHODS.getFilter(), VisibilityFilter.isPublic(), AnnotationHelper.hasAnnotationMatcher(Test.class));
 		Constraint<CtMethod<?>> con = Constraint.of(System.out::println, Naming.startsWith("test"));
 		ArchitectureTest.of(pre, con).runCheck(testModel);
 	}
