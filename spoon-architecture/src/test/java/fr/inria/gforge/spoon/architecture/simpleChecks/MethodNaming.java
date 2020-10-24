@@ -16,7 +16,7 @@ public class MethodNaming {
 
 	@Architecture
 	public void methodNameStartsWithTest(CtModel srcModel, CtModel testModel) {
-		Precondition<CtMethod<?>> pre =	Precondition.of(DefaultElementFilter.METHODS.getFilter(), Visibility.PUBLIC, AnnotationHelper.hasAnnotationMatcher(Test.class));
+		Precondition<CtMethod<?>> pre =	Precondition.of(DefaultElementFilter.METHODS.getFilter(), Visibility.isPublic(), AnnotationHelper.hasAnnotationMatcher(Test.class));
 		Constraint<CtMethod<?>> con = Constraint.of(System.out::println, Naming.startsWith("test"));
 		ArchitectureTest.of(pre, con).runCheck(testModel);
 	}

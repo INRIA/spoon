@@ -14,7 +14,7 @@ import fr.inria.gforge.spoon.architecture.constraints.FieldReferenceMatcher;
 import fr.inria.gforge.spoon.architecture.constraints.InvocationMatcher;
 import fr.inria.gforge.spoon.architecture.errorhandling.NopError;
 import fr.inria.gforge.spoon.architecture.preconditions.AnnotationHelper;
-import fr.inria.gforge.spoon.architecture.preconditions.Modifier;
+import fr.inria.gforge.spoon.architecture.preconditions.ModifierFilter;
 import fr.inria.gforge.spoon.architecture.preconditions.Naming;
 import fr.inria.gforge.spoon.architecture.preconditions.Visibility;
 import fr.inria.gforge.spoon.architecture.runner.Architecture;
@@ -43,7 +43,7 @@ public class SpoonChecks {
 
 	private boolean stateless(CtField<?> field) {
 		return Naming.equals("factory").test(field)
-				|| (Modifier.FINAL.test(field) && Modifier.TRANSIENT.test(field));
+				|| (ModifierFilter.isFinal().and(ModifierFilter.isTransient()).test(field));
 	}
 	// commented out because the lookup for the factory fails, because test resources are missing
 	// @Architecture
@@ -75,8 +75,8 @@ public class SpoonChecks {
 		// only the top declarations should be documented (not the overriding methods which are lower in the hierarchy)
 		(method) -> method.getTopDefinitions().isEmpty(),
 		 // means that only large methods must be documented),
-		Modifier.ABSTRACT.or(method -> method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 33), 
-		Visibility.PUBLIC);
+		ModifierFilter.isAbstract().or(method -> method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 33), 
+		Visibility.isPublic());
 		Constraint<CtMethod<?>> con = Constraint.of((method) -> System.out.println(method.getDeclaringType().getQualifiedName()+ "#"+ method.getSignature()),
 		(method) -> method.getDocComment().length() > 15);
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
@@ -115,7 +115,7 @@ public class SpoonChecks {
 	public void methodNameStartsWithTest(CtModel testModel) {
 		Precondition<CtMethod<?>> pre =	Precondition.of(
 		DefaultElementFilter.METHODS.getFilter(), 
-		Visibility.PUBLIC, 
+		Visibility.isPublic(), 
 		AnnotationHelper.hasAnnotationMatcher(Test.class).or(AnnotationHelper.hasAnnotationMatcher(org.junit.jupiter.api.Test.class)));
 		Constraint<CtNamedElement> con = Constraint.of((element) -> System.out.println(element), Naming.startsWith("test"));
 		ArchitectureTest.of(pre, con).runCheck(testModel);
@@ -163,8 +163,8 @@ public class SpoonChecks {
 		Constraint<CtClass<?>> con = Constraint.of(
 		(element) -> System.out.println(element),
 		(clazz) -> clazz.getSuperclass() == null,
-		(clazz) -> clazz.getMethods().stream().allMatch(Modifier.STATIC),
-		(clazz) -> clazz.getConstructors().stream().allMatch(Modifier.STATIC));
+		(clazz) -> clazz.getMethods().stream().allMatch(ModifierFilter.isStatic()),
+		(clazz) -> clazz.getConstructors().stream().allMatch(ModifierFilter.isStatic()));
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
 	}
 
@@ -187,7 +187,7 @@ public class SpoonChecks {
 	public void checkPrivateMethodInvocations(CtModel srcModel) {
 		InvocationMatcher matcher = new InvocationMatcher(srcModel);
 		Precondition<CtMethod<?>> pre = Precondition.of(DefaultElementFilter.METHODS.getFilter(),
-		Visibility.PRIVATE,
+		Visibility.isPrivate(),
 		Naming.equals("readObject").negate(),
 		Naming.equals("readResolve").negate());
 		Constraint<CtMethod<?>> con = Constraint.of(new NopError<CtMethod<?>>(), matcher);
@@ -198,7 +198,7 @@ public class SpoonChecks {
 	public void checkFields(CtModel srcModel) {
 		FieldReferenceMatcher matcher = new FieldReferenceMatcher(srcModel);
 		Precondition<CtField<?>> pre = Precondition.of(DefaultElementFilter.FIELDS.getFilter(),
-		Visibility.PRIVATE,
+		Visibility.isPrivate(),
 		Naming.equals("readObject").negate(),
 		Naming.equals("readResolve").negate());
 		Constraint<CtField<?>> con = Constraint.of(new NopError<CtField<?>>(), matcher);

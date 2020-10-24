@@ -14,7 +14,7 @@ public class MethodInvocation {
 
 	@Architecture
 	public void methodInvocationLookUp(CtModel srcModel, CtModel testModel) {
-		Precondition<CtMethod<?>> pre =	Precondition.of(DefaultElementFilter.METHODS.getFilter(), Visibility.PRIVATE);
+		Precondition<CtMethod<?>> pre =	Precondition.of(DefaultElementFilter.METHODS.getFilter(), Visibility.isPrivate());
 		InvocationMatcher matcher = new InvocationMatcher(srcModel);
 		Constraint<CtMethod<?>> con = Constraint.of((element) -> System.out.println("element has no invocation: " + element), (element) -> matcher.test(element));
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
