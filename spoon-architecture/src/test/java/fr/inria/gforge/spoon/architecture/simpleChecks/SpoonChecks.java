@@ -16,7 +16,7 @@ import fr.inria.gforge.spoon.architecture.errorhandling.NopError;
 import fr.inria.gforge.spoon.architecture.preconditions.AnnotationHelper;
 import fr.inria.gforge.spoon.architecture.preconditions.ModifierFilter;
 import fr.inria.gforge.spoon.architecture.preconditions.Naming;
-import fr.inria.gforge.spoon.architecture.preconditions.Visibility;
+import fr.inria.gforge.spoon.architecture.preconditions.VisibilityFilter;
 import fr.inria.gforge.spoon.architecture.runner.Architecture;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCodeElement;
@@ -76,7 +76,7 @@ public class SpoonChecks {
 		(method) -> method.getTopDefinitions().isEmpty(),
 		 // means that only large methods must be documented),
 		ModifierFilter.isAbstract().or(method -> method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 33), 
-		Visibility.isPublic());
+		VisibilityFilter.isPublic());
 		Constraint<CtMethod<?>> con = Constraint.of((method) -> System.out.println(method.getDeclaringType().getQualifiedName()+ "#"+ method.getSignature()),
 		(method) -> method.getDocComment().length() > 15);
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
@@ -115,7 +115,7 @@ public class SpoonChecks {
 	public void methodNameStartsWithTest(CtModel testModel) {
 		Precondition<CtMethod<?>> pre =	Precondition.of(
 		DefaultElementFilter.METHODS.getFilter(), 
-		Visibility.isPublic(), 
+		VisibilityFilter.isPublic(), 
 		AnnotationHelper.hasAnnotationMatcher(Test.class).or(AnnotationHelper.hasAnnotationMatcher(org.junit.jupiter.api.Test.class)));
 		Constraint<CtNamedElement> con = Constraint.of((element) -> System.out.println(element), Naming.startsWith("test"));
 		ArchitectureTest.of(pre, con).runCheck(testModel);
@@ -187,7 +187,7 @@ public class SpoonChecks {
 	public void checkPrivateMethodInvocations(CtModel srcModel) {
 		InvocationMatcher matcher = new InvocationMatcher(srcModel);
 		Precondition<CtMethod<?>> pre = Precondition.of(DefaultElementFilter.METHODS.getFilter(),
-		Visibility.isPrivate(),
+		VisibilityFilter.isPrivate(),
 		Naming.equals("readObject").negate(),
 		Naming.equals("readResolve").negate());
 		Constraint<CtMethod<?>> con = Constraint.of(new NopError<CtMethod<?>>(), matcher);
@@ -198,7 +198,7 @@ public class SpoonChecks {
 	public void checkFields(CtModel srcModel) {
 		FieldReferenceMatcher matcher = new FieldReferenceMatcher(srcModel);
 		Precondition<CtField<?>> pre = Precondition.of(DefaultElementFilter.FIELDS.getFilter(),
-		Visibility.isPrivate(),
+		VisibilityFilter.isPrivate(),
 		Naming.equals("readObject").negate(),
 		Naming.equals("readResolve").negate());
 		Constraint<CtField<?>> con = Constraint.of(new NopError<CtField<?>>(), matcher);
