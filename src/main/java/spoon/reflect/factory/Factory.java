@@ -526,7 +526,7 @@ public interface Factory {
 	CtTextBlock createTextBlock();
 
 	/**
-	 *  @see CoreFactory#createTextBlock()
+	 *  @see CodeFactory#createTextBlock(String)
 	 */
 	CtTextBlock createTextBlock(String value);
 
