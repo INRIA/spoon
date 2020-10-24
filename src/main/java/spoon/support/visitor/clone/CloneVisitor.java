@@ -438,15 +438,15 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		this.other = aCtLiteral;
 	}
 
-	@Override
-	public void visitCtTextBlock(CtTextBlock ctTextBlock) {
-		spoon.reflect.code.CtTextBlock aCtTextBlock = ctTextBlock.getFactory().Core().createTextBlock();
-		this.builder.copy(ctTextBlock, aCtTextBlock);
-		aCtTextBlock.setAnnotations(this.cloneHelper.clone(ctTextBlock.getAnnotations()));
-		aCtTextBlock.setType(this.cloneHelper.clone(ctTextBlock.getType()));
-		aCtTextBlock.setTypeCasts(this.cloneHelper.clone(ctTextBlock.getTypeCasts()));
-		aCtTextBlock.setComments(this.cloneHelper.clone(ctTextBlock.getComments()));
-		this.cloneHelper.tailor(ctTextBlock, aCtTextBlock);
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	public void visitCtTextBlock(final spoon.reflect.code.CtTextBlock literal) {
+		spoon.reflect.code.CtTextBlock aCtTextBlock = literal.getFactory().Core().createTextBlock();
+		this.builder.copy(literal, aCtTextBlock);
+		aCtTextBlock.setAnnotations(this.cloneHelper.clone(literal.getAnnotations()));
+		aCtTextBlock.setType(this.cloneHelper.clone(literal.getType()));
+		aCtTextBlock.setTypeCasts(this.cloneHelper.clone(literal.getTypeCasts()));
+		aCtTextBlock.setComments(this.cloneHelper.clone(literal.getComments()));
+		this.cloneHelper.tailor(literal, aCtTextBlock);
 		this.other = aCtTextBlock;
 	}
 
