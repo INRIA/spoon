@@ -242,6 +242,16 @@ switch(x) {
     int x = 4; // 4 is a literal
 
 ```
+### CtTextBlock
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtTextBlock.html)
+
+```java
+
+    String example = """
+     	Test String
+     	"""; // Defines a TextBlock literal
+
+```
 ### CtLocalVariable
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtLocalVariable.html)
 

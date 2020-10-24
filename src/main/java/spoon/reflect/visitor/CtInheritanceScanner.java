@@ -130,7 +130,7 @@ import java.util.Collection;
 
 /**
  * This class provides an abstract implementation of the visitor that allows its
- * subclasses to scans the metamodel elements by recursively using their
+ * subclasses to scan the metamodel elements by recursively using their
  * (abstract) supertype scanning methods. It declares a scan method for each
  * abstract element of the AST and a visit method for each element of the AST.
  */
