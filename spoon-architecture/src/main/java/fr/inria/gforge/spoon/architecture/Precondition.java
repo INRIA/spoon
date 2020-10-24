@@ -25,7 +25,7 @@ public class Precondition<T extends CtElement> implements IPrecondition<T> {
 	}
 	
 	public static <T extends CtElement> Precondition<T> of(Filter<T> elementFilter, Iterable<Predicate<? super T>> conditions) {
-		Predicate<T> startValue = (value) -> true;
+		Predicate<T> startValue = value -> true;
 		for (Predicate<? super T> condition : conditions) {
 			startValue = startValue.and(condition);
 		}
@@ -37,7 +37,7 @@ public class Precondition<T extends CtElement> implements IPrecondition<T> {
 	}
 
 	public static <T extends CtElement> Precondition<T> of(Filter<T> elementFilter) {
-		Predicate<T> startValue = (value) -> true;
+		Predicate<T> startValue = value -> true;
 		return new Precondition<T>(elementFilter, startValue);
 	}
 	@Override
