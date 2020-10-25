@@ -27,7 +27,6 @@ public class ModelBuilder implements IModelBuilder<CtModel> {
 		launcher.getEnvironment().setComplianceLevel(javaVersion);
 		}
 		CtModel model = launcher.buildModel();
-
 		modelByName.put(name.toLowerCase(), model);
 	}
 
@@ -38,7 +37,7 @@ public class ModelBuilder implements IModelBuilder<CtModel> {
 
 	@Override
 	public CtModel getModelWithIdentifier(String identifier) {
-		return modelByName.get(identifier);
+		return modelByName.get(identifier.toLowerCase());
 	}
 
 
