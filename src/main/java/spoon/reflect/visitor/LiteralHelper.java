@@ -61,16 +61,10 @@ abstract class LiteralHelper {
 	 * @param numTabs 
 	 * @return source code representation of the literal
 	 */
-	public static String getTextBlockToken(CtTextBlock literal, int numTabs) {
-		String initTabs = "";
-		// String initTabs = "\t";
-		// for(int i = 0; i < numTabs; ++i) initTabs += "\t";
+	public static String getTextBlockToken(CtTextBlock literal) {
 		String token = "\"\"\"\n" +
-				initTabs +
-				literal.getValue().replace(
-						"\n", 
-						"\n" + initTabs
-				) + "\"\"\"";
+				literal.getValue() +
+				"\"\"\"";
 		return token;
 	}
 
