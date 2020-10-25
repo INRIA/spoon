@@ -10,13 +10,13 @@ import spoon.reflect.CtModel;
 
 public class ForbiddenCalls {
 
-  private Map<String, List<String>> methodsByType = new HashMap<>();
+	private Map<String, List<String>> methodsByType = new HashMap<>();
 
 
-  @Architecture
-  public void forbiddenCallsTest(CtModel srcModel, CtModel testModel) {
-    methodsByType.put("java.io.PrintStream", Arrays.asList("println"));
-    ForbiddenInvocation.forbiddenInvocationCheck(methodsByType, System.out::println).runCheck(srcModel);
-    ForbiddenInvocation.forbiddenInvocationCheck(methodsByType, System.out::println).runCheck(testModel);
-  }
+	@Architecture
+	public void forbiddenCallsTest(CtModel srcModel, CtModel testModel) {
+		methodsByType.put("java.io.PrintStream", Arrays.asList("println"));
+		ForbiddenInvocation.forbiddenInvocationCheck(methodsByType, System.out::println).runCheck(srcModel);
+		ForbiddenInvocation.forbiddenInvocationCheck(methodsByType, System.out::println).runCheck(testModel);
+	}
 }
