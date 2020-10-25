@@ -242,16 +242,6 @@ switch(x) {
     int x = 4; // 4 is a literal
 
 ```
-### CtTextBlock
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtTextBlock.html)
-
-```java
-
-    String example = """
-     	Test String
-     	"""; // Defines a TextBlock literal
-
-```
 ### CtLocalVariable
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtLocalVariable.html)
 
@@ -355,6 +345,16 @@ int x = switch(i) { // <-- switch expression
    synchronized(l) {
     	System.out.println("foo");
    }
+
+```
+### CtTextBlock
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtTextBlock.html)
+
+```java
+
+    String example = """
+		      Test String
+       	      """;
 
 ```
 ### CtThisAccess
