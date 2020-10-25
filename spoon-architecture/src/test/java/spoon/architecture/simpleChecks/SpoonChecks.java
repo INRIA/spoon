@@ -3,6 +3,7 @@ package spoon.architecture.simpleChecks;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import org.junit.Test;
 import spoon.architecture.ArchitectureTest;
@@ -178,6 +179,8 @@ public class SpoonChecks {
 		Set<String> officialPackages = new HashSet<>();
 		// .... add packages here
 		Precondition<CtPackage> pre = Precondition.of(DefaultElementFilter.PACKAGES.getFilter());
+		List<CtPackage> pack = srcModel.getElements(DefaultElementFilter.PACKAGES.getFilter());
+		pack.removeIf(Objects::nonNull);
 		Constraint<CtPackage> con = Constraint.of(new NopError<CtPackage>(),
 		(packageElement) -> officialPackages.contains(packageElement.getQualifiedName()));
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
@@ -194,7 +197,7 @@ public class SpoonChecks {
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
 	}
 
-	@Architecture(modelNames = "srcModel")
+	// @Architecture(modelNames = "srcModel")
 	public void checkFields(CtModel srcModel) {
 		FieldReferenceMatcher matcher = new FieldReferenceMatcher(srcModel);
 		Precondition<CtField<?>> pre = Precondition.of(DefaultElementFilter.FIELDS.getFilter(),
