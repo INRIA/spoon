@@ -69,6 +69,7 @@
           <failsOnError>true</failsOnError>
           <configLocation>checkstyle.xml</configLocation>
           <consoleOutput>true</consoleOutput>
+          <encoding>UTF-8</encoding>
         </configuration>
         <executions>
           <execution>

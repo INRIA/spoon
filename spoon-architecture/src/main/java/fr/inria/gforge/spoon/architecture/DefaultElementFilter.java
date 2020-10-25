@@ -48,7 +48,7 @@ public enum DefaultElementFilter {
 				private AbstractFilter<CtType<?>> filter = new TypeFilter<CtType<?>>(CtType.class);
 				@Override
 				public boolean matches(CtElement element) {
-					if(element instanceof CtType){
+					if (element instanceof CtType) {
 						return filter.matches((CtType<?>) element) && !(element instanceof CtTypeParameter);
 					}
 					return false;

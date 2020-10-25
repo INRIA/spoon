@@ -65,7 +65,7 @@ public class SpoonChecks {
 	public void testDocumentation(CtModel srcModel) {
 		// Contract:
 		// Precondition: Get all methods except setters etc.
-		Precondition<CtMethod<?>> pre = 
+		Precondition<CtMethod<?>> pre =
 		Precondition.of(DefaultElementFilter.METHODS.getFilter(),
 		Naming.startsWith("get").negate(),
 		Naming.startsWith("set").negate(),
@@ -74,10 +74,10 @@ public class SpoonChecks {
 		Naming.startsWith("remove").negate(),
 		// only the top declarations should be documented (not the overriding methods which are lower in the hierarchy)
 		(method) -> method.getTopDefinitions().isEmpty(),
-		 // means that only large methods must be documented),
-		ModifierFilter.isAbstract().or(method -> method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 33), 
+		// means that only large methods must be documented)
+		ModifierFilter.isAbstract().or(method -> method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 33),
 		VisibilityFilter.isPublic());
-		Constraint<CtMethod<?>> con = Constraint.of((method) -> System.out.println(method.getDeclaringType().getQualifiedName()+ "#"+ method.getSignature()),
+		Constraint<CtMethod<?>> con = Constraint.of((method) -> System.out.println(method.getDeclaringType().getQualifiedName() + "#" + method.getSignature()),
 		(method) -> method.getDocComment().length() > 15);
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
 	}
@@ -93,8 +93,8 @@ public class SpoonChecks {
 		.or(Naming.equals("spoon.reflect.code"))
 		.or(Naming.equals("spoon.reflect.reference")).test(type.getTopLevelType().getPackage()));
 		List<CtType<?>> interfaces = srcModel.getElements(ElementFilter.ofTypeFilter(DefaultElementFilter.TYPES.getFilter(),
-		(type) -> type.isTopLevel() && 
-		Naming.equals("spoon.reflect.declaration")
+		(type) -> type.isTopLevel()
+		&& Naming.equals("spoon.reflect.declaration")
 		.or(Naming.equals("spoon.reflect.code"))
 		.or(Naming.equals("spoon.reflect.reference"))
 		.test(type.getTopLevelType().getPackage())));
@@ -102,7 +102,7 @@ public class SpoonChecks {
 		Naming.equals("DefaultCoreFactory")));
 		interfaces.addAll(defaultCoreFactory);
 
-		Constraint<CtType<?>> con = Constraint.of((v) -> System.out.println(v), 
+		Constraint<CtType<?>> con = Constraint.of((v) -> System.out.println(v),
 		(type) -> {
 			String implName = type.getQualifiedName().replace(".support", "").replace("Impl", "");
 			CtType<?> impl = interfaces.stream().filter(v -> v.getQualifiedName().equals(implName)).findFirst().get();
@@ -114,8 +114,8 @@ public class SpoonChecks {
 	@Architecture(modelNames = "testModel")
 	public void methodNameStartsWithTest(CtModel testModel) {
 		Precondition<CtMethod<?>> pre =	Precondition.of(
-		DefaultElementFilter.METHODS.getFilter(), 
-		VisibilityFilter.isPublic(), 
+		DefaultElementFilter.METHODS.getFilter(),
+		VisibilityFilter.isPublic(),
 		AnnotationHelper.hasAnnotationMatcher(Test.class).or(AnnotationHelper.hasAnnotationMatcher(org.junit.jupiter.api.Test.class)));
 		Constraint<CtNamedElement> con = Constraint.of((element) -> System.out.println(element), Naming.startsWith("test"));
 		ArchitectureTest.of(pre, con).runCheck(testModel);
@@ -128,7 +128,7 @@ public class SpoonChecks {
 		Constraint<CtTypeReference<?>> con = Constraint.of(
 		(element) -> System.out.println(element),
 		(element) -> element.getQualifiedName().equals("junit.framework.TestCase"));
-		ArchitectureTest.of(pre,con).runCheck(testModel);
+		ArchitectureTest.of(pre, con).runCheck(testModel);
 	}
 
 	@Architecture()
@@ -179,7 +179,7 @@ public class SpoonChecks {
 		// .... add packages here
 		Precondition<CtPackage> pre = Precondition.of(DefaultElementFilter.PACKAGES.getFilter());
 		Constraint<CtPackage> con = Constraint.of(new NopError<CtPackage>(),
-		(packageElement) -> officialPackages.contains(packageElement.getQualifiedName())); 
+		(packageElement) -> officialPackages.contains(packageElement.getQualifiedName()));
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
 	}
 

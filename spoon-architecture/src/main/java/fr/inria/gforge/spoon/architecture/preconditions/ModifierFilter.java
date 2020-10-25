@@ -6,6 +6,9 @@ import spoon.reflect.declaration.ModifierKind;
 
 public class ModifierFilter {
 
+	private ModifierFilter() {
+
+	}
 
 	public static <T extends CtModifiable> Predicate<T> isFinal() {
 		return CtModifiable::isFinal;

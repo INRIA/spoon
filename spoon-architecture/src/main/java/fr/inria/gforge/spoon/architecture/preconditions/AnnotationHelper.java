@@ -6,7 +6,10 @@ import java.util.regex.Pattern;
 import spoon.reflect.declaration.CtElement;
 
 public class AnnotationHelper {
-  private static class HasAnnotationClass implements Predicate<CtElement> {
+	private AnnotationHelper() {
+
+	}
+	private static class HasAnnotationClass implements Predicate<CtElement> {
 		private Class<? extends Annotation> annotation;
 		@Override
 		public boolean test(CtElement t) {
@@ -15,7 +18,7 @@ public class AnnotationHelper {
 		HasAnnotationClass(Class<? extends Annotation> annotation) {
 			this.annotation = annotation;
 		}
-  }
+	}
 	public static Predicate<CtElement> hasAnnotationMatcher(Class<? extends Annotation> annotation) {
 		return new HasAnnotationClass(annotation);
 	}
@@ -25,17 +28,16 @@ public class AnnotationHelper {
 		private boolean qualified;
 		@Override
 		public boolean test(CtElement t) {
-			if(qualified) {
+			if (qualified) {
 				return t.getAnnotations().stream().anyMatch(v -> v.getType().getQualifiedName().equals(annotationName));
-			}
-			else {
+			}	else {
 				return t.getAnnotations().stream().anyMatch(v -> v.getType().getSimpleName().equals(annotationName));
 			}
 		}
 		HasAnnotationString(String annotationName, boolean qualified) {
 			this.annotationName = annotationName;
 		}
-  }
+	}
 	public static Predicate<CtElement> hasAnnotationMatcher(String annotationName, boolean qualified) {
 		return new HasAnnotationString(annotationName, qualified);
 	}
@@ -44,17 +46,16 @@ public class AnnotationHelper {
 		private boolean qualified;
 		@Override
 		public boolean test(CtElement t) {
-			if(qualified) {
+			if (qualified) {
 				return t.getAnnotations().stream().anyMatch(v -> annotationPattern.asMatchPredicate().test(v.getType().getQualifiedName()));
-			}
-			else {
+			} else {
 				return t.getAnnotations().stream().anyMatch(v -> annotationPattern.asMatchPredicate().test(v.getType().getQualifiedName()));
 			}
 		}
 		HasAnnotationPattern(Pattern annotationPattern, boolean qualified) {
 			this.annotationPattern = annotationPattern;
 		}
-  }
+	}
 	public static Predicate<CtElement> hasAnnotationMatcher(Pattern annotationPattern, boolean qualified) {
 		return new HasAnnotationPattern(annotationPattern, qualified);
 	}

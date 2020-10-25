@@ -5,6 +5,9 @@ import spoon.reflect.declaration.CtModifiable;
 
 public class VisibilityFilter {
 
+	private VisibilityFilter() {
+
+	}
 
 	public static <T extends CtModifiable> Predicate<T> isPrivate() {
 		return CtModifiable::isPrivate;

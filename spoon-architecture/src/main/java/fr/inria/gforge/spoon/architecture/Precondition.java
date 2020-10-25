@@ -23,7 +23,7 @@ public class Precondition<T extends CtElement> implements IPrecondition<T> {
 		}
 		return new Precondition<T>(elementFilter, startValue);
 	}
-	
+
 	public static <T extends CtElement> Precondition<T> of(Filter<T> elementFilter, Iterable<Predicate<? super T>> conditions) {
 		Predicate<T> startValue = value -> true;
 		for (Predicate<? super T> condition : conditions) {

@@ -13,12 +13,12 @@ public interface ISpoonArchitecturalChecker {
 /**
  * Starts the architecture check. The default testPath is used for architecture test lookup.
  */
-	public void runChecks();
+	void runChecks();
 
 	/**
 	 * Starts the architecture check. The testPath is used for architecture test lookup.
 	 * @param testPath  lowercase non null identifier for test model.
 	 */
-	public void runChecks(String testPath);
+	void runChecks(String testPath);
 
 }

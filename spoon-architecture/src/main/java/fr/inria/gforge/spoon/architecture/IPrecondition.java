@@ -6,5 +6,5 @@ import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;
 
 public interface IPrecondition<T extends CtElement> extends Function<CtModel, Collection<T>> {
-  // Marker interface
+	// Marker interface
 }

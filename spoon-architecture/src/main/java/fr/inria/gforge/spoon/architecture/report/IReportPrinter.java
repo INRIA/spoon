@@ -3,18 +3,20 @@ package fr.inria.gforge.spoon.architecture.report;
 import java.lang.reflect.Method;
 
 public interface IReportPrinter {
-  
-  public default void startPrinting() {
 
-  }
-  public default void beforeMethod(Method method) {
+	default void startPrinting() {
 
-  }
-  public default void afterMethod(Method method) {
+	}
 
-  }
+	default void beforeMethod(Method method) {
 
-  public default void finishPrinting() {
+	}
 
-  }
+	default void afterMethod(Method method) {
+
+	}
+
+	default void finishPrinting() {
+
+	}
 }
