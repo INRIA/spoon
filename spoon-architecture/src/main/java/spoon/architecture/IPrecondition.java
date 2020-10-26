@@ -2,9 +2,7 @@ package spoon.architecture;
 
 import java.util.Collection;
 import java.util.function.Function;
-import spoon.reflect.CtModel;
-import spoon.reflect.declaration.CtElement;
 
-public interface IPrecondition<T extends CtElement> extends Function<CtModel, Collection<T>> {
+public interface IPrecondition<T, M> extends Function<M, Collection<T>> {
 	// Marker interface
 }

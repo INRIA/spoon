@@ -6,6 +6,7 @@ import spoon.architecture.ArchitectureTest;
 import spoon.architecture.Constraint;
 import spoon.architecture.Precondition;
 import spoon.architecture.errorhandling.IError;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -15,7 +16,7 @@ public class ForbiddenInvocation {
 	private ForbiddenInvocation() {
 
 	}
-	public static ArchitectureTest<CtInvocation<?>> forbiddenInvocationCheck(
+	public static ArchitectureTest<CtInvocation<?>, CtModel> forbiddenInvocationCheck(
 			Map<String, List<String>> methodsByType, IError<CtInvocation<?>> errorReporter) {
 		// how handle System.out::println?
 		Precondition<CtInvocation<?>> pre =

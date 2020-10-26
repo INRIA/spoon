@@ -7,7 +7,7 @@ import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
 
-public class Precondition<T extends CtElement> implements IPrecondition<T> {
+public class Precondition<T extends CtElement> implements IPrecondition<T, CtModel> {
 
 	private Filter<T> typeFilter;
 	private Predicate<? super T> condition;

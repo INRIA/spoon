@@ -1,21 +1,18 @@
 package spoon.architecture;
 
-import spoon.reflect.CtModel;
-import spoon.reflect.declaration.CtElement;
+public class ArchitectureTest<T, M> {
 
-public class ArchitectureTest<T extends CtElement> {
+	private IPrecondition<T, M> preCondition;
+	private Checkable<? super T> constraint;
 
-	private Precondition<T> preCondition;
-	private Constraint<? super T> constraint;
-
-	private ArchitectureTest(Precondition<T> preCondition, Constraint<? super T> constraint) {
+	private ArchitectureTest(IPrecondition<T, M> preCondition, Checkable<? super T> constraint) {
 		this.preCondition = preCondition;
 		this.constraint = constraint;
 	}
-	public static <T extends CtElement> ArchitectureTest<T> of(Precondition<T> preCondition, Constraint<? super T> constraint) {
+	public static <T, M> ArchitectureTest<T, M> of(IPrecondition<T, M> preCondition, Checkable<? super T> constraint) {
 		return new ArchitectureTest<>(preCondition, constraint);
 	}
-	public void runCheck(CtModel model) {
+	public void runCheck(M model) {
 		preCondition.apply(model).stream().forEach(constraint::checkConstraint);
 	}
 }

@@ -139,7 +139,7 @@ public class SpoonChecks {
 		(element) -> System.out.println(element),
 		(element) -> element.getType().getQualifiedName().equals("java.util.TreeSet"),
 		(element) -> element.getArguments().isEmpty());
-		ArchitectureTest<CtConstructorCall<?>> test = ArchitectureTest.of(pre, con);
+		ArchitectureTest<CtConstructorCall<?>, CtModel> test = ArchitectureTest.of(pre, con);
 		test.runCheck(srcModel);
 		test.runCheck(testModel);
 	}
