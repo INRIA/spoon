@@ -459,7 +459,11 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			if (unit.isModuleInfo() || !unit.isEmpty()) {
 				final String unitPath = new String(unit.getFileName());
 				if (canProcessCompilationUnit(unitPath)) {
-					consumer.accept(unit);
+					try {
+						consumer.accept(unit);
+					} catch (Exception e) {
+						getEnvironment().report(null, Level.ERROR, "An error occurred while processing a unit in " + String.valueOf(unit.getFileName()) + ", some units may be missing in the model: " + e.getMessage());
+					}
 				}
 					getEnvironment().getSpoonProgress().step(process, unitPath, ++i, unitList.size());
 			}
