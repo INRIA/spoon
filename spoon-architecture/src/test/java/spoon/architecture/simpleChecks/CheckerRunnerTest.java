@@ -2,7 +2,7 @@ package spoon.architecture.simpleChecks;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import spoon.architecture.report.ShellPrinter;
 import spoon.architecture.runner.IModelBuilder;
@@ -16,11 +16,11 @@ public class CheckerRunnerTest {
 
 	@Test
 	public void allChecksMustRun() {
-		List<Map.Entry<String, String>> testObjects = new ArrayList<>();
-		testObjects.add(Map.entry("srcmodel", "src/main/java/"));
-		testObjects.add(Map.entry("testmodel", "src/test/java/"));
+		List<Pair<String, String>> testObjects = new ArrayList<>();
+		testObjects.add(Pair.of("srcmodel", "src/main/java/"));
+		testObjects.add(Pair.of("testmodel", "src/test/java/"));
 
-		testObjects.add(Map.entry("fieldReferenceMatcher", "src/test/resources/FieldReferenceMatcher/"));
+		testObjects.add(Pair.of("fieldReferenceMatcher", "src/test/resources/FieldReferenceMatcher/"));
 		// SpoonArchitecturalCheckerImpl.createChecker().runChecks();
 		IModelBuilder<CtModel> builder = new ModelBuilder();
 		testObjects.forEach(v -> builder.insertInputPath(v.getKey(), v.getValue()));
