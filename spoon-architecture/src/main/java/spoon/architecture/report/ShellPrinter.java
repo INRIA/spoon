@@ -3,6 +3,7 @@ package spoon.architecture.report;
 import java.lang.reflect.Method;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 
 public class ShellPrinter implements IReportPrinter {
 
@@ -13,7 +14,7 @@ public class ShellPrinter implements IReportPrinter {
 	@Override
 	public void afterMethod(Method method) {
 		methodFinish = Instant.now();
-		System.out.println("Finished check " + method.getName() + " in " + Duration.between(methodStart, methodFinish).toSeconds() + " seconds");
+		System.out.println("Finished check " + method.getName() + " in " + TimeUnit.MILLISECONDS.toSeconds(Duration.between(methodStart, methodFinish).toMillis()) + " seconds");
 	}
 
 	@Override
@@ -25,7 +26,7 @@ public class ShellPrinter implements IReportPrinter {
 	@Override
 	public void finishPrinting() {
 		finish = Instant.now();
-		System.out.println("Finished running architecture checks in " +  Duration.between(start, finish).toSeconds() + " seconds");
+		System.out.println("Finished running architecture checks in " + TimeUnit.MILLISECONDS.toSeconds(Duration.between(start, finish).toMillis()) + " seconds");
 	}
 
 	@Override
