@@ -46,10 +46,11 @@ public class AnnotationHelper {
 		private boolean qualified;
 		@Override
 		public boolean test(CtElement t) {
+			// As asMatchPredicate is a java 11 method we need to build it ourself
 			if (qualified) {
-				return t.getAnnotations().stream().anyMatch(v -> annotationPattern.asMatchPredicate().test(v.getType().getQualifiedName()));
+				return t.getAnnotations().stream().anyMatch(v -> annotationPattern.matcher(v.getType().getQualifiedName()).matches());
 			} else {
-				return t.getAnnotations().stream().anyMatch(v -> annotationPattern.asMatchPredicate().test(v.getType().getQualifiedName()));
+				return t.getAnnotations().stream().anyMatch(v ->  annotationPattern.matcher(v.getType().getSimpleName()).matches());
 			}
 		}
 		HasAnnotationPattern(Pattern annotationPattern, boolean qualified) {

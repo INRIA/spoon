@@ -10,5 +10,5 @@ import java.util.function.Function;
  * @param M  the meta model type
  */
 public interface IPrecondition<T, M> extends Function<M, Collection<T>> {
-	// Marker interface
+	// Marker interface for documentation
 }
