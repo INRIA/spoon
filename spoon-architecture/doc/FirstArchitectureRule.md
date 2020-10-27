@@ -33,26 +33,57 @@ The constraint is created with the static `Constraint.of(IError, Predicate<?>...
 ```
 #### ArchitectureTest
 Now we have a the precondition and constraint and we only need to create the ArchitectureRule.
-The rule is create by the static method `ArchitectureTest.of(Precondition<T>, Constraint<T>)`. The `runCheck(testModel);` tells the runner which model should be checked, here the testModel.
+The rule is create by the static method `ArchitectureTest.of(IPrecondition<T>, Checkable<T>)`. The `runCheck(testModel);` tells the runner which model should be checked, here the testModel.
 Thats simply `ArchitectureTest.of(pre, con).runCheck(testModel);`
 
 #### Runner
-Now you may ask yourself how can I run this test? We have a runner integrated. The following line integrates your architecture rule into junit and allows easy usage.
+Now you may ask yourself how can I run this test? We have a runner integrated. For now add the following lines, see [junit].
 ```java	
-@Test
-	public void allChecksMustRun() {
-		SpoonArchitecturalCheckerImpl.createChecker().runChecks();
+	public static void main(String[] args) {
+		SpoonArchitecturalChecker.createChecker().runChecks();
        }
 ```
 
 #### Wrapping it up
 
 The full example rule is the following:
-````java
+```java
 	@Architecture
 	public void methodNameStartsWithTest(CtModel srcModel, CtModel testModel) {
 		Precondition<CtMethod<?>> pre =	Precondition.of(DefaultElementFilter.METHODS.getFilter(), VisibilityFilter.isPublic(), AnnotationHelper.hasAnnotationMatcher(Test.class));
 		Constraint<CtMethod<?>> con = Constraint.of(System.out::println, Naming.startsWith("test"));
 		ArchitectureTest.of(pre, con).runCheck(testModel);
+	}
+```
+
+### Junit/CI Integration [junit]
+
+To use the existing infrastructure as CI and a possibility for running the architecture tests local, junit integration helps.
+The following test case is treated by junit as a normal test, but checks architecture. 
+If you throw an `AssertionError` or any other Exception `IError<T>` junit marks the test case as failed and your CI fails.
+Or you can use a class like `JunitError` for collecting all errors before failing if there is any.
+
+```java
+@Test
+public void testArchitecture() {
+  		SpoonArchitecturalChecker.createChecker().runChecks();
+}
+```  
+
+```java
+	public class JunitError<CtElement> implements IError<CtElement> {
+
+		List<String> failedChecks = new ArrayList<>();
+		@Override
+		public void printError(CtElement element) {
+			failedChecks.add(createViolationMessage(element));
+		}
+		
+		public void checkError() {
+			if(!failedChecks.isEmpty()) {
+				// print messages to system.out or a logger
+				fail(failedChecks.stream().collect(Collectors.joining("\n")));
+			}
+		}
 	}
 ```
