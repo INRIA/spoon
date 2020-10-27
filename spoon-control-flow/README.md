@@ -7,7 +7,7 @@ To use it with maven, add the following dependency to your pom.xml
 ```xml
     <dependency>
         <groupId>fr.inria.gforge.spoon</groupId>
-        <artifactId>control-flow</artifactId>
+        <artifactId>spoon-control-flow</artifactId>
         <version>0.0.2</version>
     </dependency>
 ```
