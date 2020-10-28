@@ -25,11 +25,6 @@
       <artifactId>spoon-core</artifactId>
       <version>8.3.0-beta-12</version>
     </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>1.7.21</version>
-    </dependency>
   </dependencies>
 
   <build>
@@ -84,7 +79,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-            <source>8</source>
+           <!-- <source>8</source> -->
         </configuration>
     </plugin>
     </plugins>
