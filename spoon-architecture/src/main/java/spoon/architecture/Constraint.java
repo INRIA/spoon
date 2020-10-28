@@ -57,7 +57,7 @@ public class Constraint<T extends CtElement> implements Checkable<T> {
  * Creates a constraint of a single predicate.
  * @param <T> type of ast model element checked
  * @param errorHandler the handler for errors. Called if an element violates the conditions.
- * @param conditions the conditions that the element is checked against.
+ * @param condition the condition that the element is checked against.
  * @return a constraint with your predicate as check.
  */
 	public static <T extends CtElement> Constraint<T> of(IError<T> errorHandler,
