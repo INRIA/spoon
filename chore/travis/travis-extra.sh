@@ -91,3 +91,9 @@ mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gf
 git diff
 
 mvn -q -Djava.src.version=11 test
+
+##################################################################
+## Trigeering extra jobs that we don't want to commit to master (yet)
+## (For experimental CI features, short lived tasks, etc)
+
+curl -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Travis-API-Version: 3" -H "Authorization: token $TRAVIS_TOKEN" https://api.travis-ci.com/repo/SpoonLabs%2Fspoon-ci-external/requests
