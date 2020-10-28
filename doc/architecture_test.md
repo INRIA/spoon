@@ -128,3 +128,4 @@ Or you extend the check for writes. This could find fields reading a field befor
 * [Sonar architecture rule engine](https://docs.sonarqube.org/display/SONARQUBE44/Architecture+Rule+Engine)
 * [Archunit:  specify and assert architecture rules in plain Java](https://www.archunit.org/) ([Maven integration](https://github.com/societe-generale/arch-unit-maven-plugin))
 * [jqassistant](https://jqassistant.org/) does architectural checking on top of Neo4J.
+* [spoon-architecture: high level architecture check framework] (https://github.com/INRIA/spoon/spoon-architecture)
