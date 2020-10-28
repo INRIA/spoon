@@ -9,7 +9,7 @@ import org.junit.Test;
 import spoon.architecture.ArchitectureTest;
 import spoon.architecture.Constraint;
 import spoon.architecture.DefaultElementFilter;
-import spoon.architecture.ElementFilter;
+import spoon.architecture.ElementFilters;
 import spoon.architecture.Precondition;
 import spoon.architecture.constraints.FieldReferenceMatcher;
 import spoon.architecture.constraints.InvocationMatcher;
@@ -53,7 +53,7 @@ public class SpoonChecks {
 				Precondition.of(DefaultElementFilter.CLASSES.getFilter(),
 				Naming.contains("Factory"),
 				(clazz) -> clazz.getSuperclass().getSimpleName().equals("SubFactory"));
-		CtClass<?> factory = srcModel.getElements(ElementFilter.ofClassObject(CtClass.class, Naming.equals("Factory"))).get(0);
+		CtClass<?> factory = srcModel.getElements(ElementFilters.ofClassObject(CtClass.class, Naming.equals("Factory"))).get(0);
 		Constraint<CtClass<?>> con = Constraint.of(new NopError<CtClass<?>>(),
 				(clazz) -> clazz.getMethods()
 				.stream()
@@ -93,13 +93,13 @@ public class SpoonChecks {
 		(type) -> Naming.equals("spoon.reflect.declaration")
 		.or(Naming.equals("spoon.reflect.code"))
 		.or(Naming.equals("spoon.reflect.reference")).test(type.getTopLevelType().getPackage()));
-		List<CtType<?>> interfaces = srcModel.getElements(ElementFilter.ofTypeFilter(DefaultElementFilter.TYPES.getFilter(),
+		List<CtType<?>> interfaces = srcModel.getElements(ElementFilters.ofTypeFilter(DefaultElementFilter.TYPES.getFilter(),
 		(type) -> type.isTopLevel()
 		&& Naming.equals("spoon.reflect.declaration")
 		.or(Naming.equals("spoon.reflect.code"))
 		.or(Naming.equals("spoon.reflect.reference"))
 		.test(type.getTopLevelType().getPackage())));
-		List<CtType<?>> defaultCoreFactory = srcModel.getElements(ElementFilter.ofTypeFilter(DefaultElementFilter.TYPES.getFilter(),
+		List<CtType<?>> defaultCoreFactory = srcModel.getElements(ElementFilters.ofTypeFilter(DefaultElementFilter.TYPES.getFilter(),
 		Naming.equals("DefaultCoreFactory")));
 		interfaces.addAll(defaultCoreFactory);
 
