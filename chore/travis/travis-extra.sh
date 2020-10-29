@@ -91,3 +91,13 @@ mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gf
 git diff
 
 mvn -q -Djava.src.version=11 test
+
+##################################################################
+## Trigerring extra tasks that we don't want to commit to master
+## (For experimental CI features, short lived tasks, etc)
+
+if [[ "$TRAVIS_REPO_SLUG" == "INRIA/spoon" ]] && [[ "$TRAVIS_PULL_REQUEST" != "false" ]]
+then
+  echo "downloading extra CI PR script from SpoonLabs/spoon-ci-external"
+  curl https://raw.githubusercontent.com/SpoonLabs/spoon-ci-external/master/spoon-pull-request.sh | bash
+fi
