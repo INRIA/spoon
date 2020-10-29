@@ -6,7 +6,10 @@ import java.util.stream.Collectors;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.Filter;
-
+//TODO: more doc
+/**
+ * This class defines a precondition for a spoon meta model based architecture test. A precondition is used for selecting elements, that must hold a condition.
+ */
 public class Precondition<T extends CtElement> implements IPrecondition<T, CtModel> {
 
 	private Filter<T> typeFilter;

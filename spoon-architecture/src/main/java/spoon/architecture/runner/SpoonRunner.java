@@ -11,6 +11,11 @@ import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.filter.TypeFilter;
 
+/**
+ * This defines the default implementation for a {@link IRunner}.
+ * The select algorithm looks for methods with the {@link Architecture} annotation.
+ * The invocation algorithm prints for all exceptions the stacktrace expect {@link SpoonException}, which is rethrown.
+ */
 public class SpoonRunner implements IRunner<CtModel> {
 
 	private IModelBuilder<CtModel> builder;

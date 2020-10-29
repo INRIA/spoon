@@ -4,7 +4,10 @@ import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import spoon.reflect.declaration.CtElement;
-
+/**
+ * This defines multiple helper methods for annotation matching for elements. It supports class objects with {@link #hasAnnotationMatcher(Class)}, regex with {@link #hasAnnotationMatcher(Pattern, boolean)} and strings {@link #hasAnnotationMatcher(String, boolean)}.
+ * A qualified name is an identifier consisting of multiple identifier separated by a dot.
+ */
 public class AnnotationHelper {
 	private AnnotationHelper() {
 

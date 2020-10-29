@@ -5,6 +5,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This defines a report printer. As output is the shell or system.out used.
+ * The printer has time measurement included, for time in method and time for all methods.
+ */
 public class ShellPrinter implements IReportPrinter {
 
 	private Instant start;

@@ -4,6 +4,9 @@ import java.util.function.Predicate;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.ModifierKind;
 
+/**
+ * This class defines multiple convenience predicates for easier modifier filtering. No defined method is null safe. You can check even for modifiers an element can't have.
+ */
 public class ModifierFilter {
 
 	private ModifierFilter() {
