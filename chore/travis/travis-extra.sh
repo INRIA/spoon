@@ -98,10 +98,6 @@ mvn -q -Djava.src.version=11 test
 
 if [[ "$TRAVIS_REPO_SLUG" == "INRIA/spoon" ]] && [[ "$TRAVIS_PULL_REQUEST" != "false" ]]
 then
+  echo "downloading extra CI PR script from SpoonLabs/spoon-ci-external"
   curl https://raw.githubusercontent.com/SpoonLabs/spoon-ci-external/master/spoon-pull-request.sh | bash
-fi
-
-if [[ "$TRAVIS_REPO_SLUG" == "INRIA/spoon" ]] && [[ "$TRAVIS_BRANCH" == "master" ]]
-then
-  curl https://raw.githubusercontent.com/SpoonLabs/spoon-ci-external/master/spoon-master.sh | bash
 fi
