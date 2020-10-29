@@ -96,12 +96,12 @@ mvn -q -Djava.src.version=11 test
 ## Trigerring extra tasks that we don't want to commit to master
 ## (For experimental CI features, short lived tasks, etc)
 
-if [[ "TRAVIS_REPO_SLUG" == "INRIA/spoon" ]] && [[ "TRAVIS_PULL_REQUEST" != "false" ]]
+if [[ "$TRAVIS_REPO_SLUG" == "INRIA/spoon" ]] && [[ "$TRAVIS_PULL_REQUEST" != "false" ]]
 then
   curl https://raw.githubusercontent.com/SpoonLabs/spoon-ci-external/master/spoon-pull-request.sh | bash
 fi
 
-if [[ "TRAVIS_REPO_SLUG" == "INRIA/spoon" ]] && [[ "TRAVIS_BRANCH" == "master" ]]
+if [[ "$TRAVIS_REPO_SLUG" == "INRIA/spoon" ]] && [[ "$TRAVIS_BRANCH" == "master" ]]
 then
   curl https://raw.githubusercontent.com/SpoonLabs/spoon-ci-external/master/spoon-master.sh | bash
 fi
