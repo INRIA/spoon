@@ -986,6 +986,24 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
+	public boolean isTransient(){ return this.modifierHandler.isTransient(); }
+
+	@Override
+	public boolean isSynchronized() { return this.modifierHandler.isSynchronized(); }
+
+	@Override
+	public boolean isNative() { return this.modifierHandler.isNative(); }
+
+	@Override
+	public boolean isStrictfp() { return this.modifierHandler.isStrictfp(); }
+
+
+	@Override
+	public boolean isVolatile() {
+		return this.modifierHandler.isVolatile();
+	}
+
+	@Override
 	public CtType<?> copyType() {
 		return Refactoring.copyType(this);
 	}

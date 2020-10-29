@@ -263,4 +263,32 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	public boolean isAbstract() {
 		return this.modifierHandler.isAbstract();
 	}
+
+	@Override
+	public boolean isTransient() {
+		return this.modifierHandler.isTransient();
+	}
+
+	@Override
+	public boolean isVolatile() {
+		return this.modifierHandler.isVolatile();
+	}
+
+	@Override
+	public boolean isSynchronized() {
+		return this.modifierHandler.isSynchronized();
+	}
+
+	@Override
+	public boolean isNative() {
+		return this.modifierHandler.isNative();
+	}
+
+	@Override
+	public boolean isStrictfp() {
+		return this.modifierHandler.isStrictfp();
+	}
+
+
+
 }

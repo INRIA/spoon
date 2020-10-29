@@ -155,6 +155,17 @@ public class CtModifierHandler implements Serializable {
 		return getModifiers().contains(ModifierKind.FINAL);
 	}
 
+	public boolean isTransient() { return getModifiers().contains(ModifierKind.TRANSIENT); }
+
+	public boolean isVolatile() { return getModifiers().contains(ModifierKind.VOLATILE); }
+
+	public boolean isSynchronized() { return getModifiers().contains(ModifierKind.SYNCHRONIZED); }
+
+	public boolean isNative() { return getModifiers().contains(ModifierKind.NATIVE); }
+
+	public boolean isStrictfp() { return getModifiers().contains(ModifierKind.STRICTFP); }
+
+
 	@Override
 	public int hashCode() {
 		return getModifiers().hashCode();
