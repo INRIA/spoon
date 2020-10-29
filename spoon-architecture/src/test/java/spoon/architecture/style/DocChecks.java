@@ -22,7 +22,7 @@ public class DocChecks {
 
 	@Architecture(modelNames = "srcmodel")
 	public void aAnMistakes(CtModel srcModel) {
-		// contract check all javadoc if there is any a followed by {a,e,o,u,i}. Exceptions are given in aAnExceptions. Feel free to add some more.
+		// contract: check all javadoc if there is any a followed by {a,e,o,u,i}. Exceptions are given in aAnExceptions. Feel free to add some more.
 		// This rule is more for showcasing the possibilities and never needed.
 		Precondition<CtJavaDoc> pre = Precondition.of(DefaultElementFilter.JAVA_DOCS.getFilter());
 		ErrorCollector<CtJavaDoc> collector = new ErrorCollector<>("There is an a/an rule violation");
