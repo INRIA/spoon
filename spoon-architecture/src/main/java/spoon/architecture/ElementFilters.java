@@ -6,7 +6,7 @@ import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 /**
- * This defines a util class for creating filter combining type filtering and a predicate.
+ * This defines an util class for creating filter combining type filtering and a predicate.
  * Either by providing a class object or a filter object. If you need multiple predicates connect them by {@code Predicate#and(Predicate)}
  */
 public class ElementFilters {

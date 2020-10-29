@@ -18,8 +18,8 @@ public class FieldReferenceMatcherTest {
 	public void checkFields(CtModel srcModel) {
 		FieldReferenceMatcher matcher = new FieldReferenceMatcher(srcModel);
 		Precondition<CtField<?>> pre = Precondition.of(DefaultElementFilter.FIELDS.getFilter(),
-		VisibilityFilter.isPrivate(),
-		Naming.equals("serialVersionUID ").negate());
+			VisibilityFilter.isPrivate(),
+			Naming.equals("serialVersionUID").negate());
 		Constraint<CtField<?>> con = Constraint.of(new ExceptionError<CtField<?>>(), matcher);
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
 	}

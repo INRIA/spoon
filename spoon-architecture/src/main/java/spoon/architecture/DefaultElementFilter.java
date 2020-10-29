@@ -97,7 +97,7 @@ public enum DefaultElementFilter {
 	// Copyright note: Almost all examples are copied from http://spoon.gforge.inria.fr/code_elements.html and not own work.
 
 	/**
-	 * This defines a filter for annotations <b>usage</b>. A annotation is e.g.: {@code @SuppressWarnings("unchecked")}.
+	 * This defines a filter for annotations <b>usage</b>. An annotation is e.g.: {@code @SuppressWarnings("unchecked")}.
 	 * This filter does <b>not</b> match annotation definition. Use {@link ANNOTATIONS_DEFINITIONS} for annotation definitions. <p>
 
 	 */
@@ -293,7 +293,7 @@ public enum DefaultElementFilter {
 		}
 	},
 	/**
-	 * This defines a filter for enum definitions. A enum type definition is <pre>{@code enum TestEnum{CORRECT, WRONG}}</pre><p>
+	 * This defines a filter for enum definitions. An enum type definition is <pre>{@code enum TestEnum{CORRECT, WRONG}}</pre><p>
 
 	 */
 	ENUMS() {
@@ -303,7 +303,7 @@ public enum DefaultElementFilter {
 		}
 	},
 	/**
-	 * This defines a filter for executable references. A executable reference is either a constructor or a method.
+	 * This defines a filter for executable references. An executable reference is either a constructor or a method.
 	 * A reference to an executable is e.g. an invocation. <p>
 
 	 */
@@ -338,7 +338,7 @@ public enum DefaultElementFilter {
 		}
 	},
 	/**
-	 * This defines a filter for field references. A reference could be seen as a usage.
+	 * This defines a filter for field references. A reference could be seen as an usage.
 
 	 */
 	FIELD_REFERENCES() {
@@ -454,7 +454,7 @@ public enum DefaultElementFilter {
 		}
 	},
 	/**
-	 * This defines a filter for local variable references. A reference can be seen as a usage. <p>
+	 * This defines a filter for local variable references. A reference can be seen as an usage. <p>
 
 	 */
 	LOCAL_VARIABLES_REFERENCES() {
@@ -478,7 +478,7 @@ public enum DefaultElementFilter {
 		}
 	},
 	/**
-	 * This defines a filter for catch variable references. A reference can be seen as a usage. <p>
+	 * This defines a filter for catch variable references. A reference can be seen as an usage. <p>
 
 	 */
 	CATCH_VARIABLES_REFERENCES() {
@@ -792,7 +792,7 @@ public enum DefaultElementFilter {
 		}
 	},
 	/**
-	 * This defines a filter for variable writes. In Java, it is a usage of a variable inside an assignment.
+	 * This defines a filter for variable writes. In Java, it is an usage of a variable inside an assignment.
    *
    * For example:
    * <pre>
@@ -837,7 +837,7 @@ public enum DefaultElementFilter {
 	},
 	/**
 	 * This defines a filter for variable reads.
-   * In Java, it is a usage of a field outside an assignment. For example,
+   * In Java, it is an usage of a field outside an assignment. For example,
    * <pre>
    *     class Foo { int field; }
    *     Foo x = new Foo();
@@ -853,7 +853,7 @@ public enum DefaultElementFilter {
 	},
 	/**
 	 * This defines a filter for field writes.
-	 * In Java, it is a usage of a field inside an assignment.
+	 * In Java, it is an usage of a field inside an assignment.
    *
    * For example:
    * <pre>
@@ -1133,8 +1133,8 @@ public enum DefaultElementFilter {
 };
 
 	/**
-	 * Returns a element filter for the type. Use it with {@code CtModel#getElements(Filter)} to get all elements matching the given filter.
-	 * The filter returns references and not copies. Every change on the elements is a change in the ast an vice versa. Returns never null.
+	 * Returns an element filter for the type. Use it with {@code CtModel#getElements(Filter)} to get all elements matching the given filter.
+	 * The filter returns references and not copies. Every change on the elements is a change in the ast and vice versa. Returns never null.
 	 * @param <T>  ast element type.
 	 * @return  filter matching the given type.
 	 */

@@ -1,7 +1,7 @@
 package spoon.architecture;
 
 /**
- * This defines an architecture test. A architecture test is a rule the source code should fullfil. It consists of 2 parts, precondition and constraint.
+ * This defines an architecture test. An architecture test is a rule the source code should fullfil. It consists of 2 parts, precondition and constraint.
  * In the precondition meta model elements are selected and in the constraint the elements must hold a condition. For creating instances of this use {@link #of(IPrecondition, Checkable)}.
  * @param <T>  is the element type, that gets checked.
  * @param <M>  is the meta model type e.g. {@code CtModel} if you use the spoon-meta-model.

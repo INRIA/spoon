@@ -5,13 +5,13 @@ import spoon.architecture.errorhandling.IError;
 import spoon.reflect.declaration.CtElement;
 
 /**
- * Constraint defines the checkable part of a architecture rule. A constraint is a conjunction of predicates.
+ * Constraint defines the checkable part of an architecture rule. A constraint is a conjunction of predicates.
  * A constraint is violated if, the element does not eval all predicates to true. The predicates evaluation is circuited.
- * If A is not true then B will not be evaluated. The rule will be negated for the check. It's checked that no element doesn't hold the condition.
+ * If <pre>A</pre> is not true then <pre>B</pre> will not be evaluated. The rule will be negated for the check. It's checked that no element doesn't hold the condition.
  * <p>
  * This class defines multiple static methods for creation of constraints see {@link #of(IError,Predicate...)},
  * {@link #of(IError,Iterable)} and {@link #of(IError,Predicate)}.
- * The {@link IError} is called if a element evaluates to false. Use this to report violations.
+ * The {@link IError} is called if an element evaluates to false. Use this to report violations.
  *
  */
 public class Constraint<T extends CtElement> implements Checkable<T> {

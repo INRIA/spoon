@@ -7,7 +7,7 @@ import spoon.reflect.declaration.CtTypeInformation;
 /**
  * This provides default naming matcher for qualified and simple name. For regex usage see {@code #matches(Pattern)} and {@code #matchesQualified(Pattern)}.
  * For regex there are methods for negation provided, for the other matcher use {@code Predicate#negate()} if you want to negate them. <p>
- * All matcher are <b>null safe</b> and stateless. A fully qualified name is an java name consisting of one or more java identifiers separated by dots(.).
+ * All matcher are <b>null safe</b> and stateless. A fully qualified name is a java name consisting of one or more java identifiers separated by dots(.).
  * <pre>{@code {javaIdentifier}.[javaIdentifier]}</pre>
  */
 public class Naming {

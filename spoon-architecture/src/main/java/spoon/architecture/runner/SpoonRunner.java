@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import spoon.SpoonException;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -33,6 +34,9 @@ public class SpoonRunner implements IRunner<CtModel> {
 			method.invoke(createCallTarget(method), createArguments(method));
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| InstantiationException | NoSuchMethodException | SecurityException e) {
+			if (e.getCause() instanceof SpoonException) {
+				throw (SpoonException) e.getCause();
+			}
 			e.printStackTrace();
 		}
 	}
