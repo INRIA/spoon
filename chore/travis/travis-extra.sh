@@ -93,7 +93,15 @@ git diff
 mvn -q -Djava.src.version=11 test
 
 ##################################################################
-## Trigeering extra jobs that we don't want to commit to master (yet)
+## Trigerring extra tasks that we don't want to commit to master
 ## (For experimental CI features, short lived tasks, etc)
 
-curl -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Travis-API-Version: 3" -H "Authorization: token $TRAVIS_TOKEN" https://api.travis-ci.com/repo/SpoonLabs%2Fspoon-ci-external/requests
+if [[ "TRAVIS_REPO_SLUG" == "INRIA/spoon" ]] && [[ "TRAVIS_PULL_REQUEST" != "false" ]]
+then
+  curl https://raw.githubusercontent.com/SpoonLabs/spoon-ci-external/master/spoon-pull-request.sh | bash
+fi
+
+if [[ "TRAVIS_REPO_SLUG" == "INRIA/spoon" ]] && [[ "TRAVIS_BRANCH" == "master" ]]
+then
+  curl https://raw.githubusercontent.com/SpoonLabs/spoon-ci-external/master/spoon-master.sh | bash
+fi
