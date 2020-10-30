@@ -472,8 +472,8 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	/**
-	 * Invokes the traversal of the given compilation unit declaration using the given builder as visitor.
-	 * This method must invoke {@link CompilationUnitDeclaration#traverse(ASTVisitor, CompilationUnitScope)})} )}
+	 * Invokes the traversal of the given compilation unit declaration using the given builder as a visitor.
+	 * Overriders of this method must invoke {@link CompilationUnitDeclaration#traverse(ASTVisitor, CompilationUnitScope)})} )}
 	 * @param builder the builder to use to traverse the unit.
 	 * @param unitDeclaration the unit declaration.
 	 */
