@@ -288,7 +288,4 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	public boolean isStrictfp() {
 		return this.modifierHandler.isStrictfp();
 	}
-
-
-
 }

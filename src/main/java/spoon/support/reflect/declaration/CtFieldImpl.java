@@ -212,19 +212,29 @@ public class CtFieldImpl<T> extends CtNamedElementImpl implements CtField<T> {
     }
 
     @Override
-    public boolean isTransient() { return this.modifierHandler.isTransient(); }
+    public boolean isTransient() {
+        return this.modifierHandler.isTransient();
+    }
 
     @Override
-    public boolean isVolatile() { return this.modifierHandler.isVolatile(); }
+    public boolean isVolatile() {
+        return this.modifierHandler.isVolatile();
+    }
 
     @Override
-    public boolean isSynchronized() { return this.modifierHandler.isSynchronized(); }
+    public boolean isSynchronized() {
+        return this.modifierHandler.isSynchronized();
+    }
 
     @Override
-    public boolean isNative() { return this.modifierHandler.isNative(); }
+    public boolean isNative() {
+        return this.modifierHandler.isNative();
+    }
 
     @Override
-    public boolean isStrictfp() { return this.modifierHandler.isStrictfp(); }
+    public boolean isStrictfp() {
+        return this.modifierHandler.isStrictfp();
+    }
 
     @Override
     public boolean isPartOfJointDeclaration() {

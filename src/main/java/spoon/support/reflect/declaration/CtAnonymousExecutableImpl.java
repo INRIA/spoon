@@ -233,5 +233,4 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 	public boolean isStrictfp() {
 		return this.modifierHandler.isStrictfp();
 	}
-
 }

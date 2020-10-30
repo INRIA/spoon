@@ -121,39 +121,30 @@ public interface CtModifiable extends CtElement {
 	/**
 	 * Returns true if it contains a transient modifier (see {@link #hasModifier(ModifierKind)})
 	 */
-
 	@DerivedProperty
 	boolean isTransient();
-
 
 	/**
 	 * Returns true if it contains a volatile modifier (see {@link #hasModifier(ModifierKind)})
 	 */
-
 	@DerivedProperty
 	boolean isVolatile();
 
 	/**
 	 * Returns true if it contains a synchronized modifier (see {@link #hasModifier(ModifierKind)})
 	 */
-
 	@DerivedProperty
 	boolean isSynchronized();
 
 	/**
 	 * Returns true if it contains a native modifier (see {@link #hasModifier(ModifierKind)})
 	 */
-
 	@DerivedProperty
 	boolean isNative();
 
 	/**
 	 * Returns true if it contains a strictfp modifier (see {@link #hasModifier(ModifierKind)})
 	 */
-
 	@DerivedProperty
 	boolean isStrictfp();
-
-
-
 }

@@ -226,7 +226,9 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	}
 
 	@Override
-	public boolean isTransient() { return this.modifierHandler.isTransient(); }
+	public boolean isTransient() {
+		return this.modifierHandler.isTransient();
+	}
 
 	@Override
 	public boolean isVolatile() {
@@ -234,11 +236,17 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	}
 
 	@Override
-	public boolean isSynchronized() { return this.modifierHandler.isSynchronized(); }
+	public boolean isSynchronized() {
+		return this.modifierHandler.isSynchronized();
+	}
 
 	@Override
-	public boolean isNative() { return this.modifierHandler.isNative(); }
+	public boolean isNative() {
+		return this.modifierHandler.isNative();
+	}
 
 	@Override
-	public boolean isStrictfp() { return this.modifierHandler.isStrictfp(); }
+	public boolean isStrictfp() {
+		return this.modifierHandler.isStrictfp();
+	}
 }
