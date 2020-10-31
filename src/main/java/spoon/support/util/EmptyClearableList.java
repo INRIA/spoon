@@ -10,10 +10,10 @@ package spoon.support.util;
 import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.NoSuchElementException;
 import java.util.RandomAccess;
 
 public final class EmptyClearableList<E> extends AbstractList<E> implements RandomAccess, Serializable {
@@ -40,7 +40,7 @@ public final class EmptyClearableList<E> extends AbstractList<E> implements Rand
 
 	@Override
 	public ListIterator<E> listIterator() {
-		return (ListIterator<E>) EmptyListIterator.EMPTY_LIST_ITERATOR;
+		return (ListIterator<E>) Collections.emptyList().listIterator();
 	}
 
 	@Override
@@ -96,37 +96,4 @@ public final class EmptyClearableList<E> extends AbstractList<E> implements Rand
 		return EMPTY_LIST;
 	}
 
-	private static final class EmptyListIterator<E> extends EmptyIterator<E> implements ListIterator<E> {
-		static final EmptyListIterator<Object> EMPTY_LIST_ITERATOR = new EmptyListIterator<>();
-
-		@Override
-		public boolean hasPrevious() {
-			return false;
-		}
-
-		@Override
-		public E previous() {
-			throw new NoSuchElementException();
-		}
-
-		@Override
-		public int nextIndex() {
-			return 0;
-		}
-
-		@Override
-		public int previousIndex() {
-			return -1;
-		}
-
-		@Override
-		public void set(E e) {
-			throw new IllegalStateException();
-		}
-
-		@Override
-		public void add(E e) {
-			throw new UnsupportedOperationException();
-		}
-	}
 }

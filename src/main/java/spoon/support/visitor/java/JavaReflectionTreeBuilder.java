@@ -296,7 +296,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 				CtLiteral<Object> defaultExpression = factory.createLiteral(field.get(null));
 				ctField.setDefaultExpression(defaultExpression);
 			}
-		} catch (IllegalAccessException e) {
+		} catch (IllegalAccessException | ExceptionInInitializerError | UnsatisfiedLinkError e) {
 			// ignore
 		}
 
@@ -448,31 +448,6 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 
-	private String getTypeName(Type type) {
-		if (type instanceof Class) {
-			Class clazz = (Class) type;
-			if (clazz.isArray()) {
-				try {
-					Class<?> cl = clazz;
-					int dimensions = 0;
-					while (cl.isArray()) {
-						dimensions++;
-						cl = cl.getComponentType();
-					}
-					StringBuilder sb = new StringBuilder();
-					sb.append(cl.getName());
-					for (int i = 0; i < dimensions; i++) {
-						sb.append("[]");
-					}
-					return sb.toString();
-				} catch (Throwable e) { /*FALLTHRU*/ }
-			} else {
-				visitPackage(clazz.getPackage());
-			}
-			return clazz.getSimpleName();
-		}
-		return type.toString();
-	}
 
 	@Override
 	public <T> void visitArrayReference(CtRole role, final Type typeArray) {

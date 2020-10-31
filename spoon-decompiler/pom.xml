@@ -28,7 +28,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>8.2.0</version>
+            <version>8.3.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jboss.windup.decompiler.fernflower/fernflower -->
         <dependency>

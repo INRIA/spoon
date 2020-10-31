@@ -14,10 +14,7 @@
  */
 package spoon.javadoc.internal;
 
-import spoon.reflect.code.CtComment;
-
 import static spoon.javadoc.internal.JavadocInlineTag.nextWord;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,6 +22,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.Pair;
+import spoon.reflect.code.CtComment;
 
 /**
 * The structured content of a single Javadoc comment.
@@ -128,12 +127,12 @@ public class Javadoc implements Serializable {
 		int index = 0;
 		Pair<Integer, Integer> nextInlineTagPos;
 		while ((nextInlineTagPos = indexOfNextInlineTag(text, index)) != null) {
-			if (nextInlineTagPos.a != index) {
-			instance.addElement(new JavadocSnippet(text.substring(index, nextInlineTagPos.a)));
+			if (nextInlineTagPos.getLeft() != index) {
+			instance.addElement(new JavadocSnippet(text.substring(index, nextInlineTagPos.getLeft())));
 			}
 			instance.addElement(
-				JavadocInlineTag.fromText(text.substring(nextInlineTagPos.a, nextInlineTagPos.b + 1)));
-			index = nextInlineTagPos.b + 1;
+				JavadocInlineTag.fromText(text.substring(nextInlineTagPos.getLeft(), nextInlineTagPos.getRight() + 1)));
+			index = nextInlineTagPos.getRight() + 1;
 		}
 		if (index < text.length()) {
 			instance.addElement(new JavadocSnippet(text.substring(index)));
@@ -151,7 +150,7 @@ public class Javadoc implements Serializable {
 		if (closeIndex == -1) {
 			return null;
 		}
-		return new Pair<>(index, closeIndex);
+		return Pair.of(index, closeIndex);
 	}
 
 	/** parses the Javadoc content (description + tags) */

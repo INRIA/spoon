@@ -14,5 +14,6 @@ echo
 
 echo "$0 executed!"
 
-# we will add tasks here in the future
-true
+# we compute and save some data on https://github.com/SpoonLabs/spoon-ci-data
+curl -s -X POST -H "Content-Type: application/json" -H "Accept: application/json" -H "Travis-API-Version: 3" -H "Authorization: token $TRAVIS_TOKEN" https://api.travis-ci.com/repo/SpoonLabs%2Fspoon-ci-external/requests
+
