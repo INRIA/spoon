@@ -752,7 +752,7 @@ public class ModelChecker implements FormulaVisitor {
     }
 
     /**
-     * Compute the set of states that satisfy Or(p, Not(p)).
+     * Select all states, preferentially matching a given inner formula.
      *
      * @param element Optional Formula
      */

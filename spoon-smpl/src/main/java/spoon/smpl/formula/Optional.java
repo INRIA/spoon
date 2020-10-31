@@ -1,14 +1,12 @@
 package spoon.smpl.formula;
 
 /**
- * Optional(phi) represents a shorthand of the construction "Or(phi, Not(phi))" that can be handled more
- * efficiently by taking the result to be X union Y, where
- *    X = SAT(phi)
- *    Y = {(s, e, w) in SAT(True) | (s, _, _) not in X}
+ * Optional(phi) selects all states while preferentially matching phi:
+ *   SAT(phi) UNION {(s, ...) in SAT(True) | (s, ...) not in SAT(phi)}
  */
 public class Optional extends UnaryConnective {
     /**
-     * Create a new "Or(phi, Not(phi))" logical connective.
+     * Create a new Optional logical connective.
      *
      * @param phi Formula
      */
