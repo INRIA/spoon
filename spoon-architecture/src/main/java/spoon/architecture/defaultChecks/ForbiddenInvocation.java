@@ -1,5 +1,7 @@
 package spoon.architecture.defaultChecks;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import spoon.architecture.ArchitectureTest;
@@ -15,6 +17,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 /**
  * This defines an architecture test checking for forbidden invocations.
  * An invocation is forbidden if the target class and method name is part of the given list.
+ * Use the {@code Wildcards} for advanced matching and easier usage.
  */
 public class ForbiddenInvocation {
 
@@ -38,7 +41,8 @@ public class ForbiddenInvocation {
 			if (exec != null && exec.getDeclaringType() != null) {
 				if (methodsByType.containsKey(exec.getDeclaringType().getQualifiedName())) {
 					List<String> calls = methodsByType.get(exec.getDeclaringType().getQualifiedName());
-					if (calls.contains(exec.getSimpleName())) {
+					// we explicit use == because equals would allow any list with the "any_match" value.
+					if (calls.contains(exec.getSimpleName()) || calls == Wildcards.ANY_MATCH.getWildcard()) {
 						return true;
 					}
 				}
@@ -47,5 +51,21 @@ public class ForbiddenInvocation {
 		});
 		return ArchitectureTest.of(pre, con);
 	}
+	/**
+	 * This defines wildcards used in the matching process for easier usage.
+	 */
+	enum Wildcards {
+		/**
+		 * Use this a value in the map, to forbid a whole class. E.g. key = java.io.PrintStream and value = ANY_MATCH.getWildcard() to forbid all system.out.print... calls.
+		 */
+		ANY_MATCH() {
+			private List<String> anyMatch = Collections.unmodifiableList(Arrays.asList("any_match"));
+			@Override
+			public List<String> getWildcard() {
+				return anyMatch;
+			}
+		};
 
+		public abstract List<String> getWildcard();
+	}
 }
