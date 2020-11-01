@@ -174,12 +174,6 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 		super.visitCtLiteral(e);
 	}
 
-	@Override
-	public void visitCtTextBlock(CtTextBlock e) {
-		((spoon.reflect.code.CtTextBlock) (other)).setValue(e.getValue());
-		super.visitCtTextBlock(e);
-	}
-
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtLocalVariable(spoon.reflect.code.CtLocalVariable<T> e) {
 		((spoon.reflect.code.CtLocalVariable<T>) (other)).setSimpleName(e.getSimpleName());
