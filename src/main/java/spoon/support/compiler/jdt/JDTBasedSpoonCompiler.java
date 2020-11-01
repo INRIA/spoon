@@ -14,9 +14,7 @@ import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
-import org.eclipse.jdt.internal.compiler.lookup.BlockScope;
 import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
-import org.eclipse.jdt.internal.core.CompilationUnit;
 import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
@@ -473,11 +471,12 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 	/**
 	 * Invokes the traversal of the given compilation unit declaration using the given builder as a visitor.
-	 * Overriders of this method must invoke {@link CompilationUnitDeclaration#traverse(ASTVisitor, CompilationUnitScope)})} )}
+	 * Overriders of this method must either invoke {@link CompilationUnitDeclaration#traverse(ASTVisitor, CompilationUnitScope)})} )}
+	 * or this method before returning.
 	 * @param builder the builder to use to traverse the unit.
 	 * @param unitDeclaration the unit declaration.
 	 */
-	protected void traverseUnitDeclaration(JDTTreeBuilder builder, CompilationUnitDeclaration unitDeclaration){
+	protected void traverseUnitDeclaration(JDTTreeBuilder builder, CompilationUnitDeclaration unitDeclaration) {
 		unitDeclaration.traverse(builder, unitDeclaration.scope);
 	}
 

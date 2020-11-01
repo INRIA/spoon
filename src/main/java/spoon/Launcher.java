@@ -596,7 +596,7 @@ public class Launcher implements SpoonAPI {
 	 * 		the factory this compiler works on
 	 */
 	public SpoonModelBuilder createCompiler(Factory factory) {
-		SpoonModelBuilder comp = new JDTBasedSpoonCompiler(factory);
+		SpoonModelBuilder comp = getCompilerInstance(factory);
 		Environment env = getEnvironment();
 		// building
 		comp.setBinaryOutputDirectory(jsapActualArgs.getFile("destination"));
@@ -612,6 +612,17 @@ public class Launcher implements SpoonAPI {
 		env.debugMessage("template classpath: " + Arrays.toString(comp.getTemplateClasspath()));
 
 		return comp;
+	}
+
+	/**
+	 * Instantiates the compiler. This method is invoked by {@link #createCompiler(Factory)} to retrieve
+	 * an empty compiler instance. Clients can override this method to use their custom compiler implementation.
+	 * @param factory the factory to pass on to the compiler.
+	 * @return a new compiler.
+	 * @see #createCompiler(Factory)
+	 */
+	protected SpoonModelBuilder getCompilerInstance(Factory factory) {
+		return new JDTBasedSpoonCompiler(factory);
 	}
 
 	public SpoonModelBuilder createCompiler(Factory factory, List<SpoonResource> inputSources) {
