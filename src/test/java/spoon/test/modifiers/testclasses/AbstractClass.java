@@ -21,4 +21,18 @@ public abstract class AbstractClass {
     protected abstract void otherMethod();
 
     abstract int anotherOne();
+
+    transient int transientField;
+
+    volatile int volatileField;
+
+    protected synchronized int synchronizedMethod() {
+        return 42;
+    }
+
+    protected native void nativeMethod();
+
+    protected strictfp int strictfpMethod() {
+        return 42;
+    }
 }
