@@ -1635,7 +1635,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(StringLiteral stringLiteral, BlockScope scope) {
-		if(stringLiteral instanceof TextBlock) {
+		if (stringLiteral instanceof TextBlock) {
 			TextBlock textBlockLiteral = (TextBlock) stringLiteral;
 			context.enter(factory.Code().createTextBlock(CharOperation.charToString(textBlockLiteral.source())), textBlockLiteral);
 		} else {

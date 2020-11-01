@@ -7,8 +7,6 @@
  */
 package spoon.support.visitor.clone;
 
-import spoon.reflect.code.CtTextBlock;
-
 /**
  * Used to clone a given element.
  *

@@ -117,7 +117,6 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.printer.CommentOffset;
-import spoon.support.reflect.code.CtTextBlockImpl;
 import spoon.support.util.ModelList;
 
 import java.lang.annotation.Annotation;
@@ -1349,7 +1348,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		enterCtExpression(ctTextBlock);
 		printer.writeLiteral(
 				LiteralHelper.getTextBlockToken(ctTextBlock)
-		);		
+		);
 		exitCtExpression(ctTextBlock);
 	}
 

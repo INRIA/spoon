@@ -15,7 +15,7 @@ package spoon.reflect.code;
  *		      Test String
  *        	      """;
  * </pre>
- * 
+ *
  * The example above shows a TextBlock literal, in which the string is represented by CtTextBlock
  */
 public interface CtTextBlock extends CtLiteral<String> {

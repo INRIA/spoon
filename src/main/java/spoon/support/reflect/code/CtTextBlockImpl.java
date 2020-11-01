@@ -7,7 +7,6 @@
  */
 package spoon.support.reflect.code;
 
-import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.visitor.CtVisitor;
 

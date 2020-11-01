@@ -7,8 +7,6 @@
  */
 package spoon.support.visitor.clone;
 
-import spoon.reflect.code.CtTextBlock;
-
 /**
  * Used to set all data in the cloned element.
  *
