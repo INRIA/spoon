@@ -348,6 +348,26 @@ public class TestSniperPrinter {
 		});
 	}
 
+	@Test
+	public void testPrintTypesThrowsWhenPassedTypesFromMultipleCompilationUnits() {
+		// contract: printTypes() should raise an IllegalArgumentException if it is passed types
+		// from multiple CUs
+
+		Launcher launcher = createLauncherWithSniperPrinter();
+		// there is no particular reason for the choice of these two resources, other than that
+		// they are different from each other and existed at the time of writing this test
+		launcher.addInputResource(getResourcePath("visibility.YamlRepresenter"));
+		launcher.addInputResource(getResourcePath("spoon.test.variable.Tacos"));
+		CtType<?>[] types = launcher.buildModel().getAllTypes().toArray(new CtType<?>[0]);
+
+		try {
+			launcher.getEnvironment().createPrettyPrinter().printTypes(types);
+			fail("Expected an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+		    // pass
+		}
+	}
+
 	/**
 	 * 1) Runs spoon using sniper mode,
 	 * 2) runs `typeChanger` to modify the code,
