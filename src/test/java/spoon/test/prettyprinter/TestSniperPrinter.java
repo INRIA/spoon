@@ -341,7 +341,8 @@ public class TestSniperPrinter {
 		Launcher printTypesLauncher = createLauncherWithSniperPrinter();
 		printTypesLauncher.addInputResource(inputPath);
 		printTypesLauncher.buildModel();
-		String printTypesString = printTypesLauncher.createPrettyPrinter().printTypes(printTypesLauncher.getModel().getAllTypes().toArray(new CtType[0]));
+		String printTypesString = printTypesLauncher.createPrettyPrinter()
+				.printTypes(printTypesLauncher.getModel().getAllTypes().toArray(new CtType[0]));
 
 		testSniper(resourceName, ctType -> {}, (type, prettyPrint) -> {
 			assertEquals(prettyPrint, printTypesString);
