@@ -8,6 +8,7 @@
 package spoon.support.sniper;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
@@ -106,6 +107,16 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	 */
 	private TokenWriter createTokenWriterListener(TokenWriter tokenWriter) {
 		return new TokenWriterProxy(this, tokenWriter);
+	}
+
+	@Override
+	public String printTypes(CtType<?>... type) {
+		CtCompilationUnit cu = Arrays.stream(type)
+				.map(ctType -> ctType.getFactory().CompilationUnit().getOrCreate(ctType))
+				.findFirst()
+				.orElseThrow(IllegalArgumentException::new);
+		calculate(cu, Arrays.asList(type));
+		return getResult();
 	}
 
 	@Override
