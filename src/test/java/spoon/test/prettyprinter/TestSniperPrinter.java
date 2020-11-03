@@ -357,7 +357,7 @@ public class TestSniperPrinter {
 	 * @param resultChecker a code which checks that printed sources are as expected
 	 */
 	private void testSniper(String testClass, Consumer<CtType<?>> transformation, BiConsumer<CtType<?>, String> resultChecker) {
-	    Launcher launcher = createLauncherWithSniperPrinter();
+		Launcher launcher = createLauncherWithSniperPrinter();
 		launcher.addInputResource(getResourcePath(testClass));
 		launcher.buildModel();
 		Factory f = launcher.getFactory();
