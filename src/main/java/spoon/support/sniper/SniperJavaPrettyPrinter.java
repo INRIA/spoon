@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
-import java.util.Optional;
 
 import spoon.OutputType;
 import spoon.SpoonException;
@@ -113,7 +112,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 
 	@Override
 	public String printTypes(CtType<?>... type) {
-	    CtCompilationUnit cu = getUnambiguousCompilationUnit(type);
+		CtCompilationUnit cu = getUnambiguousCompilationUnit(type);
 		calculate(cu, Arrays.asList(type));
 		return getResult();
 	}
