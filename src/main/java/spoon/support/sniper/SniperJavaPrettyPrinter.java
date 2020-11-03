@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+import java.util.Optional;
 
 import spoon.OutputType;
 import spoon.SpoonException;
@@ -30,6 +31,7 @@ import spoon.reflect.visitor.TokenWriter;
 import spoon.support.Experimental;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.modelobs.ChangeCollector;
+import spoon.support.reflect.declaration.CtCompilationUnitImpl;
 import spoon.support.sniper.internal.ChangeResolver;
 import spoon.support.sniper.internal.CollectionSourceFragment;
 import spoon.support.sniper.internal.ElementPrinterEvent;
@@ -111,12 +113,18 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 
 	@Override
 	public String printTypes(CtType<?>... type) {
-		CtCompilationUnit cu = Arrays.stream(type)
-				.map(ctType -> ctType.getFactory().CompilationUnit().getOrCreate(ctType))
-				.findFirst()
-				.orElseThrow(IllegalArgumentException::new);
+	    CtCompilationUnit cu = getUnambiguousCompilationUnit(type);
 		calculate(cu, Arrays.asList(type));
 		return getResult();
+	}
+
+	private static CtCompilationUnit getUnambiguousCompilationUnit(CtType<?>[] type) {
+		CtCompilationUnit sentinel = new CtCompilationUnitImpl();
+		return Arrays.stream(type)
+				.map(ctType -> (CtCompilationUnit) ctType.getFactory().CompilationUnit().getOrCreate(ctType))
+				.reduce((prev, next) -> prev == next ? next : sentinel)
+				.filter(unit -> unit != sentinel)
+				.orElseThrow(() -> new IllegalArgumentException("mismatching or missing compilation unit"));
 	}
 
 	@Override
