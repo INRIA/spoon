@@ -9,6 +9,6 @@ public class Exists<T> implements Predicate<T> {
 
 	@Override
 	public boolean test(T t) {
-		return true;
+		return false;
 	}
 }
