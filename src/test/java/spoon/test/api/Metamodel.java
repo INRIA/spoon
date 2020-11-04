@@ -1110,6 +1110,18 @@ public class Metamodel {
 
 			));
 
+			types.add(new Type("CtTextBlock", spoon.reflect.code.CtTextBlock.class, spoon.support.reflect.code.CtTextBlockImpl.class, fm -> fm
+					.field(CtRole.IS_IMPLICIT, false, false)
+					.field(CtRole.VALUE, false, false)
+					.field(CtRole.POSITION, false, false)
+					.field(CtRole.LITERAL_BASE, false, false)
+					.field(CtRole.ANNOTATION, false, false)
+					.field(CtRole.TYPE, false, false)
+					.field(CtRole.CAST, false, false)
+					.field(CtRole.COMMENT, false, false)
+
+			));
+
 			types.add(new Type("CtReturn", spoon.reflect.code.CtReturn.class, spoon.support.reflect.code.CtReturnImpl.class, fm -> fm
 				.field(CtRole.IS_IMPLICIT, false, false)
 				.field(CtRole.LABEL, false, false)

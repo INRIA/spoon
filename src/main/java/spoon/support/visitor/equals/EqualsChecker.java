@@ -14,6 +14,7 @@ import spoon.reflect.code.CtContinue;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -240,6 +241,21 @@ public class EqualsChecker extends CtInheritanceScanner {
 			setNotEqual(CtRole.VALUE);
 		}
 		super.visitCtLiteral(e);
+	}
+
+	@Override
+	public void visitCtTextBlock(CtTextBlock e) {
+		final CtTextBlock peek = (CtTextBlock) this.other;
+		if (e.getValue() == null) {
+			if (peek.getValue() != null) {
+				setNotEqual(CtRole.VALUE);
+			}
+		} else if (peek.getValue() == null) {
+			setNotEqual(CtRole.VALUE);
+		} else if (!e.getValue().equals(peek.getValue())) {
+			setNotEqual(CtRole.VALUE);
+		}
+		super.visitCtTextBlock(e);
 	}
 
 	@Override

@@ -99,6 +99,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtLabelledFlowBreak.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtLambda.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtLiteral.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtTextBlock.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtLocalVariable.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtLoop.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtNewArray.class));

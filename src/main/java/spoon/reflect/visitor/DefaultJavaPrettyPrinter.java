@@ -60,6 +60,7 @@ import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
@@ -1340,6 +1341,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		enterCtExpression(literal);
 		printer.writeLiteral(LiteralHelper.getLiteralToken(literal));
 		exitCtExpression(literal);
+	}
+
+	@Override
+	public void visitCtTextBlock(CtTextBlock ctTextBlock) {
+		enterCtExpression(ctTextBlock);
+		printer.writeLiteral(
+				LiteralHelper.getTextBlockToken(ctTextBlock)
+		);
+		exitCtExpression(ctTextBlock);
 	}
 
 	@Override

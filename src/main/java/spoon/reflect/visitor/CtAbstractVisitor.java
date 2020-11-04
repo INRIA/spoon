@@ -47,6 +47,7 @@ import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
@@ -262,6 +263,11 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	@Override
 	public <T> void visitCtLiteral(CtLiteral<T> literal) {
+
+	}
+
+	@Override
+	public void visitCtTextBlock(CtTextBlock ctTextBlock) {
 
 	}
 

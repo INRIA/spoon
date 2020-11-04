@@ -347,6 +347,16 @@ int x = switch(i) { // <-- switch expression
    }
 
 ```
+### CtTextBlock
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtTextBlock.html)
+
+```java
+
+    String example = """
+		      Test String
+       	      """;
+
+```
 ### CtThisAccess
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtThisAccess.html)
 

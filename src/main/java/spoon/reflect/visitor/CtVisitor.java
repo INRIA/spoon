@@ -47,6 +47,7 @@ import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
@@ -272,6 +273,11 @@ public interface CtVisitor {
 	 * Visits a literal expression.
 	 */
 	<T> void visitCtLiteral(CtLiteral<T> literal);
+
+	/**
+	 * Visits a literal TextBlock string.
+	 */
+	void visitCtTextBlock(CtTextBlock ctTextBlock);
 
 	/**
 	 * Visits a local variable declaration.
