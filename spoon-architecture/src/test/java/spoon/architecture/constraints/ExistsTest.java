@@ -1,4 +1,4 @@
-package spoon.architecture.connstraints;
+package spoon.architecture.constraints;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -9,7 +9,6 @@ import spoon.architecture.ArchitectureTest;
 import spoon.architecture.Constraint;
 import spoon.architecture.DefaultElementFilter;
 import spoon.architecture.Precondition;
-import spoon.architecture.constraints.Exists;
 import spoon.architecture.errorhandling.ExceptionError;
 import spoon.reflect.CtModel;
 
