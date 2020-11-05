@@ -9,11 +9,10 @@ import spoon.architecture.Constraint;
 import spoon.architecture.Precondition;
 import spoon.architecture.errorhandling.IError;
 import spoon.reflect.CtModel;
-import spoon.reflect.code.CtInvocation;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-//TODO: more doc, easier usage
+// TODO: more doc, easier usage
 /**
  * This defines an architecture test checking for forbidden invocations.
  * An invocation is forbidden if the target class and method name is part of the given list.
@@ -24,6 +23,7 @@ public class ForbiddenInvocation {
 	private ForbiddenInvocation() {
 
 	}
+
 	/**
 	 * Creates an forbidden invocation architecture test. An invocation is forbidden if it is contained in methodsByType.
 	 * Method arguments/overloading are not respected for the lookups.
@@ -31,35 +31,37 @@ public class ForbiddenInvocation {
 	 * @param errorReporter  called if there is any forbidden invocation
 	 * @return  an architecture test, checking invocations.
 	 */
-	public static ArchitectureTest<CtInvocation<?>, CtModel> forbiddenInvocationCheck(
-			Map<String, List<String>> methodsByType, IError<CtInvocation<?>> errorReporter) {
+	public static ArchitectureTest<CtExecutableReference<?>, CtModel> forbiddenInvocationCheck(
+			Map<String, List<String>> methodsByType, IError<CtExecutableReference<?>> errorReporter) {
 		// how handle System.out::println?
-		Precondition<CtInvocation<?>> pre =
-				Precondition.of(new TypeFilter<CtInvocation<?>>(CtInvocation.class));
-		Constraint<CtInvocation<?>> con = Constraint.of(errorReporter, (element) -> {
-			CtExecutableReference<?> exec = element.getExecutable();
-			if (exec != null && exec.getDeclaringType() != null) {
-				if (methodsByType.containsKey(exec.getDeclaringType().getQualifiedName())) {
-					List<String> calls = methodsByType.get(exec.getDeclaringType().getQualifiedName());
+		Precondition<CtExecutableReference<?>> pre =
+				Precondition.of(new TypeFilter<CtExecutableReference<?>>(CtExecutableReference.class));
+		Constraint<CtExecutableReference<?>> con = Constraint.of(errorReporter, (element) -> {
+			if (element != null && element.getDeclaringType() != null) {
+				if (methodsByType
+						.containsKey(element.getDeclaringType().getTopLevelType().getQualifiedName())) {
+					List<String> calls = methodsByType.get(element.getDeclaringType().getQualifiedName());
 					// we explicit use == because equals would allow any list with the "any_match" value.
-					if (calls.contains(exec.getSimpleName()) || calls == Wildcards.ANY_MATCH.getWildcard()) {
-						return true;
+					if (calls.contains(element.getSimpleName()) || calls == Wildcards.ANY_MATCH.getWildcard()) {
+						return false;
 					}
 				}
 			}
-			return false;
+			return true;
 		});
 		return ArchitectureTest.of(pre, con);
 	}
+
 	/**
 	 * This defines wildcards used in the matching process for easier usage.
 	 */
-	enum Wildcards {
+	public enum Wildcards {
 		/**
 		 * Use this a value in the map, to forbid a whole class. E.g. key = java.io.PrintStream and value = ANY_MATCH.getWildcard() to forbid all system.out.print... calls.
 		 */
 		ANY_MATCH() {
-			private List<String> anyMatch = Collections.unmodifiableList(Arrays.asList("any_match"));
+			private List<String> anyMatch = Collections.unmodifiableList(Arrays.asList("<any_match>"));
+
 			@Override
 			public List<String> getWildcard() {
 				return anyMatch;
