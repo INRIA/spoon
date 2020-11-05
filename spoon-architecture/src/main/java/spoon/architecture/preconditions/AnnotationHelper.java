@@ -39,6 +39,7 @@ public class AnnotationHelper {
 		}
 		HasAnnotationString(String annotationName, boolean qualified) {
 			this.annotationName = annotationName;
+			this.qualified = qualified;
 		}
 	}
 	public static Predicate<CtElement> hasAnnotationMatcher(String annotationName, boolean qualified) {
@@ -58,6 +59,7 @@ public class AnnotationHelper {
 		}
 		HasAnnotationPattern(Pattern annotationPattern, boolean qualified) {
 			this.annotationPattern = annotationPattern;
+			this.qualified = qualified;
 		}
 	}
 	public static Predicate<CtElement> hasAnnotationMatcher(Pattern annotationPattern, boolean qualified) {
