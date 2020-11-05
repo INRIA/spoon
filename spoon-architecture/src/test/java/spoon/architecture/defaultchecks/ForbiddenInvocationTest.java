@@ -62,7 +62,7 @@ public class ForbiddenInvocationTest {
 	public void testInvocationInExecutableReference() {
 		// contract: method invocations in methods are scanned
 		CtModel model = Models.createModelFromString(
-				"src/test/resources/spoon/architecture/defaultchecks/forbiddeninvocation/ExecutableReference.java");
+				"src/test/resources/spoon/architecture/defaultchecks/forbiddeninvocation/InExecutableReference.java");
 		Map<String, List<String>> methodsByName = new HashMap<>();
 		methodsByName.put("java.io.PrintStream", Arrays.asList("println"));
 		SpoonException exception = assertThrows(SpoonException.class, () -> ForbiddenInvocation
