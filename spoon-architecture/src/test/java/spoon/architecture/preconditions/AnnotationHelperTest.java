@@ -17,7 +17,7 @@ public class AnnotationHelperTest {
 
 	@Test
 	public void testAnnotationHelperWithClass() {
-		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions");
+		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/annotationhelper");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.METHODS.getFilter(),
 											AnnotationHelper.hasAnnotationMatcher(Deprecated.class)),
@@ -27,7 +27,7 @@ public class AnnotationHelperTest {
 
 	@Test
 	public void testAnnotationHelperWithName() {
-		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions");
+		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/annotationhelper");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.METHODS.getFilter(),
 											AnnotationHelper.hasAnnotationMatcher("Deprecated", false)),
@@ -37,7 +37,7 @@ public class AnnotationHelperTest {
 
 	@Test
 	public void testAnnotationHelperWithFQName() {
-		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions");
+		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/annotationhelper");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.METHODS.getFilter(),
 											AnnotationHelper.hasAnnotationMatcher("java.lang.Deprecated", true)),
@@ -46,7 +46,7 @@ public class AnnotationHelperTest {
 	}
 	@Test
 	public void testAnnotationHelperWithPattern() {
-		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions");
+		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/annotationhelper");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.METHODS.getFilter(),
 											AnnotationHelper.hasAnnotationMatcher(Pattern.compile("(?i)deprecated"), false)),
@@ -56,7 +56,7 @@ public class AnnotationHelperTest {
 
 	@Test
 	public void testAnnotationHelperWithPatternAndFQ() {
-		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions");
+		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/annotationhelper");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.METHODS.getFilter(),
 											AnnotationHelper.hasAnnotationMatcher(Pattern.compile("(?i)java[.].*deprecated"), true)),
