@@ -14,6 +14,7 @@ public class InvocationMatcherTest {
 
 	@Test
 	public void testMethodInvocations() {
+		// contract: the matcher finds every invocation: normal, local,constructor,lambda and executable reference
 		CtModel model = Models.createModelFromString(
 				"src/test/resources/spoon/architecture/constraints/invocationmatcher");
 		InvocationMatcher matcher = new InvocationMatcher(model);
