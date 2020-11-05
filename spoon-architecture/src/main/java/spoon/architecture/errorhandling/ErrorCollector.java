@@ -37,7 +37,7 @@ public class ErrorCollector<T> implements IError<T> {
 			System.out.println(errorMessage + t);
 		}
 		if (!errors.isEmpty()) {
-			throw new SpoonException("There are rule violations");
+			throw new SpoonException("There are rule violations:\n");
 		}
 	}
 }
