@@ -13,7 +13,7 @@ import spoon.architecture.errorhandling.ExceptionError;
 import spoon.architecture.helper.Models;
 import spoon.reflect.CtModel;
 
-public class AnnotationHelperTest {
+public class AnnotationsTest {
 
 	@Test
 	public void testAnnotationHelperWithClass() {

@@ -16,7 +16,7 @@ import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-public class NamingTest {
+public class NamesTest {
 
 	@Test
 	public void testEqualName() {
