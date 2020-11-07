@@ -1,13 +1,15 @@
 package spoon.architecture.helper;
 
+import com.google.common.flogger.FluentLogger;
 import spoon.architecture.errorhandling.IError;
 
 public class CountingErrorCollector<T> implements IError<T> {
 
+	private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 	private int counter;
 	@Override
 	public void printError(T element) {
-		System.out.println(element);
+		logger.atInfo().log("Print error for element of type %s:\n %s", element.getClass(), element);
 		counter++;
 	}
 	/**
