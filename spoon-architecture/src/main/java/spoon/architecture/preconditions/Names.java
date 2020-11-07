@@ -10,9 +10,9 @@ import spoon.reflect.declaration.CtTypeInformation;
  * All matcher are <b>null safe</b> and stateless. A fully qualified name is a java name consisting of one or more java identifiers separated by dots(.).
  * <pre>{@code {javaIdentifier}.[javaIdentifier]}</pre>
  */
-public class Naming {
+public class Names {
 
-	private Naming() {
+	private Names() {
 		// private constructor for util class
 	}
 	/**

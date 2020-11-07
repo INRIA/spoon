@@ -23,7 +23,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											new TypeFilter<CtNamedElement>(CtNamedElement.class),
-											Naming.equals("Foobar")),
+											Names.equals("Foobar")),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -33,7 +33,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											new TypeFilter<CtNamedElement>(CtNamedElement.class),
-											Naming.contains("oob")),
+											Names.contains("oob")),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -43,7 +43,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											new TypeFilter<CtNamedElement>(CtNamedElement.class),
-											Naming.startsWith("F")),
+											Names.startsWith("F")),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -53,7 +53,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											new TypeFilter<CtNamedElement>(CtNamedElement.class),
-											Naming.endsWith("ar")),
+											Names.endsWith("ar")),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -63,7 +63,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											new TypeFilter<CtNamedElement>(CtNamedElement.class),
-											Naming.matches("^Fo+bar")),
+											Names.matches("^Fo+bar")),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -74,7 +74,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertDoesNotThrow(() -> ArchitectureTest.of(Precondition.of(
 											new TypeFilter<CtNamedElement>(CtNamedElement.class),
-											Naming.matchesNot(".*")),
+											Names.matchesNot(".*")),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -84,7 +84,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											new TypeFilter<CtNamedElement>(CtNamedElement.class),
-											Naming.matches(Pattern.compile("(?i)^fo+bar"))),
+											Names.matches(Pattern.compile("(?i)^fo+bar"))),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -93,7 +93,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertDoesNotThrow(() -> ArchitectureTest.of(Precondition.of(
 											new TypeFilter<CtNamedElement>(CtNamedElement.class),
-											Naming.matchesNot(Pattern.compile(".*"))),
+											Names.matchesNot(Pattern.compile(".*"))),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -102,7 +102,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.TYPES.getFilter(),
-											Naming.equalsQualified("spoon.architecture.preconditions.naming.QualifiedNames")),
+											Names.equalsQualified("spoon.architecture.preconditions.naming.QualifiedNames")),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -111,7 +111,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.TYPES.getFilter(),
-											Naming.startsWithQualified("spoon.architecture")),
+											Names.startsWithQualified("spoon.architecture")),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -120,7 +120,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.TYPES.getFilter(),
-											Naming.containsQualified("spoon")),
+											Names.containsQualified("spoon")),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -129,7 +129,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.TYPES.getFilter(),
-											Naming.endsWithQualified("QualifiedNames")),
+											Names.endsWithQualified("QualifiedNames")),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -139,7 +139,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.TYPES.getFilter(),
-											Naming.matchesQualified(".*Names")),
+											Names.matchesQualified(".*Names")),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -150,7 +150,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertDoesNotThrow(() -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.TYPES.getFilter(),
-											Naming.matchesNotQualified(".*")),
+											Names.matchesNotQualified(".*")),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -160,7 +160,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.TYPES.getFilter(),
-											Naming.matchesQualified(Pattern.compile(".*Names"))),
+											Names.matchesQualified(Pattern.compile(".*Names"))),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -169,7 +169,7 @@ public class NamingTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertDoesNotThrow(() -> ArchitectureTest.of(Precondition.of(
 			DefaultElementFilter.TYPES.getFilter(),
-			Naming.matchesNotQualified(Pattern.compile(".*"))),
+			Names.matchesNotQualified(Pattern.compile(".*"))),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}

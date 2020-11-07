@@ -6,9 +6,9 @@ import spoon.reflect.declaration.CtModifiable;
 /**
  * This class defines multiple convenience predicates for easier visibility modifier filtering. No defined method is null safe. You can check even for modifiers an element can't have.
  */
-public class VisibilityFilter {
+public class Visibilities {
 
-	private VisibilityFilter() {
+	private Visibilities() {
 
 	}
 

@@ -8,7 +8,7 @@ import spoon.architecture.Constraint;
 import spoon.architecture.DefaultElementFilter;
 import spoon.architecture.Precondition;
 import spoon.architecture.errorhandling.ErrorCollector;
-import spoon.architecture.preconditions.VisibilityFilter;
+import spoon.architecture.preconditions.Visibilities;
 import spoon.architecture.runner.Architecture;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtJavaDoc;
@@ -45,7 +45,7 @@ public class DocChecks {
 	@Architecture(modelNames = "srcmodel")
 	public void classDocumentation(CtModel srcModel) {
 		// contract: every type has a proper documentation (30 chars at least).
-		Precondition<CtType<?>> pre = Precondition.of(DefaultElementFilter.TYPES.getFilter(), VisibilityFilter.isPublic());
+		Precondition<CtType<?>> pre = Precondition.of(DefaultElementFilter.TYPES.getFilter(), Visibilities.isPublic());
 		ErrorCollector<CtType<?>> collector = new ErrorCollector<>("There is a type without documentation. Every public class must have documentation (at least 30 chars) ");
 		Constraint<CtType<?>> con = Constraint.of(collector, type -> type.getDocComment().length() > 30);
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
