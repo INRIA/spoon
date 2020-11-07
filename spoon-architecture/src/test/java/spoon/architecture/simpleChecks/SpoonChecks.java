@@ -15,7 +15,7 @@ import spoon.architecture.constraints.FieldReferenceMatcher;
 import spoon.architecture.constraints.InvocationMatcher;
 import spoon.architecture.errorhandling.NopError;
 import spoon.architecture.preconditions.Annotations;
-import spoon.architecture.preconditions.ModifierFilter;
+import spoon.architecture.preconditions.Modifiers;
 import spoon.architecture.preconditions.Naming;
 import spoon.architecture.preconditions.VisibilityFilter;
 import spoon.architecture.runner.Architecture;
@@ -44,7 +44,7 @@ public class SpoonChecks {
 
 	private boolean stateless(CtField<?> field) {
 		return Naming.equals("factory").test(field)
-				|| (ModifierFilter.isFinal().and(ModifierFilter.isTransient()).test(field));
+				|| (Modifiers.isFinal().and(Modifiers.isTransient()).test(field));
 	}
 	// commented out because the lookup for the factory fails, because test resources are missing
 	// @Architecture
@@ -76,7 +76,7 @@ public class SpoonChecks {
 		// only the top declarations should be documented (not the overriding methods which are lower in the hierarchy)
 		(method) -> method.getTopDefinitions().isEmpty(),
 		// means that only large methods must be documented)
-		ModifierFilter.isAbstract().or(method -> method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 33),
+		Modifiers.isAbstract().or(method -> method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 33),
 		VisibilityFilter.isPublic());
 		Constraint<CtMethod<?>> con = Constraint.of((method) -> System.out.println(method.getDeclaringType().getQualifiedName() + "#" + method.getSignature()),
 		(method) -> method.getDocComment().length() > 15);
@@ -164,8 +164,8 @@ public class SpoonChecks {
 		Constraint<CtClass<?>> con = Constraint.of(
 		(element) -> System.out.println(element),
 		(clazz) -> clazz.getSuperclass() == null,
-		(clazz) -> clazz.getMethods().stream().allMatch(ModifierFilter.isStatic()),
-		(clazz) -> clazz.getConstructors().stream().allMatch(ModifierFilter.isStatic()));
+		(clazz) -> clazz.getMethods().stream().allMatch(Modifiers.isStatic()),
+		(clazz) -> clazz.getConstructors().stream().allMatch(Modifiers.isStatic()));
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
 	}
 

@@ -21,7 +21,7 @@ public class ModifiersTest {
 		CountingErrorCollector<CtModifiable> collector = new CountingErrorCollector<>();
 		ArchitectureTest.of(Precondition.of(
 											new TypeFilter<>(CtModifiable.class),
-											ModifierFilter.isAbstract()),
+											Modifiers.isAbstract()),
 											Constraint.of(collector, new Exists<>()))
 											.runCheck(model);
 		assertThat(collector.getCounter()).isEqualTo(1);
@@ -34,7 +34,7 @@ public class ModifiersTest {
 		CountingErrorCollector<CtModifiable> collector = new CountingErrorCollector<>();
 		ArchitectureTest.of(Precondition.of(
 											new TypeFilter<>(CtModifiable.class),
-											ModifierFilter.isTransient()),
+											Modifiers.isTransient()),
 											Constraint.of(collector, new Exists<>()))
 											.runCheck(model);
 		assertThat(collector.getCounter()).isEqualTo(1);
@@ -47,7 +47,7 @@ public class ModifiersTest {
 		CountingErrorCollector<CtModifiable> collector = new CountingErrorCollector<>();
 		ArchitectureTest.of(Precondition.of(
 											new TypeFilter<>(CtModifiable.class),
-											ModifierFilter.isSynchronized()),
+											Modifiers.isSynchronized()),
 											Constraint.of(collector, new Exists<>()))
 											.runCheck(model);
 		assertThat(collector.getCounter()).isEqualTo(1);
@@ -60,7 +60,7 @@ public class ModifiersTest {
 		CountingErrorCollector<CtModifiable> collector = new CountingErrorCollector<>();
 		ArchitectureTest.of(Precondition.of(
 											new TypeFilter<>(CtModifiable.class),
-											ModifierFilter.isFinal()),
+											Modifiers.isFinal()),
 											Constraint.of(collector, new Exists<>()))
 											.runCheck(model);
 		assertThat(collector.getCounter()).isEqualTo(1);
@@ -73,7 +73,7 @@ public class ModifiersTest {
 		CountingErrorCollector<CtModifiable> collector = new CountingErrorCollector<>();
 		ArchitectureTest.of(Precondition.of(
 											new TypeFilter<>(CtModifiable.class),
-											ModifierFilter.isStatic()),
+											Modifiers.isStatic()),
 											Constraint.of(collector, new Exists<>()))
 											.runCheck(model);
 		assertThat(collector.getCounter()).isEqualTo(1);
