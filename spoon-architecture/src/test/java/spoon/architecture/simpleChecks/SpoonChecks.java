@@ -14,7 +14,7 @@ import spoon.architecture.Precondition;
 import spoon.architecture.constraints.FieldReferenceMatcher;
 import spoon.architecture.constraints.InvocationMatcher;
 import spoon.architecture.errorhandling.NopError;
-import spoon.architecture.preconditions.AnnotationHelper;
+import spoon.architecture.preconditions.Annotations;
 import spoon.architecture.preconditions.ModifierFilter;
 import spoon.architecture.preconditions.Naming;
 import spoon.architecture.preconditions.VisibilityFilter;
@@ -117,7 +117,7 @@ public class SpoonChecks {
 		Precondition<CtMethod<?>> pre =	Precondition.of(
 		DefaultElementFilter.METHODS.getFilter(),
 		VisibilityFilter.isPublic(),
-		AnnotationHelper.hasAnnotationMatcher(Test.class).or(AnnotationHelper.hasAnnotationMatcher(org.junit.jupiter.api.Test.class)));
+		Annotations.hasAnnotation(Test.class).or(Annotations.hasAnnotation(org.junit.jupiter.api.Test.class)));
 		Constraint<CtNamedElement> con = Constraint.of((element) -> System.out.println(element), Naming.startsWith("test"));
 		ArchitectureTest.of(pre, con).runCheck(testModel);
 	}

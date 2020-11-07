@@ -20,7 +20,7 @@ public class AnnotationHelperTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/annotationhelper");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.METHODS.getFilter(),
-											AnnotationHelper.hasAnnotationMatcher(Deprecated.class)),
+											Annotations.hasAnnotation(Deprecated.class)),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -30,7 +30,7 @@ public class AnnotationHelperTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/annotationhelper");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.METHODS.getFilter(),
-											AnnotationHelper.hasAnnotationMatcher("Deprecated", false)),
+											Annotations.hasAnnotation("Deprecated", false)),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -40,7 +40,7 @@ public class AnnotationHelperTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/annotationhelper");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.METHODS.getFilter(),
-											AnnotationHelper.hasAnnotationMatcher("java.lang.Deprecated", true)),
+											Annotations.hasAnnotation("java.lang.Deprecated", true)),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -49,7 +49,7 @@ public class AnnotationHelperTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/annotationhelper");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.METHODS.getFilter(),
-											AnnotationHelper.hasAnnotationMatcher(Pattern.compile("(?i)deprecated"), false)),
+											Annotations.hasAnnotation(Pattern.compile("(?i)deprecated"), false)),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
@@ -59,7 +59,7 @@ public class AnnotationHelperTest {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/annotationhelper");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
 											DefaultElementFilter.METHODS.getFilter(),
-											AnnotationHelper.hasAnnotationMatcher(Pattern.compile("(?i)java[.].*deprecated"), true)),
+											Annotations.hasAnnotation(Pattern.compile("(?i)java[.].*deprecated"), true)),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}

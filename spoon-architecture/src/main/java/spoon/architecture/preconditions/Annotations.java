@@ -5,11 +5,11 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import spoon.reflect.declaration.CtElement;
 /**
- * This defines multiple helper methods for annotation matching for elements. It supports class objects with {@link #hasAnnotationMatcher(Class)}, regex with {@link #hasAnnotationMatcher(Pattern, boolean)} and strings {@link #hasAnnotationMatcher(String, boolean)}.
+ * This defines multiple helper methods for annotation matching for elements. It supports class objects with {@link #hasAnnotation(Class)}, regex with {@link #hasAnnotation(Pattern, boolean)} and strings {@link #hasAnnotation(String, boolean)}.
  * A qualified name is an identifier consisting of multiple identifier separated by a dot.
  */
-public class AnnotationHelper {
-	private AnnotationHelper() {
+public class Annotations {
+	private Annotations() {
 
 	}
 	private static class HasAnnotationClass implements Predicate<CtElement> {
@@ -22,7 +22,7 @@ public class AnnotationHelper {
 			this.annotation = annotation;
 		}
 	}
-	public static Predicate<CtElement> hasAnnotationMatcher(Class<? extends Annotation> annotation) {
+	public static Predicate<CtElement> hasAnnotation(Class<? extends Annotation> annotation) {
 		return new HasAnnotationClass(annotation);
 	}
 
@@ -42,7 +42,7 @@ public class AnnotationHelper {
 			this.qualified = qualified;
 		}
 	}
-	public static Predicate<CtElement> hasAnnotationMatcher(String annotationName, boolean qualified) {
+	public static Predicate<CtElement> hasAnnotation(String annotationName, boolean qualified) {
 		return new HasAnnotationString(annotationName, qualified);
 	}
 	private static class HasAnnotationPattern implements Predicate<CtElement> {
@@ -62,7 +62,7 @@ public class AnnotationHelper {
 			this.qualified = qualified;
 		}
 	}
-	public static Predicate<CtElement> hasAnnotationMatcher(Pattern annotationPattern, boolean qualified) {
+	public static Predicate<CtElement> hasAnnotation(Pattern annotationPattern, boolean qualified) {
 		return new HasAnnotationPattern(annotationPattern, qualified);
 	}
 }
