@@ -88,20 +88,7 @@ public class SpoonArchitecturalChecker implements ISpoonArchitecturalChecker {
 
 	@Override
 	public void runChecks() {
-		printers.forEach(printer -> printer.startPrinting());
-		Iterable<Method> architectureChecks = runner.selectMethods(builder.getModelWithIdentifier(DefaultPath.TEST.getIdentifier()));
-		try {
-			for (Method method : architectureChecks) {
-				printers.forEach(printer -> printer.beforeMethod(method));
-				runner.invokeMethod(method);
-				printers.forEach(printer -> printer.afterMethod(method));
-			}
-		} catch (Exception e) {
-			// guarantees the finish printing method gets called in case of error
-			printers.forEach(printer -> printer.finishPrinting());
-			throw e;
-		}
-		printers.forEach(printer -> printer.finishPrinting());
+		runChecks(DefaultPath.TEST.getIdentifier());
 	}
 
 
