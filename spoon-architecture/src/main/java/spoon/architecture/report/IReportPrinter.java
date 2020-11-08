@@ -1,3 +1,6 @@
+/**
+ * SPDX-License-Identifier:  MIT
+ */
 package spoon.architecture.report;
 
 import java.lang.reflect.Method;

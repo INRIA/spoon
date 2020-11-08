@@ -58,6 +58,10 @@ Initial implementation is done by @MartinWitt with guidance by @monperrus and va
 For all authors use ``git shortlog -sne`` 
 # License
 
+This work is under MIT
+
+
+`SPDX-License-Identifier: MIT`
 
 
  

@@ -1,3 +1,6 @@
+/**
+ * SPDX-License-Identifier:  MIT
+ */
 package spoon.architecture.errorhandling;
 
 /** This class is a default implementation omitting the error and doing nothing. */

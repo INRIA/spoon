@@ -1,3 +1,6 @@
+/**
+ * SPDX-License-Identifier:  MIT
+ */
 package spoon.architecture.preconditions;
 
 import java.util.function.Predicate;

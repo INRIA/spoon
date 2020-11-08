@@ -1,3 +1,6 @@
+/**
+ * SPDX-License-Identifier:  MIT
+ */
 package spoon.architecture.constraints;
 
 import java.util.HashSet;

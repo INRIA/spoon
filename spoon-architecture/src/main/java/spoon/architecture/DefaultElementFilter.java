@@ -1,3 +1,6 @@
+/**
+ * SPDX-License-Identifier:  MIT
+ */
 package spoon.architecture;
 
 import spoon.reflect.code.CtAnnotationFieldAccess;

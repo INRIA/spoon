@@ -1,3 +1,6 @@
+/**
+ * SPDX-License-Identifier:  MIT
+ */
 package spoon.architecture.runner;
 /**
  * This interfaces defines an architecture checker. This has methods for starting the checking with serval different parameters.
