@@ -115,25 +115,33 @@ public class ModifiersTest {
 
         CtType<?> abstractClass = spoon.getFactory().Type().get(AbstractClass.class);
 
-        checkCtModifiableHelpersAssertion(abstractClass, true, false, false, true, false, false);
+        checkCtModifiableHelpersAssertion(abstractClass, true, false, false, true, false, false, false, false, false, false, false);
 
-        assertEquals(4, abstractClass.getFields().size());
+        assertEquals(6, abstractClass.getFields().size());
         for (CtField field : abstractClass.getFields()) {
             switch (field.getSimpleName()) {
                 case "privateField":
-                    checkCtModifiableHelpersAssertion(field, false, false, true, false, false, false);
+                    checkCtModifiableHelpersAssertion(field, false, false, true, false, false, false, false, false, false, false, false);
                     break;
 
                 case "protectedField":
-                    checkCtModifiableHelpersAssertion(field, false, true, false, false, false, false);
+                    checkCtModifiableHelpersAssertion(field, false, true, false, false, false, false, false, false, false, false, false);
                     break;
 
                 case "privateStaticField":
-                    checkCtModifiableHelpersAssertion(field, false, false, true, false, false, true);
+                    checkCtModifiableHelpersAssertion(field, false, false, true, false, false, true, false, false, false, false, false);
                     break;
 
                 case "publicFinalField":
-                    checkCtModifiableHelpersAssertion(field, true, false, false, false, true, false);
+                    checkCtModifiableHelpersAssertion(field, true, false, false, false, true, false, false, false, false, false, false);
+                    break;
+
+                case "transientField":
+                    checkCtModifiableHelpersAssertion(field, false, false, false, false, false, false, true, false, false, false, false);
+                    break;
+
+                case "volatileField":
+                    checkCtModifiableHelpersAssertion(field, false, false, false, false, false, false, false, true, false, false, false);
                     break;
 
                 default:
@@ -141,24 +149,36 @@ public class ModifiersTest {
             }
         }
 
-        assertEquals(4, abstractClass.getMethods().size());
+        assertEquals(7, abstractClass.getMethods().size());
 
         for (CtMethod method : abstractClass.getMethods()) {
             switch (method.getSimpleName()) {
                 case "method":
-                    checkCtModifiableHelpersAssertion(method, true, false, false, false, true, true);
+                    checkCtModifiableHelpersAssertion(method, true, false, false, false, true, true, false, false, false, false, false);
                     break;
 
                 case "onlyStatic":
-                    checkCtModifiableHelpersAssertion(method, true, false, false, false, false, true);
+                    checkCtModifiableHelpersAssertion(method, true, false, false, false, false, true, false, false, false, false, false);
                     break;
 
                 case "otherMethod":
-                    checkCtModifiableHelpersAssertion(method, false, true, false, true, false, false);
+                    checkCtModifiableHelpersAssertion(method, false, true, false, true, false, false, false, false, false, false, false);
                     break;
 
                 case "anotherOne":
-                    checkCtModifiableHelpersAssertion(method, false, false, false, true, false, false);
+                    checkCtModifiableHelpersAssertion(method, false, false, false, true, false, false, false, false, false, false, false);
+                    break;
+
+                case "synchronizedMethod":
+                    checkCtModifiableHelpersAssertion(method, false, true, false, false, false, false, false, false, true, false, false);
+                    break;
+
+                case "nativeMethod":
+                    checkCtModifiableHelpersAssertion(method, false, true, false, false, false, false, false, false, false, true, false);
+                    break;
+
+                case "strictfpMethod":
+                    checkCtModifiableHelpersAssertion(method, false, true, false, false, false, false, false, false, false, false, true);
                     break;
 
                 default:
@@ -167,17 +187,17 @@ public class ModifiersTest {
         }
 
         CtType<?> concreteClass = spoon.getFactory().Type().get("spoon.test.modifiers.testclasses.ConcreteClass");
-        checkCtModifiableHelpersAssertion(concreteClass, false, false, false, false, true, false);
+        checkCtModifiableHelpersAssertion(concreteClass, false, false, false, false, true, false, false, false, false, false, false);
 
         assertEquals(2, concreteClass.getFields().size());
         for (CtField field : concreteClass.getFields()) {
             switch (field.getSimpleName()) {
                 case "className":
-                    checkCtModifiableHelpersAssertion(field, true, false, false, false, true, true);
+                    checkCtModifiableHelpersAssertion(field, true, false, false, false, true, true, false, false, false, false, false);
                     break;
 
                 case "test":
-                    checkCtModifiableHelpersAssertion(field, false, false, true, false, false, true);
+                    checkCtModifiableHelpersAssertion(field, false, false, true, false, false, true, false, false, false, false, false);
                     break;
 
                 default:
@@ -189,11 +209,11 @@ public class ModifiersTest {
         for (CtMethod method : concreteClass.getMethods()) {
             switch (method.getSimpleName()) {
                 case "otherMethod":
-                    checkCtModifiableHelpersAssertion(method, false, true, false, false, false, false);
+                    checkCtModifiableHelpersAssertion(method, false, true, false, false, false, false, false, false, false, false, false);
                     break;
 
                 case "anotherOne":
-                    checkCtModifiableHelpersAssertion(method, false, false, false, false, true, false);
+                    checkCtModifiableHelpersAssertion(method, false, false, false, false, true, false, false, false, false, false, false);
                     break;
 
                 default:
@@ -202,22 +222,27 @@ public class ModifiersTest {
         }
     }
 
-    private void checkCtModifiableHelpersAssertion(CtModifiable element, boolean isPublic, boolean isProtected, boolean isPrivate, boolean isAbstract, boolean isFinal, boolean isStatic) {
+    private void checkCtModifiableHelpersAssertion(CtModifiable element, boolean isPublic, boolean isProtected, boolean isPrivate, boolean isAbstract, boolean isFinal, boolean isStatic, boolean isTransient, boolean isVolatile, boolean isSynchronized, boolean isNative, boolean isStrictfp) {
         assertEquals("isPublic for "+element+" is wrong", isPublic, element.isPublic());
         assertEquals("isProtected for "+element+" is wrong", isProtected, element.isProtected());
         assertEquals("isPrivate for "+element+" is wrong", isPrivate, element.isPrivate());
         assertEquals("isAbstract for "+element+" is wrong", isAbstract, element.isAbstract());
         assertEquals("isFinal for "+element+" is wrong", isFinal, element.isFinal());
         assertEquals("isStatic for "+element+" is wrong", isStatic, element.isStatic());
+        assertEquals("isTransient for "+element+" is wrong", isTransient, element.isTransient());
+        assertEquals("isVolatile for "+element+" is wrong", isVolatile, element.isVolatile());
+        assertEquals("isSynchronized for "+element+" is wrong", isSynchronized, element.isSynchronized());
+        assertEquals("isNative for "+element+" is wrong", isNative, element.isNative());
+        assertEquals("isStrictfp for "+element+" is wrong", isStrictfp, element.isStrictfp());
     }
-    
+
     @Test
     public void testClearModifiersByEmptySet() throws Exception {
     	//contract: it is possible to remove modifiers by setModifiers(emptySet)
     	CtType<?> ctClass = ModelUtils.buildClass(StaticMethod.class);
     	assertTrue(ctClass.hasModifier(ModifierKind.PUBLIC));
     	assertEquals(1, ctClass.getModifiers().size());
-    	
+
     	ctClass.setModifiers(Collections.emptySet());
     	assertFalse(ctClass.hasModifier(ModifierKind.PUBLIC));
     	assertEquals(0, ctClass.getModifiers().size());

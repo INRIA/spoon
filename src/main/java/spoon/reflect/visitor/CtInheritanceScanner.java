@@ -59,6 +59,7 @@ import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
 import spoon.reflect.code.CtTargetedExpression;
+import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
@@ -129,7 +130,7 @@ import java.util.Collection;
 
 /**
  * This class provides an abstract implementation of the visitor that allows its
- * subclasses to scans the metamodel elements by recursively using their
+ * subclasses to scan the metamodel elements by recursively using their
  * (abstract) supertype scanning methods. It declares a scan method for each
  * abstract element of the AST and a visit method for each element of the AST.
  */
@@ -662,6 +663,10 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtTypedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
+	}
+
+	public void visitCtTextBlock(CtTextBlock e) {
+		visitCtLiteral(e);
 	}
 
 	public <T> void visitCtLocalVariable(CtLocalVariable<T> e) {

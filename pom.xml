@@ -18,7 +18,7 @@
 
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>8.3.0-SNAPSHOT</version>
+  <version>8.4.0-SNAPSHOT</version>
   <name>Spoon Core</name>
   <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
   <url>http://spoon.gforge.inria.fr/</url>
@@ -115,7 +115,7 @@
       <!-- to reproduce JTD error with nullable annotation -->
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>29.0-jre</version>
+      <version>30.0-jre</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -225,6 +225,9 @@
                     <manifest>
                         <mainClass>spoon.Launcher</mainClass>
                     </manifest>
+                    <manifestEntries>
+                      <Multi-Release>true</Multi-Release>
+                    </manifestEntries>
                 </archive>
                 <descriptorRefs>
                     <descriptorRef>jar-with-dependencies</descriptorRef>
