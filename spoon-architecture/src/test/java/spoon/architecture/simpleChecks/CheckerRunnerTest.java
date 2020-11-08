@@ -18,7 +18,7 @@ public class CheckerRunnerTest {
 	public void allChecksMustRun() {
 		List<Pair<String, String>> testObjects = new ArrayList<>();
 		testObjects.add(Pair.of("srcmodel", "src/main/java/"));
-		testObjects.add(Pair.of("testmodel", "src/test/java/"));
+		testObjects.add(Pair.of("testmodel", "src/test/java/spoon/"));
 
 		testObjects.add(Pair.of("fieldReferenceMatcher", "src/test/resources/FieldReferenceMatcher/"));
 		// SpoonArchitecturalCheckerImpl.createChecker().runChecks();
