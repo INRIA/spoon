@@ -13,7 +13,7 @@ import spoon.reflect.declaration.CtAnnotation;
 /**
  * This class contains multiple example for architecture checks for annotations. This checks allow rules for the values an annotation has set and it's value.
  */
-public class AnnotationChecks {
+public class AnnotationValueChecks {
 
 	@Architecture(modelNames = "annotationTests")
 	public void allSuppressWarningsHaveValues(CtModel testCases) {
