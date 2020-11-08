@@ -93,7 +93,6 @@ git diff
 mvn -q -Djava.src.version=11 test
 
 ##################################################################
-feature/archChecks
 # Spoon-architecture
 ##################################################################
 cd ../spoon-architecture
