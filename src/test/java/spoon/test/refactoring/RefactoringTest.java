@@ -150,7 +150,7 @@ public class RefactoringTest {
 		assertEquals("spoon.test.refactoring.testclasses.AClassX", instanceofInvocation.getRightHandOperand().toString());
 	}
 	@Test
-	@DisabledForJreRange(min = JRE.JAVA_9)
+	@DisabledForJreRange(max = JRE.JAVA_8)
 	public void testRemoveDeprecatedMethods() {
 		// clean dir if exists
 		try {
