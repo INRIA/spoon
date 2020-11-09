@@ -5,6 +5,7 @@ import spoon.architecture.Constraint;
 import spoon.architecture.DefaultElementFilter;
 import spoon.architecture.Precondition;
 import spoon.architecture.errorhandling.IError;
+import spoon.architecture.preconditions.Names;
 import spoon.architecture.runner.Architecture;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
@@ -20,9 +21,9 @@ public class Junit4Junit5Test {
 		// You write the constraint as forall Elements X must hold and the runner checks that there is no where not X is true.
 		Constraint<CtClass<?>>  con = Constraint.of(new ErrorReporter(),
 			// check for any junit 5 usage
-			(element) -> element.getReferencedTypes().stream().anyMatch(clazz -> clazz.getQualifiedName().startsWith("org.junit.jupiter")),
+			(element) -> element.getReferencedTypes().stream().anyMatch(Names.startsWithQualified("org.junit.jupiter")),
 			// check for any junit 4 usage
-			(element) -> element.getReferencedTypes().stream().anyMatch(clazz -> clazz.getQualifiedName().startsWith("org.junit")));
+			(element) -> element.getReferencedTypes().stream().anyMatch(Names.startsWithQualified("org.junit")));
 			// run the check
 			ArchitectureTest.of(pre, con).runCheck(testModel);
 	}
