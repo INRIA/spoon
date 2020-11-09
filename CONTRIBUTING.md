@@ -34,6 +34,7 @@ Guidelines for all pull-requests:
 * The pull request does a single thing (eg a single bug fix or a single feature). 
 * The pull request must pass all continuous integration checks (incl. formatting rules).
 * The pull request must have an explicit and clear explanation.
+* The pull request links related (open) issues, simply add "fix #issueNumber" or "close #issuenumber" to the description, see [doc](https://docs.github.com/en/free-pro-team@latest/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue) for details
 * Pull-request title:
   * The pull-request title starts with a prefix stating its kind: "fix:", "feature:", "refactor:", "perf:", "checkstyle:"
   * Pull-requests that are in progress are prefixed by "WIP".
