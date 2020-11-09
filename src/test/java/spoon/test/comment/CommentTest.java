@@ -803,7 +803,11 @@ public class CommentTest {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
+
+		// TODO: Compliance level should be set at 15 and previews disabled
 		launcher.getEnvironment().setComplianceLevel(14);
+		launcher.getEnvironment().setPreviewFeaturesEnabled(true);
+		
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/");
 		launcher.addInputResource("./src/main/java/spoon/support/reflect/");

@@ -1773,6 +1773,15 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	@java.lang.Override
+	public void visitCtTextBlock(final spoon.reflect.code.CtTextBlock literal) {
+		replaceInListIfExist(literal.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(literal));
+		replaceElementIfExist(literal.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(literal));
+		replaceInListIfExist(literal.getTypeCasts(), new spoon.support.visitor.replace.ReplacementVisitor.CtExpressionTypeCastsReplaceListener(literal));
+		replaceInListIfExist(literal.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(literal));
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
 	public <T> void visitCtLocalVariable(final spoon.reflect.code.CtLocalVariable<T> localVariable) {
 		replaceInListIfExist(localVariable.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(localVariable));
 		replaceElementIfExist(localVariable.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(localVariable));

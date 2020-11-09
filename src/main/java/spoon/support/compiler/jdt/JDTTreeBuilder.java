@@ -88,6 +88,7 @@ import org.eclipse.jdt.internal.compiler.ast.SuperReference;
 import org.eclipse.jdt.internal.compiler.ast.SwitchExpression;
 import org.eclipse.jdt.internal.compiler.ast.SwitchStatement;
 import org.eclipse.jdt.internal.compiler.ast.SynchronizedStatement;
+import org.eclipse.jdt.internal.compiler.ast.TextBlock;
 import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.eclipse.jdt.internal.compiler.ast.ThrowStatement;
 import org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
@@ -1634,7 +1635,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(StringLiteral stringLiteral, BlockScope scope) {
-		context.enter(factory.Code().createLiteral(CharOperation.charToString(stringLiteral.source())), stringLiteral);
+		if (stringLiteral instanceof TextBlock) {
+			TextBlock textBlockLiteral = (TextBlock) stringLiteral;
+			context.enter(factory.Code().createTextBlock(CharOperation.charToString(textBlockLiteral.source())), textBlockLiteral);
+		} else {
+			context.enter(factory.Code().createLiteral(CharOperation.charToString(stringLiteral.source())), stringLiteral);
+		}
 		return true;
 	}
 

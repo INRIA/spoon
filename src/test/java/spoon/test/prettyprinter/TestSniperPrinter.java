@@ -328,6 +328,47 @@ public class TestSniperPrinter {
 		});
 	}
 
+	@Test
+	public void testPrintTypesProducesFullOutputForSingleTypeCompilationUnit() {
+		// contract: printTypes() should produce the same output as launcher.prettyprint() for a
+		// single-type compilation unit
+
+		// there is no particular reason for using the YamlRepresenter resource, it simply already
+		// existed and filled the role it needed to
+		String resourceName = "visibility.YamlRepresenter";
+		String inputPath = getResourcePath(resourceName);
+
+		Launcher printTypesLauncher = createLauncherWithSniperPrinter();
+		printTypesLauncher.addInputResource(inputPath);
+		printTypesLauncher.buildModel();
+		String printTypesString = printTypesLauncher.createPrettyPrinter()
+				.printTypes(printTypesLauncher.getModel().getAllTypes().toArray(new CtType[0]));
+
+		testSniper(resourceName, ctType -> {}, (type, prettyPrint) -> {
+			assertEquals(prettyPrint, printTypesString);
+		});
+	}
+
+	@Test
+	public void testPrintTypesThrowsWhenPassedTypesFromMultipleCompilationUnits() {
+		// contract: printTypes() should raise an IllegalArgumentException if it is passed types
+		// from multiple CUs
+
+		Launcher launcher = createLauncherWithSniperPrinter();
+		// there is no particular reason for the choice of these two resources, other than that
+		// they are different from each other and existed at the time of writing this test
+		launcher.addInputResource(getResourcePath("visibility.YamlRepresenter"));
+		launcher.addInputResource(getResourcePath("spoon.test.variable.Tacos"));
+		CtType<?>[] types = launcher.buildModel().getAllTypes().toArray(new CtType<?>[0]);
+
+		try {
+			launcher.getEnvironment().createPrettyPrinter().printTypes(types);
+			fail("Expected an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+		    // pass
+		}
+	}
+
 	/**
 	 * 1) Runs spoon using sniper mode,
 	 * 2) runs `typeChanger` to modify the code,
@@ -337,20 +378,8 @@ public class TestSniperPrinter {
 	 * @param resultChecker a code which checks that printed sources are as expected
 	 */
 	private void testSniper(String testClass, Consumer<CtType<?>> transformation, BiConsumer<CtType<?>, String> resultChecker) {
-		Launcher launcher = new Launcher();
+		Launcher launcher = createLauncherWithSniperPrinter();
 		launcher.addInputResource(getResourcePath(testClass));
-		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
-			SniperJavaPrettyPrinter printer = new SniperJavaPrettyPrinter(launcher.getEnvironment());
-			printer.setPreprocessors(Collections.unmodifiableList(Arrays.<Processor<CtElement>>asList(
-					//remove unused imports first. Do not add new imports at time when conflicts are not resolved
-					new ImportCleaner().setCanAddImports(false),
-					//solve conflicts, the current imports are relevant too
-					new ImportConflictDetector(),
-					//compute final imports
-					new ImportCleaner()
-				)));
-			return printer;
-		});
 		launcher.buildModel();
 		Factory f = launcher.getFactory();
 
@@ -364,6 +393,23 @@ public class TestSniperPrinter {
 
 		//check the printed file
 		resultChecker.accept(ctClass, getContentOfPrettyPrintedClassFromDisk(ctClass));
+	}
+
+	private static Launcher createLauncherWithSniperPrinter() {
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
+			SniperJavaPrettyPrinter printer = new SniperJavaPrettyPrinter(launcher.getEnvironment());
+			printer.setPreprocessors(Collections.unmodifiableList(Arrays.<Processor<CtElement>>asList(
+					//remove unused imports first. Do not add new imports at time when conflicts are not resolved
+					new ImportCleaner().setCanAddImports(false),
+					//solve conflicts, the current imports are relevant too
+					new ImportConflictDetector(),
+					//compute final imports
+					new ImportCleaner()
+			)));
+			return printer;
+		});
+		return launcher;
 	}
 
 	private String getContentOfPrettyPrintedClassFromDisk(CtType<?> type) {
