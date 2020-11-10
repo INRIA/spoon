@@ -37,6 +37,6 @@ public class AnnotationValueChecks {
 	}
 
 	private Predicate<? super CtAnnotation<?>> isDeprecatedAnnotation() {
-		return (annotation) -> annotation.getAnnotationType().getSimpleName().equals("SuppressWarnings");
+		return (annotation) -> annotation.getAnnotationType().getSimpleName().equals("Deprecated");
 	}
 }
