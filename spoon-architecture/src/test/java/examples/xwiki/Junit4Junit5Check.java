@@ -10,7 +10,7 @@ import spoon.architecture.runner.Architecture;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
 
-public class Junit4Junit5Test {
+public class Junit4Junit5Check {
 
 	@Architecture(modelNames = "testModel")
 	public void junit4Junit5Test(CtModel testModel) {
