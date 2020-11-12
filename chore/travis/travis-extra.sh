@@ -12,6 +12,7 @@ set -e
 pip install --user CommonMark==0.7.5 requests pygithub
 
 # we need Java 8 for the javadoc below
+ls /usr/lib/jvm/
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
 
 mvn -version
