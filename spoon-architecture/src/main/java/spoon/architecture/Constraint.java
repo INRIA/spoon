@@ -33,6 +33,7 @@ public class Constraint<T extends CtElement> implements Checkable<T> {
  * @param conditions the conditions that the element is checked against.
  * @return a constraint a conjunction of your predicate as check.
  */
+	@SafeVarargs
 	public static <T extends CtElement> Constraint<T> of(IError<T> errorHandler,
 			Predicate<T>... conditions) {
 		Predicate<T> startValue = (value) -> true;
