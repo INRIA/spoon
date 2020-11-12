@@ -74,6 +74,10 @@ public class SpoonArchitecturalChecker implements ISpoonArchitecturalChecker {
 			checker.printers.add(printer);
 			return this;
 		}
+		public Builder addModelBuilder(IModelBuilder<CtModel> builder) {
+			checker.builder = builder;
+			return this;
+		}
 		public Builder addRunner(IRunner<CtModel> runner) {
 			checker.runner = runner;
 			return this;
