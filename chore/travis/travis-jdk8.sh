@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-sudo apt-get -y install openjdk-8-jdk
+sudo apt-get -y install openjdk-8-jdk openjdk-8-jre
 
 mvn -version
 
