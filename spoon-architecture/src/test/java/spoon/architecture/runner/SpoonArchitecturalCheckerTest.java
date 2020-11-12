@@ -12,5 +12,6 @@ public class SpoonArchitecturalCheckerTest {
 	@Test
 	public void testInvalidPathThrowsNullPointer() {
 		assertThrows(NullPointerException.class, () -> SpoonArchitecturalChecker.createCheckerWithoutDefault().runChecks(tempDir.getPath()));
+		assertThrows(NullPointerException.class, () -> SpoonArchitecturalChecker.createChecker().runChecks(tempDir.getPath()));
 	}
 }

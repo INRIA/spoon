@@ -1,6 +1,7 @@
 package spoon.architecture.preconditions;
 
 import static com.google.common.truth.Truth.assertThat;
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import spoon.architecture.ArchitectureTest;
 import spoon.architecture.Constraint;
@@ -35,7 +36,7 @@ public class ModifiersTest {
 		ArchitectureTest.of(Precondition.of(
 											new TypeFilter<>(CtModifiable.class),
 											Modifiers.isTransient()),
-											Constraint.of(collector, new Exists<>()))
+											Constraint.of(collector, Arrays.asList(new Exists<>())))
 											.runCheck(model);
 		assertThat(collector.getCounter()).isEqualTo(1);
 	}

@@ -8,6 +8,7 @@ import spoon.SpoonException;
 import spoon.architecture.ArchitectureTest;
 import spoon.architecture.Constraint;
 import spoon.architecture.DefaultElementFilter;
+import spoon.architecture.ElementFilters;
 import spoon.architecture.Precondition;
 import spoon.architecture.constraints.Exists;
 import spoon.architecture.errorhandling.ExceptionError;
@@ -32,8 +33,8 @@ public class NamesTest {
 	public void testContainsName() {
 		CtModel model = Models.createModelFromString("src/test/resources/spoon/architecture/preconditions/naming");
 		assertThrows(SpoonException.class, () -> ArchitectureTest.of(Precondition.of(
-											new TypeFilter<CtNamedElement>(CtNamedElement.class),
-											Names.contains("oob")),
+											ElementFilters.ofClassObject(CtNamedElement.class,
+											Names.contains("oob"))),
 											Constraint.of(new ExceptionError<>(), new Exists<>()))
 											.runCheck(model));
 	}
