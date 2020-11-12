@@ -1,8 +1,8 @@
 # we use the default JVM of bionic which is Java 11
 language: java
 
-# moving to Ubuntu Bionic 18.04, see https://docs.travis-ci.com/user/reference/overview/
-dist: bionic
+# doc: https://docs.travis-ci.com/user/reference/overview/
+dist: focal
 
 env:
   global:

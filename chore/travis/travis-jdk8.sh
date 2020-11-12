@@ -1,9 +1,7 @@
 #!/bin/bash
 set -e
 
-wget https://raw.githubusercontent.com/sormuras/bach/master/install-jdk.sh
-chmod +x install-jdk.sh
-source ./install-jdk.sh -f 8 -c
+sudo apt-get -y install openjdk-8-jdk
 
 mvn -version
 
