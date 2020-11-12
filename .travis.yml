@@ -1,4 +1,3 @@
-# we use the default JVM of bionic which is Java 11
 language: java
 
 # doc: https://docs.travis-ci.com/user/reference/overview/
