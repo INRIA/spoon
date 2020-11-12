@@ -44,7 +44,7 @@ public class TypeTest {
 				() -> assertEquals(1, type.getConstructors().size()),
 				() -> assertTrue(16 == type.getAllMethods().size() || 15 == type.getAllMethods().size()),
 				() -> assertTrue(12 == type.getFactory().Type().get(Object.class).getAllMethods().size()
-												 || 11 == type.getFactory().Type().get(Object.class).getAllMethods().size()));
+													|| 11 == type.getFactory().Type().get(Object.class).getAllMethods().size()));
 
 		// we have 3  methods in Foo + 2 in Baz - 1 common in Foo.bar (m) + 12 in Object + 1 explicit constructor in Foo
 		/*
