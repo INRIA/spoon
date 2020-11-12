@@ -21,6 +21,8 @@ import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.CtModel;
@@ -53,15 +55,6 @@ import static org.junit.Assert.fail;
 
 public class TestModule {
 	private static final String MODULE_RESOURCES_PATH = "./src/test/resources/spoon/test/module";
-
-	private void checkJavaVersion() {
-		String property = System.getProperty("java.version");
-		if (property != null && !property.isEmpty()) {
-
-			// java 8 and less are versionning "1.X" where 9 and more are directly versioned "X"
-			Assume.assumeFalse(property.startsWith("1."));
-		}
-	}
 
 	@BeforeClass
 	public static void setUp() throws IOException {
@@ -293,8 +286,8 @@ public class TestModule {
 	}
 
 	@Test
+	@DisabledForJreRange(max = JRE.JAVA_8)
 	public void testSimpleModuleCanBeBuilt() {
-		checkJavaVersion();
 		// contract: Spoon is able to build a simple model with a module in full classpath
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(9);
