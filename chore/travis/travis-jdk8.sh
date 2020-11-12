@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+sudo apt-get -y update
 sudo apt-get -y install openjdk-8-jdk openjdk-8-jre libatk-wrapper-java-jni libpulse0
 
 mvn -version
