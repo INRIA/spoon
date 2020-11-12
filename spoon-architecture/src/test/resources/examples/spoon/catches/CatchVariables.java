@@ -13,6 +13,7 @@ public class CatchVariables {
 		try {
 
 		} catch (IOError e) {
+			break;
 		}
 	}
 }

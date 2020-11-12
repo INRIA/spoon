@@ -103,8 +103,8 @@ export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
 # always depends on the latest snapshot, just installed with "mvn install" above
 mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
 git diff
-
-mvn -q test
+# use verify to ensure that line coverage is > 0.70
+mvn -q verify
 
 ##################################################################
 
