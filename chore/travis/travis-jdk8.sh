@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e
 
-export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
+wget https://raw.githubusercontent.com/sormuras/bach/master/install-jdk.sh
+chmod +x install-jdk.sh
+source ./install-jdk.sh -f 8 -c
 
 mvn -version
 
