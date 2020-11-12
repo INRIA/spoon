@@ -15,7 +15,7 @@ public class NoAsserts {
 
 	@Architecture(modelNames = "arrayTests")
 	public void noJavaAssertsInTestCode(CtModel model) {
-		Precondition<CtAssert<?>> pre = Precondition.of(DefaultElementFilter.ARRAY_TYPE_REFERENCES.getFilter());
+		Precondition<CtAssert<?>> pre = Precondition.of(DefaultElementFilter.ASSERTS.getFilter());
 		Constraint<CtAssert<?>> con = Constraint.of(new ExceptionError<>("Found an assert in test code. Use junit methods for it instead."), new Exists<>());
 		ArchitectureTest.of(pre, con).runCheck(model);
 	}
