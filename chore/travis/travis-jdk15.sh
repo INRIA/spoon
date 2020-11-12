@@ -10,4 +10,4 @@ chmod +x install-jdk.sh
 source ./install-jdk.sh -f 15 -c
 
 # install also does verify goals
-mvn  -Djava.src.version=1.15 clean install
+mvn  -Djava.src.version=15 clean install
