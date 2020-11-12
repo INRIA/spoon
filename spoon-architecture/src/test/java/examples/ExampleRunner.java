@@ -20,14 +20,16 @@ public class ExampleRunner {
 		testObjects.add(Pair.of("testmodel", "src/test/java/examples/spoon"));
 
 		testObjects.add(Pair.of("annotationTests", "src/test/resources/examples/spoon/annotations/"));
+		testObjects.add(Pair.of("arrayTests", "src/test/resources/examples/spoon/arrays/"));
+
 		// SpoonArchitecturalCheckerImpl.createChecker().runChecks();
 		IModelBuilder<CtModel> builder = new ModelBuilder();
 		testObjects.forEach(v -> builder.insertInputPath(v.getKey(), v.getValue()));
 		ISpoonArchitecturalChecker checker = new SpoonArchitecturalChecker.Builder()
 		.addRunner(new SpoonRunner(builder))
-		.useDefaultPath()
+		.addModelBuilder(builder)
 		.addReportPrinter(new ShellPrinter())
 		.build();
-		checker.runChecks();
+		checker.runChecks("testmodel");
 	}
 }

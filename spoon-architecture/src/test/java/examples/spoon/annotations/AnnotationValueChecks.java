@@ -32,7 +32,7 @@ public class AnnotationValueChecks {
 		// contract: All @Deprecated have forRemoval set to true
 		Precondition<CtAnnotation<?>> pre = Precondition.of(DefaultElementFilter.ANNOTATIONS.getFilter(), isDeprecatedAnnotation());
 		Constraint<CtAnnotation<?>> con =  Constraint.of(new ExceptionError<>("Found @Deprecated without for removal set"),
-																										v -> !v.getValueAsObject("forRemoval").equals(true));
+																										v -> String.valueOf(v.getValue("forRemoval")).equals("true"));
 		ArchitectureTest.of(pre, con).runCheck(testCases);
 	}
 
