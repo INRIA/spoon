@@ -26,9 +26,9 @@ public class CheckerRunnerTest {
 		testObjects.forEach(v -> builder.insertInputPath(v.getKey(), v.getValue()));
 		ISpoonArchitecturalChecker checker = new SpoonArchitecturalChecker.Builder()
 		.addRunner(new SpoonRunner(builder))
-		.useDefaultPath()
+		.addModelBuilder(builder)
 		.addReportPrinter(new ShellPrinter())
 		.build();
-		checker.runChecks();
+		checker.runChecks("testmodel");
 	}
 }
