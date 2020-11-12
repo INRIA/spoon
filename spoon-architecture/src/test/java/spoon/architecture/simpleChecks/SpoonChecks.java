@@ -13,6 +13,7 @@ import spoon.architecture.ElementFilters;
 import spoon.architecture.Precondition;
 import spoon.architecture.constraints.FieldReferenceMatcher;
 import spoon.architecture.constraints.InvocationMatcher;
+import spoon.architecture.errorhandling.ExceptionError;
 import spoon.architecture.errorhandling.NopError;
 import spoon.architecture.preconditions.Annotations;
 import spoon.architecture.preconditions.Modifiers;
@@ -78,7 +79,7 @@ public class SpoonChecks {
 		// means that only large methods must be documented)
 		Modifiers.isAbstract().or(method -> method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 33),
 		Visibilities.isPublic());
-		Constraint<CtMethod<?>> con = Constraint.of((method) -> System.out.println(method.getDeclaringType().getQualifiedName() + "#" + method.getSignature()),
+		Constraint<CtMethod<?>> con = Constraint.of((method) -> new ExceptionError<>("Method without good doc found :" + method.getDeclaringType().getQualifiedName() + "#" + method.getSignature()),
 		(method) -> method.getDocComment().length() > 15);
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
 	}
@@ -103,7 +104,7 @@ public class SpoonChecks {
 		Names.equals("DefaultCoreFactory")));
 		interfaces.addAll(defaultCoreFactory);
 
-		Constraint<CtType<?>> con = Constraint.of((v) -> System.out.println(v),
+		Constraint<CtType<?>> con = Constraint.of(new NopError<>(),
 		(type) -> {
 			String implName = type.getQualifiedName().replace(".support", "").replace("Impl", "");
 			CtType<?> impl = interfaces.stream().filter(v -> v.getQualifiedName().equals(implName)).findFirst().get();
@@ -162,8 +163,9 @@ public class SpoonChecks {
 		Precondition<CtClass<?>> pre = Precondition.of(
 			DefaultElementFilter.CLASSES.getFilter());
 		Constraint<CtClass<?>> con = Constraint.of(
-		(element) -> System.out.println(element),
+		(element) -> new ExceptionError<>("Found helper class not having only static methods and a private constructor. " + element.getSimpleName()),
 		(clazz) -> clazz.getSuperclass() == null,
+		(clazz) -> clazz.getSuperInterfaces().isEmpty(),
 		(clazz) -> clazz.getMethods().stream().allMatch(Modifiers.isStatic()),
 		(clazz) -> clazz.getConstructors().stream().allMatch(Modifiers.isStatic()));
 		ArchitectureTest.of(pre, con).runCheck(srcModel);
