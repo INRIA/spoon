@@ -21,7 +21,9 @@ public class ExampleRunner {
 
 		testObjects.add(Pair.of("annotationTests", "src/test/resources/examples/spoon/annotations/"));
 		testObjects.add(Pair.of("arrayTests", "src/test/resources/examples/spoon/arrays/"));
+		testObjects.add(Pair.of("assignments", "src/test/resources/examples/spoon/assignments/"));
 
+		
 		// SpoonArchitecturalCheckerImpl.createChecker().runChecks();
 		IModelBuilder<CtModel> builder = new ModelBuilder();
 		testObjects.forEach(v -> builder.insertInputPath(v.getKey(), v.getValue()));
