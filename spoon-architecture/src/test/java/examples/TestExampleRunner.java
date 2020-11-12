@@ -12,7 +12,7 @@ import spoon.architecture.runner.SpoonArchitecturalChecker;
 import spoon.architecture.runner.SpoonRunner;
 import spoon.reflect.CtModel;
 
-public class ExampleRunner {
+public class TestExampleRunner {
 
 	@Test
 	public void spoonExampleMustRun() {
@@ -22,8 +22,8 @@ public class ExampleRunner {
 		testObjects.add(Pair.of("annotationTests", "src/test/resources/examples/spoon/annotations/"));
 		testObjects.add(Pair.of("arrayTests", "src/test/resources/examples/spoon/arrays/"));
 		testObjects.add(Pair.of("assignments", "src/test/resources/examples/spoon/assignments/"));
+		testObjects.add(Pair.of("catchvariables", "src/test/resources/examples/spoon/catches/CatchVariables.java"));
 
-		
 		// SpoonArchitecturalCheckerImpl.createChecker().runChecks();
 		IModelBuilder<CtModel> builder = new ModelBuilder();
 		testObjects.forEach(v -> builder.insertInputPath(v.getKey(), v.getValue()));
