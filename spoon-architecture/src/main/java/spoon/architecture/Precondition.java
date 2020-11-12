@@ -21,13 +21,19 @@ public class Precondition<T extends CtElement> implements IPrecondition<T, CtMod
 		this.typeFilter = typeFilter;
 		this.condition = condition;
 	}
-
+	/*
+	* SafeVarargs because
+	* - no reference to the array escapes the method
+	* - no store operations to the array are done
+	* - only read operations
+	*/
+	@SafeVarargs
 	public static <T extends CtElement> Precondition<T> of(Filter<T> elementFilter, Predicate<? super T>...conditions) {
 		Predicate<T> startValue = (value) -> true;
 		for (Predicate<? super T> condition : conditions) {
 			startValue = startValue.and(condition);
 		}
-		return new Precondition<T>(elementFilter, startValue);
+		return new Precondition<>(elementFilter, startValue);
 	}
 
 	public static <T extends CtElement> Precondition<T> of(Filter<T> elementFilter, Iterable<Predicate<? super T>> conditions) {
@@ -35,16 +41,15 @@ public class Precondition<T extends CtElement> implements IPrecondition<T, CtMod
 		for (Predicate<? super T> condition : conditions) {
 			startValue = startValue.and(condition);
 		}
-		return new Precondition<T>(elementFilter, startValue);
+		return new Precondition<>(elementFilter, startValue);
 	}
 
 	public static <T extends CtElement> Precondition<T> of(Filter<T> elementFilter, Predicate<? super T> conditions) {
-		return new Precondition<T>(elementFilter, conditions);
+		return new Precondition<>(elementFilter, conditions);
 	}
 
 	public static <T extends CtElement> Precondition<T> of(Filter<T> elementFilter) {
-		Predicate<T> startValue = value -> true;
-		return new Precondition<T>(elementFilter, startValue);
+		return Precondition.of(elementFilter, value -> true);
 	}
 	@Override
 	public Collection<T> apply(CtModel t) {
