@@ -27,14 +27,9 @@ public class ElementFilters {
 	public static <T extends CtElement> Filter<T> ofClassObject(Class<T> elementType,
 			Predicate<? super T> predicate) {
 		Filter<T> typeFilter = new TypeFilter<T>(elementType);
-		return new Filter<T>() {
-			@Override
-			public boolean matches(T element) {
-				return typeFilter.matches(element) && predicate.test(element);
-			}
-
-		};
+		return ofTypeFilter(typeFilter, predicate);
 	}
+
 /**
  * Creates a filter converting all matching elements.
  * @param <T>  element type
