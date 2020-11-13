@@ -23,6 +23,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -67,7 +68,7 @@ public class TestSniperPrinter {
 
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
-	
+
 	@Test
 	public void testClassRename1() throws Exception {
 		// contract: one can sniper out of the box after Refactoring.changeTypeName
@@ -367,6 +368,23 @@ public class TestSniperPrinter {
 		} catch (IllegalArgumentException e) {
 		    // pass
 		}
+	}
+
+	@Test
+	public void testCalculateCrashesWhenSniperPrinterSetAfterModelBuild() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(getResourcePath("visibility.YamlRepresenter"));
+
+		// build model, then set sniper
+		launcher.buildModel();
+		launcher.getEnvironment().setPrettyPrinterCreator(
+				() -> new SniperJavaPrettyPrinter(launcher.getEnvironment()));
+
+		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getMap().values().stream()
+				.findFirst().get();
+		// crash because sniper was set after model was built, and so the ChangeCollector was not
+		// attached to the environment
+        launcher.createPrettyPrinter().calculate(cu, cu.getDeclaredTypes());
 	}
 
 	/**
