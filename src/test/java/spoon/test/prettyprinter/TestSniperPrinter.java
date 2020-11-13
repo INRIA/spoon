@@ -384,7 +384,7 @@ public class TestSniperPrinter {
 				.findFirst().get();
 		// crash because sniper was set after model was built, and so the ChangeCollector was not
 		// attached to the environment
-        launcher.createPrettyPrinter().calculate(cu, cu.getDeclaredTypes());
+		launcher.createPrettyPrinter().calculate(cu, cu.getDeclaredTypes());
 	}
 
 	/**
