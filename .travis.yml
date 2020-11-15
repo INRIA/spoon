@@ -1,15 +1,15 @@
 language: java
 
-# moving to Ubuntu Bionic 18.04, see https://docs.travis-ci.com/user/reference/overview/
-dist: bionic
+# doc: https://docs.travis-ci.com/user/reference/overview/
+dist: focal
 
 env:
   global:
   - M2_HOME="/usr/local/maven"
   matrix:
   - SCRIPT=travis-jdk8.sh
-  - SCRIPT=travis-jdk10.sh
   - SCRIPT=travis-jdk11.sh
+  - SCRIPT=travis-jdk15.sh
   - SCRIPT=travis-coverage.sh
   - SCRIPT=travis-extra.sh
 
@@ -18,9 +18,7 @@ env:
 #   - it executes checkstyle (we have a specific job for this)
 #   - it's useless ("mvn test" later does all the necessary tasks automatically)
 #   - it makes the build longer (we want a fast job)
-# Java8
 install:
-  - sudo apt-get -y install openjdk-8-jdk
   # we want silent logs in travis but verbose ones on the developer machine (ie the default logback config)
   - mv chore/travis/logback.xml src/test/resources/
 
