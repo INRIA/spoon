@@ -1,7 +1,11 @@
 #!/bin/bash
 set -e
 
+sudo apt-get -y update
+sudo apt-get -y install openjdk-8-jdk openjdk-8-jre libatk-wrapper-java-jni libpulse0
+ls /usr/lib/jvm/
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64/
+
 
 mvn -version
 

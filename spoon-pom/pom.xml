@@ -304,6 +304,7 @@
                 <configuration>
                     <!-- see https://stackoverflow.com/a/57430117 -->
                     <doclint>none</doclint>
+                    <detectJavaApiLink>false</detectJavaApiLink>
                 </configuration>
                 <reportSets>
                     <reportSet>
