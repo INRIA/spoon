@@ -79,7 +79,7 @@ public class ExecutableFactory extends SubFactory {
 	public <T> CtParameterReference<T> createParameterReference(CtParameter<T> parameter) {
 		CtParameterReference<T> ref = factory.Core().createParameterReference();
 		ref.setSimpleName(parameter.getSimpleName());
-		ref.setType(parameter.getType());
+		ref.setType(parameter.getType().clone());
 		return ref;
 	}
 

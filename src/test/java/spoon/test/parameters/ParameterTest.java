@@ -124,4 +124,14 @@ public class ParameterTest {
 			assertNull(refType);
 		}
 	}
+
+	@Test
+	public void testGetParentAfterGetParameterReference() {
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/resources/parameter/ParameterResource.java");
+		spoon.buildModel();
+		CtParameter parameter = spoon.getModel().getRootPackage().getElements(new TypeFilter<>(CtParameter.class)).get(0);
+		CtParameterReference pref = parameter.getReference();
+		assertEquals(parameter, parameter.getType().getParent());
+	}
 }
