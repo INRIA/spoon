@@ -34,6 +34,9 @@ public class TestExampleRunner {
 		testObjects.add(Pair.of("parameters", "src/test/resources/examples/spoon/parameters/UnusedParameters.java"));
 		testObjects.add(Pair.of("anonymousexec", "src/test/resources/examples/spoon/anonymousexec/Foo.java"));
 		testObjects.add(Pair.of("breaks", "src/test/resources/examples/spoon/parameters/UnusedParameters.java"));
+		testObjects.add(Pair.of("binaryoperators", "src/test/resources/examples/spoon/binaryoperators"));
+		testObjects.add(Pair.of("blocks", "src/test/resources/examples/spoon/blocks"));
+		testObjects.add(Pair.of("switches", "src/test/resources/examples/spoon/switches"));
 
 
 		// SpoonArchitecturalCheckerImpl.createChecker().runChecks();
