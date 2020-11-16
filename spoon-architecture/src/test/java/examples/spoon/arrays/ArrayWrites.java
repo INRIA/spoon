@@ -15,7 +15,7 @@ public class ArrayWrites {
 	public void noArrayWriteUsesMinusSignInIndex(CtModel model) {
 		Precondition<CtArrayWrite<?>> pre = Precondition.of(DefaultElementFilter.ARRAY_WRITES.getFilter());
 		Constraint<CtArrayWrite<?>> con = Constraint.of(new ExceptionError<>("Found an arrayWrite that uses \"-\" in index expression. "),
-																										v -> v.getIndexExpression().toString().contains("-"));
+																										v -> !v.getIndexExpression().toString().contains("-"));
 		ArchitectureTest.of(pre, con).runCheck(model);
 	}
 }

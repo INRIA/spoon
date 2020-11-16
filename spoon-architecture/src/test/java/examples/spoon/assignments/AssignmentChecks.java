@@ -29,6 +29,12 @@ public class AssignmentChecks {
 	}
 
 	private Predicate<CtAssignment<?, ?>> checkForSelfAssignment() {
-		return v -> !v.getAssigned().equals(v.getAssignment());
+		return assignment -> {
+		boolean typeCheck = assignment.getAssigned().getType().equals(assignment.getAssignment().getType());
+		String assignedName = assignment.getAssigned().toString().replaceFirst("this\\.", "");
+		String assignmentName = assignment.getAssignment().toString().replaceFirst("this\\.", "");
+		boolean nameCheck = assignedName.equals(assignmentName);
+		return !(typeCheck && nameCheck);
+		};
 	}
 }

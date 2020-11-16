@@ -6,6 +6,7 @@ public class ArrayWrites {
 
 	public int test() {
 		bar[2 - 1] = 5;
+		assert bar.length == 5;
 		return bar[2 - 1];
 	}
 }

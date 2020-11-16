@@ -12,14 +12,14 @@ import spoon.reflect.declaration.CtAnonymousExecutable;
 
 public class AnonymousExecutableChecks {
 
-	@Architecture(modelNames = "annotationTests")
+	@Architecture(modelNames = "anonymousexec")
 	public void noAnonymousExecutableExist(CtModel model) {
 		Precondition<CtAnonymousExecutable> pre = Precondition.of(DefaultElementFilter.ANONYMOUS_EXECUTABLES.getFilter());
 		Constraint<CtAnonymousExecutable> con = Constraint.of(new ExceptionError<>("Found forbidden anonymous executable"), new Exists<>());
 		ArchitectureTest.of(pre, con).runCheck(model);
 	}
 
-	@Architecture(modelNames = "annotationTests")
+	@Architecture(modelNames = "anonymousexec")
 	public void allAnonymousExecutableAreEmpty(CtModel model) {
 		Precondition<CtAnonymousExecutable> pre = Precondition.of(DefaultElementFilter.ANONYMOUS_EXECUTABLES.getFilter());
 		Constraint<CtAnonymousExecutable> con = Constraint.of(new ExceptionError<>("Found forbidden anonymous executable"), v -> v.getBody().getStatements().isEmpty());

@@ -11,11 +11,11 @@ import spoon.reflect.code.CtBreak;
 
 public class NoBreaksWithLabels {
 
-	@Architecture(modelNames = "testmodel")
+	@Architecture(modelNames = "breaks")
 	public void noBreaksWithLabels(CtModel model) {
 		Precondition<CtBreak> pre = Precondition.of(DefaultElementFilter.BREAKS.getFilter());
 		Constraint<CtBreak> con = Constraint.of(new ExceptionError<>("Found a break with label. "),
-		v -> v.getLabel() == null);
+		v -> v.getTargetLabel() == null);
 		ArchitectureTest.of(pre, con).runCheck(model);
 	}
 }

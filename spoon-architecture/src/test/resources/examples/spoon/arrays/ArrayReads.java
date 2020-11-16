@@ -2,8 +2,8 @@ package examples.spoon.arrays;
 
 public class ArrayReads {
 
-	int[] bar = new int[5];
-	public int test() {
+	Integer[] bar = new Integer[5];
+	public Integer test() {
 		return bar[2];
 	}
 }

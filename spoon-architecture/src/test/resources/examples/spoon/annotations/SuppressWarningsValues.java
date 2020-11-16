@@ -7,8 +7,8 @@ public class SuppressWarningsValues {
 	public void bar() {
 
 	}
-
-	@Deprecated(forRemoval = true)
+	@SuppressWarnings
+	@Deprecated
 	public void test() {
 
 	}
