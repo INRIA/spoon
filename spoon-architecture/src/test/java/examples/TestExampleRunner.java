@@ -40,7 +40,7 @@ public class TestExampleRunner {
 
 
 		// SpoonArchitecturalCheckerImpl.createChecker().runChecks();
-		IModelBuilder<CtModel> builder = new ModelBuilder();
+		IModelBuilder<CtModel> builder = new ModelBuilder(14);
 		testObjects.forEach(v -> builder.insertInputPath(v.getKey(), v.getValue()));
 		ISpoonArchitecturalChecker checker = new SpoonArchitecturalChecker.Builder()
 		.addRunner(new MustFailRunner(builder))

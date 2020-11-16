@@ -13,9 +13,9 @@ public class Switch {
 	}
 
 	public void foo() {
+		int a,b = 4;
 		switch (1) {
-			case 4:
-				break;
+			case a,b -> System.out.println("foo");;
 
 		}
 	}
