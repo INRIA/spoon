@@ -16,7 +16,9 @@ public class Switch {
 		int a,b = 4;
 		switch (1) {
 			case a,b -> System.out.println("foo");;
-
+		}
+		int q = switch (1) {
+			default -> 3;
 		}
 	}
 }

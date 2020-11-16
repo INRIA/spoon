@@ -4,12 +4,14 @@ import spoon.architecture.ArchitectureTest;
 import spoon.architecture.Constraint;
 import spoon.architecture.DefaultElementFilter;
 import spoon.architecture.Precondition;
+import spoon.architecture.constraints.Exists;
 import spoon.architecture.errorhandling.ExceptionError;
 import spoon.architecture.runner.Architecture;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtSwitchExpression;
 
 public class SwitchChecks {
 
@@ -38,6 +40,14 @@ public class SwitchChecks {
 		Precondition<CtCase<?>> pre = Precondition.of(DefaultElementFilter.CASES.getFilter());
 		Constraint<CtCase<?>> con = Constraint.of(new ExceptionError<>("Found a case with multiple case expressions "),
 		v -> v.getCaseExpressions().size() < 2);
+		ArchitectureTest.of(pre, con).runCheck(model);
+	}
+
+	@Architecture(modelNames = "switches")
+	public void noSwitchExpressions(CtModel model) {
+		Precondition<CtSwitchExpression<?, ?>> pre = Precondition.of(DefaultElementFilter.SWITCH_EXPRESSIONS.getFilter());
+		Constraint<CtSwitchExpression<?, ?>> con = Constraint.of(new ExceptionError<>("Found a switch expression "),
+		new Exists<>());
 		ArchitectureTest.of(pre, con).runCheck(model);
 	}
 }
