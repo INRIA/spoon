@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import com.google.common.flogger.FluentLogger;
+
 import spoon.SpoonException;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtMethod;
@@ -22,7 +25,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 public class SpoonRunner implements IRunner<CtModel> {
 
 	private IModelBuilder<CtModel> builder;
-
+	private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 	public SpoonRunner(IModelBuilder<CtModel> builder) {
 		this.builder = builder;
 	}
@@ -54,7 +57,7 @@ public class SpoonRunner implements IRunner<CtModel> {
 		return method.getDeclaringClass().getDeclaredConstructor().newInstance();
 	}
 	private Object[] createArguments(Method method) {
-		System.out.println("creating args for " + method.getName() + " count: " + method.getParameterCount());
+		logger.atInfo().log("creating args for %s count: %d", method.getName(), method.getParameterCount());
 		List<Object> modelParameter = new ArrayList<>();
 		String[] modelNames = method.getAnnotation(Architecture.class).modelNames();
 		for (String name : modelNames) {
