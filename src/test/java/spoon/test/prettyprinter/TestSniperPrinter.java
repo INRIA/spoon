@@ -63,11 +63,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.StringContains.containsString;
+
 public class TestSniperPrinter {
 
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
-	
+
 	@Test
 	public void testClassRename1() throws Exception {
 		// contract: one can sniper out of the box after Refactoring.changeTypeName
@@ -367,6 +370,47 @@ public class TestSniperPrinter {
 		} catch (IllegalArgumentException e) {
 		    // pass
 		}
+	}
+
+	@Test
+	public void testNewlineInsertedBetweenCommentAndTypeMemberWithAddedModifier() {
+		// contract: newline must be inserted after comment when a succeeding field has had a
+		// modifier added to it
+
+		Consumer<CtType<?>> addFinalModifier = type -> {
+			type.getField("NON_FINAL_FIELD")
+					.addModifier(ModifierKind.FINAL);
+			type.getMethod("nonStaticMethod").addModifier(ModifierKind.STATIC);
+			type.getNestedType("NonStaticInnerClass").addModifier(ModifierKind.STATIC);
+		};
+		BiConsumer<CtType<?>, String> assertFieldCorrectlyPrinted = (type, result) -> {
+		    assertThat(result, containsString("// field comment\n"));
+			assertThat(result, containsString("// method comment\n"));
+			assertThat(result, containsString("// nested type comment\n"));
+		};
+
+		testSniper("TypeMemberComments", addFinalModifier, assertFieldCorrectlyPrinted);
+	}
+
+	@Test
+	public void testNewlineInsertedBetweenCommentAndTypeMemberWithRemovedModifier() {
+		// contract: newline must be inserted after comment when a succeeding field has had a
+		// modifier removed from it
+
+		Consumer<CtType<?>> addFinalModifier = type -> {
+			type.getField("NON_FINAL_FIELD")
+					.removeModifier(ModifierKind.PUBLIC);
+			type.getMethod("nonStaticMethod").removeModifier(ModifierKind.PUBLIC);
+			type.getNestedType("NonStaticInnerClass").removeModifier(ModifierKind.PRIVATE);
+		};
+
+		BiConsumer<CtType<?>, String> assertFieldCorrectlyPrinted = (type, result) -> {
+			assertThat(result, containsString("// field comment\n"));
+			assertThat(result, containsString("// method comment\n"));
+			assertThat(result, containsString("// nested type comment\n"));
+		};
+
+		testSniper("TypeMemberComments", addFinalModifier, assertFieldCorrectlyPrinted);
 	}
 
 	/**
