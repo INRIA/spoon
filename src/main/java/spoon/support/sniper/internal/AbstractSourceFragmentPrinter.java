@@ -58,7 +58,11 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 		if (index != -1) { // means we have found a source code fragment corresponding to this event
 
 			// we print all spaces and comments before this fragment
-			printSpaces(getLastNonSpaceNonCommentBefore(index), index);
+            if (event.getRole() == CtRole.DECLARED_IMPORT) {
+            	printStandardSpaces();
+			} else {
+				printSpaces(getLastNonSpaceNonCommentBefore(index), index);
+			}
 
 			SourceFragment fragment = childFragments.get(index);
 			event.printSourceFragment(fragment, isFragmentModified(fragment));
