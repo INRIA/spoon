@@ -18,7 +18,7 @@ package spoon.test.variable;
 
 import com.google.common.io.Files;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import spoon.Launcher;
