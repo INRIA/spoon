@@ -401,7 +401,6 @@ public class TestSniperPrinter {
 		// contract: newline must be inserted both before and after a new import statement if ther
 		// is a package statement in the file
 
-
 		Consumer<CtType<?>> addArrayListImport = type -> {
 			Factory factory = type.getFactory();
 			assertFalse("there should be a package statement in this test file", type.getPackage().isUnnamedPackage());
