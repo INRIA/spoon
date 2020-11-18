@@ -371,7 +371,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
-	public void testAddedImportStatementPlacedOnSeparateLine() {
+	public void testAddedImportStatementPlacedOnSeparateLineInFileWithoutPackageStatement() {
 		// contract: newline must be inserted between import statements when a new one is added
 
 		Consumer<CtType<?>> addArrayListImport = type -> {
@@ -387,6 +387,25 @@ public class TestSniperPrinter {
 		};
 
 		testSniper("ClassWithSingleImport", addArrayListImport, assertImportsPrintedCorrectly);
+	}
+
+	@Test
+	public void testAddedImportStatementPlacedOnSeparateLineInFileWithPackageStatement() {
+		// contract: newline must be inserted both before and after a new import statement if ther
+		// is a package statement in the file
+
+
+		Consumer<CtType<?>> addArrayListImport = type -> {
+			Factory factory = type.getFactory();
+			CtCompilationUnit cu = factory.CompilationUnit().getOrCreate(type);
+			CtTypeReference<?> arrayListRef = factory.Type().get(java.util.ArrayList.class).getReference();
+			cu.getImports().add(factory.createImport(arrayListRef));
+		};
+		BiConsumer<CtType<?>, String> assertImportsPrintedCorrectly = (type, result) -> {
+			assertThat(result, containsString("\nimport java.util.ArrayList;\n"));
+		};
+
+		testSniper("visibility.YamlRepresenter", addArrayListImport, assertImportsPrintedCorrectly);
 	}
 
 	/**
