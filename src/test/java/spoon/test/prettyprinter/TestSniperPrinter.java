@@ -57,10 +57,16 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -68,7 +74,7 @@ public class TestSniperPrinter {
 
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
-	
+
 	@Test
 	public void testClassRename1() throws Exception {
 		// contract: one can sniper out of the box after Refactoring.changeTypeName
@@ -376,6 +382,7 @@ public class TestSniperPrinter {
 
 		Consumer<CtType<?>> addArrayListImport = type -> {
 			Factory factory = type.getFactory();
+			assertTrue("there should be no package statement in this test file", type.getPackage().isUnnamedPackage());
 			CtCompilationUnit cu = factory.CompilationUnit().getOrCreate(type);
 			CtTypeReference<?> arrayListRef = factory.Type().get(java.util.ArrayList.class).getReference();
 			cu.getImports().add(factory.createImport(arrayListRef));
@@ -397,6 +404,7 @@ public class TestSniperPrinter {
 
 		Consumer<CtType<?>> addArrayListImport = type -> {
 			Factory factory = type.getFactory();
+			assertFalse("there should be a package statement in this test file", type.getPackage().isUnnamedPackage());
 			CtCompilationUnit cu = factory.CompilationUnit().getOrCreate(type);
 			CtTypeReference<?> arrayListRef = factory.Type().get(java.util.ArrayList.class).getReference();
 			cu.getImports().add(factory.createImport(arrayListRef));
