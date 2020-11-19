@@ -284,7 +284,7 @@ public class TestModule {
 		assertSame(module, moduleNewName);
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
 	@DisabledForJreRange(max = JRE.JAVA_8)
 	public void testSimpleModuleCanBeBuilt() {
 		// contract: Spoon is able to build a simple model with a module in full classpath
@@ -296,20 +296,15 @@ public class TestModule {
 
 		CtModel model = launcher.getModel();
 
-		// unnamed module and module 'simple_module_with_code'
-		assertEquals(2, model.getAllModules().size());
+		// unnamed module
+		assertEquals(1, model.getAllModules().size());
 		assertEquals(1, model.getAllTypes().size());
 
 		CtClass simpleClass = model.getElements(new TypeFilter<>(CtClass.class)).get(0);
 		assertEquals("SimpleClass", simpleClass.getSimpleName());
 
-		CtModule simpleModule = model.getElements(new NamedElementFilter<>(CtModule.class, "simple_module_with_code")).get(0);
-		assertNotNull(simpleModule);
-		assertEquals("simple_module_with_code", simpleModule.getSimpleName());
-
 		CtModule module = simpleClass.getParent(CtModule.class);
 		assertNotNull(module);
-		assertSame(simpleModule, module);
 	}
 
 	@Ignore
