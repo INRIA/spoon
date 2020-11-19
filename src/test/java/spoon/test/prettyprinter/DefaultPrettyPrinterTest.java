@@ -62,6 +62,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.compiler.SpoonPom;
+import spoon.support.visitor.SpoonCheckstyleCompliantPrettyPrinter;
 import spoon.test.imports.ImportTest;
 import spoon.test.prettyprinter.testclasses.AClass;
 import spoon.testing.utils.ModelUtils;
@@ -459,7 +460,7 @@ public class DefaultPrettyPrinterTest {
 	 * used as unit test.
 	 * Note that this test can be reused to check the compliance of any pretty printer with any set of styling rules.
 	*/
-	@Ignore // ignored as long as 1) it is too long 2) we don't implement a SpoonCompliantPrettyPrinter
+	// @Ignore // ignored as long as 1) it is too long 2) we don't implement a SpoonCompliantPrettyPrinter
 	@Test
 	public void testCheckstyleCompliance() throws IOException, XmlPullParserException {
 		File tmpDir = new File("./target/tmp-checkstyle");
@@ -469,6 +470,10 @@ public class DefaultPrettyPrinterTest {
 
 		//Build spoon AST and pretty print it in tmpDir
 		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
+			SpoonCheckstyleCompliantPrettyPrinter defaultJavaPrettyPrinter = new SpoonCheckstyleCompliantPrettyPrinter(launcher.getEnvironment());
+		    return defaultJavaPrettyPrinter;
+		});
 		launcher.addInputResource("./src/main/java");
 		launcher.setSourceOutputDirectory(tmpDir.getPath() + "/src/main/java");
 		launcher.buildModel();
