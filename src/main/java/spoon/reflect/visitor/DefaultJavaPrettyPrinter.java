@@ -1085,7 +1085,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			break;
 		case TYPE_DECLARATION:
 			scan(compilationUnit.getPackageDeclaration());
-			if (!compilationUnit.getDeclaredPackage().isUnnamedPackage()) {
+
+			CtPackage pkg = compilationUnit.getDeclaredPackage();
+			if (pkg != null && !pkg.isUnnamedPackage()) {
 				printer.writeln();
 			}
 
