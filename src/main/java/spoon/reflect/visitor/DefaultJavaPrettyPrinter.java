@@ -1084,14 +1084,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				//note: the package-info.java may contain type declarations too
 			break;
 		case TYPE_DECLARATION:
-				scan(compilationUnit.getPackageDeclaration());
-				for (CtImport imprt : getImports(compilationUnit)) {
-					scan(imprt);
-					printer.writeln();
-				}
-				for (CtType<?> t : compilationUnit.getDeclaredTypes()) {
-					scan(t);
-				}
+			scan(compilationUnit.getPackageDeclaration());
+
+			CtPackage pkg = compilationUnit.getDeclaredPackage();
+			if (pkg != null && !pkg.isUnnamedPackage()) {
+				printer.writeln();
+			}
+
+			for (CtImport imprt : getImports(compilationUnit)) {
+				scan(imprt);
+				printer.writeln();
+			}
+			for (CtType<?> t : compilationUnit.getDeclaredTypes()) {
+				scan(t);
+			}
 			break;
 		default:
 				throw new SpoonException("Unexpected compilation unit type: " + compilationUnit.getUnitType());
@@ -1111,7 +1117,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		CtPackageReference ctPackage = packageDeclaration.getReference();
 		elementPrinterHelper.writeComment(ctPackage, CommentOffset.BEFORE);
 		if (!ctPackage.isUnnamedPackage()) {
-			elementPrinterHelper.writePackageLine(ctPackage.getQualifiedName());
+			elementPrinterHelper.writePackageStatement(ctPackage.getQualifiedName());
 		}
 	}
 

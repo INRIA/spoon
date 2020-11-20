@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import spoon.Launcher;
 import spoon.SpoonException;
-import spoon.processing.Processor;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
@@ -23,6 +22,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -33,8 +33,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.ImportCleaner;
-import spoon.reflect.visitor.ImportConflictDetector;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
@@ -59,7 +57,16 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -67,7 +74,7 @@ public class TestSniperPrinter {
 
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
-	
+
 	@Test
 	public void testClassRename1() throws Exception {
 		// contract: one can sniper out of the box after Refactoring.changeTypeName
@@ -369,6 +376,45 @@ public class TestSniperPrinter {
 		}
 	}
 
+	@Test
+	public void testAddedImportStatementPlacedOnSeparateLineInFileWithoutPackageStatement() {
+		// contract: newline must be inserted between import statements when a new one is added
+
+		Consumer<CtType<?>> addArrayListImport = type -> {
+			Factory factory = type.getFactory();
+			assertTrue("there should be no package statement in this test file", type.getPackage().isUnnamedPackage());
+			CtCompilationUnit cu = factory.CompilationUnit().getOrCreate(type);
+			CtTypeReference<?> arrayListRef = factory.Type().get(java.util.ArrayList.class).getReference();
+			cu.getImports().add(factory.createImport(arrayListRef));
+		};
+		BiConsumer<CtType<?>, String> assertImportsPrintedCorrectly = (type, result) -> {
+			assertThat(result, anyOf(
+					containsString("import java.util.Set;\nimport java.util.ArrayList;\n"),
+					containsString("import java.util.ArrayList;\nimport java.util.Set;\n")));
+		};
+
+		testSniper("ClassWithSingleImport", addArrayListImport, assertImportsPrintedCorrectly);
+	}
+
+	@Test
+	public void testAddedImportStatementPlacedOnSeparateLineInFileWithPackageStatement() {
+		// contract: newline must be inserted both before and after a new import statement if ther
+		// is a package statement in the file
+
+		Consumer<CtType<?>> addArrayListImport = type -> {
+			Factory factory = type.getFactory();
+			assertFalse("there should be a package statement in this test file", type.getPackage().isUnnamedPackage());
+			CtCompilationUnit cu = factory.CompilationUnit().getOrCreate(type);
+			CtTypeReference<?> arrayListRef = factory.Type().get(java.util.ArrayList.class).getReference();
+			cu.getImports().add(factory.createImport(arrayListRef));
+		};
+		BiConsumer<CtType<?>, String> assertImportsPrintedCorrectly = (type, result) -> {
+			assertThat(result, containsString("\nimport java.util.ArrayList;\n"));
+		};
+
+		testSniper("visibility.YamlRepresenter", addArrayListImport, assertImportsPrintedCorrectly);
+	}
+
 	/**
 	 * 1) Runs spoon using sniper mode,
 	 * 2) runs `typeChanger` to modify the code,
@@ -398,16 +444,7 @@ public class TestSniperPrinter {
 	private static Launcher createLauncherWithSniperPrinter() {
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
-			SniperJavaPrettyPrinter printer = new SniperJavaPrettyPrinter(launcher.getEnvironment());
-			printer.setPreprocessors(Collections.unmodifiableList(Arrays.<Processor<CtElement>>asList(
-					//remove unused imports first. Do not add new imports at time when conflicts are not resolved
-					new ImportCleaner().setCanAddImports(false),
-					//solve conflicts, the current imports are relevant too
-					new ImportConflictDetector(),
-					//compute final imports
-					new ImportCleaner()
-			)));
-			return printer;
+			return new SniperJavaPrettyPrinter(launcher.getEnvironment());
 		});
 		return launcher;
 	}

@@ -102,6 +102,11 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 			//so skip printing of this comment
 			//comment will be printed at place where it belongs to - together with spaces
 			return -1;
+		} else if (event.getRole() == CtRole.DECLARED_IMPORT && fragmentIndex == 0) {
+			// this is the first pre-existing import statement, and so we must print all newline
+			// events unconditionally to avoid placing it on the same line as a newly added import
+			// statement. See PR #3702 for details
+			printStandardSpaces();
 		}
 		setChildFragmentIdx(fragmentIndex);
 		return fragmentIndex;
