@@ -348,9 +348,20 @@ public class ElementPrinterHelper {
 		}
 	}
 
+	/**
+	 * Write a package statement and a newline.
+	 */
 	public void writePackageLine(String packageQualifiedName) {
+		writePackageStatement(packageQualifiedName);
+		printer.writeln();
+	}
+
+	/**
+	 * Write a package statement.
+	 */
+	public void writePackageStatement(String packageQualifiedName) {
 		printer.writeKeyword("package").writeSpace();
-		writeQualifiedName(packageQualifiedName).writeSeparator(";").writeln();
+		writeQualifiedName(packageQualifiedName).writeSeparator(";");
 	}
 
 	private String removeInnerTypeSeparator(String fqn) {
