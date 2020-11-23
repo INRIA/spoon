@@ -79,6 +79,8 @@ public class ExecutableFactory extends SubFactory {
 	public <T> CtParameterReference<T> createParameterReference(CtParameter<T> parameter) {
 		CtParameterReference<T> ref = factory.Core().createParameterReference();
 		ref.setSimpleName(parameter.getSimpleName());
+
+		// true when parameter comes from a lambda expression
 		if (parameter.getType() == null) {
 			ref.setType(parameter.getType());
 		} else {
