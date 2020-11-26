@@ -75,7 +75,8 @@ class JDTTreeBuilderQuery {
 		for (CompilationUnitDeclaration unitToProcess : unitsToProcess) {
 			if (unitToProcess.types != null) {
 				for (TypeDeclaration type : unitToProcess.types) {
-					if (qualifiedName.equals(CharOperation.toString(type.binding.compoundName))) {
+					if (type.binding != null
+							&& qualifiedName.equals(CharOperation.toString(type.binding.compoundName))) {
 						return type.binding;
 					}
 					if (type.memberTypes != null) {
