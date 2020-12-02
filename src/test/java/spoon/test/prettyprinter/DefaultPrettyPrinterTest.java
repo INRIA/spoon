@@ -64,6 +64,7 @@ import spoon.support.JavaOutputProcessor;
 import spoon.support.compiler.SpoonPom;
 import spoon.test.imports.ImportTest;
 import spoon.test.prettyprinter.testclasses.AClass;
+import spoon.test.prettyprinter.testclasses.ClassUsingStaticMethod;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -72,18 +73,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -95,6 +90,30 @@ import static spoon.testing.utils.ModelUtils.build;
 
 public class DefaultPrettyPrinterTest {
 	private static final String nl = System.lineSeparator();
+
+	@Test
+	public void testPrintClassWithStaticImportOfMethod() {
+		final Launcher launcher = new Launcher();
+		final Factory factory = launcher.getFactory();
+		factory.getEnvironment().setAutoImports(true);
+		final SpoonModelBuilder compiler = launcher.createCompiler();
+		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/ClassWithStaticMethod.java"));
+		compiler.addInputSource(new File("./src/test/java/spoon/test/prettyprinter/testclasses/ClassUsingStaticMethod.java"));
+		compiler.build();
+
+		final String expected =
+				"package spoon.test.prettyprinter.testclasses;" + nl +
+                "import static spoon.test.prettyprinter.testclasses.ClassWithStaticMethod.findFirst" + nl +
+				"public class ClassUsingStaticMethod {" + nl +
+				"    public void callFindFirst() {" + nl +
+				"        findFirst();" + nl +
+				"    }" + nl +
+				"}";
+
+		final CtClass<?> classUsingStaticMethod = (CtClass<?>) factory.Type().get(ClassUsingStaticMethod.class);
+		final String printed = factory.getEnvironment().createPrettyPrinter().printTypes(classUsingStaticMethod);
+		assertTrue(printed, printed.contains(expected));
+	}
 
 	@Test
 	public void printerCanPrintInvocationWithoutException() throws Exception {
@@ -162,7 +181,7 @@ public class DefaultPrettyPrinterTest {
 		final CtClass<?> aClass = (CtClass<?>) factory.Type().get(AClass.class);
 		//TODO remove that after implicit is set correctly for these cases
 		assertTrue(factory.getEnvironment().createPrettyPrinter().printTypes(aClass).contains(expected));
-		
+
 		assertEquals(expected, aClass.prettyprint());
 
 		final CtConstructorCall<?> constructorCall = aClass.getElements(new TypeFilter<CtConstructorCall<?>>(CtConstructorCall.class)).get(0);
@@ -250,7 +269,7 @@ public class DefaultPrettyPrinterTest {
 		String computed = aClass.getMethodsByName("setFieldUsingExternallyDefinedEnumWithSameNameAsLocal").get(0).toString();
 		assertEquals("We use FQN for E1", expected, computed);
 
-		expected = 
+		expected =
 			"public void setFieldUsingLocallyDefinedEnum() {" + nl
 			+ "    localField = ENUM.E1.ordinal();" + nl
 			+ "}";
@@ -403,7 +422,7 @@ public class DefaultPrettyPrinterTest {
 		CtConstructor<?> constr = type.getConstructors().stream().filter(c -> c.getParameters().size() == 1).findFirst().get();
 		assertEquals("this(v, true)", constr.getBody().getStatement(0).toString());
 	}
-	
+
 	@Test
 	public void testThisConstructorCall2() throws Exception {
 		// contract: the this(...) call of another constructor is printed well
@@ -416,8 +435,8 @@ public class DefaultPrettyPrinterTest {
 		CtClass<?> type = (CtClass) f.Class().get("org.apache.commons.math4.linear.ArrayRealVector");
 		{
 			CtConstructor<?> constr = type.getConstructors().stream()
-					.filter(c -> 
-						c.getParameters().size() == 1 
+					.filter(c ->
+						c.getParameters().size() == 1
 						&& "ArrayRealVector".equals(c.getParameters().get(0).getType().getSimpleName())
 					).findFirst().get();
 			assertEquals("this(v, true)", constr.getBody().getStatement(0).toString());
@@ -453,7 +472,7 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	/**
-	 * This test parses Spoon sources (src/main/java) and pretty prints them in a temporary directory 
+	 * This test parses Spoon sources (src/main/java) and pretty prints them in a temporary directory
 	 * to check the compliance of the pretty printer to the set of checkstyle rules used by the Spoon repo.
 	 * As the test takes a long time to run, it is only meant to detect exemples of violation that can, then, be
 	 * used as unit test.
