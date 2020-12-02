@@ -112,7 +112,7 @@ public class DefaultPrettyPrinterTest {
 
 		final CtClass<?> classUsingStaticMethod = (CtClass<?>) factory.Type().get(ClassUsingStaticMethod.class);
 		final String printed = factory.getEnvironment().createPrettyPrinter().printTypes(classUsingStaticMethod);
-		assertTrue(printed, printed.contains(expected));
+		assertEquals(expected, printed);
 	}
 
 	@Test
