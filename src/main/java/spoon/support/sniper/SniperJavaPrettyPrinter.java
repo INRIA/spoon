@@ -38,6 +38,7 @@ import spoon.support.sniper.internal.ChangeResolver;
 import spoon.support.sniper.internal.CollectionSourceFragment;
 import spoon.support.sniper.internal.ElementPrinterEvent;
 import spoon.support.sniper.internal.ElementSourceFragment;
+import spoon.support.sniper.internal.IndentationDetector;
 import spoon.support.sniper.internal.ModificationStatus;
 import spoon.support.sniper.internal.MutableTokenWriter;
 import spoon.support.sniper.internal.PrinterEvent;
@@ -138,7 +139,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		setLineSeparator(detectLineSeparator(compilationUnit.getOriginalSourceCode()));
 
 		// use indentation style of origin source file for new elements
-		Pair<Integer, Boolean> indentationInfo = detectIndentation(compilationUnit);
+		Pair<Integer, Boolean> indentationInfo = IndentationDetector.detectIndentation(compilationUnit);
 		mutableTokenWriter.setOriginSourceTabulationSize(indentationInfo.getLeft());
 		mutableTokenWriter.setOriginSourceUsesTabulations(indentationInfo.getRight());
 
@@ -149,68 +150,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		() -> {
 			super.calculate(sourceCompilationUnit, types);;
 		});
-	}
-
-	private static Pair<Integer, Boolean> detectIndentation(CtCompilationUnit cu) {
-		List<ElementSourceFragment> typeFragments = cu.getOriginalSourceFragment()
-				.getGroupedChildrenFragments().stream()
-				.filter(fragment -> fragment instanceof CollectionSourceFragment)
-				.flatMap(fragment -> extractTypeFragments((CollectionSourceFragment) fragment).stream())
-				.collect(Collectors.toList());
-		return detectIndentation(typeFragments);
-	}
-
-	private static List<ElementSourceFragment> extractTypeFragments(CollectionSourceFragment collection) {
-		return collection.getItems().stream()
-				.filter(fragment -> fragment instanceof ElementSourceFragment)
-				.map(fragment -> (ElementSourceFragment) fragment)
-				.filter(fragment -> fragment.getRoleInParent() == CtRole.DECLARED_TYPE)
-				.collect(Collectors.toList());
-	}
-
-	private static Pair<Integer, Boolean> detectIndentation(List<ElementSourceFragment> typeFragments) {
-		List<String> wsPrecedingTypeMembers = new ArrayList<>();
-
-		for (ElementSourceFragment typeSource : typeFragments) {
-			assert typeSource.getRoleInParent() == CtRole.DECLARED_TYPE;
-			List<SourceFragment> children = typeSource.getChildrenFragments();
-			for (int i = 0; i < children.size() - 1; i++) {
-				if (children.get(i) instanceof TokenSourceFragment
-						&& children.get(i + 1) instanceof ElementSourceFragment) {
-
-					TokenSourceFragment cur = (TokenSourceFragment) children.get(i);
-					ElementSourceFragment next = (ElementSourceFragment) children.get(i + 1);
-					if (cur.getType() == TokenType.SPACE && next.getRoleInParent() == CtRole.TYPE_MEMBER) {
-						wsPrecedingTypeMembers.add(cur.getSourceCode().replace("\n", ""));
-					}
-				}
-			}
-		}
-
-		return guessIndentationStyle(wsPrecedingTypeMembers);
-	}
-
-	private static Pair<Integer, Boolean> guessIndentationStyle(List<String> wsPrecedingTypeMembers) {
-		double avgIndent = wsPrecedingTypeMembers.stream()
-				.map(String::length)
-				.map(Double::valueOf)
-				.reduce((acc, next) -> (acc + next) / 2).orElse(4d);
-
-		double diff1 = Math.abs(1d - avgIndent);
-		double diff2 = Math.abs(2d - avgIndent);
-		double diff4 = Math.abs(4d - avgIndent);
-
-		int indentationSize;
-		if (diff1 > diff2) {
-			indentationSize = diff2 > diff4 ? 4 : 2;
-		} else {
-			indentationSize = 1;
-		}
-
-		boolean usesTabs = wsPrecedingTypeMembers.stream()
-				.filter(s -> s.contains("\t"))
-				.count() >= wsPrecedingTypeMembers.size() / 2;
-		return Pair.of(indentationSize, usesTabs);
 	}
 
 	private static final String CR = "\r";
