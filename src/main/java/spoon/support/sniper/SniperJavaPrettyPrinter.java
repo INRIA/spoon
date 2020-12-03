@@ -169,7 +169,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	}
 
 	private static Pair<Integer, Boolean> detectIndentation(List<ElementSourceFragment> typeFragments) {
-		List<String> spacePrecedingTypeMember = new ArrayList<>();
+		List<String> wsPrecedingTypeMembers = new ArrayList<>();
 
 		for (ElementSourceFragment typeSource : typeFragments) {
 			assert typeSource.getRoleInParent() == CtRole.DECLARED_TYPE;
@@ -181,13 +181,17 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 					TokenSourceFragment cur = (TokenSourceFragment) children.get(i);
 					ElementSourceFragment next = (ElementSourceFragment) children.get(i + 1);
 					if (cur.getType() == TokenType.SPACE && next.getRoleInParent() == CtRole.TYPE_MEMBER) {
-						spacePrecedingTypeMember.add(cur.getSourceCode().replace("\n", ""));
+						wsPrecedingTypeMembers.add(cur.getSourceCode().replace("\n", ""));
 					}
 				}
 			}
 		}
 
-		double avgIndent = spacePrecedingTypeMember.stream()
+		return guessIndentationStyle(wsPrecedingTypeMembers);
+	}
+
+	private static Pair<Integer, Boolean> guessIndentationStyle(List<String> wsPrecedingTypeMembers) {
+		double avgIndent = wsPrecedingTypeMembers.stream()
 				.map(String::length)
 				.map(Double::valueOf)
 				.reduce((acc, next) -> (acc + next) / 2).orElse(4d);
@@ -203,10 +207,9 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 			indentationSize = 1;
 		}
 
-		boolean usesTabs = spacePrecedingTypeMember.stream()
+		boolean usesTabs = wsPrecedingTypeMembers.stream()
 				.filter(s -> s.contains("\t"))
-				.count() >= spacePrecedingTypeMember.size() / 2;
-
+				.count() >= wsPrecedingTypeMembers.size() / 2;
 		return Pair.of(indentationSize, usesTabs);
 	}
 
