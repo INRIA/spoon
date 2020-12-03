@@ -8,12 +8,10 @@
 package spoon.support.sniper;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import spoon.OutputType;
@@ -48,7 +46,6 @@ import spoon.support.sniper.internal.SourceFragmentContextList;
 import spoon.support.sniper.internal.SourceFragmentContextNormal;
 import spoon.support.sniper.internal.DefaultSourceFragmentPrinter;
 import spoon.support.sniper.internal.TokenPrinterEvent;
-import spoon.support.sniper.internal.TokenSourceFragment;
 import spoon.support.sniper.internal.TokenType;
 import spoon.support.sniper.internal.TokenWriterProxy;
 import spoon.support.util.ModelList;
