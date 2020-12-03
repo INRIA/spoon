@@ -14,6 +14,7 @@ import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
@@ -53,6 +54,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -413,6 +415,35 @@ public class TestSniperPrinter {
 		};
 
 		testSniper("visibility.YamlRepresenter", addArrayListImport, assertImportsPrintedCorrectly);
+	}
+
+	@Test
+	public void testAddedElementsIndentedWithAppropriateIndentationStyle() {
+		// contract: added elements in a source file should be indented with the same style of
+		// indentation as the rest of the file
+
+		Consumer<CtType<?>> addElements = type -> {
+		    Factory fact = type.getFactory();
+		    fact.createField(type, new HashSet<>(), fact.Type().INTEGER_PRIMITIVE, "z", fact.createLiteral(3));
+		    type.getMethod("sum").getBody()
+					.addStatement(0, fact.createCodeSnippetStatement("System.out.println(z);"));
+		};
+		BiConsumer<CtType<?>, String> assertTabs = (type, result) -> {
+			assertThat(result, containsString("\n\tint z = 3;"));
+			assertThat(result, containsString("\n\t\tSystem"));
+		};
+		BiConsumer<CtType<?>, String> assertTwoSpaces = (type, result) -> {
+		    assertThat(result, containsString("\n  int z = 3;"));
+		    assertThat(result, containsString("\n    System"));
+		};
+		BiConsumer<CtType<?>, String> assertFourSpaces = (type, result) -> {
+			assertThat(result, containsString("\n    int z = 3;"));
+			assertThat(result, containsString("\n        System"));
+		};
+
+		testSniper("indentation.Tabs", addElements, assertTabs);
+		testSniper("indentation.TwoSpaces", addElements, assertTwoSpaces);
+		testSniper("indentation.FourSpaces", addElements, assertFourSpaces);
 	}
 
 	/**
