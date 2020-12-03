@@ -48,7 +48,9 @@ public class MutableTokenWriter implements TokenWriter {
 			int setTabulationSize = env.getTabulationSize();
 			env.useTabulations(originSourceUsesTabulations);
 			env.setTabulationSize(originSourceTabulationSize);
+
 			super.autoWriteTabs();
+
 			env.setTabulationSize(setTabulationSize);
 			env.useTabulations(true);
 		}
