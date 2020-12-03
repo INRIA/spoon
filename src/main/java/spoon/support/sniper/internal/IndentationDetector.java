@@ -35,11 +35,12 @@ public class IndentationDetector {
         return detectIndentation(typeFragments);
     }
 
-    private static Pair<Integer, Boolean> detectIndentation(List<ElementSourceFragment> typeFragments) {
+    private static Pair<Integer, Boolean> detectIndentation(List<ElementSourceFragment> topLevelTypeFragments) {
         List<String> wsPrecedingTypeMembers = new ArrayList<>();
 
-        for (ElementSourceFragment typeSource : typeFragments) {
+        for (ElementSourceFragment typeSource : topLevelTypeFragments) {
             assert typeSource.getRoleInParent() == CtRole.DECLARED_TYPE;
+
             List<SourceFragment> children = typeSource.getChildrenFragments();
             for (int i = 0; i < children.size() - 1; i++) {
                 if (children.get(i) instanceof TokenSourceFragment
@@ -61,7 +62,7 @@ public class IndentationDetector {
         double avgIndent = wsPrecedingTypeMembers.stream()
                 .map(String::length)
                 .map(Double::valueOf)
-                .reduce((acc, next) -> (acc + next) / 2).orElse(4d);
+                .reduce((acc, next) -> (acc + next) / 2).orElse(1d);
 
         double diff1 = Math.abs(1d - avgIndent);
         double diff2 = Math.abs(2d - avgIndent);
@@ -76,7 +77,7 @@ public class IndentationDetector {
 
         boolean usesTabs = wsPrecedingTypeMembers.stream()
                 .filter(s -> s.contains("\t"))
-                .count() > wsPrecedingTypeMembers.size() / 2;
+                .count() >= wsPrecedingTypeMembers.size() / 2;
         return Pair.of(indentationSize, usesTabs);
     }
 

@@ -446,6 +446,20 @@ public class TestSniperPrinter {
 		testSniper("indentation.FourSpaces", addElements, assertFourSpaces);
 	}
 
+	@Test
+	public void testDefaultsToSingleTabIndentationWhenThereAreNoTypeMembers() {
+		// contract: if there are no type members in a compilation unit, the sniper printer defaults
+		// to indenting with 1 tab
+
+		Consumer<CtType<?>> addField = type -> {
+			Factory fact = type.getFactory();
+			fact.createField(type, new HashSet<>(), fact.Type().INTEGER_PRIMITIVE, "z", fact.createLiteral(3));
+		};
+		testSniper("indentation.NoTypeMembers", addField, (type, result) -> {
+			assertThat(result, containsString("\n\tint z = 3;"));
+		});
+	}
+
 	/**
 	 * 1) Runs spoon using sniper mode,
 	 * 2) runs `typeChanger` to modify the code,
