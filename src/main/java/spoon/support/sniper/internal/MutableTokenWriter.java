@@ -22,8 +22,36 @@ public class MutableTokenWriter implements TokenWriter {
 	private final TokenWriter delegate;
 	private boolean muted = false;
 
+	// indentation style to use for new elements
+	private boolean originSourceUsesTabulations;
+	private int originSourceTabulationSize;
+
 	public MutableTokenWriter(Environment env) {
-		this.delegate = new DefaultTokenWriter(new PrinterHelper(env));
+		this.delegate = new DefaultTokenWriter(new SniperPrinterHelper(env));
+		originSourceUsesTabulations = true;
+		originSourceTabulationSize = 1;
+	}
+
+	private class SniperPrinterHelper extends PrinterHelper {
+		private final Environment env;
+
+		SniperPrinterHelper(Environment env) {
+			super(env);
+			this.env = env;
+		}
+
+		/**
+		 * We override this method to use the correct style of indentation for new elements.
+		 */
+		@Override
+		protected void autoWriteTabs() {
+			int setTabulationSize = env.getTabulationSize();
+			env.useTabulations(originSourceUsesTabulations);
+			env.setTabulationSize(originSourceTabulationSize);
+			super.autoWriteTabs();
+			env.setTabulationSize(setTabulationSize);
+			env.useTabulations(true);
+		}
 	}
 
 	/**
@@ -38,6 +66,14 @@ public class MutableTokenWriter implements TokenWriter {
 	 */
 	public void setMuted(boolean muted) {
 		this.muted = muted;
+	}
+
+	public void setOriginSourceUsesTabulations(boolean originSourceUsesTabulations) {
+		this.originSourceUsesTabulations = originSourceUsesTabulations;
+	}
+
+	public void setOriginSourceTabulationSize(int originSourceTabulationSize) {
+		this.originSourceTabulationSize = originSourceTabulationSize;
 	}
 
 	@Override

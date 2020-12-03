@@ -8,11 +8,14 @@
 package spoon.support.sniper;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
@@ -44,6 +47,7 @@ import spoon.support.sniper.internal.SourceFragmentContextList;
 import spoon.support.sniper.internal.SourceFragmentContextNormal;
 import spoon.support.sniper.internal.DefaultSourceFragmentPrinter;
 import spoon.support.sniper.internal.TokenPrinterEvent;
+import spoon.support.sniper.internal.TokenSourceFragment;
 import spoon.support.sniper.internal.TokenType;
 import spoon.support.sniper.internal.TokenWriterProxy;
 import spoon.support.util.ModelList;
@@ -132,6 +136,12 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 
 		//use line separator of origin source file
 		setLineSeparator(detectLineSeparator(compilationUnit.getOriginalSourceCode()));
+
+		// use indentation style of origin source file for new elements
+		Pair<Integer, Boolean> indentationInfo = detectIndentation(compilationUnit);
+		mutableTokenWriter.setOriginSourceTabulationSize(indentationInfo.getLeft());
+		mutableTokenWriter.setOriginSourceUsesTabulations(indentationInfo.getRight());
+
 		runInContext(new SourceFragmentContextList(mutableTokenWriter,
 				compilationUnit,
 				Collections.singletonList(compilationUnit.getOriginalSourceFragment()),
@@ -139,6 +149,65 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		() -> {
 			super.calculate(sourceCompilationUnit, types);;
 		});
+	}
+
+	private static Pair<Integer, Boolean> detectIndentation(CtCompilationUnit cu) {
+		List<ElementSourceFragment> typeFragments = cu.getOriginalSourceFragment()
+				.getGroupedChildrenFragments().stream()
+				.filter(fragment -> fragment instanceof CollectionSourceFragment)
+				.flatMap(fragment -> extractTypeFragments((CollectionSourceFragment) fragment).stream())
+				.collect(Collectors.toList());
+		return detectIndentation(typeFragments);
+	}
+
+	private static List<ElementSourceFragment> extractTypeFragments(CollectionSourceFragment collection) {
+		return collection.getItems().stream()
+				.filter(fragment -> fragment instanceof ElementSourceFragment)
+				.map(fragment -> (ElementSourceFragment) fragment)
+				.filter(fragment -> fragment.getRoleInParent() == CtRole.DECLARED_TYPE)
+				.collect(Collectors.toList());
+	}
+
+	private static Pair<Integer, Boolean> detectIndentation(List<ElementSourceFragment> typeFragments) {
+		List<String> spacePrecedingTypeMember = new ArrayList<>();
+
+		for (ElementSourceFragment typeSource : typeFragments) {
+			assert typeSource.getRoleInParent() == CtRole.DECLARED_TYPE;
+			List<SourceFragment> children = typeSource.getChildrenFragments();
+			for (int i = 0; i < children.size() - 1; i++) {
+				if (children.get(i) instanceof TokenSourceFragment
+						&& children.get(i + 1) instanceof ElementSourceFragment) {
+
+					TokenSourceFragment cur = (TokenSourceFragment) children.get(i);
+					ElementSourceFragment next = (ElementSourceFragment) children.get(i + 1);
+					if (cur.getType() == TokenType.SPACE && next.getRoleInParent() == CtRole.TYPE_MEMBER) {
+						spacePrecedingTypeMember.add(cur.getSourceCode().replace("\n", ""));
+					}
+				}
+			}
+		}
+
+		double avgIndent = spacePrecedingTypeMember.stream()
+				.map(String::length)
+				.map(Double::valueOf)
+				.reduce((acc, next) -> (acc + next) / 2).orElse(4d);
+
+		double diff1 = Math.abs(1d - avgIndent);
+		double diff2 = Math.abs(2d - avgIndent);
+		double diff4 = Math.abs(4d - avgIndent);
+
+		int indentationSize;
+		if (diff1 > diff2) {
+			indentationSize = diff2 > diff4 ? 4 : 2;
+		} else {
+			indentationSize = 1;
+		}
+
+		boolean usesTabs = spacePrecedingTypeMember.stream()
+				.filter(s -> s.contains("\t"))
+				.count() >= spacePrecedingTypeMember.size() / 2;
+
+		return Pair.of(indentationSize, usesTabs);
 	}
 
 	private static final String CR = "\r";
