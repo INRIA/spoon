@@ -68,10 +68,16 @@ public class MutableTokenWriter implements TokenWriter {
 		this.muted = muted;
 	}
 
+	/**
+	 * @param originSourceUsesTabulations whether or not the origin source uses tabs for indentation.
+	 */
 	public void setOriginSourceUsesTabulations(boolean originSourceUsesTabulations) {
 		this.originSourceUsesTabulations = originSourceUsesTabulations;
 	}
 
+	/**
+	 * @param originSourceTabulationSize the amount of indentation used in the origin source.
+	 */
 	public void setOriginSourceTabulationSize(int originSourceTabulationSize) {
 		this.originSourceTabulationSize = originSourceTabulationSize;
 	}
