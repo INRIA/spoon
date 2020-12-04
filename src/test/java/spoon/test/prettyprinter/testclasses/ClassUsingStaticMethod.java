@@ -11,6 +11,7 @@ public class ClassUsingStaticMethod {
 
     public void callFindFirst() {
         findFirst();
+        new ClassWithStaticMethod().notStaticFindFirst();
     }
 
 }

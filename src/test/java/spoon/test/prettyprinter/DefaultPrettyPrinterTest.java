@@ -103,10 +103,11 @@ public class DefaultPrettyPrinterTest {
 
 		final String expected =
 				"package spoon.test.prettyprinter.testclasses;" + nl +
-                "import static spoon.test.prettyprinter.testclasses.ClassWithStaticMethod.findFirst" + nl +
+				"import static spoon.test.prettyprinter.testclasses.ClassWithStaticMethod.findFirst;" + nl +
 				"public class ClassUsingStaticMethod {" + nl +
 				"    public void callFindFirst() {" + nl +
 				"        findFirst();" + nl +
+                "        new ClassWithStaticMethod().notStaticFindFirst();" + nl +
 				"    }" + nl +
 				"}";
 
