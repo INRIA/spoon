@@ -24,7 +24,8 @@ public class IndentationDetector {
 	}
 
 	/**
-	 * Detect the indentation style of the given compilation unit as 1, 2 or 4 spaces or tabs.
+	 * Detect the indentation style of the given compilation unit as 1, 2 or 4 spaces or tabs by
+	 * inspecting the whitespace preceding type members of top-level type declarations.
 	 *
 	 * @param cu A compilation unit.
 	 * @return A pair on the form (indentationSize, isTabs)
