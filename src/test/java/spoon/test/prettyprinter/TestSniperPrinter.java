@@ -447,6 +447,29 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	public void testAddedElementsIndentedWithAppropriateIndentationStyleWhenOnlyOneTypeMemberExists() {
+		// contract: added elements in a source file should be indented with the same style of
+		// indentation as the single type member, when there is only one type member.
+
+		Consumer<CtType<?>> addElement = type -> {
+			Factory fact = type.getFactory();
+			fact.createField(type, new HashSet<>(), fact.Type().INTEGER_PRIMITIVE, "z", fact.createLiteral(2));
+		};
+		final String newField = "int z = 2;";
+
+		BiConsumer<CtType<?>, String> assertTabs = (type, result) ->
+				assertThat(result, containsString("\n\t" + newField));
+		BiConsumer<CtType<?>, String> assertTwoSpaces = (type, result) ->
+				assertThat(result, containsString("\n  " + newField));
+		BiConsumer<CtType<?>, String> assertFourSpaces = (type, result) ->
+				assertThat(result, containsString("\n    " + newField));
+
+		testSniper("indentation.singletypemember.Tabs", addElement, assertTabs);
+		testSniper("indentation.singletypemember.TwoSpaces", addElement, assertTwoSpaces);
+		testSniper("indentation.singletypemember.FourSpaces", addElement, assertFourSpaces);
+	}
+
+	@Test
 	public void testDefaultsToSingleTabIndentationWhenThereAreNoTypeMembers() {
 		// contract: if there are no type members in a compilation unit, the sniper printer defaults
 		// to indenting with 1 tab
