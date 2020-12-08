@@ -27,6 +27,8 @@ jobs:
       - uses: actions/setup-java@d202f5dbf7256730fb690ec59f6381650114feb2 # v1.4.3
         with:
           java-version: ${{ matrix.java }}
+      - name: Use silent log config
+        run: mv chore/travis/logback.xml src/test/resources/
       - name: Build and test
         run: mvn -Djava.src.version=${{ matrix.java }} test
 
@@ -38,6 +40,8 @@ jobs:
       - uses: actions/setup-java@d202f5dbf7256730fb690ec59f6381650114feb2 # v1.4.3
         with:
           java-version: 15
+      - name: Use silent log config
+        run: mv chore/travis/logback.xml src/test/resources/
       - name: Build and test
         run: mvn -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
         env:
@@ -55,5 +59,7 @@ jobs:
       - uses: actions/setup-python@41b7212b1668f5de9d65e9c82aa777e6bbedb3a8 # v2.1.4
         with:
           python-version: 3.6
+      - name: Use silent log config
+        run: mv chore/travis/logback.xml src/test/resources/
       - name: Run extra checks
         run: ./chore/travis/travis-extra.sh
