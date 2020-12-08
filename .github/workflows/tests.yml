@@ -24,8 +24,8 @@ jobs:
         java: [1.8, 11, 15]
     name: Tests with Java ${{ matrix.java }}
     steps:
-      - uses: actions/checkout@${{ checkout_version }}
-      - uses: actions/setup-java@${{ setup_java_version }}
+      - uses: actions/checkout@${{ env.checkout_version }}
+      - uses: actions/setup-java@${{ env.setup_java_version }}
         with:
           java-version: ${{ matrix.java }}
       - name: Build and test
@@ -35,8 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Test with coverage
     steps:
-      - uses: actions/checkout@${{ checkout_version }}
-      - uses: actions/setup-java@${{ setup_java_version }}
+      - uses: actions/checkout@${{ env.checkout_version }}
+      - uses: actions/setup-java@${{ env.setup_java_version }}
         with:
           java-version: 15
       - name: Build and test
@@ -46,11 +46,11 @@ jobs:
     runs-on: ubuntu-latest
     name: Extra checks
     steps:
-      - uses: actions/checkout@${{ checkout_version }}
-      - uses: actions/setup-java@${{ setup_java_version }}
+      - uses: actions/checkout@${{ env.checkout_version }}
+      - uses: actions/setup-java@${{ env.setup_java_version }}
         with:
           java-version: 15
-      - uses: actions/setup-python@${{ setup_python_version }}
+      - uses: actions/setup-python@${{ env.setup_python_version }}
         with:
           python-version: 3.6
       - name: Build and test
