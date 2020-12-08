@@ -35,7 +35,11 @@ jobs:
         with:
           java-version: 15
       - name: Build and test
-        run: mvn -Pcoveralls test jacoco:report coveralls:report --fail-never
+        run: mvn test jacoco:report --fail-never
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@8cbef1dea373ebce56de0a14c68d6267baa10b44 # v1.1.2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   extra:
     runs-on: ubuntu-latest
