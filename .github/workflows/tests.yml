@@ -48,5 +48,5 @@ jobs:
       - uses: actions/setup-python@41b7212b1668f5de9d65e9c82aa777e6bbedb3a8 # v2.1.4
         with:
           python-version: 3.6
-      - name: Build and test
-        run: mvn -Pcoveralls test jacoco:report coveralls:report --fail-never
+      - name: Run extra checks
+        run: ./chore/github_actions/gha_extra.sh
