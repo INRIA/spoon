@@ -13,6 +13,7 @@ on:
 
 jobs:
   build:
+    if: false
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -35,13 +36,14 @@ jobs:
         with:
           java-version: 15
       - name: Build and test
-        run: mvn test jacoco:report --fail-never
-      - name: Upload coverage to Coveralls
-        uses: coverallsapp/github-action@8cbef1dea373ebce56de0a14c68d6267baa10b44 # v1.1.2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -Pcoveralls test jacoco:report coveralls:report --fail-never \
+              -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
 
   extra:
+    if: false
     runs-on: ubuntu-latest
     name: Extra checks
     steps:
