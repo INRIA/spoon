@@ -51,7 +51,7 @@ jobs:
         with:
           java-version: 15
       - uses: actions/setup-python@${{ setup_python_version }}
-          with:
-            python-version: 3.6
+        with:
+          python-version: 3.6
       - name: Build and test
         run: mvn -Pcoveralls test jacoco:report coveralls:report --fail-never
