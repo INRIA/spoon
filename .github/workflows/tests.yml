@@ -54,4 +54,4 @@ jobs:
         with:
           python-version: 3.6
       - name: Run extra checks
-        run: ./chore/github_actions/gha-extra.sh
+        run: ./chore/travis/travis-extra.sh
