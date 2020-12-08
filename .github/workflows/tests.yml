@@ -49,4 +49,4 @@ jobs:
         with:
           python-version: 3.6
       - name: Run extra checks
-        run: ./chore/github_actions/gha_extra.sh
+        run: ./chore/github_actions/gha-extra.sh
