@@ -8,6 +8,7 @@ name: tests
 on:
   pull_request:
   push:
+    master
   schedule:
   - cron: "0 0 * * *"
 
