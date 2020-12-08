@@ -13,7 +13,6 @@ on:
 
 jobs:
   build:
-    if: false
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -42,7 +41,6 @@ jobs:
           PR_NUMBER: ${{ github.event.number }}
 
   extra:
-    if: false
     runs-on: ubuntu-latest
     name: Extra checks
     steps:
