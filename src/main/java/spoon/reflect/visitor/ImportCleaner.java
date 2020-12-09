@@ -85,7 +85,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			return;
 		}
 
-		if (target != null && target.isImplicit()) {
+		if (target.isImplicit()) {
 			if (target instanceof CtTypeAccess) {
 				if (targetedExpression instanceof CtFieldAccess) {
 					context.addImport(((CtFieldAccess<?>) targetedExpression).getVariable());
@@ -183,7 +183,8 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				//java.lang is always imported implicitly. Ignore it
 				return;
 			}
-			if (Objects.equals(packageQName, packageRef.getQualifiedName())) {
+			if (Objects.equals(packageQName, packageRef.getQualifiedName())
+					&& !(ref instanceof CtExecutableReference<?> && ((CtExecutableReference<?>) ref).isStatic())) {
 				//it is reference to a type of the same package. Do not add it
 				return;
 			}
