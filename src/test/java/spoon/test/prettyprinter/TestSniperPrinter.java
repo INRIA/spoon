@@ -420,7 +420,7 @@ public class TestSniperPrinter {
 	@Test
 	public void testAddedElementsIndentedWithAppropriateIndentationStyle() {
 		// contract: added elements in a source file should be indented with the same style of
-		// indentation as the rest of the file
+		// indentation as in the rest of the file
 
 		Consumer<CtType<?>> addElements = type -> {
 		    Factory fact = type.getFactory();
