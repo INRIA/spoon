@@ -93,6 +93,7 @@ public class DefaultPrettyPrinterTest {
 
 	@Test
 	public void testPrintClassWithStaticImportOfMethod() {
+		// contract: prettyprinter does not add static variables as imports after generating code
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
 		factory.getEnvironment().setAutoImports(true);
