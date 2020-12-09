@@ -79,9 +79,9 @@ public class IndentationDetector {
 			indentationSize = 1;
 		}
 
-		boolean usesTabs = wsPrecedingTypeMembers.stream()
+		boolean usesTabs = (double) wsPrecedingTypeMembers.stream()
 				.filter(s -> s.contains("\t"))
-				.count() >= wsPrecedingTypeMembers.size() / 2;
+				.count() >= (double) wsPrecedingTypeMembers.size() / 2;
 		return Pair.of(indentationSize, usesTabs);
 	}
 

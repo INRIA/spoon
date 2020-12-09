@@ -420,7 +420,7 @@ public class TestSniperPrinter {
 	@Test
 	public void testAddedElementsIndentedWithAppropriateIndentationStyle() {
 		// contract: added elements in a source file should be indented with the same style of
-		// indentation as the rest of the file
+		// indentation as in the rest of the file
 
 		Consumer<CtType<?>> addElements = type -> {
 		    Factory fact = type.getFactory();
@@ -444,6 +444,29 @@ public class TestSniperPrinter {
 		testSniper("indentation.Tabs", addElements, assertTabs);
 		testSniper("indentation.TwoSpaces", addElements, assertTwoSpaces);
 		testSniper("indentation.FourSpaces", addElements, assertFourSpaces);
+	}
+
+	@Test
+	public void testAddedElementsIndentedWithAppropriateIndentationStyleWhenOnlyOneTypeMemberExists() {
+		// contract: added elements in a source file should be indented with the same style of
+		// indentation as the single type member, when there is only one type member.
+
+		Consumer<CtType<?>> addElement = type -> {
+			Factory fact = type.getFactory();
+			fact.createField(type, new HashSet<>(), fact.Type().INTEGER_PRIMITIVE, "z", fact.createLiteral(2));
+		};
+		final String newField = "int z = 2;";
+
+		BiConsumer<CtType<?>, String> assertTabs = (type, result) ->
+				assertThat(result, containsString("\n\t" + newField));
+		BiConsumer<CtType<?>, String> assertTwoSpaces = (type, result) ->
+				assertThat(result, containsString("\n  " + newField));
+		BiConsumer<CtType<?>, String> assertFourSpaces = (type, result) ->
+				assertThat(result, containsString("\n    " + newField));
+
+		testSniper("indentation.singletypemember.Tabs", addElement, assertTabs);
+		testSniper("indentation.singletypemember.TwoSpaces", addElement, assertTwoSpaces);
+		testSniper("indentation.singletypemember.FourSpaces", addElement, assertFourSpaces);
 	}
 
 	@Test
