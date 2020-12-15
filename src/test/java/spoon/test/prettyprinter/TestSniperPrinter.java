@@ -12,9 +12,9 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import spoon.Launcher;
 import spoon.SpoonException;
-import spoon.processing.Processor;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
@@ -23,6 +23,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -33,8 +34,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.ImportCleaner;
-import spoon.reflect.visitor.ImportConflictDetector;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
@@ -55,16 +54,25 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.StringContains.containsString;
 
 public class TestSniperPrinter {
 
@@ -413,6 +421,111 @@ public class TestSniperPrinter {
 		testSniper("TypeMemberComments", addFinalModifier, assertFieldCorrectlyPrinted);
 	}
 
+	@Test
+	public void testAddedImportStatementPlacedOnSeparateLineInFileWithoutPackageStatement() {
+		// contract: newline must be inserted between import statements when a new one is added
+
+		Consumer<CtType<?>> addArrayListImport = type -> {
+			Factory factory = type.getFactory();
+			assertTrue("there should be no package statement in this test file", type.getPackage().isUnnamedPackage());
+			CtCompilationUnit cu = factory.CompilationUnit().getOrCreate(type);
+			CtTypeReference<?> arrayListRef = factory.Type().get(java.util.ArrayList.class).getReference();
+			cu.getImports().add(factory.createImport(arrayListRef));
+		};
+		BiConsumer<CtType<?>, String> assertImportsPrintedCorrectly = (type, result) -> {
+			assertThat(result, anyOf(
+					containsString("import java.util.Set;\nimport java.util.ArrayList;\n"),
+					containsString("import java.util.ArrayList;\nimport java.util.Set;\n")));
+		};
+
+		testSniper("ClassWithSingleImport", addArrayListImport, assertImportsPrintedCorrectly);
+	}
+
+	@Test
+	public void testAddedImportStatementPlacedOnSeparateLineInFileWithPackageStatement() {
+		// contract: newline must be inserted both before and after a new import statement if ther
+		// is a package statement in the file
+
+		Consumer<CtType<?>> addArrayListImport = type -> {
+			Factory factory = type.getFactory();
+			assertFalse("there should be a package statement in this test file", type.getPackage().isUnnamedPackage());
+			CtCompilationUnit cu = factory.CompilationUnit().getOrCreate(type);
+			CtTypeReference<?> arrayListRef = factory.Type().get(java.util.ArrayList.class).getReference();
+			cu.getImports().add(factory.createImport(arrayListRef));
+		};
+		BiConsumer<CtType<?>, String> assertImportsPrintedCorrectly = (type, result) -> {
+			assertThat(result, containsString("\nimport java.util.ArrayList;\n"));
+		};
+
+		testSniper("visibility.YamlRepresenter", addArrayListImport, assertImportsPrintedCorrectly);
+	}
+
+	@Test
+	public void testAddedElementsIndentedWithAppropriateIndentationStyle() {
+		// contract: added elements in a source file should be indented with the same style of
+		// indentation as in the rest of the file
+
+		Consumer<CtType<?>> addElements = type -> {
+		    Factory fact = type.getFactory();
+		    fact.createField(type, new HashSet<>(), fact.Type().INTEGER_PRIMITIVE, "z", fact.createLiteral(3));
+		    type.getMethod("sum").getBody()
+					.addStatement(0, fact.createCodeSnippetStatement("System.out.println(z);"));
+		};
+		BiConsumer<CtType<?>, String> assertTabs = (type, result) -> {
+			assertThat(result, containsString("\n\tint z = 3;"));
+			assertThat(result, containsString("\n\t\tSystem"));
+		};
+		BiConsumer<CtType<?>, String> assertTwoSpaces = (type, result) -> {
+		    assertThat(result, containsString("\n  int z = 3;"));
+		    assertThat(result, containsString("\n    System"));
+		};
+		BiConsumer<CtType<?>, String> assertFourSpaces = (type, result) -> {
+			assertThat(result, containsString("\n    int z = 3;"));
+			assertThat(result, containsString("\n        System"));
+		};
+
+		testSniper("indentation.Tabs", addElements, assertTabs);
+		testSniper("indentation.TwoSpaces", addElements, assertTwoSpaces);
+		testSniper("indentation.FourSpaces", addElements, assertFourSpaces);
+	}
+
+	@Test
+	public void testAddedElementsIndentedWithAppropriateIndentationStyleWhenOnlyOneTypeMemberExists() {
+		// contract: added elements in a source file should be indented with the same style of
+		// indentation as the single type member, when there is only one type member.
+
+		Consumer<CtType<?>> addElement = type -> {
+			Factory fact = type.getFactory();
+			fact.createField(type, new HashSet<>(), fact.Type().INTEGER_PRIMITIVE, "z", fact.createLiteral(2));
+		};
+		final String newField = "int z = 2;";
+
+		BiConsumer<CtType<?>, String> assertTabs = (type, result) ->
+				assertThat(result, containsString("\n\t" + newField));
+		BiConsumer<CtType<?>, String> assertTwoSpaces = (type, result) ->
+				assertThat(result, containsString("\n  " + newField));
+		BiConsumer<CtType<?>, String> assertFourSpaces = (type, result) ->
+				assertThat(result, containsString("\n    " + newField));
+
+		testSniper("indentation.singletypemember.Tabs", addElement, assertTabs);
+		testSniper("indentation.singletypemember.TwoSpaces", addElement, assertTwoSpaces);
+		testSniper("indentation.singletypemember.FourSpaces", addElement, assertFourSpaces);
+	}
+
+	@Test
+	public void testDefaultsToSingleTabIndentationWhenThereAreNoTypeMembers() {
+		// contract: if there are no type members in a compilation unit, the sniper printer defaults
+		// to indenting with 1 tab
+
+		Consumer<CtType<?>> addField = type -> {
+			Factory fact = type.getFactory();
+			fact.createField(type, new HashSet<>(), fact.Type().INTEGER_PRIMITIVE, "z", fact.createLiteral(3));
+		};
+		testSniper("indentation.NoTypeMembers", addField, (type, result) -> {
+			assertThat(result, containsString("\n\tint z = 3;"));
+		});
+	}
+
 	/**
 	 * 1) Runs spoon using sniper mode,
 	 * 2) runs `typeChanger` to modify the code,
@@ -442,16 +555,7 @@ public class TestSniperPrinter {
 	private static Launcher createLauncherWithSniperPrinter() {
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
-			SniperJavaPrettyPrinter printer = new SniperJavaPrettyPrinter(launcher.getEnvironment());
-			printer.setPreprocessors(Collections.unmodifiableList(Arrays.<Processor<CtElement>>asList(
-					//remove unused imports first. Do not add new imports at time when conflicts are not resolved
-					new ImportCleaner().setCanAddImports(false),
-					//solve conflicts, the current imports are relevant too
-					new ImportConflictDetector(),
-					//compute final imports
-					new ImportCleaner()
-			)));
-			return printer;
+			return new SniperJavaPrettyPrinter(launcher.getEnvironment());
 		});
 		return launcher;
 	}

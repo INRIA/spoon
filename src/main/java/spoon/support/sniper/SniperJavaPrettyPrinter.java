@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
@@ -35,6 +36,7 @@ import spoon.support.sniper.internal.ChangeResolver;
 import spoon.support.sniper.internal.CollectionSourceFragment;
 import spoon.support.sniper.internal.ElementPrinterEvent;
 import spoon.support.sniper.internal.ElementSourceFragment;
+import spoon.support.sniper.internal.IndentationDetector;
 import spoon.support.sniper.internal.ModificationStatus;
 import spoon.support.sniper.internal.MutableTokenWriter;
 import spoon.support.sniper.internal.PrinterEvent;
@@ -132,6 +134,12 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 
 		//use line separator of origin source file
 		setLineSeparator(detectLineSeparator(compilationUnit.getOriginalSourceCode()));
+
+		// use indentation style of origin source file for new elements
+		Pair<Integer, Boolean> indentationInfo = IndentationDetector.detectIndentation(compilationUnit);
+		mutableTokenWriter.setOriginSourceTabulationSize(indentationInfo.getLeft());
+		mutableTokenWriter.setOriginSourceUsesTabulations(indentationInfo.getRight());
+
 		runInContext(new SourceFragmentContextList(mutableTokenWriter,
 				compilationUnit,
 				Collections.singletonList(compilationUnit.getOriginalSourceFragment()),
