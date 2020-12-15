@@ -193,6 +193,9 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 						} else {
 							//comment is not modified write origin sources
 							mutableTokenWriter.write(fragment.getSourceCode());
+							if (childAtIdxIsModifiedCollectionSourceFragment(i + 1)) {
+								mutableTokenWriter.directPrint("\n");
+							}
 						}
 						//we printed the comment, so we can print next space too
 						canPrintSpace = true;
@@ -217,6 +220,13 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 			}
 		}
 		separatorActions.clear();
+	}
+
+	private boolean childAtIdxIsModifiedCollectionSourceFragment(int idx) {
+		SourceFragment nextElement = idx < childFragments.size() ?
+				childFragments.get(idx) : null;
+		return nextElement instanceof CollectionSourceFragment
+				&& isFragmentModified(nextElement) != ModificationStatus.NOT_MODIFIED;
 	}
 
 	/**
