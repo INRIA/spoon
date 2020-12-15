@@ -41,6 +41,8 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 	//If next element is new, then run collected separator actions to print DJPP separators
 	protected final List<Runnable> separatorActions = new ArrayList<>();
 
+	private List<Integer> commentFragmentsToBePrinted = new ArrayList<>();
+
 	protected AbstractSourceFragmentPrinter(MutableTokenWriter mutableTokenWriter, ChangeResolver changeResolver, List<SourceFragment> childFragments) {
 		this.mutableTokenWriter = mutableTokenWriter;
 		this.changeResolver = changeResolver;
@@ -101,6 +103,10 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 			//note: DJPP sends comments in wrong order/wrong place.
 			//so skip printing of this comment
 			//comment will be printed at place where it belongs to - together with spaces
+
+			// sometimes when the element directly succeeding the comment is deleted, the comment is lost,
+			// and so we must keep track of all comments to be printed
+			commentFragmentsToBePrinted.add(fragmentIndex);
 			return -1;
 		} else if (event.getRole() == CtRole.DECLARED_IMPORT && fragmentIndex == 0) {
 			// this is the first pre-existing import statement, and so we must print all newline
@@ -176,10 +182,13 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 	 * @param toIndex index of first not processed fragment.
 	 */
 	protected void printOriginSpacesUntilFragmentIndex(int fromIndex, int toIndex) {
+		int adjustedFromIndex = Math.min(commentFragmentsToBePrinted.isEmpty() ?
+				fromIndex : commentFragmentsToBePrinted.get(0), fromIndex);
+
 		//print all not yet printed comments which still exist in parent
 		boolean canPrintSpace = true;
 		boolean skipSpaceAfterDeletedElement = false;
-		for (int i = fromIndex; i < toIndex; i++) {
+		for (int i = adjustedFromIndex; i < toIndex; i++) {
 			SourceFragment fragment = childFragments.get(i);
 			if (fragment instanceof ElementSourceFragment) {
 				ElementSourceFragment sourceFragment = (ElementSourceFragment) fragment;
@@ -220,6 +229,7 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 			}
 		}
 		separatorActions.clear();
+		commentFragmentsToBePrinted.clear();
 	}
 
 	private boolean childAtIdxIsModifiedCollectionSourceFragment(int idx) {
@@ -325,6 +335,16 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 			return i + 1;
 		}
 		return 0;
+	}
+
+	private boolean elementExists(SourceFragment fragment) {
+		if (fragment instanceof ElementSourceFragment) {
+			return changeResolver.isElementExists(((ElementSourceFragment) fragment).getElement());
+		} else if (fragment instanceof CollectionSourceFragment) {
+			return ((CollectionSourceFragment) fragment).getItems().stream().anyMatch(this::elementExists);
+		} else {
+			return true;
+		}
 	}
 
 	@Override
