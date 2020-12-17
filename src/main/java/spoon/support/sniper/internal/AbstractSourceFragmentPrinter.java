@@ -182,8 +182,8 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 	 * @param toIndex index of first not processed fragment.
 	 */
 	protected void printOriginSpacesUntilFragmentIndex(int fromIndex, int toIndex) {
-		int adjustedFromIndex = Math.min(commentFragmentsToBePrinted.isEmpty()
-				? fromIndex : commentFragmentsToBePrinted.get(0), fromIndex);
+		int adjustedFromIndex = Math.min(commentFragmentsToBePrinted.isEmpty() ?
+				fromIndex : commentFragmentsToBePrinted.get(0), fromIndex);
 
 		//print all not yet printed comments which still exist in parent
 		boolean canPrintSpace = true;
@@ -233,8 +233,8 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 	}
 
 	private boolean childAtIdxIsModifiedCollectionSourceFragment(int idx) {
-		SourceFragment nextElement = idx < childFragments.size()
-				? childFragments.get(idx) : null;
+		SourceFragment nextElement = idx < childFragments.size() ?
+				childFragments.get(idx) : null;
 		return nextElement instanceof CollectionSourceFragment
 				&& isFragmentModified(nextElement) != ModificationStatus.NOT_MODIFIED;
 	}
