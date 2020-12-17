@@ -197,7 +197,7 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 
 						if (childAtIdxIsModifiedCollectionSourceFragment(i + 1)) {
 							// This is typically when the next child is a modified modifier list.
-						    // We must forcibly print a linefeed in this case, as the linefeed
+							// We must forcibly print a linefeed in this case, as the linefeed
 							// is part of the collection fragment and will thus not be printed with
 							// the comment, nor with the collection fragment itself due to corner
 							// case of entering the collection fragment "too late".
@@ -231,8 +231,8 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 	}
 
 	private boolean childAtIdxIsModifiedCollectionSourceFragment(int idx) {
-		SourceFragment nextElement = idx < childFragments.size() ?
-				childFragments.get(idx) : null;
+		SourceFragment nextElement = idx < childFragments.size()
+				? childFragments.get(idx) : null;
 		return nextElement instanceof CollectionSourceFragment
 				&& isFragmentModified(nextElement) != ModificationStatus.NOT_MODIFIED;
 	}
