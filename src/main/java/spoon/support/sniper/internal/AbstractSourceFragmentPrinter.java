@@ -194,6 +194,7 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 							//comment is not modified write origin sources
 							mutableTokenWriter.write(fragment.getSourceCode());
 						}
+						//we printed the comment, so we can print next space too
 						canPrintSpace = true;
 					} else {
 						//comment was remove
