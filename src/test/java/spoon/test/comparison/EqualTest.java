@@ -19,24 +19,18 @@ package spoon.test.comparison;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtTry;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.visitor.equals.EqualsVisitor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class EqualTest {
 
@@ -127,5 +121,19 @@ public class EqualTest {
 		assertSame(var2.getCatchers().get(0).getParameter().getMultiTypes(), ev.getNotEqualElement());
 		assertSame(var.getCatchers().get(0).getParameter().getMultiTypes(), ev.getNotEqualOther());
 		assertSame(CtRole.MULTI_TYPE, ev.getNotEqualRole());
+	}
+
+	@Test
+	public void testInnerElementEquality() {
+		// contract: elements that have different declaring inner or anonymous classes should not be equal
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/spoon/test/comparison/Anonymous.java");
+		launcher.buildModel();
+		List<CtMethod> methods = launcher.getModel().getRootPackage().getElements(new TypeFilter<>(CtMethod.class));
+		assertFalse(methods.get(0).equals(methods.get(1)));
+		assertFalse(methods.get(1).equals(methods.get(2)));
+		assertFalse(methods.get(2).equals(methods.get(3)));
+		assertFalse(methods.get(3).equals(methods.get(4)));
+		assertFalse(methods.get(4).equals(methods.get(5)));
 	}
 }

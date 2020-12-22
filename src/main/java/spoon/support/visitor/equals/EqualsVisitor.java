@@ -8,9 +8,13 @@
 package spoon.support.visitor.equals;
 
 
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtBiScannerDefault;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.Collection;
 
@@ -96,15 +100,49 @@ public class EqualsVisitor extends CtBiScannerDefault {
 		if (element == other) {
 			return;
 		}
-
 		try {
 			lastRole = role;
+			if (haveDifferentDeclaringInnerClasses(element, other)) {
+				fail(role, element, other);
+				return;
+			}
 			super.biScan(element, other);
 		} catch (java.lang.ClassCastException e) {
 			fail(role, element, other);
 		} finally {
 			lastRole = null;
 		}
+	}
+
+	private boolean haveDifferentDeclaringInnerClasses(CtElement element, CtElement other) {
+		if (element instanceof CtReference || other instanceof CtReference) {
+			return false;
+		}
+		CtClass innerClassParent1;
+		CtClass innerClassParent2;
+		try {
+			innerClassParent1 = element.getParent(new TypeFilter<>(CtClass.class));
+			innerClassParent2 = other.getParent(new TypeFilter<>(CtClass.class));
+		} catch (ParentNotInitializedException e) {
+			return false;
+		}
+		if (innerClassParent1 == null || innerClassParent2 == null) {
+			return false;
+		}
+		if ((!innerClassParent1.isTopLevel() && innerClassParent2.isTopLevel())
+				|| (innerClassParent1.isTopLevel() && !innerClassParent2.isTopLevel())) {
+			return true;
+		}
+		if (innerClassParent1.isTopLevel() || innerClassParent2.isTopLevel()) {
+			return false;
+		}
+		int lastDot1 = innerClassParent1.getQualifiedName().lastIndexOf('.');
+		int lastDot2 = innerClassParent2.getQualifiedName().lastIndexOf('.');
+
+		// remove package name
+		String name1 = innerClassParent1.getQualifiedName().substring(lastDot1 + 1);
+		String name2 = innerClassParent2.getQualifiedName().substring(lastDot2 + 1);
+		return !name1.equals(name2);
 	}
 
 	protected boolean fail(CtRole role, Object element, Object other) {
