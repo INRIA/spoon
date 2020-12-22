@@ -58,17 +58,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.isA;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -376,6 +372,67 @@ public class TestSniperPrinter {
 		} catch (IllegalArgumentException e) {
 		    // pass
 		}
+	}
+
+	@Test
+	public void testNewlineInsertedBetweenCommentAndTypeMemberWithAddedModifier() {
+		// contract: newline must be inserted after comment when a succeeding type member has had a
+		// modifier added to it
+
+		Consumer<CtType<?>> addModifiers = type -> {
+			type.getField("NON_FINAL_FIELD")
+					.addModifier(ModifierKind.FINAL);
+			type.getMethod("nonStaticMethod").addModifier(ModifierKind.STATIC);
+			type.getNestedType("NonStaticInnerClass").addModifier(ModifierKind.STATIC);
+		};
+		BiConsumer<CtType<?>, String> assertCommentsCorrectlyPrinted = (type, result) -> {
+		    assertThat(result, containsString("// field comment\n"));
+			assertThat(result, containsString("// method comment\n"));
+			assertThat(result, containsString("// nested type comment\n"));
+		};
+
+		testSniper("TypeMemberComments", addModifiers, assertCommentsCorrectlyPrinted);
+	}
+
+	@Test
+	public void testNewlineInsertedBetweenCommentAndTypeMemberWithRemovedModifier() {
+		// contract: newline must be inserted after comment when a succeeding field has had a
+		// modifier removed from it
+
+		Consumer<CtType<?>> removeModifier = type -> {
+			// we only test removing a modifier from the field in this test, as removing the
+			// last modifier leads to a different corner case where the comment disappears
+			// altogether
+			type.getField("NON_FINAL_FIELD")
+					.removeModifier(ModifierKind.PUBLIC);
+		};
+
+		BiConsumer<CtType<?>, String> assertCommentCorrectlyPrinted = (type, result) -> {
+			assertThat(result, containsString("// field comment\n"));
+		};
+
+		testSniper("TypeMemberComments", removeModifier, assertCommentCorrectlyPrinted);
+	}
+
+	@Test
+	public void testNewlineInsertedBetweenModifiedCommentAndTypeMemberWithAddedModifier() {
+		// contract: newline must be inserted after modified comment when a succeeding type member
+		// has had its modifier list modified. We test modified comments separately from
+		// non-modified comments as they are handled differently in the printer.
+
+		final String commentContent = "modified comment";
+
+		Consumer<CtType<?>> enactModifications = type -> {
+			CtField<?> field = type.getField("NON_FINAL_FIELD");
+			field.addModifier(ModifierKind.FINAL);
+			field.getComments().get(0).setContent(commentContent);
+		};
+
+		BiConsumer<CtType<?>, String> assertCommentCorrectlyPrinted = (type, result) -> {
+			assertThat(result, containsString("// " + commentContent + "\n"));
+		};
+
+		testSniper("TypeMemberComments", enactModifications, assertCommentCorrectlyPrinted);
 	}
 
 	@Test

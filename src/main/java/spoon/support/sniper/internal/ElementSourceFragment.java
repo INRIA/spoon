@@ -500,7 +500,7 @@ public class ElementSourceFragment implements SourceFragment {
 				foundRoles.add(checkNotNull(esf.getRoleInParent()));
 				List<SourceFragment> childrenInSameCollection = new ArrayList<>();
 				//but first include prefix whitespace
-				SourceFragment spaceChild = removeSuffixSpace(result);
+				SourceFragment spaceChild = removeNonCommentSuffixSpace(result);
 				if (spaceChild != null) {
 					childrenInSameCollection.add(spaceChild);
 				}
@@ -540,10 +540,16 @@ public class ElementSourceFragment implements SourceFragment {
 		return result;
 	}
 
-	private SourceFragment removeSuffixSpace(List<SourceFragment> list) {
+	/**
+	 * Remove any suffix space, except if it follows directly after a comment. As comments are
+	 * treated as whitespace, the suffix space must be considered part of the comment, or we
+	 * sometimes fail to print it.
+	 */
+	private SourceFragment removeNonCommentSuffixSpace(List<SourceFragment> list) {
 		if (list.size() > 0) {
 			SourceFragment lastChild = list.get(list.size() - 1);
-			if (isSpaceFragment(lastChild)) {
+			SourceFragment secondLastChild = list.size() > 1 ? list.get(list.size() - 2) : null;
+			if (isSpaceFragment(lastChild) && !isCommentFragment(secondLastChild)) {
 				list.remove(list.size() - 1);
 				return lastChild;
 			}
