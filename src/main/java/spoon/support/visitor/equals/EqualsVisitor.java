@@ -126,15 +126,13 @@ public class EqualsVisitor extends CtBiScannerDefault {
 		} catch (ParentNotInitializedException e) {
 			return false;
 		}
-		if (innerClassParent1 == null || innerClassParent2 == null) {
+		if (innerClassParent1 == null || innerClassParent2 == null
+				|| (innerClassParent1.isTopLevel() && innerClassParent2.isTopLevel())) {
 			return false;
 		}
 		if ((!innerClassParent1.isTopLevel() && innerClassParent2.isTopLevel())
 				|| (innerClassParent1.isTopLevel() && !innerClassParent2.isTopLevel())) {
 			return true;
-		}
-		if (innerClassParent1.isTopLevel() || innerClassParent2.isTopLevel()) {
-			return false;
 		}
 		int lastDot1 = innerClassParent1.getQualifiedName().lastIndexOf('.');
 		int lastDot2 = innerClassParent2.getQualifiedName().lastIndexOf('.');
