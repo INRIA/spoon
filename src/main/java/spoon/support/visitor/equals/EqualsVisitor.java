@@ -102,16 +102,35 @@ public class EqualsVisitor extends CtBiScannerDefault {
 		}
 		try {
 			lastRole = role;
-			if (haveDifferentDeclaringInnerClasses(element, other)) {
-				fail(role, element, other);
-				return;
-			}
 			super.biScan(element, other);
 		} catch (java.lang.ClassCastException e) {
 			fail(role, element, other);
 		} finally {
 			lastRole = null;
 		}
+	}
+
+	protected boolean fail(CtRole role, Object element, Object other) {
+		isNotEqual = true;
+		notEqualRole = role;
+		notEqualElement = element;
+		notEqualOther = other;
+		return true;
+	}
+
+	/**
+	 * @param element first to be compared element
+	 * @param other second to be compared element
+	 * @return true if `element` and `other` are equal. If false then see
+	 * {@link #getNotEqualElement()}, {@link #getNotEqualOther()} and {@link #getNotEqualRole()} for details
+	 */
+	public boolean checkEquals(CtElement element, CtElement other) {
+		if (haveDifferentDeclaringInnerClasses(element, other)) {
+				fail(null, element, other);
+				return false;
+		}
+		biScan(element, other);
+		return !isNotEqual;
 	}
 
 	private boolean haveDifferentDeclaringInnerClasses(CtElement element, CtElement other) {
@@ -137,29 +156,10 @@ public class EqualsVisitor extends CtBiScannerDefault {
 		int lastDot1 = innerClassParent1.getQualifiedName().lastIndexOf('.');
 		int lastDot2 = innerClassParent2.getQualifiedName().lastIndexOf('.');
 
-		// remove package name
+		// remove package name (everything prior to and including the last dot)
 		String name1 = innerClassParent1.getQualifiedName().substring(lastDot1 + 1);
 		String name2 = innerClassParent2.getQualifiedName().substring(lastDot2 + 1);
 		return !name1.equals(name2);
-	}
-
-	protected boolean fail(CtRole role, Object element, Object other) {
-		isNotEqual = true;
-		notEqualRole = role;
-		notEqualElement = element;
-		notEqualOther = other;
-		return true;
-	}
-
-	/**
-	 * @param element first to be compared element
-	 * @param other second to be compared element
-	 * @return true if `element` and `other` are equal. If false then see
-	 * {@link #getNotEqualElement()}, {@link #getNotEqualOther()} and {@link #getNotEqualRole()} for details
-	 */
-	public boolean checkEquals(CtElement element, CtElement other) {
-		biScan(element, other);
-		return !isNotEqual;
 	}
 
 	/**
