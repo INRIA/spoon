@@ -1,12 +1,14 @@
-public class Anonymous {
+package spoon;
+
+public class InnerClasses {
     public static abstract class AbstractClass {
     }
 
     public void test() {
     }
 
-    public Anonymous.AbstractClass one = new Anonymous.AbstractClass() {
-        public Anonymous.AbstractClass one = new Anonymous.AbstractClass() {
+    public AbstractClass one = new AbstractClass() {
+        public AbstractClass one = new AbstractClass() {
             public void test() {
             }
         };
@@ -15,12 +17,12 @@ public class Anonymous {
         }
     };
 
-    public Anonymous.AbstractClass two = new Anonymous.AbstractClass() {
+    static public AbstractClass two = new AbstractClass() {
         public void test() {
         }
     };
 
-    class Inner1 {
+    static class Inner1 {
         public void test() {
         }
     }

@@ -127,7 +127,7 @@ public class EqualTest {
 	public void testInnerElementEquality() {
 		// contract: elements that have different declaring inner or anonymous classes should not be equal
 		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/spoon/test/comparison/Anonymous.java");
+		launcher.addInputResource("./src/test/resources/spoon/test/comparison/InnerClasses.java");
 		launcher.buildModel();
 		List<CtMethod> methods = launcher.getModel().getRootPackage().getElements(new TypeFilter<>(CtMethod.class));
 		assertFalse(methods.get(0).equals(methods.get(1)));
