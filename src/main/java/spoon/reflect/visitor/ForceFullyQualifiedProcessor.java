@@ -45,7 +45,9 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScope> {
 				return;
 			}
 
-			if (isTypeReferenceToEnclosingType(nameScope, reference) && reference.getParent(CtAnonymousExecutable.class) != null) {
+			if (isTypeReferenceToEnclosingType(nameScope, reference) &&
+					reference.isParentInitialized() &&
+					reference.getParent(CtAnonymousExecutable.class) != null) {
 				// for the java compiler, we must keep short version of field accesses in static blocks
 				return;
 			}
@@ -61,7 +63,7 @@ public class ForceFullyQualifiedProcessor extends ImportAnalyzer<LexicalScope> {
 	}
 
 	protected boolean isTypeReferenceToEnclosingType(LexicalScope nameScope, CtTypeReference<?> reference) {
-		CtType<?> enclosingType = reference.getParent(CtType.class);
+		CtType<?> enclosingType = reference.isParentInitialized() ? reference.getParent(CtType.class) : null;
 		if (enclosingType == null) {
 			return false;
 		}

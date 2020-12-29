@@ -696,7 +696,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (declType == null) {
 			throw new SpoonException("The declaring type is expected, but " + getQualifiedName() + " is top level type");
 		}
-		CtType<?> contextType = getParent(CtType.class);
+		CtType<?> contextType = isParentInitialized() ? getParent(CtType.class) : null;
 		if (contextType == null) {
 			return declType;
 		}

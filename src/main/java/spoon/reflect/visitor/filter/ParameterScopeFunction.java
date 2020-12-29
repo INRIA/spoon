@@ -42,7 +42,7 @@ public class ParameterScopeFunction implements CtConsumableFunction<CtParameter<
 
 	@Override
 	public void apply(CtParameter<?> parameter, CtConsumer<Object> outputConsumer) {
-		CtExecutable<?> exec = parameter.getParent(CtExecutable.class);
+		CtExecutable<?> exec = parameter.isParentInitialized() ? parameter.getParent(CtExecutable.class) : null;
 		if (exec == null) {
 			//cannot search for parameter references of parameter which has no executable
 			return;

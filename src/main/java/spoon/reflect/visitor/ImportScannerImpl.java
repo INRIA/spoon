@@ -306,7 +306,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 			addClassImport(simpleType.getReference());
 			scan(simpleType);
 		} else {
-			CtType<?> type = element.getParent(CtType.class);
+			CtType<?> type = element.isParentInitialized() ? element.getParent(CtType.class) : null;
 			targetType = type == null ? null : type.getReference().getTopLevelType();
 			scan(element);
 		}
@@ -635,7 +635,7 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 	 * @return
 	 */
 	private boolean isInCollisionWithLocalMethod(CtExecutableReference ref) {
-		CtType<?> typeDecl = ref.getParent(CtType.class);
+		CtType<?> typeDecl = ref.isParentInitialized() ? ref.getParent(CtType.class) : null;
 
 		if (typeDecl != null) {
 			String methodName = ref.getSimpleName();

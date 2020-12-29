@@ -126,9 +126,11 @@ public class PatternBuilder {
 				t = (CtType) ctElement;
 				type = mergeType(type, t);
 			}
-			t = ctElement.getParent(CtType.class);
-			if (t != null) {
-				type = mergeType(type, t);
+			if (ctElement.isParentInitialized()) {
+				t = ctElement.getParent(CtType.class);
+				if (t != null) {
+					type = mergeType(type, t);
+				}
 			}
 		}
 		return type == null ? null : type.getReference();
