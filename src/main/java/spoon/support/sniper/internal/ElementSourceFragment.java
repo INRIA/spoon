@@ -87,8 +87,7 @@ public class ElementSourceFragment implements SourceFragment {
 			// were imported from, so we must unconditionally return the import's position instead
 			// of its childrens'. See https://github.com/INRIA/spoon/issues/3743 for details
 			return start;
-		}
-		if (firstChild != null) {
+		} else if (firstChild != null) {
 			return Math.min(start, firstChild.getStart());
 		}
 		return start;
@@ -104,8 +103,7 @@ public class ElementSourceFragment implements SourceFragment {
 			// were imported from, so we must unconditionally return the import's position instead
 			// of its childrens'. See https://github.com/INRIA/spoon/issues/3743 for details
 			return end;
-		}
-		if (firstChild != null) {
+		} else if (firstChild != null) {
 			return Math.max(end, firstChild.getLastSibling().getEnd());
 		}
 		return end;
