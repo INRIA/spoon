@@ -18,8 +18,6 @@ import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtImport;
-import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
@@ -81,35 +79,20 @@ public class ElementSourceFragment implements SourceFragment {
 	 * @return offset of first character which belongs to this fragment
 	 */
 	public int getStart() {
-		int start = getSourcePosition().getSourceStart();
-		if (firstChild == null || isMethodImport(element)) {
-			// method imports have child type references with source positions in the files they
-			// were imported from, so we must unconditionally return the import's position instead
-			// of its childrens'. See https://github.com/INRIA/spoon/issues/3743 for details
-			return start;
-		} else {
-			return Math.min(start, firstChild.getStart());
+		if (firstChild != null) {
+			return Math.min(getSourcePosition().getSourceStart(), firstChild.getStart());
 		}
+		return getSourcePosition().getSourceStart();
 	}
 
 	/**
 	 * @return offset of character after this fragment
 	 */
 	public int getEnd() {
-		int end = getSourcePosition().getSourceEnd() + 1;
-		if (firstChild == null || isMethodImport(element)) {
-			// method imports have child type references with source positions in the files they
-			// were imported from, so we must unconditionally return the import's position instead
-			// of its childrens'. See https://github.com/INRIA/spoon/issues/3743 for details
-			return end;
-		} else {
-			return Math.max(end, firstChild.getLastSibling().getEnd());
+		if (firstChild != null) {
+			return Math.max(getSourcePosition().getSourceEnd() + 1, firstChild.getLastSibling().getEnd());
 		}
-	}
-
-	private static boolean isMethodImport(SourcePositionHolder element) {
-		return element instanceof CtImport
-				&& ((CtImport) element).getImportKind() == CtImportKind.METHOD;
+		return getSourcePosition().getSourceEnd() + 1;
 	}
 
 	/**
@@ -253,13 +236,25 @@ public class ElementSourceFragment implements SourceFragment {
 	 */
 	private ElementSourceFragment addChild(CtRole roleInParent, SourcePositionHolder otherElement) {
 		SourcePosition otherSourcePosition = otherElement.getPosition();
-		if (otherSourcePosition instanceof SourcePositionImpl && !(otherSourcePosition.getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
+		if (otherSourcePosition instanceof SourcePositionImpl && !(otherSourcePosition.getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)
+				// method imports have child type references from other files, see https://github.com/INRIA/spoon/issues/3743
+				&& fromSameFile(element, otherElement)) {
 				ElementSourceFragment otherFragment = new ElementSourceFragment(otherElement, this.getRoleHandler(roleInParent, otherElement));
 			this.addChild(otherFragment);
 			return otherFragment;
 		}
 		//do not connect that undefined source position
 		return null;
+	}
+
+	private static boolean fromSameFile(SourcePositionHolder parent, SourcePositionHolder child) {
+		SourcePosition parentPos = parent.getPosition();
+		SourcePosition childPos = child.getPosition();
+
+		return parentPos.getFile().equals(childPos.getFile())
+				// we always consider the children of a compilation unit to be from the same file,
+				// as this is required e.g. to support sniper printing of renamed classes
+				|| parent instanceof CtCompilationUnit;
 	}
 
 	private RoleHandler getRoleHandler(CtRole roleInParent, SourcePositionHolder otherElement) {

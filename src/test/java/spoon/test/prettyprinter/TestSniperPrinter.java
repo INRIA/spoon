@@ -78,7 +78,7 @@ public class TestSniperPrinter {
 	public void testClassRename1() throws Exception {
 		// contract: one can sniper out of the box after Refactoring.changeTypeName
 		testClassRename(type -> {
-			Refactoring.changeTypeName(type, "Bar");
+			Refactoring.changeTypeName(type, "A");
 		});
 	}
 
@@ -87,7 +87,7 @@ public class TestSniperPrinter {
 		// contract: one can sniper after setSimpleName
 		// with the necessary tweaks
 		testClassRename(type -> {
-			type.setSimpleName("Bar");
+			type.setSimpleName("A");
 			type.getFactory().CompilationUnit().addType(type);
 		});
 
@@ -114,7 +114,7 @@ public class TestSniperPrinter {
 
 
 		String contentOfPrettyPrintedClassFromDisk = getContentOfPrettyPrintedClassFromDisk(type);
-		assertTrue(contentOfPrettyPrintedClassFromDisk, contentOfPrettyPrintedClassFromDisk.contains("EOLs*/ Bar<T, K>"));
+		assertTrue(contentOfPrettyPrintedClassFromDisk, contentOfPrettyPrintedClassFromDisk.contains("EOLs*/ A<T, K>"));
 
 	}
 
