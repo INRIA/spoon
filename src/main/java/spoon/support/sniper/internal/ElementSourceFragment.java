@@ -18,6 +18,8 @@ import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
+import spoon.reflect.declaration.CtImportKind;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
@@ -89,10 +91,21 @@ public class ElementSourceFragment implements SourceFragment {
 	 * @return offset of character after this fragment
 	 */
 	public int getEnd() {
+		if (isMethodImport(element)) {
+			// method imports have child type references with source positions in the files they
+			// were imported from, so we must unconditionally return the import's position instead
+			// of its childrens'. See https://github.com/INRIA/spoon/issues/3743 for details
+			return getSourcePosition().getSourceEnd() + 1;
+		}
 		if (firstChild != null) {
 			return Math.max(getSourcePosition().getSourceEnd() + 1, firstChild.getLastSibling().getEnd());
 		}
 		return getSourcePosition().getSourceEnd() + 1;
+	}
+
+	private static boolean isMethodImport(SourcePositionHolder element) {
+		return element instanceof CtImport
+				&& ((CtImport) element).getImportKind() == CtImportKind.METHOD;
 	}
 
 	/**
