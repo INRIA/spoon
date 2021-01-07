@@ -540,6 +540,28 @@ public class TestSniperPrinter {
 		});
 	}
 
+	@Test
+	public void testPrintFileWithStaticMethodImport() {
+		// contract: the sniper printer should correctly print a static method import when that
+		// method is available in some source file. This is an edge case as static method imports
+		// have type references (such as the return type) with source positions in the file from
+		// which the method is imported, rather than the file in which the import statement exists.
+
+		Launcher launcher = createLauncherWithSniperPrinter();
+		launcher.addInputResource(getResourcePath("staticmethodimport.ClassWithStaticMethod"));
+		launcher.addInputResource(getResourcePath("staticmethodimport.ClassWithStaticMethodImport"));
+
+		CtModel model = launcher.buildModel();
+		CtType<?> classWithStaticMethodImport = model.getAllTypes().stream()
+				.filter(type -> type.getSimpleName().endsWith("Import")).findFirst().get();
+
+		String output = launcher
+				.getEnvironment()
+				.createPrettyPrinter().printTypes(classWithStaticMethodImport);
+
+		assertThat(output, containsString("import static staticmethodimport.ClassWithStaticMethod.staticMethod;"));
+	}
+
 	/**
 	 * 1) Runs spoon using sniper mode,
 	 * 2) runs `typeChanger` to modify the code,
