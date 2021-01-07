@@ -22,6 +22,8 @@ jobs:
       matrix:
         java: [1.8, 11, 15]
         os: [ubuntu-latest, windows-latest]
+        env:
+          MAVEN_OPTS: -Djava.src.version=${{ matrix.java }}
         exclude:
           - os: windows-latest
             java: 11
@@ -37,7 +39,7 @@ jobs:
       - name: Use silent log config
         run: mv chore/travis/logback.xml src/test/resources/
       - name: Build and test
-        run: mvn -Djava.src.version=${{ matrix.java }} test
+        run: mvn test
 
   coverage:
     runs-on: ubuntu-latest
