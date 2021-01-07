@@ -38,7 +38,7 @@ jobs:
         run: mv chore/travis/logback.xml src/test/resources/
       - name: Build and test
         env:
-          MAVEN_OPTS: -Djava.src.version=${{ matrix.java }}
+          MAVEN_OPTS: -Djava.src.version ${{ matrix.java }}
         run: mvn test
 
   coverage:
