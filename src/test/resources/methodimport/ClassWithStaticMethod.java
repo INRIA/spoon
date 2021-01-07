@@ -1,4 +1,4 @@
-package staticmethodimport;
+package methodimport;
 
 public class ClassWithStaticMethod {
     public static void main(String[] args) {
