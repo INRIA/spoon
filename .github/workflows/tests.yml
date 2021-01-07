@@ -17,10 +17,16 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest, windows-latest]
     strategy:
       matrix:
         java: [1.8, 11, 15]
+        exclude:
+          - os: windows-latest
+            java: 11
+          - os: windows-latest
+            java: 15
+
     name: Tests with Java ${{ matrix.java }}
     steps:
       - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # v2.3.4
