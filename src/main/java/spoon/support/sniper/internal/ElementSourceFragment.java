@@ -81,26 +81,34 @@ public class ElementSourceFragment implements SourceFragment {
 	 * @return offset of first character which belongs to this fragment
 	 */
 	public int getStart() {
-		if (firstChild != null) {
-			return Math.min(getSourcePosition().getSourceStart(), firstChild.getStart());
+		int start = getSourcePosition().getSourceStart();
+		if (isMethodImport(element)) {
+			// method imports have child type references with source positions in the files they
+			// were imported from, so we must unconditionally return the import's position instead
+			// of its childrens'. See https://github.com/INRIA/spoon/issues/3743 for details
+			return start;
 		}
-		return getSourcePosition().getSourceStart();
+		if (firstChild != null) {
+			return Math.min(start, firstChild.getStart());
+		}
+		return start;
 	}
 
 	/**
 	 * @return offset of character after this fragment
 	 */
 	public int getEnd() {
+		int end = getSourcePosition().getSourceEnd() + 1;
 		if (isMethodImport(element)) {
 			// method imports have child type references with source positions in the files they
 			// were imported from, so we must unconditionally return the import's position instead
 			// of its childrens'. See https://github.com/INRIA/spoon/issues/3743 for details
-			return getSourcePosition().getSourceEnd() + 1;
+			return end;
 		}
 		if (firstChild != null) {
-			return Math.max(getSourcePosition().getSourceEnd() + 1, firstChild.getLastSibling().getEnd());
+			return Math.max(end, firstChild.getLastSibling().getEnd());
 		}
-		return getSourcePosition().getSourceEnd() + 1;
+		return end;
 	}
 
 	private static boolean isMethodImport(SourcePositionHolder element) {
