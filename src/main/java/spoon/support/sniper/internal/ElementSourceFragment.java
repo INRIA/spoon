@@ -82,15 +82,14 @@ public class ElementSourceFragment implements SourceFragment {
 	 */
 	public int getStart() {
 		int start = getSourcePosition().getSourceStart();
-		if (isMethodImport(element)) {
+		if (firstChild == null || isMethodImport(element)) {
 			// method imports have child type references with source positions in the files they
 			// were imported from, so we must unconditionally return the import's position instead
 			// of its childrens'. See https://github.com/INRIA/spoon/issues/3743 for details
 			return start;
-		} else if (firstChild != null) {
+		} else {
 			return Math.min(start, firstChild.getStart());
 		}
-		return start;
 	}
 
 	/**
@@ -98,15 +97,14 @@ public class ElementSourceFragment implements SourceFragment {
 	 */
 	public int getEnd() {
 		int end = getSourcePosition().getSourceEnd() + 1;
-		if (isMethodImport(element)) {
+		if (firstChild == null || isMethodImport(element)) {
 			// method imports have child type references with source positions in the files they
 			// were imported from, so we must unconditionally return the import's position instead
 			// of its childrens'. See https://github.com/INRIA/spoon/issues/3743 for details
 			return end;
-		} else if (firstChild != null) {
+		} else {
 			return Math.max(end, firstChild.getLastSibling().getEnd());
 		}
-		return end;
 	}
 
 	private static boolean isMethodImport(SourcePositionHolder element) {
