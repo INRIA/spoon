@@ -20,6 +20,8 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
@@ -95,6 +97,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testBlockStatementWithinBody(){
 		// contract: test a CtBlock within body is commented out as a block comment
 		Launcher launcher = setUpTest();
@@ -122,6 +125,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testMethodBodyNonEmptyStatement(){
 		// contract: test CtBlock representing method body is commented out by commenting all contained statements individually
 		Launcher launcher = setUpTest();
@@ -178,6 +182,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testIfStatement(){
 		// contract: test commenting of if statement
 		Launcher launcher = setUpTest();
@@ -210,6 +215,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testLoopStatement(){
 		// contract: test commenting of loop statement
 		Launcher launcher = setUpTest();
@@ -225,6 +231,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testSwitchStatement(){
 		// contract: test commenting of switch statement
 		Launcher launcher = setUpTest();
@@ -245,6 +252,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testSynchronousStatement(){
 		// contract: test commenting of synchronous statement
 		Launcher launcher = setUpTest();
@@ -260,6 +268,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testTryStatement(){
 		// contract: test commenting of try-catch statement
 		Launcher launcher = setUpTest();

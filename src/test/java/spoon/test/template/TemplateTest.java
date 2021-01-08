@@ -17,6 +17,8 @@
 package spoon.test.template;
 
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.SpoonResourceHelper;
@@ -116,6 +118,7 @@ public class TemplateTest {
 	private String newLine = System.getProperty("line.separator");
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testTemplateInheritance() throws Exception {
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.getFactory();

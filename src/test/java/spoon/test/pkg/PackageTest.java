@@ -17,6 +17,8 @@
 package spoon.test.pkg;
 
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonModelBuilder;
@@ -61,6 +63,7 @@ import static spoon.testing.utils.ModelUtils.canBeBuilt;
 public class PackageTest {
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPackage() throws Exception {
 		final String classFilePath = "./src/test/java/spoon/test/pkg/name/PackageTestClass.java";
 		final String packageInfoFilePath = "./src/test/java/spoon/test/pkg/package-info.java";

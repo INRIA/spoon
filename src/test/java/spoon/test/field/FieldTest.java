@@ -28,6 +28,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
@@ -190,6 +192,7 @@ public class FieldTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void bugAfterRefactoringImports() {
 		Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();

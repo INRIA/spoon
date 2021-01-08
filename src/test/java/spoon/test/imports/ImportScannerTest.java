@@ -17,6 +17,8 @@
 package spoon.test.imports;
 
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
@@ -56,6 +58,7 @@ import static spoon.testing.utils.ModelUtils.build;
 public class ImportScannerTest {
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testImportOnSpoon() throws IOException {
 
 		File targetDir = new File("./target/import-test");

@@ -18,6 +18,8 @@ package spoon.test.imports;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
@@ -1582,6 +1584,7 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		}
 	}
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testImportOnSpoon() throws IOException {
 
 		File targetDir = new File("./target/import-test");

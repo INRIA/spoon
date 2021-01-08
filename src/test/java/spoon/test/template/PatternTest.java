@@ -17,6 +17,8 @@
 package spoon.test.template;
 
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.pattern.ConflictResolutionMode;
 import spoon.pattern.Match;
@@ -1157,6 +1159,7 @@ public class PatternTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPatternToString() {
 		//contract: Pattern can be printed to String and each parameter is defined there
 		String nl = System.getProperty("line.separator");

@@ -35,6 +35,8 @@ import org.junit.Test;
 import org.junit.Before;
 import org.junit.After;
 
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import spoon.IncrementalLauncher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtAssignment;
@@ -56,6 +58,7 @@ public class IncrementalLauncherTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testCache() throws IOException {
 		// Build model from A.java, B.java, C.java, D.java, and then load the same model from cache several times.
 		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, WORKING_DIR);
@@ -91,6 +94,7 @@ public class IncrementalLauncherTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testIncremental1() throws IOException, InterruptedException {
 		// Build model from A.java, B.java, C.java, D.java, then change D.java => load A, B, C from cache and build D.
 		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, WORKING_DIR);
@@ -137,6 +141,7 @@ public class IncrementalLauncherTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testIncremental2() throws IOException {
 		// Build model from A.java, B.java, C.java, then remove C.java and add D.java
 		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, WORKING_DIR);
@@ -177,6 +182,7 @@ public class IncrementalLauncherTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testIncremental3() throws IOException, InterruptedException {
 		// Build model from A.java, B.java, C.java, then change type of field val in C.
 		// B refers to C, so we should check reference resolution in B as well.
@@ -226,6 +232,7 @@ public class IncrementalLauncherTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testSaveCacheIssue3404() {
 		// contract: IncrementalLauncher does not crash with classnotfound in noclasspath
 		// see isse 3404

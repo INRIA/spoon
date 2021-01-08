@@ -9,6 +9,8 @@ package spoon.test.prettyprinter;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.rules.TemporaryFolder;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -119,6 +121,7 @@ public class TestSniperPrinter {
 
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPrintInsertedThrow() {
 		testSniper(Throw.class.getName(), type -> {
 			CtConstructorCall<?> ctConstructorCall = (CtConstructorCall<?>) type.getMethodsByName("foo").get(0).getBody().getStatements().get(0);
@@ -153,6 +156,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPrintLocalVariableDeclaration() {
 		// contract: joint local declarations can be sniper-printed in whole unmodified method
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
@@ -171,6 +175,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPrintLocalVariableDeclaration2() {
 		// contract: joint local declarations can be sniper-printed
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
@@ -190,6 +195,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPrintOneLineMultipleVariableDeclaration() {
 		// contract: files with joint field declarations can be recompiled after sniper
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
@@ -228,6 +234,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPrintChangedComplex() {
 		//contract: sniper printing after remove of statement from nested complex `if else if ...`
 		testSniper("spoon.test.prettyprinter.testclasses.ComplexClass", type -> {
@@ -290,6 +297,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPrintAfterRemoveOfLastTypeMember() {
 		//contract: sniper print after remove of last type member - check that suffix spaces are printed correctly
 		testSniper(ToBeChanged.class.getName(), type -> {
@@ -301,6 +309,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPrintAfterAddOfLastTypeMember() {
 		//contract: sniper print after add of last type member - check that suffix spaces are printed correctly
 		class Context {
@@ -375,6 +384,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testNewlineInsertedBetweenCommentAndTypeMemberWithAddedModifier() {
 		// contract: newline must be inserted after comment when a succeeding type member has had a
 		// modifier added to it
@@ -395,6 +405,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testNewlineInsertedBetweenCommentAndTypeMemberWithRemovedModifier() {
 		// contract: newline must be inserted after comment when a succeeding field has had a
 		// modifier removed from it
@@ -415,6 +426,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testNewlineInsertedBetweenModifiedCommentAndTypeMemberWithAddedModifier() {
 		// contract: newline must be inserted after modified comment when a succeeding type member
 		// has had its modifier list modified. We test modified comments separately from
@@ -436,6 +448,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testAddedImportStatementPlacedOnSeparateLineInFileWithoutPackageStatement() {
 		// contract: newline must be inserted between import statements when a new one is added
 
@@ -456,6 +469,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testAddedImportStatementPlacedOnSeparateLineInFileWithPackageStatement() {
 		// contract: newline must be inserted both before and after a new import statement if ther
 		// is a package statement in the file
@@ -475,6 +489,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testAddedElementsIndentedWithAppropriateIndentationStyle() {
 		// contract: added elements in a source file should be indented with the same style of
 		// indentation as in the rest of the file

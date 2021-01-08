@@ -19,6 +19,8 @@ package spoon;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import spoon.compiler.SpoonResource;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtTypeReference;
@@ -137,6 +139,7 @@ public class MavenLauncherTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testSystemDependency() {
 		//contract: scope dependencies are added to classpath
 		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/system-dependency", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);

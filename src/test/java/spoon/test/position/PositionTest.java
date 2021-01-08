@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtAssignment;
@@ -70,7 +72,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.comment.testclasses.BlockComment;
-import spoon.test.comment.testclasses.Comment1;import spoon.test.position.testclasses.AnnonymousClassNewIface;
+import spoon.test.comment.testclasses.Comment1;
+import spoon.test.position.testclasses.AnnonymousClassNewIface;
 import spoon.test.position.testclasses.ArrayArgParameter;
 import spoon.test.position.testclasses.CatchPosition;
 import spoon.test.position.testclasses.CompilationUnitComments;
@@ -115,6 +118,7 @@ import static spoon.testing.utils.ModelUtils.buildClass;
 public class PositionTest {
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPositionClass() {
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooClazz> foo = build.Type().get(FooClazz.class);
@@ -146,6 +150,7 @@ public class PositionTest {
 	
 	
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPositionClassWithComments() {
 		//contract: check that comments before and after the 'class' keyword are handled well by PositionBuilder
 		//and it produces correct `modifierEnd`
@@ -186,6 +191,7 @@ public class PositionTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPositionParameterTypeReference() throws Exception {
 		//contract: the parameterized type reference has a source position which includes parameter types, etc.
 		final CtType<?> foo = buildClass(PositionParameterTypeWithReference.class);
@@ -233,6 +239,7 @@ public class PositionTest {
 	}
 	
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPositionInterface() {
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooInterface> foo = build.Type().get(FooInterface.class);
@@ -267,6 +274,7 @@ public class PositionTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPositionAnnotation() {
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooAnnotation> foo = build.Type().get(FooAnnotation.class);
@@ -310,6 +318,7 @@ public class PositionTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPositionField() throws Exception {
 		final Factory build = build(FooField.class);
 		final CtType<FooField> foo = build.Type().get(FooField.class);
@@ -373,6 +382,7 @@ public class PositionTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPositionGeneric() throws Exception {
 		final Factory build = build(FooGeneric.class);
 		final CtClass<FooGeneric> foo = build.Class().get(FooGeneric.class);
@@ -434,6 +444,7 @@ public class PositionTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPositionMethod() throws Exception {
 		final Factory build = build(FooMethod.class);
 		final CtClass<FooMethod> foo = build.Class().get(FooMethod.class);
@@ -504,6 +515,7 @@ public class PositionTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPositionAbstractMethod() throws Exception {
 		final Factory build = build(FooAbstractMethod.class);
 		final CtClass<FooMethod> foo = build.Class().get(FooAbstractMethod.class);
@@ -538,6 +550,7 @@ public class PositionTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPositionStatement() throws Exception {
 		final Factory build = build(FooStatement.class);
 		final CtType<FooStatement> foo = build.Type().get(FooStatement.class);
@@ -731,6 +744,7 @@ public class PositionTest {
 	}
 	
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPositionOfAnnonymousType() throws Exception {
 		//contract: the annonymous type has consistent position
 		final CtEnum foo = (CtEnum) buildClass(SomeEnum.class);
@@ -915,6 +929,7 @@ public class PositionTest {
 
 	}
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testArrayArgParameter() throws Exception {
 		//contract: the parameter declared like `String arg[]`, `String[] arg` and `String []arg` has correct positions
 		final CtType<?> foo = buildClass(ArrayArgParameter.class);
@@ -965,6 +980,7 @@ public class PositionTest {
 	}
 	
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testExpressions() throws Exception {
 		//contract: the expression including type casts has correct position which includes all brackets too
 		final CtType<?> foo = buildClass(Expressions.class);
@@ -1011,6 +1027,7 @@ public class PositionTest {
 		}
 	}
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testCatchPosition() throws Exception {
 		//contract: check the catch position
 		final CtType<?> foo = buildClass(CatchPosition.class);
@@ -1073,6 +1090,7 @@ public class PositionTest {
 		}
 	}
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testEnumConstructorCallComment() throws Exception {
 		//contract: check position the enum constructor call 
 		final CtType<?> foo = buildClass(FooEnum.class);
@@ -1090,6 +1108,7 @@ public class PositionTest {
 		}
 	}
 	@Test
+    @DisabledOnOs(OS.WINDOWS)
 	public void testSwitchCase() throws Exception {
 		//contract: check position of the statements of the case of switch
 		final CtType<?> foo = buildClass(FooSwitch.class);
@@ -1127,6 +1146,7 @@ public class PositionTest {
 		}
 	}
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testFooForEach() throws Exception {
 		//contract: check position of the for each position
 		final CtType<?> foo = buildClass(FooForEach.class);
@@ -1268,6 +1288,7 @@ public class PositionTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testImportPosition() throws Exception {
 		// contract: import position includes its comment
 		CtType<?> type = ModelUtils.buildClass(cfg -> {
@@ -1285,6 +1306,7 @@ public class PositionTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testPackageDeclarationWithCommentPosition() throws Exception {
 		// contract: package declaration position includes its comment. The file comment is not included
 		CtType<?> type = ModelUtils.buildClass(cfg -> {

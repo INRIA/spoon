@@ -34,6 +34,8 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.MavenLauncher;
 import spoon.SpoonException;
@@ -453,6 +455,7 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testElseIf() {
 		//contract: else if statements should be printed without break else and if
 		Launcher launcher = new Launcher();

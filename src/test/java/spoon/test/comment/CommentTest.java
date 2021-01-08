@@ -19,6 +19,8 @@ package spoon.test.comment;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.CtModel;
@@ -797,6 +799,7 @@ public class CommentTest {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testDocumentationContract() throws Exception {
 		// contract: all metamodel classes must be commented with an example.
 		

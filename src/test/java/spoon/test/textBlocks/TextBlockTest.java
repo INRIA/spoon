@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtInvocation;
@@ -95,6 +97,7 @@ public class TextBlockTest{
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testTextBlockCreation(){
 		// contract: Test creation of TextBlock and prettyprinting
 		Factory factory = getSpoonFactory();

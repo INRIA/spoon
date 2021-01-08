@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
@@ -211,6 +213,7 @@ public class TestSourceFragment {
 	}
 
 	@Test
+    @DisabledOnOs(OS.WINDOWS)
 	public void testExactSourceFragments() throws Exception {
 		//contract: SourceFragments of some tricky sources are as expected
 		final Launcher launcher = new Launcher();
@@ -249,6 +252,7 @@ public class TestSourceFragment {
 	}
 	
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	public void testSourceFragmentsOfCompilationUnit() throws Exception {
 		//contract: SourceFragments of compilation unit children like, package declaration, imports, types
 		final Launcher launcher = new Launcher();
