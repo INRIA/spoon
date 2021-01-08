@@ -436,6 +436,21 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	public void testFieldCommentDoesNotDisappearWhenAllModifiersAreRemoved() {
+		// contract: A comment on a field should not disappear when all of its modifiers are removed.
+
+		Consumer<CtType<?>> removeFieldModifiers = type -> {
+			CtField<?> field = type.getField("NON_FINAL_FIELD");
+			field.setModifiers(Collections.emptySet());
+		};
+
+		BiConsumer<CtType<?>, String> assertFieldCommentPrinted = (type, result) ->
+				assertThat(result, containsString("// field comment\n"));
+
+		testSniper("TypeMemberComments", removeFieldModifiers, assertFieldCommentPrinted);
+	}
+
+	@Test
 	public void testAddedImportStatementPlacedOnSeparateLineInFileWithoutPackageStatement() {
 		// contract: newline must be inserted between import statements when a new one is added
 
