@@ -10,7 +10,6 @@ package spoon.support.sniper.internal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtComment;
@@ -327,14 +326,10 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 	 */
 	private boolean isUnprintedModifierCollectionFragment(int fragmentIndex, int lastPrintedIndex) {
 		SourceFragment fragment = childFragments.get(fragmentIndex);
-		if (!(fragment instanceof CollectionSourceFragment)) {
-			return false;
-		}
-
-		Predicate<SourceFragment> isModifierFragment = f -> f instanceof ElementSourceFragment
-				&& ((ElementSourceFragment) f).getRoleInParent() == CtRole.MODIFIER;
-		return ((CollectionSourceFragment) fragment).getItems().stream().anyMatch(isModifierFragment)
-				&& lastPrintedIndex < fragmentIndex;
+		return lastPrintedIndex < fragmentIndex
+				&& fragment instanceof CollectionSourceFragment
+				&& ((CollectionSourceFragment) fragment).getItems().stream()
+						.anyMatch(ElementSourceFragment::isModifierFragment);
 	}
 
 	@Override

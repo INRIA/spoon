@@ -898,4 +898,11 @@ public class ElementSourceFragment implements SourceFragment {
 		return fragment instanceof ElementSourceFragment && ((ElementSourceFragment) fragment).getElement() instanceof CtComment;
 	}
 
+	/**
+	 * @return true if {@link SourceFragment} represents a modifier
+	 */
+	static boolean isModifierFragment(SourceFragment fragment) {
+		return fragment instanceof ElementSourceFragment
+				&& ((ElementSourceFragment) fragment).getRoleInParent() == CtRole.MODIFIER;
+	}
 }
