@@ -10,6 +10,7 @@ package spoon.support.sniper.internal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import spoon.SpoonException;
 import spoon.reflect.code.CtComment;
@@ -58,7 +59,7 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 		if (index != -1) { // means we have found a source code fragment corresponding to this event
 
 			// we print all spaces and comments before this fragment
-			printSpaces(getLastNonSpaceNonCommentBefore(index), index);
+			printSpaces(getLastNonSpaceNonCommentBefore(index, prevIndex), index);
 
 			SourceFragment fragment = childFragments.get(index);
 			event.printSourceFragment(fragment, isFragmentModified(fragment));
@@ -306,15 +307,34 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 		separatorActions.clear();
 	}
 
-	private int getLastNonSpaceNonCommentBefore(int index) {
+	private int getLastNonSpaceNonCommentBefore(int index, int lastPrintedIndex) {
 		for (int i = index - 1; i >= 0; i--) {
 			SourceFragment fragment = childFragments.get(i);
-			if (isSpaceFragment(fragment) || isCommentFragment(fragment)) {
+			if (isSpaceFragment(fragment)
+					|| isCommentFragment(fragment)
+					|| isUnprintedModifierCollectionFragment(i, lastPrintedIndex)) {
 				continue;
 			}
 			return i + 1;
 		}
 		return 0;
+	}
+
+	/**
+	 * @param fragmentIndex Index of the fragment.
+	 * @param lastPrintedIndex Index of the last printed fragment.
+	 * @return true if the fragment is a collection fragment that contains at least one modifier.
+	 */
+	private boolean isUnprintedModifierCollectionFragment(int fragmentIndex, int lastPrintedIndex) {
+		SourceFragment fragment = childFragments.get(fragmentIndex);
+		if (!(fragment instanceof CollectionSourceFragment)) {
+			return false;
+		}
+
+		Predicate<SourceFragment> isModifierFragment = f -> f instanceof ElementSourceFragment
+				&& ((ElementSourceFragment) f).getRoleInParent() == CtRole.MODIFIER;
+		return ((CollectionSourceFragment) fragment).getItems().stream().anyMatch(isModifierFragment)
+				&& lastPrintedIndex < fragmentIndex;
 	}
 
 	@Override
