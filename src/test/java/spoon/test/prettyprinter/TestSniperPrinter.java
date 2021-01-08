@@ -445,7 +445,7 @@ public class TestSniperPrinter {
 		};
 
 		BiConsumer<CtType<?>, String> assertFieldCommentPrinted = (type, result) ->
-				assertThat(result, containsString("// field comment\n"));
+				assertThat(result, containsString("// field comment\n    int NON_FINAL_FIELD"));
 
 		testSniper("TypeMemberComments", removeFieldModifiers, assertFieldCommentPrinted);
 	}
