@@ -311,7 +311,7 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 			SourceFragment fragment = childFragments.get(i);
 			if (isSpaceFragment(fragment)
 					|| isCommentFragment(fragment)
-					|| isUnprintedModifierCollectionFragment(i, lastPrintedIndex)) {
+					|| isRecentlySkippedModifierCollectionFragment(i, lastPrintedIndex)) {
 				continue;
 			}
 			return i + 1;
@@ -320,11 +320,18 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 	}
 
 	/**
+	 * Determines if the fragment at fragmentIndex is a "recently skipped" collection fragment
+	 * containing modifiers. "Recently skipped" entails that the modifier fragment has not been
+	 * printed, and that the last printed fragment occurs before the modifier fragment.
+	 *
+	 * It is necessary to detect such fragments as whitespace and comments may otherwise be lost
+	 * when completely removing modifier lists. See issue #3732 for details.
+	 *
 	 * @param fragmentIndex Index of the fragment.
 	 * @param lastPrintedIndex Index of the last printed fragment.
-	 * @return true if the fragment is a collection fragment that contains at least one modifier.
+	 * @return true if the fragment is a recently skipped collection fragment with modifiers.
 	 */
-	private boolean isUnprintedModifierCollectionFragment(int fragmentIndex, int lastPrintedIndex) {
+	private boolean isRecentlySkippedModifierCollectionFragment(int fragmentIndex, int lastPrintedIndex) {
 		SourceFragment fragment = childFragments.get(fragmentIndex);
 		return lastPrintedIndex < fragmentIndex
 				&& fragment instanceof CollectionSourceFragment
