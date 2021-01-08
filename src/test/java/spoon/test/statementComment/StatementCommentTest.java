@@ -20,8 +20,6 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
@@ -44,6 +42,7 @@ import spoon.support.reflect.code.CtCatchImpl;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
 public class StatementCommentTest {
 	String EOL;
@@ -97,8 +96,8 @@ public class StatementCommentTest {
 	}
 	
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	public void testBlockStatementWithinBody(){
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: test a CtBlock within body is commented out as a block comment
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
@@ -125,8 +124,8 @@ public class StatementCommentTest {
 	}
 	
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	public void testMethodBodyNonEmptyStatement(){
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: test CtBlock representing method body is commented out by commenting all contained statements individually
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
@@ -182,8 +181,8 @@ public class StatementCommentTest {
 	}
 	
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	public void testIfStatement(){
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: test commenting of if statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
@@ -215,8 +214,8 @@ public class StatementCommentTest {
 	}
 	
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	public void testLoopStatement(){
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: test commenting of loop statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
@@ -231,8 +230,8 @@ public class StatementCommentTest {
 	}
 	
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	public void testSwitchStatement(){
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: test commenting of switch statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
@@ -252,8 +251,8 @@ public class StatementCommentTest {
 	}
 	
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	public void testSynchronousStatement(){
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: test commenting of synchronous statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
@@ -268,8 +267,8 @@ public class StatementCommentTest {
 	}
 	
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	public void testTryStatement(){
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: test commenting of try-catch statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");

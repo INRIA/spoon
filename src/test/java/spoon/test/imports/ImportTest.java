@@ -18,8 +18,6 @@ package spoon.test.imports;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
@@ -103,6 +101,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class ImportTest {
@@ -1584,8 +1583,8 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		}
 	}
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	public void testImportOnSpoon() throws IOException {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 
 		File targetDir = new File("./target/import-test");
 		Launcher spoon = new Launcher();

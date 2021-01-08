@@ -17,8 +17,6 @@
 package spoon.test.pkg;
 
 import org.junit.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonModelBuilder;
@@ -57,14 +55,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class PackageTest {
 
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	public void testPackage() throws Exception {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		final String classFilePath = "./src/test/java/spoon/test/pkg/name/PackageTestClass.java";
 		final String packageInfoFilePath = "./src/test/java/spoon/test/pkg/package-info.java";
 		final File packageInfoFile = new File(packageInfoFilePath);

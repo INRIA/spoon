@@ -19,8 +19,6 @@ package spoon;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import spoon.compiler.SpoonResource;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtTypeReference;
@@ -42,6 +40,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
 public class MavenLauncherTest {
 
@@ -139,8 +138,8 @@ public class MavenLauncherTest {
 	}
 
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	public void testSystemDependency() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: scope dependencies are added to classpath
 		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/system-dependency", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 		assertEquals(1, launcher.getEnvironment().getSourceClasspath().length);

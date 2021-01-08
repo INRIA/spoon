@@ -17,8 +17,6 @@
 package spoon.test.imports;
 
 import org.junit.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
@@ -53,13 +51,14 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class ImportScannerTest {
 
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	public void testImportOnSpoon() throws IOException {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 
 		File targetDir = new File("./target/import-test");
 		Launcher spoon = new Launcher();

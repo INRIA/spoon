@@ -34,8 +34,6 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.MavenLauncher;
 import spoon.SpoonException;
@@ -88,6 +86,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class DefaultPrettyPrinterTest {
@@ -455,8 +454,8 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	public void testElseIf() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: else if statements should be printed without break else and if
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/A6.java");

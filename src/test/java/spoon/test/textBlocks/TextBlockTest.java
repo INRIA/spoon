@@ -2,11 +2,10 @@ package spoon.test.textBlocks;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
 import org.junit.Test;
 
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtInvocation;
@@ -97,8 +96,8 @@ public class TextBlockTest{
 	}
 
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	public void testTextBlockCreation(){
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: Test creation of TextBlock and prettyprinting
 		Factory factory = getSpoonFactory();
 		CtClass<?> c = Launcher.parseClass("class Test{public String m1(){String s = \"\";}}");

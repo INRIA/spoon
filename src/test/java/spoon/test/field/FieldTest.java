@@ -19,6 +19,7 @@ package spoon.test.field;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -28,8 +29,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
@@ -192,8 +191,8 @@ public class FieldTest {
 	}
 
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	public void bugAfterRefactoringImports() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();
 		final CtClass<?> klass = factory.createClass("foo.A");

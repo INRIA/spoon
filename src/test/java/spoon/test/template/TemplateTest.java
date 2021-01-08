@@ -17,8 +17,6 @@
 package spoon.test.template;
 
 import org.junit.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.SpoonResourceHelper;
@@ -111,6 +109,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 import static spoon.testing.utils.ModelUtils.getOptimizedString;
 
 public class TemplateTest {
@@ -118,8 +117,8 @@ public class TemplateTest {
 	private String newLine = System.getProperty("line.separator");
 
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	public void testTemplateInheritance() throws Exception {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.getFactory();
 		spoon.getEnvironment().setCommentEnabled(true);
