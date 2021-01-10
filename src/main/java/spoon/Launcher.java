@@ -449,7 +449,7 @@ public class Launcher implements SpoonAPI {
 		}
 
 		String cpmode = jsapActualArgs.getString("cpmode").toUpperCase();
-		Launcher.LOGGER.info("Running in " + cpmode + " mode (doc: http://spoon.gforge.inria.fr/launcher.html).");
+		reportClassPathMode();
 		CLASSPATH_MODE classpath_mode = CLASSPATH_MODE.valueOf(cpmode);
 		switch (classpath_mode) {
 			case NOCLASSPATH:
@@ -536,6 +536,11 @@ public class Launcher implements SpoonAPI {
 			}
 		}
 
+	}
+
+	protected void reportClassPathMode() {
+		String cpmode = jsapActualArgs.getString("cpmode").toUpperCase();
+		Launcher.LOGGER.info("Running in " + cpmode + " mode (doc: http://spoon.gforge.inria.fr/launcher.html).");
 	}
 
 	/**
