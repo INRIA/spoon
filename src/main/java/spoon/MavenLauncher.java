@@ -23,7 +23,7 @@ public class MavenLauncher extends Launcher {
 	private SOURCE_TYPE sourceType;
 	private SpoonPom model;
 	private boolean forceRefresh = false;
-	public static final Logger LOGGER = LoggerFactory.getLogger(MavenLauncher.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MavenLauncher.class);
 
 	/**
 	 * @return SpoonPom corresponding to the pom file used by the launcher
