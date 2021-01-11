@@ -306,12 +306,12 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 		separatorActions.clear();
 	}
 
-	private int getLastNonSpaceNonCommentBefore(int index, int lastPrintedIndex) {
+	private int getLastNonSpaceNonCommentBefore(int index, int prevIndex) {
 		for (int i = index - 1; i >= 0; i--) {
 			SourceFragment fragment = childFragments.get(i);
 			if (isSpaceFragment(fragment)
 					|| isCommentFragment(fragment)
-					|| isRecentlySkippedModifierCollectionFragment(i, lastPrintedIndex)) {
+					|| isRecentlySkippedModifierCollectionFragment(i, prevIndex)) {
 				continue;
 			}
 			return i + 1;
@@ -320,20 +320,20 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 	}
 
 	/**
-	 * Determines if the fragment at fragmentIndex is a "recently skipped" collection fragment
+	 * Determines if the fragment at index is a "recently skipped" collection fragment
 	 * containing modifiers. "Recently skipped" entails that the modifier fragment has not been
 	 * printed, and that the last printed fragment occurs before the modifier fragment.
 	 *
 	 * It is necessary to detect such fragments as whitespace and comments may otherwise be lost
 	 * when completely removing modifier lists. See issue #3732 for details.
 	 *
-	 * @param fragmentIndex Index of the fragment.
-	 * @param lastPrintedIndex Index of the last printed fragment.
+	 * @param index Index of the fragment.
+	 * @param prevIndex Index of the last printed fragment.
 	 * @return true if the fragment is a recently skipped collection fragment with modifiers.
 	 */
-	private boolean isRecentlySkippedModifierCollectionFragment(int fragmentIndex, int lastPrintedIndex) {
-		SourceFragment fragment = childFragments.get(fragmentIndex);
-		return lastPrintedIndex < fragmentIndex
+	private boolean isRecentlySkippedModifierCollectionFragment(int index, int prevIndex) {
+		SourceFragment fragment = childFragments.get(index);
+		return prevIndex < index
 				&& fragment instanceof CollectionSourceFragment
 				&& ((CollectionSourceFragment) fragment).getItems().stream()
 						.anyMatch(ElementSourceFragment::isModifierFragment);
