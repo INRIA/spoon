@@ -7,6 +7,8 @@
  */
 package spoon;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import spoon.support.compiler.SpoonPom;
 
 import java.io.File;
@@ -21,6 +23,7 @@ public class MavenLauncher extends Launcher {
 	private SOURCE_TYPE sourceType;
 	private SpoonPom model;
 	private boolean forceRefresh = false;
+	private static final Logger LOGGER  = LogManager.getLogger();
 
 	/**
 	 * @return SpoonPom corresponding to the pom file used by the launcher
@@ -192,13 +195,22 @@ public class MavenLauncher extends Launcher {
 
 		if (classpath == null) {
 			classpath = model.buildClassPath(mvnHome, sourceType, LOGGER, forceRefresh);
+			LOGGER.info("Running in FULLCLASSPATH mode. Source folders and dependencies are inferred from the pom.xml file (doc: http://spoon.gforge.inria.fr/launcher.html).");
+		} else {
+			LOGGER.info("Running in FULLCLASSPATH mode. Classpath is manually set (doc: http://spoon.gforge.inria.fr/launcher.html).");
 		}
 
 		// dependencies
+		factory.getEnvironment().setNoClasspath(false);
 		this.getModelBuilder().setSourceClasspath(classpath);
 
 		// compliance level
 		this.getEnvironment().setComplianceLevel(model.getSourceVersion());
+	}
+
+	@Override
+	protected void reportClassPathMode() {
+		// skip classpath mode logs from Launcher
 	}
 
 	/**
