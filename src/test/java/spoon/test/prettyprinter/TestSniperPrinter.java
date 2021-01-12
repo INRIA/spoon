@@ -26,6 +26,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
@@ -538,6 +539,58 @@ public class TestSniperPrinter {
 		testSniper("indentation.NoTypeMembers", addField, (type, result) -> {
 			assertThat(result, containsString("\n\tint z = 3;"));
 		});
+	}
+
+	@Test
+	public void testPrintTypeWithMethodImportAboveMethodDefinition() {
+		// contract: The type references of a method import (e.g. its return type) has source
+		// positions in the file the method was imported from. The resolved source end position
+		// of the import should not be affected by the placement of the imported method. This
+		// test ensures this is the case even when the end position of the imported method is
+		// greater than the end position of the import statement.
+
+		Launcher launcher = createLauncherWithSniperPrinter();
+		launcher.addInputResource(getResourcePath("methodimport.ClassWithStaticMethod"));
+		launcher.addInputResource(getResourcePath("methodimport.MethodImportAboveImportedMethod"));
+
+		CtModel model = launcher.buildModel();
+		CtType<?> classWithStaticMethodImport = model.getAllTypes().stream()
+				.filter(type -> type.getSimpleName().endsWith("AboveImportedMethod"))
+				.findFirst()
+				.get();
+
+		List<CtImport> imports = classWithStaticMethodImport.getFactory().CompilationUnit().getOrCreate(classWithStaticMethodImport).getImports();
+
+		String output = launcher
+				.getEnvironment()
+				.createPrettyPrinter().printTypes(classWithStaticMethodImport);
+
+		assertThat(output, containsString("import static methodimport.ClassWithStaticMethod.staticMethod;"));
+	}
+
+	@Test
+	public void testPrintTypeWithMethodImportBelowMethodDefinition() {
+		// contract: The type references of a method import (e.g. its return type) has source
+		// positions in the file the method was imported from. The resolved source start position
+		// of the import should not be affected by the placement of the imported method. This
+		// test ensures this is the case even when the start position of the imported method is
+		// less than the start position of the import statement.
+
+		Launcher launcher = createLauncherWithSniperPrinter();
+		launcher.addInputResource(getResourcePath("methodimport.ClassWithStaticMethod"));
+		launcher.addInputResource(getResourcePath("methodimport.MethodImportBelowImportedMethod"));
+
+		CtModel model = launcher.buildModel();
+		CtType<?> classWithStaticMethodImport = model.getAllTypes().stream()
+				.filter(type -> type.getSimpleName().endsWith("BelowImportedMethod"))
+				.findFirst()
+				.get();
+
+		String output = launcher
+				.getEnvironment()
+				.createPrettyPrinter().printTypes(classWithStaticMethodImport);
+
+		assertThat(output, containsString("import static methodimport.ClassWithStaticMethod.staticMethod;"));
 	}
 
 	/**
