@@ -61,6 +61,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -445,6 +446,27 @@ public class TestSniperPrinter {
 		};
 
 		testSniper("TypeMemberComments", enactModifications, assertCommentCorrectlyPrinted);
+	}
+
+	@Test
+	public void testTypeMemberCommentDoesNotDisappearWhenAllModifiersAreRemoved() {
+		// contract: A comment on a field should not disappear when all of its modifiers are removed.
+
+		Consumer<CtType<?>> removeTypeMemberModifiers = type -> {
+			type.getField("NON_FINAL_FIELD").setModifiers(Collections.emptySet());
+			type.getMethodsByName("nonStaticMethod").get(0).setModifiers(Collections.emptySet());
+			type.getNestedType("NonStaticInnerClass").setModifiers(Collections.emptySet());
+		};
+
+		BiConsumer<CtType<?>, String> assertFieldCommentPrinted = (type, result) ->
+			assertThat(result, allOf(
+						containsString("// field comment\n    int NON_FINAL_FIELD"),
+						containsString("// method comment\n    void nonStaticMethod"),
+						containsString("// nested type comment\n    class NonStaticInnerClass")
+					)
+			);
+
+		testSniper("TypeMemberComments", removeTypeMemberModifiers, assertFieldCommentPrinted);
 	}
 
 	@Test
