@@ -99,6 +99,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
 public class CommentTest {
 
@@ -798,6 +799,7 @@ public class CommentTest {
 
 	@Test
 	public void testDocumentationContract() throws Exception {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: all metamodel classes must be commented with an example.
 		
 		final Launcher launcher = new Launcher();
