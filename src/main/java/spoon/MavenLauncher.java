@@ -7,8 +7,8 @@
  */
 package spoon;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spoon.support.compiler.SpoonPom;
 
 import java.io.File;
@@ -23,7 +23,7 @@ public class MavenLauncher extends Launcher {
 	private SOURCE_TYPE sourceType;
 	private SpoonPom model;
 	private boolean forceRefresh = false;
-	private static final Logger LOGGER  = LogManager.getLogger();
+	private static final Logger LOGGER  = LoggerFactory.getLogger(MavenLauncher.class);
 
 	/**
 	 * @return SpoonPom corresponding to the pom file used by the launcher

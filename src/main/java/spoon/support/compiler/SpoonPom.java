@@ -7,7 +7,7 @@
  */
 package spoon.support.compiler;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.BuildBase;
 import org.apache.maven.model.Model;
