@@ -128,7 +128,7 @@
       <!-- to reproduce and fix a bug -->
       <groupId>com.mysema.querydsl</groupId>
       <artifactId>querydsl-core</artifactId>
-      <version>3.6.9</version>
+      <version>3.7.4</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
