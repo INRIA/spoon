@@ -125,27 +125,6 @@
         <scope>test</scope>
     </dependency>
     <dependency>
-      <!-- to reproduce and fix a bug -->
-      <groupId>com.mysema.querydsl</groupId>
-      <artifactId>querydsl-core</artifactId>
-      <version>3.7.4</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.code.findbugs</groupId>
-          <artifactId>jsr305</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.mysema.commons</groupId>
-          <artifactId>mysema-commons-lang</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.infradna.tool</groupId>
-          <artifactId>bridge-method-annotation</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-invoker</artifactId>
       <version>3.0.1</version>
