@@ -159,6 +159,8 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 
+import java.lang.invoke.MethodHandles;
+
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
@@ -187,7 +189,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return LOGGER;
 	}
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(JDTTreeBuilder.class);;
+	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	public PositionBuilder getPositionBuilder() {
 		return position;

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import spoon.support.compiler.SpoonPom;
 
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -23,7 +24,7 @@ public class MavenLauncher extends Launcher {
 	private SOURCE_TYPE sourceType;
 	private SpoonPom model;
 	private boolean forceRefresh = false;
-	private static final Logger LOGGER  = LoggerFactory.getLogger(MavenLauncher.class);
+	private static final Logger LOGGER  = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	/**
 	 * @return SpoonPom corresponding to the pom file used by the launcher

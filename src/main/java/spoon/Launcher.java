@@ -46,6 +46,7 @@ import spoon.support.gui.SpoonModelTree;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -591,7 +592,7 @@ public class Launcher implements SpoonAPI {
 	/**
 	 * A default logger to be used by Spoon.
 	 */
-	public static final Logger LOGGER = LoggerFactory.getLogger(Launcher.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	/**
 	 * Creates a new Spoon Java compiler in order to process and compile Java

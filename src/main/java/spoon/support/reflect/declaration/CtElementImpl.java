@@ -57,6 +57,7 @@ import spoon.support.visitor.replace.ReplacementVisitor;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -74,7 +75,7 @@ import static spoon.reflect.visitor.CommentHelper.printComment;
  */
 public abstract class CtElementImpl implements CtElement, Serializable {
 	private static final long serialVersionUID = 1L;
-	protected static final Logger LOGGER = LoggerFactory.getLogger(CtElementImpl.class);;
+	protected static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
 	private static final Factory DEFAULT_FACTORY = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
 
