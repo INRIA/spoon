@@ -440,15 +440,15 @@ public interface Environment {
 	void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations);
 
 	/**
-	 * Sets the line ending to the given value. See {@link spoon.compiler.Environment.LineEnding} for possible values.
-	 * @param lineEnding  lineEnding to use
+	 * Sets the line separator to the given value. See {@link spoon.compiler.Environment.PlatformLineSeparators} for possible values.
+	 * @param lineSeparator  lineEnding to use
 	 */
-	void setLineEndings(LineEnding lineEnding);
+	void setLineSeparators(PlatformLineSeparators lineSeparator);
 
 	/**
-	 * @return  the used line endings as a String.
+	 * @return  the used line separator as a String.
 	 */
-	String getLineEnding();
+	String getLineSeparators();
 	/** Drives how the model is pretty-printed to disk, or when {@link CtElement#prettyprint()} is called */
 	enum PRETTY_PRINTING_MODE {
 		/** direct in {@link spoon.reflect.visitor.DefaultJavaPrettyPrinter}, no preprocessors are applied to the model before pretty-printing }. */
@@ -461,10 +461,10 @@ public interface Environment {
 		FULLYQUALIFIED
 	}
 	/**
-	 * Defines different line endings for different platforms.
+	 * Defines different line separators for different platforms.
 	 * Windows is {@code \r\n}, UNIX {@code \n} and SYSTEM_DEFAULT uses {@link System#lineSeparator()}.
 	 */
-	enum LineEnding {
+	enum PlatformLineSeparators {
 		UNIX("\n"), WINDOWS("\r\n"), SYSTEM_DEFAULT(System.lineSeparator());
 		private String lineSeparator;
 		/**
@@ -473,7 +473,7 @@ public interface Environment {
 		public String getLineEndingString() {
 			return lineSeparator;
 		}
-		LineEnding(String lineSeparator) {
+		PlatformLineSeparators(String lineSeparator) {
 			this.lineSeparator = lineSeparator;
 		}
 	}
