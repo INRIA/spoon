@@ -73,6 +73,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean processingStopped = false;
 
+	private String lineEnding = LineEnding.SYSTEM_DEFAULT.getLineEndingString();
 	@Override
 	public PRETTY_PRINTING_MODE getPrettyPrintingMode() {
 		return prettyPrintingMode;
@@ -655,6 +656,7 @@ private transient  ClassLoader inputClassloader;
 		));
 		printer.setIgnoreImplicit(false);
 		printer.setPreprocessors(preprocessors);
+		printer.setLineSeparator(this.getLineEnding());
 		return printer;
 	}
 
@@ -668,6 +670,7 @@ private transient  ClassLoader inputClassloader;
 
 			if (PRETTY_PRINTING_MODE.DEBUG.equals(prettyPrintingMode)) {
 				DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
+				printer.setLineSeparator(this.getLineEnding());
 				return printer;
 			}
 
@@ -683,6 +686,7 @@ private transient  ClassLoader inputClassloader;
 				));
 				printer.setIgnoreImplicit(false);
 				printer.setPreprocessors(preprocessors);
+				printer.setLineSeparator(this.getLineEnding());
 				return printer;
 			}
 
@@ -705,5 +709,15 @@ private transient  ClassLoader inputClassloader;
 	@Override
 	public void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations) {
 		this.ignoreDuplicateDeclarations = ignoreDuplicateDeclarations;
+	}
+
+	@Override
+	public void setLineEndings(LineEnding lineEnding) {
+		this.lineEnding = lineEnding.getLineEndingString();
+	}
+
+	@Override
+	public String getLineEnding() {
+		return lineEnding;
 	}
 }
