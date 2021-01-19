@@ -1,18 +1,16 @@
 /**
- * Copyright (C) 2006-2018 INRIA and contributors
- * Spoon - http://spoon.gforge.inria.fr/
+ * Copyright (C) 2006-2018 INRIA and contributors Spoon - http://spoon.gforge.inria.fr/
  *
- * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify
- * and/or redistribute the software under the terms of the CeCILL-C license as
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ * This software is governed by the CeCILL-C License under French law and abiding by the rules of
+ * distribution of free software. You can use, modify and/or redistribute the software under the
+ * terms of the CeCILL-C license as circulated by CEA, CNRS and INRIA at http://www.cecill.info.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * CeCILL-C License for more details.
  *
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
+ * The fact that you are presently reading this means that you have had knowledge of the CeCILL-C
+ * license and that you accept its terms.
  */
 package spoon.test.prettyprinter;
 
@@ -36,6 +34,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.MavenLauncher;
+import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.Environment;
@@ -62,6 +61,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.compiler.SpoonPom;
+import spoon.support.compiler.VirtualFile;
 import spoon.test.imports.ImportTest;
 import spoon.test.prettyprinter.testclasses.AClass;
 import spoon.test.prettyprinter.testclasses.ClassUsingStaticMethod;
@@ -570,5 +570,32 @@ public class DefaultPrettyPrinterTest {
 		} catch (MavenInvocationException e) {
 			return false;
 		}
+	}
+
+
+	@Test
+	public void testUnixLineEndings() {
+		// contract: setting line endings to unix style should produce \n line endings.
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setLineEndings(Environment.LineEnding.UNIX);
+		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
+		launcher.getEnvironment().setTabulationSize(4);
+		launcher.addInputResource(new VirtualFile("class a { int c = 3;}"));
+		CtModel model = launcher.buildModel();
+		CtType<?> type = model.getAllTypes().iterator().next();
+		assertEquals("class a {\n    int c = 3;\n}", type.toString());
+	}
+
+	@Test
+	public void testWindowsLineEndings() {
+		// contract: setting line endings to windows style should produce \r\n line endings.
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setLineEndings(Environment.LineEnding.WINDOWS);
+		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
+		launcher.getEnvironment().setTabulationSize(4);
+		launcher.addInputResource(new VirtualFile("class a { int c = 3;}"));
+		CtModel model = launcher.buildModel();
+		CtType<?> type = model.getAllTypes().iterator().next();
+		assertEquals("class a {\r\n    int c = 3;\r\n}", type.toString());
 	}
 }
