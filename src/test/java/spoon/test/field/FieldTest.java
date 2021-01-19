@@ -30,6 +30,7 @@ import java.util.List;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.compiler.Environment.LineEnding;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtReturn;
@@ -192,8 +193,8 @@ public class FieldTest {
 
 	@Test
 	public void bugAfterRefactoringImports() {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setLineEndings(LineEnding.UNIX);
 		Factory factory = launcher.getFactory();
 		final CtClass<?> klass = factory.createClass("foo.A");
 
