@@ -73,7 +73,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean processingStopped = false;
 
-	private String lineEnding = PlatformLineSeparators.SYSTEM_DEFAULT.getLineEndingString();
+	private String lineSeparator = PlatformLineSeparator.SYSTEM_DEFAULT.getLineSeparatorAsString();
 	@Override
 	public PRETTY_PRINTING_MODE getPrettyPrintingMode() {
 		return prettyPrintingMode;
@@ -656,7 +656,7 @@ private transient  ClassLoader inputClassloader;
 		));
 		printer.setIgnoreImplicit(false);
 		printer.setPreprocessors(preprocessors);
-		printer.setLineSeparator(this.getLineSeparators());
+		printer.setLineSeparator(this.getLineSeparator());
 		return printer;
 	}
 
@@ -670,7 +670,7 @@ private transient  ClassLoader inputClassloader;
 
 			if (PRETTY_PRINTING_MODE.DEBUG.equals(prettyPrintingMode)) {
 				DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
-				printer.setLineSeparator(this.getLineSeparators());
+				printer.setLineSeparator(this.getLineSeparator());
 				return printer;
 			}
 
@@ -686,7 +686,7 @@ private transient  ClassLoader inputClassloader;
 				));
 				printer.setIgnoreImplicit(false);
 				printer.setPreprocessors(preprocessors);
-				printer.setLineSeparator(this.getLineSeparators());
+				printer.setLineSeparator(this.getLineSeparator());
 				return printer;
 			}
 
@@ -712,12 +712,12 @@ private transient  ClassLoader inputClassloader;
 	}
 
 	@Override
-	public void setLineSeparators(PlatformLineSeparators lineEnding) {
-		this.lineEnding = lineEnding.getLineEndingString();
+	public void setLineSeparator(PlatformLineSeparator lineSeparator) {
+		this.lineSeparator = lineSeparator.getLineSeparatorAsString();
 	}
 
 	@Override
-	public String getLineSeparators() {
-		return lineEnding;
+	public String getLineSeparator() {
+		return lineSeparator;
 	}
 }

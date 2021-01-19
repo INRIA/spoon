@@ -579,7 +579,7 @@ public class DefaultPrettyPrinterTest {
 	public void testUnixLineEndings() {
 		// contract: setting line endings to unix style should produce \n line endings.
 		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setLineSeparators(Environment.PlatformLineSeparators.UNIX);
+		launcher.getEnvironment().setLineSeparator(Environment.PlatformLineSeparator.UNIX);
 		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
 		launcher.getEnvironment().setTabulationSize(4);
 		launcher.addInputResource(new VirtualFile("class a { int c = 3;}"));
@@ -592,7 +592,7 @@ public class DefaultPrettyPrinterTest {
 	public void testWindowsLineEndings() {
 		// contract: setting line endings to windows style should produce \r\n line endings.
 		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setLineSeparators(Environment.PlatformLineSeparators.WINDOWS);
+		launcher.getEnvironment().setLineSeparator(Environment.PlatformLineSeparator.WINDOWS);
 		launcher.getEnvironment().setOutputType(OutputType.NO_OUTPUT);
 		launcher.getEnvironment().setTabulationSize(4);
 		launcher.addInputResource(new VirtualFile("class a { int c = 3;}"));

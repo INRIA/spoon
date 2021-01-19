@@ -440,15 +440,15 @@ public interface Environment {
 	void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations);
 
 	/**
-	 * Sets the line separator to the given value. See {@link spoon.compiler.Environment.PlatformLineSeparators} for possible values.
+	 * Sets the line separator to the given value. See {@link spoon.compiler.Environment.PlatformLineSeparator} for possible values.
 	 * @param lineSeparator  lineEnding to use
 	 */
-	void setLineSeparators(PlatformLineSeparators lineSeparator);
+	void setLineSeparator(PlatformLineSeparator lineSeparator);
 
 	/**
 	 * @return  the used line separator as a String.
 	 */
-	String getLineSeparators();
+	String getLineSeparator();
 	/** Drives how the model is pretty-printed to disk, or when {@link CtElement#prettyprint()} is called */
 	enum PRETTY_PRINTING_MODE {
 		/** direct in {@link spoon.reflect.visitor.DefaultJavaPrettyPrinter}, no preprocessors are applied to the model before pretty-printing }. */
@@ -464,16 +464,16 @@ public interface Environment {
 	 * Defines different line separators for different platforms.
 	 * Windows is {@code \r\n}, UNIX {@code \n} and SYSTEM_DEFAULT uses {@link System#lineSeparator()}.
 	 */
-	enum PlatformLineSeparators {
+	enum PlatformLineSeparator {
 		UNIX("\n"), WINDOWS("\r\n"), SYSTEM_DEFAULT(System.lineSeparator());
 		private String lineSeparator;
 		/**
 		 * @return the lineEndingString as a String
 		 */
-		public String getLineEndingString() {
+		public String getLineSeparatorAsString() {
 			return lineSeparator;
 		}
-		PlatformLineSeparators(String lineSeparator) {
+		PlatformLineSeparator(String lineSeparator) {
 			this.lineSeparator = lineSeparator;
 		}
 	}
