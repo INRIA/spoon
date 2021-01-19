@@ -7,7 +7,7 @@
  */
 package spoon.compiler;
 
-import org.apache.logging.log4j.Level;
+import org.slf4j.event.Level;
 import spoon.OutputType;
 import spoon.compiler.builder.EncodingProvider;
 import spoon.processing.FileGenerator;

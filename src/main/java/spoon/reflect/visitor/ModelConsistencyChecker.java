@@ -7,7 +7,7 @@
  */
 package spoon.reflect.visitor;
 
-import org.apache.logging.log4j.Level;
+import org.slf4j.event.Level;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;

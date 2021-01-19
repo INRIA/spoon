@@ -17,9 +17,9 @@ import com.martiansoftware.jsap.stringparsers.FileStringParser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.event.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spoon.SpoonModelBuilder.InputType;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResource;
@@ -46,6 +46,7 @@ import spoon.support.gui.SpoonModelTree;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -540,7 +541,7 @@ public class Launcher implements SpoonAPI {
 
 	protected void reportClassPathMode() {
 		String cpmode = jsapActualArgs.getString("cpmode").toUpperCase();
-		Launcher.LOGGER.info("Running in " + cpmode + " mode (doc: http://spoon.gforge.inria.fr/launcher.html).");
+		factory.getEnvironment().report(null, Level.INFO, "Running in " + cpmode + " mode (doc: http://spoon.gforge.inria.fr/launcher.html).");
 	}
 
 	/**
@@ -591,7 +592,7 @@ public class Launcher implements SpoonAPI {
 	/**
 	 * A default logger to be used by Spoon.
 	 */
-	public static final Logger LOGGER = LogManager.getLogger();
+	public static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	/**
 	 * Creates a new Spoon Java compiler in order to process and compile Java

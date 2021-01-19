@@ -34,7 +34,7 @@
     </repositories>
 
     <dependencies>
-        
+
         <!-- we all depend on Junit with scope=test -->
         <dependency>
             <groupId>org.junit.vintage</groupId>
@@ -102,24 +102,6 @@
 
     <build>
         <defaultGoal>clean install</defaultGoal>
-
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-                <excludes>
-                    <exclude>log4j.properties</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>log4j.properties</include>
-                </includes>
-            </resource>
-        </resources>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

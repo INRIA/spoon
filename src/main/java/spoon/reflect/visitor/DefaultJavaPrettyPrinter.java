@@ -7,8 +7,8 @@
  */
 package spoon.reflect.visitor;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.experimental.CtUnresolvedImport;
@@ -120,6 +120,7 @@ import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.support.util.ModelList;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -244,7 +245,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 
-	protected static final Logger LOGGER = LogManager.getLogger();
+	protected static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
 	/**
 	 * Prints an element. This method shall be called by the toString() method of an element.

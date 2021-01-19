@@ -18,7 +18,7 @@ package spoon.test.prettyprinter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.Profile;

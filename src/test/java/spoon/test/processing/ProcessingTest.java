@@ -18,7 +18,7 @@ package spoon.test.processing;
 
 import com.google.common.io.Files;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
+import org.slf4j.event.Level;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
