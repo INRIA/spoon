@@ -662,38 +662,47 @@ private transient  ClassLoader inputClassloader;
 
 	@Override
 	public PrettyPrinter createPrettyPrinter() {
-		if (prettyPrinterCreator == null) {
-			if (PRETTY_PRINTING_MODE.AUTOIMPORT.equals(prettyPrintingMode)) {
+		if (prettyPrinterCreator != null) {
+			return prettyPrinterCreator.get();
+		}
+		switch (prettyPrintingMode) {
+			case AUTOIMPORT:
 				return createPrettyPrinterAutoImport();
-			}
+			case DEBUG:
+				return createPrettyPrinterDebug();
+			case FULLYQUALIFIED:
+				return createPrettyPrinterFullyQualified();
+			default:
+				throw new UnsupportedOperationException(
+					String.format("No fitting printer mode found. Give was %s, available are %s",	prettyPrintingMode,	getPrettyPrinterModes()));
+		}
+	}
 
+	private String[] getPrettyPrinterModes() {
+		return Arrays.stream(PRETTY_PRINTING_MODE.values()).map(PRETTY_PRINTING_MODE::name).toArray(String[]::new);
+	}
 
-			if (PRETTY_PRINTING_MODE.DEBUG.equals(prettyPrintingMode)) {
-				DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
-				printer.setLineSeparator(this.getLineSeparator());
-				return printer;
-			}
+	private PrettyPrinter createPrettyPrinterDebug() {
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
+		printer.setLineSeparator(this.getLineSeparator());
+		return printer;
+	}
 
-			if (PRETTY_PRINTING_MODE.FULLYQUALIFIED.equals(prettyPrintingMode)) {
-				DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
-				List<Processor<CtElement>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtElement>>asList(
+	private DefaultJavaPrettyPrinter createPrettyPrinterFullyQualified() {
+		DefaultJavaPrettyPrinter printer;
+		printer = new DefaultJavaPrettyPrinter(this);
+		List<Processor<CtElement>> preprocessors =
+				Collections.unmodifiableList(Arrays.<Processor<CtElement>>asList(
 						//force fully qualified
 						new ForceFullyQualifiedProcessor(),
 						//solve conflicts, the current imports are relevant too
 						new ImportConflictDetector(),
 						//compute final imports
-						new ImportCleaner().setImportComparator(new DefaultImportComparator())
-				));
-				printer.setIgnoreImplicit(false);
-				printer.setPreprocessors(preprocessors);
-				printer.setLineSeparator(this.getLineSeparator());
-				return printer;
-			}
-
-			throw new UnsupportedOperationException();
-
-		}
-		return prettyPrinterCreator.get();
+						new ImportCleaner().setImportComparator(new DefaultImportComparator())));
+		printer.setIgnoreImplicit(false);
+		printer.setPreprocessors(preprocessors);
+		printer.setLineSeparator(this.getLineSeparator());
+		return printer;
 	}
 
 	@Override
