@@ -30,7 +30,6 @@ import java.util.List;
 import org.junit.Test;
 
 import spoon.Launcher;
-import spoon.compiler.Environment.LineEnding;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtReturn;
