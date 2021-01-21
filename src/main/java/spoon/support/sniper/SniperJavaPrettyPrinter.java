@@ -171,9 +171,9 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	}
 
 	private static <T> Set<T> toIdentityHashSet(Collection<T> items) {
-	    Set<T> idHashSet = Collections.newSetFromMap(new IdentityHashMap<>());
-	    idHashSet.addAll(items);
-	    return idHashSet;
+		Set<T> idHashSet = Collections.newSetFromMap(new IdentityHashMap<>());
+		idHashSet.addAll(items);
+		return idHashSet;
 	}
 
 	private static final String CR = "\r";

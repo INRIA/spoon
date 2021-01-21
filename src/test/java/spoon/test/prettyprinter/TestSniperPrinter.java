@@ -634,7 +634,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testThrowsWhenTryingToPrintSubsetOfCompilationUnitTypes() {
-	    // contract: Printing a subset of a compilation unit's types is a hassle to implement at the time of writing
+		// contract: Printing a subset of a compilation unit's types is a hassle to implement at the time of writing
 		// this, as a) DJPP will replace the compilation unit with a clone, and b) it makes it more difficult to
 		// match source code fragments. For now, we're lazy and simply don't allow it.
 
