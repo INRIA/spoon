@@ -630,6 +630,12 @@ public class TestSniperPrinter {
 		assertThat(output, containsString("import static methodimport.ClassWithStaticMethod.staticMethod;"));
 	}
 
+	@Test
+	public void reproduceIllegalStateException() {
+		Consumer<CtType<?>> removeField = type -> type.getField("a").delete();
+		testSniper("CausesIllegalStateExceptionForSniper", removeField, (type, result) -> {});
+	}
+
 	/**
 	 * 1) Runs spoon using sniper mode,
 	 * 2) runs `typeChanger` to modify the code,
