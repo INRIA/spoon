@@ -28,6 +28,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
@@ -67,6 +68,7 @@ import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.test.SpoonTestHelpers.assumeNotWindows;
@@ -628,6 +630,23 @@ public class TestSniperPrinter {
 				.createPrettyPrinter().printTypes(classWithStaticMethodImport);
 
 		assertThat(output, containsString("import static methodimport.ClassWithStaticMethod.staticMethod;"));
+	}
+
+	@Test
+	public void testThrowsWhenTryingToPrintSubsetOfCompilationUnitTypes() {
+	    // contract: Printing a subset of a compilation unit's types is a hassle to implement at the time of writing
+		// this, as a) DJPP will replace the compilation unit with a clone, and b) it makes it more difficult to
+		// match source code fragments. For now, we're lazy and simply don't allow it.
+
+		Launcher launcher = createLauncherWithSniperPrinter();
+		launcher.addInputResource(getResourcePath("MultipleTopLevelTypes"));
+
+		CtModel model = launcher.buildModel();
+		CtType<?> primaryType = model.getAllTypes().stream().filter(CtModifiable::isPublic).findFirst().get();
+		CtCompilationUnit cu = primaryType.getFactory().CompilationUnit().getOrCreate(primaryType);
+		SniperJavaPrettyPrinter sniper = (SniperJavaPrettyPrinter) launcher.getEnvironment().createPrettyPrinter();
+
+		assertThrows(IllegalArgumentException.class, () -> sniper.calculate(cu, Collections.singletonList(primaryType)));
 	}
 
 	/**
