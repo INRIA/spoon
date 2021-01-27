@@ -27,6 +27,7 @@ import spoon.SpoonException;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackage;
@@ -35,6 +36,7 @@ import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
@@ -45,9 +47,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
@@ -349,6 +355,24 @@ public class TestModule {
 		CtType<?> reFetchedTypeDecl = typeRef.getTypeDeclaration();
 
 		assertSame(reFetchedTypeDecl, typeDecl);
+	}
+
+	@Test
+	public void testCompilationUnitInNamedModuleHasDeclaredTypes() {
+		// contract: Compilation units in named modules should have the expected declared types
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(9);
+		Path projectPath = Paths.get(MODULE_RESOURCES_PATH).resolve("simple_module_with_code");
+		launcher.addInputResource(projectPath.toString());
+
+		CtModel model = launcher.buildModel();
+		Factory factory = launcher.getFactory();
+		CtModule namedModule = model.getAllModules().stream().filter(m -> !m.isUnnamedModule()).findFirst().get();
+		CtType<?> expectedType = factory.Type().get("fr.simplemodule.pack.SimpleClass");
+		CtCompilationUnit cu = namedModule.getFactory().CompilationUnit().getOrCreate(expectedType);
+
+		assertThat(cu.getDeclaredTypes(), equalTo(Collections.singletonList(expectedType)));
 	}
 
 	@Test (expected = SpoonException.class)
