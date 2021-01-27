@@ -11,6 +11,8 @@ package spoon.reflect.factory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.StringTokenizer;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
@@ -157,13 +159,18 @@ public class PackageFactory extends SubFactory {
 		if (qualifiedName.contains(CtType.INNERTTYPE_SEPARATOR)) {
 			throw new RuntimeException("Invalid package name " + qualifiedName);
 		}
+
+		return factory.getModel().getAllModules().stream()
+				.map(module -> getPackageFromModule(qualifiedName, module))
+				.filter(Objects::nonNull)
+				.findFirst().orElse(null);
+	}
+
+	private static CtPackage getPackageFromModule(String qualifiedName, CtModule module) {
 		StringTokenizer token = new StringTokenizer(qualifiedName, CtPackage.PACKAGE_SEPARATOR);
-		CtPackage current = factory.getModel().getRootPackage();
-		if (token.hasMoreElements()) {
+		CtPackage current = module.getRootPackage();
+		while (token.hasMoreElements() && current != null) {
 			current = current.getPackage(token.nextToken());
-			while (token.hasMoreElements() && current != null) {
-				current = current.getPackage(token.nextToken());
-			}
 		}
 
 		return current;
