@@ -36,6 +36,7 @@ import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtModuleReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -43,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -327,6 +329,26 @@ public class TestModule {
 		CtPackage packBar = (CtPackage) barclass.getParent();
 
 		assertTrue(packBar.getParent() instanceof CtModule);
+	}
+
+	@Test
+	public void testTypeDeclarationToReferenceRoundTripInNamedModule() {
+		// contract: It's possible to go from a type declaration, to a reference, and back to the declaration
+		// when the declaration is contained within a named module
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.addInputResource(Paths.get(MODULE_RESOURCES_PATH).resolve("simple_module_with_code").toString());
+
+		CtModel model = launcher.buildModel();
+		CtType<?> typeDecl = model.getAllTypes().stream()
+				.filter(t -> t.getQualifiedName().equals("fr.simplemodule.pack.SimpleClass"))
+				.findFirst()
+				.get();
+		CtTypeReference<?> typeRef = typeDecl.getReference();
+		CtType<?> reFetchedTypeDecl = typeRef.getTypeDeclaration();
+
+		assertSame(reFetchedTypeDecl, typeDecl);
 	}
 
 	@Test (expected = SpoonException.class)
