@@ -37,7 +37,6 @@ import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.PackageFactory;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
@@ -50,7 +49,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -346,12 +344,9 @@ public class TestModule {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(9);
 		launcher.addInputResource(Paths.get(MODULE_RESOURCES_PATH).resolve("simple_module_with_code").toString());
+		launcher.buildModel();
 
-		CtModel model = launcher.buildModel();
-		CtType<?> typeDecl = model.getAllTypes().stream()
-				.filter(t -> t.getQualifiedName().equals("fr.simplemodule.pack.SimpleClass"))
-				.findFirst()
-				.get();
+		CtType<?> typeDecl = launcher.getFactory().Type().get("fr.simplemodule.pack.SimpleClass");
 		CtTypeReference<?> typeRef = typeDecl.getReference();
 		CtType<?> reFetchedTypeDecl = typeRef.getTypeDeclaration();
 
@@ -364,14 +359,11 @@ public class TestModule {
 
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(9);
-		Path projectPath = Paths.get(MODULE_RESOURCES_PATH).resolve("simple_module_with_code");
-		launcher.addInputResource(projectPath.toString());
+		launcher.addInputResource(Paths.get(MODULE_RESOURCES_PATH).resolve("simple_module_with_code").toString());
+		launcher.buildModel();
 
-		CtModel model = launcher.buildModel();
-		Factory factory = launcher.getFactory();
-		CtModule namedModule = model.getAllModules().stream().filter(m -> !m.isUnnamedModule()).findFirst().get();
-		CtType<?> expectedType = factory.Type().get("fr.simplemodule.pack.SimpleClass");
-		CtCompilationUnit cu = namedModule.getFactory().CompilationUnit().getOrCreate(expectedType);
+		CtType<?> expectedType = launcher.getFactory().Type().get("fr.simplemodule.pack.SimpleClass");
+		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(expectedType);
 
 		assertThat(cu.getDeclaredTypes(), equalTo(Collections.singletonList(expectedType)));
 	}
