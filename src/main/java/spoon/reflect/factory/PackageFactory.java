@@ -162,9 +162,15 @@ public class PackageFactory extends SubFactory {
 		return factory.getModel().getAllModules().stream()
 				.map(module -> getPackageFromModule(qualifiedName, module))
 				.filter(Objects::nonNull)
-				.findFirst().orElse(null);
+				.findFirst()
+				.orElse(null);
 	}
 
+	/**
+	 * @param qualifiedName Qualified name of a package.
+	 * @param module A module in which to search for the package.
+	 * @return The package if found in this module, otherwise null.
+	 */
 	private static CtPackage getPackageFromModule(String qualifiedName, CtModule module) {
 		StringTokenizer token = new StringTokenizer(qualifiedName, CtPackage.PACKAGE_SEPARATOR);
 		CtPackage current = module.getRootPackage();
