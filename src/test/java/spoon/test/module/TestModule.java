@@ -37,6 +37,7 @@ import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.PackageFactory;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
@@ -373,6 +374,22 @@ public class TestModule {
 		CtCompilationUnit cu = namedModule.getFactory().CompilationUnit().getOrCreate(expectedType);
 
 		assertThat(cu.getDeclaredTypes(), equalTo(Collections.singletonList(expectedType)));
+	}
+
+	@Test
+	public void testGetPackageFromNamedModule() {
+		// contract: It should be possible to get a package from a named module
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.addInputResource(Paths.get(MODULE_RESOURCES_PATH).resolve("simple_module_with_code").toString());
+		launcher.buildModel();
+
+		String packageName = "fr.simplemodule.pack";
+		CtPackage packageInNamedModule = launcher.getFactory().Package().get(packageName);
+
+		assertNotNull(packageInNamedModule);
+		assertThat(packageInNamedModule.getQualifiedName(), equalTo(packageName));
 	}
 
 	@Test (expected = SpoonException.class)
