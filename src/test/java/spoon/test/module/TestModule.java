@@ -27,7 +27,6 @@ import spoon.SpoonException;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackage;
@@ -36,9 +35,7 @@ import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
-import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtModuleReference;
-import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -46,13 +43,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
@@ -334,54 +327,6 @@ public class TestModule {
 		CtPackage packBar = (CtPackage) barclass.getParent();
 
 		assertTrue(packBar.getParent() instanceof CtModule);
-	}
-
-	@Test
-	public void testTypeDeclarationToReferenceRoundTripInNamedModule() {
-		// contract: It's possible to go from a type declaration, to a reference, and back to the declaration
-		// when the declaration is contained within a named module
-
-		final Launcher launcher = new Launcher();
-		launcher.getEnvironment().setComplianceLevel(9);
-		launcher.addInputResource(Paths.get(MODULE_RESOURCES_PATH).resolve("simple_module_with_code").toString());
-		launcher.buildModel();
-
-		CtType<?> typeDecl = launcher.getFactory().Type().get("fr.simplemodule.pack.SimpleClass");
-		CtTypeReference<?> typeRef = typeDecl.getReference();
-		CtType<?> reFetchedTypeDecl = typeRef.getTypeDeclaration();
-
-		assertSame(reFetchedTypeDecl, typeDecl);
-	}
-
-	@Test
-	public void testCompilationUnitInNamedModuleHasDeclaredTypes() {
-		// contract: Compilation units in named modules should have the expected declared types
-
-		final Launcher launcher = new Launcher();
-		launcher.getEnvironment().setComplianceLevel(9);
-		launcher.addInputResource(Paths.get(MODULE_RESOURCES_PATH).resolve("simple_module_with_code").toString());
-		launcher.buildModel();
-
-		CtType<?> expectedType = launcher.getFactory().Type().get("fr.simplemodule.pack.SimpleClass");
-		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(expectedType);
-
-		assertThat(cu.getDeclaredTypes(), equalTo(Collections.singletonList(expectedType)));
-	}
-
-	@Test
-	public void testGetPackageFromNamedModule() {
-		// contract: It should be possible to get a package from a named module
-
-		final Launcher launcher = new Launcher();
-		launcher.getEnvironment().setComplianceLevel(9);
-		launcher.addInputResource(Paths.get(MODULE_RESOURCES_PATH).resolve("simple_module_with_code").toString());
-		launcher.buildModel();
-
-		String packageName = "fr.simplemodule.pack";
-		CtPackage packageInNamedModule = launcher.getFactory().Package().get(packageName);
-
-		assertNotNull(packageInNamedModule);
-		assertThat(packageInNamedModule.getQualifiedName(), equalTo(packageName));
 	}
 
 	@Test (expected = SpoonException.class)
