@@ -9,9 +9,13 @@ package spoon.support.sniper;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import spoon.OutputType;
@@ -130,6 +134,8 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 
 	@Override
 	public void calculate(CtCompilationUnit compilationUnit, List<CtType<?>> types) {
+		checkGivenTypesMatchDeclaredTypes(compilationUnit, types);
+
 		sourceCompilationUnit = compilationUnit;
 
 		//use line separator of origin source file
@@ -147,6 +153,27 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		() -> {
 			super.calculate(sourceCompilationUnit, types);;
 		});
+	}
+
+	/** Throws an {@link IllegalArgumentException} if the given types do not exactly match the types of the CU. */
+	private static void checkGivenTypesMatchDeclaredTypes(CtCompilationUnit cu, List<CtType<?>> types) {
+		Set<CtType<?>> givenTypes = toIdentityHashSet(types);
+		Set<CtType<?>> declaredTypes = toIdentityHashSet(cu.getDeclaredTypes());
+		if (!givenTypes.equals(declaredTypes)) {
+			throw new IllegalArgumentException(
+					"Can only sniper print exactly all declared types of the compilation unit. Given types: "
+							+ toNameList(givenTypes) + ". Declared types: " + toNameList(declaredTypes));
+		}
+	}
+
+	private static List<String> toNameList(Collection<CtType<?>> types) {
+		return types.stream().map(CtType::getQualifiedName).collect(Collectors.toList());
+	}
+
+	private static <T> Set<T> toIdentityHashSet(Collection<T> items) {
+		Set<T> idHashSet = Collections.newSetFromMap(new IdentityHashMap<>());
+		idHashSet.addAll(items);
+		return idHashSet;
 	}
 
 	private static final String CR = "\r";
