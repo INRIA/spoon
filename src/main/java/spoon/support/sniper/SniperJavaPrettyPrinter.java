@@ -8,10 +8,16 @@
 package spoon.support.sniper;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
@@ -29,10 +35,12 @@ import spoon.reflect.visitor.TokenWriter;
 import spoon.support.Experimental;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.modelobs.ChangeCollector;
+import spoon.support.reflect.declaration.CtCompilationUnitImpl;
 import spoon.support.sniper.internal.ChangeResolver;
 import spoon.support.sniper.internal.CollectionSourceFragment;
 import spoon.support.sniper.internal.ElementPrinterEvent;
 import spoon.support.sniper.internal.ElementSourceFragment;
+import spoon.support.sniper.internal.IndentationDetector;
 import spoon.support.sniper.internal.ModificationStatus;
 import spoon.support.sniper.internal.MutableTokenWriter;
 import spoon.support.sniper.internal.PrinterEvent;
@@ -109,11 +117,35 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	}
 
 	@Override
+	public String printTypes(CtType<?>... type) {
+		CtCompilationUnit cu = getUnambiguousCompilationUnit(type);
+		calculate(cu, Arrays.asList(type));
+		return getResult();
+	}
+
+	private static CtCompilationUnit getUnambiguousCompilationUnit(CtType<?>[] type) {
+		CtCompilationUnit sentinel = new CtCompilationUnitImpl();
+		return Arrays.stream(type)
+				.map(ctType -> (CtCompilationUnit) ctType.getFactory().CompilationUnit().getOrCreate(ctType))
+				.reduce((prev, next) -> prev == next ? next : sentinel)
+				.filter(unit -> unit != sentinel)
+				.orElseThrow(() -> new IllegalArgumentException("mismatching or missing compilation unit"));
+	}
+
+	@Override
 	public void calculate(CtCompilationUnit compilationUnit, List<CtType<?>> types) {
+		checkGivenTypesMatchDeclaredTypes(compilationUnit, types);
+
 		sourceCompilationUnit = compilationUnit;
 
 		//use line separator of origin source file
 		setLineSeparator(detectLineSeparator(compilationUnit.getOriginalSourceCode()));
+
+		// use indentation style of origin source file for new elements
+		Pair<Integer, Boolean> indentationInfo = IndentationDetector.detectIndentation(compilationUnit);
+		mutableTokenWriter.setOriginSourceTabulationSize(indentationInfo.getLeft());
+		mutableTokenWriter.setOriginSourceUsesTabulations(indentationInfo.getRight());
+
 		runInContext(new SourceFragmentContextList(mutableTokenWriter,
 				compilationUnit,
 				Collections.singletonList(compilationUnit.getOriginalSourceFragment()),
@@ -121,6 +153,27 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		() -> {
 			super.calculate(sourceCompilationUnit, types);;
 		});
+	}
+
+	/** Throws an {@link IllegalArgumentException} if the given types do not exactly match the types of the CU. */
+	private static void checkGivenTypesMatchDeclaredTypes(CtCompilationUnit cu, List<CtType<?>> types) {
+		Set<CtType<?>> givenTypes = toIdentityHashSet(types);
+		Set<CtType<?>> declaredTypes = toIdentityHashSet(cu.getDeclaredTypes());
+		if (!givenTypes.equals(declaredTypes)) {
+			throw new IllegalArgumentException(
+					"Can only sniper print exactly all declared types of the compilation unit. Given types: "
+							+ toNameList(givenTypes) + ". Declared types: " + toNameList(declaredTypes));
+		}
+	}
+
+	private static List<String> toNameList(Collection<CtType<?>> types) {
+		return types.stream().map(CtType::getQualifiedName).collect(Collectors.toList());
+	}
+
+	private static <T> Set<T> toIdentityHashSet(Collection<T> items) {
+		Set<T> idHashSet = Collections.newSetFromMap(new IdentityHashMap<>());
+		idHashSet.addAll(items);
+		return idHashSet;
 	}
 
 	private static final String CR = "\r";

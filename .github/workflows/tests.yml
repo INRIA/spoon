@@ -1,0 +1,74 @@
+# Workflow for testing Spoon.
+#
+# Note that actions are specified by commit hash. This is to avoid the security
+# risk of someone injecting malicious code into a release and then simply
+# changing a tag.
+
+name: tests
+on:
+  pull_request:
+    branches:
+      master
+  push:
+    branches:
+      master
+  schedule:
+  - cron: "0 0 * * *"
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        java: [1.8, 11, 15]
+        os: [ubuntu-latest, windows-latest]
+        exclude:
+          - os: windows-latest
+            java: 11
+          - os: windows-latest
+            java: 15
+
+    name: Tests with Java ${{ matrix.java }} on ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # v2.3.4
+      - uses: actions/setup-java@d202f5dbf7256730fb690ec59f6381650114feb2 # v1.4.3
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Use silent log config
+        run: mv chore/travis/logback.xml src/test/resources/
+      - name: Build and test
+        env:
+          MAVEN_OPTS: -Djava.src.version=${{ matrix.java }}
+        run: mvn test
+
+  coverage:
+    runs-on: ubuntu-latest
+    name: Test with coverage
+    steps:
+      - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # v2.3.4
+      - uses: actions/setup-java@d202f5dbf7256730fb690ec59f6381650114feb2 # v1.4.3
+        with:
+          java-version: 15
+      - name: Use silent log config
+        run: mv chore/travis/logback.xml src/test/resources/
+      - name: Build and test
+        run: mvn -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
+
+  extra:
+    runs-on: ubuntu-latest
+    name: Extra checks
+    steps:
+      - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # v2.3.4
+      - uses: actions/setup-java@d202f5dbf7256730fb690ec59f6381650114feb2 # v1.4.3
+        with:
+          java-version: 15
+      - uses: actions/setup-python@41b7212b1668f5de9d65e9c82aa777e6bbedb3a8 # v2.1.4
+        with:
+          python-version: 3.6
+      - name: Use silent log config
+        run: mv chore/travis/logback.xml src/test/resources/
+      - name: Run extra checks
+        run: ./chore/travis/travis-extra.sh

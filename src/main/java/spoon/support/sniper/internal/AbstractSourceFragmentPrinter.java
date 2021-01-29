@@ -58,7 +58,7 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 		if (index != -1) { // means we have found a source code fragment corresponding to this event
 
 			// we print all spaces and comments before this fragment
-			printSpaces(getLastNonSpaceNonCommentBefore(index), index);
+			printSpaces(getLastNonSpaceNonCommentBefore(index, prevIndex), index);
 
 			SourceFragment fragment = childFragments.get(index);
 			event.printSourceFragment(fragment, isFragmentModified(fragment));
@@ -102,6 +102,11 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 			//so skip printing of this comment
 			//comment will be printed at place where it belongs to - together with spaces
 			return -1;
+		} else if (event.getRole() == CtRole.DECLARED_IMPORT && fragmentIndex == 0) {
+			// this is the first pre-existing import statement, and so we must print all newline
+			// events unconditionally to avoid placing it on the same line as a newly added import
+			// statement. See PR #3702 for details
+			printStandardSpaces();
 		}
 		setChildFragmentIdx(fragmentIndex);
 		return fragmentIndex;
@@ -301,15 +306,37 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 		separatorActions.clear();
 	}
 
-	private int getLastNonSpaceNonCommentBefore(int index) {
+	private int getLastNonSpaceNonCommentBefore(int index, int prevIndex) {
 		for (int i = index - 1; i >= 0; i--) {
 			SourceFragment fragment = childFragments.get(i);
-			if (isSpaceFragment(fragment) || isCommentFragment(fragment)) {
+			if (isSpaceFragment(fragment)
+					|| isCommentFragment(fragment)
+					|| isRecentlySkippedModifierCollectionFragment(i, prevIndex)) {
 				continue;
 			}
 			return i + 1;
 		}
 		return 0;
+	}
+
+	/**
+	 * Determines if the fragment at index is a "recently skipped" collection fragment
+	 * containing modifiers. "Recently skipped" entails that the modifier fragment has not been
+	 * printed, and that the last printed fragment occurs before the modifier fragment.
+	 *
+	 * It is necessary to detect such fragments as whitespace and comments may otherwise be lost
+	 * when completely removing modifier lists. See issue #3732 for details.
+	 *
+	 * @param index Index of the fragment.
+	 * @param prevIndex Index of the last printed fragment.
+	 * @return true if the fragment is a recently skipped collection fragment with modifiers.
+	 */
+	private boolean isRecentlySkippedModifierCollectionFragment(int index, int prevIndex) {
+		SourceFragment fragment = childFragments.get(index);
+		return prevIndex < index
+				&& fragment instanceof CollectionSourceFragment
+				&& ((CollectionSourceFragment) fragment).getItems().stream()
+						.anyMatch(ElementSourceFragment::isModifierFragment);
 	}
 
 	@Override

@@ -175,6 +175,11 @@ public class MethodReferenceTest {
 	}
 
 	@Test
+	public void testTryRecoverTypeArgumentsHandlesNullTypeArguments() {
+		canBeBuilt("./src/test/resources/ReferenceBuilder-null-pointer/", 8);
+	}
+
+	@Test
 	public void testNoClasspathExecutableReferenceExpression() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[] {

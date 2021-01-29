@@ -8,11 +8,13 @@
 package spoon.support.compiler.jdt;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.Level;
+import org.slf4j.event.Level;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.compiler.IProblem;
+import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
+import org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope;
 import spoon.OutputType;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
@@ -432,7 +434,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 
 		forEachCompilationUnit(unitList, SpoonProgress.Process.MODEL, unit -> {
 			// we need first to go through the whole model before getting the right reference for imports
-			unit.traverse(builder, unit.scope);
+			traverseUnitDeclaration(builder, unit);
 		});
 		//we need first imports before we can place comments. Mainly comments on imports need that
 		forEachCompilationUnit(unitList, SpoonProgress.Process.IMPORT, unit -> {
@@ -461,11 +463,23 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 				if (canProcessCompilationUnit(unitPath)) {
 					consumer.accept(unit);
 				}
-					getEnvironment().getSpoonProgress().step(process, unitPath, ++i, unitList.size());
+				getEnvironment().getSpoonProgress().step(process, unitPath, ++i, unitList.size());
 			}
 		}
-			getEnvironment().getSpoonProgress().end(process);
+		getEnvironment().getSpoonProgress().end(process);
 	}
+
+	/**
+	 * Invokes the traversal of the given compilation unit declaration using the given builder as a visitor.
+	 * Overriders of this method must either invoke {@link CompilationUnitDeclaration#traverse(ASTVisitor, CompilationUnitScope)})} )}
+	 * or this method before returning.
+	 * @param builder the builder to use to traverse the unit.
+	 * @param unitDeclaration the unit declaration.
+	 */
+	protected void traverseUnitDeclaration(JDTTreeBuilder builder, CompilationUnitDeclaration unitDeclaration) {
+		unitDeclaration.traverse(builder, unitDeclaration.scope);
+	}
+
 
 	private boolean canProcessCompilationUnit(String unitPath) {
 		for (final CompilationUnitFilter cuf : compilationUnitFilters) {

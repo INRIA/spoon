@@ -53,6 +53,7 @@ import spoon.reflect.code.CtSuperAccess;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSwitchExpression;
 import spoon.reflect.code.CtSynchronized;
+import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
@@ -504,6 +505,11 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public <T> CtLiteral<T> createLiteral(T value) {
 		return Code().createLiteral(value);
+	}
+
+	@Override
+	public CtTextBlock createTextBlock(String value) {
+		return Code().createTextBlock(value);
 	}
 
 	@Override
@@ -1290,5 +1296,10 @@ public class FactoryImpl implements Factory, Serializable {
 	@Override
 	public CtYieldStatement createYieldStatement(boolean isImplicit) {
 		return Core().createYieldStatement().setImplicit(isImplicit);
+	}
+
+	@Override
+	public CtTextBlock createTextBlock() {
+		return Core().createTextBlock();
 	}
 }

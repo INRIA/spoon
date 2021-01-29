@@ -44,6 +44,6 @@ def main(where):
             if not os.path.exists(linked_page): raise Exception("no such page "+linked_page)
     
 def debug(filename):
-  print "\n".join(str(x) for x in list(CommonMark.Parser().parse(codecs.open(filename, encoding="utf8").read()).walker()))
+  print("\n".join(str(x) for x in list(CommonMark.Parser().parse(codecs.open(filename, encoding="utf8").read()).walker())))
 
 main("./doc")

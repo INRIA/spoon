@@ -10,6 +10,7 @@ package spoon.support.util;
 import java.io.Serializable;
 import java.util.AbstractSet;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -35,7 +36,7 @@ public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> imple
 	private final Set<T> set;
 
 	protected ModelSet(Comparator<? super CtElement> comparator) {
-		set = new TreeSet<>(comparator);
+		set = Collections.synchronizedSet(new TreeSet<>(comparator));
 	}
 
 	protected abstract CtElement getOwner();

@@ -1,6 +1,39 @@
 ---
-title: Custom Java Pretty-Printing
+title: Java Source Code Pretty-Printing
 ---
+
+Spoon provides users with different options to pretty-print the Java code.
+
+
+## Fully-qualified Pretty-Printing
+
+Spoon can pretty-print code where all classes and methods  are fully-qualified. This is the default behavior on `toString()` on AST elements.
+This is not readable for humans but is useful when name collisions happen. If `launcher.getEnvironment().getToStringMode() == FULLYQUALIFIED`, the files written on disk are also fully qualified. 
+
+
+## Autoimport Pretty-Printing 
+
+Spoon can pretty-print code where all classes and methods  are imported as long as no conflict exists. 
+
+```java
+launcher.getEnvironment().setAutoImports(true);
+```
+
+The autoimport mode computes the required imports, add the imports in the pretty-printed files, and writes class names unqualified (w/o package names). This involves changing the field `implicit` of some elements of the model, through a set of `ImportAnalyzer`, most notable `ImportCleaner` and `ImportConflictDetector`.
+When pretty-printing, Spoon reformats the code according to its own formatting rules that can be configured by providing a custom `TokenWriter`.
+
+## Sniper Pretty-Printing Mode
+
+ The sniper mode enables to rewrite only the transformed AST elements, so that the rest of the code is printed identically to the origin version. This is useful to get small diffs after automated refactoring. 
+
+```java
+launcher.getEnvironment().setPrettyPrinterCreator(() -> {
+   return new SniperJavaPrettyPrinter(launcher.getEnvironment());
+  }
+);
+```
+
+## User-Defined Pretty-Printing Mode
 
 It is a good practice to have consistent formatting in a project.
 Spoon can be used to implement a custom Java pretty-printer, according to the guidelines of your project.

@@ -124,4 +124,15 @@ public class ParameterTest {
 			assertNull(refType);
 		}
 	}
+
+	@Test
+	public void testGetParentAfterGetParameterReference() {
+		// contract: after getting a parameter reference, the parent of the parameter type reference should still be the parameter itself
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("./src/test/resources/parameter/ParameterResource.java");
+		spoon.buildModel();
+		CtParameter parameter = spoon.getModel().getRootPackage().getElements(new TypeFilter<>(CtParameter.class)).get(0);
+		CtParameterReference pref = parameter.getReference();
+		assertEquals(parameter, parameter.getType().getParent());
+	}
 }

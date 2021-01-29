@@ -16,74 +16,76 @@
  */
 package spoon.test.logging;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.ArgumentCaptor;
+import org.slf4j.event.Level;
 import spoon.Launcher;
-
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
+import spoon.MavenLauncher;
+import uk.org.lidalia.slf4jtest.TestLogger;
+import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-@RunWith(Parameterized.class)
+@RunWith(Enclosed.class)
 public class LogTest {
 
-	@Parameterized.Parameters
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] {
-				{Level.ALL, 5 },
-				{Level.DEBUG, 5 },
-				{Level.INFO, 1 },
-				{Level.WARN, 0 },
-				{Level.ERROR, 0 },
-				{Level.OFF, 0 }
-		});
+	@RunWith(Parameterized.class)
+	public static class ParameterizedTest {
+		@Parameterized.Parameters
+		public static Collection<Object[]> data() {
+			return Arrays.asList(new Object[][] {
+					{Level.DEBUG, 6 },
+					{Level.INFO, 2 },
+					{Level.WARN, 0 },
+					{Level.ERROR, 0 }
+			});
+		}
+
+		@Parameterized.Parameter(0)
+		public Level level;
+
+		@Parameterized.Parameter(1)
+		public int nbLogMessagesMinimum;
+
+		@Test
+		public void testAllLevelsForLogs() {
+			final TestLogger logger = TestLoggerFactory.getTestLogger(Launcher.class);
+			final Launcher launcher = new Launcher();
+			logger.clear();
+			launcher.setArgs(new String[] {
+					"-i", "./src/test/java/spoon/test/logging",
+					"--level", level.toString()
+			});
+
+			// launcher provides two logging methods
+			launcher.getEnvironment().debugMessage("debugMessage");
+			launcher.getEnvironment().reportProgressMessage("reportProgressMessage");
+
+			// contract: the --level arguments sets the level
+			assertEquals(level, launcher.getFactory().getEnvironment().getLevel());
+
+			// contract: the number of messages increases with the log level
+			assertTrue(logger.getLoggingEvents().size() >= nbLogMessagesMinimum);
+		}
 	}
 
-	@Parameterized.Parameter(0)
-	public Level level;
+	public static class NonParameterizedTest {
 
-	@Parameterized.Parameter(1)
-	public int nbLogMessagesMinimum;
-
-	@Test
-	public void testAllLevelsForLogs() throws Exception {
-		final Launcher launcher = new Launcher();
-
-		Logger logger = mock(Logger.class);
-		FieldUtils.writeField(launcher.getEnvironment(), "logger", logger, true);
-
-		ArgumentCaptor<String> valueCaptureMessage = ArgumentCaptor.forClass(String.class);
-		ArgumentCaptor<Level> valueCaptureLevel = ArgumentCaptor.forClass(Level.class);
-
-		doNothing().when(logger).log(valueCaptureLevel.capture(), valueCaptureMessage.capture());
-
-		launcher.setArgs(new String[] {
-				"-i", "./src/test/java/spoon/test/logging",
-				"--level", level.toString()
-		});
-
-		// launcher provides two logging methods
-		launcher.getEnvironment().debugMessage("debugMessage");
-		launcher.getEnvironment().reportProgressMessage("reportProgressMessage");
-
-		// contract: the --level arguments sets the level
-		assertEquals(level, launcher.getFactory().getEnvironment().getLevel());
-
-		// contract: the number of messages increases with the log level
-		// System.out.println(level+ " " + valueCaptureMessage.getAllValues().size());
-		assertTrue(valueCaptureMessage.getAllValues().size() >= nbLogMessagesMinimum);
-
-
-
+		@Test
+		public void testMavenLauncherLogs() {
+			// contract: MavenLauncher should output different logs depending on whether the classpath is inferred or manually set
+			final TestLogger logger = TestLoggerFactory.getTestLogger(MavenLauncher.class);
+			MavenLauncher mavenLauncher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
+			assertEquals("Running in FULLCLASSPATH mode. Source folders and dependencies are inferred from the pom.xml file (doc: http://spoon.gforge.inria.fr/launcher.html).",logger.getLoggingEvents().get(0).getMessage());
+			logger.clear();
+			mavenLauncher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE, new String[]{"./"});
+			assertEquals("Running in FULLCLASSPATH mode. Classpath is manually set (doc: http://spoon.gforge.inria.fr/launcher.html).",logger.getLoggingEvents().get(0).getMessage());
+		}
 	}
 }

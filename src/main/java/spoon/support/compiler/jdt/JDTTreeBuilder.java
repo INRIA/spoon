@@ -7,8 +7,7 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
@@ -88,6 +87,7 @@ import org.eclipse.jdt.internal.compiler.ast.SuperReference;
 import org.eclipse.jdt.internal.compiler.ast.SwitchExpression;
 import org.eclipse.jdt.internal.compiler.ast.SwitchStatement;
 import org.eclipse.jdt.internal.compiler.ast.SynchronizedStatement;
+import org.eclipse.jdt.internal.compiler.ast.TextBlock;
 import org.eclipse.jdt.internal.compiler.ast.ThisReference;
 import org.eclipse.jdt.internal.compiler.ast.ThrowStatement;
 import org.eclipse.jdt.internal.compiler.ast.TrueLiteral;
@@ -112,6 +112,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
+import org.slf4j.LoggerFactory;
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayAccess;
@@ -158,6 +159,8 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 
+import java.lang.invoke.MethodHandles;
+
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
@@ -186,7 +189,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return LOGGER;
 	}
 
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	public PositionBuilder getPositionBuilder() {
 		return position;
@@ -1634,7 +1637,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(StringLiteral stringLiteral, BlockScope scope) {
-		context.enter(factory.Code().createLiteral(CharOperation.charToString(stringLiteral.source())), stringLiteral);
+		if (stringLiteral instanceof TextBlock) {
+			TextBlock textBlockLiteral = (TextBlock) stringLiteral;
+			context.enter(factory.Code().createTextBlock(CharOperation.charToString(textBlockLiteral.source())), textBlockLiteral);
+		} else {
+			context.enter(factory.Code().createLiteral(CharOperation.charToString(stringLiteral.source())), stringLiteral);
+		}
 		return true;
 	}
 

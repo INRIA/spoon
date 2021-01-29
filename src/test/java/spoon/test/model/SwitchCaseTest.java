@@ -112,6 +112,17 @@ public class SwitchCaseTest {
 				assertEquals(String.class.getName(), aCase.getCaseExpression().getType().getTypeDeclaration().getQualifiedName());
 			}
 		}
+		@DisplayName("Parent is set")
+		@Test
+		public void testParentInCaseExpressions() {
+				// contract: for all expressions in a case, the parent is set.
+				Launcher launcher = new Launcher();
+				launcher.getEnvironment().setComplianceLevel(14);
+				launcher.addInputResource(new VirtualFile("class A { { int x = switch(1) { case 1, 3 -> 0; default -> 1}; } }"));
+				launcher.buildModel();
+				List<CtLiteral<?>> caseStatement = launcher.getModel().getElements(new TypeFilter<>(CtLiteral.class));
+				assertTrue(caseStatement.stream().allMatch(CtLiteral::isParentInitialized));
+		}
 	}
 
 
