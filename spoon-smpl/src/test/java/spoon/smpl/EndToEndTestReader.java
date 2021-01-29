@@ -12,7 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * EndToEndTestReader provides parsing of the following simple INI-like format:
+ * EndToEndTestReader provides parsing and simple validation of the following simple INI-like format:
  *
  *   [section]
  *   arbitrary text

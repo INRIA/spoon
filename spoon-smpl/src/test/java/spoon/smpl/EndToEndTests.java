@@ -1,5 +1,6 @@
 package spoon.smpl;
 
+import java.util.Map;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -11,13 +12,13 @@ public class EndToEndTests {
     private CtClass<?> getTargetClass(String code) {
         CtModel model = SpoonJavaParser.parse(code);
         return (CtClass<?>) model.getRootPackage()
-                                 .getTypes()
-                                 .stream()
-                                 .filter(ctType -> ctType.getComments()
-                                                         .stream()
-                                                         .noneMatch(comment -> comment.getContent()
-                                                                                      .contains("skip")))
-                                 .findFirst().get();
+                .getTypes()
+                .stream()
+                .filter(ctType -> ctType.getComments()
+                        .stream()
+                        .noneMatch(comment -> comment.getContent()
+                                .contains("skip")))
+                .findFirst().get();
     }
 
     private void runSingleTest(String smpl, String inputCode, String expectedCode) {
@@ -56,3670 +57,599 @@ public class EndToEndTests {
 
         assertEquals(expected.toString(), input.toString());
     }
+
     @Test
-    public void testAnchorAfterDotsBug() {
+    public void test_src_test_resources_endtoend_AnchorAfterDotsBug() {
         // contract: an addition must not be anchored to an element on the opposite side of an intermediate dots operator
-
-        String inputCode = "class A {\n" +
-                           "    void a() {}\n" +
-                           "    void b() {}\n" +
-                           "    void somethingElse() {}\n" +
-                           "    \n" +
-                           "    void foo() {\n" +
-                           "        a();\n" +
-                           "        somethingElse();\n" +
-                           "        b();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void a() {}\n" +
-                              "    void b() {}\n" +
-                              "    void somethingElse() {}\n" +
-                              "    \n" +
-                              "    void foo() {\n" +
-                              "        a();\n" +
-                              "        somethingElse();\n" +
-                              "        c();\n" +
-                              "        b();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "a();\n" +
-                      "...\n" +
-                      "+ c();\n" +
-                      "b();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/AnchorAfterDotsBug.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testAppendContextBranch() {
+    public void test_src_test_resources_endtoend_AppendContextBranch() {
         // contract: a patch should be able to append elements below a context branch
-
-        String inputCode = "class A {\n" +
-                           "    void m1() {\n" +
-                           "        if (true) {\n" +
-                           "            int x = 0;\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void m1() {\n" +
-                              "        if (true) {\n" +
-                              "            int x = 0;\n" +
-                              "        }\n" +
-                              "        int y = 1;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "  if (true) {\n" +
-                      "      int x = 0;\n" +
-                      "  }\n" +
-                      "+ int y = 1;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/AppendContextBranch.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testAppendToContext() {
+    public void test_src_test_resources_endtoend_AppendToContext() {
         // contract: a patch should be able to append elements to a context statement
-
-        String inputCode = "class A {\n" +
-                           "    void m1() {\n" +
-                           "        int x;\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void m2() {\n" +
-                           "        int y;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void m1() {\n" +
-                              "        int x;\n" +
-                              "        int appended1;\n" +
-                              "        int appended2;\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void m2() {\n" +
-                              "        int y;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "  int x;\n" +
-                      "+ int appended1;\n" +
-                      "+ int appended2;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/AppendToContext.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testBasicDots() {
+    public void test_src_test_resources_endtoend_BasicDots() {
         // contract: dots are able to match any number of arbitrary paths
-
-        String inputCode = "class A {\n" +
-                           "    int sgn(int input) {\n" +
-                           "        int x;\n" +
-                           "        \n" +
-                           "        if (input > 0) {\n" +
-                           "            x = 1;\n" +
-                           "        } else if (input == 0) {\n" +
-                           "            x = 0;\n" +
-                           "        } else {\n" +
-                           "            x = 2;\n" +
-                           "        }\n" +
-                           "        \n" +
-                           "        return x;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int sgn(int input) {\n" +
-                              "        int x;\n" +
-                              "        \n" +
-                              "        if (input > 0) {\n" +
-                              "            x = 1 + 1;\n" +
-                              "        } else if (input == 0) {\n" +
-                              "            x = 0 + 1;\n" +
-                              "        } else {\n" +
-                              "            x = 2 + 1;\n" +
-                              "        }\n" +
-                              "        \n" +
-                              "        return x;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "identifier v1;\n" +
-                      "constant C;\n" +
-                      "@@\n" +
-                      "  int v1;\n" +
-                      "  ...\n" +
-                      "- v1 = C;\n" +
-                      "+ v1 = C + 1;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/BasicDots.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testBasicPatternDisjunction() {
+    public void test_src_test_resources_endtoend_BasicPatternDisjunction() {
         // contract: matching of pattern disjunction including clause-order priority
-
-        String inputCode = "class A {\n" +
-                           "    void a() {}\n" +
-                           "    void b() {}\n" +
-                           "    void c() {}\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "        a();\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void m2() {\n" +
-                           "        b();\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void m3() {\n" +
-                           "        c();\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void m4() {\n" +
-                           "        a();\n" +
-                           "        b();\n" +
-                           "        c();\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void m5() {\n" +
-                           "        c();\n" +
-                           "        b();\n" +
-                           "        a();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void a() {}\n" +
-                              "    void b() {}\n" +
-                              "    void c() {}\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void m2() {\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void m3() {\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void m4() {\n" +
-                              "        b();\n" +
-                              "        c();\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void m5() {\n" +
-                              "        b();\n" +
-                              "        a();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "identifier fn;\n" +
-                      "@@\n" +
-                      "void fn() {\n" +
-                      "(\n" +
-                      "- a();\n" +
-                      "|\n" +
-                      "- b();\n" +
-                      "|\n" +
-                      "- c();\n" +
-                      ")\n" +
-                      "...\n" +
-                      "}\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/BasicPatternDisjunction.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
-    @Test
-    public void testArgDotsPatternMatchMismatchedExecutableBug() {
-        // contract: pattern matching the expression \"f(...)\" should not fail to find a mismatch in the executable of the invocation
 
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a(int x, int y, int z) {}\n" +
-                           "    void m1() {\n" +
-                           "      a(1,2,3);\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */\n" +
-                              "    void a(int x, int y, int z) {\n" +
-                              "    }\n" +
-                              "    void m1() {\n" +
-                              "        a(1, 2, 3);\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- b(...)\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
-    }
     @Test
-    public void testDotsLeavingScopeBug01() {
+    public void test_src_test_resources_endtoend_Bugs_ArgDotsPatternMatchMismatchedExecutableBug() {
+        // contract: pattern matching the expression "f(...)" should not fail to find a mismatch in the executable of the invocation
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/Bugs/ArgDotsPatternMatchMismatchedExecutableBug.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
+    }
+
+    @Test
+    public void test_src_test_resources_endtoend_Bugs_DotsLeavingScopeBug01() {
         // contract: dots should be prevented from traversing out of the enclosing scope (when forall version)
-
-        String inputCode = "class A {\n" +
-                           "  void a() {}\n" +
-                           "  boolean whatever;\n" +
-                           "  \n" +
-                           "  void m1() {\n" +
-                           "    if (true) {\n" +
-                           "    }\n" +
-                           "    a();\n" +
-                           "    if (true) {\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "  void m2() {\n" +
-                           "    if (true) {\n" +
-                           "      a();\n" +
-                           "    }\n" +
-                           "    a();\n" +
-                           "    if (true) {\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "  void m3() {\n" +
-                           "    if (true) {\n" +
-                           "    }\n" +
-                           "    a();\n" +
-                           "    if (true) {\n" +
-                           "      a();\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "  void m4() {\n" +
-                           "    if (true) {\n" +
-                           "      a();\n" +
-                           "    }\n" +
-                           "    a();\n" +
-                           "    if (true) {\n" +
-                           "      a();\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "  void m5() {\n" +
-                           "    if (true) {\n" +
-                           "      if (true) {\n" +
-                           "        a();\n" +
-                           "      }\n" +
-                           "    }\n" +
-                           "    a();\n" +
-                           "    if (true) {\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "  void m6() {\n" +
-                           "    if (true) {\n" +
-                           "      if (whatever) {\n" +
-                           "        a();\n" +
-                           "      }\n" +
-                           "    }\n" +
-                           "    a();\n" +
-                           "    if (true) {\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void a() {}\n" +
-                              "    boolean whatever;\n" +
-                              "    void m1() {\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "        a();\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    void m2() {\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "        a();\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    void m3() {\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "        a();\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    void m4() {\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "        a();\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    void m5() {\n" +
-                              "        if (true) {\n" +
-                              "            if (true) {\n" +
-                              "            }\n" +
-                              "        }\n" +
-                              "        a();\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    void m6() {\n" +
-                              "        if (true) {\n" +
-                              "            if (whatever) {\n" +
-                              "                a();\n" +
-                              "            }\n" +
-                              "        }\n" +
-                              "        a();\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "if (true) {\n" +
-                      "  ...\n" +
-                      "- a();\n" +
-                      "  ...\n" +
-                      "}\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/Bugs/DotsLeavingScopeBug01.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDotsLeavingScopeBug02() {
+    public void test_src_test_resources_endtoend_Bugs_DotsLeavingScopeBug02() {
         // contract: dots should be prevented from traversing out of the enclosing scope (when exists version)
-
-        String inputCode = "class A {\n" +
-                           "  void a() {}\n" +
-                           "  boolean whatever;\n" +
-                           "  \n" +
-                           "  void m1() {\n" +
-                           "    if (true) {\n" +
-                           "    }\n" +
-                           "    a();\n" +
-                           "    if (true) {\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "  void m2() {\n" +
-                           "    if (true) {\n" +
-                           "      a();\n" +
-                           "    }\n" +
-                           "    a();\n" +
-                           "    if (true) {\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "  void m3() {\n" +
-                           "    if (true) {\n" +
-                           "    }\n" +
-                           "    a();\n" +
-                           "    if (true) {\n" +
-                           "      a();\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "  void m4() {\n" +
-                           "    if (true) {\n" +
-                           "      a();\n" +
-                           "    }\n" +
-                           "    a();\n" +
-                           "    if (true) {\n" +
-                           "      a();\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "  void m5() {\n" +
-                           "    if (true) {\n" +
-                           "      if (true) {\n" +
-                           "        a();\n" +
-                           "      }\n" +
-                           "    }\n" +
-                           "    a();\n" +
-                           "    if (true) {\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "  void m6() {\n" +
-                           "    if (true) {\n" +
-                           "      if (whatever) {\n" +
-                           "        a();\n" +
-                           "      }\n" +
-                           "    }\n" +
-                           "    a();\n" +
-                           "    if (true) {\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void a() {}\n" +
-                              "    boolean whatever;\n" +
-                              "    void m1() {\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "        a();\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    void m2() {\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "        a();\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    void m3() {\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "        a();\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    void m4() {\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "        a();\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    void m5() {\n" +
-                              "        if (true) {\n" +
-                              "            if (true) {\n" +
-                              "            }\n" +
-                              "        }\n" +
-                              "        a();\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    void m6() {\n" +
-                              "        if (true) {\n" +
-                              "            if (whatever) {\n" +
-                              "            }\n" +
-                              "        }\n" +
-                              "        a();\n" +
-                              "        if (true) {\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "if (true) {\n" +
-                      "  ... when exists\n" +
-                      "- a();\n" +
-                      "  ...\n" +
-                      "}\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/Bugs/DotsLeavingScopeBug02.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDotsWhenExistsBug() {
+    public void test_src_test_resources_endtoend_Bugs_DotsWhenExistsBug() {
         // contract: the when-exists dots modifier should successfully match in the following example
-
-        String inputCode = "class A {\n" +
-                           "  void a() {}\n" +
-                           "  void b() {}\n" +
-                           "  \n" +
-                           "  void m() {\n" +
-                           "    try {\n" +
-                           "      a();\n" +
-                           "    }\n" +
-                           "    catch (Exception e) {\n" +
-                           "      b();\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void a() {}\n" +
-                              "    void b() {}\n" +
-                              "    void m() {\n" +
-                              "        try {\n" +
-                              "            a();\n" +
-                              "        } catch (Exception e) {\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "  a();\n" +
-                      "  ... when exists\n" +
-                      "- b();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/Bugs/DotsWhenExistsBug.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testEnvironmentNegationBug() {
+    public void test_src_test_resources_endtoend_Bugs_EnvironmentNegationBug() {
         // contract: the bug where the environments (Tv1=int, v1=x) and (Tv1=(int), v1=(y)) could not be joined should be fixed
-
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a(int x) {}\n" +
-                           "    /* skip */ int f(int x, int y) { return 1; }\n" +
-                           "    int m1(int x, int y) {\n" +
-                           "        return f(x, y);\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */ void a(int x) {}\n" +
-                              "    /* skip */ int f(int x, int y) { return 1; }\n" +
-                              "    int m1(int x, int y) {\n" +
-                              "        a(x);\n" +
-                              "        return f(x, y);\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ type Tf, Tv1; identifier v1, f; @@\n" +
-                      "Tf f(Tv1 v1, ...) {\n" +
-                      "+ a(v1);\n" +
-                      "...\n" +
-                      "}\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/Bugs/EnvironmentNegationBug.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMissingSubstitutionInAddedLocalVarDeclBug() {
+    public void test_src_test_resources_endtoend_Bugs_MissingSubstitutionInAddedLocalVarDeclBug() {
         // contract: bound metavariable should be substituted in addition of local variable declaration
-
-        String inputCode = "class A {\n" +
-                           "    void m1() {\n" +
-                           "      int x;\n" +
-                           "      x = 2;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void m1() {\n" +
-                              "        float x;\n" +
-                              "        x = 2;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ identifier y; @@\n" +
-                      "  void m1() {\n" +
-                      "-   int y;\n" +
-                      "+   float y;\n" +
-                      "    y = 2;\n" +
-                      "  }\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/Bugs/MissingSubstitutionInAddedLocalVarDeclBug.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDeleteBranch() {
+    public void test_src_test_resources_endtoend_DeleteBranch() {
         // contract: a patch should be able to delete a complete branch statement
-
-        String inputCode = "class A {\n" +
-                           "    void m1() {\n" +
-                           "        if (true) {\n" +
-                           "            int x = 0;\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void m1() {\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "- if (true) {\n" +
-                      "-     int x = 0;\n" +
-                      "- }\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DeleteBranch.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDeleteBranchInBranch() {
+    public void test_src_test_resources_endtoend_DeleteBranchInBranch() {
         // contract: a patch should be able to delete a complete branch statement nested inside another branch
-
-        String inputCode = "class A {\n" +
-                           "    void before() {}\n" +
-                           "    void after() {}\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "        boolean somevariable = Math.random() < 0.5;\n" +
-                           "        \n" +
-                           "        if (somevariable) {\n" +
-                           "            before();\n" +
-                           "            \n" +
-                           "            if (true) {\n" +
-                           "                int x = 0;\n" +
-                           "            }\n" +
-                           "            \n" +
-                           "            after();\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void before() {}\n" +
-                              "    void after() {}\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        boolean somevariable = Math.random() < 0.5;\n" +
-                              "        \n" +
-                              "        if (somevariable) {\n" +
-                              "            before();\n" +
-                              "            after();\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "- if (true) {\n" +
-                      "-     int x = 0;\n" +
-                      "- }\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DeleteBranchInBranch.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDeleteEnclosingBranch() {
+    public void test_src_test_resources_endtoend_DeleteEnclosingBranch() {
         // contract: a patch should be able to delete an enclosing branch statement while keeping inner context
-
-        String inputCode = "class A {\n" +
-                           "    void m1() {\n" +
-                           "        if (true) {\n" +
-                           "            int x = 0;\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void m2() {\n" +
-                           "        if (true) {\n" +
-                           "            if (true) {\n" +
-                           "                int x = 0;\n" +
-                           "            }\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void m3() {\n" +
-                           "        if (false) {\n" +
-                           "            if (true) {\n" +
-                           "                int x = 0;\n" +
-                           "            }\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void m1() {\n" +
-                              "        int x = 0;\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void m2() {\n" +
-                              "        if (true) {\n" +
-                              "            int x = 0;\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void m3() {\n" +
-                              "        if (false) {\n" +
-                              "            int x = 0;\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "- if (true) {\n" +
-                      "      int x = 0;\n" +
-                      "- }\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DeleteEnclosingBranch.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDeleteEnclosingBranchDots() {
+    public void test_src_test_resources_endtoend_DeleteEnclosingBranchDots() {
         // contract: a patch should be able to delete an enclosing branch statement while keeping inner context
-
-        String inputCode = "class A {\n" +
-                           "    void m1() {\n" +
-                           "        if (true) {\n" +
-                           "            int x = 0;\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void m2() {\n" +
-                           "        if (true) {\n" +
-                           "            if (true) {\n" +
-                           "                int x = 0;\n" +
-                           "            }\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void m3() {\n" +
-                           "        if (false) {\n" +
-                           "            if (true) {\n" +
-                           "                int x = 0;\n" +
-                           "            }\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void m4() {\n" +
-                           "        if (true) {\n" +
-                           "            if (false) {\n" +
-                           "                int x = 0;\n" +
-                           "            }\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void m1() {\n" +
-                              "        int x = 0;\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void m2() {\n" +
-                              "        if (true) {\n" +
-                              "            int x = 0;\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void m3() {\n" +
-                              "        if (false) {\n" +
-                              "            int x = 0;\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void m4() {\n" +
-                              "        if (false) {\n" +
-                              "            int x = 0;\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "- if (true) {\n" +
-                      "      ...\n" +
-                      "- }\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DeleteEnclosingBranchDots.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDeleteStmAfterBranch() {
+    public void test_src_test_resources_endtoend_DeleteStmAfterBranch() {
         // contract: only the statement below the branch should be removed
-
-        String inputCode = "class A {\n" +
-                           "    int positive(int input) {\n" +
-                           "        int ans = 0;\n" +
-                           "        \n" +
-                           "        ans = 1;\n" +
-                           "        \n" +
-                           "        if (input > 0) {\n" +
-                           "            ans = 1;\n" +
-                           "        }\n" +
-                           "        \n" +
-                           "        ans = 1;\n" +
-                           "        \n" +
-                           "        return ans;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int positive(int input) {\n" +
-                              "        int ans = 0;\n" +
-                              "        \n" +
-                              "        ans = 1;\n" +
-                              "        \n" +
-                              "        if (input > 0) {\n" +
-                              "            ans = 1;\n" +
-                              "        }\n" +
-                              "        \n" +
-                              "        return ans;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "identifier v1;\n" +
-                      "constant C;\n" +
-                      "@@\n" +
-                      "  if (input > 0) {\n" +
-                      "  ...\n" +
-                      "  }\n" +
-                      "- v1 = C;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DeleteStmAfterBranch.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDeleteStmBeforeBranch() {
+    public void test_src_test_resources_endtoend_DeleteStmBeforeBranch() {
         // contract: only the statement above the branch should be removed
-
-        String inputCode = "class A {\n" +
-                           "    int positive(int input) {\n" +
-                           "        int ans = 0;\n" +
-                           "        \n" +
-                           "        ans = 1;\n" +
-                           "        \n" +
-                           "        if (input > 0) {\n" +
-                           "            ans = 1;\n" +
-                           "        }\n" +
-                           "        \n" +
-                           "        ans = 1;\n" +
-                           "        \n" +
-                           "        return ans;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int positive(int input) {\n" +
-                              "        int ans = 0;\n" +
-                              "        \n" +
-                              "        if (input > 0) {\n" +
-                              "            ans = 1;\n" +
-                              "        }\n" +
-                              "        \n" +
-                              "        ans = 1;\n" +
-                              "        \n" +
-                              "        return ans;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "identifier v1;\n" +
-                      "constant C;\n" +
-                      "@@\n" +
-                      "- v1 = C;\n" +
-                      "  if (input > 0) {\n" +
-                      "  ...\n" +
-                      "  }\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DeleteStmBeforeBranch.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDeleteStmInBranch() {
+    public void test_src_test_resources_endtoend_DeleteStmInBranch() {
         // contract: only the statement inside the branch should be removed
-
-        String inputCode = "class A {\n" +
-                           "    int positive(int input) {\n" +
-                           "        int ans = 0;\n" +
-                           "        \n" +
-                           "        ans = 1;\n" +
-                           "        \n" +
-                           "        if (input > 0) {\n" +
-                           "            ans = 1;\n" +
-                           "        }\n" +
-                           "        \n" +
-                           "        ans = 1;\n" +
-                           "        \n" +
-                           "        return ans;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int positive(int input) {\n" +
-                              "        int ans = 0;\n" +
-                              "        \n" +
-                              "        ans = 1;\n" +
-                              "        \n" +
-                              "        if (input > 0) {\n" +
-                              "        }\n" +
-                              "        \n" +
-                              "        ans = 1;\n" +
-                              "        \n" +
-                              "        return ans;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "identifier v1;\n" +
-                      "constant C;\n" +
-                      "@@\n" +
-                      "  if (input > 0) {\n" +
-                      "-     v1 = C;\n" +
-                      "  }\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DeleteStmInBranch.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDotsShortestPath() {
+    public void test_src_test_resources_endtoend_DotsShortestPath() {
         // contract: dots by default should only match the shortest path between enclosing anchors (if any)
-
-        String inputCode = "class A {\n" +
-                           "    void foo(Object x) {}\n" +
-                           "    void bar(Object x) {}\n" +
-                           "    \n" +
-                           "    void m1(Object x) {\n" +
-                           "        foo(x);\n" +
-                           "        foo(x);\n" +
-                           "        bar(x);\n" +
-                           "        bar(x);\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void foo(Object x) {}\n" +
-                              "    void bar(Object x) {}\n" +
-                              "    \n" +
-                              "    void m1(Object x) {\n" +
-                              "        foo(x);\n" +
-                              "        bar(x);\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "- foo(x);\n" +
-                      "  ...\n" +
-                      "- bar(x);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DotsShortestPath.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDotsWhenAny() {
+    public void test_src_test_resources_endtoend_DotsWhenAny() {
         // contract: dots shortest path restriction is lifted by using when any
-
-        String inputCode = "class A {\n" +
-                           "    void foo(Object x) {}\n" +
-                           "    void bar(Object x) {}\n" +
-                           "    \n" +
-                           "    void m1(Object x) {\n" +
-                           "        foo(x);\n" +
-                           "        foo(x);\n" +
-                           "        bar(x);\n" +
-                           "        bar(x);\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void foo(Object x) {}\n" +
-                              "    void bar(Object x) {}\n" +
-                              "    \n" +
-                              "    void m1(Object x) {\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "- foo(x);\n" +
-                      "  ... when any\n" +
-                      "- bar(x);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DotsWhenAny.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDotsWhenNeqExpression01() {
+    public void test_src_test_resources_endtoend_DotsWhenNeqExpression_DotsWhenNeqExpression01() {
         // contract: due to the constraint on the dots operator the patch should not match m1, but should match and transform m2
-
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a() {}\n" +
-                           "    /* skip */ void b() {}\n" +
-                           "    /* skip */ void c() {}\n" +
-                           "    void m1() {\n" +
-                           "      a();\n" +
-                           "      b();\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "    void m2() {\n" +
-                           "      a();\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */\n" +
-                              "    void a() {\n" +
-                              "    }\n" +
-                              "    /* skip */\n" +
-                              "    void b() {\n" +
-                              "    }\n" +
-                              "    /* skip */\n" +
-                              "    void c() {\n" +
-                              "    }\n" +
-                              "    void m1() {\n" +
-                              "        a();\n" +
-                              "        b();\n" +
-                              "        c();\n" +
-                              "    }\n" +
-                              "    void m2() {\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- a();\n" +
-                      "  ... when != b()\n" +
-                      "- c();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DotsWhenNeqExpression/DotsWhenNeqExpression01.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDotsWhenNeqExpression02() {
+    public void test_src_test_resources_endtoend_DotsWhenNeqExpression_DotsWhenNeqExpression02() {
         // contract: due to the constraint on the dots operator the patch should not match m2, but should match and transform m1
-
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a() {}\n" +
-                           "    /* skip */ void b(int x) {}\n" +
-                           "    /* skip */ void c() {}\n" +
-                           "    void m1() {\n" +
-                           "      a();\n" +
-                           "      b(0);\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "    void m2() {\n" +
-                           "      a();\n" +
-                           "      b(1);\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */\n" +
-                              "    void a() {\n" +
-                              "    }\n" +
-                              "    /* skip */\n" +
-                              "    void b(int x) {\n" +
-                              "    }\n" +
-                              "    /* skip */\n" +
-                              "    void c() {\n" +
-                              "    }\n" +
-                              "    void m1() {\n" +
-                              "        b(0);\n" +
-                              "    }\n" +
-                              "    void m2() {\n" +
-                              "        a();\n" +
-                              "        b(1);\n" +
-                              "        c();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- a();\n" +
-                      "  ... when != b(1)\n" +
-                      "- c();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DotsWhenNeqExpression/DotsWhenNeqExpression02.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDotsWhenNeqExpression03() {
+    public void test_src_test_resources_endtoend_DotsWhenNeqExpression_DotsWhenNeqExpression03() {
         // contract: dots for arguments should be supported in expressions of when != expr, both m1 and m2 should be rejected
-
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a() {}\n" +
-                           "    /* skip */ void b(int x) {}\n" +
-                           "    /* skip */ void c() {}\n" +
-                           "    void m1() {\n" +
-                           "      a();\n" +
-                           "      b(0);\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "    void m2() {\n" +
-                           "      a();\n" +
-                           "      b(1);\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */\n" +
-                              "    void a() {\n" +
-                              "    }\n" +
-                              "    /* skip */\n" +
-                              "    void b(int x) {\n" +
-                              "    }\n" +
-                              "    /* skip */\n" +
-                              "    void c() {\n" +
-                              "    }\n" +
-                              "    void m1() {\n" +
-                              "        a();\n" +
-                              "        b(0);\n" +
-                              "        c();\n" +
-                              "    }\n" +
-                              "    void m2() {\n" +
-                              "        a();\n" +
-                              "        b(1);\n" +
-                              "        c();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- a();\n" +
-                      "  ... when != b(...)\n" +
-                      "- c();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DotsWhenNeqExpression/DotsWhenNeqExpression03.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDotsWhenNeqExpression04() {
+    public void test_src_test_resources_endtoend_DotsWhenNeqExpression_DotsWhenNeqExpression04() {
         // contract: constructor calls should be supported in when != expr, m1 should match but m2 should not
-
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a() {}\n" +
-                           "    /* skip */ void c() {}\n" +
-                           "    public static class Point {\n" +
-                           "        public Point(int x, int y) {\n" +
-                           "            this.x = x;\n" +
-                           "            this.y = y;\n" +
-                           "        }\n" +
-                           "        public final int x;\n" +
-                           "        public final int y;\n" +
-                           "    }\n" +
-                           "    void m1() {\n" +
-                           "      a();\n" +
-                           "      Point p = new Point(1,2);\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "    void m2() {\n" +
-                           "      a();\n" +
-                           "      Point p = new Point(2,3);\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */\n" +
-                              "    void a() {\n" +
-                              "    }\n" +
-                              "    /* skip */\n" +
-                              "    void c() {\n" +
-                              "    }\n" +
-                              "    public static class Point {\n" +
-                              "        public Point(int x, int y) {\n" +
-                              "            this.x = x;\n" +
-                              "            this.y = y;\n" +
-                              "        }\n" +
-                              "        public final int x;\n" +
-                              "        public final int y;\n" +
-                              "    }\n" +
-                              "    void m1() {\n" +
-                              "        Point p = new Point(1, 2);\n" +
-                              "    }\n" +
-                              "    void m2() {\n" +
-                              "        a();\n" +
-                              "        Point p = new Point(2, 3);\n" +
-                              "        c();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- a();\n" +
-                      "  ... when != new Point(2,3)\n" +
-                      "- c();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DotsWhenNeqExpression/DotsWhenNeqExpression04.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDotsWhenNeqExpression05() {
+    public void test_src_test_resources_endtoend_DotsWhenNeqExpression_DotsWhenNeqExpression05() {
         // contract: dots for arguments in constructor calls should be supported in when != expr, m1 and m2 should match but not m3
-
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a() {}\n" +
-                           "    /* skip */ void c() {}\n" +
-                           "    public static class Point {\n" +
-                           "        public Point(int x, int y) {\n" +
-                           "            this.x = x;\n" +
-                           "            this.y = y;\n" +
-                           "        }\n" +
-                           "        public final int x;\n" +
-                           "        public final int y;\n" +
-                           "    }\n" +
-                           "    void m1() {\n" +
-                           "      a();\n" +
-                           "      Point p = new Point(2,2);\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "    void m2() {\n" +
-                           "      a();\n" +
-                           "      Point p = new Point(2,3);\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "    void m3() {\n" +
-                           "      a();\n" +
-                           "      Point p = new Point(1,1);\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */\n" +
-                              "    void a() {\n" +
-                              "    }\n" +
-                              "    /* skip */\n" +
-                              "    void c() {\n" +
-                              "    }\n" +
-                              "    public static class Point {\n" +
-                              "        public Point(int x, int y) {\n" +
-                              "            this.x = x;\n" +
-                              "            this.y = y;\n" +
-                              "        }\n" +
-                              "        public final int x;\n" +
-                              "        public final int y;\n" +
-                              "    }\n" +
-                              "    void m1() {\n" +
-                              "      Point p = new Point(2,2);\n" +
-                              "    }\n" +
-                              "    void m2() {\n" +
-                              "      Point p = new Point(2,3);\n" +
-                              "    }\n" +
-                              "    void m3() {\n" +
-                              "      a();\n" +
-                              "      Point p = new Point(1,1);\n" +
-                              "      c();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- a();\n" +
-                      "  ... when != new Point(1,...)\n" +
-                      "- c();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DotsWhenNeqExpression/DotsWhenNeqExpression05.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDotsWhenNeqExpression06() {
+    public void test_src_test_resources_endtoend_DotsWhenNeqExpression_DotsWhenNeqExpression06() {
         // contract: dots for arguments in constructor calls should be supported in when != expr, none of m1,m2,m3 should match
-
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a() {}\n" +
-                           "    /* skip */ void c() {}\n" +
-                           "    public static class Point {\n" +
-                           "        public Point(int x, int y) {\n" +
-                           "            this.x = x;\n" +
-                           "            this.y = y;\n" +
-                           "        }\n" +
-                           "        public final int x;\n" +
-                           "        public final int y;\n" +
-                           "    }\n" +
-                           "    void m1() {\n" +
-                           "      a();\n" +
-                           "      Point p = new Point(2,2);\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "    void m2() {\n" +
-                           "      a();\n" +
-                           "      Point p = new Point(2,3);\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "    void m3() {\n" +
-                           "      a();\n" +
-                           "      Point p = new Point(1,1);\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */\n" +
-                              "    void a() {\n" +
-                              "    }\n" +
-                              "    /* skip */\n" +
-                              "    void c() {\n" +
-                              "    }\n" +
-                              "    public static class Point {\n" +
-                              "        public Point(int x, int y) {\n" +
-                              "            this.x = x;\n" +
-                              "            this.y = y;\n" +
-                              "        }\n" +
-                              "        public final int x;\n" +
-                              "        public final int y;\n" +
-                              "    }\n" +
-                              "    void m1() {\n" +
-                              "      a();\n" +
-                              "      Point p = new Point(2,2);\n" +
-                              "      c();\n" +
-                              "    }\n" +
-                              "    void m2() {\n" +
-                              "      a();\n" +
-                              "      Point p = new Point(2,3);\n" +
-                              "      c();\n" +
-                              "    }\n" +
-                              "    void m3() {\n" +
-                              "      a();\n" +
-                              "      Point p = new Point(1,1);\n" +
-                              "      c();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- a();\n" +
-                      "  ... when != new Point(...)\n" +
-                      "- c();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DotsWhenNeqExpression/DotsWhenNeqExpression06.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDotsWithOptionalMatchShortestPath() {
+    public void test_src_test_resources_endtoend_DotsWithOptionalMatch_DotsWithOptionalMatchShortestPath() {
         // contract: optdots should match the shortest path between surrounding context elements
-
-        String inputCode = "class A {\n" +
-                           "  void pre() {}\n" +
-                           "  void post() {}\n" +
-                           "  void a() {}\n" +
-                           "  \n" +
-                           "  void test() {\n" +
-                           "    pre();\n" +
-                           "    a();\n" +
-                           "    pre();\n" +
-                           "    a();\n" +
-                           "    a();\n" +
-                           "    post();\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void pre() {}\n" +
-                              "    void post() {}\n" +
-                              "    void a() {}\n" +
-                              "    \n" +
-                              "    void test() {\n" +
-                              "        pre();\n" +
-                              "        a();\n" +
-                              "        pre();\n" +
-                              "        post();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "void test() {\n" +
-                      "  ... when any\n" +
-                      "  pre();\n" +
-                      "<...\n" +
-                      "- a();\n" +
-                      "...>\n" +
-                      "  post();\n" +
-                      "}\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DotsWithOptionalMatch/DotsWithOptionalMatchShortestPath.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDotsWithOptionalMatchSingle() {
+    public void test_src_test_resources_endtoend_DotsWithOptionalMatch_DotsWithOptionalMatchSingle() {
         // contract: using the <... P ...> dots alternative to include an optional matching of P
-
-        String inputCode = "class A {\n" +
-                           "  /* skip */ void a(Object ... xs) {}\n" +
-                           "  /* skip */ void b(Object ... xs) {}\n" +
-                           "  /* skip */ void c(Object ... xs) {}\n" +
-                           "  /* skip */ void d(Object ... xs) {}\n" +
-                           "  Object x;\n" +
-                           "  Object y;\n" +
-                           "  Object z;\n" +
-                           "  void m1() {\n" +
-                           "    a();\n" +
-                           "    b(x);\n" +
-                           "    b(y);\n" +
-                           "    b(z);\n" +
-                           "    c();\n" +
-                           "    d();\n" +
-                           "  }\n" +
-                           "  void m2() {\n" +
-                           "    a();\n" +
-                           "    c();\n" +
-                           "    // call to c should be removed as patch should match even without the presence of any calls to b\n" +
-                           "    d();\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "  /* skip */ void a(Object ... xs) {}\n" +
-                              "  /* skip */ void b(Object ... xs) {}\n" +
-                              "  /* skip */ void c(Object ... xs) {}\n" +
-                              "  /* skip */ void d(Object ... xs) {}\n" +
-                              "  Object x;\n" +
-                              "  Object y;\n" +
-                              "  Object z;\n" +
-                              "  void m1() {\n" +
-                              "    a();\n" +
-                              "    log(x);\n" +
-                              "    log(y);\n" +
-                              "    log(z);\n" +
-                              "    d();\n" +
-                              "  }\n" +
-                              "  void m2() {\n" +
-                              "    a();\n" +
-                              "    // call to c should be removed as patch should match even without the presence of any calls to b\n" +
-                              "    d();\n" +
-                              "  }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "identifier x;\n" +
-                      "@@\n" +
-                      "a();\n" +
-                      "<...\n" +
-                      "- b(x);\n" +
-                      "+ log(x);\n" +
-                      "...>\n" +
-                      "- c();\n" +
-                      "d();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/DotsWithOptionalMatch/DotsWithOptionalMatchSingle.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testEncloseInBranch() {
+    public void test_src_test_resources_endtoend_EncloseInBranch() {
         // contract: a patch should be able to add a branch statement enclosing context
-
-        String inputCode = "class A {\n" +
-                           "    void anchor() {}\n" +
-                           "    void foo() {}\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "        anchor();\n" +
-                           "        foo();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void anchor() {}\n" +
-                              "    void foo() {}\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        anchor();\n" +
-                              "        if (debug) {\n" +
-                              "            foo();\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "  anchor();\n" +
-                      "+ if (debug) {\n" +
-                      "      foo();\n" +
-                      "+ }\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/EncloseInBranch.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDotsEnteringTryBlock() {
+    public void test_src_test_resources_endtoend_Exceptions_DotsEnteringTryBlock() {
         // contract: dots should be able to traverse into try blocks
-
-        String inputCode = "class A {\n" +
-                           "  void a() {}\n" +
-                           "  void b() {}\n" +
-                           "  void c() {}\n" +
-                           "  void d() {}\n" +
-                           "  \n" +
-                           "  void m() {\n" +
-                           "    a();\n" +
-                           "    try {\n" +
-                           "      b();\n" +
-                           "    }\n" +
-                           "    catch (Exception e) {\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "    d();\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void a() {}\n" +
-                              "    void b() {}\n" +
-                              "    void c() {}\n" +
-                              "    void d() {}\n" +
-                              "    \n" +
-                              "    void m() {\n" +
-                              "        a();\n" +
-                              "        try {\n" +
-                              "        } catch (Exception e) {\n" +
-                              "            c();\n" +
-                              "        }\n" +
-                              "        d();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "  a();\n" +
-                      "  ...\n" +
-                      "- b();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/Exceptions/DotsEnteringTryBlock.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testDotsTraversingTryCatch() {
+    public void test_src_test_resources_endtoend_Exceptions_DotsTraversingTryCatch() {
         // contract: dots should be able to traverse over a try-catch
-
-        String inputCode = "class A {\n" +
-                           "  void a() {}\n" +
-                           "  void b() {}\n" +
-                           "  void c() {}\n" +
-                           "  void d() {}\n" +
-                           "  \n" +
-                           "  void m() {\n" +
-                           "    a();\n" +
-                           "    try {\n" +
-                           "      b();\n" +
-                           "    }\n" +
-                           "    catch (Exception e) {\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "    d();\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void a() {}\n" +
-                              "    void b() {}\n" +
-                              "    void c() {}\n" +
-                              "    void d() {}\n" +
-                              "    \n" +
-                              "    void m() {\n" +
-                              "        a();\n" +
-                              "        try {\n" +
-                              "            b();\n" +
-                              "        } catch (Exception e) {\n" +
-                              "            c();\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "  a();\n" +
-                      "  ...\n" +
-                      "- d();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/Exceptions/DotsTraversingTryCatch.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testExistsDotsPatchingCatchBlock() {
+    public void test_src_test_resources_endtoend_Exceptions_ExistsDotsPatchingCatchBlock() {
         // contract: dots in exists mode should patch a statement only found in the catch block
-
-        String inputCode = "class A {\n" +
-                           "  void a() {}\n" +
-                           "  void b() {}\n" +
-                           "  void c() {}\n" +
-                           "  void d() {}\n" +
-                           "  \n" +
-                           "  void m() {\n" +
-                           "    a();\n" +
-                           "    try {\n" +
-                           "      b();\n" +
-                           "    }\n" +
-                           "    catch (Exception e) {\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "    d();\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void a() {}\n" +
-                              "    void b() {}\n" +
-                              "    void c() {}\n" +
-                              "    void d() {}\n" +
-                              "    \n" +
-                              "    void m() {\n" +
-                              "        a();\n" +
-                              "        try {\n" +
-                              "            b();\n" +
-                              "        } catch (Exception e) {\n" +
-                              "        }\n" +
-                              "        d();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "  a();\n" +
-                      "  ... when exists\n" +
-                      "- c();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/Exceptions/ExistsDotsPatchingCatchBlock.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testForallDotsNotPatchingCatchBlock() {
+    public void test_src_test_resources_endtoend_Exceptions_ForallDotsNotPatchingCatchBlock() {
         // contract: dots in forall mode should not patch a statement only found in the catch block
-
-        String inputCode = "class A {\n" +
-                           "  void a() {}\n" +
-                           "  void b() {}\n" +
-                           "  void c() {}\n" +
-                           "  void d() {}\n" +
-                           "  \n" +
-                           "  void m() {\n" +
-                           "    a();\n" +
-                           "    try {\n" +
-                           "      b();\n" +
-                           "    }\n" +
-                           "    catch (Exception e) {\n" +
-                           "      c();\n" +
-                           "    }\n" +
-                           "    d();\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void a() {}\n" +
-                              "    void b() {}\n" +
-                              "    void c() {}\n" +
-                              "    void d() {}\n" +
-                              "    \n" +
-                              "    void m() {\n" +
-                              "        a();\n" +
-                              "        try {\n" +
-                              "            b();\n" +
-                              "        } catch (Exception e) {\n" +
-                              "            c();\n" +
-                              "        }\n" +
-                              "        d();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "  a();\n" +
-                      "  ...\n" +
-                      "- c();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/Exceptions/ForallDotsNotPatchingCatchBlock.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testBasicExpressionMatchAndTransform() {
+    public void test_src_test_resources_endtoend_ExpressionMatch_BasicExpressionMatchAndTransform() {
         // contract: correct application of patch specifying transformation on sub-element expression part of statement
-
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a(int x) { }\n" +
-                           "    /* skip */ int b() { return 0; }\n" +
-                           "    void m1() {\n" +
-                           "        a(b());\n" +
-                           "    }\n" +
-                           "    void m2() {\n" +
-                           "        System.out.println(b());\n" +
-                           "    }\n" +
-                           "    int m3() {\n" +
-                           "        return b();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */\n" +
-                              "    void a(int x) {\n" +
-                              "    }\n" +
-                              "    /* skip */\n" +
-                              "    int b() {\n" +
-                              "        return 0;\n" +
-                              "    }\n" +
-                              "    void m1() {\n" +
-                              "        a(c());\n" +
-                              "    }\n" +
-                              "    void m2() {\n" +
-                              "        System.out.println(c());\n" +
-                              "    }\n" +
-                              "    int m3() {\n" +
-                              "        return c();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- b()\n" +
-                      "+ c()\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/ExpressionMatch/BasicExpressionMatchAndTransform.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testFieldReads() {
+    public void test_src_test_resources_endtoend_FieldReads() {
         // contract: correct matching of field reads
-
-        String inputCode = "class A {\n" +
-                           "    class Point { Integer x,y; public Point(Integer x, Integer y) {} }\n" +
-                           "    class Logger { public void log(Object x) {} }\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "        Point point = new Point(1,2);\n" +
-                           "        Logger logger = new Logger();\n" +
-                           "        logger.log(point);\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void m2() {\n" +
-                           "        Point point = new Point(1,2);\n" +
-                           "        Logger logger = new Logger();\n" +
-                           "        logger.log(point.x);\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    class Point { Integer x,y; public Point(Integer x, Integer y) {} }\n" +
-                              "    class Logger { public void log(Object x) {} }\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        Point point = new Point(1,2);\n" +
-                              "        Logger logger = new Logger();\n" +
-                              "        logger.log(point);\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void m2() {\n" +
-                              "        Point point = new Point(1,2);\n" +
-                              "        Logger logger = new Logger();\n" +
-                              "        logger.log(\"The X coordinate is \" + point.x.toString());\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "Point p;\n" +
-                      "@@\n" +
-                      "- logger.log(p.x);\n" +
-                      "+ logger.log(\"The X coordinate is \" + p.x.toString());\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/FieldReads.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testHelloWorld() {
+    public void test_src_test_resources_endtoend_HelloWorld() {
         // contract: hello world template test
-
-        String inputCode = "class A {\n" +
-                           "    void foo() {\n" +
-                           "        int x = 1;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void foo() {\n" +
-                              "        \n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "identifier v1;\n" +
-                      "@@\n" +
-                      "- int v1 = 1;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/HelloWorld.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMatchAnyType() {
+    public void test_src_test_resources_endtoend_MatchAnyType() {
         // contract: a 'type' metavariable should match any type
-
-        String inputCode = "class A {\n" +
-                           "    class ASpecificType {}\n" +
-                           "    \n" +
-                           "    void foo() {\n" +
-                           "        int x;\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void bar() {\n" +
-                           "        float x;\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void baz() {\n" +
-                           "        ASpecificType x;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    class ASpecificType {}\n" +
-                              "    \n" +
-                              "    void foo() {\n" +
-                              "        \n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void bar() {\n" +
-                              "        \n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void baz() {\n" +
-                              "        \n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "type T;\n" +
-                      "@@\n" +
-                      "- T x;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MatchAnyType.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMatchSpecificType() {
+    public void test_src_test_resources_endtoend_MatchSpecificType() {
         // contract: a concretely given type in SmPL should match that precise type
-
-        String inputCode = "class A {\n" +
-                           "    class ASpecificType {}\n" +
-                           "    \n" +
-                           "    void foo() {\n" +
-                           "        int x;\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void bar() {\n" +
-                           "        float x;\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void baz() {\n" +
-                           "        ASpecificType x;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    class ASpecificType {}\n" +
-                              "    \n" +
-                              "    void foo() {\n" +
-                              "        int x;\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void bar() {\n" +
-                              "        float x;\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void baz() {\n" +
-                              "        \n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "- ASpecificType x;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MatchSpecificType.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodHeaderBinding() {
+    public void test_src_test_resources_endtoend_MatchingMethodHeader_MethodHeaderBinding() {
         // contract: binding metavariables on the method header
-
-        String inputCode = "class A {\n" +
-                           "    int square(int x) {\n" +
-                           "        return x*x;\n" +
-                           "    }\n" +
-                           "    float square(float x) {\n" +
-                           "        return x*x;\n" +
-                           "    }\n" +
-                           "    double square(Float x) {\n" +
-                           "        return x*x;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int square(int x) {\n" +
-                              "        int y = 0;\n" +
-                              "        return x*x;\n" +
-                              "    }\n" +
-                              "    float square(float x) {\n" +
-                              "        float y = 0;\n" +
-                              "        return x*x;\n" +
-                              "    }\n" +
-                              "    double square(Float x) {\n" +
-                              "        return x*x;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "type T1;\n" +
-                      "expression E;\n" +
-                      "@@\n" +
-                      "  T1 square(T1 x) {\n" +
-                      "+     T1 y = 0;\n" +
-                      "      return E;\n" +
-                      "  }\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MatchingMethodHeader/MethodHeaderBinding.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodHeaderDots() {
+    public void test_src_test_resources_endtoend_MatchingMethodHeader_MethodHeaderDots() {
         // contract: using dots to match arbitrary sequences of parameters in method header
-
-        String inputCode = "class A {\n" +
-                           "    static class Point {\n" +
-                           "        public Integer x;\n" +
-                           "        public Integer y;\n" +
-                           "    }\n" +
-                           "    /* skip */ void log(String message) {}\n" +
-                           "    void drawCircle(Point origin, float radius) {\n" +
-                           "        log(\"Coordinates: \" + origin.x.toString() + \", \" + origin.y.toString());\n" +
-                           "    }\n" +
-                           "    void drawRectangle(float width, float height, Point topLeftCorner) {\n" +
-                           "        log(\"Coordinates: \" + topLeftCorner.x.toString() + \", \" + topLeftCorner.y.toString());\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    static class Point {\n" +
-                              "        public Integer x;\n" +
-                              "        public Integer y;\n" +
-                              "    }\n" +
-                              "    /* skip */ void log(String message) {}\n" +
-                              "    void drawCircle(Point origin, float radius) {\n" +
-                              "        log(\"Point: \" + origin.toString());\n" +
-                              "    }\n" +
-                              "    void drawRectangle(float width, float height, Point topLeftCorner) {\n" +
-                              "        log(\"Point: \" + topLeftCorner.toString());\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "type T;\n" +
-                      "identifier fn, pt;\n" +
-                      "@@\n" +
-                      "  T fn(..., Point pt, ...) {\n" +
-                      "      ...\n" +
-                      "-     log(\"Coordinates: \" + pt.x.toString() + \", \" + pt.y.toString());\n" +
-                      "+     log(\"Point: \" + pt.toString());\n" +
-                      "  }\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MatchingMethodHeader/MethodHeaderDots.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodHeaderLiteralMatch() {
+    public void test_src_test_resources_endtoend_MatchingMethodHeader_MethodHeaderLiteralMatch() {
         // contract: literal matching on the method header
-
-        String inputCode = "class A {\n" +
-                           "    int square(int x) {\n" +
-                           "        return x*x;\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    int cube(int x) {\n" +
-                           "        return x*x*x;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int square(int x) {\n" +
-                              "        log(\"square called\");\n" +
-                              "        return x*x;\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    int cube(int x) {\n" +
-                              "        return x*x*x;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "expression E;\n" +
-                      "@@\n" +
-                      "  int square(int x) {\n" +
-                      "+     log(\"square called\");\n" +
-                      "      return E;\n" +
-                      "  }\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MatchingMethodHeader/MethodHeaderLiteralMatch.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testAddToEmptyMethod() {
+    public void test_src_test_resources_endtoend_MethodBodyAdditions_AddToEmptyMethod() {
         // contract: a patch should be able to add statements to an empty method body
-
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a() {}\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "    }\n" +
-                           "    void m2() {\n" +
-                           "        a();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */ void a() {}\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        foo();\n" +
-                              "        bar();\n" +
-                              "    }\n" +
-                              "    void m2() {\n" +
-                              "        a();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ identifier fn; @@\n" +
-                      "void fn() {\n" +
-                      "+ foo();\n" +
-                      "+ bar();\n" +
-                      "}\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodBodyAdditions/AddToEmptyMethod.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testAddToMethodBottom() {
+    public void test_src_test_resources_endtoend_MethodBodyAdditions_AddToMethodBottom() {
         // contract: a patch should be able to add statements at the bottom of methods
-
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a() {}\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "    }\n" +
-                           "    void m2() {\n" +
-                           "        a();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */ void a() {}\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        foo();\n" +
-                              "        bar();\n" +
-                              "    }\n" +
-                              "    void m2() {\n" +
-                              "        a();\n" +
-                              "        foo();\n" +
-                              "        bar();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ identifier fn; @@\n" +
-                      "void fn() {\n" +
-                      "  ...\n" +
-                      "+ foo();\n" +
-                      "+ bar();\n" +
-                      "}\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodBodyAdditions/AddToMethodBottom.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testAddToMethodTop() {
+    public void test_src_test_resources_endtoend_MethodBodyAdditions_AddToMethodTop() {
         // contract: a patch should be able to add statements at the top of methods
-
-        String inputCode = "class A {\n" +
-                           "    // Skip\n" +
-                           "    void a() {}\n" +
-                           "    void m1() {\n" +
-                           "    }\n" +
-                           "    void m2() {\n" +
-                           "        a();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    // Skip\n" +
-                              "    void a() {}\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        foo();\n" +
-                              "        bar();\n" +
-                              "    }\n" +
-                              "    void m2() {\n" +
-                              "        foo();\n" +
-                              "        bar();\n" +
-                              "        a();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ identifier fn; @@\n" +
-                      "void fn() {\n" +
-                      "+ foo();\n" +
-                      "+ bar();\n" +
-                      "  ...\n" +
-                      "}\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodBodyAdditions/AddToMethodTop.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodCallArgDotsMatchAny() {
+    public void test_src_test_resources_endtoend_MethodCallArgDots_MethodCallArgDotsMatchAny() {
         // contract: the expression 'f(...)' should match any method call to 'f' regardless of argument list
-
-        String inputCode = "class A {\n" +
-                           "    // Skip\n" +
-                           "    int f() { return 0; }\n" +
-                           "    \n" +
-                           "    // Skip\n" +
-                           "    int f(int x) { return 0; }\n" +
-                           "    \n" +
-                           "    // Skip\n" +
-                           "    int f(int x, int y) { return 0; }\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "        f();\n" +
-                           "        f(1);\n" +
-                           "        f(2, 3);\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    // Skip\n" +
-                              "    int f() { return 0; }\n" +
-                              "    \n" +
-                              "    // Skip\n" +
-                              "    int f(int x) { return 0; }\n" +
-                              "    \n" +
-                              "    // Skip\n" +
-                              "    int f(int x, int y) { return 0; }\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- f(...);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodCallArgDots/MethodCallArgDotsMatchAny.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodCallArgDotsMatchSingle() {
+    public void test_src_test_resources_endtoend_MethodCallArgDots_MethodCallArgDotsMatchSingle() {
         // contract: the expression 'f(..., E, ...)' should match any method call to 'f' where the expression E appears anywhere in the argument list
-
-        String inputCode = "class A {\n" +
-                           "    int f(int ... xs) { return 0; }\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "        f();\n" +
-                           "        f(1);\n" +
-                           "        f(2, 3);\n" +
-                           "        f(1, 2, 3);\n" +
-                           "        f(2, 1, 3);\n" +
-                           "        f(2, 3, 1);\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int f(int ... xs) { return 0; }\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        f();\n" +
-                              "        f(2, 3);\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- f(..., 1, ...);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodCallArgDots/MethodCallArgDotsMatchSingle.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodCallArgDotsMatchSingleAtEnd() {
+    public void test_src_test_resources_endtoend_MethodCallArgDots_MethodCallArgDotsMatchSingleAtEnd() {
         // contract: the expression 'f(..., E)' should match any method call to 'f' where the expression E appears as the last argument
-
-        String inputCode = "class A {\n" +
-                           "    int f(int ... xs) { return 0; }\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "        f();\n" +
-                           "        f(1);\n" +
-                           "        f(2, 3);\n" +
-                           "        f(1, 2, 3);\n" +
-                           "        f(2, 1, 3);\n" +
-                           "        f(2, 3, 1);\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int f(int ... xs) { return 0; }\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        f();\n" +
-                              "        f(2, 3);\n" +
-                              "        f(1, 2, 3);\n" +
-                              "        f(2, 1, 3);\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- f(..., 1);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodCallArgDots/MethodCallArgDotsMatchSingleAtEnd.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodCallArgDotsMatchSingleAtStart() {
+    public void test_src_test_resources_endtoend_MethodCallArgDots_MethodCallArgDotsMatchSingleAtStart() {
         // contract: the expression 'f(E, ...)' should match any method call to 'f' where the expression E appears as the first argument
-
-        String inputCode = "class A {\n" +
-                           "    /* skip */ int f(int ... xs) { return 0; }\n" +
-                           "    void m1() {\n" +
-                           "        f();\n" +
-                           "        f(1);\n" +
-                           "        f(2, 3);\n" +
-                           "        f(1, 2, 3);\n" +
-                           "        f(2, 1, 3);\n" +
-                           "        f(2, 3, 1);\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */ int f(int ... xs) { return 0; }\n" +
-                              "    void m1() {\n" +
-                              "        f();\n" +
-                              "        f(2, 3);\n" +
-                              "        f(2, 1, 3);\n" +
-                              "        f(2, 3, 1);\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- f(1, ...);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodCallArgDots/MethodCallArgDotsMatchSingleAtStart.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodCallArgDotsNested1() {
+    public void test_src_test_resources_endtoend_MethodCallArgDots_MethodCallArgDotsNested1() {
         // contract: the expression 'f(..., g(...), ...)' should match any method call to 'f' with any argument list where a call to 'g' occurs (with any argument list for 'g')
-
-        String inputCode = "class A {\n" +
-                           "    int f(int ... xs) { return 0; }\n" +
-                           "    int g(int ... xs) { return 0; }\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "        f();\n" +
-                           "        f(1);\n" +
-                           "        f(2, 3);\n" +
-                           "        f(g());\n" +
-                           "        f(g(), 1);\n" +
-                           "        f(2, g(), 3);\n" +
-                           "        f(1, 2, g());\n" +
-                           "        f(g(1, 2));\n" +
-                           "        f(g(2, 1), 1);\n" +
-                           "        f(2, g(1, 3), 3);\n" +
-                           "        f(1, 2, g(2, 3));\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int f(int ... xs) { return 0; }\n" +
-                              "    int g(int ... xs) { return 0; }\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        f();\n" +
-                              "        f(1);\n" +
-                              "        f(2, 3);\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- f(..., g(...), ...);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodCallArgDots/MethodCallArgDotsNested1.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodCallArgDotsNested2() {
+    public void test_src_test_resources_endtoend_MethodCallArgDots_MethodCallArgDotsNested2() {
         // contract: the expression 'f(..., g(..., 1, ...), ...)' should match any method call to 'f' with any argument list where a call to 'g' occurs containing the argument 1 in its argument list
-
-        String inputCode = "class A {\n" +
-                           "    int f(int ... xs) { return 0; }\n" +
-                           "    int g(int ... xs) { return 0; }\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "        f();\n" +
-                           "        f(1);\n" +
-                           "        f(2, 3);\n" +
-                           "        f(g());\n" +
-                           "        f(g(), 1);\n" +
-                           "        f(2, g(), 3);\n" +
-                           "        f(1, 2, g());\n" +
-                           "        f(g(1, 2));\n" +
-                           "        f(g(2, 1), 1);\n" +
-                           "        f(2, g(1, 3), 3);\n" +
-                           "        f(1, 2, g(2, 3));\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int f(int ... xs) { return 0; }\n" +
-                              "    int g(int ... xs) { return 0; }\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        f();\n" +
-                              "        f(1);\n" +
-                              "        f(2, 3);\n" +
-                              "        f(g());\n" +
-                              "        f(g(), 1);\n" +
-                              "        f(2, g(), 3);\n" +
-                              "        f(1, 2, g());\n" +
-                              "        f(1, 2, g(2, 3));\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- f(..., g(..., 1, ...), ...);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodCallArgDots/MethodCallArgDotsNested2.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodCallArgDotsNested3() {
+    public void test_src_test_resources_endtoend_MethodCallArgDots_MethodCallArgDotsNested3() {
         // contract: the expression 'f(..., g(1, ...), ...)' should match any method call to 'f' with any argument list where a call to 'g' occurs containing the argument 1 as its first argument
-
-        String inputCode = "class A {\n" +
-                           "    int f(int ... xs) { return 0; }\n" +
-                           "    int g(int ... xs) { return 0; }\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "        f();\n" +
-                           "        f(1);\n" +
-                           "        f(2, 3);\n" +
-                           "        f(g());\n" +
-                           "        f(g(), 1);\n" +
-                           "        f(2, g(), 3);\n" +
-                           "        f(1, 2, g());\n" +
-                           "        f(g(1, 2));\n" +
-                           "        f(g(2, 1), 1);\n" +
-                           "        f(2, g(1, 3), 3);\n" +
-                           "        f(1, 2, g(2, 3));\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int f(int ... xs) { return 0; }\n" +
-                              "    int g(int ... xs) { return 0; }\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        f();\n" +
-                              "        f(1);\n" +
-                              "        f(2, 3);\n" +
-                              "        f(g());\n" +
-                              "        f(g(), 1);\n" +
-                              "        f(2, g(), 3);\n" +
-                              "        f(1, 2, g());\n" +
-                              "        f(g(2, 1), 1);\n" +
-                              "        f(1, 2, g(2, 3));\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- f(..., g(1, ...), ...);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodCallArgDots/MethodCallArgDotsNested3.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodCallArgDotsNested4() {
+    public void test_src_test_resources_endtoend_MethodCallArgDots_MethodCallArgDotsNested4() {
         // contract: the expression 'f(..., g(..., 1), ...)' should match any method call to 'f' with any argument list where a call to 'g' occurs containing the argument 1 as its last argument
-
-        String inputCode = "class A {\n" +
-                           "    int f(int ... xs) { return 0; }\n" +
-                           "    int g(int ... xs) { return 0; }\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "        f();\n" +
-                           "        f(1);\n" +
-                           "        f(2, 3);\n" +
-                           "        f(g());\n" +
-                           "        f(g(), 1);\n" +
-                           "        f(2, g(), 3);\n" +
-                           "        f(1, 2, g());\n" +
-                           "        f(g(1, 2));\n" +
-                           "        f(g(2, 1), 1);\n" +
-                           "        f(2, g(1, 3), 3);\n" +
-                           "        f(1, 2, g(2, 3));\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int f(int ... xs) { return 0; }\n" +
-                              "    int g(int ... xs) { return 0; }\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        f();\n" +
-                              "        f(1);\n" +
-                              "        f(2, 3);\n" +
-                              "        f(g());\n" +
-                              "        f(g(), 1);\n" +
-                              "        f(2, g(), 3);\n" +
-                              "        f(1, 2, g());\n" +
-                              "        f(g(1, 2));\n" +
-                              "        f(2, g(1, 3), 3);\n" +
-                              "        f(1, 2, g(2, 3));\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- f(..., g(..., 1), ...);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodCallArgDots/MethodCallArgDotsNested4.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodCallArgDotsNested5() {
+    public void test_src_test_resources_endtoend_MethodCallArgDots_MethodCallArgDotsNested5() {
         // contract: the expression 'f(..., g(..., 1))' should match any method call to 'f' with last argument a call to 'g' containing the argument 1 as its last argument
-
-        String inputCode = "class A {\n" +
-                           "    int f(int ... xs) { return 0; }\n" +
-                           "    int g(int ... xs) { return 0; }\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "        f();\n" +
-                           "        f(1);\n" +
-                           "        f(2, 3);\n" +
-                           "        f(g());\n" +
-                           "        f(g(), 1);\n" +
-                           "        f(2, g(), 3);\n" +
-                           "        f(1, 2, g());\n" +
-                           "        f(g(1, 2));\n" +
-                           "        f(g(2, 1), 1);\n" +
-                           "        f(2, g(1, 3), 3);\n" +
-                           "        f(1, 2, g(2, 3));\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int f(int ... xs) { return 0; }\n" +
-                              "    int g(int ... xs) { return 0; }\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        f();\n" +
-                              "        f(1);\n" +
-                              "        f(2, 3);\n" +
-                              "        f(g());\n" +
-                              "        f(g(), 1);\n" +
-                              "        f(2, g(), 3);\n" +
-                              "        f(1, 2, g());\n" +
-                              "        f(g(1, 2));\n" +
-                              "        f(g(2, 1), 1);\n" +
-                              "        f(2, g(1, 3), 3);\n" +
-                              "        f(1, 2, g(2, 3));\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- f(..., g(..., 1));\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodCallArgDots/MethodCallArgDotsNested5.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodCallArgDotsNested6() {
+    public void test_src_test_resources_endtoend_MethodCallArgDots_MethodCallArgDotsNested6() {
         // contract: the expression 'f(..., g(1, ...))' should match any method call to 'f' with last argument a call to 'g' containing the argument 1 as its first argument
-
-        String inputCode = "class A {\n" +
-                           "    int f(int ... xs) { return 0; }\n" +
-                           "    int g(int ... xs) { return 0; }\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "        f();\n" +
-                           "        f(1);\n" +
-                           "        f(2, 3);\n" +
-                           "        f(g());\n" +
-                           "        f(g(), 1);\n" +
-                           "        f(2, g(), 3);\n" +
-                           "        f(1, 2, g());\n" +
-                           "        f(g(1, 2));\n" +
-                           "        f(g(2, 1), 1);\n" +
-                           "        f(2, g(1, 3), 3);\n" +
-                           "        f(1, 2, g(2, 3));\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int f(int ... xs) { return 0; }\n" +
-                              "    int g(int ... xs) { return 0; }\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        f();\n" +
-                              "        f(1);\n" +
-                              "        f(2, 3);\n" +
-                              "        f(g());\n" +
-                              "        f(g(), 1);\n" +
-                              "        f(2, g(), 3);\n" +
-                              "        f(1, 2, g());\n" +
-                              "        f(g(2, 1), 1);\n" +
-                              "        f(2, g(1, 3), 3);\n" +
-                              "        f(1, 2, g(2, 3));\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- f(..., g(1, ...));\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodCallArgDots/MethodCallArgDotsNested6.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodCallArgDotsNested7() {
+    public void test_src_test_resources_endtoend_MethodCallArgDots_MethodCallArgDotsNested7() {
         // contract: the expression 'f(1, ..., g(..., 3))' should match any method call to 'f' with first argument 1 and last argument a call to 'g' containing the argument 3 as its last argument
-
-        String inputCode = "class A {\n" +
-                           "    int f(int ... xs) { return 0; }\n" +
-                           "    int g(int ... xs) { return 0; }\n" +
-                           "    \n" +
-                           "    void m1() {\n" +
-                           "        f();\n" +
-                           "        f(1);\n" +
-                           "        f(2, 3);\n" +
-                           "        f(g());\n" +
-                           "        f(g(), 1);\n" +
-                           "        f(2, g(), 3);\n" +
-                           "        f(1, 2, g());\n" +
-                           "        f(g(1, 2));\n" +
-                           "        f(g(2, 1), 1);\n" +
-                           "        f(2, g(1, 3), 3);\n" +
-                           "        f(1, 2, g(2, 3));\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int f(int ... xs) { return 0; }\n" +
-                              "    int g(int ... xs) { return 0; }\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        f();\n" +
-                              "        f(1);\n" +
-                              "        f(2, 3);\n" +
-                              "        f(g());\n" +
-                              "        f(g(), 1);\n" +
-                              "        f(2, g(), 3);\n" +
-                              "        f(1, 2, g());\n" +
-                              "        f(g(1, 2));\n" +
-                              "        f(g(2, 1), 1);\n" +
-                              "        f(2, g(1, 3), 3);\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- f(1, ..., g(..., 3));\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodCallArgDots/MethodCallArgDotsNested7.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodHeaderTransformationAlsoAddingMethods() {
+    public void test_src_test_resources_endtoend_MethodHeaderTransformation_MethodHeaderTransformationAlsoAddingMethods() {
         // contract: a patch should be able to modify the matched header while also adding new methods
-
-        String inputCode = "class A {\n" +
-                           "    /*skip*/ void print(String message) {}\n" +
-                           "    void m1() {\n" +
-                           "        print(\"hello\");\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /*skip*/ void print(String message) {}\n" +
-                              "    \n" +
-                              "    int square(int x) {\n" +
-                              "        return x*x;\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void m2(String p1) {\n" +
-                              "        print(\"hello\");\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    int cube(int y) {\n" +
-                              "        return y*y*y;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "+ int square(int x) {\n" +
-                      "+   return x*x;\n" +
-                      "+ }\n" +
-                      "- void m1() {\n" +
-                      "+ void m2(String p1) {\n" +
-                      "    print(\"hello\");\n" +
-                      "}\n" +
-                      "+ int cube(int y) {\n" +
-                      "+   return y*y*y;\n" +
-                      "+ }\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodHeaderTransformation/MethodHeaderTransformationAlsoAddingMethods.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodHeaderTransformationChangeAll() {
+    public void test_src_test_resources_endtoend_MethodHeaderTransformation_MethodHeaderTransformationChangeAll() {
         // contract: a patch should be able to specify multiple modifications to a matched method header
-
-        String inputCode = "class A {\n" +
-                           "    void m1() {\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int sgn(int x) {\n" +
-                              "      if (x > 0) return 1 else return 0;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- void m1() {\n" +
-                      "+ int sgn(int x) {\n" +
-                      "+   if (x > 0) return 1 else return 0;\n" +
-                      "}\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodHeaderTransformation/MethodHeaderTransformationChangeAll.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodHeaderTransformationChangeName() {
+    public void test_src_test_resources_endtoend_MethodHeaderTransformation_MethodHeaderTransformationChangeName() {
         // contract: a patch should be able to specify a change of return type on a matched method header
-
-        String inputCode = "class A {\n" +
-                           "    void m1() {\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int m1() {\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- void m1() {\n" +
-                      "+ int m1() {\n" +
-                      "}\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodHeaderTransformation/MethodHeaderTransformationChangeName.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodHeaderTransformationChangeParams() {
+    public void test_src_test_resources_endtoend_MethodHeaderTransformation_MethodHeaderTransformationChangeParams() {
         // contract: a patch should be able to specify modifications to formal parameters on a matched method header
-
-        String inputCode = "class A {\n" +
-                           "    void m1() {\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void m1(String s, int x) {\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- void m1() {\n" +
-                      "+ void m1(String s, int x) {\n" +
-                      "}\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodHeaderTransformation/MethodHeaderTransformationChangeParams.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodHeaderTransformationChangeType() {
+    public void test_src_test_resources_endtoend_MethodHeaderTransformation_MethodHeaderTransformationChangeType() {
         // contract: a patch should be able to specify a change of return type on a matched method header
-
-        String inputCode = "class A {\n" +
-                           "    void m1() {\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int m1() {\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- void m1() {\n" +
-                      "+ int m1() {\n" +
-                      "}\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodHeaderTransformation/MethodHeaderTransformationChangeType.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testMethodsAddedToClass() {
+    public void test_src_test_resources_endtoend_MethodsAddedToClass_MethodsAddedToClass() {
         // contract: a patch should be able to add entire methods to the parent class of a patch-context-matching method
-
-        String inputCode = "class A {\n" +
-                           "  void a() {}\n" +
-                           "  \n" +
-                           "  void m1() {\n" +
-                           "    a();\n" +
-                           "  }\n" +
-                           "  void m2() {\n" +
-                           "    a();\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void a() {}\n" +
-                              "    \n" +
-                              "    void m1() {\n" +
-                              "        b();\n" +
-                              "    }\n" +
-                              "    void m2() {\n" +
-                              "        b();\n" +
-                              "    }\n" +
-                              "    void b() {\n" +
-                              "        System.out.println(\"Hello, World!\");\n" +
-                              "        logCallToB();\n" +
-                              "    }\n" +
-                              "    void logCallToB() {\n" +
-                              "        logger.log(\"b called\");\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ identifier fn; @@\n" +
-                      "+ void b() {\n" +
-                      "+   System.out.println(\"Hello, World!\");\n" +
-                      "+   logCallToB();\n" +
-                      "+ }\n" +
-                      "void fn() {\n" +
-                      "- a();\n" +
-                      "+ b();\n" +
-                      "}\n" +
-                      "+ void logCallToB() {\n" +
-                      "+   logger.log(\"b called\");\n" +
-                      "+ }\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/MethodsAddedToClass/MethodsAddedToClass.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testPrependContextBranch() {
+    public void test_src_test_resources_endtoend_PrependContextBranch() {
         // contract: a patch should be able to prepend elements above a context branch
-
-        String inputCode = "class A {\n" +
-                           "    void m1() {\n" +
-                           "        if (true) {\n" +
-                           "            int x = 0;\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void m1() {\n" +
-                              "        int y = 1;\n" +
-                              "        if (true) {\n" +
-                              "            int x = 0;\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "+ int y = 1;\n" +
-                      "  if (true) {\n" +
-                      "      int x = 0;\n" +
-                      "  }\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/PrependContextBranch.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testPrependToContext() {
+    public void test_src_test_resources_endtoend_PrependToContext() {
         // contract: a patch should be able to prepend elements to a context statement
-
-        String inputCode = "class A {\n" +
-                           "    void m1() {\n" +
-                           "        int x;\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void m2() {\n" +
-                           "        int y;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    void m1() {\n" +
-                              "        int prepended1;\n" +
-                              "        int prepended2;\n" +
-                              "        int x;\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void m2() {\n" +
-                              "        int y;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "+ int prepended1;\n" +
-                      "+ int prepended2;\n" +
-                      "  int x;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/PrependToContext.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testRemoveLocalsReturningConstants001() {
+    public void test_src_test_resources_endtoend_RemoveLocalsReturningConstants_RemoveLocalsReturningConstants001() {
         // contract: correct application of remove-locals-returning-constants patch example
-
-        String inputCode = "class A {\n" +
-                           "    float square(float x) { return x*x; }\n" +
-                           "    void print(Object x) { System.out.println(x); }\n" +
-                           "    \n" +
-                           "    int m1() {\n" +
-                           "        int x = 0;\n" +
-                           "        return x;\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    int m1b() {\n" +
-                           "        int x = 0;\n" +
-                           "        x = x + 1;\n" +
-                           "        return x;\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    float m2() {\n" +
-                           "        float x = 3.0f;\n" +
-                           "        return x;\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    float m2b() {\n" +
-                           "        float x = 3.0f;\n" +
-                           "        float y = square(x);\n" +
-                           "        return x;\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    String m3() {\n" +
-                           "        String x = \"Hello, World!\";\n" +
-                           "        return x;\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    String m3b() {\n" +
-                           "        String x = \"Hello, World!\";\n" +
-                           "        print(x);\n" +
-                           "        return x;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    float square(float x) { return x*x; }\n" +
-                              "    void print(Object x) { System.out.println(x); }\n" +
-                              "    \n" +
-                              "    int m1() {\n" +
-                              "        return 0;\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    int m1b() {\n" +
-                              "        int x = 0;\n" +
-                              "        x = x + 1;\n" +
-                              "        return x;\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    float m2() {\n" +
-                              "        return 3.0f;\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    float m2b() {\n" +
-                              "        float x = 3.0f;\n" +
-                              "        float y = square(x);\n" +
-                              "        return x;\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    String m3() {\n" +
-                              "        return \"Hello, World!\";\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    String m3b() {\n" +
-                              "        String x = \"Hello, World!\";\n" +
-                              "        print(x);\n" +
-                              "        return x;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "type T;\n" +
-                      "identifier ret;\n" +
-                      "constant C;\n" +
-                      "@@\n" +
-                      "- T ret = C;\n" +
-                      "  ... when != ret\n" +
-                      "- return ret;\n" +
-                      "+ return C;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/RemoveLocalsReturningConstants/RemoveLocalsReturningConstants001.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testRemoveLocalsReturningConstantsBranch() {
+    public void test_src_test_resources_endtoend_RemoveLocalsReturningConstants_RemoveLocalsReturningConstantsBranch() {
         // contract: correct application of remove-locals-returning-constants patch example
-
-        String inputCode = "class input\n" +
-                           "{\n" +
-                           "    public int foo(boolean x)\n" +
-                           "    {\n" +
-                           "        int ret = 42;\n" +
-                           "        \n" +
-                           "        if (x == true)\n" +
-                           "        {\n" +
-                           "            return ret;\n" +
-                           "        }\n" +
-                           "        else\n" +
-                           "        {\n" +
-                           "            return ret;\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class input\n" +
-                              "{\n" +
-                              "    public int foo(boolean x)\n" +
-                              "    {\n" +
-                              "        if (x == true)\n" +
-                              "        {\n" +
-                              "            return 42;\n" +
-                              "        }\n" +
-                              "        else\n" +
-                              "        {\n" +
-                              "            return 42;\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "type T;\n" +
-                      "identifier ret;\n" +
-                      "constant C;\n" +
-                      "@@\n" +
-                      "- T ret = C;\n" +
-                      "  ... when != ret\n" +
-                      "- return ret;\n" +
-                      "+ return C;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/RemoveLocalsReturningConstants/RemoveLocalsReturningConstantsBranch.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testRemoveLocalsReturningConstantsBranchMultiple() {
+    public void test_src_test_resources_endtoend_RemoveLocalsReturningConstants_RemoveLocalsReturningConstantsBranchMultiple() {
         // contract: correct application of remove-locals-returning-constants patch example
-
-        String inputCode = "class input\n" +
-                           "{\n" +
-                           "    public int foo(int n)\n" +
-                           "    {\n" +
-                           "        int a = 123;\n" +
-                           "        int b = 234;\n" +
-                           "        int c = 345;\n" +
-                           "        \n" +
-                           "        if (n == 0)\n" +
-                           "        {\n" +
-                           "            return a;\n" +
-                           "        }\n" +
-                           "        else if (n == 1)\n" +
-                           "        {\n" +
-                           "            return b;\n" +
-                           "        }\n" +
-                           "        else\n" +
-                           "        {\n" +
-                           "            return c;\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class input\n" +
-                              "{\n" +
-                              "    public int foo(int n)\n" +
-                              "    {\n" +
-                              "        int a = 123;\n" +
-                              "        int b = 234;\n" +
-                              "        int c = 345;\n" +
-                              "        \n" +
-                              "        if (n == 0)\n" +
-                              "        {\n" +
-                              "            return a;\n" +
-                              "        }\n" +
-                              "        else if (n == 1)\n" +
-                              "        {\n" +
-                              "            return b;\n" +
-                              "        }\n" +
-                              "        else\n" +
-                              "        {\n" +
-                              "            return c;\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "type T;\n" +
-                      "identifier ret;\n" +
-                      "constant C;\n" +
-                      "@@\n" +
-                      "- T ret = C;\n" +
-                      "  ... when != ret\n" +
-                      "- return ret;\n" +
-                      "+ return C;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/RemoveLocalsReturningConstants/RemoveLocalsReturningConstantsBranchMultiple.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testRemoveLocalsReturningConstantsBranchMultipleWhenExists() {
+    public void test_src_test_resources_endtoend_RemoveLocalsReturningConstants_RemoveLocalsReturningConstantsBranchMultipleWhenExists() {
         // contract: correct application of remove-locals-returning-constants patch example
-
-        String inputCode = "class input\n" +
-                           "{\n" +
-                           "    public int foo(int n)\n" +
-                           "    {\n" +
-                           "        int a = 123;\n" +
-                           "        int b = 234;\n" +
-                           "        int c = 345;\n" +
-                           "        \n" +
-                           "        if (n == 0)\n" +
-                           "        {\n" +
-                           "            return a;\n" +
-                           "        }\n" +
-                           "        else if (n == 1)\n" +
-                           "        {\n" +
-                           "            return b;\n" +
-                           "        }\n" +
-                           "        else\n" +
-                           "        {\n" +
-                           "            return c;\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class input\n" +
-                              "{\n" +
-                              "    public int foo(int n)\n" +
-                              "    {\n" +
-                              "        if (n == 0)\n" +
-                              "        {\n" +
-                              "            return 123;\n" +
-                              "        }\n" +
-                              "        else if (n == 1)\n" +
-                              "        {\n" +
-                              "            return 234;\n" +
-                              "        }\n" +
-                              "        else\n" +
-                              "        {\n" +
-                              "            return 345;\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "type T;\n" +
-                      "identifier ret;\n" +
-                      "constant C;\n" +
-                      "@@\n" +
-                      "- T ret = C;\n" +
-                      "  ... when != ret\n" +
-                      "      when exists\n" +
-                      "- return ret;\n" +
-                      "+ return C;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/RemoveLocalsReturningConstants/RemoveLocalsReturningConstantsBranchMultipleWhenExists.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testRemoveLocalsReturningConstantsElselessBranch() {
+    public void test_src_test_resources_endtoend_RemoveLocalsReturningConstants_RemoveLocalsReturningConstantsElselessBranch() {
         // contract: correct application of remove-locals-returning-constants patch example
-
-        String inputCode = "class input\n" +
-                           "{\n" +
-                           "    public int foo(boolean x)\n" +
-                           "    {\n" +
-                           "        int ret = 42;\n" +
-                           "        \n" +
-                           "        if (x == true)\n" +
-                           "        {\n" +
-                           "            return ret;\n" +
-                           "        }\n" +
-                           "        \n" +
-                           "        return ret;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class input\n" +
-                              "{\n" +
-                              "    public int foo(boolean x)\n" +
-                              "    {\n" +
-                              "        if (x == true)\n" +
-                              "        {\n" +
-                              "            return 42;\n" +
-                              "        }\n" +
-                              "        \n" +
-                              "        return 42;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "type T;\n" +
-                      "identifier ret;\n" +
-                      "constant C;\n" +
-                      "@@\n" +
-                      "- T ret = C;\n" +
-                      "  ... when != ret\n" +
-                      "- return ret;\n" +
-                      "+ return C;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/RemoveLocalsReturningConstants/RemoveLocalsReturningConstantsElselessBranch.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testRemoveLocalsReturningConstantsExpressionlessReturnBug() {
+    public void test_src_test_resources_endtoend_RemoveLocalsReturningConstants_RemoveLocalsReturningConstantsExpressionlessReturnBug() {
         // contract: correct application of remove-locals-returning-constants patch example
-
-        String inputCode = "class input\n" +
-                           "{\n" +
-                           "    public void foo(boolean x)\n" +
-                           "    {\n" +
-                           "        int ret = 42;\n" +
-                           "        return;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class input\n" +
-                              "{\n" +
-                              "    public void foo(boolean x)\n" +
-                              "    {\n" +
-                              "        int ret = 42;\n" +
-                              "        return;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "type T;\n" +
-                      "identifier ret;\n" +
-                      "constant C;\n" +
-                      "@@\n" +
-                      "- T ret = C;\n" +
-                      "  ... when != ret\n" +
-                      "- return ret;\n" +
-                      "+ return C;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/RemoveLocalsReturningConstants/RemoveLocalsReturningConstantsExpressionlessReturnBug.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testRemoveLocalsReturningConstantsRejectUsageInBranchCondition() {
+    public void test_src_test_resources_endtoend_RemoveLocalsReturningConstants_RemoveLocalsReturningConstantsRejectUsageInBranchCondition() {
         // contract: correct application of remove-locals-returning-constants patch example
-
-        String inputCode = "class input\n" +
-                           "{\n" +
-                           "    public int foo()\n" +
-                           "    {\n" +
-                           "        int y = 42;\n" +
-                           "        \n" +
-                           "        if (y > 0)\n" +
-                           "        {\n" +
-                           "            return y;\n" +
-                           "        }\n" +
-                           "        \n" +
-                           "        return y;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class input\n" +
-                              "{\n" +
-                              "    public int foo()\n" +
-                              "    {\n" +
-                              "        int y = 42;\n" +
-                              "        \n" +
-                              "        if (y > 0)\n" +
-                              "        {\n" +
-                              "            return y;\n" +
-                              "        }\n" +
-                              "        \n" +
-                              "        return y;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "type T;\n" +
-                      "identifier ret;\n" +
-                      "constant C;\n" +
-                      "@@\n" +
-                      "- T ret = C;\n" +
-                      "  ... when != ret\n" +
-                      "- return ret;\n" +
-                      "+ return C;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/RemoveLocalsReturningConstants/RemoveLocalsReturningConstantsRejectUsageInBranchCondition.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
-    @Test
-    public void testReplacedTypeAccessesMatchExternal() {
-        // contract: the statement \"setTextSize(WebSettings.TextSize.LARGER);\" should be removed (external class version)
 
-        String inputCode = "class A {\n" +
-                           "  /* skip */ public void setTextSize(Object x) {}\n" +
-                           "  public void m1() {\n" +
-                           "    setTextSize(WebSettings.TextSize.LARGER);\n" +
-                           "  }\n" +
-                           "}\n" +
-                           "/* skip */\n" +
-                           "class WebSettings {\n" +
-                           "  public enum TextSize {\n" +
-                           "    LARGER, NORMAL, SMALLER\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "  /* skip */ public void setTextSize(Object x) {}\n" +
-                              "  public void m1() {\n" +
-                              "  }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- setTextSize(WebSettings.TextSize.LARGER);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
-    }
     @Test
-    public void testReplacedTypeAccessesMatchInner() {
-        // contract: the statement \"setTextSize(WebSettings.TextSize.LARGER);\" should be removed (inner class version)
+    public void test_src_test_resources_endtoend_ReplacedTypeAccesses_ReplacedTypeAccessesMatchExternal() {
+        // contract: the statement "setTextSize(WebSettings.TextSize.LARGER);" should be removed (external class version)
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/ReplacedTypeAccesses/ReplacedTypeAccessesMatchExternal.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
+    }
 
-        String inputCode = "class A {\n" +
-                           "  public static class WebSettings {\n" +
-                           "    public enum TextSize {\n" +
-                           "      LARGER, NORMAL, SMALLER\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "  /* skip */ public void setTextSize(Object x) {}\n" +
-                           "  public void m1() {\n" +
-                           "    setTextSize(WebSettings.TextSize.LARGER);\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "  public static class WebSettings {\n" +
-                              "    public enum TextSize {\n" +
-                              "      LARGER, NORMAL, SMALLER\n" +
-                              "    }\n" +
-                              "  }\n" +
-                              "  /* skip */ public void setTextSize(Object x) {}\n" +
-                              "  public void m1() {\n" +
-                              "  }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- setTextSize(WebSettings.TextSize.LARGER);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
-    }
     @Test
-    public void testReplacedTypeAccessesMatchMissing() {
-        // contract: the statement \"setTextSize(WebSettings.TextSize.LARGER);\" should be removed (missing information version). validate-e2e: purposefully-invalid
+    public void test_src_test_resources_endtoend_ReplacedTypeAccesses_ReplacedTypeAccessesMatchInner() {
+        // contract: the statement "setTextSize(WebSettings.TextSize.LARGER);" should be removed (inner class version)
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/ReplacedTypeAccesses/ReplacedTypeAccessesMatchInner.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
+    }
 
-        String inputCode = "class A {\n" +
-                           "  /* skip */ public void setTextSize(Object x) {}\n" +
-                           "  public void m1() {\n" +
-                           "    setTextSize(WebSettings.TextSize.LARGER);\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "  /* skip */ public void setTextSize(Object x) {}\n" +
-                              "  public void m1() {\n" +
-                              "  }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- setTextSize(WebSettings.TextSize.LARGER);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
-    }
     @Test
-    public void testReplacedTypeAccessesRejectExternal() {
-        // contract: the sub-expression \"LARGER\" in the patch should NOT match the expression \"WebSettings.TextSize.LARGER\" in the code, no transformation should be applied (external class version)
+    public void test_src_test_resources_endtoend_ReplacedTypeAccesses_ReplacedTypeAccessesMatchMissing() {
+        // contract: the statement "setTextSize(WebSettings.TextSize.LARGER);" should be removed (missing information version). validate-e2e: purposefully-invalid
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/ReplacedTypeAccesses/ReplacedTypeAccessesMatchMissing.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
+    }
 
-        String inputCode = "class A {\n" +
-                           "  /* skip */ public void setTextSize(Object x) {}\n" +
-                           "  public void m1() {\n" +
-                           "    setTextSize(WebSettings.TextSize.LARGER);\n" +
-                           "  }\n" +
-                           "}\n" +
-                           "/* skip */\n" +
-                           "class WebSettings {\n" +
-                           "  public enum TextSize {\n" +
-                           "    LARGER, NORMAL, SMALLER\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "  /* skip */ public void setTextSize(Object x) {}\n" +
-                              "  public void m1() {\n" +
-                              "    setTextSize(WebSettings.TextSize.LARGER);\n" +
-                              "  }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- setTextSize(LARGER);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
-    }
     @Test
-    public void testReplacedTypeAccessesRejectInner() {
-        // contract: the sub-expression \"LARGER\" in the patch should NOT match the expression \"WebSettings.TextSize.LARGER\" in the code, no transformation should be applied (inner class version)
+    public void test_src_test_resources_endtoend_ReplacedTypeAccesses_ReplacedTypeAccessesRejectExternal() {
+        // contract: the sub-expression "LARGER" in the patch should NOT match the expression "WebSettings.TextSize.LARGER" in the code, no transformation should be applied (external class version)
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/ReplacedTypeAccesses/ReplacedTypeAccessesRejectExternal.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
+    }
 
-        String inputCode = "class A {\n" +
-                           "  public static class WebSettings {\n" +
-                           "    public enum TextSize {\n" +
-                           "      LARGER, NORMAL, SMALLER\n" +
-                           "    }\n" +
-                           "  }\n" +
-                           "  /* skip */ public void setTextSize(Object x) {}\n" +
-                           "  public void m1() {\n" +
-                           "    setTextSize(WebSettings.TextSize.LARGER);\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "  public static class WebSettings {\n" +
-                              "    public enum TextSize {\n" +
-                              "      LARGER, NORMAL, SMALLER\n" +
-                              "    }\n" +
-                              "  }\n" +
-                              "  /* skip */ public void setTextSize(Object x) {}\n" +
-                              "  public void m1() {\n" +
-                              "    setTextSize(WebSettings.TextSize.LARGER);\n" +
-                              "  }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- setTextSize(LARGER);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
-    }
     @Test
-    public void testReplacedTypeAccessesRejectMissing() {
-        // contract: the sub-expression \"LARGER\" in the patch should NOT match the expression \"WebSettings.TextSize.LARGER\" in the code, no transformation should be applied (missing information version). validate-e2e: purposefully-invalid
+    public void test_src_test_resources_endtoend_ReplacedTypeAccesses_ReplacedTypeAccessesRejectInner() {
+        // contract: the sub-expression "LARGER" in the patch should NOT match the expression "WebSettings.TextSize.LARGER" in the code, no transformation should be applied (inner class version)
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/ReplacedTypeAccesses/ReplacedTypeAccessesRejectInner.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
+    }
 
-        String inputCode = "class A {\n" +
-                           "  /* skip */ public void setTextSize(Object x) {}\n" +
-                           "  public void m1() {\n" +
-                           "    setTextSize(WebSettings.TextSize.LARGER);\n" +
-                           "  }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "  /* skip */ public void setTextSize(Object x) {}\n" +
-                              "  public void m1() {\n" +
-                              "    setTextSize(WebSettings.TextSize.LARGER);\n" +
-                              "  }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "- setTextSize(LARGER);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
-    }
     @Test
-    public void testTernaryExpression() {
+    public void test_src_test_resources_endtoend_ReplacedTypeAccesses_ReplacedTypeAccessesRejectMissing() {
+        // contract: the sub-expression "LARGER" in the patch should NOT match the expression "WebSettings.TextSize.LARGER" in the code, no transformation should be applied (missing information version). validate-e2e: purposefully-invalid
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/ReplacedTypeAccesses/ReplacedTypeAccessesRejectMissing.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
+    }
+
+    @Test
+    public void test_src_test_resources_endtoend_TernaryExpression() {
         // contract: patches should be able to match on ternary expressions
-
-        String inputCode = "class A {\n" +
-                           "    int sgn(int x) {\n" +
-                           "        int result = (x > 0) ? 1 : 0;\n" +
-                           "        return result;\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    int sgn(int x) {\n" +
-                              "        int result = (x > 0) ? 1 : 0;\n" +
-                              "        log(result);\n" +
-                              "        return result;\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@ @@\n" +
-                      "+ log(result);\n" +
-                      "  return result;\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/TernaryExpression.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testTypedIdentifierMetavariables1() {
+    public void test_src_test_resources_endtoend_TypedIdentifierMetavariables1() {
         // contract: correct bindings of explicitly typed identifier metavariables
-
-        String inputCode = "class A {\n" +
-                           "    class ASpecificType {}\n" +
-                           "    void log(Object x) { System.out.println(x.toString()); }\n" +
-                           "    \n" +
-                           "    void foo() {\n" +
-                           "        int x = 0;\n" +
-                           "        log(x);\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void bar() {\n" +
-                           "        float x = 0.0f;\n" +
-                           "        log(x);\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void baz() {\n" +
-                           "        ASpecificType x = new ASpecificType();\n" +
-                           "        log(x);\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    class ASpecificType {}\n" +
-                              "    void log(Object x) { System.out.println(x.toString()); }\n" +
-                              "    \n" +
-                              "    void foo() {\n" +
-                              "        int x = 0;\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void bar() {\n" +
-                              "        float x = 0.0f;\n" +
-                              "        log(x);\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void baz() {\n" +
-                              "        ASpecificType x = new ASpecificType();\n" +
-                              "        log(x);\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "int x;\n" +
-                      "@@\n" +
-                      "- log(x);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/TypedIdentifierMetavariables1.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testTypedIdentifierMetavariables2() {
+    public void test_src_test_resources_endtoend_TypedIdentifierMetavariables2() {
         // contract: correct bindings of explicitly typed identifier metavariables
-
-        String inputCode = "class A {\n" +
-                           "    class ASpecificType {}\n" +
-                           "    void log(Object x) { System.out.println(x.toString()); }\n" +
-                           "    \n" +
-                           "    void foo() {\n" +
-                           "        int x = 0;\n" +
-                           "        log(x);\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void bar() {\n" +
-                           "        float x = 0.0f;\n" +
-                           "        log(x);\n" +
-                           "    }\n" +
-                           "    \n" +
-                           "    void baz() {\n" +
-                           "        ASpecificType x = new ASpecificType();\n" +
-                           "        log(x);\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    class ASpecificType {}\n" +
-                              "    void log(Object x) { System.out.println(x.toString()); }\n" +
-                              "    \n" +
-                              "    void foo() {\n" +
-                              "        int x = 0;\n" +
-                              "        log(x);\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void bar() {\n" +
-                              "        float x = 0.0f;\n" +
-                              "        log(x);\n" +
-                              "    }\n" +
-                              "    \n" +
-                              "    void baz() {\n" +
-                              "        ASpecificType x = new ASpecificType();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "ASpecificType x;\n" +
-                      "@@\n" +
-                      "- log(x);\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/TypedIdentifierMetavariables2.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
-    @Test
-    public void testUnsupportedElementsDotsWhenExists() {
-        // contract: dots in \"when exists\" mode should be allowed to traverse over unsupported elements when there exists a path that avoids them
 
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a() {}\n" +
-                           "    /* skip */ void b() {}\n" +
-                           "    float random;\n" +
-                           "    boolean loopsNotSupported;\n" +
-                           "    \n" +
-                           "    void foo() {\n" +
-                           "        a();\n" +
-                           "        \n" +
-                           "        if (random > 0.5f) {\n" +
-                           "            while (loopsNotSupported) {\n" +
-                           "              break;\n" +
-                           "            }\n" +
-                           "        }\n" +
-                           "        \n" +
-                           "        b();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */ void a() {}\n" +
-                              "    /* skip */ void b() {}\n" +
-                              "    float random;\n" +
-                              "    boolean loopsNotSupported;\n" +
-                              "    \n" +
-                              "    void foo() {\n" +
-                              "        a();\n" +
-                              "        \n" +
-                              "        if (random > 0.5f) {\n" +
-                              "            while (loopsNotSupported) {\n" +
-                              "              break;\n" +
-                              "            }\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "a();\n" +
-                      "... when exists\n" +
-                      "- b();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
-    }
     @Test
-    public void testUnsupportedElementsMatchAfter() {
+    public void test_src_test_resources_endtoend_UnsupportedElements_UnsupportedElementsDotsWhenExists() {
+        // contract: dots in "when exists" mode should be allowed to traverse over unsupported elements when there exists a path that avoids them
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/UnsupportedElements/UnsupportedElementsDotsWhenExists.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
+    }
+
+    @Test
+    public void test_src_test_resources_endtoend_UnsupportedElements_UnsupportedElementsMatchAfter() {
         // contract: should be able to match and transform things surrounding an unsupported element
-
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a() {}\n" +
-                           "    /* skip */ void b() {}\n" +
-                           "    boolean loopsNotSupported;\n" +
-                           "    \n" +
-                           "    void foo() {\n" +
-                           "        a();\n" +
-                           "        while (loopsNotSupported) {\n" +
-                           "          break;\n" +
-                           "        }\n" +
-                           "        b();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */ void a() {}\n" +
-                              "    /* skip */ void b() {}\n" +
-                              "    boolean loopsNotSupported;\n" +
-                              "    \n" +
-                              "    void foo() {\n" +
-                              "        a();\n" +
-                              "        while (loopsNotSupported) {\n" +
-                              "            break;\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "- b();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/UnsupportedElements/UnsupportedElementsMatchAfter.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testUnsupportedElementsMatchBefore() {
+    public void test_src_test_resources_endtoend_UnsupportedElements_UnsupportedElementsMatchBefore() {
         // contract: should be able to match and transform things surrounding an unsupported element
-
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a() {}\n" +
-                           "    /* skip */ void b() {}\n" +
-                           "    boolean loopsNotSupported;\n" +
-                           "    \n" +
-                           "    void foo() {\n" +
-                           "        a();\n" +
-                           "        while (loopsNotSupported) {\n" +
-                           "          break;\n" +
-                           "        }\n" +
-                           "        b();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */ void a() {}\n" +
-                              "    /* skip */ void b() {}\n" +
-                              "    boolean loopsNotSupported;\n" +
-                              "    \n" +
-                              "    void foo() {\n" +
-                              "        while (loopsNotSupported) {\n" +
-                              "            break;\n" +
-                              "        }\n" +
-                              "        b();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "- a();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/UnsupportedElements/UnsupportedElementsMatchBefore.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testUnsupportedElementsMatchSurrounding() {
+    public void test_src_test_resources_endtoend_UnsupportedElements_UnsupportedElementsMatchSurrounding() {
         // contract: should be able to match and transform things surrounding an unsupported element
-
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a() {}\n" +
-                           "    /* skip */ void b() {}\n" +
-                           "    boolean loopsNotSupported;\n" +
-                           "    \n" +
-                           "    void foo() {\n" +
-                           "        a();\n" +
-                           "        while (loopsNotSupported) {\n" +
-                           "          break;\n" +
-                           "        }\n" +
-                           "        b();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */ void a() {}\n" +
-                              "    /* skip */ void b() {}\n" +
-                              "    boolean loopsNotSupported;\n" +
-                              "    \n" +
-                              "    void foo() {\n" +
-                              "        while (loopsNotSupported) {\n" +
-                              "            break;\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "(\n" +
-                      "- a();\n" +
-                      "|\n" +
-                      "- b();\n" +
-                      ")\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/UnsupportedElements/UnsupportedElementsMatchSurrounding.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
+
     @Test
-    public void testUnsupportedElementsRejectDots() {
+    public void test_src_test_resources_endtoend_UnsupportedElements_UnsupportedElementsRejectDots() {
         // contract: dots with post-context should not be allowed to traverse across unsupported elements
-
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a() {}\n" +
-                           "    /* skip */ void b() {}\n" +
-                           "    boolean loopsNotSupported;\n" +
-                           "    \n" +
-                           "    void foo() {\n" +
-                           "        a();\n" +
-                           "        while (loopsNotSupported) {\n" +
-                           "          break;\n" +
-                           "        }\n" +
-                           "        b();\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */ void a() {}\n" +
-                              "    /* skip */ void b() {}\n" +
-                              "    boolean loopsNotSupported;\n" +
-                              "    \n" +
-                              "    void foo() {\n" +
-                              "        a();\n" +
-                              "        while (loopsNotSupported) {\n" +
-                              "            break;\n" +
-                              "        }\n" +
-                              "        b();\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "a();\n" +
-                      "...\n" +
-                      "- b();\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/UnsupportedElements/UnsupportedElementsRejectDots.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
-    @Test
-    public void testUnsupportedElementsRejectDotsWhenNotEquals() {
-        // contract: dots constrained by \"when != x\" should not be allowed to traverse across unsupported elements even if there is no post-context
 
-        String inputCode = "class A {\n" +
-                           "    /* skip */ void a() {}\n" +
-                           "    /* skip */ void b() {}\n" +
-                           "    boolean loopsNotSupported;\n" +
-                           "    \n" +
-                           "    void foo() {\n" +
-                           "        a();\n" +
-                           "        while (loopsNotSupported) {\n" +
-                           "          break;\n" +
-                           "        }\n" +
-                           "    }\n" +
-                           "}\n";
-    
-        String expectedCode = "class A {\n" +
-                              "    /* skip */ void a() {}\n" +
-                              "    /* skip */ void b() {}\n" +
-                              "    boolean loopsNotSupported;\n" +
-                              "    \n" +
-                              "    void foo() {\n" +
-                              "        a();\n" +
-                              "        while (loopsNotSupported) {\n" +
-                              "            break;\n" +
-                              "        }\n" +
-                              "    }\n" +
-                              "}\n";
-    
-        String smpl = "@@\n" +
-                      "@@\n" +
-                      "- a();\n" +
-                      "... when != x\n";
-    
-        runSingleTest(smpl, inputCode, expectedCode);
+    @Test
+    public void test_src_test_resources_endtoend_UnsupportedElements_UnsupportedElementsRejectDotsWhenNotEquals() {
+        // contract: dots constrained by "when != x" should not be allowed to traverse across unsupported elements even if there is no post-context
+        Map<String, String> test = EndToEndTestReader.validate(EndToEndTestReader.readFileOrDefault("src/test/resources/endtoend/UnsupportedElements/UnsupportedElementsRejectDotsWhenNotEquals.txt", ""));
+        runSingleTest(test.get("patch"), test.get("input"), test.get("expected"));
     }
 }
