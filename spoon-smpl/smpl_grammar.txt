@@ -1,3 +1,4 @@
+TODO: update this file to reflect the "final" implementation used in the thesis
 TODO: markdownify this file
 
 First milestone SmPL grammar:
