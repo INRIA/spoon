@@ -101,7 +101,7 @@ def all_files(path):
     for f in os.listdir(path):
         filename = "{}/{}".format(path, f)
         
-        if os.path.isfile(filename):
+        if os.path.isfile(filename) and ".txt" in filename:
             output += [filename]
         elif os.path.isdir(filename):
             output += all_files(filename)
