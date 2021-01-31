@@ -30,7 +30,7 @@ public class ElemNode implements PatternNode {
     public ElemNode(CtElement elem, String matchStr) {
         this.elem = elem;
         this.matchStr = matchStr;
-        this.sub = new HashMap<>();
+        this.subPatterns = new HashMap<>();
     }
 
     /**
@@ -52,7 +52,7 @@ public class ElemNode implements PatternNode {
     @Override
     public boolean equals(Object other) {
         if (other instanceof ElemNode) {
-            return matchStr.equals(((ElemNode) other).matchStr) && sub.equals(((ElemNode) other).sub);
+            return matchStr.equals(((ElemNode) other).matchStr) && subPatterns.equals(((ElemNode) other).subPatterns);
         }
         else {
             return false;
@@ -72,13 +72,13 @@ public class ElemNode implements PatternNode {
         sb.append(matchStr);
         sb.append(", ");
 
-        List<String> subKeys = new ArrayList<>(sub.keySet());
+        List<String> subKeys = new ArrayList<>(subPatterns.keySet());
         Collections.sort(subKeys);
 
         for (String key : subKeys) {
             sb.append(key);
             sb.append("=");
-            sb.append(sub.get(key).toString());
+            sb.append(subPatterns.get(key).toString());
             sb.append(", ");
         }
 
@@ -102,5 +102,5 @@ public class ElemNode implements PatternNode {
     /**
      * Sub-patterns.
      */
-    public final Map<String, PatternNode> sub;
+    public final Map<String, PatternNode> subPatterns;
 }

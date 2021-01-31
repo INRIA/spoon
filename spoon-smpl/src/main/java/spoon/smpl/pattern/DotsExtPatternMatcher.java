@@ -53,7 +53,7 @@ public class DotsExtPatternMatcher extends PatternMatcher {
      * @return Value held in "numargs" sub-pattern of invocation pattern
      */
     private static int numArgs(ElemNode node) {
-        return (int) ((ValueNode) node.sub.get("numargs")).heldValue;
+        return (int) ((ValueNode) node.subPatterns.get("numargs")).heldValue;
     }
 
     /**
@@ -64,7 +64,7 @@ public class DotsExtPatternMatcher extends PatternMatcher {
      * @return Sub-pattern of nth argument in given invocation pattern
      */
     private static PatternNode nthArg(ElemNode node, int n) {
-        return node.sub.get("arg" + Integer.toString(n));
+        return node.subPatterns.get("arg" + Integer.toString(n));
     }
 
     /**
@@ -94,7 +94,7 @@ public class DotsExtPatternMatcher extends PatternMatcher {
         int numargs = numArgs(node);
 
         for (int i = 0; i < numargs; ++i) {
-            if (isDots(node.sub.get("arg" + Integer.toString(i)))) {
+            if (isDots(node.subPatterns.get("arg" + Integer.toString(i)))) {
                 return true;
             }
         }
@@ -133,9 +133,9 @@ public class DotsExtPatternMatcher extends PatternMatcher {
      */
     private void matchInvocationWithDots(ElemNode myElemNode, ElemNode otherNode) {
         for (String key : Arrays.asList("executable", "target")) {
-            if (myElemNode.sub.containsKey(key) && otherNode.sub.containsKey(key)) {
-                patternStack.push(myElemNode.sub.get(key));
-                otherNode.sub.get(key).accept(this);
+            if (myElemNode.subPatterns.containsKey(key) && otherNode.subPatterns.containsKey(key)) {
+                patternStack.push(myElemNode.subPatterns.get(key));
+                otherNode.subPatterns.get(key).accept(this);
 
                 if (!result) {
                     return;

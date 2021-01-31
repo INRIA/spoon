@@ -78,10 +78,10 @@ public class PatternMatcher implements PatternNodeVisitor {
                 return;
             }
 
-            for (String k : myElemNode.sub.keySet()) {
-                if (otherNode.sub.containsKey(k)) {
-                    patternStack.push(myElemNode.sub.get(k));
-                    otherNode.sub.get(k).accept(this);
+            for (String k : myElemNode.subPatterns.keySet()) {
+                if (otherNode.subPatterns.containsKey(k)) {
+                    patternStack.push(myElemNode.subPatterns.get(k));
+                    otherNode.subPatterns.get(k).accept(this);
 
                     if (result == false) {
                         return;

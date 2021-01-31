@@ -33,8 +33,8 @@ public class SubElemPatternCollector implements PatternNodeVisitor {
     public void visit(ElemNode node) {
         subPatterns.add(node);
 
-        for (String key : node.sub.keySet()) {
-            node.sub.get(key).accept(this);
+        for (String key : node.subPatterns.keySet()) {
+            node.subPatterns.get(key).accept(this);
         }
     }
 
