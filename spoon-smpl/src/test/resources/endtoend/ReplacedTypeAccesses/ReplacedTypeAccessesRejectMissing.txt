@@ -2,13 +2,14 @@
 ReplacedTypeAccessesRejectMissing
 
 [contract]
-the sub-expression "LARGER" in the patch should NOT match the expression "WebSettings.TextSize.LARGER" in the code, no transformation should be applied (missing information version). validate-e2e: purposefully-invalid
+the sub-expression "LARGER" in the patch should NOT match the expression "WebSettings.TextSize.LARGER" in the code, no transformation should be applied (missing information version).
 
 [patch]
 @@ @@
 - setTextSize(LARGER);
 
 [input]
+/* intentionally-does-not-compile */
 class A {
   /* skip */ public void setTextSize(Object x) {}
 
@@ -18,6 +19,7 @@ class A {
 }
 
 [expected]
+/* intentionally-does-not-compile */
 class A {
   /* skip */ public void setTextSize(Object x) {}
 

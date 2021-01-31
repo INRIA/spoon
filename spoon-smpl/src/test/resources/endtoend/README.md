@@ -1,1 +1,1 @@
-TODO: document the format, particularly the "skip" and "purposefully-invalid" tags
+TODO: document the format, particularly the "skip" and "intentionally-does-not-compile" tags

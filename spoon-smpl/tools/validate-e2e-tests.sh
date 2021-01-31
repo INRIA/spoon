@@ -4,15 +4,15 @@
 # 
 # Example usage: ./tools/validate-e2e-tests.sh src/test/resources/endtoend
 
-# TODO: document the purposefully-invalid tag
+# TODO: document the "intentionally-does-not-compile" tag
 # TODO: document the asterisk "*OK" output
 
 mkdir -p /tmp/validate-e2e-tests
 
-for f in $(find "$1"); do
+for f in $(find "$1" | grep -P "\.txt$" | sort); do
     if [ -f "$f" ]; then
         code=$(cat "$f" | grep -Pzo '(?s)\[input\].+?(?=\n\[|\$)' | tr -d '\0' | grep -v '\[input\]')
-        marked_invalid=$(cat "$f" | grep -Po "validate-e2e: purposefully-invalid")
+        marked_invalid=$(cat "$f" | grep -Pio "intentionally-does-not-compile")
 
         if [ "$marked_invalid" == "" ]; then
             class=$(echo "$code" | grep -Po 'class \w+' | cut -d ' ' -f2)

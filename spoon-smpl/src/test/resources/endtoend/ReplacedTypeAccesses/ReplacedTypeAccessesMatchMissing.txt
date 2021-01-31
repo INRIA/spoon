@@ -2,13 +2,14 @@
 ReplacedTypeAccessesMatchMissing
 
 [contract]
-the statement "setTextSize(WebSettings.TextSize.LARGER);" should be removed (missing information version). validate-e2e: purposefully-invalid
+the statement "setTextSize(WebSettings.TextSize.LARGER);" should be removed (missing information version).
 
 [patch]
 @@ @@
 - setTextSize(WebSettings.TextSize.LARGER);
 
 [input]
+/* intentionally-does-not-compile */
 class A {
   /* skip */ public void setTextSize(Object x) {}
 
@@ -18,6 +19,7 @@ class A {
 }
 
 [expected]
+/* intentionally-does-not-compile */
 class A {
   /* skip */ public void setTextSize(Object x) {}
 
