@@ -1,10 +1,15 @@
 package spoon.smpl.pattern;
 
 /**
- * Part of temporary substitute for spoon.pattern
+ * PatternNode defines the base interface for pattern nodes.
  *
  * This interface roughly corresponds to spoon.pattern.internal.node.RootNode
  */
 public interface PatternNode {
-    public void accept(PatternNodeVisitor visitor);
+    /**
+     * Visitor pattern dispatch.
+     *
+     * @param visitor Visitor to accept
+     */
+    void accept(PatternNodeVisitor visitor);
 }

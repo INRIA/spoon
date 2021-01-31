@@ -6,13 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+// TODO: merge PatternMatcher, DotsExtPatternMatcher and SubElemPatternMatcher into a single class?
+
 /**
- * A SubElemPatternMatcher is a PatternNode with the added ability of matching a given "rule" pattern against
- * all ElemNode sub-patterns contained in a "target" pattern.
+ * SubElemPatternMatcher implements pattern matching with the added ability of matching a given rule
+ * pattern against any ElemNode sub-pattern contained in an input pattern. For example, a rule pattern
+ * representing an expression may be matched to a statement pattern containing the expression as a
+ * sub-pattern.
  */
 public class SubElemPatternMatcher {
     /**
-     * A MatchResult consists of a matched code element the parameter bindings involved.
+     * A MatchResult consists of a matched code element and the parameter bindings involved.
      */
     public static class MatchResult {
         /**
@@ -43,8 +47,8 @@ public class SubElemPatternMatcher {
     }
 
     /**
-     * Create a new SubElemPatternMatcher using the given rule pattern that should be allowed to match any ElemNode
-     * sub-pattern of a target pattern.
+     * Create a new SubElemPatternMatcher using the given rule pattern that should be allowed to match any
+     * ElemNode sub-pattern of a target pattern.
      *
      * @param rulePattern Rule pattern
      */

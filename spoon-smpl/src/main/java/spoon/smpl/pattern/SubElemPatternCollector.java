@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A SubElemPatternCollector collects the list of all ElemNodes sub-patterns contained in a given Pattern.
+ * SubElemPatternCollector implements the building of a list of all ElemNodes sub-patterns contained in a
+ * given pattern.
  */
 public class SubElemPatternCollector implements PatternNodeVisitor {
     /**
-     * Create a new SubElemPatternCollctor.
+     * Create a new SubElemPatternCollector.
      */
     public SubElemPatternCollector() {
         subPatterns = new ArrayList<>();
@@ -23,6 +24,11 @@ public class SubElemPatternCollector implements PatternNodeVisitor {
         return subPatterns;
     }
 
+    /**
+     * Collect an element pattern and all of its element sub-patterns.
+     *
+     * @param node Pattern to collect
+     */
     @Override
     public void visit(ElemNode node) {
         subPatterns.add(node);
@@ -32,10 +38,20 @@ public class SubElemPatternCollector implements PatternNodeVisitor {
         }
     }
 
+    /**
+     * Parameter patterns are ignored.
+     *
+     * @param node Pattern to collect
+     */
     @Override
     public void visit(ParamNode node) {
     }
 
+    /**
+     * Value patterns are ignored.
+     *
+     * @param node Pattern to collect
+     */
     @Override
     public void visit(ValueNode node) {
     }

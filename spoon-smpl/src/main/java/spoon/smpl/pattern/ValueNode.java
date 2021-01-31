@@ -1,21 +1,44 @@
 package spoon.smpl.pattern;
 
 /**
- * Part of temporary substitute for spoon.pattern
+ * ValueNode is a pattern node corresponding to some concrete flat (containing no sub-patterns) value
+ * such as a String or an Integer.
  *
- * This class roughly corresponds to spoon.pattern.internal.node.ConstantNode
+ * A ValueNode contains two values; one value to match, and one value to "hold". The idea is that some
+ * matching tasks over complex values can be made simpler or more flexible by using a separate arbitrary
+ * match value (such as a String), while the original complex value can be stored and retrieved in the
+ * form of the "held" value. For simple matching tasks the two values will typically be identical.
+ *
+ * The concept of this class roughly corresponds to spoon.pattern.internal.node.ConstantNode
  */
 public class ValueNode implements PatternNode {
-    public ValueNode(Object matchValue, Object srcValue) {
+    /**
+     * Create a new ValueNode using a given Object to match, and a given Object to hold.
+     *
+     * @param matchValue Value to match
+     * @param heldValue Value to hold
+     */
+    public ValueNode(Object matchValue, Object heldValue) {
         this.matchValue = matchValue;
-        this.srcValue = srcValue;
+        this.heldValue = heldValue;
     }
 
+    /**
+     * Visitor pattern dispatch.
+     *
+     * @param visitor Visitor to accept
+     */
     @Override
     public void accept(PatternNodeVisitor visitor) {
         visitor.visit(this);
     }
 
+    /**
+     * Compare this pattern node to a given pattern node.
+     *
+     * @param other Pattern node to compare against
+     * @return True if nodes match, false otherwise
+     */
     @Override
     public boolean equals(Object other) {
         if (other instanceof ValueNode) {
@@ -26,6 +49,11 @@ public class ValueNode implements PatternNode {
         }
     }
 
+    /**
+     * Get a String representation of this pattern node.
+     *
+     * @return String representation
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -42,18 +70,25 @@ public class ValueNode implements PatternNode {
 
         sb.append("; ");
 
-        if (srcValue == null) {
+        if (heldValue == null) {
             sb.append("null");
         } else {
-            sb.append(srcValue.getClass().getSimpleName());
+            sb.append(heldValue.getClass().getSimpleName());
             sb.append(":");
-            sb.append(srcValue.toString());
+            sb.append(heldValue.toString());
         }
 
         sb.append(")");
         return sb.toString();
     }
 
+    /**
+     * Value to match.
+     */
     public final Object matchValue;
-    public final Object srcValue;
+
+    /**
+     * Value to hold.
+     */
+    public final Object heldValue;
 }

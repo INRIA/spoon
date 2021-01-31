@@ -6,16 +6,32 @@ import spoon.smpl.SmPLJavaDSL;
 
 import java.util.Arrays;
 
+// TODO: merge PatternMatcher, DotsExtPatternMatcher and SubElemPatternMatcher into a single class?
+
+/**
+ * DotsExtPatternMatcher extends the basic PatternMatcher with support for the SmPL dots operator in
+ * invocation argument lists.
+ */
 public class DotsExtPatternMatcher extends PatternMatcher {
+    /**
+     * Create a new DotsExtPatternMatcher using a given rule pattern.
+     *
+     * @param pattern Rule pattern to use
+     */
     public DotsExtPatternMatcher(PatternNode pattern) {
         super(pattern);
     }
 
+    /**
+     * Attempt to match the top of the rule pattern stack to a given input element pattern.
+     *
+     * @param otherNode Input pattern to attempt to match
+     */
     @Override
     public void visit(ElemNode otherNode) {
         PatternNode myNode = patternStack.pop();
 
-        if (myNode instanceof ElemNode) {
+        if (myNode instanceof ElemNode && isInvocationWithDots((ElemNode) myNode)) {
             ElemNode myElemNode = (ElemNode) myNode;
 
             if (!myElemNode.matchStr.equals(otherNode.matchStr)) {
@@ -23,30 +39,53 @@ public class DotsExtPatternMatcher extends PatternMatcher {
                 return;
             }
 
-            if (isInvocationWithDots(myElemNode)) {
-                matchInvocationWithDots(myElemNode, otherNode);
-                return;
-            }
+            matchInvocationWithDots(myElemNode, otherNode);
+        } else {
+            patternStack.push(myNode);
+            super.visit(otherNode);
         }
-
-        patternStack.push(myNode);
-        super.visit(otherNode);
     }
 
+    /**
+     * Get the value held in the "numargs" sub-pattern of the given invocation element pattern.
+     *
+     * @param node Invocation element pattern
+     * @return Value held in "numargs" sub-pattern of invocation pattern
+     */
     private static int numArgs(ElemNode node) {
-        return (int) ((ValueNode) node.sub.get("numargs")).srcValue;
+        return (int) ((ValueNode) node.sub.get("numargs")).heldValue;
     }
 
+    /**
+     * Get the nth argument sub-pattern of the given invocation element pattern.
+     *
+     * @param node Invocation element pattern
+     * @param n Index of argument to retrieve
+     * @return Sub-pattern of nth argument in given invocation pattern
+     */
     private static PatternNode nthArg(ElemNode node, int n) {
         return node.sub.get("arg" + Integer.toString(n));
     }
 
+    /**
+     * Determine whether a given pattern represents an SmPL argument-or-parameter-list dots operator.
+     *
+     * @param node Pattern to inspect
+     * @return True if pattern represents a dots operator, false otherwise
+     */
     private static boolean isDots(PatternNode node) {
         return node instanceof ElemNode
                && ((ElemNode) node).elem instanceof CtVariableRead<?>
                && ((CtVariableRead<?>) ((ElemNode) node).elem).getVariable().getSimpleName().equals(SmPLJavaDSL.getDotsParameterOrArgumentElementName());
     }
 
+    /**
+     * Determine whether a given element pattern represents an invocation that uses one or more SmPL dots
+     * operators in its argument list.
+     *
+     * @param node Pattern to inspect
+     * @return True if pattern represents an invocation using dots, false otherwise
+     */
     private static boolean isInvocationWithDots(ElemNode node) {
         if (!(node.elem instanceof CtAbstractInvocation<?>) || ((CtAbstractInvocation<?>) node.elem).getArguments().size() < 1) {
             return false;
@@ -63,6 +102,14 @@ public class DotsExtPatternMatcher extends PatternMatcher {
         return false;
     }
 
+    /**
+     * Find the first non-dots argument in a given invocation pattern.
+     *
+     * @param invocationNode Invocation pattern to inspect
+     * @param numargs Number of argument in invocation
+     * @param start Search start offset
+     * @return Index of first non-dots argument in respect to given offset, or -1 if no such argument is present
+     */
     private static int firstNonDotsArgIndex(ElemNode invocationNode, int numargs, int start) {
         for (int n = start; n < numargs; ++n) {
             if (!isDots(nthArg(invocationNode, n))) {
@@ -73,6 +120,17 @@ public class DotsExtPatternMatcher extends PatternMatcher {
         return -1;
     }
 
+    /**
+     * Attempt to match a rule invocation pattern using the dots operator (a pattern node representing an
+     * invocation where one or more argument nodes represent the SmPL dots operator and in which parameter
+     * nodes are allowed) against a target invocation pattern (a pattern node representing an invocation in
+     * which parameter nodes are NOT allowed).
+     *
+     * The result of the match attempt is written to the "result" instance field.
+     *
+     * @param myElemNode Rule invocation pattern
+     * @param otherNode Target invocation pattern
+     */
     private void matchInvocationWithDots(ElemNode myElemNode, ElemNode otherNode) {
         for (String key : Arrays.asList("executable", "target")) {
             if (myElemNode.sub.containsKey(key) && otherNode.sub.containsKey(key)) {
@@ -115,7 +173,6 @@ public class DotsExtPatternMatcher extends PatternMatcher {
 
         if (i != -1) {
             result = false;
-            return;
         }
     }
 }

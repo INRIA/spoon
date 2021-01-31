@@ -13,9 +13,15 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
- * Part of temporary substitute for spoon.pattern
+ * PatternBuilder builds a pattern (a tree of PatternNode) from a given Spoon metamodel element, optionally
+ * using a set of parameter identifiers. If no parameter identifiers are specified, the pattern will consist
+ * of ElemNodes and ValueNodes. If parameter identifiers are specified, the builder will create ParamNodes
+ * as appropriate when encountering the specified identifiers in the metamodel.
  */
 public class PatternBuilder implements CtVisitor {
+    /**
+     * Create a new PatternBuilder without any parameter identifiers.
+     */
     public PatternBuilder() {
         this(new ArrayList<>());
     }
@@ -32,6 +38,11 @@ public class PatternBuilder implements CtVisitor {
         resultStack = new Stack<>();
     }
 
+    /**
+     * Retrieve the pattern that was built.
+     *
+     * @return The pattern built by the builder
+     */
     public PatternNode getResult() {
         return resultStack.pop();
     }
@@ -122,7 +133,7 @@ public class PatternBuilder implements CtVisitor {
     public <R> void visitCtBlock(CtBlock<R> ctBlock) {
         ElemNode result = new ElemNode(ctBlock);
 
-        // TODO: should probably add a type ListNode and get rid of this hack
+        // TODO: add a type ListNode and get rid of this hack
         result.sub.put("numstatements", new ValueNode(ctBlock.getStatements().size(), null));
 
         int n = 0;
@@ -200,6 +211,7 @@ public class PatternBuilder implements CtVisitor {
     public <T> void visitCtExecutableReference(CtExecutableReference<T> ctExecutableReference) {
         ElemNode result = new ElemNode(ctExecutableReference);
 
+        // TODO: why has this been disabled?
         /*CtTypeReference<?> declType = ctExecutableReference.getDeclaringType();
 
         if (declType != null && !declType.getSimpleName().equals(SmPLJavaDSL.getUnspecifiedElementOrTypeName())) {
@@ -698,15 +710,36 @@ public class PatternBuilder implements CtVisitor {
         throw new NotImplementedException("Not implemented");
     }
 
+    /**
+     * Parameter identifiers.
+     */
     private List<String> params;
+
+    /**
+     * Stack used to store intermediate results while building the pattern.
+     */
     private Stack<PatternNode> resultStack;
 
+    /**
+     * Set a "target" sub-pattern in a given sub-pattern map to a given PatternNode.
+     *
+     * @param sub Sub-pattern map to modify
+     * @param target Pattern to use for the "target" sub-pattern
+     */
     private static void setTarget(Map<String, PatternNode> sub, PatternNode target) {
         if (target != null) {
             sub.put("target", target);
         }
     }
 
+    /**
+     * Set a "target" sub-pattern in a given sub-pattern map to a given preferred PatternNode, falling
+     * back to a second, default PatternNode if the preferred PatternNode is null.
+     *
+     * @param sub Sub-pattern map to modify
+     * @param target Pattern to prefer for the "target" sub-pattern
+     * @param _default Pattern to use for the "target" sub-pattern if the preferred pattern is null
+     */
     private static void setTarget(Map<String, PatternNode> sub, PatternNode target, PatternNode _default) {
         if (target != null) {
             sub.put("target", target);
