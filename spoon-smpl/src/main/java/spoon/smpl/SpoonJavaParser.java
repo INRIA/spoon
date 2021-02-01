@@ -22,6 +22,7 @@ public class SpoonJavaParser {
         launcher.getEnvironment().setAutoImports(false);
         launcher.addInputResource(new VirtualFile(code));
         launcher.buildModel();
+        // removes type accesses and replaces by field accesses, see #TypeAccessReplacer
         new TypeAccessReplacer().scan(launcher.getModel().getRootPackage());
         return launcher.getModel();
     }

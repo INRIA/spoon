@@ -48,11 +48,14 @@ public class SmPLParser {
             }
         }
 
-        List<String> separated = separateAdditionsDeletions(rewrite(smpl));
+        /** the DSL contains two classes, one for all additions, and for all deletions */
+        String javaDSL = rewrite(smpl);
+        List<String> separated = separateAdditionsDeletions(javaDSL);
 
         CtClass<?> dels = SpoonJavaParser.parseClass(separated.get(0), "RewrittenSmPLRule");
         CtClass<?> adds = SpoonJavaParser.parseClass(separated.get(1), "RewrittenSmPLRule");
 
+        // some tricks
         new SelfTypeReferenceNullifier().scan(dels);
         new SelfTypeReferenceNullifier().scan(adds);
 
@@ -68,6 +71,7 @@ public class SmPLParser {
         }
 
         // TODO: why do we need to includeMetaElements in this call to collectStatementLines?
+        // which line numbers are additions and deletions
         Set<Integer> delsLines = collectStatementLines(delsRuleMethod, true);
 
         // TODO: more comments are needed in the remainder of this method body
@@ -95,6 +99,7 @@ public class SmPLParser {
             throw new IllegalStateException("Unable to determine rule method of additions AST");
         }
 
+        // find appropriate anchors for all addition operations
         Set<Integer> addsLines = collectStatementLines(addsRuleMethod, true);
 
         Set<Integer> commonLines = new HashSet<>(delsLines);
