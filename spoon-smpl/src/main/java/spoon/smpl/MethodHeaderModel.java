@@ -19,8 +19,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+// TODO: a simpler approach for method header matching, something more similar to dots-in-method-calls
 // TODO: access modifiers
-// TODO: maybe ditch the sub-model approach and go for something more similar to dots-in-method-calls
 // TODO: rename since its not just methods but rather executables?
 
 /**
