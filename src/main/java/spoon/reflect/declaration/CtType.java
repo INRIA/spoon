@@ -230,7 +230,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	/**
 	 * Gets a method from its name and parameter types.
 	 *
-	 * @return null if does not exit
+	 * @return null if does not exist
 	 */
 	@PropertyGetter(role = METHOD)
 	<R> CtMethod<R> getMethod(String name, CtTypeReference<?>... parameterTypes);
