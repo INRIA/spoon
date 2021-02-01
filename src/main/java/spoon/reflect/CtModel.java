@@ -31,7 +31,7 @@ public interface CtModel extends Serializable, CtQueryable {
 	/** returns all top-level types of the model */
 	Collection<CtType<?>> getAllTypes();
 
-	/** returns all packages of the model */
+	/** returns an unmodifiable view of all packages of the model */
 	Collection<CtPackage> getAllPackages();
 
 	/**

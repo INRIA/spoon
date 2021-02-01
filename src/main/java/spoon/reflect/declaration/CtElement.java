@@ -95,9 +95,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 
 
 	/**
-	 * Returns the annotations that are present on this element.
-	 *
-	 * For sake of encapsulation, the returned list is unmodifiable.
+	 * Returns an unmodifiable view of the annotations that are present on this element.
 	 */
 	@PropertyGetter(role = ANNOTATION)
 	List<CtAnnotation<? extends Annotation>> getAnnotations();
@@ -311,7 +309,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	Object getMetadata(String key);
 
 	/**
-	 * Retrieves all metadata stored in an element.
+	 * Retrieves an unmodifiable view of all metadata stored in an element.
 	 */
 	Map<String, Object> getAllMetadata();
 
@@ -327,7 +325,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	<E extends CtElement> E setComments(List<CtComment> comments);
 
 	/**
-	 * The list of comments
+	 * The list of comments as unmodifiable view
 	 * @return the list of comment
 	 */
 	@PropertyGetter(role = COMMENT)

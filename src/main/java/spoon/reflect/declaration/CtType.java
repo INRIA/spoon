@@ -77,7 +77,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	CtField<?> getField(String name);
 
 	/**
-	 * Returns the fields that are directly declared by this class or interface.
+	 * Returns an unmodifiable view of the fields that are directly declared by this class or interface.
 	 * Includes enum constants.
 	 *
 	 * Derived from {@link #getTypeMembers()}
@@ -93,7 +93,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	<N extends CtType<?>> N getNestedType(String name);
 
 	/**
-	 * Returns the declarations of the nested classes and interfaces that are
+	 * Returns an unmodifiable view of the declarations of the nested classes and interfaces that are
 	 * directly declared by this class or interface.
 	 */
 	@DerivedProperty
@@ -204,7 +204,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	void compileAndReplaceSnippets();
 
 	/**
-	 * Return all the methods that can be called on an instance of this type.
+	 * Return an unmodifiable view of all the methods that can be called on an instance of this type.
 	 * It recursively collects all methods (both concrete and abstract) from all super-classes and all super-interfaces.
 	 * It deduplicates methods with the same signature, which are defined several times somewhere in the type hierarchy.
 	 *
@@ -236,7 +236,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	<R> CtMethod<R> getMethod(String name, CtTypeReference<?>... parameterTypes);
 
 	/**
-	 * Returns the methods that are directly declared by this class or
+	 * Returns an unmodifiable view of the methods that are directly declared by this class or
 	 * interface.
 	 *
 	 * Derived from {@link #getTypeMembers()}
@@ -314,7 +314,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	<S> boolean removeSuperInterface(CtTypeReference<S> interfac);
 
 	/**
-	 * Gets all type members of the type like fields, methods, anonymous block, etc.
+	 * Gets an unmodifiable view of all type members of the type like fields, methods, anonymous block, etc.
 	 */
 	@PropertyGetter(role = TYPE_MEMBER)
 	List<CtTypeMember> getTypeMembers();

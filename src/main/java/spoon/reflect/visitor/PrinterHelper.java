@@ -261,7 +261,9 @@ public class PrinterHelper {
 	public void putLineNumberMapping(int valueLine) {
 		lineNumberMapping.put(this.line, valueLine);
 	}
-
+	/**
+	 * @return an unmodifiable view of the line mappings.
+	 */
 	public Map<Integer, Integer> getLineNumberMapping() {
 		return Collections.unmodifiableMap(lineNumberMapping);
 	}

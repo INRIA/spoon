@@ -76,7 +76,7 @@ public class ChangeCollector {
 
 	/**
 	 * @param currentElement the {@link CtElement} whose changes has to be checked
-	 * @return set of {@link CtRole}s in direct children on of `currentElement` where something has changed since this {@link ChangeCollector} was attached
+	 * @return an unmodifiable view of the set of {@link CtRole}s in direct children on of `currentElement` where something has changed since this {@link ChangeCollector} was attached
 	 * The 'directly' means that value of attribute of `currentElement` was changed.
 	 * Use {@link #getChanges(CtElement)} to detect changes in child elements too
 	 */
@@ -89,7 +89,7 @@ public class ChangeCollector {
 	}
 
 	/**
-	 * Return the set of {@link CtRole}s for which children have changed from `currentElement`
+	 * Return an unmodifiable view of the set of {@link CtRole}s for which children have changed from `currentElement`
 	 * since this {@link ChangeCollector} was attached
 	 * Warning: change in IMPLICIT are ignored
 	 * @param currentElement the {@link CtElement} whose changes has to be checked

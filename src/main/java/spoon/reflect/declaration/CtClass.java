@@ -33,7 +33,7 @@ import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
  */
 public interface CtClass<T> extends CtType<T>, CtStatement {
 	/**
-	 * Returns the anonymous blocks of this class.
+	 * Returns an unmodifiable view of the anonymous blocks of this class.
 	 * Derived from {@link #getTypeMembers()}
 	 */
 	@DerivedProperty
@@ -50,7 +50,7 @@ public interface CtClass<T> extends CtType<T>, CtStatement {
 	CtConstructor<T> getConstructor(CtTypeReference<?>... parameterTypes);
 
 	/**
-	 * Returns the constructors of this class. This includes the default
+	 * Returns an unmodifiable view of the constructors of this class. This includes the default
 	 * constructor if this class has no constructors explicitly declared.
 	 *
 	 * Derived from {@link #getTypeMembers()}

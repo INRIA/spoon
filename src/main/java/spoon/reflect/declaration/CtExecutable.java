@@ -48,7 +48,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	CtBlock<R> getBody();
 
 	/**
-	 * Gets the parameters list.
+	 * Gets an unmodifiable view of the parameters list.
 	 */
 	@PropertyGetter(role = PARAMETER)
 	List<CtParameter<?>> getParameters();

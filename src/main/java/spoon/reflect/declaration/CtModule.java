@@ -70,13 +70,17 @@ public interface CtModule extends CtNamedElement {
 
 	@PropertySetter(role = MODULE_DIRECTIVE)
 	<T extends CtModule> T addModuleDirectiveAt(int position, CtModuleDirective moduleDirective);
-
+	/**
+	 * @return an unmodifiable view of module directives
+	 */
 	@PropertyGetter(role = MODULE_DIRECTIVE)
 	List<CtModuleDirective> getModuleDirectives();
 
 	@PropertySetter(role = MODULE_DIRECTIVE)
 	<T extends CtModule> T removeModuleDirective(CtModuleDirective moduleDirective);
-
+	/**
+	 * @return an unmodifiable view of used services
+	 */
 	@PropertyGetter(role = SERVICE_TYPE)
 	@DerivedProperty
 	List<CtUsedService> getUsedServices();
@@ -92,7 +96,9 @@ public interface CtModule extends CtNamedElement {
 	@PropertySetter(role = SERVICE_TYPE)
 	@DerivedProperty
 	<T extends CtModule> T removeUsedService(CtUsedService usedService);
-
+	/**
+	 * @return an unmodifiable view of exported packages
+	 */
 	@PropertyGetter(role = EXPORTED_PACKAGE)
 	@DerivedProperty
 	List<CtPackageExport> getExportedPackages();
@@ -108,7 +114,9 @@ public interface CtModule extends CtNamedElement {
 	@PropertySetter(role = EXPORTED_PACKAGE)
 	@DerivedProperty
 	<T extends CtModule> T removeExportedPackage(CtPackageExport exportedPackage);
-
+	/**
+	 * @return an unmodifiable view of opened packages
+	 */
 	@PropertyGetter(role = OPENED_PACKAGE)
 	@DerivedProperty
 	List<CtPackageExport> getOpenedPackages();
@@ -125,6 +133,9 @@ public interface CtModule extends CtNamedElement {
 	@DerivedProperty
 	<T extends CtModule> T removeOpenedPackage(CtPackageExport openedPackage);
 
+	/**
+	 * @return an unmodifiable view of required modules
+	 */
 	@PropertyGetter(role = REQUIRED_MODULE)
 	@DerivedProperty
 	List<CtModuleRequirement> getRequiredModules();
@@ -140,7 +151,9 @@ public interface CtModule extends CtNamedElement {
 	@PropertySetter(role = REQUIRED_MODULE)
 	@DerivedProperty
 	<T extends CtModule> T removeRequiredModule(CtModuleRequirement requiredModule);
-
+	/**
+	 * @return an unmodifiable view of provided services.
+	 */
 	@PropertyGetter(role = PROVIDED_SERVICE)
 	@DerivedProperty
 	List<CtProvidedService> getProvidedServices();

@@ -294,7 +294,7 @@ public class Metamodel {
 	}
 
 	/**
-	 * @return all {@link MetamodelConcept}s of spoon meta model
+	 * @return an unmodifiable view of all {@link MetamodelConcept}s of spoon meta model
 	 */
 	public Collection<MetamodelConcept> getConcepts() {
 		return Collections.unmodifiableCollection(nameToConcept.values());

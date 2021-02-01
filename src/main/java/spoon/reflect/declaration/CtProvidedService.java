@@ -39,6 +39,9 @@ public interface CtProvidedService extends CtModuleDirective {
 	@PropertySetter(role = CtRole.SERVICE_TYPE)
 	<T extends CtProvidedService> T setServiceType(CtTypeReference providingType);
 
+	/**
+	 * @return an unmodifiable view of all implementation types.
+	 */
 	@PropertyGetter(role = CtRole.IMPLEMENTATION_TYPE)
 	List<CtTypeReference> getImplementationTypes();
 

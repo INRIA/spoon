@@ -53,7 +53,7 @@ public class Pattern {
 	}
 
 	/**
-	 * @return Map of parameter names to {@link ParameterInfo} for each parameter of this {@link Pattern}
+	 * @return an unmodifiable view of the Map of parameter names to {@link ParameterInfo} for each parameter of this {@link Pattern}
 	 */
 	public Map<String, ParameterInfo> getParameterInfos() {
 		Map<String, ParameterInfo> parameters = new HashMap<>();

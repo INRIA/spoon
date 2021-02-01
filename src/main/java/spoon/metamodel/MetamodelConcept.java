@@ -110,18 +110,18 @@ public class MetamodelConcept {
 	}
 
 	/**
-	 * @return map of {@link MetamodelProperty}s by their {@link CtRole}
+	 * @return an unmodifiable view of {@link MetamodelProperty}s by their {@link CtRole}
 	 */
 	public Map<CtRole, MetamodelProperty> getRoleToProperty() {
 		return Collections.unmodifiableMap(role2Property);
 	}
 
 	/**
-	 * @return Collection of all {@link MetamodelProperty} of current {@link MetamodelConcept}
+	 * @return an unmodifiable view of all {@link MetamodelProperty} of current {@link MetamodelConcept}
 	 * Note: actually is the order undefined
-	 * TODO: return List in the same order like it is scanned by CtScanner
 	 */
 	public Collection<MetamodelProperty> getProperties() {
+		// TODO: return List in the same order like it is scanned by CtScanner
 		return Collections.unmodifiableCollection(role2Property.values());
 	}
 

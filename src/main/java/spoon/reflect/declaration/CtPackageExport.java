@@ -53,7 +53,9 @@ public interface CtPackageExport extends CtModuleDirective {
 
 	@PropertySetter(role = CtRole.PACKAGE_REF)
 	<T extends CtPackageExport> T setPackageReference(CtPackageReference packageReference);
-
+	/**
+	 * @return an unmodifiable view of exported packages.
+	 */
 	@PropertyGetter(role = CtRole.MODULE_REF)
 	List<CtModuleReference> getTargetExport();
 

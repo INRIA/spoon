@@ -35,7 +35,9 @@ public class CtModifierHandler implements Serializable {
 	public Factory getFactory() {
 		return element.getFactory();
 	}
-
+	/**
+	 * @return an unmodifiable view of extended modifiers
+	 */
 	public Set<CtExtendedModifier> getExtendedModifiers() {
 		return Collections.unmodifiableSet(this.modifiers);
 	}

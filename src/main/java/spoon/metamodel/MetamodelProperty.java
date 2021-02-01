@@ -270,7 +270,7 @@ public class MetamodelProperty {
 
 	/**
 	 * @param kind {@link MMMethodKind}
-	 * @return methods of required `kind`
+	 * @return an unmodifiable view of methods of required `kind`
 	 */
 	public List<MMMethod> getMethods(MMMethodKind kind) {
 		List<MMMethod> ms = methodsByKind.get(kind);
@@ -278,7 +278,7 @@ public class MetamodelProperty {
 	}
 
 	/**
-	 * @return all methods which are accessing this property
+	 * @return an unmodifiable view of all methods which are accessing this property
 	 */
 	public Set<MMMethod> getMethods() {
 		Set<MMMethod> res = new HashSet<>();

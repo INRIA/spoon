@@ -661,7 +661,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	}
 
 	/**
-	 * returns the list of current problems
+	 * returns an unmodifiable view of the list of current problems
 	 */
 	public List<CategorizedProblem> getProblems() {
 		return Collections.unmodifiableList(this.probs);

@@ -446,7 +446,7 @@ public class PatternBuilder {
 	}
 
 	/**
-	 * @return a {@link CtElement}s which are the template model of this Pattern
+	 * @return an unmodifiable view of {@link CtElement}s which are the template model of this Pattern
 	 */
 	List<CtElement> getPatternModel() {
 		return patternModel;

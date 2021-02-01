@@ -103,7 +103,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	<T extends CtExpression> T getWrappedValue(String key);
 
 	/**
-	 * Returns this annotation's elements and their values. This is returned in
+	 * Returns an unmodifiable view of this annotation's elements and their values. This is returned in
 	 * the form of a map that associates element names with their corresponding
 	 * values. If you iterate over the map with entrySet(), the iteration order
 	 * complies with the order of annotation values in the source code.
@@ -114,7 +114,7 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 	@PropertyGetter(role = VALUE)
 	Map<String, CtExpression> getValues();
 
-	/** Get all values of {@link #getValues()}, plus the default ones defined in the annotation type. */
+	/** Get an unmodifiable view of all values of {@link #getValues()}, plus the default ones defined in the annotation type. */
 	@DerivedProperty
 	Map<String, CtExpression> getAllValues();
 

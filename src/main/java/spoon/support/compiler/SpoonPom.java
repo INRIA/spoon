@@ -149,7 +149,7 @@ public class SpoonPom implements SpoonResource {
 	}
 
 	/**
-	 * Get the list of modules defined in this POM
+	 * Get an unmodifiable view of the list of modules defined in this POM
 	 * @return the list of modules
 	 */
 	public List<SpoonPom> getModules() {

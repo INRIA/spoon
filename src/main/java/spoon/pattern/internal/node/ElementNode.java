@@ -192,7 +192,9 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		}
 		return false;
 	}
-
+	/**
+	 * @return an unmodifiable view of rootNode by metamodel property
+	 */
 	public Map<MetamodelProperty, RootNode> getRoleToNode() {
 		return roleToNode == null ? Collections.emptyMap() : Collections.unmodifiableMap(roleToNode);
 	}

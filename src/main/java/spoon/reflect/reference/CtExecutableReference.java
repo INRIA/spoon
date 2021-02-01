@@ -81,7 +81,7 @@ public interface CtExecutableReference<T> extends CtReference, CtActualTypeConta
 	CtTypeReference<T> getType();
 
 	/**
-	 * Gets parameters of the executable.
+	 * Gets an unmodifiable view of the parameters of the executable.
 	 */
 	@PropertyGetter(role = CtRole.ARGUMENT_TYPE)
 	List<CtTypeReference<?>> getParameters();

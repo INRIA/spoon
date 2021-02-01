@@ -107,7 +107,7 @@ public class MMMethod {
 	}
 
 	/**
-	 * @return {@link CtMethod}s, which are declared in the {@link MetamodelConcept} or in the hierarchy, that have the same role and {@link MMMethodKind}.
+	 * @return an unmodifiable view of {@link CtMethod}s, which are declared in the {@link MetamodelConcept} or in the hierarchy, that have the same role and {@link MMMethodKind}.
 	 */
 	public List<CtMethod<?>> getDeclaredMethods() {
 		return Collections.unmodifiableList(ownMethods);

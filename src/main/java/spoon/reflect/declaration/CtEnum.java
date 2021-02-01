@@ -57,7 +57,7 @@ public interface CtEnum<T extends Enum<?>> extends CtClass<T> {
 	CtEnumValue<?> getEnumValue(String name);
 
 	/**
-	 * Gets all enum values of the enumeration.
+	 * Gets all enum values of the enumeration as unmodifiable view
 	 *
 	 * @return All enum values.
 	 */

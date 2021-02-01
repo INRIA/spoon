@@ -849,7 +849,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public Set<CtTypeReference<?>> getSuperInterfaces() {
-		return interfaces;
+		return Collections.unmodifiableSet(interfaces);
 	}
 
 	@Override

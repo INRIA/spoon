@@ -110,7 +110,7 @@ public class StringNode extends AbstractPrimitiveMatcher {
 	}
 
 	/**
-	 * @return {@link ParameterInfo} to replace marker map
+	 * @return an unmodifiable view of {@link ParameterInfo} to replace marker map
 	 */
 	public Map<String, ParameterInfo> getReplaceMarkers() {
 		return Collections.unmodifiableMap(tobeReplacedSubstrings);

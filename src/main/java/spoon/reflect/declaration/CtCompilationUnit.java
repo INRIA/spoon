@@ -67,7 +67,7 @@ public interface CtCompilationUnit extends CtElement {
 	List<File> getBinaryFiles();
 
 	/**
-	 * Gets all the types declared in this compilation unit.
+	 * Gets an unmodifiable view of all the types declared in this compilation unit.
 	 */
 	@DerivedProperty
 	@PropertyGetter(role = CtRole.DECLARED_TYPE)

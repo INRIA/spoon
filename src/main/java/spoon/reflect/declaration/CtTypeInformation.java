@@ -30,7 +30,7 @@ import static spoon.reflect.path.CtRole.SUPER_TYPE;
  */
 public interface CtTypeInformation {
 	/**
-	 * Returns the interface types directly implemented by this class or
+	 * Returns an unmodifiable view of the interface types directly implemented by this class or
 	 * extended by this interface.
 	 */
 	@PropertyGetter(role = INTERFACE)
@@ -159,7 +159,7 @@ public interface CtTypeInformation {
 	CtFieldReference<?> getDeclaredOrInheritedField(String fieldName);
 
 	/**
-	 * Gets the executables declared by this type if applicable.
+	 * Gets an unmodifiable view of the executables declared by this type if applicable.
 	 */
 	@DerivedProperty
 	Collection<CtExecutableReference<?>> getDeclaredExecutables();

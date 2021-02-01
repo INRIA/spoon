@@ -68,7 +68,9 @@ public class ModuleFactory extends SubFactory {
 			}
 			return null;
 		}
-
+		/**
+		 * @return an unmodifiable view of all modules
+		 */
 		public Collection<CtModule> getAllModules() {
 			return Collections.unmodifiableCollection(allModules);
 		}
