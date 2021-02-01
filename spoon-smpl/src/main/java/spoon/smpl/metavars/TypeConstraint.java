@@ -7,6 +7,8 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.smpl.formula.MetavariableConstraint;
 
+// TODO: remove special method header encoding case once we have a simpler approach for matching the method header
+
 /**
  * A TypeConstraint restricts a metavariable binding to be a CtTypeReference. A special case exists for binding to
  * a newly created type reference indicated by the name of a CtFieldRead appearing as the single argument to an

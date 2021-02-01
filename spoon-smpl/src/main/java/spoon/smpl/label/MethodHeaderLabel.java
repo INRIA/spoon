@@ -12,6 +12,7 @@ import spoon.smpl.formula.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// TODO: replace with simpler approach, a full inner CTL model + formula is overkill and leads to e.g verifyResultAndCollectMetavars
 // TODO: rename since its not just methods but rather executables?
 
 /**
@@ -56,6 +57,7 @@ public class MethodHeaderLabel implements Label {
     @Override
     public boolean matches(Predicate predicate) {
         if (predicate instanceof MethodHeaderPredicate) {
+            // For lazy initialization
             //if (headerModel == null) {
             //    headerModel = new MethodHeaderModel(method);
             //}

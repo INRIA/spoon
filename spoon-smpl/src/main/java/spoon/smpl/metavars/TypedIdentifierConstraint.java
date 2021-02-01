@@ -4,6 +4,8 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.smpl.formula.MetavariableConstraint;
 
+// TODO: replace with TypedExpressionConstraint to more closely mimic Coccinelle
+
 /**
  * An TypedIdentifierConstraint behaves like an IdentifierConstraint extended with the
  * additional constraint on the data type of the bound variable.

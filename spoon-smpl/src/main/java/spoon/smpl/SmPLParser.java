@@ -67,8 +67,10 @@ public class SmPLParser {
             throw new IllegalArgumentException("Empty match context");
         }
 
-        // TODO: why do we need to includeMetaElements here?
+        // TODO: why do we need to includeMetaElements in this call to collectStatementLines?
         Set<Integer> delsLines = collectStatementLines(delsRuleMethod, true);
+
+        // TODO: more comments are needed in the remainder of this method body
 
         for (CtMethod<?> method : adds.getMethods()) {
             if (method.getSignature().equals(delsRuleMethod.getSignature())

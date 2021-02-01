@@ -62,7 +62,7 @@ public class SmPLGrep {
                     break;
 
                 case MetavarType:
-                    // TODO: use SmPLJavaDSL for checking the type-of-type
+                    // TODO: use SmPLJavaDSL for checking for typenames of specifically-typed metavars
                     if (!Arrays.asList("identifier", "type", "constant", "expression").contains(token.getText())) {
                         result.addString(token.getText());
                     }

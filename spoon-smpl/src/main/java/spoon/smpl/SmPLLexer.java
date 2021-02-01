@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// TODO: proper strings including escape characters
+// TODO: proper string parsing including escape characters
 
 /**
  * An SmPL lexer.
@@ -118,7 +118,7 @@ public class SmPLLexer {
         /**
          * Record a new Position.
          *
-         * @param text Source text
+         * @param text Full source text
          * @param pos Character offset in source text
          */
         public Position(String text, int pos) {
@@ -127,9 +127,9 @@ public class SmPLLexer {
         }
 
         /**
-         * Get source text.
+         * Get full source text.
          *
-         * @return Source text
+         * @return Full source text
          */
         public String getText() {
             return text;

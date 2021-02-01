@@ -249,6 +249,8 @@ public class SmPLMethodCFG {
         removeBlockEndNodes(cfg);
         removeOutermostBlockBeginNode(cfg);
         removeExceptionBlockBeginNodes(cfg);
+
+        // TODO: document the motivation for replacing ternary branches with single statements
         replaceTernaryBranchesWithSingleStatements(cfg);
 
         // Add method header node
@@ -280,7 +282,7 @@ public class SmPLMethodCFG {
 
         // Annotate branches
         for (ControlFlowNode node : cfg.findNodesOfKind(BranchKind.BRANCH)) {
-            // If is the only supported branch statement at this time
+            // CtIf is the only supported branch statement at this time
             CtIf ifStm = (CtIf) node.getStatement().getParent();
 
             int currentParentId = parentId++;
