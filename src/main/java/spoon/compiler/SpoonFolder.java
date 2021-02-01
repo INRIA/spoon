@@ -15,7 +15,7 @@ import java.util.List;
 public interface SpoonFolder extends SpoonResource {
 
 	/**
-	 * Gets an unmodifiable view of all the files (excluding folders) in the folder.
+	 * Gets all the files (excluding folders) in the folder.
 	 */
 	List<SpoonFile> getFiles();
 
@@ -30,7 +30,7 @@ public interface SpoonFolder extends SpoonResource {
 	List<SpoonFile> getAllJavaFiles();
 
 	/**
-	 * Gets an unmodifiable view of subfolders in this folder.
+	 * Gets of subfolders in this folder.
 	 */
 	List<SpoonFolder> getSubFolders();
 

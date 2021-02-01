@@ -53,7 +53,10 @@ public class VirtualFolder implements SpoonFolder {
 
 		return result;
 	}
-
+	/**
+	 * @{inheritDoc}
+	 * The result is an unmodifiable view.
+	 */
 	@Override
 	public List<SpoonFile> getFiles() {
 		return Collections.unmodifiableList(new ArrayList<>(files));
@@ -69,6 +72,10 @@ public class VirtualFolder implements SpoonFolder {
 		return null;
 	}
 
+		/**
+	 * @{inheritDoc}
+	 * The result is an unmodifiable view.
+	 */
 	@Override
 	public List<SpoonFolder> getSubFolders() {
 		List<SpoonFolder> result = new ArrayList<>();
