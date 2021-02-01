@@ -28,6 +28,7 @@ import java.io.Serializable;
 */
 public class JavadocBlockTag implements Serializable {
 
+	private static final long serialVersionUID = 8385157251800755037L;
 	private CtJavaDocTag.TagType type;
 	private JavadocDescription content;
 	private String name = "";

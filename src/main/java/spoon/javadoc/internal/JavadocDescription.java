@@ -23,6 +23,8 @@ package spoon.javadoc.internal;
 	*/
 	public class JavadocDescription implements Serializable {
 
+
+	private static final long serialVersionUID = -103777997692627654L;
 	private List<JavadocDescriptionElement> elements;
 
 	public JavadocDescription() {

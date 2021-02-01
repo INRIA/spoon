@@ -23,6 +23,8 @@ import java.io.Serializable;
 */
 public class JavadocInlineTag implements JavadocDescriptionElement, Serializable {
 
+	private static final long serialVersionUID = 1934780794454717951L;
+
 	/** Return the next word of the string, in other words it stops when a space is encountered. */
 	public static String nextWord(String string) {
 		int index = 0;

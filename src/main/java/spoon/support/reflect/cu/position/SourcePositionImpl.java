@@ -15,14 +15,13 @@ import spoon.reflect.cu.position.DeclarationSourcePosition;
 import spoon.reflect.cu.position.NoSourcePosition;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * This immutable class represents the position of a Java program element in a source
  * file.
  */
-public class SourcePositionImpl implements SourcePosition, Serializable {
+public class SourcePositionImpl implements SourcePosition {
 
 	private static final long serialVersionUID = 1L;
 

@@ -18,6 +18,8 @@ import spoon.reflect.declaration.CtElement;
  */
 public class CtLineElementComparator implements Comparator<CtElement>, Serializable {
 
+	private static final long serialVersionUID = -6784439592249504942L;
+
 	/**
 	 * Returns 0 if o1 has the same position as o2, or both positions are invalid and o1.equals(o2).
 	 * Returns -1 if o1 is before o2 in the file, or o1 has no valid position or both positions are invalid !o1.equals(o2).

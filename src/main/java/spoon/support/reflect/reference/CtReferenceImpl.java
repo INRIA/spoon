@@ -18,7 +18,6 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
 import java.util.HashSet;
@@ -28,7 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import static spoon.reflect.path.CtRole.NAME;
 
-public abstract class CtReferenceImpl extends CtElementImpl implements CtReference, Serializable {
+public abstract class CtReferenceImpl extends CtElementImpl implements CtReference {
 
 	private static final long serialVersionUID = 1L;
 	private static Collection<String> keywords = fillWithKeywords();

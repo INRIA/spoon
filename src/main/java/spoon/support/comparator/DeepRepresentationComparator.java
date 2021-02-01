@@ -17,6 +17,8 @@ import java.util.Comparator;
  */
 public class DeepRepresentationComparator implements Comparator<CtElement>, Serializable {
 
+	private static final long serialVersionUID = 4852935760298043152L;
+
 	@Override
 	public int compare(CtElement o1, CtElement o2) {
 		if (o1.getPosition().isValidPosition() == false) {

@@ -12,12 +12,11 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 
 import java.io.File;
-import java.io.Serializable;
 
 /**
  * This class represents the position of a program element in a source file.
  */
-public class NoSourcePosition implements SourcePosition, Serializable {
+public class NoSourcePosition implements SourcePosition {
 
 	private static final long serialVersionUID = 1L;
 
