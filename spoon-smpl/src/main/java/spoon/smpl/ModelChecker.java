@@ -6,6 +6,9 @@ import spoon.smpl.formula.Optional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// TODO: separate/extract the inner classes (witnesses, results)
+// TODO: add formal logic specifications to all Formula-visiting methods, e.g SAT(M, True) def= {s | s \in M.s}
+
 /**
  * ModelChecker implements the CTL-VW (with additional extensions) model-checking algorithm.
  */
@@ -345,8 +348,6 @@ public class ModelChecker implements FormulaVisitor {
         return resultStack.pop();
     }
 
-    // TODO: add logic syntax specifications to all Formula-visiting methods
-
     /**
      * Computes the set of states that satisfy True, i.e all states.
      *
@@ -455,6 +456,7 @@ public class ModelChecker implements FormulaVisitor {
                         }
 
                         if (recordMatchedElements && result.getMatchedElement() != null) {
+                            // TODO: document or make customizable the name "_e" used for indicating a matched (sub-)element.
                             resultSet.add(new Result(s, environment, newWitnessForest(new Witness(s, "_e", result.getMatchedElement(), emptyWitnessForest()))));
                         } else {
                             resultSet.add(new Result(s, environment, emptyWitnessForest()));
@@ -540,6 +542,7 @@ public class ModelChecker implements FormulaVisitor {
                     Set<Witness> jointWitnesses = new HashSet<>();
 
                     for (Result r : combos.current()) {
+                        // TODO: early break if jointEnvironment becomes null?
                         jointEnvironment = Environment.join(jointEnvironment, r.getEnvironment());
                         jointWitnesses.addAll(r.getWitnesses());
                     }
@@ -788,6 +791,7 @@ public class ModelChecker implements FormulaVisitor {
 
         ResultSet finalResult = new ResultSet();
 
+        // TODO: add comments for the InnerAnd computation procedure
         Map<Integer, Map<String, Set<Object>>> options = getPositiveOptions(innerResult);
 
         for (int state : innerResult.getIncludedStates()) {
