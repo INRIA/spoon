@@ -29,7 +29,7 @@ public class PropositionLabel implements Label {
      */
     public boolean matches(Predicate obj) {
         if (obj instanceof Proposition) {
-            return ((Proposition)obj).getProposition().equals(label);
+            return ((Proposition) obj).getProposition().equals(label);
         } else {
             return false;
         }
