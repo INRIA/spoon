@@ -254,6 +254,11 @@ public class Substitutor implements CtVisitor {
     public <T> void visitCtLiteral(CtLiteral<T> literal) {}
 
     @Override
+    public void visitCtTextBlock(CtTextBlock ctTextBlock) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public <T> void visitCtLocalVariable(CtLocalVariable<T> localVariable) {
         localVariable.getType().accept(this);
 

@@ -321,6 +321,11 @@ public class PatternBuilder implements CtVisitor {
     }
 
     @Override
+    public void visitCtTextBlock(CtTextBlock ctTextBlock) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public <T> void visitCtLocalVariable(CtLocalVariable<T> ctLocalVariable) {
         ElemNode result = new ElemNode(ctLocalVariable);
 

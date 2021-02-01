@@ -123,7 +123,7 @@ public class C4JSetTextSizeTest {
         assertTrue(pos4 > 0);
         assertTrue(pos5 > 0);
 
-        ctx.testExecutable(constructor);
+        ctx.applySmplPatch(constructor);
 
         String newConstructorCode = constructor.toString();
 

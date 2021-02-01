@@ -75,10 +75,10 @@ public class ZippedCodeBaseTestContext {
     }
 
     public String testMethod(String qualifiedName) {
-        return testExecutable(getMethod(qualifiedName));
+        return applySmplPatch(getMethod(qualifiedName));
     }
 
-    public String testExecutable(CtExecutable<?> ctExecutable) {
+    public String applySmplPatch(CtExecutable<?> ctExecutable) {
         if (!rule.isPotentialMatch(ctExecutable)) {
             return null;
         }

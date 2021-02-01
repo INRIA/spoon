@@ -75,13 +75,8 @@
     <dependencies>
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
-            <artifactId>spoon-core</artifactId>
-            <version>8.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>fr.inria.gforge.spoon</groupId>
-            <artifactId>control-flow</artifactId>
-            <version>0.0.2</version>
+            <artifactId>spoon-control-flow</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
