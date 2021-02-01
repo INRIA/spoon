@@ -9,154 +9,154 @@ import static org.junit.Assert.assertTrue;
 import spoon.smpl.SmPLProblemDetector.Problem;
 
 public class SmPLProblemDetectorTest {
-    @Test
-    public void testDetectLeadingSuperfluousStatementDotsOperator() {
+	@Test
+	public void testDetectLeadingSuperfluousStatementDotsOperator() {
 
-        // contract: a superfluous statement dots operator at the top of a patch using implicit dots (not matching on method header) should be reported as an error
+		// contract: a superfluous statement dots operator at the top of a patch using implicit dots (not matching on method header) should be reported as an error
 
-        String smpl = "@@ @@\n" +
-                      "...\n" +
-                      "\n";
+		String smpl = "@@ @@\n" +
+					  "...\n" +
+					  "\n";
 
-        List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
-        assertTrue(problems.toString().contains("Error: Superfluous dots operator"));
-    }
+		List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
+		assertTrue(problems.toString().contains("Error: Superfluous dots operator"));
+	}
 
-    @Test
-    public void testDetectLeadingSuperfluousOptDotsOperator() {
+	@Test
+	public void testDetectLeadingSuperfluousOptDotsOperator() {
 
-        // contract: a superfluous optdots operator at the top of a patch using implicit dots (not matching on method header) should be reported as an error
+		// contract: a superfluous optdots operator at the top of a patch using implicit dots (not matching on method header) should be reported as an error
 
-        String smpl = "@@ @@\n" +
-                      "<...\n" +
-                      "...>\n" +
-                      "\n";
+		String smpl = "@@ @@\n" +
+					  "<...\n" +
+					  "...>\n" +
+					  "\n";
 
-        List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
-        assertTrue(problems.toString().contains("Error: Superfluous dots operator"));
-    }
+		List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
+		assertTrue(problems.toString().contains("Error: Superfluous dots operator"));
+	}
 
-    @Test
-    public void testDetectConsecutiveStatementDotsOperatorsPlain() {
+	@Test
+	public void testDetectConsecutiveStatementDotsOperatorsPlain() {
 
-        // contract: consecutive statement dots operators should be reported as an error
+		// contract: consecutive statement dots operators should be reported as an error
 
-        String smpl = "@@ @@\n" +
-                      "void m() {\n" +
-                      "...\n" +
-                      "...\n" +
-                      "}\n" +
-                      "\n";
+		String smpl = "@@ @@\n" +
+					  "void m() {\n" +
+					  "...\n" +
+					  "...\n" +
+					  "}\n" +
+					  "\n";
 
-        List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
-        assertTrue(problems.toString().contains("Error: Consecutive dots operators"));
-    }
+		List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
+		assertTrue(problems.toString().contains("Error: Consecutive dots operators"));
+	}
 
-    @Test
-    public void testDetectConsecutiveStatementDotsOperatorsWithConstraintsUpper() {
+	@Test
+	public void testDetectConsecutiveStatementDotsOperatorsWithConstraintsUpper() {
 
-        // contract: consecutive statement dots operators should be reported as an error
+		// contract: consecutive statement dots operators should be reported as an error
 
-        String smpl = "@@ @@\n" +
-                      "void m() {\n" +
-                      "... when any\n" +
-                      "...\n" +
-                      "}\n" +
-                      "\n";
+		String smpl = "@@ @@\n" +
+					  "void m() {\n" +
+					  "... when any\n" +
+					  "...\n" +
+					  "}\n" +
+					  "\n";
 
-        List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
-        assertTrue(problems.toString().contains("Error: Consecutive dots operators"));
-    }
+		List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
+		assertTrue(problems.toString().contains("Error: Consecutive dots operators"));
+	}
 
-    @Test
-    public void testDetectConsecutiveStatementDotsOperatorsWithConstraintsLower() {
+	@Test
+	public void testDetectConsecutiveStatementDotsOperatorsWithConstraintsLower() {
 
-        // contract: consecutive statement dots operators should be reported as an error
+		// contract: consecutive statement dots operators should be reported as an error
 
-        String smpl = "@@ @@\n" +
-                      "void m() {\n" +
-                      "...\n" +
-                      "... when exists\n" +
-                      "}\n" +
-                      "\n";
+		String smpl = "@@ @@\n" +
+					  "void m() {\n" +
+					  "...\n" +
+					  "... when exists\n" +
+					  "}\n" +
+					  "\n";
 
-        List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
-        assertTrue(problems.toString().contains("Error: Consecutive dots operators"));
-    }
+		List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
+		assertTrue(problems.toString().contains("Error: Consecutive dots operators"));
+	}
 
-    @Test
-    public void testDetectConsecutiveStatementDotsOperatorsWithConstraintsBoth() {
+	@Test
+	public void testDetectConsecutiveStatementDotsOperatorsWithConstraintsBoth() {
 
-        // contract: consecutive statement dots operators should be reported as an error
+		// contract: consecutive statement dots operators should be reported as an error
 
-        String smpl = "@@ @@\n" +
-                      "void m() {\n" +
-                      "... when any\n" +
-                      "... when exists\n" +
-                      "}\n" +
-                      "\n";
+		String smpl = "@@ @@\n" +
+					  "void m() {\n" +
+					  "... when any\n" +
+					  "... when exists\n" +
+					  "}\n" +
+					  "\n";
 
-        List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
-        assertTrue(problems.toString().contains("Error: Consecutive dots operators"));
-    }
+		List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
+		assertTrue(problems.toString().contains("Error: Consecutive dots operators"));
+	}
 
-    @Test
-    public void testDetectStatementDotsInDisjunction() {
+	@Test
+	public void testDetectStatementDotsInDisjunction() {
 
-        // contract: statement dots operators inside a pattern disjunction should be reported as an error
+		// contract: statement dots operators inside a pattern disjunction should be reported as an error
 
-        String smpl = "@@ @@\n" +
-                      "(\n" +
-                      "foo();\n" +
-                      "|\n" +
-                      "...\n" +
-                      ")\n";
+		String smpl = "@@ @@\n" +
+					  "(\n" +
+					  "foo();\n" +
+					  "|\n" +
+					  "...\n" +
+					  ")\n";
 
-        List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
-        assertTrue(problems.toString().contains("Error: Dots operator in pattern disjunction"));
-    }
+		List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
+		assertTrue(problems.toString().contains("Error: Dots operator in pattern disjunction"));
+	}
 
-    @Test
-    public void testDetectOptDotsInDisjunction() {
+	@Test
+	public void testDetectOptDotsInDisjunction() {
 
-        // contract: optdots blocks inside a pattern disjunction should be reported as an error
+		// contract: optdots blocks inside a pattern disjunction should be reported as an error
 
-        String smpl = "@@ @@\n" +
-                      "(\n" +
-                      "foo();\n" +
-                      "|\n" +
-                      "<...\n" +
-                      "bar();\n" +
-                      "...>\n" +
-                      ")\n";
+		String smpl = "@@ @@\n" +
+					  "(\n" +
+					  "foo();\n" +
+					  "|\n" +
+					  "<...\n" +
+					  "bar();\n" +
+					  "...>\n" +
+					  ")\n";
 
-        List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
-        assertTrue(problems.toString().contains("Error: Dots operator in pattern disjunction"));
-    }
+		List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
+		assertTrue(problems.toString().contains("Error: Dots operator in pattern disjunction"));
+	}
 
-    @Test
-    public void testDetectStatementDotsInAddition() {
+	@Test
+	public void testDetectStatementDotsInAddition() {
 
-        // contract: statement dots in an addition line should be reported as an error
+		// contract: statement dots in an addition line should be reported as an error
 
-        String smpl = "@@ @@\n" +
-                      "anchor();\n" +
-                      "+ ...\n";
+		String smpl = "@@ @@\n" +
+					  "anchor();\n" +
+					  "+ ...\n";
 
-        List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
-        assertTrue(problems.toString().contains("Error: Dots operator in addition at"));
-    }
+		List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
+		assertTrue(problems.toString().contains("Error: Dots operator in addition at"));
+	}
 
-    @Test
-    public void testDetectArgumentDotsInAddition() {
+	@Test
+	public void testDetectArgumentDotsInAddition() {
 
-        // contract: argument dots in an addition line should be reported as an error
+		// contract: argument dots in an addition line should be reported as an error
 
-        String smpl = "@@ @@\n" +
-                      "anchor();\n" +
-                      "+ System.out.println(...);\n";
+		String smpl = "@@ @@\n" +
+					  "anchor();\n" +
+					  "+ System.out.println(...);\n";
 
-        List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
-        assertTrue(problems.toString().contains("Error: Dots operator in addition at"));
-    }
+		List<Problem> problems = SmPLProblemDetector.detectProblems(SmPLLexer.lex(smpl));
+		assertTrue(problems.toString().contains("Error: Dots operator in addition at"));
+	}
 }

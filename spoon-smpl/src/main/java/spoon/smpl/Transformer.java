@@ -9,186 +9,199 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.operation.Operation;
 import spoon.smpl.operation.OperationCategory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Transformer contains methods capable to applying a set of transformations as recorded by
  * CTL-VW witnesses to a CFGModel.
- *
+ * <p>
  * A CTL-VW witness is a 4-tuple of the form (state, metavar, binding, subWitnesses) where
  * subWitnesses is a set of witnesses.
- *
+ * <p>
  * Transformations are generally encoded as the following witness structure:
- *
+ * <p>
  * {(_, x1, y1, {(_, x2, y2, ... {(S, _, Operation)})})}
- *
+ * <p>
  * The transformation in the structure above would be applied by collecting all bindings along
  * the path to the leaf witness node and applying its Operation to state S in the CFGModel
  * supplying the Operation with the bindings collected along the path (x1=y1, x2=y2, ...).
  */
 public class Transformer {
-    /**
-     * Apply a set of transformations to the control flow graph of a method body.
-     * @param model CFG of method body
-     * @param witnesses CTL-VW witnesses that encode transformations
-     */
-    public static void transform(CFGModel model, Set<ModelChecker.Witness> witnesses) {
-        Map<String, Object> bindings = new HashMap<>();
-        HashSet<StateElementPair> done = new HashSet<>();
+	/**
+	 * Hide utility class constructor.
+	 */
+	private Transformer() { }
 
-        for (ModelChecker.Witness witness : witnesses) {
-            transform(model, bindings, witness, done);
-        }
-    }
+	/**
+	 * Apply a set of transformations to the control flow graph of a method body.
+	 *
+	 * @param model     CFG of method body
+	 * @param witnesses CTL-VW witnesses that encode transformations
+	 */
+	public static void transform(CFGModel model, Set<ModelChecker.Witness> witnesses) {
+		Map<String, Object> bindings = new HashMap<>();
+		HashSet<StateElementPair> done = new HashSet<>();
 
-    /**
-     * Copy method additions specified by a matching rule to the parent class of a matching method. Only missing
-     * methods are copied.
-     *
-     * @param model CFG Model of matching method
-     * @param rule Matching rule
-     */
-    public static void copyAddedMethods(CFGModel model, SmPLRule rule) {
-        copyAddedMethods(model.getCfg().findNodesOfKind(BranchKind.STATEMENT).get(0).getStatement().getParent(CtClass.class), rule);
-    }
+		for (ModelChecker.Witness witness : witnesses) {
+			transform(model, bindings, witness, done);
+		}
+	}
 
-    /**
-     * Copy method additions specified by a matching rule to the parent class of a matching method. Only missing
-     * methods are copied.
-     *
-     * @param cls Parent class of matching method
-     * @param rule Matching rule
-     */
-    public static void copyAddedMethods(CtClass<?> cls, SmPLRule rule) {
-        List<String> sigs = new ArrayList<>();
+	/**
+	 * Copy method additions specified by a matching rule to the parent class of a matching method. Only missing
+	 * methods are copied.
+	 *
+	 * @param model CFG Model of matching method
+	 * @param rule  Matching rule
+	 */
+	public static void copyAddedMethods(CFGModel model, SmPLRule rule) {
+		copyAddedMethods(model.getCfg().findNodesOfKind(BranchKind.STATEMENT).get(0).getStatement().getParent(CtClass.class), rule);
+	}
 
-        for (CtMethod<?> method : cls.getMethods()) {
-            sigs.add(method.getSignature());
-        }
+	/**
+	 * Copy method additions specified by a matching rule to the parent class of a matching method. Only missing
+	 * methods are copied.
+	 *
+	 * @param cls  Parent class of matching method
+	 * @param rule Matching rule
+	 */
+	public static void copyAddedMethods(CtClass<?> cls, SmPLRule rule) {
+		List<String> sigs = new ArrayList<>();
 
-        for (CtMethod<?> method : rule.getMethodsAdded()) {
-            if (!sigs.contains(method.getSignature())) {
-                cls.addMethod(method);
-            }
-        }
-    }
+		for (CtMethod<?> method : cls.getMethods()) {
+			sigs.add(method.getSignature());
+		}
 
-    /**
-     * Apply a set of transformations using a given set of metavariable bindings to the control
-     * flow graph of a method body.
-     * @param model CFG of method body
-     * @param bindings Metavariable bindings
-     * @param witness CTL-VW witness that encodes zero or more transformations
-     */
-    private static void transform(CFGModel model, Map<String, Object> bindings, ModelChecker.Witness witness, Set<StateElementPair> done) {
-        if (witness.binding instanceof List<?>) {
-            // The witness binding is a list of operations, apply them
+		for (CtMethod<?> method : rule.getMethodsAdded()) {
+			if (!sigs.contains(method.getSignature())) {
+				cls.addMethod(method);
+			}
+		}
+	}
 
-            List<?> objects = (List<?>) witness.binding;
-            ControlFlowNode node = model.getCfg().findNodeById(witness.state);
-            BranchKind kind = node.getKind();
+	/**
+	 * Apply a set of transformations using a given set of metavariable bindings to the control
+	 * flow graph of a method body.
+	 *
+	 * @param model    CFG of method body
+	 * @param bindings Metavariable bindings
+	 * @param witness  CTL-VW witness that encodes zero or more transformations
+	 */
+	private static void transform(CFGModel model, Map<String, Object> bindings, ModelChecker.Witness witness, Set<StateElementPair> done) {
+		if (witness.binding instanceof List<?>) {
+			// The witness binding is a list of operations, apply them
 
-            CtElement targetElement;
+			List<?> objects = (List<?>) witness.binding;
+			ControlFlowNode node = model.getCfg().findNodeById(witness.state);
+			BranchKind kind = node.getKind();
 
-            if (bindings.containsKey("_e")) {
-                targetElement = (CtElement) bindings.get("_e");
-            } else {
-                if (kind == BranchKind.STATEMENT) {
-                    targetElement = node.getStatement();
-                } else if (kind == BranchKind.BRANCH || kind == BranchKind.BLOCK_BEGIN) {
-                    targetElement = ((SmPLMethodCFG.NodeTag) node.getTag()).getAnchor();
-                } else {
-                    throw new IllegalArgumentException("unexpected node kind " + kind);
-                }
-            }
+			CtElement targetElement;
 
-            StateElementPair target = new StateElementPair(witness.state, targetElement);
+			if (bindings.containsKey("_e")) {
+				targetElement = (CtElement) bindings.get("_e");
+			} else {
+				if (kind == BranchKind.STATEMENT) {
+					targetElement = node.getStatement();
+				} else if (kind == BranchKind.BRANCH || kind == BranchKind.BLOCK_BEGIN) {
+					targetElement = ((SmPLMethodCFG.NodeTag) node.getTag()).getAnchor();
+				} else {
+					throw new IllegalArgumentException("unexpected node kind " + kind);
+				}
+			}
 
-            if (done.contains(target)) {
-                System.out.println("WARNING: already transformed " + target + ": " + model.getCfg().findNodeById(witness.state));
-                return;
-            }
+			StateElementPair target = new StateElementPair(witness.state, targetElement);
 
-            done.add(target);
+			if (done.contains(target)) {
+				System.out.println("WARNING: already transformed " + target + ": " + model.getCfg().findNodeById(witness.state));
+				return;
+			}
 
-            // Process any prepend operations in the list
-            objects.stream().filter((obj) -> obj instanceof Operation).forEachOrdered((obj) -> {
-                ((Operation) obj).accept(OperationCategory.PREPEND, targetElement, bindings);
-            });
+			done.add(target);
 
-            // Process any append operations in the list, in reverse order to preserve correct output order
-            objects.stream().filter((obj) -> obj instanceof Operation)
-                    .collect(Collectors.toCollection(LinkedList::new))
-                    .descendingIterator().forEachRemaining((obj) -> {
-                        ((Operation) obj).accept(OperationCategory.APPEND, targetElement, bindings);
-                    });
+			// Process any prepend operations in the list
+			objects.stream().filter((obj) -> obj instanceof Operation).forEachOrdered((obj) -> {
+				((Operation) obj).accept(OperationCategory.PREPEND, targetElement, bindings);
+			});
 
-            // Process any delete operations in the list
-            objects.stream().filter((obj) -> obj instanceof Operation).forEachOrdered((obj) -> {
-                ((Operation) obj).accept(OperationCategory.DELETE, targetElement, bindings);
-            });
-        } else {
-            // The witness binding is an actual metavariable binding, record it and process sub-witnesses
-            bindings.put(witness.metavar, witness.binding);
+			// Process any append operations in the list, in reverse order to preserve correct output order
+			objects.stream().filter((obj) -> obj instanceof Operation)
+					.collect(Collectors.toCollection(LinkedList::new))
+					.descendingIterator().forEachRemaining((obj) -> {
+				((Operation) obj).accept(OperationCategory.APPEND, targetElement, bindings);
+			});
 
-            for (ModelChecker.Witness subWitness : witness.witnesses) {
-                transform(model, bindings, subWitness, done);
-            }
+			// Process any delete operations in the list
+			objects.stream().filter((obj) -> obj instanceof Operation).forEachOrdered((obj) -> {
+				((Operation) obj).accept(OperationCategory.DELETE, targetElement, bindings);
+			});
+		} else {
+			// The witness binding is an actual metavariable binding, record it and process sub-witnesses
+			bindings.put(witness.metavar, witness.binding);
 
-            bindings.remove(witness.metavar);
-        }
-    }
+			for (ModelChecker.Witness subWitness : witness.witnesses) {
+				transform(model, bindings, subWitness, done);
+			}
 
-    /**
-     * A StateElementPair is a record of a state ID and a code element, used for keeping track of which elements have
-     * been processed as targets of transformation operations.
-     */
-    private static class StateElementPair {
-        /**
-         * Create a new StateElementPair.
-         *
-         * @param state State ID
-         * @param element Code element
-         */
-        public StateElementPair(Integer state, CtElement element) {
-            this.state = state;
-            this.element = element;
-        }
+			bindings.remove(witness.metavar);
+		}
+	}
 
-        @Override
-        public int hashCode() {
-            final int prime = 43;
-            int result = 1;
-            result = prime * result + 17 * state;
+	/**
+	 * A StateElementPair is a record of a state ID and a code element, used for keeping track of which elements have
+	 * been processed as targets of transformation operations.
+	 */
+	private static class StateElementPair {
+		/**
+		 * Create a new StateElementPair.
+		 *
+		 * @param state   State ID
+		 * @param element Code element
+		 */
+		StateElementPair(Integer state, CtElement element) {
+			this.state = state;
+			this.element = element;
+		}
 
-            if (!(element.getPosition() instanceof NoSourcePosition)) {
-                result = prime * result + 23 * element.getPosition().getSourceStart();
-            } else {
-                result = prime * result + 23 * element.getParent().getPosition().getSourceStart();
-            }
+		@Override
+		public int hashCode() {
+			final int prime = 43;
+			int result = 1;
+			result = prime * result + 17 * state;
 
-            return result;
-        }
+			if (!(element.getPosition() instanceof NoSourcePosition)) {
+				result = prime * result + 23 * element.getPosition().getSourceStart();
+			} else {
+				result = prime * result + 23 * element.getParent().getPosition().getSourceStart();
+			}
 
-        @Override
-        public boolean equals(Object other) {
-            return this == other || (other instanceof StateElementPair && this.hashCode() == other.hashCode());
-        }
+			return result;
+		}
 
-        @Override
-        public String toString() {
-            return "(" + state.toString() + ", " + element.toString() + ")";
-        }
+		@Override
+		public boolean equals(Object other) {
+			return this == other || (other instanceof StateElementPair && this.hashCode() == other.hashCode());
+		}
 
-        /**
-         * State ID.
-         */
-        public final Integer state;
+		@Override
+		public String toString() {
+			return "(" + state.toString() + ", " + element.toString() + ")";
+		}
 
-        /**
-         * Code element.
-         */
-        public final CtElement element;
-    }
+		/**
+		 * State ID.
+		 */
+		public final Integer state;
+
+		/**
+		 * Code element.
+		 */
+		public final CtElement element;
+	}
 }

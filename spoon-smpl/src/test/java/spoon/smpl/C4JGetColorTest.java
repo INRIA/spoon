@@ -8,131 +8,131 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 public class C4JGetColorTest {
-    private static ZippedCodeBaseTestContext ctx = null;
+	private static ZippedCodeBaseTestContext ctx = null;
 
-    @BeforeClass
-    public static void initializeContext() {
-        if (ctx != null) {
-            return;
-        }
-        // extracted from the Coccinelle4J test suite
-        // changes one call to a instance method to a call method
-        String smpl = "@@\n" +
-                      "Context ctx;\n" +
-                      "expression E;\n" +
-                      "@@\n" +
-                      "- ctx.getResources().getColor(E)\n" +
-                      "+ ContextCompat.getColor(ctx , E)\n" +
-                      "\n";
+	@BeforeClass
+	public static void initializeContext() {
+		if (ctx != null) {
+			return;
+		}
+		// extracted from the Coccinelle4J test suite
+		// changes one call to a instance method to a call method
+		String smpl = "@@\n" +
+					  "Context ctx;\n" +
+					  "expression E;\n" +
+					  "@@\n" +
+					  "- ctx.getResources().getColor(E)\n" +
+					  "+ ContextCompat.getColor(ctx , E)\n" +
+					  "\n";
 
-        // the source tree of the example is unzipped
-        ctx = new ZippedCodeBaseTestContext(smpl, "src/test/resources/C4JGetColor.zip", false);
-    }
+		// the source tree of the example is unzipped
+		ctx = new ZippedCodeBaseTestContext(smpl, "src/test/resources/C4JGetColor.zip", false);
+	}
 
-    @Test
-    public void testNotificationBuilder() {
+	@Test
+	public void testNotificationBuilder() {
 
-        // contract: patch (lines 5-6) should perform replacement in target method
+		// contract: patch (lines 5-6) should perform replacement in target method
 
-        CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.PushNotifications::notificationBuilder");
-        // check the content of the code, the method looked for is here
-        assertTrue(method.toString().contains("context.getResources().getColor(R.color.green)"));
+		CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.PushNotifications::notificationBuilder");
+		// check the content of the code, the method looked for is here
+		assertTrue(method.toString().contains("context.getResources().getColor(R.color.green)"));
 
-        ctx.applySmplPatch(method);
-        // the code to be removed is not there anymore
-        assertFalse(method.toString().contains("context.getResources().getColor(R.color.green)"));
-        // the code to be added is here now
-        assertTrue(method.toString().contains("ContextCompat.getColor(context, R.color.green)"));
-    }
+		ctx.applySmplPatch(method);
+		// the code to be removed is not there anymore
+		assertFalse(method.toString().contains("context.getResources().getColor(R.color.green)"));
+		// the code to be added is here now
+		assertTrue(method.toString().contains("ContextCompat.getColor(context, R.color.green)"));
+	}
 
-    @Test
-    public void testPrimaryColor() {
+	@Test
+	public void testPrimaryColor() {
 
-        // contract: patch (lines 5-6) should perform replacement in target method
+		// contract: patch (lines 5-6) should perform replacement in target method
 
-        CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.DiscoveryUtils::primaryColor");
-        assertTrue(method.toString().contains("context.getResources().getColor(R.color.discovery_primary)"));
+		CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.DiscoveryUtils::primaryColor");
+		assertTrue(method.toString().contains("context.getResources().getColor(R.color.discovery_primary)"));
 
-        ctx.applySmplPatch(method);
-        assertFalse(method.toString().contains("context.getResources().getColor(R.color.discovery_primary)"));
-        assertTrue(method.toString().contains("ContextCompat.getColor(context, R.color.discovery_primary)"));
-    }
+		ctx.applySmplPatch(method);
+		assertFalse(method.toString().contains("context.getResources().getColor(R.color.discovery_primary)"));
+		assertTrue(method.toString().contains("ContextCompat.getColor(context, R.color.discovery_primary)"));
+	}
 
-    @Test
-    public void testSecondaryColor() {
+	@Test
+	public void testSecondaryColor() {
 
-        // contract: patch (lines 5-6) should perform replacement in target method
+		// contract: patch (lines 5-6) should perform replacement in target method
 
-        CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.DiscoveryUtils::secondaryColor");
-        assertTrue(method.toString().contains("context.getResources().getColor(R.color.discovery_secondary)"));
+		CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.DiscoveryUtils::secondaryColor");
+		assertTrue(method.toString().contains("context.getResources().getColor(R.color.discovery_secondary)"));
 
-        ctx.applySmplPatch(method);
-        assertFalse(method.toString().contains("context.getResources().getColor(R.color.discovery_secondary)"));
-        assertTrue(method.toString().contains("ContextCompat.getColor(context, R.color.discovery_secondary)"));
-    }
+		ctx.applySmplPatch(method);
+		assertFalse(method.toString().contains("context.getResources().getColor(R.color.discovery_secondary)"));
+		assertTrue(method.toString().contains("ContextCompat.getColor(context, R.color.discovery_secondary)"));
+	}
 
-    @Test
-    public void testOverlayTextColor() {
+	@Test
+	public void testOverlayTextColor() {
 
-        // contract: patch (lines 5-6) should perform replacement in target method
+		// contract: patch (lines 5-6) should perform replacement in target method
 
-        CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.DiscoveryUtils::overlayTextColor", 1);
-        assertTrue(method.toString().contains("context.getResources().getColor(color)"));
+		CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.DiscoveryUtils::overlayTextColor", 1);
+		assertTrue(method.toString().contains("context.getResources().getColor(color)"));
 
-        ctx.applySmplPatch(method);
-        assertFalse(method.toString().contains("context.getResources().getColor(color)"));
-        assertTrue(method.toString().contains("ContextCompat.getColor(context, color)"));
-    }
+		ctx.applySmplPatch(method);
+		assertFalse(method.toString().contains("context.getResources().getColor(color)"));
+		assertTrue(method.toString().contains("ContextCompat.getColor(context, color)"));
+	}
 
-    @Test
-    public void testDarkColor() {
+	@Test
+	public void testDarkColor() {
 
-        // contract: patch (lines 5-6) should perform replacement in target method
+		// contract: patch (lines 5-6) should perform replacement in target method
 
-        CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.KSColorUtils::darkColor");
-        assertTrue(method.toString().contains("context.getResources().getColor(com.kickstarter.libs.utils.KSColorUtils.darkColorId())"));
+		CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.KSColorUtils::darkColor");
+		assertTrue(method.toString().contains("context.getResources().getColor(com.kickstarter.libs.utils.KSColorUtils.darkColorId())"));
 
-        ctx.applySmplPatch(method);
-        assertFalse(method.toString().contains("context.getResources().getColor(com.kickstarter.libs.utils.KSColorUtils.darkColorId())"));
-        assertTrue(method.toString().contains("ContextCompat.getColor(context, com.kickstarter.libs.utils.KSColorUtils.darkColorId())"));
-    }
+		ctx.applySmplPatch(method);
+		assertFalse(method.toString().contains("context.getResources().getColor(com.kickstarter.libs.utils.KSColorUtils.darkColorId())"));
+		assertTrue(method.toString().contains("ContextCompat.getColor(context, com.kickstarter.libs.utils.KSColorUtils.darkColorId())"));
+	}
 
-    @Test
-    public void testLightColor() {
+	@Test
+	public void testLightColor() {
 
-        // contract: patch (lines 5-6) should perform replacement in target method
+		// contract: patch (lines 5-6) should perform replacement in target method
 
-        CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.KSColorUtils::lightColor");
-        assertTrue(method.toString().contains("context.getResources().getColor(com.kickstarter.libs.utils.KSColorUtils.lightColorId())"));
+		CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.KSColorUtils::lightColor");
+		assertTrue(method.toString().contains("context.getResources().getColor(com.kickstarter.libs.utils.KSColorUtils.lightColorId())"));
 
-        ctx.applySmplPatch(method);
-        assertFalse(method.toString().contains("context.getResources().getColor(com.kickstarter.libs.utils.KSColorUtils.lightColorId())"));
-        assertTrue(method.toString().contains("ContextCompat.getColor(context, com.kickstarter.libs.utils.KSColorUtils.lightColorId())"));
-    }
+		ctx.applySmplPatch(method);
+		assertFalse(method.toString().contains("context.getResources().getColor(com.kickstarter.libs.utils.KSColorUtils.lightColorId())"));
+		assertTrue(method.toString().contains("ContextCompat.getColor(context, com.kickstarter.libs.utils.KSColorUtils.lightColorId())"));
+	}
 
-    @Test
-    public void testForegroundColor() {
+	@Test
+	public void testForegroundColor() {
 
-        // contract: patch (lines 5-6) should perform replacement in target method
+		// contract: patch (lines 5-6) should perform replacement in target method
 
-        CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.KSColorUtils::foregroundColor");
-        assertTrue(method.toString().contains("return context.getResources().getColor(colorId)"));
+		CtMethod<?> method = ctx.getMethod("com.kickstarter.libs.utils.KSColorUtils::foregroundColor");
+		assertTrue(method.toString().contains("return context.getResources().getColor(colorId)"));
 
-        ctx.applySmplPatch(method);
-        assertFalse(method.toString().contains("return context.getResources().getColor(colorId)"));
-        assertTrue(method.toString().contains("return ContextCompat.getColor(context, colorId)"));
-    }
+		ctx.applySmplPatch(method);
+		assertFalse(method.toString().contains("return context.getResources().getColor(colorId)"));
+		assertTrue(method.toString().contains("return ContextCompat.getColor(context, colorId)"));
+	}
 
-    @Test
-    public void testCategorySecondaryColor() {
+	@Test
+	public void testCategorySecondaryColor() {
 
-        // contract: patch (lines 5-6) should perform replacement in target method
+		// contract: patch (lines 5-6) should perform replacement in target method
 
-        CtMethod<?> method = ctx.getMethod("com.kickstarter.models.Category::secondaryColor");
-        assertTrue(method.toString().contains("return context.getResources().getColor(identifier)"));
+		CtMethod<?> method = ctx.getMethod("com.kickstarter.models.Category::secondaryColor");
+		assertTrue(method.toString().contains("return context.getResources().getColor(identifier)"));
 
-        ctx.applySmplPatch(method);
-        assertFalse(method.toString().contains("return context.getResources().getColor(identifier)"));
-        assertTrue(method.toString().contains("return ContextCompat.getColor(context, identifier)"));
-    }
+		ctx.applySmplPatch(method);
+		assertFalse(method.toString().contains("return context.getResources().getColor(identifier)"));
+		assertTrue(method.toString().contains("return ContextCompat.getColor(context, identifier)"));
+	}
 }

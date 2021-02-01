@@ -16,320 +16,325 @@ import java.util.stream.Collectors;
  * certain strings contained in the rule.
  */
 public class SmPLGrep {
-    /**
-     * Build a pattern from a given SmPL rule instance
-     *
-     * @param rule SmPL rule
-     * @return Pattern representing strings required to be present in matching code
-     */
-    public static Pattern buildPattern(SmPLRule rule) {
-        return buildPattern(rule.getSource());
-    }
+	/**
+	 * Hide utility class constructor.
+	 */
+	private SmPLGrep() { }
 
-    /**
-     * Build a pattern from a given plain-text SmPL patch.
-     *
-     * @param smpl Plain-text SmPL patch
-     * @return Pattern representing strings required to be present in matching code
-     */
-    public static Pattern buildPattern(String smpl) {
-        List<SmPLLexer.Token> tokens = SmPLLexer.lex(smpl);
-        Pattern result = new Pattern();
-        Set<String> metavars = new HashSet<>();
-        java.util.regex.Pattern targetPattern = java.util.regex.Pattern.compile("[0-9.]+[0-9fL]+|[A-Za-z0-9_]+");
-        boolean isAddition = false;
+	/**
+	 * Build a pattern from a given SmPL rule instance
+	 *
+	 * @param rule SmPL rule
+	 * @return Pattern representing strings required to be present in matching code
+	 */
+	public static Pattern buildPattern(SmPLRule rule) {
+		return buildPattern(rule.getSource());
+	}
 
-        for (SmPLLexer.Token token : tokens) {
-            switch (token.getType()) {
-                case Newline:
-                    isAddition = false;
-                    break;
+	/**
+	 * Build a pattern from a given plain-text SmPL patch.
+	 *
+	 * @param smpl Plain-text SmPL patch
+	 * @return Pattern representing strings required to be present in matching code
+	 */
+	public static Pattern buildPattern(String smpl) {
+		List<SmPLLexer.Token> tokens = SmPLLexer.lex(smpl);
+		Pattern result = new Pattern();
+		Set<String> metavars = new HashSet<>();
+		java.util.regex.Pattern targetPattern = java.util.regex.Pattern.compile("[0-9.]+[0-9fL]+|[A-Za-z0-9_]+");
+		boolean isAddition = false;
 
-                case Addition:
-                    isAddition = true;
-                    break;
+		for (SmPLLexer.Token token : tokens) {
+			switch (token.getType()) {
+				case Newline:
+					isAddition = false;
+					break;
 
-                case DisjunctionBegin:
-                    result.enterDisjunction();
-                    break;
+				case Addition:
+					isAddition = true;
+					break;
 
-                case DisjunctionContinue:
-                    result.continueDisjunction();
-                    break;
+				case DisjunctionBegin:
+					result.enterDisjunction();
+					break;
 
-                case DisjunctionEnd:
-                    result.exitDisjunction();
-                    break;
+				case DisjunctionContinue:
+					result.continueDisjunction();
+					break;
 
-                case MetavarType:
-                    // TODO: use SmPLJavaDSL for checking for typenames of specifically-typed metavars
-                    if (!Arrays.asList("identifier", "type", "constant", "expression").contains(token.getText())) {
-                        result.addString(token.getText());
-                    }
+				case DisjunctionEnd:
+					result.exitDisjunction();
+					break;
 
-                    break;
+				case MetavarType:
+					// TODO: use SmPLJavaDSL for checking for typenames of specifically-typed metavars
+					if (!Arrays.asList("identifier", "type", "constant", "expression").contains(token.getText())) {
+						result.addString(token.getText());
+					}
 
-                case MetavarIdentifier:
-                    metavars.add(token.getText());
-                    break;
+					break;
 
-                case Code:
-                    if (isAddition) {
-                        break;
-                    }
+				case MetavarIdentifier:
+					metavars.add(token.getText());
+					break;
 
-                    for (java.util.regex.MatchResult mr : targetPattern.matcher(token.getText()).results().collect(Collectors.toList())) {
-                        String match = mr.group();
+				case Code:
+					if (isAddition) {
+						break;
+					}
 
-                        if (!metavars.contains(match)) {
-                            result.addString(match);
-                        }
-                    }
+					for (java.util.regex.MatchResult mr : targetPattern.matcher(token.getText()).results().collect(Collectors.toList())) {
+						String match = mr.group();
 
-                    break;
+						if (!metavars.contains(match)) {
+							result.addString(match);
+						}
+					}
 
-                default:
-                    break;
-            }
-        }
+					break;
 
-        return result;
-    }
+				default:
+					break;
+			}
+		}
 
-    /**
-     * SmPLGrep.Pattern represents a set of Strings (and/or disjunctions over Strings) that all must be present in a
-     * given target String for the target String to be considered as matching.
-     *
-     * For example, the pattern (foo & bar & (x | (y & z))) would match a String containing both substrings "foo" and
-     * "bar", and either the substring "x" or both substrings "y" and "z".
-     */
-    public static class Pattern {
-        /**
-         * Base pattern element type.
-         */
-        private static abstract class PatternNode extends ArrayList<PatternNode> {
-            public abstract boolean matches(String s);
-        }
+		return result;
+	}
 
-        /**
-         * Pattern element for a single String.
-         */
-        private static class _String extends PatternNode {
-            /**
-             * Create a new single String pattern node.
-             *
-             * @param value String value
-             */
-            public _String(String value) {
-                this.value = value;
-                this.lowerCaseValue = value.toLowerCase();
-            }
+	/**
+	 * SmPLGrep.Pattern represents a set of Strings (and/or disjunctions over Strings) that all must be present in a
+	 * given target String for the target String to be considered as matching.
+	 * <p>
+	 * For example, the pattern (foo & bar & (x | (y & z))) would match a String containing both substrings "foo" and
+	 * "bar", and either the substring "x" or both substrings "y" and "z".
+	 */
+	public static class Pattern {
+		/**
+		 * Base pattern element type.
+		 */
+		private abstract static class PatternNode extends ArrayList<PatternNode> {
+			public abstract boolean matches(String s);
+		}
 
-            /**
-             * String value.
-             */
-            public final String value;
+		/**
+		 * Pattern element for a single String.
+		 */
+		private static class _String extends PatternNode {
+			/**
+			 * Create a new single String pattern node.
+			 *
+			 * @param value String value
+			 */
+			_String(String value) {
+				this.value = value;
+				this.lowerCaseValue = value.toLowerCase();
+			}
 
-            /**
-             * Lowercase String value;
-             */
-            public final String lowerCaseValue;
+			/**
+			 * String value.
+			 */
+			public final String value;
 
-            /**
-             * Check if a given target String contains this String.
-             *
-             * @param s Target String
-             * @return True if target String contains this String, false otherwise
-             */
-            @Override
-            public boolean matches(String s) {
-                return s.contains(lowerCaseValue);
-            }
+			/**
+			 * Lowercase String value;
+			 */
+			public final String lowerCaseValue;
 
-            @Override
-            public String toString() {
-                return value;
-            }
+			/**
+			 * Check if a given target String contains this String.
+			 *
+			 * @param s Target String
+			 * @return True if target String contains this String, false otherwise
+			 */
+			@Override
+			public boolean matches(String s) {
+				return s.contains(lowerCaseValue);
+			}
 
-            @Override
-            public boolean equals(Object other) {
-                return other == this || (other instanceof _String && ((_String) other).lowerCaseValue.equals(lowerCaseValue));
-            }
+			@Override
+			public String toString() {
+				return value;
+			}
 
-            /**
-             * Disabled.
-             *
-             * @param patternNode Irrelevant
-             * @return false
-             */
-            @Override
-            public boolean add(PatternNode patternNode) {
-                return false;
-            }
-        }
+			@Override
+			public boolean equals(Object other) {
+				return other == this || (other instanceof _String && ((_String) other).lowerCaseValue.equals(lowerCaseValue));
+			}
 
-        /**
-         * Pattern element representing a conjunction of other pattern elements.
-         */
-        private static class Conjunction extends PatternNode {
-            /**
-             * Check if a given target String matches all the elements of this conjunction.
-             *
-             * @param s Target String
-             * @return True if target String matches all elements of the conjunction, false otherwise
-             */
-            @Override
-            public boolean matches(String s) {
-                return size() == 0 || stream().allMatch(node -> node.matches(s));
-            }
+			/**
+			 * Disabled.
+			 *
+			 * @param patternNode Irrelevant
+			 * @return false
+			 */
+			@Override
+			public boolean add(PatternNode patternNode) {
+				return false;
+			}
+		}
 
-            @Override
-            public String toString() {
-                if (size() == 1) {
-                    return get(0).toString();
-                } else {
-                    return "(" + stream().map(PatternNode::toString).collect(Collectors.joining(" & ")) + ")";
-                }
-            }
+		/**
+		 * Pattern element representing a conjunction of other pattern elements.
+		 */
+		private static class Conjunction extends PatternNode {
+			/**
+			 * Check if a given target String matches all the elements of this conjunction.
+			 *
+			 * @param s Target String
+			 * @return True if target String matches all elements of the conjunction, false otherwise
+			 */
+			@Override
+			public boolean matches(String s) {
+				return size() == 0 || stream().allMatch(node -> node.matches(s));
+			}
 
-            @Override
-            public boolean add(PatternNode node) {
-                return (node instanceof _String && contains(node)) ? false : super.add(node);
-            }
-        }
+			@Override
+			public String toString() {
+				if (size() == 1) {
+					return get(0).toString();
+				} else {
+					return "(" + stream().map(PatternNode::toString).collect(Collectors.joining(" & ")) + ")";
+				}
+			}
 
-        /**
-         * Pattern element representing a disjunction of other pattern elements.
-         */
-        private static class Disjunction extends PatternNode {
-            /**
-             * Check if a given target String contains some element of this disjunction.
-             *
-             * @param s Target String
-             * @return True if target String contains any element of this disjunction, false otherwise
-             */
-            @Override
-            public boolean matches(String s) {
-                return size() == 0 || stream().anyMatch(node -> node.matches(s));
-            }
+			@Override
+			public boolean add(PatternNode node) {
+				return (node instanceof _String && contains(node)) ? false : super.add(node);
+			}
+		}
 
-            @Override
-            public String toString() {
-                if (size() == 1) {
-                    return get(0).toString();
-                } else {
-                    return "(" + stream().map(PatternNode::toString).collect(Collectors.joining(" | ")) + ")";
-                }
-            }
+		/**
+		 * Pattern element representing a disjunction of other pattern elements.
+		 */
+		private static class Disjunction extends PatternNode {
+			/**
+			 * Check if a given target String contains some element of this disjunction.
+			 *
+			 * @param s Target String
+			 * @return True if target String contains any element of this disjunction, false otherwise
+			 */
+			@Override
+			public boolean matches(String s) {
+				return size() == 0 || stream().anyMatch(node -> node.matches(s));
+			}
 
-            @Override
-            public boolean add(PatternNode node) {
-                return (node instanceof _String && contains(node)) ? false : super.add(node);
-            }
-        }
+			@Override
+			public String toString() {
+				if (size() == 1) {
+					return get(0).toString();
+				} else {
+					return "(" + stream().map(PatternNode::toString).collect(Collectors.joining(" | ")) + ")";
+				}
+			}
 
-        /**
-         * Create a new Pattern.
-         */
-        public Pattern() {
-            patternNodeStack = new Stack<>();
-            patternNodeStack.push(new Conjunction());
-        }
+			@Override
+			public boolean add(PatternNode node) {
+				return (node instanceof _String && contains(node)) ? false : super.add(node);
+			}
+		}
 
-        /**
-         * Create a new disjunction at the current cursor position in the pattern and place the cursor in its first
-         * clause.
-         */
-        public void enterDisjunction() {
-            Disjunction disjunction = new Disjunction();
-            Conjunction firstClause = new Conjunction();
+		/**
+		 * Create a new Pattern.
+		 */
+		public Pattern() {
+			patternNodeStack = new Stack<>();
+			patternNodeStack.push(new Conjunction());
+		}
 
-            disjunction.add(firstClause);
+		/**
+		 * Create a new disjunction at the current cursor position in the pattern and place the cursor in its first
+		 * clause.
+		 */
+		public void enterDisjunction() {
+			Disjunction disjunction = new Disjunction();
+			Conjunction firstClause = new Conjunction();
 
-            patternNodeStack.peek().add(disjunction);
-            patternNodeStack.push(disjunction);
-            patternNodeStack.push(firstClause);
-        }
+			disjunction.add(firstClause);
 
-        /**
-         * Create a new clause for the current disjunction and move to cursor into it.
-         */
-        public void continueDisjunction() {
-            if (patternNodeStack.size() < 3) {
-                throw new IllegalStateException("Not in a disjunction");
-            }
+			patternNodeStack.peek().add(disjunction);
+			patternNodeStack.push(disjunction);
+			patternNodeStack.push(firstClause);
+		}
 
-            if (patternNodeStack.peek().size() > 0) {
-                Conjunction nextClause = new Conjunction();
-                patternNodeStack.pop();
-                patternNodeStack.peek().add(nextClause);
-                patternNodeStack.push(nextClause);
-            }
-        }
+		/**
+		 * Create a new clause for the current disjunction and move to cursor into it.
+		 */
+		public void continueDisjunction() {
+			if (patternNodeStack.size() < 3) {
+				throw new IllegalStateException("Not in a disjunction");
+			}
 
-        /**
-         * Exit the current disjunction, moving the cursor back out into the enclosing pattern element.
-         */
-        public void exitDisjunction() {
-            if (patternNodeStack.size() < 3) {
-                throw new IllegalStateException("Not in a disjunction");
-            }
+			if (patternNodeStack.peek().size() > 0) {
+				Conjunction nextClause = new Conjunction();
+				patternNodeStack.pop();
+				patternNodeStack.peek().add(nextClause);
+				patternNodeStack.push(nextClause);
+			}
+		}
 
-            Conjunction lastClause = (Conjunction) patternNodeStack.pop();
-            Disjunction disjunction = (Disjunction) patternNodeStack.pop();
+		/**
+		 * Exit the current disjunction, moving the cursor back out into the enclosing pattern element.
+		 */
+		public void exitDisjunction() {
+			if (patternNodeStack.size() < 3) {
+				throw new IllegalStateException("Not in a disjunction");
+			}
 
-            if (lastClause.size() == 0) {
-                removeFrom(disjunction, lastClause);
-            }
+			Conjunction lastClause = (Conjunction) patternNodeStack.pop();
+			Disjunction disjunction = (Disjunction) patternNodeStack.pop();
 
-            if (disjunction.size() == 0) {
-                removeFrom(patternNodeStack.peek(), disjunction);
-            }
-        }
+			if (lastClause.size() == 0) {
+				removeFrom(disjunction, lastClause);
+			}
 
-        /**
-         * Remove an inner pattern node from an outer container by object identity.
-         *
-         * @param container Outer container node
-         * @param element Inner element node
-         */
-        private void removeFrom(PatternNode container, PatternNode element) {
-            for (int i = 0; i < container.size(); ++i) {
-                if (container.get(i) == element) {
-                    container.remove(i);
-                    return;
-                }
-            }
-        }
+			if (disjunction.size() == 0) {
+				removeFrom(patternNodeStack.peek(), disjunction);
+			}
+		}
 
-        /**
-         * Add a String at the current position of the cursor.
-         *
-         * @param s String to add
-         */
-        public void addString(String s) {
-            patternNodeStack.peek().add(new _String(s));
-        }
+		/**
+		 * Remove an inner pattern node from an outer container by object identity.
+		 *
+		 * @param container Outer container node
+		 * @param element   Inner element node
+		 */
+		private void removeFrom(PatternNode container, PatternNode element) {
+			for (int i = 0; i < container.size(); ++i) {
+				if (container.get(i) == element) {
+					container.remove(i);
+					return;
+				}
+			}
+		}
 
-        /**
-         * Check if the Pattern matches a given String. The target String is considered to match if all Strings
-         * required by the Pattern are present, taking disjunctions under account.
-         *
-         * @param s String to match
-         * @return True if the String matches the Pattern, false otherwise
-         */
-        public boolean matches(String s) {
-            return patternNodeStack.peek().matches(s.toLowerCase());
-        }
+		/**
+		 * Add a String at the current position of the cursor.
+		 *
+		 * @param s String to add
+		 */
+		public void addString(String s) {
+			patternNodeStack.peek().add(new _String(s));
+		}
 
-        @Override
-        public String toString() {
-            return patternNodeStack.peek().toString();
-        }
+		/**
+		 * Check if the Pattern matches a given String. The target String is considered to match if all Strings
+		 * required by the Pattern are present, taking disjunctions under account.
+		 *
+		 * @param s String to match
+		 * @return True if the String matches the Pattern, false otherwise
+		 */
+		public boolean matches(String s) {
+			return patternNodeStack.peek().matches(s.toLowerCase());
+		}
 
-        /**
-         * Stack of pattern nodes, top of stack serves as cursor position.
-         */
-        private Stack<PatternNode> patternNodeStack;
-    }
+		@Override
+		public String toString() {
+			return patternNodeStack.peek().toString();
+		}
+
+		/**
+		 * Stack of pattern nodes, top of stack serves as cursor position.
+		 */
+		private Stack<PatternNode> patternNodeStack;
+	}
 }

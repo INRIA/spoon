@@ -5,7 +5,7 @@ package spoon.smpl;
 import org.junit.Test;
 
 public class PatternMatchingTest {
-    @Test
-    public void dummy() {
-    }
+	@Test
+	public void dummy() {
+	}
 }

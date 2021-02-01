@@ -9,12 +9,12 @@ import java.util.function.Function;
  * value that is bound to (or is in the process of being bound to) a metavariable.
  */
 public interface MetavariableConstraint extends Function<CtElement, CtElement> {
-    /**
-     * Validate and potentially modify a value bound to a metavariable.
-     *
-     * @param value Value bound to metavariable
-     * @return The Object that is a valid binding under the constraint, or null if the value does not match the constraint
-     */
-    @Override
-    public CtElement apply(CtElement value);
+	/**
+	 * Validate and potentially modify a value bound to a metavariable.
+	 *
+	 * @param value Value bound to metavariable
+	 * @return The Object that is a valid binding under the constraint, or null if the value does not match the constraint
+	 */
+	@Override
+	CtElement apply(CtElement value);
 }

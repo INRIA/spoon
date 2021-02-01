@@ -15,88 +15,88 @@ import java.util.Map;
  * sub-pattern.
  */
 public class SubElemPatternMatcher {
-    /**
-     * A MatchResult consists of a matched code element and the parameter bindings involved.
-     */
-    public static class MatchResult {
-        /**
-         * Create a new MatchResult.
-         *
-         * @param matchedElement Matched code element
-         * @param parameters Parameter bindings
-         */
-        public MatchResult(CtElement matchedElement, Map<String, Object> parameters) {
-            this.matchedElement = matchedElement;
-            this.parameters = parameters;
-        }
+	/**
+	 * A MatchResult consists of a matched code element and the parameter bindings involved.
+	 */
+	public static class MatchResult {
+		/**
+		 * Create a new MatchResult.
+		 *
+		 * @param matchedElement Matched code element
+		 * @param parameters     Parameter bindings
+		 */
+		public MatchResult(CtElement matchedElement, Map<String, Object> parameters) {
+			this.matchedElement = matchedElement;
+			this.parameters = parameters;
+		}
 
-        @Override
-        public String toString() {
-            return matchedElement.toString() + ":" + parameters.toString();
-        }
+		@Override
+		public String toString() {
+			return matchedElement.toString() + ":" + parameters.toString();
+		}
 
-        /**
-         * Matched code element.
-         */
-        public final CtElement matchedElement;
+		/**
+		 * Matched code element.
+		 */
+		public final CtElement matchedElement;
 
-        /**
-         * Parameter bindings.
-         */
-        public final Map<String, Object> parameters;
-    }
+		/**
+		 * Parameter bindings.
+		 */
+		public final Map<String, Object> parameters;
+	}
 
-    /**
-     * Create a new SubElemPatternMatcher using the given rule pattern that should be allowed to match any
-     * ElemNode sub-pattern of a target pattern.
-     *
-     * @param rulePattern Rule pattern
-     */
-    public SubElemPatternMatcher(PatternNode rulePattern) {
-        this.rulePattern = rulePattern;
-    }
+	/**
+	 * Create a new SubElemPatternMatcher using the given rule pattern that should be allowed to match any
+	 * ElemNode sub-pattern of a target pattern.
+	 *
+	 * @param rulePattern Rule pattern
+	 */
+	public SubElemPatternMatcher(PatternNode rulePattern) {
+		this.rulePattern = rulePattern;
+	}
 
-    /**
-     * Test if the rule pattern matches a given target pattern or any of its ElemNode sub-patterns.
-     *
-     * @param pattern Target pattern
-     * @return True if there is any match, false otherwise
-     */
-    public boolean matches(PatternNode pattern) {
-        result = new ArrayList<>();
-        DotsExtPatternMatcher regularMatcher = new DotsExtPatternMatcher(rulePattern);
-        SubElemPatternCollector spc = new SubElemPatternCollector();
-        pattern.accept(spc);
+	/**
+	 * Test if the rule pattern matches a given target pattern or any of its ElemNode sub-patterns.
+	 *
+	 * @param pattern Target pattern
+	 * @return True if there is any match, false otherwise
+	 */
+	public boolean matches(PatternNode pattern) {
+		result = new ArrayList<>();
+		DotsExtPatternMatcher regularMatcher = new DotsExtPatternMatcher(rulePattern);
+		SubElemPatternCollector spc = new SubElemPatternCollector();
+		pattern.accept(spc);
 
-        for (ElemNode subPattern : spc.getResult()) {
-            subPattern.accept(regularMatcher);
+		for (ElemNode subPattern : spc.getResult()) {
+			subPattern.accept(regularMatcher);
 
-            if (regularMatcher.getResult() == true) {
-                result.add(new MatchResult(subPattern.elem, regularMatcher.getParameters()));
-            }
+			if (regularMatcher.getResult() == true) {
+				result.add(new MatchResult(subPattern.elem, regularMatcher.getParameters()));
+			}
 
-            regularMatcher.reset();
-        }
+			regularMatcher.reset();
+		}
 
-        return result.size() > 0;
-    }
+		return result.size() > 0;
+	}
 
-    /**
-     * Get the results.
-     *
-     * @return List of results
-     */
-    public List<MatchResult> getResult() {
-        return result;
-    }
+	/**
+	 * Get the results.
+	 *
+	 * @return List of results
+	 */
+	public List<MatchResult> getResult() {
+		return result;
+	}
 
-    /**
-     * Rule pattern.
-     */
-    private PatternNode rulePattern;
+	/**
+	 * Rule pattern.
+	 */
+	private PatternNode rulePattern;
 
-    /**
-     * List of results.
-     */
-    private List<MatchResult> result;
+	/**
+	 * List of results.
+	 */
+	private List<MatchResult> result;
 }

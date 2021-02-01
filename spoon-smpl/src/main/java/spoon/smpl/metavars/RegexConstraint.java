@@ -12,47 +12,47 @@ import java.util.regex.Pattern;
  * matches a regular expression.
  */
 public class RegexConstraint implements MetavariableConstraint {
-    /**
-     * Create a new RegexConstraint using a given regular expression and inner constraint.
-     *
-     * @param pattern Regular expression
-     * @param innerConstraint Inner constraint
-     */
-    public RegexConstraint(String pattern, MetavariableConstraint innerConstraint) {
-        this.pattern = pattern;
-        this.matchPredicate = Pattern.compile(pattern).asMatchPredicate();
-        this.innerConstraint = innerConstraint;
-    }
+	/**
+	 * Create a new RegexConstraint using a given regular expression and inner constraint.
+	 *
+	 * @param pattern         Regular expression
+	 * @param innerConstraint Inner constraint
+	 */
+	public RegexConstraint(String pattern, MetavariableConstraint innerConstraint) {
+		this.pattern = pattern;
+		this.matchPredicate = Pattern.compile(pattern).asMatchPredicate();
+		this.innerConstraint = innerConstraint;
+	}
 
-    /**
-     * Apply the constraint by checking that the value produced by the inner constraint matches the regex.
-     *
-     * @param value Value bound to metavariable
-     * @return Value produced by inner constraint if said value is not null and matches regex, null otherwise
-     */
-    @Override
-    public CtElement apply(CtElement value) {
-        CtElement innerResult = innerConstraint.apply(value);
-        return innerResult != null && matchPredicate.test(value.toString()) ? value : null;
-    }
+	/**
+	 * Apply the constraint by checking that the value produced by the inner constraint matches the regex.
+	 *
+	 * @param value Value bound to metavariable
+	 * @return Value produced by inner constraint if said value is not null and matches regex, null otherwise
+	 */
+	@Override
+	public CtElement apply(CtElement value) {
+		CtElement innerResult = innerConstraint.apply(value);
+		return innerResult != null && matchPredicate.test(value.toString()) ? value : null;
+	}
 
-    @Override
-    public String toString() {
-        return innerConstraint.toString() + " + Regex(" + pattern + ")";
-    }
+	@Override
+	public String toString() {
+		return innerConstraint.toString() + " + Regex(" + pattern + ")";
+	}
 
-    /**
-     * Plain text regex pattern.
-     */
-    private final String pattern;
+	/**
+	 * Plain text regex pattern.
+	 */
+	private final String pattern;
 
-    /**
-     * Regex match predicate.
-     */
-    private final Predicate<String> matchPredicate;
+	/**
+	 * Regex match predicate.
+	 */
+	private final Predicate<String> matchPredicate;
 
-    /**
-     * Inner constraint.
-     */
-    private final MetavariableConstraint innerConstraint;
+	/**
+	 * Inner constraint.
+	 */
+	private final MetavariableConstraint innerConstraint;
 }

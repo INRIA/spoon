@@ -12,18 +12,18 @@ import java.util.Map;
  * or its parent structure / environment.
  */
 public interface Operation extends TriConsumer<OperationCategory, CtElement, Map<String, Object>> {
-    /**
-     * Apply the operation.
-     *
-     * The Operation should inspect the 'category' parameter to validate whether or not
-     * the operation should be applied. For example, an Operation that appends elements
-     * to an anchor element should probably only apply their effect if the call comes
-     * with the OperationCategory.APPEND category value.
-     *
-     * @param category Category to match
-     * @param targetElement AST element targeted by operation
-     * @param bindings Metavariable bindings to use
-     */
-    @Override
-    public void accept(OperationCategory category, CtElement targetElement, Map<String, Object> bindings);
+	/**
+	 * Apply the operation.
+	 * <p>
+	 * The Operation should inspect the 'category' parameter to validate whether or not
+	 * the operation should be applied. For example, an Operation that appends elements
+	 * to an anchor element should probably only apply their effect if the call comes
+	 * with the OperationCategory.APPEND category value.
+	 *
+	 * @param category      Category to match
+	 * @param targetElement AST element targeted by operation
+	 * @param bindings      Metavariable bindings to use
+	 */
+	@Override
+	void accept(OperationCategory category, CtElement targetElement, Map<String, Object> bindings);
 }

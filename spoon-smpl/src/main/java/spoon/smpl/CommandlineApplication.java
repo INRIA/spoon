@@ -15,287 +15,291 @@ import java.nio.file.Paths;
  * CommandLineApplication offers a command line interface to some of the features of spoon-smpl.
  */
 public class CommandlineApplication {
-    /**
-     * Read all contents of a plain text file.
-     *
-     * @author https://stackoverflow.com/a/326440
-     * @param path Path to file
-     * @param encoding Character encoding of file
-     * @return Contents of file
-     * @throws IOException on IO errors
-     */
-    static String readFile(String path, Charset encoding) throws IOException
-    {
-        byte[] encoded = Files.readAllBytes(Paths.get(path));
-        return new String(encoded, encoding);
-    }
+	/**
+	 * Hide utility class constructor.
+	 */
+	private CommandlineApplication() { }
 
-    /**
-     * Print usage.
-     */
-    private static void usage() {
-        System.out.println("usage:");
-        System.out.println("smplcli ACTION [ARG [ARG ..]]");
-        System.out.println();
-        System.out.println("    ACTIONs:");
-        System.out.println("        patch        apply SmPL patch");
-        System.out.println("                     requires --smpl-file and --java-file");
-        System.out.println();
-        System.out.println("        check        run model checker");
-        System.out.println("                     requires --smpl-file and --java-file");
-        System.out.println();
-        System.out.println("        checksub     run model checker on every subformula");
-        System.out.println("                     requires --smpl-file and --java-file");
-        System.out.println();
-        System.out.println("        rewrite      rewrite SmPL input");
-        System.out.println("                     requires --smpl-file");
-        System.out.println();
-        System.out.println("        compile      compile SmPL input");
-        System.out.println("                     requires --smpl-file");
-        System.out.println();
-        System.out.println("        ctl          compile and print CTL formula");
-        System.out.println("                     requires --smpl-file");
-        System.out.println();
-        System.out.println("    ARGs:");
-        System.out.println("        --smpl-file FILENAME");
-        System.out.println("        --java-file FILENAME");
-        System.out.println();
-    }
+	/**
+	 * Read all contents of a plain text file.
+	 *
+	 * @param path     Path to file
+	 * @param encoding Character encoding of file
+	 * @return Contents of file
+	 * @throws IOException on IO errors
+	 * @author https://stackoverflow.com/a/326440
+	 */
+	static String readFile(String path, Charset encoding) throws IOException {
+		byte[] encoded = Files.readAllBytes(Paths.get(path));
+		return new String(encoded, encoding);
+	}
 
-    /**
-     * Enumeration of possible actions.
-     */
-    enum Action {
-        /**
-         * Run the model checker.
-         */
-        CHECK,
+	/**
+	 * Print usage.
+	 */
+	private static void usage() {
+		System.out.println("usage:");
+		System.out.println("smplcli ACTION [ARG [ARG ..]]");
+		System.out.println();
+		System.out.println("    ACTIONs:");
+		System.out.println("        patch        apply SmPL patch");
+		System.out.println("                     requires --smpl-file and --java-file");
+		System.out.println();
+		System.out.println("        check        run model checker");
+		System.out.println("                     requires --smpl-file and --java-file");
+		System.out.println();
+		System.out.println("        checksub     run model checker on every subformula");
+		System.out.println("                     requires --smpl-file and --java-file");
+		System.out.println();
+		System.out.println("        rewrite      rewrite SmPL input");
+		System.out.println("                     requires --smpl-file");
+		System.out.println();
+		System.out.println("        compile      compile SmPL input");
+		System.out.println("                     requires --smpl-file");
+		System.out.println();
+		System.out.println("        ctl          compile and print CTL formula");
+		System.out.println("                     requires --smpl-file");
+		System.out.println();
+		System.out.println("    ARGs:");
+		System.out.println("        --smpl-file FILENAME");
+		System.out.println("        --java-file FILENAME");
+		System.out.println();
+	}
 
-        /**
-         * Run the model checker on every sub-formula.
-         */
-        CHECKSUB,
+	/**
+	 * Enumeration of possible actions.
+	 */
+	enum Action {
+		/**
+		 * Run the model checker.
+		 */
+		CHECK,
 
-        /**
-         * Have the SmPL parser rewrite an SmPL patch into the spoon-smpl Java SmPL DSL.
-         */
-        REWRITE,
+		/**
+		 * Run the model checker on every sub-formula.
+		 */
+		CHECKSUB,
 
-        /**
-         * Compile an SmPL patch and print the produced SmPLRule.
-         */
-        COMPILE,
+		/**
+		 * Have the SmPL parser rewrite an SmPL patch into the spoon-smpl Java SmPL DSL.
+		 */
+		REWRITE,
 
-        /**
-         * Apply a given SmPL patch to each method in the single class defined in a given Java source file.
-         */
-        PATCH,
+		/**
+		 * Compile an SmPL patch and print the produced SmPLRule.
+		 */
+		COMPILE,
 
-        /**
-         * Compile an SmPL patch and pretty-print the resulting Formula.
-         */
-        CTL
-    };
+		/**
+		 * Apply a given SmPL patch to each method in the single class defined in a given Java source file.
+		 */
+		PATCH,
 
-    /**
-     * Enumeration of possible states for the argument parser.
-     */
-    enum ArgumentState {
-        /**
-         * Initial state.
-         */
-        BASE,
+		/**
+		 * Compile an SmPL patch and pretty-print the resulting Formula.
+		 */
+		CTL
+	}
 
-        /**
-         * Failure state.
-         */
-        FAIL,
+	/**
+	 * Enumeration of possible states for the argument parser.
+	 */
+	enum ArgumentState {
+		/**
+		 * Initial state.
+		 */
+		BASE,
 
-        /**
-         * Expecting action argument.
-         */
-        ACTION,
+		/**
+		 * Failure state.
+		 */
+		FAIL,
 
-        /**
-         * Expecting SmPL patch filename.
-         */
-        FILENAME_SMPL,
+		/**
+		 * Expecting action argument.
+		 */
+		ACTION,
 
-        /**
-         * Expecting Java source filename.
-         */
-        FILENAME_JAVA
-    };
+		/**
+		 * Expecting SmPL patch filename.
+		 */
+		FILENAME_SMPL,
 
-    /**
-     * Main entry point.
-     *
-     * @param args Command line arguments
-     */
-    public static void main(String[] args) {
-        Action action = null;
-        String smplFilename = null;
-        String javaFilename = null;
+		/**
+		 * Expecting Java source filename.
+		 */
+		FILENAME_JAVA
+	}
 
-        ArgumentState argumentState = ArgumentState.ACTION;
+	/**
+	 * Main entry point.
+	 *
+	 * @param args Command line arguments
+	 */
+	public static void main(String[] args) {
+		Action action = null;
+		String smplFilename = null;
+		String javaFilename = null;
 
-        for (String arg : args) {
-            if (argumentState == ArgumentState.FAIL) {
-                break;
-            }
+		ArgumentState argumentState = ArgumentState.ACTION;
 
-            switch (argumentState) {
-                case ACTION:
-                    if (arg.equals("check")) {
-                        action = Action.CHECK;
-                        argumentState = ArgumentState.BASE;
-                    } else if (arg.equals("checksub")) {
-                        action = Action.CHECKSUB;
-                        argumentState = ArgumentState.BASE;
-                    } else if (arg.equals("rewrite")) {
-                        action = Action.REWRITE;
-                        argumentState = ArgumentState.BASE;
-                    } else if (arg.equals("compile")) {
-                        action = Action.COMPILE;
-                        argumentState = ArgumentState.BASE;
-                    } else if (arg.equals("patch")) {
-                        action = Action.PATCH;
-                        argumentState = ArgumentState.BASE;
-                    } else if (arg.equals("ctl")) {
-                        action = Action.CTL;
-                        argumentState = ArgumentState.BASE;
-                    } else {
-                        argumentState = ArgumentState.FAIL;
-                    }
-                case BASE:
-                    if (arg.equals("--smpl-file")) {
-                        argumentState = ArgumentState.FILENAME_SMPL;
-                    } else if (arg.equals("--java-file")) {
-                        argumentState = ArgumentState.FILENAME_JAVA;
-                    }
-                    break;
+		for (String arg : args) {
+			if (argumentState == ArgumentState.FAIL) {
+				break;
+			}
 
-                case FILENAME_SMPL:
-                    smplFilename = arg;
-                    argumentState = ArgumentState.BASE;
-                    break;
+			switch (argumentState) {
+				case ACTION:
+					if (arg.equals("check")) {
+						action = Action.CHECK;
+						argumentState = ArgumentState.BASE;
+					} else if (arg.equals("checksub")) {
+						action = Action.CHECKSUB;
+						argumentState = ArgumentState.BASE;
+					} else if (arg.equals("rewrite")) {
+						action = Action.REWRITE;
+						argumentState = ArgumentState.BASE;
+					} else if (arg.equals("compile")) {
+						action = Action.COMPILE;
+						argumentState = ArgumentState.BASE;
+					} else if (arg.equals("patch")) {
+						action = Action.PATCH;
+						argumentState = ArgumentState.BASE;
+					} else if (arg.equals("ctl")) {
+						action = Action.CTL;
+						argumentState = ArgumentState.BASE;
+					} else {
+						argumentState = ArgumentState.FAIL;
+					}
+				case BASE:
+					if (arg.equals("--smpl-file")) {
+						argumentState = ArgumentState.FILENAME_SMPL;
+					} else if (arg.equals("--java-file")) {
+						argumentState = ArgumentState.FILENAME_JAVA;
+					}
+					break;
 
-                case FILENAME_JAVA:
-                    javaFilename = arg;
-                    argumentState = ArgumentState.BASE;
-                    break;
+				case FILENAME_SMPL:
+					smplFilename = arg;
+					argumentState = ArgumentState.BASE;
+					break;
 
-                default:
-                    break;
-            }
-        }
+				case FILENAME_JAVA:
+					javaFilename = arg;
+					argumentState = ArgumentState.BASE;
+					break;
 
-        if (action == null || argumentState != ArgumentState.BASE) {
-            usage();
+				default:
+					break;
+			}
+		}
 
-            System.exit(args.length > 0 ? 1 : 0);
-        }
+		if (action == null || argumentState != ArgumentState.BASE) {
+			usage();
 
-        if (action == Action.CHECK || action == Action.CHECKSUB ||  action == Action.PATCH) {
-            if (smplFilename != null && javaFilename != null) {
-                try {
-                    SmPLRule smplRule = SmPLParser.parse(readFile(smplFilename, StandardCharsets.UTF_8));
+			System.exit(args.length > 0 ? 1 : 0);
+		}
 
-                    CtClass<?> inputClass = SpoonJavaParser.parseClass(readFile(javaFilename, StandardCharsets.UTF_8));
+		if (action == Action.CHECK || action == Action.CHECKSUB || action == Action.PATCH) {
+			if (smplFilename != null && javaFilename != null) {
+				try {
+					SmPLRule smplRule = SmPLParser.parse(readFile(smplFilename, StandardCharsets.UTF_8));
 
-                    for (CtMethod<?> method : inputClass.getMethods()) {
-                        SmPLMethodCFG cfg = new SmPLMethodCFG(method);
+					CtClass<?> inputClass = SpoonJavaParser.parseClass(readFile(javaFilename, StandardCharsets.UTF_8));
 
-                        CFGModel model = new CFGModel(cfg);
-                        ModelChecker modelChecker = new ModelChecker(model);
+					for (CtMethod<?> method : inputClass.getMethods()) {
+						SmPLMethodCFG cfg = new SmPLMethodCFG(method);
 
-                        if (action == Action.CHECKSUB) {
-                            System.out.println(method.getSimpleName());
-                            System.out.println(model);
+						CFGModel model = new CFGModel(cfg);
+						ModelChecker modelChecker = new ModelChecker(model);
 
-                            SubformulaCollector subformulas = new SubformulaCollector();
-                            smplRule.getFormula().accept(subformulas);
+						if (action == Action.CHECKSUB) {
+							System.out.println(method.getSimpleName());
+							System.out.println(model);
 
-                            for (Formula phi : subformulas.getResult()) {
-                                phi.accept(modelChecker);
+							SubformulaCollector subformulas = new SubformulaCollector();
+							smplRule.getFormula().accept(subformulas);
 
-                                System.out.println(DebugUtils.prettifyFormula(phi));
-                                System.out.print("  ");
-                                System.out.println(modelChecker.getResult());
-                                System.out.println();
-                            }
-                        } else {
-                            smplRule.getFormula().accept(modelChecker);
+							for (Formula phi : subformulas.getResult()) {
+								phi.accept(modelChecker);
 
-                            if (action == Action.CHECK) {
-                                System.out.println(method.getSimpleName());
-                                System.out.println(model);
-                                System.out.println(modelChecker.getResult());
-                            } else if (action == Action.PATCH) {
-                                ModelChecker.ResultSet results = modelChecker.getResult();
-                                Transformer.transform(model, results.getAllWitnesses());
+								System.out.println(DebugUtils.prettifyFormula(phi));
+								System.out.print("  ");
+								System.out.println(modelChecker.getResult());
+								System.out.println();
+							}
+						} else {
+							smplRule.getFormula().accept(modelChecker);
 
-                                if (results.size() > 0 && smplRule.getMethodsAdded().size() > 0) {
-                                    Transformer.copyAddedMethods(model, smplRule);
-                                }
+							if (action == Action.CHECK) {
+								System.out.println(method.getSimpleName());
+								System.out.println(model);
+								System.out.println(modelChecker.getResult());
+							} else if (action == Action.PATCH) {
+								ModelChecker.ResultSet results = modelChecker.getResult();
+								Transformer.transform(model, results.getAllWitnesses());
 
-                                model.getCfg().restoreUnsupportedElements();
-                            }
-                        }
-                    }
+								if (results.size() > 0 && smplRule.getMethodsAdded().size() > 0) {
+									Transformer.copyAddedMethods(model, smplRule);
+								}
 
-                    if (action == Action.PATCH) {
-                        System.out.println(inputClass);
-                    }
+								model.getCfg().restoreUnsupportedElements();
+							}
+						}
+					}
 
-                    System.exit(0);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.exit(1);
-                }
-            } else {
-                System.out.println("check: Missing file name");
-                System.out.println();
-                usage();
-                System.exit(1);
-            }
-        } else if (action == Action.REWRITE) {
-            if (smplFilename != null) {
-                try {
-                    System.out.println(SmPLParser.rewrite(readFile(smplFilename, StandardCharsets.UTF_8)));
-                    System.exit(0);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.exit(1);
-                }
-            } else {
-                System.out.println("rewrite: Missing file name");
-                System.out.println();
-                usage();
-                System.exit(1);
-            }
-        } else if (action == Action.CTL || action == Action.COMPILE) {
-            if (smplFilename != null) {
-                try {
-                    SmPLRule rule = SmPLParser.parse(readFile(smplFilename, StandardCharsets.UTF_8));
+					if (action == Action.PATCH) {
+						System.out.println(inputClass);
+					}
 
-                    if (action == Action.CTL) {
-                        System.out.println(DebugUtils.prettifyFormula(rule.getFormula()));
-                    } else if (action == Action.COMPILE) {
-                        System.out.println(rule);
-                    }
+					System.exit(0);
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+			} else {
+				System.out.println("check: Missing file name");
+				System.out.println();
+				usage();
+				System.exit(1);
+			}
+		} else if (action == Action.REWRITE) {
+			if (smplFilename != null) {
+				try {
+					System.out.println(SmPLParser.rewrite(readFile(smplFilename, StandardCharsets.UTF_8)));
+					System.exit(0);
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+			} else {
+				System.out.println("rewrite: Missing file name");
+				System.out.println();
+				usage();
+				System.exit(1);
+			}
+		} else if (action == Action.CTL || action == Action.COMPILE) {
+			if (smplFilename != null) {
+				try {
+					SmPLRule rule = SmPLParser.parse(readFile(smplFilename, StandardCharsets.UTF_8));
 
-                    System.exit(0);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.exit(1);
-                }
-            } else {
-                System.out.println("ctl: Missing file name");
-                System.out.println();
-                usage();
-                System.exit(1);
-            }
-        }
-    }
+					if (action == Action.CTL) {
+						System.out.println(DebugUtils.prettifyFormula(rule.getFormula()));
+					} else if (action == Action.COMPILE) {
+						System.out.println(rule);
+					}
+
+					System.exit(0);
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+			} else {
+				System.out.println("ctl: Missing file name");
+				System.out.println();
+				usage();
+				System.exit(1);
+			}
+		}
+	}
 }

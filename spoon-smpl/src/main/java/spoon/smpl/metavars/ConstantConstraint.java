@@ -11,25 +11,26 @@ import spoon.smpl.formula.MetavariableConstraint;
  * CtLiteral.
  */
 public class ConstantConstraint implements MetavariableConstraint {
-    /**
-     * Validate and potentially modify a value bound to a metavariable.
-     * @param value Value bound to metavariable
-     * @return The Object that is a valid binding under the constraint, or null if the value does not match the constraint
-     */
-    @Override
-    public CtElement apply(CtElement value) {
-        if (value instanceof CtLiteral) {
-            return value;
-        } else if (value instanceof CtExpression) {
-            CtExpression<?> expr = (CtExpression<?>) value;
+	/**
+	 * Validate and potentially modify a value bound to a metavariable.
+	 *
+	 * @param value Value bound to metavariable
+	 * @return The Object that is a valid binding under the constraint, or null if the value does not match the constraint
+	 */
+	@Override
+	public CtElement apply(CtElement value) {
+		if (value instanceof CtLiteral) {
+			return value;
+		} else if (value instanceof CtExpression) {
+			CtExpression<?> expr = (CtExpression<?>) value;
 
-            if (expr.getDirectChildren().get(0) instanceof CtLiteral) {
-                return expr.getDirectChildren().get(0);
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
+			if (expr.getDirectChildren().get(0) instanceof CtLiteral) {
+				return expr.getDirectChildren().get(0);
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
 }

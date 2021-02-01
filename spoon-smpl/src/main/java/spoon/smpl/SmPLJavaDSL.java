@@ -19,448 +19,463 @@ import java.util.List;
  * Utilities to define and facilitate working with the SmPL Java DSL.
  */
 public class SmPLJavaDSL {
-    /**
-     * Name of the field used to hold the name of the rule.
-     */
-    private static final String ruleNameFieldName = "__SmPLRuleName__";
+	/**
+	 * Hide utility class constructor.
+	 */
+	private SmPLJavaDSL() { }
 
-    /**
-     * Get the name of the field used to hold the name of the rule.
-     * @return Name of the field used to hold the name of the rule
-     */
-    public static String getRuleNameFieldName() {
-        return ruleNameFieldName;
-    }
+	/**
+	 * Name of the field used to hold the name of the rule.
+	 */
+	private static final String ruleNameFieldName = "__SmPLRuleName__";
 
-    /**
-     * Name of the method used to encode metavariable definitions.
-     */
-    private static final String metavarsMethodName = "__SmPLMetavars__";
+	/**
+	 * Get the name of the field used to hold the name of the rule.
+	 *
+	 * @return Name of the field used to hold the name of the rule
+	 */
+	public static String getRuleNameFieldName() {
+		return ruleNameFieldName;
+	}
 
-    /**
-     * Get name of the method used to encode metavariable definitions.
-     * @return Name of the method used to encode metavariable definitions
-     */
-    public static String getMetavarsMethodName() {
-        return metavarsMethodName;
-    }
+	/**
+	 * Name of the method used to encode metavariable definitions.
+	 */
+	private static final String metavarsMethodName = "__SmPLMetavars__";
 
-    /**
-     * Name of executable used to encode dots statements.
-     */
-    private static final String dotsStatementElementName = "__SmPLDots__";
+	/**
+	 * Get name of the method used to encode metavariable definitions.
+	 *
+	 * @return Name of the method used to encode metavariable definitions
+	 */
+	public static String getMetavarsMethodName() {
+		return metavarsMethodName;
+	}
 
-    /**
-     * Get name of executable used to encode dots statements.
-     * @return Name of executable used to encode dots statements
-     */
-    public static String getDotsStatementElementName() {
-        return dotsStatementElementName;
-    }
+	/**
+	 * Name of executable used to encode dots statements.
+	 */
+	private static final String dotsStatementElementName = "__SmPLDots__";
 
-    /**
-     * Name of executable used to encode dots parameters and call arguments.
-     */
-    private static final String dotsParameterOrArgumentElementName = "__SmPLDotsArg__";
+	/**
+	 * Get name of executable used to encode dots statements.
+	 *
+	 * @return Name of executable used to encode dots statements
+	 */
+	public static String getDotsStatementElementName() {
+		return dotsStatementElementName;
+	}
 
-    /**
-     * Get name of executable used to encode dots parameters and call arguments.
-     * @return Name of executable used to encode dots parameters and call arguments.
-     */
-    public static String getDotsParameterOrArgumentElementName() {
-        return dotsParameterOrArgumentElementName;
-    }
+	/**
+	 * Name of executable used to encode dots parameters and call arguments.
+	 */
+	private static final String dotsParameterOrArgumentElementName = "__SmPLDotsArg__";
 
-    /**
-     * Name of executable used to encode "when != x" constraints on dots.
-     */
-    private static final String dotsWhenNotEqualName = "whenNotEqual";
+	/**
+	 * Get name of executable used to encode dots parameters and call arguments.
+	 *
+	 * @return Name of executable used to encode dots parameters and call arguments.
+	 */
+	public static String getDotsParameterOrArgumentElementName() {
+		return dotsParameterOrArgumentElementName;
+	}
 
-    /**
-     * Get name of executable used to encode "when != x" constraints on dots.
-     * @return Name of executable used to encode "when != x" constraints on dots
-     */
-    public static String getDotsWhenNotEqualName() {
-        return dotsWhenNotEqualName;
-    }
+	/**
+	 * Name of executable used to encode "when != x" constraints on dots.
+	 */
+	private static final String dotsWhenNotEqualName = "whenNotEqual";
 
-    /**
-     * Name of executable used to encode "when exists" constraints on dots.
-     */
-    private static final String dotsWhenExistsName = "whenExists";
+	/**
+	 * Get name of executable used to encode "when != x" constraints on dots.
+	 *
+	 * @return Name of executable used to encode "when != x" constraints on dots
+	 */
+	public static String getDotsWhenNotEqualName() {
+		return dotsWhenNotEqualName;
+	}
 
-    /**
-     * Get name of executable used to encode "when exists" constraints on dots.
-     * @return Name of executable used to encode "when exists" constraints on dots
-     */
-    public static String getDotsWhenExistsName() {
-        return dotsWhenExistsName;
-    }
+	/**
+	 * Name of executable used to encode "when exists" constraints on dots.
+	 */
+	private static final String dotsWhenExistsName = "whenExists";
 
-    /**
-     * Name of executable used to encode "when any" constraints on dots.
-     */
-    private static final String dotsWhenAnyName = "whenAny";
+	/**
+	 * Get name of executable used to encode "when exists" constraints on dots.
+	 *
+	 * @return Name of executable used to encode "when exists" constraints on dots
+	 */
+	public static String getDotsWhenExistsName() {
+		return dotsWhenExistsName;
+	}
 
-    /**
-     * Get name of executable used to encode "when any" constraints on dots.
-     * @return Name of executable used to encode "when any" constraints on dots
-     */
-    public static String getDotsWhenAnyName() {
-        return dotsWhenAnyName;
-    }
+	/**
+	 * Name of executable used to encode "when any" constraints on dots.
+	 */
+	private static final String dotsWhenAnyName = "whenAny";
 
-    /**
-     * Name of executable used to encode deleted lines available for anchoring.
-     */
-    private static final String deletionAnchorName = "__SmPLDeletion__";
+	/**
+	 * Get name of executable used to encode "when any" constraints on dots.
+	 *
+	 * @return Name of executable used to encode "when any" constraints on dots
+	 */
+	public static String getDotsWhenAnyName() {
+		return dotsWhenAnyName;
+	}
 
-    /**
-     * Get name of executable used to encode deleted lines available for anchoring.
-     * @return Name of executable used to encode deleted lines available for anchoring
-     */
-    public static String getDeletionAnchorName() {
-        return deletionAnchorName;
-    }
+	/**
+	 * Name of executable used to encode deleted lines available for anchoring.
+	 */
+	private static final String deletionAnchorName = "__SmPLDeletion__";
 
-    /**
-     * Check if a given element represents a deletion anchor in the SmPL Java DSL.
-     * @param e Element to check
-     * @return True if element represents a deletion anchor, false otherwise
-     */
-    public static boolean isDeletionAnchor(CtElement e) {
-        return isExecutableWithName(e, deletionAnchorName);
-    }
+	/**
+	 * Get name of executable used to encode deleted lines available for anchoring.
+	 *
+	 * @return Name of executable used to encode deleted lines available for anchoring
+	 */
+	public static String getDeletionAnchorName() {
+		return deletionAnchorName;
+	}
 
-    /**
-     * Name for elements that indicate missing/unspecified information.
-     */
-    private static final String unspecifiedElementOrTypeName = "__SmPLUnspecified__";
+	/**
+	 * Check if a given element represents a deletion anchor in the SmPL Java DSL.
+	 *
+	 * @param e Element to check
+	 * @return True if element represents a deletion anchor, false otherwise
+	 */
+	public static boolean isDeletionAnchor(CtElement e) {
+		return isExecutableWithName(e, deletionAnchorName);
+	}
 
-    /**
-     * Get name for elements that indicate missing/unspecified information.
-     *
-     * @return Name for elements that indicate missing/unspecified information
-     */
-    public static String getUnspecifiedElementOrTypeName() {
-        return unspecifiedElementOrTypeName;
-    }
+	/**
+	 * Name for elements that indicate missing/unspecified information.
+	 */
+	private static final String unspecifiedElementOrTypeName = "__SmPLUnspecified__";
 
-    /**
-     * Name for elements that indicate unsupported elements that have been substituted.
-     */
-    private static String unsupportedElementName = "__SmPLUnsupported__";
+	/**
+	 * Get name for elements that indicate missing/unspecified information.
+	 *
+	 * @return Name for elements that indicate missing/unspecified information
+	 */
+	public static String getUnspecifiedElementOrTypeName() {
+		return unspecifiedElementOrTypeName;
+	}
 
-    /**
-     * Get name for elements that indicate unsupported elements that have been substituted.
-     *
-     * @return Name for elements that indicate unsupported elements that have been substituted
-     */
-    public static String getUnsupportedElementName() {
-        return unsupportedElementName;
-    }
+	/**
+	 * Name for elements that indicate unsupported elements that have been substituted.
+	 */
+	private static String unsupportedElementName = "__SmPLUnsupported__";
 
-    /**
-     * Name for element indicating a dots-with-optional-match SmPL construct.
-     */
-    private static String dotsWithOptionalMatchName = "__SmPLDotsOptionalMatch__";
+	/**
+	 * Get name for elements that indicate unsupported elements that have been substituted.
+	 *
+	 * @return Name for elements that indicate unsupported elements that have been substituted
+	 */
+	public static String getUnsupportedElementName() {
+		return unsupportedElementName;
+	}
 
-    /**
-     * Get name for element indicating a dots-with-optional-match SmPL construct.
-     *
-     * @return Name for element indicating a dots-with-optional-match SmPL construct
-     */
-    public static String getDotsWithOptionalMatchName() {
-        return dotsWithOptionalMatchName;
-    }
+	/**
+	 * Name for element indicating a dots-with-optional-match SmPL construct.
+	 */
+	private static String dotsWithOptionalMatchName = "__SmPLDotsOptionalMatch__";
 
-    /**
-     * Name for element indicating the beginning of an SmPL pattern disjunction.
-     */
-    private static String beginDisjunctionName = "__SmPLBeginDisjunction__";
+	/**
+	 * Get name for element indicating a dots-with-optional-match SmPL construct.
+	 *
+	 * @return Name for element indicating a dots-with-optional-match SmPL construct
+	 */
+	public static String getDotsWithOptionalMatchName() {
+		return dotsWithOptionalMatchName;
+	}
 
-    /**
-     * Get name for element indicating the beginning of an SmPL pattern disjunction.
-     *
-     * @return Name for element indicating the beginning of an SmPL pattern disjunction
-     */
-    public static String getBeginDisjunctionName() {
-        return beginDisjunctionName;
-    }
+	/**
+	 * Name for element indicating the beginning of an SmPL pattern disjunction.
+	 */
+	private static String beginDisjunctionName = "__SmPLBeginDisjunction__";
 
-    /**
-     * Name for element indicating a continuation (clause-separator) of an SmPL pattern disjunction.
-     */
-    private static String continueDisjunctionName = "__SmPLContinueDisjunction__";
+	/**
+	 * Get name for element indicating the beginning of an SmPL pattern disjunction.
+	 *
+	 * @return Name for element indicating the beginning of an SmPL pattern disjunction
+	 */
+	public static String getBeginDisjunctionName() {
+		return beginDisjunctionName;
+	}
 
-    /**
-     * Get name for element indicating a continuation (clause-separator) of an SmPL pattern disjunction.
-     *
-     * @return Name for element indicating a continuation (clause-separator) of an SmPL pattern disjunction
-     */
-    public static String getContinueDisjunctionName() {
-        return continueDisjunctionName;
-    }
+	/**
+	 * Name for element indicating a continuation (clause-separator) of an SmPL pattern disjunction.
+	 */
+	private static String continueDisjunctionName = "__SmPLContinueDisjunction__";
 
-    /**
-     * Check if a given element represents the beginning of an SmPL pattern disjunction.
-     *
-     * @param element Element to check
-     * @return True if element represents the beginning of an SmPL pattern disjunction, false otherwise
-     */
-    public static boolean isBeginDisjunction(CtElement element) {
-        return isIfStatementWithNamedConditionVariable(element, beginDisjunctionName);
-    }
+	/**
+	 * Get name for element indicating a continuation (clause-separator) of an SmPL pattern disjunction.
+	 *
+	 * @return Name for element indicating a continuation (clause-separator) of an SmPL pattern disjunction
+	 */
+	public static String getContinueDisjunctionName() {
+		return continueDisjunctionName;
+	}
 
-    /**
-     * Check if a given element represents a continuation (clause-separator) of an SmPL pattern disjunction.
-     *
-     * @param element Element to check
-     * @return True if element represents a continuation (clause-separator) of an SmPL pattern disjunction, false otherwise
-     */
-    public static boolean isContinueDisjunction(CtElement element) {
-        return isIfStatementWithNamedConditionVariable(element, continueDisjunctionName);
-    }
+	/**
+	 * Check if a given element represents the beginning of an SmPL pattern disjunction.
+	 *
+	 * @param element Element to check
+	 * @return True if element represents the beginning of an SmPL pattern disjunction, false otherwise
+	 */
+	public static boolean isBeginDisjunction(CtElement element) {
+		return isIfStatementWithNamedConditionVariable(element, beginDisjunctionName);
+	}
 
-    /**
-     * Check if a given element represents a dots-with-optional-match SmPL construct.
-     *
-     * @param element Element to check
-     * @return True if element represents a dots-with-optional-match SmPL construct, false otherwise
-     */
-    public static boolean isDotsWithOptionalMatch(CtElement element) {
-        return (element instanceof CtIf
-                && isExecutableWithName(((CtIf) element).getCondition(), dotsWithOptionalMatchName))
-               || isExecutableWithName(element, dotsWithOptionalMatchName); // TODO: maybe separate these cases
-    }
+	/**
+	 * Check if a given element represents a continuation (clause-separator) of an SmPL pattern disjunction.
+	 *
+	 * @param element Element to check
+	 * @return True if element represents a continuation (clause-separator) of an SmPL pattern disjunction, false otherwise
+	 */
+	public static boolean isContinueDisjunction(CtElement element) {
+		return isIfStatementWithNamedConditionVariable(element, continueDisjunctionName);
+	}
 
-    /**
-     * Name for a wrapper element marking its descendant as a match on an expression rather than a full statement.
-     */
-    private static String expressionMatchWrapperName = "__SmPLExpressionMatch__";
+	/**
+	 * Check if a given element represents a dots-with-optional-match SmPL construct.
+	 *
+	 * @param element Element to check
+	 * @return True if element represents a dots-with-optional-match SmPL construct, false otherwise
+	 */
+	public static boolean isDotsWithOptionalMatch(CtElement element) {
+		return (element instanceof CtIf
+				&& isExecutableWithName(((CtIf) element).getCondition(), dotsWithOptionalMatchName))
+				|| isExecutableWithName(element, dotsWithOptionalMatchName); // TODO: maybe separate these cases
+	}
 
-    /**
-     * Get name for a wrapper element marking its descendant as a match on an expression rather than a full statement.
-     *
-     * @return Name for a wrapper element marking its descendant as a match on an expression rather than a full statement
-     */
-    public static String getExpressionMatchWrapperName() {
-        return expressionMatchWrapperName;
-    }
+	/**
+	 * Name for a wrapper element marking its descendant as a match on an expression rather than a full statement.
+	 */
+	private static String expressionMatchWrapperName = "__SmPLExpressionMatch__";
 
-    /**
-     * Check if a given element is a wrapper element marking its descendant as a match on an expression rather than a
-     * full statement.
-     *
-     * @param element Element to check
-     * @return True if element is a wrapper element marking its descendant as a match on an expression, false otherwise
-     */
-    public static boolean isExpressionMatchWrapper(CtElement element) {
-        return isExecutableWithName(element, expressionMatchWrapperName);
-    }
+	/**
+	 * Get name for a wrapper element marking its descendant as a match on an expression rather than a full statement.
+	 *
+	 * @return Name for a wrapper element marking its descendant as a match on an expression rather than a full statement
+	 */
+	public static String getExpressionMatchWrapperName() {
+		return expressionMatchWrapperName;
+	}
 
-    /**
-     * Get the wrapped descendant of a wrapper element.
-     *
-     * @param wrapper Wrapper element
-     * @return Wrapped descendant element
-     */
-    public static CtElement getWrappedElement(CtElement wrapper) {
-        if (wrapper instanceof CtInvocation) {
-            return ((CtInvocation<?>) wrapper).getArguments().get(0);
-        } else {
-            throw new IllegalArgumentException("invalid wrapper element");
-        }
-    }
+	/**
+	 * Check if a given element is a wrapper element marking its descendant as a match on an expression rather than a
+	 * full statement.
+	 *
+	 * @param element Element to check
+	 * @return True if element is a wrapper element marking its descendant as a match on an expression, false otherwise
+	 */
+	public static boolean isExpressionMatchWrapper(CtElement element) {
+		return isExecutableWithName(element, expressionMatchWrapperName);
+	}
 
-    /**
-     * Given a CtClass in the SmPL Java DSL, find the method encoding the matching/transformation
-     * rule.
-     * @param ctClass Class in SmPL Java DSL
-     * @return Method encoding the matching/transformation rule
-     */
-    public static CtMethod<?> getRuleMethod(CtClass<?> ctClass) {
-        for (CtMethod<?> method : ctClass.getMethods()) {
-            if (!method.getSimpleName().equals(metavarsMethodName)) {
-                return method;
-            }
-        }
+	/**
+	 * Get the wrapped descendant of a wrapper element.
+	 *
+	 * @param wrapper Wrapper element
+	 * @return Wrapped descendant element
+	 */
+	public static CtElement getWrappedElement(CtElement wrapper) {
+		if (wrapper instanceof CtInvocation) {
+			return ((CtInvocation<?>) wrapper).getArguments().get(0);
+		} else {
+			throw new IllegalArgumentException("invalid wrapper element");
+		}
+	}
 
-        return null;
-    }
+	/**
+	 * Given a CtClass in the SmPL Java DSL, find the method encoding the matching/transformation
+	 * rule.
+	 *
+	 * @param ctClass Class in SmPL Java DSL
+	 * @return Method encoding the matching/transformation rule
+	 */
+	public static CtMethod<?> getRuleMethod(CtClass<?> ctClass) {
+		for (CtMethod<?> method : ctClass.getMethods()) {
+			if (!method.getSimpleName().equals(metavarsMethodName)) {
+				return method;
+			}
+		}
 
-    /**
-     * Check if a given element represents a statement-level SmPL dots operator.
-     *
-     * @param e Element to check
-     * @return True if element represents a statement-level SmPL dots operator, false otherwise
-     */
-    public static boolean isStatementLevelDots(CtElement e) {
-        return isExecutableWithName(e, dotsStatementElementName);
-    }
+		return null;
+	}
 
-    /**
-     * Check if a given element represents a parameter (or argument) -level SmPL dots operator.
-     *
-     * @param e Element to check
-     * @return True if element represents a parameter (or argument) -level SmPL dots operator, false otherwise
-     */
-    public static boolean isParameterLevelDots(CtElement e) {
-        return (e instanceof CtParameter && ((CtParameter<?>) e).getSimpleName().equals(dotsStatementElementName))
-               || (e instanceof CtVariableRead && ((CtVariableRead<?>) e).getVariable().getSimpleName().equals(dotsStatementElementName));
-    }
+	/**
+	 * Check if a given element represents a statement-level SmPL dots operator.
+	 *
+	 * @param e Element to check
+	 * @return True if element represents a statement-level SmPL dots operator, false otherwise
+	 */
+	public static boolean isStatementLevelDots(CtElement e) {
+		return isExecutableWithName(e, dotsStatementElementName);
+	}
 
-    /**
-     * Create a source code String for a parameter (or argument) -level SmPL dots operator.
-     *
-     * @return Source code string for a parameter (or argument) -level SmPL dots operator
-     */
-    public static String createDotsParameterString() {
-        // TODO: should these be unique / fresh identifiers?
-        return "Object " + dotsStatementElementName;
-    }
+	/**
+	 * Check if a given element represents a parameter (or argument) -level SmPL dots operator.
+	 *
+	 * @param e Element to check
+	 * @return True if element represents a parameter (or argument) -level SmPL dots operator, false otherwise
+	 */
+	public static boolean isParameterLevelDots(CtElement e) {
+		return (e instanceof CtParameter && ((CtParameter<?>) e).getSimpleName().equals(dotsStatementElementName))
+				|| (e instanceof CtVariableRead && ((CtVariableRead<?>) e).getVariable().getSimpleName().equals(dotsStatementElementName));
+	}
 
-    /**
-     * Given a CtInvocation representing an SmPL dots construct in the SmPL Java DSL, collect
-     * all arguments provided in "when != x" constraints.
-     *
-     * @param dots Element representing an SmPL dots construct
-     * @return List of arguments x provided in "when != x" constraints
-     */
-    public static List<CtElement> getWhenNotEquals(CtInvocation<?> dots) {
-        List<CtElement> result = new ArrayList<>();
+	/**
+	 * Create a source code String for a parameter (or argument) -level SmPL dots operator.
+	 *
+	 * @return Source code string for a parameter (or argument) -level SmPL dots operator
+	 */
+	public static String createDotsParameterString() {
+		// TODO: should these be unique / fresh identifiers?
+		return "Object " + dotsStatementElementName;
+	}
 
-        for (CtExpression<?> stmt : dots.getArguments()) {
-            if (isWhenNotEquals(stmt)) {
-                result.add(((CtInvocation<?>) stmt).getArguments().get(0));
-            }
-        }
+	/**
+	 * Given a CtInvocation representing an SmPL dots construct in the SmPL Java DSL, collect
+	 * all arguments provided in "when != x" constraints.
+	 *
+	 * @param dots Element representing an SmPL dots construct
+	 * @return List of arguments x provided in "when != x" constraints
+	 */
+	public static List<CtElement> getWhenNotEquals(CtInvocation<?> dots) {
+		List<CtElement> result = new ArrayList<>();
 
-        return result;
-    }
+		for (CtExpression<?> stmt : dots.getArguments()) {
+			if (isWhenNotEquals(stmt)) {
+				result.add(((CtInvocation<?>) stmt).getArguments().get(0));
+			}
+		}
 
-    /**
-     * Check if a given element represents a "when != x" constraint on dots in the SmPL
-     * Java DSL.
-     *
-     * @param e Element to check
-     * @return True if element represents a "when != x" constraint, false otherwise
-     */
-    public static boolean isWhenNotEquals(CtElement e) {
-        return isExecutableWithName(e, dotsWhenNotEqualName);
-    }
+		return result;
+	}
 
-    /**
-     * Given a CtInvocation representing an SmPL dots construct in the SmPL Java DSL, check
-     * if the dots constructs specifies the "when exists" constraint relaxation.
-     *
-     * @param dots Element representing an SmPL dots construct
-     * @return True if dots construct specifies "when exists" relaxation, false otherwise
-     */
-    public static boolean hasWhenExists(CtInvocation<?> dots) {
-        return dots.getArguments().stream().anyMatch(SmPLJavaDSL::isWhenExists);
-    }
+	/**
+	 * Check if a given element represents a "when != x" constraint on dots in the SmPL
+	 * Java DSL.
+	 *
+	 * @param e Element to check
+	 * @return True if element represents a "when != x" constraint, false otherwise
+	 */
+	public static boolean isWhenNotEquals(CtElement e) {
+		return isExecutableWithName(e, dotsWhenNotEqualName);
+	}
 
-    /**
-     * Check if a given element represents a "when exists" constraint relaxation on dots in the SmPL
-     * Java DSL.
-     *
-     * @param e Element to check
-     * @return True if element represents a "when exists" constraint relaxation, false otherwise
-     */
-    public static boolean isWhenExists(CtElement e) {
-        return isExecutableWithName(e, dotsWhenExistsName);
-    }
+	/**
+	 * Given a CtInvocation representing an SmPL dots construct in the SmPL Java DSL, check
+	 * if the dots constructs specifies the "when exists" constraint relaxation.
+	 *
+	 * @param dots Element representing an SmPL dots construct
+	 * @return True if dots construct specifies "when exists" relaxation, false otherwise
+	 */
+	public static boolean hasWhenExists(CtInvocation<?> dots) {
+		return dots.getArguments().stream().anyMatch(SmPLJavaDSL::isWhenExists);
+	}
 
-    /**
-     * Given a CtInvocation representing an SmPL dots construct in the SmPL Java DSL, check
-     * if the dots constructs specifies the "when any" constraint relaxation.
-     *
-     * @param dots Element representing an SmPL dots construct
-     * @return True if dots construct specifies "when any" relaxation, false otherwise
-     */
-    public static boolean hasWhenAny(CtInvocation<?> dots) {
-        return dots.getArguments().stream().anyMatch(SmPLJavaDSL::isWhenAny);
-    }
+	/**
+	 * Check if a given element represents a "when exists" constraint relaxation on dots in the SmPL
+	 * Java DSL.
+	 *
+	 * @param e Element to check
+	 * @return True if element represents a "when exists" constraint relaxation, false otherwise
+	 */
+	public static boolean isWhenExists(CtElement e) {
+		return isExecutableWithName(e, dotsWhenExistsName);
+	}
 
-    /**
-     * Check if a given element represents a "when any" constraint relaxation on dots in the SmPL
-     * Java DSL.
-     *
-     * @param e Element to check
-     * @return True if element represents a "when any" constraint relaxation, false otherwise
-     */
-    public static boolean isWhenAny(CtElement e) {
-        return isExecutableWithName(e, dotsWhenAnyName);
-    }
+	/**
+	 * Given a CtInvocation representing an SmPL dots construct in the SmPL Java DSL, check
+	 * if the dots constructs specifies the "when any" constraint relaxation.
+	 *
+	 * @param dots Element representing an SmPL dots construct
+	 * @return True if dots construct specifies "when any" relaxation, false otherwise
+	 */
+	public static boolean hasWhenAny(CtInvocation<?> dots) {
+		return dots.getArguments().stream().anyMatch(SmPLJavaDSL::isWhenAny);
+	}
 
-    /**
-     * Create a source code String for a representation of an unspecified method header (unspecified return type,
-     * name and list of parameters).
-     *
-     * @return Source code String for a method header that represents an unspecified method
-     */
-    public static String createUnspecifiedMethodHeaderString() {
-        return "void " + unspecifiedElementOrTypeName + "()";
-    }
+	/**
+	 * Check if a given element represents a "when any" constraint relaxation on dots in the SmPL
+	 * Java DSL.
+	 *
+	 * @param e Element to check
+	 * @return True if element represents a "when any" constraint relaxation, false otherwise
+	 */
+	public static boolean isWhenAny(CtElement e) {
+		return isExecutableWithName(e, dotsWhenAnyName);
+	}
 
-    /**
-     * Create a source code String for the method call expression part of the implicit dots construct that is added to
-     * a patch that does not match on the method header.
-     *
-     * @return Source code String for method call expression of the implicit dots construct
-     */
-    public static String createImplicitDotsCall() {
-        return dotsWithOptionalMatchName + "(" + dotsWhenExistsName + "())";
-    }
+	/**
+	 * Create a source code String for a representation of an unspecified method header (unspecified return type,
+	 * name and list of parameters).
+	 *
+	 * @return Source code String for a method header that represents an unspecified method
+	 */
+	public static String createUnspecifiedMethodHeaderString() {
+		return "void " + unspecifiedElementOrTypeName + "()";
+	}
 
-    /**
-     * Check whether the given element is a CtMethod with a method header that is a representation of an
-     * unspecified method header (unspecified return type, name and list of parameters).
-     *
-     * @param e Element to check
-     * @return True if element represents an unspecified method header, false otherwise
-     */
-    public static boolean isUnspecifiedMethodHeader(CtElement e) {
-        return e instanceof CtMethod && ((CtMethod<?>) e).getSimpleName().equals(unspecifiedElementOrTypeName);
-    }
+	/**
+	 * Create a source code String for the method call expression part of the implicit dots construct that is added to
+	 * a patch that does not match on the method header.
+	 *
+	 * @return Source code String for method call expression of the implicit dots construct
+	 */
+	public static String createImplicitDotsCall() {
+		return dotsWithOptionalMatchName + "(" + dotsWhenExistsName + "())";
+	}
 
-    /**
-     * Check whether the given element is any of the DSL meta elements.
-     *
-     * @param e Element to check
-     * @return True if the element is any of the DSL meta elements, false otherwise
-     */
-    public static boolean isMetaElement(CtElement e) {
-        return isExpressionMatchWrapper(e) || isBeginDisjunction(e) || isContinueDisjunction(e)
-                || isStatementLevelDots(e) || isDotsWithOptionalMatch(e) || isDeletionAnchor(e)
-                || isParameterLevelDots(e) || isParameterLevelDots(e) || isWhenAny(e)
-                || isWhenExists(e) || isWhenNotEquals(e);
-    }
+	/**
+	 * Check whether the given element is a CtMethod with a method header that is a representation of an
+	 * unspecified method header (unspecified return type, name and list of parameters).
+	 *
+	 * @param e Element to check
+	 * @return True if element represents an unspecified method header, false otherwise
+	 */
+	public static boolean isUnspecifiedMethodHeader(CtElement e) {
+		return e instanceof CtMethod && ((CtMethod<?>) e).getSimpleName().equals(unspecifiedElementOrTypeName);
+	}
 
-    /**
-     * Check if a given AST element is an invocation of a given executable name.
-     *
-     * @param e Element to check
-     * @param name Executable name to match
-     * @return True if the given element is an invocation matching the given executable name, false otherwise
-     */
-    private static boolean isExecutableWithName(CtElement e, String name) {
-        return e instanceof CtInvocation<?>
-               && ((CtInvocation<?>) e).getExecutable().getSimpleName().equals(name);
-    }
+	/**
+	 * Check whether the given element is any of the DSL meta elements.
+	 *
+	 * @param e Element to check
+	 * @return True if the element is any of the DSL meta elements, false otherwise
+	 */
+	public static boolean isMetaElement(CtElement e) {
+		return isExpressionMatchWrapper(e) || isBeginDisjunction(e) || isContinueDisjunction(e)
+				|| isStatementLevelDots(e) || isDotsWithOptionalMatch(e) || isDeletionAnchor(e)
+				|| isParameterLevelDots(e) || isParameterLevelDots(e) || isWhenAny(e)
+				|| isWhenExists(e) || isWhenNotEquals(e);
+	}
 
-    /**
-     * Check if a given AST element is an If statement with condition expression a single VariableRead of a variable
-     * of a certain name.
-     *
-     * @param element Element to check
-     * @param name Variable name to match
-     * @return True if the given element is an If statement with condition variable of given name, false otherwise
-     */
-    private static boolean isIfStatementWithNamedConditionVariable(CtElement element, String name) {
-        return element instanceof CtIf
-               && ((CtIf) element).getCondition() instanceof CtVariableRead
-               && ((CtVariableRead<?>) ((CtIf) element).getCondition()).getVariable().getSimpleName().equals(name);
-    }
+	/**
+	 * Check if a given AST element is an invocation of a given executable name.
+	 *
+	 * @param e    Element to check
+	 * @param name Executable name to match
+	 * @return True if the given element is an invocation matching the given executable name, false otherwise
+	 */
+	private static boolean isExecutableWithName(CtElement e, String name) {
+		return e instanceof CtInvocation<?>
+				&& ((CtInvocation<?>) e).getExecutable().getSimpleName().equals(name);
+	}
+
+	/**
+	 * Check if a given AST element is an If statement with condition expression a single VariableRead of a variable
+	 * of a certain name.
+	 *
+	 * @param element Element to check
+	 * @param name    Variable name to match
+	 * @return True if the given element is an If statement with condition variable of given name, false otherwise
+	 */
+	private static boolean isIfStatementWithNamedConditionVariable(CtElement element, String name) {
+		return element instanceof CtIf
+				&& ((CtIf) element).getCondition() instanceof CtVariableRead
+				&& ((CtVariableRead<?>) ((CtIf) element).getCondition()).getVariable().getSimpleName().equals(name);
+	}
 }

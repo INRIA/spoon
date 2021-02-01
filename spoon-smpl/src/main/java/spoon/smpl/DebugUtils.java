@@ -16,228 +16,244 @@ import java.util.Stack;
  * Collection of static debug utility methods.
  */
 public class DebugUtils {
-    /**
-     * Given a CtClass of an SmPL rule in the SmPL Java DSL, pretty-print format the rule method adding line
-     * numbers to statements.
-     *
-     * @param ctClass SmPL rule in SmPL Java DSL
-     * @return Pretty-print formatted string
-     */
-    public static String printRuleMethodWithLines(CtClass<?> ctClass) {
-        CtMethod<?> ruleMethod = SmPLJavaDSL.getRuleMethod(ctClass);
-        return printRuleMethodWithLinesInner(ruleMethod.getBody(), 0).toString();
-    }
+	/**
+	 * Hide utility class constructor.
+	 */
+	private DebugUtils() { }
 
-    /**
-     * Recursive helper method for printRuleMethodWithLines.
-     *
-     * @param e Element to pretty-print format
-     * @param indent Current indentation level
-     * @return Pretty-print formatted string
-     */
-    private static StringBuilder printRuleMethodWithLinesInner(CtElement e, int indent) {
-        StringBuilder sb = new StringBuilder();
-        String lineStr;
+	/**
+	 * Given a CtClass of an SmPL rule in the SmPL Java DSL, pretty-print format the rule method adding line
+	 * numbers to statements.
+	 *
+	 * @param ctClass SmPL rule in SmPL Java DSL
+	 * @return Pretty-print formatted string
+	 */
+	public static String printRuleMethodWithLines(CtClass<?> ctClass) {
+		CtMethod<?> ruleMethod = SmPLJavaDSL.getRuleMethod(ctClass);
+		return printRuleMethodWithLinesInner(ruleMethod.getBody(), 0).toString();
+	}
 
-        if (e instanceof CtBlock) {
-            sb.append("{\n");
+	/**
+	 * Recursive helper method for printRuleMethodWithLines.
+	 *
+	 * @param e      Element to pretty-print format
+	 * @param indent Current indentation level
+	 * @return Pretty-print formatted string
+	 */
+	private static StringBuilder printRuleMethodWithLinesInner(CtElement e, int indent) {
+		StringBuilder sb = new StringBuilder();
+		String lineStr;
 
-            for (CtStatement stmt : ((CtBlock<?>) e).getStatements()) {
-                sb.append(printRuleMethodWithLinesInner(stmt, indent + 4));
-            }
+		if (e instanceof CtBlock) {
+			sb.append("{\n");
 
-            for (int n = 0; n < indent; ++n) { sb.append(" "); }
-            sb.append("}\n");
-        } else if (e instanceof CtIf) {
-            lineStr = Integer.toString(e.getPosition().getLine());
-            sb.append(lineStr);
+			for (CtStatement stmt : ((CtBlock<?>) e).getStatements()) {
+				sb.append(printRuleMethodWithLinesInner(stmt, indent + 4));
+			}
 
-            for (int n = 0; n < indent - lineStr.length(); ++n) { sb.append(" "); }
-            sb.append("if (")
-                    .append(((CtIf) e).getCondition().toString())
-                    .append(") ");
+			for (int n = 0; n < indent; ++n) {
+				sb.append(" ");
+			}
+			sb.append("}\n");
+		} else if (e instanceof CtIf) {
+			lineStr = Integer.toString(e.getPosition().getLine());
+			sb.append(lineStr);
 
-            sb.append(printRuleMethodWithLinesInner(((CtIf) e).getThenStatement(), indent));
+			for (int n = 0; n < indent - lineStr.length(); ++n) {
+				sb.append(" ");
+			}
 
-            if (((CtIf) e).getElseStatement() != null) {
-                for (int n = 0; n < indent; ++n) { sb.append(" "); }
-                sb.append("else ").append(printRuleMethodWithLinesInner(((CtIf) e).getElseStatement(), indent));
-            }
-        } else {
-            lineStr = Integer.toString(e.getPosition().getLine());
-            sb.append(lineStr);
-            for (int n = 0; n < indent - lineStr.length(); ++n) { sb.append(" "); }
-            sb.append(e.toString()).append("\n");
-        }
+			sb.append("if (")
+				.append(((CtIf) e).getCondition().toString())
+				.append(") ");
 
-        return sb;
-    }
+			sb.append(printRuleMethodWithLinesInner(((CtIf) e).getThenStatement(), indent));
 
-    /**
-     * Add indentation to text in unindented C-like syntax.
-     *
-     * @param text Text to format
-     * @return Formatted text
-     */
-    public static String prettifyCLike(String text) {
-        return prettifyCLike(text, '{', '}', 4, false);
-    }
+			if (((CtIf) e).getElseStatement() != null) {
+				for (int n = 0; n < indent; ++n) {
+					sb.append(" ");
+				}
+				sb.append("else ").append(printRuleMethodWithLinesInner(((CtIf) e).getElseStatement(), indent));
+			}
+		} else {
+			lineStr = Integer.toString(e.getPosition().getLine());
+			sb.append(lineStr);
+			for (int n = 0; n < indent - lineStr.length(); ++n) {
+				sb.append(" ");
+			}
+			sb.append(e.toString()).append("\n");
+		}
 
-    /**
-     * Add indentation to text in unindented C-like syntax.
-     *
-     * @param text Text to format
-     * @param open Indentation-increasing character
-     * @param close Indentation-decreasing character
-     * @param indentSize Indentation size
-     * @param addNewlines Add newlines after indentation-altering characters?
-     * @return Formatted text
-     */
-    public static String prettifyCLike(String text, char open, char close, int indentSize, boolean addNewlines) {
-        StringBuilder result = new StringBuilder();
+		return sb;
+	}
 
-        int indent = 0;
-        boolean doIndent = false;
+	/**
+	 * Add indentation to text in unindented C-like syntax.
+	 *
+	 * @param text Text to format
+	 * @return Formatted text
+	 */
+	public static String prettifyCLike(String text) {
+		return prettifyCLike(text, '{', '}', 4, false);
+	}
 
-        for (char c : text.toCharArray()) {
-            if (c == close) {
-                indent -= 1;
+	/**
+	 * Add indentation to text in unindented C-like syntax.
+	 *
+	 * @param text        Text to format
+	 * @param open        Indentation-increasing character
+	 * @param close       Indentation-decreasing character
+	 * @param indentSize  Indentation size
+	 * @param addNewlines Add newlines after indentation-altering characters?
+	 * @return Formatted text
+	 */
+	public static String prettifyCLike(String text, char open, char close, int indentSize, boolean addNewlines) {
+		StringBuilder result = new StringBuilder();
 
-                if (addNewlines) {
-                    result.append('\n');
-                    doIndent = true;
-                }
-            }
+		int indent = 0;
+		boolean doIndent = false;
 
-            if (doIndent) {
-                doIndent = false;
+		for (char c : text.toCharArray()) {
+			if (c == close) {
+				indent -= 1;
 
-                for (int i = 0; i < indent; ++i) {
-                    for (int j = 0; j < indentSize; ++j) {
-                        result.append(" ");
-                    }
-                }
-            }
+				if (addNewlines) {
+					result.append('\n');
+					doIndent = true;
+				}
+			}
 
-            result.append(c);
+			if (doIndent) {
+				doIndent = false;
 
-            if (c == '\n') {
-                doIndent = true;
-            }
+				for (int i = 0; i < indent; ++i) {
+					for (int j = 0; j < indentSize; ++j) {
+						result.append(" ");
+					}
+				}
+			}
 
-            if (c == open) {
-                indent += 1;
+			result.append(c);
 
-                if (addNewlines) {
-                    result.append('\n');
-                    doIndent = true;
-                }
-            }
-        }
+			if (c == '\n') {
+				doIndent = true;
+			}
 
-        return result.toString();
-    }
+			if (c == open) {
+				indent += 1;
 
-    /**
-     * Produce a pretty-printed String of a given formula.
-     *
-     * @param phi Formula to pretty-print
-     * @return Pretty-printed String
-     */
-    public static String prettifyFormula(Formula phi) {
-        return prettifyFunctionlike(phi.toString());
-    }
+				if (addNewlines) {
+					result.append('\n');
+					doIndent = true;
+				}
+			}
+		}
 
-    /**
-     * Reformat a given String, adding line breaks after commas and indenting the content following a comma such
-     * that it aligns with the appropriate enclosing opening parenthesis.
-     *
-     * Example:
-     *   input: "And(First, Or(Second, Third))"
-     *  output: "And(First,
-     *               Or(Second,
-     *                  Third))
-     *
-     * @param str String to reformat
-     * @return Reformatted String
-     */
-    public static String prettifyFunctionlike(String str) {
-        StringBuilder sb = new StringBuilder();
+		return result.toString();
+	}
 
-        Stack<Integer> indentStack = new Stack<>();
-        indentStack.push(0);
+	/**
+	 * Produce a pretty-printed String of a given formula.
+	 *
+	 * @param phi Formula to pretty-print
+	 * @return Pretty-printed String
+	 */
+	public static String prettifyFormula(Formula phi) {
+		return prettifyFunctionlike(phi.toString());
+	}
 
-        int offset = 0;
-        boolean doIndent = false;
+	/**
+	 * Reformat a given String, adding line breaks after commas and indenting the content following a comma such
+	 * that it aligns with the appropriate enclosing opening parenthesis.
+	 * <p>
+	 * Example:
+	 * input: "And(First, Or(Second, Third))"
+	 * output: "And(First,
+	 * Or(Second,
+	 * Third))
+	 *
+	 * @param str String to reformat
+	 * @return Reformatted String
+	 */
+	public static String prettifyFunctionlike(String str) {
+		StringBuilder sb = new StringBuilder();
 
-        for (char c : str.toCharArray()) {
-            if (doIndent) {
-                doIndent = false;
-                sb.append("\n");
+		Stack<Integer> indentStack = new Stack<>();
+		indentStack.push(0);
 
-                for (int i = 0; i < indentStack.peek(); ++i) {
-                    sb.append(" ");
-                }
+		int offset = 0;
+		boolean doIndent = false;
 
-                offset = indentStack.peek();
-            }
-            if (c == '(') {
-                indentStack.push(offset);
-            } else if (c == ')') {
-                indentStack.pop();
-            } else if (c == ',') {
-                doIndent = true;
-            }
+		for (char c : str.toCharArray()) {
+			if (doIndent) {
+				doIndent = false;
+				sb.append("\n");
 
-            sb.append(c);
-            ++offset;
-        }
+				for (int i = 0; i < indentStack.peek(); ++i) {
+					sb.append(" ");
+				}
 
-        return sb.toString();
-    }
+				offset = indentStack.peek();
+			}
+			if (c == '(') {
+				indentStack.push(offset);
+			} else if (c == ')') {
+				indentStack.pop();
+			} else if (c == ',') {
+				doIndent = true;
+			}
 
-    /**
-     * Produce a pretty-printed String of a given Model.
-     *
-     * @param model Model to pretty-print
-     * @return Pretty-printed string of Model
-     */
-    public static String prettifyModel(Model model) {
-        StringBuilder sb = new StringBuilder();
+			sb.append(c);
+			++offset;
+		}
 
-        List<Integer> states = model.getStates();
-        Collections.sort(states);
+		return sb.toString();
+	}
 
-        sb.append("Model(states=").append(states).append(", ")
-                .append("successors={");
+	/**
+	 * Produce a pretty-printed String of a given Model.
+	 *
+	 * @param model Model to pretty-print
+	 * @return Pretty-printed string of Model
+	 */
+	public static String prettifyModel(Model model) {
+		StringBuilder sb = new StringBuilder();
 
-        for (int state : states) {
-            for (int next : model.getSuccessors(state)) {
-                sb.append(state).append("->").append(next).append(", ");
-            }
-        }
+		List<Integer> states = model.getStates();
+		Collections.sort(states);
 
-        sb.delete(sb.length() - 2, sb.length());
-        sb.append("}, labels={");
+		sb.append("Model(states=")
+			.append(states)
+			.append(", ")
+			.append("successors={");
 
-        for (int state : states) {
-            if (model.getLabels(state).size() > 0 ) {
-                sb.append(state).append(": [");
+		for (int state : states) {
+			for (int next : model.getSuccessors(state)) {
+				sb.append(state).append("->").append(next).append(", ");
+			}
+		}
 
-                for (Label label : model.getLabels(state)) {
-                    sb.append(label.toString()).append(", ");
-                }
+		sb.delete(sb.length() - 2, sb.length());
+		sb.append("}, labels={");
 
-                sb.delete(sb.length() - 2, sb.length());
-                sb.append("], ");
-            } else {
-                sb.append(state).append(": [], ");
-            }
-        }
+		for (int state : states) {
+			if (model.getLabels(state).size() > 0) {
+				sb.append(state).append(": [");
 
-        sb.delete(sb.length() - 2, sb.length());
-        sb.append("})");
+				for (Label label : model.getLabels(state)) {
+					sb.append(label.toString()).append(", ");
+				}
 
-        return sb.toString();
-    }
+				sb.delete(sb.length() - 2, sb.length());
+				sb.append("], ");
+			} else {
+				sb.append(state).append(": [], ");
+			}
+		}
+
+		sb.delete(sb.length() - 2, sb.length());
+		sb.append("})");
+
+		return sb.toString();
+	}
 }
