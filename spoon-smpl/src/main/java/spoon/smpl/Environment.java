@@ -163,6 +163,7 @@ public class Environment extends HashMap<String, Object> {
             return result;
         }
 
+        // The negation of the top/any-environment is the bottom/conflicting environment
         if (e.isEmpty()) {
             return null;
         }
@@ -170,6 +171,7 @@ public class Environment extends HashMap<String, Object> {
         // See invariant comment below
         Queue<Environment> workqueue = new LinkedList<>();
 
+        // Negate positive bindings
         for (String key : e.keySet()) {
             Object val = e.get(key);
 
@@ -186,6 +188,8 @@ public class Environment extends HashMap<String, Object> {
                 env.put(key, binding);
 
                 // TODO: properly figure out if this bit should be included or not
+                // Note: this adds all -other- bindings (excluding the key processed by the
+                //       outermost loop) as-is to the env placed in the workqueue.
                 /*for (String key2 : e.keySet()) {
                     if (key2.equals(key)) {
                         continue;
