@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // TODO: add names for metavariable types (identifier, type, constant ...)
+// TODO: grouping of public and private members
 
 /**
  * Utilities to define and facilitate working with the SmPL Java DSL.
