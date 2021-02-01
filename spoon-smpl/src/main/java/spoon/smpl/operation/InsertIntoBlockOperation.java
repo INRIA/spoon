@@ -69,10 +69,10 @@ public class InsertIntoBlockOperation implements Operation {
      * @param bindings Metavariable bindings to use
      */
     @Override
-    public void accept(OperationFilter category, CtElement targetElement, Map<String, Object> bindings) {
-        if (anchor == Anchor.TOP && category == OperationFilter.APPEND) {
+    public void accept(OperationCategory category, CtElement targetElement, Map<String, Object> bindings) {
+        if (anchor == Anchor.TOP && category == OperationCategory.APPEND) {
             getTargetBlock(targetElement).insertBegin((CtStatement) Substitutor.apply(statementToInsert.clone(), bindings));
-        } else if (anchor == Anchor.BOTTOM && category == OperationFilter.PREPEND) {
+        } else if (anchor == Anchor.BOTTOM && category == OperationCategory.PREPEND) {
             getTargetBlock(targetElement).insertEnd((CtStatement) Substitutor.apply(statementToInsert.clone(), bindings));
         }
     }

@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.operation.Operation;
-import spoon.smpl.operation.OperationFilter;
+import spoon.smpl.operation.OperationCategory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -52,7 +52,7 @@ public class TransformerTest {
         Set<ModelChecker.Witness> witnesses = new HashSet<>();
 
         Operation operation = (category, element, bindings) -> {
-            if (category == OperationFilter.PREPEND) {
+            if (category == OperationCategory.PREPEND) {
                 messages.add("Operation applied to " + element.toString() + " with bindings " + bindings.toString());
             }
         };
@@ -81,8 +81,8 @@ public class TransformerTest {
 
         List<Operation> operations = new ArrayList<>();
 
-        operations.add((category, element, bindings) -> { if (category == OperationFilter.PREPEND) { messages.add("hello"); } } );
-        operations.add((category, element, bindings) -> { if (category == OperationFilter.PREPEND) { messages.add("world"); } } );
+        operations.add((category, element, bindings) -> { if (category == OperationCategory.PREPEND) { messages.add("hello"); } } );
+        operations.add((category, element, bindings) -> { if (category == OperationCategory.PREPEND) { messages.add("world"); } } );
 
         witnesses.add(witness(4, "whatever", operations));
 
@@ -106,9 +106,9 @@ public class TransformerTest {
 
         List<Operation> operations = new ArrayList<>();
 
-        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.PREPEND) { messages.add("prepend"); } } );
-        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.APPEND) { messages.add("append"); } } );
-        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.DELETE) { messages.add("delete"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationCategory.PREPEND) { messages.add("prepend"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationCategory.APPEND) { messages.add("append"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationCategory.DELETE) { messages.add("delete"); } } );
 
         witnesses.add(witness(4, "whatever", operations));
 
@@ -135,12 +135,12 @@ public class TransformerTest {
 
         List<Operation> operations = new ArrayList<>();
 
-        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.PREPEND) { messages.add("prepend1"); } } );
-        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.PREPEND) { messages.add("prepend2"); } } );
-        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.APPEND) { messages.add("append1"); } } );
-        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.APPEND) { messages.add("append2"); } } );
-        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.DELETE) { messages.add("delete1"); } } );
-        operations.add((Operation) (category, element, bindings) -> { if (category == OperationFilter.DELETE) { messages.add("delete2"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationCategory.PREPEND) { messages.add("prepend1"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationCategory.PREPEND) { messages.add("prepend2"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationCategory.APPEND) { messages.add("append1"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationCategory.APPEND) { messages.add("append2"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationCategory.DELETE) { messages.add("delete1"); } } );
+        operations.add((Operation) (category, element, bindings) -> { if (category == OperationCategory.DELETE) { messages.add("delete2"); } } );
 
         witnesses.add(witness(4, "whatever", operations));
 

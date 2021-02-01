@@ -1,10 +1,10 @@
 package spoon.smpl.operation;
 
 /**
- * OperationFilter defines categories for prioritization and ordering of operations.
+ * OperationCategory defines categories for prioritization and ordering of operations.
  *
  * A class implementing Operation contains a method accept() that takes a value of
- * OperationFilter. The Transformer provides calls to these Operations with OperationFilter
+ * OperationCategory. The Transformer provides calls to these Operations with OperationCategory
  * values for the Operations to decide for themselves whether or not to act on the call.
  *
  * The current set defines the following order of application:
@@ -12,6 +12,6 @@ package spoon.smpl.operation;
  * 2) APPEND operations, in reverse stored order.
  * 3) DELETE operations, in stored order.
  */
-public enum OperationFilter {
+public enum OperationCategory {
     PREPEND, APPEND, DELETE;
 }

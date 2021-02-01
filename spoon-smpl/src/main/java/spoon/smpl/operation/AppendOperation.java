@@ -25,8 +25,8 @@ public class AppendOperation implements Operation {
      * @param bindings Metavariable bindings to use
      */
     @Override
-    public void accept(OperationFilter category, CtElement targetElement, Map<String, Object> bindings) {
-        if (category != OperationFilter.APPEND) {
+    public void accept(OperationCategory category, CtElement targetElement, Map<String, Object> bindings) {
+        if (category != OperationCategory.APPEND) {
             return;
         }
 

@@ -7,7 +7,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.operation.Operation;
-import spoon.smpl.operation.OperationFilter;
+import spoon.smpl.operation.OperationCategory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -114,19 +114,19 @@ public class Transformer {
 
             // Process any prepend operations in the list
             objects.stream().filter((obj) -> obj instanceof Operation).forEachOrdered((obj) -> {
-                ((Operation) obj).accept(OperationFilter.PREPEND, targetElement, bindings);
+                ((Operation) obj).accept(OperationCategory.PREPEND, targetElement, bindings);
             });
 
             // Process any append operations in the list, in reverse order to preserve correct output order
             objects.stream().filter((obj) -> obj instanceof Operation)
                     .collect(Collectors.toCollection(LinkedList::new))
                     .descendingIterator().forEachRemaining((obj) -> {
-                        ((Operation) obj).accept(OperationFilter.APPEND, targetElement, bindings);
+                        ((Operation) obj).accept(OperationCategory.APPEND, targetElement, bindings);
                     });
 
             // Process any delete operations in the list
             objects.stream().filter((obj) -> obj instanceof Operation).forEachOrdered((obj) -> {
-                ((Operation) obj).accept(OperationFilter.DELETE, targetElement, bindings);
+                ((Operation) obj).accept(OperationCategory.DELETE, targetElement, bindings);
             });
         } else {
             // The witness binding is an actual metavariable binding, record it and process sub-witnesses
