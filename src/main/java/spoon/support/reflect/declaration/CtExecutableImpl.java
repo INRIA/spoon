@@ -20,6 +20,7 @@ import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.visitor.SignaturePrinter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -82,7 +83,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	public List<CtParameter<?>> getParameters() {
-		return parameters;
+		return Collections.unmodifiableList(parameters);
 	}
 
 	@Override

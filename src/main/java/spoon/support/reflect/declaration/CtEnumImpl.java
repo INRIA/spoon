@@ -52,7 +52,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 		allMethods.addAll(getFactory().Type().get(Enum.class).getMethods());
 		allMethods.add(valuesMethod());
 		allMethods.add(valueOfMethod());
-		return allMethods;
+		return Collections.unmodifiableSet(allMethods);
 	}
 
 	@Override

@@ -411,6 +411,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 				throw new SpoonException("Type not found " + getQualifiedName());
 			}
 		} else {
+			// no Collections.unmodifiable needed, because method already returns read only view
 			return t.getDeclaredExecutables();
 		}
 	}
