@@ -65,7 +65,7 @@ public interface CtTypeReference<T> extends CtReference, CtActualTypeContainer, 
 	 * reference or <code>null</code> if the type declaration is not in the
 	 * analyzed source files,
 	 *
-	 * {@link #getTypeDeclaration()} is a newer and better alternative that never returns null.
+	 * {@link #getTypeDeclaration()} is a newer and better alternative that less often returns null.
 	 *
 	 * @return the referenced element or <code>null</code> if the type
 	 * declaration is not the analyzed source files.
