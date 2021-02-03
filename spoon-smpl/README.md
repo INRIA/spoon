@@ -24,13 +24,13 @@ References:
 
 * Parsing SMPL: see SmPLLexer
     *  SmPLLexer is used by SmPLParser, whose main method is method `parse`. Next, method `rewrite` transforms the SmPL code into the Java DSL.
-* class `SmPLRule` encapsulates a single rule, it is created by method `SmPLParser#compile
+* class `SmPLRule` encapsulates a single rule, it is created by method `SmPLParser#compile`
 * class `FormulaCompiler` generates the CTL formula, method `compileFormula()` returns a `Formula`
 * `ModelChecker` takes a `CFGModel` as input (there is one `CFGModel` instance per method in the project to be analyzed) (there are many `CFGModel` and only one `Formula`, and then evaluates the formula on the model. The evaluation is done through interpretation with a visitor over the formula code. It returns a `Result` containing a set of `Witness` that encode the metavariable bindings and transformation operations, and this set is taken as input by `Transformer`.
 * `Transformer` takes the CFG model and a set of `Witness`
 * package `spoon.smpl.operation` contains reified operations and a way to execute them
 * `Substitutor` substitutes meta-variables by their bound values
-* The full loop can be seen in method spoon.smpl.SmPLProcessor.tryApplyPatch
+* The full loop can be seen in method `spoon.smpl.SmPLProcessor#tryApplyPatch`
 
 ## Ideas
 
