@@ -33,12 +33,16 @@ public class TriConsumerTest {
 
 		StringBuilder sb = new StringBuilder();
 
-		TriConsumer<Integer, String, Boolean> fn = (x, y, z) -> {
+		TriConsumer<Integer, String, Boolean> fn1 = (x, y, z) -> {
 			sb.append(x).append(y).append(z);
 		};
 
-		fn.accept(123, "foo", true);
+		TriConsumer<Integer, String, Boolean> fn2 = (x, y, z) -> {
+			sb.append(z).append(y).append(x);
+		};
 
-		assertEquals("123footrue", sb.toString());
+		fn1.andThen(fn2).accept(123, "foo", true);
+
+		assertEquals("123footruetruefoo123", sb.toString());
 	}
 }
