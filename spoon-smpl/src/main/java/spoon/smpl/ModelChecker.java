@@ -125,7 +125,7 @@ public class ModelChecker implements FormulaVisitor {
 		public final String metavar;
 
 		/**
-		 * Value bound to metavariable.
+		 * Value bound to metavariable (usually a CtElement).
 		 */
 		public final Object binding;
 

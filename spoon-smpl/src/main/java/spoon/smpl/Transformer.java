@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 /**
  * Transformer contains methods capable to applying a set of transformations as recorded by
  * CTL-VW witnesses to a CFGModel.
+ * See paper "A foundation for flow-based program matching: using temporal logic and model checking" (2009)
  * <p>
  * A CTL-VW witness is a 4-tuple of the form (state, metavar, binding, subWitnesses) where
  * subWitnesses is a set of witnesses.
@@ -118,6 +119,7 @@ public class Transformer {
 	 */
 	private static void transform(CFGModel model, Map<String, Object> bindings, ModelChecker.Witness witness, Set<StateElementPair> done) {
 		if (witness.binding instanceof List<?>) {
+			// we're at at a leaf of the witness trees
 			// The witness binding is a list of operations, apply them
 
 			List<?> objects = (List<?>) witness.binding;
@@ -126,6 +128,7 @@ public class Transformer {
 
 			CtElement targetElement;
 
+			// naming convention: "_e" means a bound expression between a metavariable and a subexpression of a statement
 			if (bindings.containsKey("_e")) {
 				targetElement = (CtElement) bindings.get("_e");
 			} else {

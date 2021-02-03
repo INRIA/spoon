@@ -134,7 +134,7 @@ public class Substitutor implements CtVisitor {
 	 * The given element is cloned so the input will not be mutated.
 	 *
 	 * @param element  Element to perform substitutions on
-	 * @param bindings Metavariable bindings
+	 * @param bindings Metavariable bindings, the string is the simpe name of local variables
 	 */
 	public Substitutor(CtElement element, Map<String, Object> bindings) {
 		this.element = element.clone();
