@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.inria.gforge.spoon</groupId>
-    <artifactId>control-flow</artifactId>
-    <version>0.0.2</version>
+    <artifactId>spoon-control-flow</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -37,7 +37,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.1.2</version>
                 <configuration>
                     <failsOnError>true</failsOnError>
                     <configLocation>../checkstyle.xml</configLocation>
@@ -81,7 +81,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>8.2.0</version>
+            <version>8.3.0</version>
         </dependency>
 
         <dependency>
@@ -93,7 +93,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
