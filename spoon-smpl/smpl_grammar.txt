@@ -1,69 +1,41 @@
-TODO: update this file to reflect the "final" implementation used in the thesis
+TODO: further update this file to reflect the "final" implementation used in the thesis
 TODO: markdownify this file
 
-First milestone SmPL grammar:
-    
+
     Adapted from http://coccinelle.lip6.fr/docs/main_grammar.pdf
     
     
-    
-    Note: This grammar is incomplete as it does not cover dot modifiers <...> and <+...+>,
-          pattern disjunction (p | ... | p) and conjunction (p && ... && p)
-          
-          These constructs are to be part of the first milestone but could not be
-          trivially lifted from the official grammar PDF as they are buried in the
-          C-specific parts of that grammar.
+    Note: This grammar is incomplete as it does not cover dots variant < ... >
+          and pattern disjunction ( a | b )
     
     
     
-    program        ::= include_cocci* changeset+
-    
-    include_cocci  ::= #include string
-                     | using string                        patch-local isomorphism definitions?
-                     | using pathToIsoFile
-                 //  | virtual id (,id)*
+    program        ::= changeset+
     
     changeset      ::= metavariables transformation
-                 //  | script_metavariables script_code
     
     metavariables  ::= @@ metadecl* @@ | @ rulename @ metadecl* @@
     
-    // rulename    ::= id [extends id] [depends on] [scope] dep [iso] [disable-iso] [exists] [rulekind]
     rulename       ::= id
     
-    metadecl ::= identifier ids ;
-               | type ids ;
-               | expression [list] ids ;
-               | statement [list] ids ;
-               | constant ids ;
-               | JavaType ids ;         
-               // too much removed to include here
+    metadecl ::= metatype ids (when matches "regex")? ;
     
-    ids ::= pmid (, pmid)*
-    pmid ::= id | mid
-    mid ::= rulename_id.id
+    metatype ::= identifier
+               | type
+               | expression
+               | statement
+               | constant
+               | JavaType
+    
+    ids ::= id (, id)*
     
     transformation ::= OPTDOTSEQ(top, when)
     
-    top ::= java_expr | java_decl_stmt+ | java_fundecl          this is where the java lives
+    top ::= java_expr | java_decl_stmt+ | java_fundecl          //this is where the java lives
     
     when ::= when != when_code
-        // | when any                     lifting shortest path restriction
-        // | when strict                  applicable to error states (how are these determined?)
-           | when exists                  not all paths need to match
-           | when forall                  all paths must match the complete rule
-        // | when true != expr
-        // | when false != expr
-    
+           | when exists
+           | when any
     
     OPTDOTSEQ(grammar, when) = [... (when)*] grammar (... (when)* grammar)* [... (when)*]
     
-    
-    
-    
-    Notable omissions in first milestone:
-        
-        dots in method calls: foo(...)
-        "when any" lifting of shortest-path restriction for dots
-        "fresh identifier" metavariables for code generation
-        constraints/regexes on metavariable ids
