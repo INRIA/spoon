@@ -28,6 +28,7 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
@@ -46,9 +47,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -145,6 +148,22 @@ public class PackageTest {
 		assertEquals(CtComment.CommentType.INLINE, aPackage.getComments().get(2).getCommentType());
 
 		assertThat(aPackage).isEqualTo(ModelUtils.build(new File("./target/spooned/package/spoon/test/pkg/testclasses/internal")).Package().get("spoon.test.pkg.testclasses.internal"));
+	}
+
+	@Test
+	public void testHandlesDuplicatePackageInfo(){
+		// contract: with setIgnoreDuplicateDeclarations(true), duplicated package-info.java files should be allowed
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);
+		launcher.addInputResource("./src/test/resources/duplicate-package-info");
+		launcher.run();
+
+		List<CtCompilationUnit> compilationUnits = new ArrayList<>(launcher.getFactory().CompilationUnit().getMap().values());
+
+		org.hamcrest.MatcherAssert.assertThat(compilationUnits.size(), equalTo(2));
+		compilationUnits.forEach(
+				cu -> org.hamcrest.MatcherAssert.assertThat(cu.getFile().getName(), equalTo("package-info.java")));
 	}
 	
 	@Test
