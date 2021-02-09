@@ -26,7 +26,9 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
@@ -60,13 +62,16 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
 public class TestSniperPrinter {
 
@@ -120,6 +125,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testPrintInsertedThrow() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		testSniper(Throw.class.getName(), type -> {
 			CtConstructorCall<?> ctConstructorCall = (CtConstructorCall<?>) type.getMethodsByName("foo").get(0).getBody().getStatements().get(0);
 			CtThrow ctThrow = type.getFactory().createCtThrow(ctConstructorCall.toString());
@@ -154,6 +160,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testPrintLocalVariableDeclaration() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: joint local declarations can be sniper-printed in whole unmodified method
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
 			type.getFields().stream().forEach(x -> { x.delete(); });
@@ -172,6 +179,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testPrintLocalVariableDeclaration2() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: joint local declarations can be sniper-printed
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
 			type.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0).delete();
@@ -191,6 +199,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testPrintOneLineMultipleVariableDeclaration() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: files with joint field declarations can be recompiled after sniper
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
 			// we change something (anything would work)
@@ -229,6 +238,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testPrintChangedComplex() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: sniper printing after remove of statement from nested complex `if else if ...`
 		testSniper("spoon.test.prettyprinter.testclasses.ComplexClass", type -> {
 			//find to be removed statement "bounds = false"
@@ -291,6 +301,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testPrintAfterRemoveOfLastTypeMember() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: sniper print after remove of last type member - check that suffix spaces are printed correctly
 		testSniper(ToBeChanged.class.getName(), type -> {
 			//delete first parameter of method `andSomeOtherMethod`
@@ -302,6 +313,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testPrintAfterAddOfLastTypeMember() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: sniper print after add of last type member - check that suffix spaces are printed correctly
 		class Context {
 			CtField<?> newField;
@@ -376,6 +388,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testNewlineInsertedBetweenCommentAndTypeMemberWithAddedModifier() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: newline must be inserted after comment when a succeeding type member has had a
 		// modifier added to it
 
@@ -396,6 +409,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testNewlineInsertedBetweenCommentAndTypeMemberWithRemovedModifier() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: newline must be inserted after comment when a succeeding field has had a
 		// modifier removed from it
 
@@ -416,6 +430,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testNewlineInsertedBetweenModifiedCommentAndTypeMemberWithAddedModifier() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: newline must be inserted after modified comment when a succeeding type member
 		// has had its modifier list modified. We test modified comments separately from
 		// non-modified comments as they are handled differently in the printer.
@@ -436,7 +451,30 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	public void testTypeMemberCommentDoesNotDisappearWhenAllModifiersAreRemoved() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
+		// contract: A comment on a field should not disappear when all of its modifiers are removed.
+
+		Consumer<CtType<?>> removeTypeMemberModifiers = type -> {
+			type.getField("NON_FINAL_FIELD").setModifiers(Collections.emptySet());
+			type.getMethodsByName("nonStaticMethod").get(0).setModifiers(Collections.emptySet());
+			type.getNestedType("NonStaticInnerClass").setModifiers(Collections.emptySet());
+		};
+
+		BiConsumer<CtType<?>, String> assertFieldCommentPrinted = (type, result) ->
+			assertThat(result, allOf(
+						containsString("// field comment\n    int NON_FINAL_FIELD"),
+						containsString("// method comment\n    void nonStaticMethod"),
+						containsString("// nested type comment\n    class NonStaticInnerClass")
+					)
+			);
+
+		testSniper("TypeMemberComments", removeTypeMemberModifiers, assertFieldCommentPrinted);
+	}
+
+	@Test
 	public void testAddedImportStatementPlacedOnSeparateLineInFileWithoutPackageStatement() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: newline must be inserted between import statements when a new one is added
 
 		Consumer<CtType<?>> addArrayListImport = type -> {
@@ -457,6 +495,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testAddedImportStatementPlacedOnSeparateLineInFileWithPackageStatement() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: newline must be inserted both before and after a new import statement if ther
 		// is a package statement in the file
 
@@ -476,6 +515,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testAddedElementsIndentedWithAppropriateIndentationStyle() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: added elements in a source file should be indented with the same style of
 		// indentation as in the rest of the file
 
@@ -538,6 +578,75 @@ public class TestSniperPrinter {
 		testSniper("indentation.NoTypeMembers", addField, (type, result) -> {
 			assertThat(result, containsString("\n\tint z = 3;"));
 		});
+	}
+
+	@Test
+	public void testPrintTypeWithMethodImportAboveMethodDefinition() {
+		// contract: The type references of a method import (e.g. its return type) has source
+		// positions in the file the method was imported from. The resolved source end position
+		// of the import should not be affected by the placement of the imported method. This
+		// test ensures this is the case even when the end position of the imported method is
+		// greater than the end position of the import statement.
+
+		Launcher launcher = createLauncherWithSniperPrinter();
+		launcher.addInputResource(getResourcePath("methodimport.ClassWithStaticMethod"));
+		launcher.addInputResource(getResourcePath("methodimport.MethodImportAboveImportedMethod"));
+
+		CtModel model = launcher.buildModel();
+		CtType<?> classWithStaticMethodImport = model.getAllTypes().stream()
+				.filter(type -> type.getSimpleName().endsWith("AboveImportedMethod"))
+				.findFirst()
+				.get();
+
+		List<CtImport> imports = classWithStaticMethodImport.getFactory().CompilationUnit().getOrCreate(classWithStaticMethodImport).getImports();
+
+		String output = launcher
+				.getEnvironment()
+				.createPrettyPrinter().printTypes(classWithStaticMethodImport);
+
+		assertThat(output, containsString("import static methodimport.ClassWithStaticMethod.staticMethod;"));
+	}
+
+	@Test
+	public void testPrintTypeWithMethodImportBelowMethodDefinition() {
+		// contract: The type references of a method import (e.g. its return type) has source
+		// positions in the file the method was imported from. The resolved source start position
+		// of the import should not be affected by the placement of the imported method. This
+		// test ensures this is the case even when the start position of the imported method is
+		// less than the start position of the import statement.
+
+		Launcher launcher = createLauncherWithSniperPrinter();
+		launcher.addInputResource(getResourcePath("methodimport.ClassWithStaticMethod"));
+		launcher.addInputResource(getResourcePath("methodimport.MethodImportBelowImportedMethod"));
+
+		CtModel model = launcher.buildModel();
+		CtType<?> classWithStaticMethodImport = model.getAllTypes().stream()
+				.filter(type -> type.getSimpleName().endsWith("BelowImportedMethod"))
+				.findFirst()
+				.get();
+
+		String output = launcher
+				.getEnvironment()
+				.createPrettyPrinter().printTypes(classWithStaticMethodImport);
+
+		assertThat(output, containsString("import static methodimport.ClassWithStaticMethod.staticMethod;"));
+	}
+
+	@Test
+	public void testThrowsWhenTryingToPrintSubsetOfCompilationUnitTypes() {
+		// contract: Printing a subset of a compilation unit's types is a hassle to implement at the time of writing
+		// this, as a) DJPP will replace the compilation unit with a clone, and b) it makes it more difficult to
+		// match source code fragments. For now, we're lazy and simply don't allow it.
+
+		Launcher launcher = createLauncherWithSniperPrinter();
+		launcher.addInputResource(getResourcePath("MultipleTopLevelTypes"));
+
+		CtModel model = launcher.buildModel();
+		CtType<?> primaryType = model.getAllTypes().stream().filter(CtModifiable::isPublic).findFirst().get();
+		CtCompilationUnit cu = primaryType.getFactory().CompilationUnit().getOrCreate(primaryType);
+		SniperJavaPrettyPrinter sniper = (SniperJavaPrettyPrinter) launcher.getEnvironment().createPrettyPrinter();
+
+		assertThrows(IllegalArgumentException.class, () -> sniper.calculate(cu, Collections.singletonList(primaryType)));
 	}
 
 	/**

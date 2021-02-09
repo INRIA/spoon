@@ -40,10 +40,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -51,6 +54,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
 
 /**
@@ -130,6 +134,22 @@ public class TestCompilationUnit {
 			// do nothing
 		}
 	}
+
+	@Test
+	public void testCompilationUnitInNamedModuleHasDeclaredTypes() {
+		// contract: Compilation units in named modules should have the expected declared types
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.addInputResource("./src/test/resources/spoon/test/module/simple_module_with_code");
+		launcher.buildModel();
+
+		CtType<?> expectedType = launcher.getFactory().Type().get("fr.simplemodule.pack.SimpleClass");
+		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getOrCreate(expectedType);
+
+		assertThat(cu.getDeclaredTypes(), equalTo(Collections.singletonList(expectedType)));
+	}
+
 
 	@Test
 	public void testCompilationUnitSourcePosition() throws IOException {
@@ -284,6 +304,7 @@ public class TestCompilationUnit {
 
 	@Test
 	public void testDifferentEncodings() throws Exception {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: both utf-8 and cp1251 files in the same project should be handled properly
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/encodings/Cp1251.java");

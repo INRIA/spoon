@@ -41,7 +41,10 @@ import spoon.test.SpoonTestHelpers;
 import spoon.test.factory.testclasses.Foo;
 
 import java.lang.reflect.Method;
+import java.nio.file.Paths;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -169,6 +172,23 @@ public class FactoryTest {
 		});
 		assertEquals(0, model.getAllTypes().size());
 	}
+
+	@Test
+	public void testGetPackageFromNamedModule() {
+		// contract: It should be possible to get a package from a named module
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.addInputResource("./src/test/resources/spoon/test/module/simple_module_with_code");
+		launcher.buildModel();
+
+		String packageName = "fr.simplemodule.pack";
+		CtPackage packageInNamedModule = launcher.getFactory().Package().get(packageName);
+
+		assertNotNull(packageInNamedModule);
+		assertThat(packageInNamedModule.getQualifiedName(), equalTo(packageName));
+	}
+
 
 	public void testIncrementalModel() {
 

@@ -8,7 +8,7 @@
 package spoon.support.compiler.jdt;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.Level;
+import org.slf4j.event.Level;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;

@@ -45,7 +45,7 @@
         <dependency>
             <groupId>org.benf</groupId>
             <artifactId>cfr</artifactId>
-            <version>0.150</version>
+            <version>0.151</version>
         </dependency>
 
     </dependencies>
@@ -83,7 +83,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-		        <version>3.1.1</version>
+		        <version>3.1.2</version>
                 <configuration>
                     <failsOnError>true</failsOnError>
                     <configLocation>../checkstyle.xml</configLocation>

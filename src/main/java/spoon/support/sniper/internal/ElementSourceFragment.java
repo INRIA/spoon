@@ -236,13 +236,25 @@ public class ElementSourceFragment implements SourceFragment {
 	 */
 	private ElementSourceFragment addChild(CtRole roleInParent, SourcePositionHolder otherElement) {
 		SourcePosition otherSourcePosition = otherElement.getPosition();
-		if (otherSourcePosition instanceof SourcePositionImpl && !(otherSourcePosition.getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)) {
+		if (otherSourcePosition instanceof SourcePositionImpl && !(otherSourcePosition.getCompilationUnit() instanceof NoSourcePosition.NullCompilationUnit)
+				// method imports have child type references from other files, see https://github.com/INRIA/spoon/issues/3743
+				&& fromSameFile(element, otherElement)) {
 				ElementSourceFragment otherFragment = new ElementSourceFragment(otherElement, this.getRoleHandler(roleInParent, otherElement));
 			this.addChild(otherFragment);
 			return otherFragment;
 		}
 		//do not connect that undefined source position
 		return null;
+	}
+
+	private static boolean fromSameFile(SourcePositionHolder parent, SourcePositionHolder child) {
+		SourcePosition parentPos = parent.getPosition();
+		SourcePosition childPos = child.getPosition();
+
+		return parentPos.getFile().equals(childPos.getFile())
+				// we always consider the children of a compilation unit to be from the same file,
+				// as this is required e.g. to support sniper printing of renamed classes
+				|| parent instanceof CtCompilationUnit;
 	}
 
 	private RoleHandler getRoleHandler(CtRole roleInParent, SourcePositionHolder otherElement) {
@@ -898,4 +910,11 @@ public class ElementSourceFragment implements SourceFragment {
 		return fragment instanceof ElementSourceFragment && ((ElementSourceFragment) fragment).getElement() instanceof CtComment;
 	}
 
+	/**
+	 * @return true if {@link SourceFragment} represents a modifier
+	 */
+	static boolean isModifierFragment(SourceFragment fragment) {
+		return fragment instanceof ElementSourceFragment
+				&& ((ElementSourceFragment) fragment).getRoleInParent() == CtRole.MODIFIER;
+	}
 }

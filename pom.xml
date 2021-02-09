@@ -43,7 +43,7 @@
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.23.0</version>
+      <version>3.24.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.platform</groupId>
@@ -68,18 +68,13 @@
       <artifactId>jsap</artifactId>
       <version>2.1</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
     <dependency>
-        <!-- doc: https://logging.apache.org/log4j/2.0/faq.html -->
-        <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-api</artifactId>
-      <version>2.14.0</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.30</version>
     </dependency>
-    <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-to-slf4j</artifactId>
-        <version>2.14.0</version>
-    </dependency>
-    <dependency>
+      <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>2.8.0</version>
@@ -103,7 +98,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.12.0</version>
+      <version>2.12.1</version>
     </dependency>
     <dependency>
       <!-- support for compressed serialized ASTs -->
@@ -148,7 +143,7 @@
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-invoker</artifactId>
-      <version>3.0.1</version>
+      <version>3.1.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
     <dependency>
@@ -157,11 +152,17 @@
       <version>2.0.1.Final</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.8.6</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/uk.org.lidalia/slf4j-test -->
+    <dependency>
+      <groupId>uk.org.lidalia</groupId>
+      <artifactId>slf4j-test</artifactId>
+      <version>1.2.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -249,7 +250,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.1.2</version>
         <configuration>
           <failsOnError>true</failsOnError>
           <configLocation>checkstyle.xml</configLocation>
@@ -268,6 +269,16 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0-M5</version>
+        <configuration>
+          <classpathDependencyExcludes>
+            <classpathDependencyExclude>ch.qos.logback:logback-classic</classpathDependencyExclude>
+          </classpathDependencyExcludes>
+        </configuration>
       </plugin>
     </plugins>
   </build>

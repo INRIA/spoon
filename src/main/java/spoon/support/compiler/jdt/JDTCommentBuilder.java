@@ -7,8 +7,8 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import spoon.SpoonException;
@@ -61,6 +61,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -71,7 +72,7 @@ import java.util.regex.Pattern;
  */
 public class JDTCommentBuilder {
 
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private final CompilationUnitDeclaration declarationUnit;
 	private CompilationUnit spoonUnit;

@@ -8,8 +8,8 @@
 package spoon.support;
 
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.event.Level;
+import org.slf4j.Logger;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
@@ -98,7 +98,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private transient  Logger logger = Launcher.LOGGER;
 
-	private Level level = Level.OFF;
+	private Level level = Level.ERROR;
 
 	private boolean shouldCompile = false;
 
@@ -193,7 +193,13 @@ public class StandardEnvironment implements Serializable, Environment {
 		if (level == null || level.isEmpty()) {
 			throw new SpoonException("Wrong level given at Spoon.");
 		}
-		return Level.toLevel(level, Level.ALL);
+		Level levelEnum;
+		try {
+			levelEnum = Level.valueOf(level);
+		} catch (IllegalArgumentException e) {
+			return Level.TRACE;
+		}
+		return levelEnum;
 	}
 
 	@Override
@@ -273,8 +279,18 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	private void print(String message, Level messageLevel) {
-		if (messageLevel.isMoreSpecificThan(this.level)) {
-			logger.log(messageLevel, message);
+		if (messageLevel.toInt() >= this.level.toInt()) {
+			switch (messageLevel) {
+				case ERROR: logger.error(message);
+					break;
+				case WARN: logger.warn(message);
+					break;
+				case INFO: logger.info(message);
+					break;
+				case DEBUG: logger.debug(message);
+					break;
+				case TRACE: logger.trace(message);
+			}
 		}
 	}
 
