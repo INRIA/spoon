@@ -7,6 +7,8 @@
  */
 package spoon.support.compiler.jdt;
 
+import org.eclipse.jdt.core.compiler.CategorizedProblem;
+import org.eclipse.jdt.core.compiler.IProblem;
 import org.slf4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
@@ -160,6 +162,8 @@ import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
+import java.util.function.Function;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
@@ -1728,15 +1732,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
-		if ("package-info".equals(new String(typeDeclaration.name))) {
+		if (typeDeclaration.binding == null && getFactory().getEnvironment().isIgnoreDuplicateDeclarations()) {
+			// skip the type declaration that are already declared
+			return false;
+		} else if ("package-info".equals(new String(typeDeclaration.name))) {
 			context.enter(factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.readableName())), typeDeclaration);
 			return true;
 		} else {
 			CtModule module;
-			// skip the type declaration that are already declared
-			if (typeDeclaration.binding == null && getFactory().getEnvironment().isIgnoreDuplicateDeclarations()) {
-				return false;
-			}
 			if (typeDeclaration.binding.module != null && !typeDeclaration.binding.module.isUnnamed() && typeDeclaration.binding.module.shortReadableName() != null && typeDeclaration.binding.module.shortReadableName().length > 0) {
 				module = factory.Module().getOrCreate(String.valueOf(typeDeclaration.binding.module.shortReadableName()));
 			} else {
@@ -1754,7 +1757,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		}
 	}
-
 	@Override
 	public boolean visit(UnaryExpression unaryExpression, BlockScope scope) {
 		CtUnaryOperator<?> op = factory.Core().createUnaryOperator();
