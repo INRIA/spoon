@@ -860,10 +860,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 			// the simplest case: we always print "this" if we're in the top-level class,
 			// this is shorter (no qualified this), explicit, and less fragile wrt transformation
-			if (targetType == null ||
-					(thisAccess.isParentInitialized() &&
-							thisAccess.getParent(CtType.class) != null &&
-							thisAccess.getParent(CtType.class).isTopLevel())) {
+			if (targetType == null
+					|| (thisAccess.isParentInitialized()
+							&& thisAccess.getParent(CtType.class) != null
+							&& thisAccess.getParent(CtType.class).isTopLevel())) {
 				printer.writeKeyword("this");
 				return; // still go through finally block below
 			}
