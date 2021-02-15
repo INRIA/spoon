@@ -7,7 +7,6 @@
  */
 package spoon.support;
 
-import org.slf4j.event.Level;
 import spoon.processing.ProcessInterruption;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
@@ -54,7 +53,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 			p.init();
 			addProcessor(p);
 		} catch (Exception e) {
-			factory.getEnvironment().report(null, Level.ERROR, "Unable to instantiate processor \"" + type.getName() + "\" - Your processor should have a constructor with no arguments");
+			factory.getEnvironment().report(null, LogLevel.ERROR, "Unable to instantiate processor \"" + type.getName() + "\" - Your processor should have a constructor with no arguments");
 		}
 	}
 
@@ -70,7 +69,7 @@ public class RuntimeProcessingManager implements ProcessingManager {
 		try {
 			addProcessor((Class<? extends Processor<?>>) getFactory().getEnvironment().getInputClassLoader().loadClass(qualifiedName));
 		} catch (ClassNotFoundException e) {
-			factory.getEnvironment().report(null, Level.ERROR, "Unable to load processor \"" + qualifiedName + "\" - Check your classpath.");
+			factory.getEnvironment().report(null, LogLevel.ERROR, "Unable to load processor \"" + qualifiedName + "\" - Check your classpath.");
 		}
 	}
 

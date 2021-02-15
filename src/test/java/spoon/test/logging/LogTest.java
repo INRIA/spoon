@@ -20,9 +20,9 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.slf4j.event.Level;
 import spoon.Launcher;
 import spoon.MavenLauncher;
+import spoon.support.LogLevel;
 import uk.org.lidalia.slf4jtest.TestLogger;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
@@ -40,15 +40,15 @@ public class LogTest {
 		@Parameterized.Parameters
 		public static Collection<Object[]> data() {
 			return Arrays.asList(new Object[][] {
-					{Level.DEBUG, 6 },
-					{Level.INFO, 2 },
-					{Level.WARN, 0 },
-					{Level.ERROR, 0 }
+					{LogLevel.DEBUG, 6 },
+					{LogLevel.INFO, 2 },
+					{LogLevel.WARN, 0 },
+					{LogLevel.ERROR, 0 }
 			});
 		}
 
 		@Parameterized.Parameter(0)
-		public Level level;
+		public LogLevel level;
 
 		@Parameterized.Parameter(1)
 		public int nbLogMessagesMinimum;

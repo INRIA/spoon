@@ -8,7 +8,6 @@
 package spoon.support;
 
 
-import org.slf4j.event.Level;
 import org.slf4j.Logger;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -98,7 +97,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private transient  Logger logger = Launcher.LOGGER;
 
-	private Level level = Level.ERROR;
+	private LogLevel level = LogLevel.ERROR;
 
 	private boolean shouldCompile = false;
 
@@ -137,7 +136,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	@Override
 	public void debugMessage(String message) {
-		print(message, Level.DEBUG);
+		print(message, LogLevel.DEBUG);
 	}
 
 	@Override
@@ -160,7 +159,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	@Override
-	public Level getLevel() {
+	public LogLevel getLevel() {
 		return this.level;
 	}
 
@@ -189,15 +188,15 @@ public class StandardEnvironment implements Serializable, Environment {
 		skipSelfChecks = true;
 	}
 
-	private Level toLevel(String level) {
+	private LogLevel toLevel(String level) {
 		if (level == null || level.isEmpty()) {
 			throw new SpoonException("Wrong level given at Spoon.");
 		}
-		Level levelEnum;
+		LogLevel levelEnum;
 		try {
-			levelEnum = Level.valueOf(level);
+			levelEnum = LogLevel.valueOf(level);
 		} catch (IllegalArgumentException e) {
-			return Level.TRACE;
+			return LogLevel.TRACE;
 		}
 		return levelEnum;
 	}
@@ -227,18 +226,18 @@ public class StandardEnvironment implements Serializable, Environment {
 		return processingStopped;
 	}
 
-	private void prefix(StringBuilder buffer, Level level) {
-		if (level == Level.ERROR) {
+	private void prefix(StringBuilder buffer, LogLevel level) {
+		if (level == LogLevel.ERROR) {
 			buffer.append("error: ");
 			errorCount++;
-		} else if (level == Level.WARN) {
+		} else if (level == LogLevel.WARN) {
 			buffer.append("warning: ");
 			warningCount++;
 		}
 	}
 
 	@Override
-	public void report(Processor<?> processor, Level level, CtElement element, String message) {
+	public void report(Processor<?> processor, LogLevel level, CtElement element, String message) {
 		StringBuilder buffer = new StringBuilder();
 
 		prefix(buffer, level);
@@ -269,7 +268,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	@Override
-	public void report(Processor<?> processor, Level level, String message) {
+	public void report(Processor<?> processor, LogLevel level, String message) {
 		StringBuilder buffer = new StringBuilder();
 
 		prefix(buffer, level);
@@ -278,8 +277,8 @@ public class StandardEnvironment implements Serializable, Environment {
 		print(buffer.toString(), level);
 	}
 
-	private void print(String message, Level messageLevel) {
-		if (messageLevel.toInt() >= this.level.toInt()) {
+	private void print(String message, LogLevel messageLevel) {
+		if (messageLevel.toInt() <= this.level.toInt()) {
 			switch (messageLevel) {
 				case ERROR: logger.error(message);
 					break;
@@ -299,32 +298,32 @@ public class StandardEnvironment implements Serializable, Environment {
 	 */
 	@Override
 	public void reportEnd() {
-		print("end of processing: ", Level.INFO);
+		print("end of processing: ", LogLevel.INFO);
 		if (warningCount > 0) {
-			print(warningCount + " warning", Level.INFO);
+			print(warningCount + " warning", LogLevel.INFO);
 			if (warningCount > 1) {
-				print("s", Level.INFO);
+				print("s", LogLevel.INFO);
 			}
 			if (errorCount > 0) {
-				print(", ", Level.INFO);
+				print(", ", LogLevel.INFO);
 			}
 		}
 		if (errorCount > 0) {
-			print(errorCount + " error", Level.INFO);
+			print(errorCount + " error", LogLevel.INFO);
 			if (errorCount > 1) {
-				print("s", Level.INFO);
+				print("s", LogLevel.INFO);
 			}
 		}
 		if ((errorCount + warningCount) > 0) {
-			print("\n", Level.INFO);
+			print("\n", LogLevel.INFO);
 		} else {
-			print("no errors, no warnings", Level.INFO);
+			print("no errors, no warnings", LogLevel.INFO);
 		}
 	}
 
 	@Override
 	public void reportProgressMessage(String message) {
-		print(message, Level.INFO);
+		print(message, LogLevel.INFO);
 	}
 
 	public void setDebug(boolean debug) {
@@ -487,9 +486,9 @@ private transient  ClassLoader inputClassloader;
 				SpoonFolder tmp = new FileSystemFolder(classOrJarFolder);
 				List<SpoonFile> javaFiles = tmp.getAllJavaFiles();
 				if (!javaFiles.isEmpty()) {
-					print("You're trying to give source code in the classpath, this should be given to " + "addInputSource " + javaFiles, Level.WARN);
+					print("You're trying to give source code in the classpath, this should be given to " + "addInputSource " + javaFiles, LogLevel.WARN);
 				}
-				print("You specified the directory " + classOrJarFolder.getPath() + " in source classpath, please note that only class files will be considered. Jars and subdirectories will be ignored.", Level.WARN);
+				print("You specified the directory " + classOrJarFolder.getPath() + " in source classpath, please note that only class files will be considered. Jars and subdirectories will be ignored.", LogLevel.WARN);
 			} else if (classOrJarFolder.getName().endsWith(".class")) {
 				throw new InvalidClassPathException(".class files are not accepted in source classpath.");
 			}
@@ -576,7 +575,7 @@ private transient  ClassLoader inputClassloader;
 			this.outputDestinationHandler = new DefaultOutputDestinationHandler(directory.getCanonicalFile(),
 					this);
 		} catch (IOException e) {
-			print(e.getMessage(), Level.WARN);
+			print(e.getMessage(), LogLevel.WARN);
 			throw new SpoonException(e);
 		}
 	}

@@ -7,10 +7,10 @@
  */
 package spoon.reflect.visitor;
 
-import org.slf4j.event.Level;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.support.LogLevel;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -59,7 +59,7 @@ public class ModelConsistencyChecker extends CtScanner {
 					element.setParent(stack.peek());
 				} else {
 					final String name = element instanceof CtNamedElement ? " - " + ((CtNamedElement) element).getSimpleName() : "";
-					environment.report(null, Level.WARN,
+					environment.report(null, LogLevel.WARN,
 							(element.isParentInitialized() ? "inconsistent" : "null") + " parent for " + element.getClass() + name + " - " + element.getPosition() + " - " + stack.peek()
 									.getPosition());
 					dumpStack();
