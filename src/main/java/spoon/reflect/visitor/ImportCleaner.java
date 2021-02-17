@@ -185,13 +185,11 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				//java.lang is always imported implicitly. Ignore it
 				return;
 			}
-			if (Objects.equals(packageQName, packageRef.getQualifiedName())
-					&& !isStaticExecutableRef(ref)) {
+			if (Objects.equals(packageQName, packageRef.getQualifiedName()) && !isStaticExecutableRef(ref)) {
 				//it is reference to a type of the same package. Do not add it
 				return;
 			}
-			if (isStaticExecutableRef(ref)
-					&& inheritsFrom(ref.getParent(CtType.class).getReference(), typeRef)) {
+			if (isStaticExecutableRef(ref) && inheritsFrom(ref.getParent(CtType.class).getReference(), typeRef)) {
 				// Static method is inherited from parent class. At worst, importing an inherited
 				// static method results in a compile error, if the static method is defined in
 				// the default package (not allowed to import methods from default package).
