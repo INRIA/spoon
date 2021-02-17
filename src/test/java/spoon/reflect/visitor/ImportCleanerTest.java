@@ -1,6 +1,5 @@
 package spoon.reflect.visitor;
 
-import org.apache.maven.model.Model;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
@@ -9,7 +8,6 @@ import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtType;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
