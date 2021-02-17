@@ -36,8 +36,8 @@ public class ImportCleanerTest {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(source);
 		CtModel model = launcher.buildModel();
-		CtType<?> derivedType = model.getUnnamedModule().getFactory().Type().get(targetClassQualname);
-		CtCompilationUnit cu = derivedType.getFactory().CompilationUnit().getOrCreate(derivedType);
+		CtType<?> type = model.getUnnamedModule().getFactory().Type().get(targetClassQualname);
+		CtCompilationUnit cu = type.getFactory().CompilationUnit().getOrCreate(type);
 		List<String> importsBefore = getTextualImports(cu);
 
 		// act
