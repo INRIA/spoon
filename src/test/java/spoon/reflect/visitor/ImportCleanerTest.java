@@ -1,5 +1,6 @@
 package spoon.reflect.visitor;
 
+import org.apache.maven.model.Model;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
@@ -8,6 +9,7 @@ import spoon.reflect.declaration.CtImport;
 import spoon.reflect.declaration.CtType;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -18,32 +20,25 @@ public class ImportCleanerTest {
 	@Test
 	public void testDoesNotDuplicateUnresolvedImports() {
 	    // contract: The import cleaner should not duplicate unresolved imports
-
-		// arrange
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/unresolved/UnresolvedImport.java");
-		CtModel model = launcher.buildModel();
-		CtType<?> type = model.getAllTypes().stream().findFirst().get();
-		CtCompilationUnit cu = type.getFactory().CompilationUnit().getOrCreate(type);
-		List<String> importsBefore = getTextualImports(cu);
-
-		// act
-		new ImportCleaner().process(cu);
-
-		// assert
-		List<String> importsAfter = getTextualImports(cu);
-		assertThat(importsAfter, equalTo(importsBefore));
+		testImportCleanerDoesNotAlterImports("./src/test/resources/unresolved/UnresolvedImport.java", "UnresolvedImport");
 	}
 
 	@Test
 	public void testDoesNotImportInheritedStaticMethod() {
 		// contract: The import cleaner should not import static attributes that are inherited
+		testImportCleanerDoesNotAlterImports("./src/test/resources/inherit-static-method", "Derived");
+	}
 
+	/**
+	 * Test that processing the target class' compilation unit with the import cleaner does not
+	 * alter the imports.
+	 */
+	private static void testImportCleanerDoesNotAlterImports(String source, String targetClassQualname) {
 		// arrange
 		Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/resources/inherit-static-method");
+		launcher.addInputResource(source);
 		CtModel model = launcher.buildModel();
-		CtType<?> derivedType = model.getUnnamedModule().getFactory().Type().get("Derived");
+		CtType<?> derivedType = model.getUnnamedModule().getFactory().Type().get(targetClassQualname);
 		CtCompilationUnit cu = derivedType.getFactory().CompilationUnit().getOrCreate(derivedType);
 		List<String> importsBefore = getTextualImports(cu);
 
