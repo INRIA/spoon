@@ -171,6 +171,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				// we would like to add an import, but we don't know to where
 				return;
 			}
+
 			CtTypeReference<?> topLevelTypeRef = typeRef.getTopLevelType();
 			if (typeRefQNames.contains(topLevelTypeRef.getQualifiedName())) {
 				//it is reference to a type of this CompilationUnit. Do not add it
@@ -185,8 +186,13 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				return;
 			}
 			if (Objects.equals(packageQName, packageRef.getQualifiedName())
-					&& !(ref instanceof CtExecutableReference<?> && ((CtExecutableReference<?>) ref).isStatic())) {
+					&& !isStaticExecutableRef(ref)) {
 				//it is reference to a type of the same package. Do not add it
+				return;
+			}
+			if (isStaticExecutableRef(ref)
+					&& inheritsFrom(ref.getParent(CtType.class).getReference(), typeRef)) {
+				// Static method is inherited from parent class
 				return;
 			}
 			String importRefID = getImportRefID(ref);
@@ -411,5 +417,18 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 	public ImportCleaner setImportComparator(Comparator<CtImport> importComparator) {
 		this.importComparator = importComparator;
 		return this;
+	}
+
+	/** @return true if ref inherits from potentialBase */
+	private static boolean inheritsFrom(CtTypeReference<?> ref, CtTypeReference<?> potentialBase) {
+		CtTypeReference<?> superClass = ref.getSuperclass();
+		return superClass != null
+				&& (superClass.getQualifiedName().equals(potentialBase.getQualifiedName())
+						|| inheritsFrom(superClass, potentialBase));
+	}
+
+	private static boolean isStaticExecutableRef(CtElement element) {
+		return element instanceof CtExecutableReference<?>
+				&& ((CtExecutableReference<?>) element).isStatic();
 	}
 }
