@@ -35,6 +35,26 @@ public class ImportCleanerTest {
 		assertThat(importsAfter, equalTo(importsBefore));
 	}
 
+	@Test
+	public void testDoesNotImportInheritedStaticMethod() {
+		// contract: The import cleaner should not import static attributes that are inherited
+
+		// arrange
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/inherit-static-method");
+		CtModel model = launcher.buildModel();
+		CtType<?> derivedType = model.getUnnamedModule().getFactory().Type().get("Derived");
+		CtCompilationUnit cu = derivedType.getFactory().CompilationUnit().getOrCreate(derivedType);
+		List<String> importsBefore = getTextualImports(cu);
+
+		// act
+		new ImportCleaner().process(cu);
+
+		// assert
+		List<String> importsAfter = getTextualImports(cu);
+		assertThat(importsAfter, equalTo(importsBefore));
+	}
+
 	private static List<String> getTextualImports(CtCompilationUnit cu) {
 		return cu.getImports().stream()
 				.map(CtImport::toString)
