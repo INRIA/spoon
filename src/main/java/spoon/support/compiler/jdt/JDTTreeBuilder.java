@@ -1509,7 +1509,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(reference, qualifiedTypeReference);
 			return true;
 		} else if (context.stack.peekFirst().element instanceof CtCatch) {
-			context.enter(helper.createCatchVariable(qualifiedTypeReference), qualifiedTypeReference);
+			context.enter(helper.createCatchVariable(qualifiedTypeReference, scope), qualifiedTypeReference);
 			return true;
 		}
 		context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.buildTypeReference(qualifiedTypeReference, scope)), qualifiedTypeReference);
@@ -1593,7 +1593,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (!(context.stack.peekFirst().node instanceof Argument)) {
 			throw new SpoonException("UnionType is only supported for CtCatch.");
 		}
-		context.enter(helper.createCatchVariable(unionTypeReference), unionTypeReference);
+		context.enter(helper.createCatchVariable(unionTypeReference, scope), unionTypeReference);
 		return true;
 	}
 
@@ -1619,7 +1619,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 			return true;
 		} else if (context.stack.peekFirst().element instanceof CtCatch) {
-			context.enter(helper.createCatchVariable(singleTypeReference), singleTypeReference);
+			context.enter(helper.createCatchVariable(singleTypeReference, scope), singleTypeReference);
 			return true;
 		}
 		CtTypeReference<?> typeRef = references.buildTypeReference(singleTypeReference, scope);
