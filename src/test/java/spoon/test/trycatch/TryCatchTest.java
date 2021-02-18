@@ -336,4 +336,17 @@ public class TryCatchTest {
 		assertEquals("CustomException", caughtType.getSimpleName());
 		assertEquals("some.neat.pkg.CustomException", caughtType.getQualifiedName());
 	}
+
+	@Test
+	public void testCatchUnqualifiedReferenceHasPackageMarkedImplicit() throws Exception {
+		// contract: An unqualified type reference in a catch clause should have its package marked implicit
+
+        CtClass<?> clazz = build("spoon.test.trycatch.testclasses", "CatchWithUnqualifiedType");
+        List<CtCatch> catches = clazz.getElements(e -> true);
+        assertEquals(1, catches.size());
+
+        CtCatch targetCatch = catches.get(0);
+        CtTypeReference<?> catchParamType = targetCatch.getParameter().getType();
+        assertTrue(catchParamType.getPackage().isImplicit());
+	}
 }
