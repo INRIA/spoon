@@ -341,12 +341,12 @@ public class TryCatchTest {
 	public void testCatchUnqualifiedReferenceIsMarkedSimplyQualified() throws Exception {
 		// contract: An unqualified type reference in a catch clause should have its package marked implicit
 
-        CtClass<?> clazz = build("spoon.test.trycatch.testclasses", "CatchWithUnqualifiedType");
-        List<CtCatch> catches = clazz.getElements(e -> true);
-        assertEquals(1, catches.size());
+		CtClass<?> clazz = build("spoon.test.trycatch.testclasses", "CatchWithUnqualifiedType");
+		List<CtCatch> catches = clazz.getElements(e -> true);
+		assertEquals(1, catches.size());
 
-        CtCatch targetCatch = catches.get(0);
-        CtTypeReference<?> catchParamType = targetCatch.getParameter().getType();
-        assertTrue(catchParamType.isSimplyQualified());
+		CtCatch targetCatch = catches.get(0);
+		CtTypeReference<?> catchParamType = targetCatch.getParameter().getType();
+		assertTrue(catchParamType.isSimplyQualified());
 	}
 }
