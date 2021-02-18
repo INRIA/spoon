@@ -17,7 +17,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.CompressionType;
-import spoon.support.LogLevel;
+import spoon.support.Level;
 import spoon.support.OutputDestinationHandler;
 import spoon.support.compiler.SpoonProgress;
 import spoon.support.modelobs.FineModelChangeListener;
@@ -117,7 +117,7 @@ public interface Environment {
 	 * @param message
 	 *            The message to report
 	 */
-	void report(Processor<?> processor, LogLevel level, CtElement element, String message);
+	void report(Processor<?> processor, Level level, CtElement element, String message);
 
 	/**
 	 * This method should be called to print out a message during the
@@ -130,7 +130,7 @@ public interface Environment {
 	 * @param message
 	 *            The message to report
 	 */
-	void report(Processor<?> processor, LogLevel level, String message);
+	void report(Processor<?> processor, Level level, String message);
 
 	/**
 	 * This method should be called to report the end of the processing.
@@ -292,7 +292,7 @@ public interface Environment {
 	/**
 	 * Gets the level of loggers asked by the user.
 	 */
-	LogLevel getLevel();
+	Level getLevel();
 
 	/**
 	 * Sets the level of loggers asked by the user.

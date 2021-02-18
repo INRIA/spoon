@@ -35,7 +35,7 @@ import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.JavaOutputProcessor;
-import spoon.support.LogLevel;
+import spoon.support.Level;
 import spoon.support.StandardEnvironment;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
@@ -237,7 +237,7 @@ public class Launcher implements SpoonAPI {
 			opt2.setLongFlag("level");
 			opt2.setHelp("Level of the ouput messages about what spoon is doing.");
 			opt2.setStringParser(JSAP.STRING_PARSER);
-			opt2.setDefault(LogLevel.ERROR.toString());
+			opt2.setDefault(Level.ERROR.toString());
 			jsap.registerParameter(opt2);
 
 			// Auto-import
@@ -525,7 +525,7 @@ public class Launcher implements SpoonAPI {
 				try {
 					modelBuilder.addTemplateSource(SpoonResourceHelper.createResource(new File(s)));
 				} catch (FileNotFoundException e) {
-					environment.report(null, LogLevel.ERROR, "Unable to add template file: " + e.getMessage());
+					environment.report(null, Level.ERROR, "Unable to add template file: " + e.getMessage());
 					LOGGER.error(e.getMessage(), e);
 				}
 			}
@@ -541,7 +541,7 @@ public class Launcher implements SpoonAPI {
 
 	protected void reportClassPathMode() {
 		String cpmode = jsapActualArgs.getString("cpmode").toUpperCase();
-		factory.getEnvironment().report(null, LogLevel.INFO, "Running in " + cpmode + " mode (doc: http://spoon.gforge.inria.fr/launcher.html).");
+		factory.getEnvironment().report(null, Level.INFO, "Running in " + cpmode + " mode (doc: http://spoon.gforge.inria.fr/launcher.html).");
 	}
 
 	/**

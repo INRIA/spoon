@@ -24,7 +24,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtTypedElement;
-import spoon.support.LogLevel;
+import spoon.support.Level;
 import spoon.template.Substitution;
 import spoon.test.template.testclasses.constructors.TemplateWithConstructor;
 
@@ -38,13 +38,13 @@ public class TestProcessor extends AbstractProcessor<CtElement> {
 
 	public void process(CtElement element) {
 		if ((!(element instanceof CtPackage)) && !element.isParentInitialized()) {
-			getEnvironment().report(this, LogLevel.ERROR, element,
+			getEnvironment().report(this, Level.ERROR, element,
 					"Element's parent is null (" + element + ")");
 			throw new RuntimeException("uninitialized parent detected");
 		}
 		if (element instanceof CtTypedElement) {
 			if (((CtTypedElement<?>) element).getType() == null) {
-				getEnvironment().report(this, LogLevel.WARN, element,
+				getEnvironment().report(this, Level.WARN, element,
 						"Element's type is null (" + element + ")");
 			}
 		}

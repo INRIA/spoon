@@ -7,12 +7,12 @@
  */
 package spoon.support;
 
-public enum LogLevel {
+public enum Level {
 	ERROR(100), WARN(200), INFO(300), DEBUG(400), TRACE(500);
 
 	private final int levelValue;
 
-	LogLevel(int levelValue) {
+	Level(int levelValue) {
 		this.levelValue = levelValue;
 	}
 

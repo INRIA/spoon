@@ -40,7 +40,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.reflect.visitor.Query;
-import spoon.support.LogLevel;
+import spoon.support.Level;
 import spoon.support.QueueProcessingManager;
 import spoon.support.comparator.FixedOrderBasedOnFileNameCompilationUnitComparator;
 import spoon.support.compiler.SnippetCompilationError;
@@ -445,7 +445,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 				try {
 					new JDTCommentBuilder(unit, aFactory).build();
 				} catch (Exception e) {
-					getEnvironment().report(null, LogLevel.ERROR, "JDTCommentBuilder crashed with the error, some comments may be missing in the model: " + e.toString());
+					getEnvironment().report(null, Level.ERROR, "JDTCommentBuilder crashed with the error, some comments may be missing in the model: " + e.toString());
 				}
 			});
 		}
@@ -614,7 +614,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 				if (problem.isError()) {
 					throw new SnippetCompilationError(message);
 				} else {
-					environment.report(null, LogLevel.WARN, message);
+					environment.report(null, Level.WARN, message);
 				}
 			}
 		}
@@ -653,7 +653,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 				int problemId = problem.getID();
 				if (problemId != IProblem.UndefinedType && problemId != IProblem.UndefinedName
 						&& problemId != IProblem.ImportNotFound) {
-					environment.report(null, LogLevel.WARN, message);
+					environment.report(null, Level.WARN, message);
 				}
 			}
 		}

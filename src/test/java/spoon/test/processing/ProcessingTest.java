@@ -35,7 +35,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.LogLevel;
+import spoon.support.Level;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.test.processing.processors.RenameProcessor;
 import spoon.test.processing.processors.CtClassProcessor;
@@ -173,7 +173,7 @@ public class ProcessingTest {
 		/* throw correctly an exception when trying to use a processor with constructor with args */
 
 		Launcher l = new Launcher();
-		l.getEnvironment().setLevel(LogLevel.ERROR.toString());
+		l.getEnvironment().setLevel(Level.ERROR.toString());
 		l.buildModel();
 		try {
 			new JDTBasedSpoonCompiler(l.getFactory()).instantiateAndProcess(Collections.singletonList("spoon.test.processing.ProcessingTest$WrongProcessor"));

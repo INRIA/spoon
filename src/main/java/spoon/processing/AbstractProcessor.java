@@ -11,7 +11,7 @@ import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
-import spoon.support.LogLevel;
+import spoon.support.Level;
 import spoon.testing.utils.ProcessorUtils;
 
 import java.lang.reflect.Method;
@@ -86,7 +86,7 @@ public abstract class AbstractProcessor<E extends CtElement> implements Processo
 		try {
 			props = p.getFactory().getEnvironment().getProcessorProperties(p.getClass().getName());
 		} catch (Exception e) {
-			p.getFactory().getEnvironment().report(p, LogLevel.ERROR,
+			p.getFactory().getEnvironment().report(p, Level.ERROR,
 					"unable to get properties for processor '" + p.getClass().getName() + "': " + e.getMessage());
 			Launcher.LOGGER.error(e.getMessage(), e);
 		}
