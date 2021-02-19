@@ -22,6 +22,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.intercession.IntercessionScanner;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -66,9 +67,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class ParentTest {
 
@@ -423,4 +426,22 @@ public class ParentTest {
 		l.run();
 	}
 
+
+	@Test
+	public void testGetParentOverloadsInNoParentElements() {
+		CtStatement statement = createFactory().Code().createCodeSnippetStatement("String hello = \"t1\";").compile();
+
+		assertThrows(ParentNotInitializedException.class, () -> statement.getParent());
+		assertNull(statement.getParent(CtBlock.class));
+		assertNull(statement.getParent(new TypeFilter<>(CtBlock.class)));
+	}
+
+	@Test
+	public void testGetParentOverloadsWithNoMatchingElements() {
+		CtStatement statement = createFactory().Code().createCodeSnippetStatement("String hello = \"t1\";").compile();
+		CtExpression<?> expression = ((CtLocalVariable<?>) statement).getAssignment();
+
+		assertNull(expression.getParent(CtBlock.class));
+		assertNull(expression.getParent(new TypeFilter<>(CtBlock.class)));
+	}
 }

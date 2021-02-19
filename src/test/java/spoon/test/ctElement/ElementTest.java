@@ -18,23 +18,14 @@ package spoon.test.ctElement;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.ParentNotInitializedException;
-import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.declaration.CtAnnotationImpl;
 import spoon.support.reflect.declaration.CtMethodImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
-import static spoon.testing.utils.ModelUtils.createFactory;
 
 /**
  * Created by urli on 28/06/2017.
@@ -73,23 +64,5 @@ public class ElementTest {
 		//contract: children contains all direct descendants but nothing else
 		CtClass cl = Launcher.parseClass("class A {int f; int g; public void m(int k){}}");
 		assertEquals(cl.getDirectChildren().size(),4);
-	}
-
-	@Test
-	public void testGetParentOverloadsInNoParentElements() {
-		CtStatement statement = createFactory().Code().createCodeSnippetStatement("String hello = \"t1\";").compile();
-
-		assertThrows(ParentNotInitializedException.class, () -> statement.getParent());
-		assertNull(statement.getParent(CtBlock.class));
-		assertNull(statement.getParent(new TypeFilter<>(CtBlock.class)));
-	}
-
-	@Test
-	public void testGetParentOverloadsWithNoMatchingElements() {
-		CtStatement statement = createFactory().Code().createCodeSnippetStatement("String hello = \"t1\";").compile();
-		CtExpression<?> expression = ((CtLocalVariable<?>) statement).getAssignment();
-
-		assertNull(expression.getParent(CtBlock.class));
-		assertNull(expression.getParent(new TypeFilter<>(CtBlock.class)));
 	}
 }
