@@ -44,7 +44,6 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -374,12 +373,8 @@ public class ParentTest {
 					if (setParent == null) {
 						return;
 					}
-					try {
-						if (setParent.getParent(CtIf.class) == null) {
-							fail("Missing condition in " + element.getSignature() + " declared in the class " + element.getDeclaringType().getQualifiedName());
-						}
-					} catch (ParentNotInitializedException e) {
-						fail("Missing parent condition in " + element.getSignature() + " declared in the class " + element.getDeclaringType().getQualifiedName());
+					if (setParent.getParent(CtIf.class) == null) {
+						fail("Missing condition in " + element.getSignature() + " declared in the class " + element.getDeclaringType().getQualifiedName());
 					}
 				}
 			}

@@ -353,7 +353,7 @@ public class PatternParameterConfigurator {
 		}
 		searchScope.map(new VariableReferenceFunction(variable))
 				.forEach((CtVariableReference<?> varRef) -> {
-					CtFieldRead<?> fieldRead = varRef.isParentInitialized() ? varRef.getParent(CtFieldRead.class) : null;
+					CtFieldRead<?> fieldRead = varRef.getParent(CtFieldRead.class);
 					if (fieldRead != null) {
 						addSubstitutionRequest(
 								parameter(fieldRead.getVariable().getSimpleName()).getCurrentParameter(),

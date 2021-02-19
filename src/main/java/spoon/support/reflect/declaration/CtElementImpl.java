@@ -382,23 +382,23 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <P extends CtElement> P getParent(Class<P> parentType) throws ParentNotInitializedException {
+	public <P extends CtElement> P getParent(Class<P> parentType) {
 		CtElement current = this;
-		do {
+		while (current.isParentInitialized()) {
 			current = current.getParent();
 			if (parentType.isAssignableFrom(current.getClass())) {
 				return (P) current;
 			}
-		} while (current.isParentInitialized());
+		}
 
 		return null;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <E extends CtElement> E getParent(Filter<E> filter) throws ParentNotInitializedException {
+	public <E extends CtElement> E getParent(Filter<E> filter) {
 		CtElement current = this;
-		do {
+		while (current.isParentInitialized()) {
 			current = current.getParent();
 			try {
 				if (filter.matches((E) current)) {
@@ -407,7 +407,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			} catch (ClassCastException ignored) {
 				// expected, some elements are not of type
 			}
-		} while (current.isParentInitialized());
+		}
 
 		return null;
 	}

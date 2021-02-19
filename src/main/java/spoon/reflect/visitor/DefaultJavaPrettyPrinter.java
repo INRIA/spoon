@@ -860,10 +860,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 			// the simplest case: we always print "this" if we're in the top-level class,
 			// this is shorter (no qualified this), explicit, and less fragile wrt transformation
-			if (targetType == null
-					|| (thisAccess.isParentInitialized()
-							&& thisAccess.getParent(CtType.class) != null
-							&& thisAccess.getParent(CtType.class).isTopLevel())) {
+			if (targetType == null || (thisAccess.getParent(CtType.class) != null && thisAccess.getParent(CtType.class).isTopLevel())) {
 				printer.writeKeyword("this");
 				return; // still go through finally block below
 			}
@@ -1304,12 +1301,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (invocation.getExecutable().isConstructor()) {
 			// It's a constructor (super or this)
 			elementPrinterHelper.writeActualTypeArguments(invocation.getExecutable());
-			CtType<?> parentType;
-			try {
-				parentType = invocation.getParent(CtType.class);
-			} catch (ParentNotInitializedException e) {
-				parentType = null;
-			}
+			CtType<?> parentType = invocation.getParent(CtType.class);
 			if (parentType == null || parentType.getQualifiedName() != null && parentType.getQualifiedName().equals(invocation.getExecutable().getDeclaringType().getQualifiedName())) {
 				printer.writeKeyword("this");
 			} else {
@@ -1463,13 +1455,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@SuppressWarnings("rawtypes")
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 		enterCtExpression(newArray);
-		boolean isNotInAnnotation;
-		try {
-			isNotInAnnotation = (newArray.getParent(CtAnnotationType.class) == null) && (newArray.getParent(CtAnnotation.class) == null);
-		} catch (ParentNotInitializedException e) {
-			isNotInAnnotation = true;
-		}
 
+		boolean isNotInAnnotation = (newArray.getParent(CtAnnotationType.class) == null) && (newArray.getParent(CtAnnotation.class) == null);
 		if (isNotInAnnotation) {
 			CtTypeReference<?> ref = newArray.getType();
 

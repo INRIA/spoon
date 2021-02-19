@@ -139,11 +139,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 		}
 
 		if (!(typeDeclarer instanceof CtFormalTypeDeclarer)) {
-			if (typeDeclarer.isParentInitialized()) {
-				typeDeclarer = typeDeclarer.getParent(CtFormalTypeDeclarer.class);
-			} else {
-				typeDeclarer = null;
-			}
+			typeDeclarer = typeDeclarer.getParent(CtFormalTypeDeclarer.class);
 		}
 
 		// case #1: we're a type of a method parameter, a local variable, ...
@@ -154,7 +150,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			if (result != null) {
 				return result;
 			}
-			typeDeclarer = typeDeclarer.isParentInitialized() ? typeDeclarer.getParent(CtFormalTypeDeclarer.class) : null;
+			typeDeclarer = typeDeclarer.getParent(CtFormalTypeDeclarer.class);
 		}
 		return null;
 	}

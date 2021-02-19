@@ -250,12 +250,12 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	/**
 	 * Gets the first parent that matches the given type.
 	 */
-	<P extends CtElement> P getParent(Class<P> parentType) throws ParentNotInitializedException;
+	<P extends CtElement> P getParent(Class<P> parentType);
 
 	/**
 	 * Gets the first parent that matches the filter.
 	 */
-	<E extends CtElement> E getParent(Filter<E> filter) throws ParentNotInitializedException;
+	<E extends CtElement> E getParent(Filter<E> filter);
 
 	/**
 	 * Manually sets the parent element of the current element.

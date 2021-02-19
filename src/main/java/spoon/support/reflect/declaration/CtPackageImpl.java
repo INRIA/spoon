@@ -14,7 +14,6 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -121,20 +120,12 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public CtModule getDeclaringModule() {
-		try {
-			return getParent(CtModule.class);
-		} catch (ParentNotInitializedException e) {
-			return null;
-		}
+		return getParent(CtModule.class);
 	}
 
 	@Override
 	public CtPackage getDeclaringPackage() {
-		try {
-			return getParent(CtPackage.class);
-		} catch (ParentNotInitializedException e) {
-			return null;
-		}
+		return getParent(CtPackage.class);
 	}
 
 	@Override

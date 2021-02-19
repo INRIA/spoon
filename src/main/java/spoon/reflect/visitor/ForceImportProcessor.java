@@ -41,7 +41,7 @@ public class ForceImportProcessor extends ImportAnalyzer<LexicalScope> {
 		} else {
 			//it is a reference to an child type
 			//if it is a reference in scope of parent type declaration then make it implicit, else keep it as it is
-			CtType<?> contextType = reference.isParentInitialized() ? reference.getParent(CtType.class) : null;
+			CtType<?> contextType = reference.getParent(CtType.class);
 			if (contextType != null) {
 				CtType<?> topLevelType = contextType.getTopLevelType();
 				CtTypeReference<?> referenceDeclaringType = reference.getDeclaringType();

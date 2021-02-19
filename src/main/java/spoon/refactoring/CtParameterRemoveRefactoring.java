@@ -259,7 +259,7 @@ public class CtParameterRemoveRefactoring implements CtRefactoring {
 	}
 
 	protected boolean isRemovedParamOfRefactoredInvocation(CtParameterReference<?> paramRef) {
-		CtInvocation<?> invocation = paramRef.isParentInitialized() ? paramRef.getParent(CtInvocation.class) : null;
+		CtInvocation<?> invocation = paramRef.getParent(CtInvocation.class);
 		if (invocation == null) {
 			return false;
 		}

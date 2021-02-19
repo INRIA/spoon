@@ -80,8 +80,8 @@ public class ElementTest {
 		CtStatement statement = createFactory().Code().createCodeSnippetStatement("String hello = \"t1\";").compile();
 
 		assertThrows(ParentNotInitializedException.class, () -> statement.getParent());
-		assertThrows(ParentNotInitializedException.class, () -> statement.getParent(CtBlock.class));
-		assertThrows(ParentNotInitializedException.class, () -> statement.getParent(new TypeFilter<>(CtBlock.class)));
+		assertNull(statement.getParent(CtBlock.class));
+		assertNull(statement.getParent(new TypeFilter<>(CtBlock.class)));
 	}
 
 	@Test
