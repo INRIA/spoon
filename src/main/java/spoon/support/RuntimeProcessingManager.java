@@ -7,7 +7,6 @@
  */
 package spoon.support;
 
-import org.slf4j.event.Level;
 import spoon.processing.ProcessInterruption;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;

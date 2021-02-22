@@ -8,7 +8,6 @@
 package spoon.support;
 
 
-import org.slf4j.event.Level;
 import org.slf4j.Logger;
 import spoon.Launcher;
 import spoon.OutputType;
@@ -279,7 +278,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	private void print(String message, Level messageLevel) {
-		if (messageLevel.toInt() >= this.level.toInt()) {
+		if (messageLevel.toInt() <= this.level.toInt()) {
 			switch (messageLevel) {
 				case ERROR: logger.error(message);
 					break;
