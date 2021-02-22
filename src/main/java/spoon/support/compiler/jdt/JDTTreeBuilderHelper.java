@@ -33,6 +33,7 @@ import org.eclipse.jdt.internal.compiler.lookup.PackageBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemReferenceBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TagBits;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
@@ -117,7 +118,7 @@ public class JDTTreeBuilderHelper {
 	 * 		Corresponds to the exception type declared in the catch.
 	 * @return a catch variable.
 	 */
-	CtCatchVariable<Throwable> createCatchVariable(TypeReference typeReference) {
+	CtCatchVariable<Throwable> createCatchVariable(TypeReference typeReference, Scope scope) {
 		final Argument jdtCatch = (Argument) jdtTreeBuilder.getContextBuilder().stack.peekFirst().node;
 		final Set<CtExtendedModifier> modifiers = getModifiers(jdtCatch.modifiers, false, false);
 
@@ -127,12 +128,7 @@ public class JDTTreeBuilderHelper {
 			//do not set type of variable yet. It will be initialized later by visit of multiple types. Each call then ADDs one type
 			return result;
 		} else {
-			CtTypeReference ctTypeReference;
-			if (typeReference.resolvedType instanceof ProblemReferenceBinding) {
-				ctTypeReference = jdtTreeBuilder.getReferencesBuilder().buildTypeReference(typeReference, null);
-			} else {
-				ctTypeReference = jdtTreeBuilder.getReferencesBuilder().<Throwable>getTypeReference(typeReference.resolvedType);
-			}
+			CtTypeReference ctTypeReference = jdtTreeBuilder.getReferencesBuilder().buildTypeReference(typeReference, scope);
 			return result.<CtCatchVariable>setType(ctTypeReference);
 		}
 	}
