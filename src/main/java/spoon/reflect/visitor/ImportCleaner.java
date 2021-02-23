@@ -184,9 +184,15 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				//java.lang is always imported implicitly. Ignore it
 				return;
 			}
-			if (Objects.equals(packageQName, packageRef.getQualifiedName())
-					&& !(ref instanceof CtExecutableReference<?> && ((CtExecutableReference<?>) ref).isStatic())) {
+			if (Objects.equals(packageQName, packageRef.getQualifiedName()) && !isStaticExecutableRef(ref)) {
 				//it is reference to a type of the same package. Do not add it
+				return;
+			}
+			if (isStaticExecutableRef(ref) && inheritsFrom(ref.getParent(CtType.class).getReference(), typeRef)) {
+				// Static method is inherited from parent class. At worst, importing an inherited
+				// static method results in a compile error, if the static method is defined in
+				// the default package (not allowed to import methods from default package).
+				// At best, it's pointless. So we skip it.
 				return;
 			}
 			String importRefID = getImportRefID(ref);
@@ -411,5 +417,18 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 	public ImportCleaner setImportComparator(Comparator<CtImport> importComparator) {
 		this.importComparator = importComparator;
 		return this;
+	}
+
+	/** @return true if ref inherits from potentialBase */
+	private static boolean inheritsFrom(CtTypeReference<?> ref, CtTypeReference<?> potentialBase) {
+		CtTypeReference<?> superClass = ref.getSuperclass();
+		return superClass != null
+				&& (superClass.getQualifiedName().equals(potentialBase.getQualifiedName())
+						|| inheritsFrom(superClass, potentialBase));
+	}
+
+	private static boolean isStaticExecutableRef(CtElement element) {
+		return element instanceof CtExecutableReference<?>
+				&& ((CtExecutableReference<?>) element).isStatic();
 	}
 }

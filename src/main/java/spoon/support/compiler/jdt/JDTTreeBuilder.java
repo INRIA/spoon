@@ -1509,7 +1509,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(reference, qualifiedTypeReference);
 			return true;
 		} else if (context.stack.peekFirst().element instanceof CtCatch) {
-			context.enter(helper.createCatchVariable(qualifiedTypeReference), qualifiedTypeReference);
+			context.enter(helper.createCatchVariable(qualifiedTypeReference, scope), qualifiedTypeReference);
 			return true;
 		}
 		context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.buildTypeReference(qualifiedTypeReference, scope)), qualifiedTypeReference);
@@ -1593,7 +1593,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (!(context.stack.peekFirst().node instanceof Argument)) {
 			throw new SpoonException("UnionType is only supported for CtCatch.");
 		}
-		context.enter(helper.createCatchVariable(unionTypeReference), unionTypeReference);
+		context.enter(helper.createCatchVariable(unionTypeReference, scope), unionTypeReference);
 		return true;
 	}
 
@@ -1619,7 +1619,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 			return true;
 		} else if (context.stack.peekFirst().element instanceof CtCatch) {
-			context.enter(helper.createCatchVariable(singleTypeReference), singleTypeReference);
+			context.enter(helper.createCatchVariable(singleTypeReference, scope), singleTypeReference);
 			return true;
 		}
 		CtTypeReference<?> typeRef = references.buildTypeReference(singleTypeReference, scope);
@@ -1728,15 +1728,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
-		if ("package-info".equals(new String(typeDeclaration.name))) {
+		if (typeDeclaration.binding == null && getFactory().getEnvironment().isIgnoreDuplicateDeclarations()) {
+			// skip the type declaration that are already declared
+			return false;
+		} else if ("package-info".equals(new String(typeDeclaration.name))) {
 			context.enter(factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.readableName())), typeDeclaration);
 			return true;
 		} else {
 			CtModule module;
-			// skip the type declaration that are already declared
-			if (typeDeclaration.binding == null && getFactory().getEnvironment().isIgnoreDuplicateDeclarations()) {
-				return false;
-			}
 			if (typeDeclaration.binding.module != null && !typeDeclaration.binding.module.isUnnamed() && typeDeclaration.binding.module.shortReadableName() != null && typeDeclaration.binding.module.shortReadableName().length > 0) {
 				module = factory.Module().getOrCreate(String.valueOf(typeDeclaration.binding.module.shortReadableName()));
 			} else {
@@ -1754,7 +1753,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		}
 	}
-
 	@Override
 	public boolean visit(UnaryExpression unaryExpression, BlockScope scope) {
 		CtUnaryOperator<?> op = factory.Core().createUnaryOperator();
