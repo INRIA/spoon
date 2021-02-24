@@ -102,7 +102,7 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 			return null;
 		}
 
-		CtElement e = this;
+		CtElement typeDeclarer = this;
 		CtElement parent = getParent();
 
 		if (parent instanceof CtTypeParameter && Objects.equals(getSimpleName(), ((CtTypeParameter) parent).getSimpleName())) {
@@ -119,8 +119,8 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 				// we might enter in that case because of a call
 				// of getSuperInterfaces() for example
 				CtTypeReference typeReference = (CtTypeReference) parent;
-				e = typeReference.getTypeDeclaration();
-				if (e == null) {
+				typeDeclarer = typeReference.getTypeDeclaration();
+				if (typeDeclarer == null) {
 					return null;
 				}
 			} else {
@@ -130,31 +130,27 @@ public class CtTypeParameterReferenceImpl extends CtTypeReferenceImpl<Object> im
 
 		if (parent instanceof CtExecutableReference) {
 			CtExecutableReference parentExec = (CtExecutableReference) parent;
-			if (Objects.nonNull(parentExec.getDeclaringType()) && !parentExec.getDeclaringType().equals(e)) {
+			if (Objects.nonNull(parentExec.getDeclaringType()) && !parentExec.getDeclaringType().equals(typeDeclarer)) {
 				CtElement parent2 = parentExec.getExecutableDeclaration();
 				if (parent2 instanceof CtMethod) {
-					e = parent2;
-				} else {
-					e = e.getParent(CtFormalTypeDeclarer.class);
+					typeDeclarer = parent2;
 				}
-			} else {
-				e = e.getParent(CtFormalTypeDeclarer.class);
 			}
-		} else {
-			if (!(e instanceof CtFormalTypeDeclarer)) {
-				e = e.getParent(CtFormalTypeDeclarer.class);
-			}
+		}
+
+		if (!(typeDeclarer instanceof CtFormalTypeDeclarer)) {
+			typeDeclarer = typeDeclarer.getParent(CtFormalTypeDeclarer.class);
 		}
 
 		// case #1: we're a type of a method parameter, a local variable, ...
 		// the strategy is to look in the parents
 		// collecting all formal type declarers of the hierarchy
-		while (e != null) {
-			CtTypeParameter result = findTypeParamDeclaration((CtFormalTypeDeclarer) e, this.getSimpleName());
+		while (typeDeclarer != null) {
+			CtTypeParameter result = findTypeParamDeclaration((CtFormalTypeDeclarer) typeDeclarer, this.getSimpleName());
 			if (result != null) {
 				return result;
 			}
-			e = e.getParent(CtFormalTypeDeclarer.class);
+			typeDeclarer = typeDeclarer.getParent(CtFormalTypeDeclarer.class);
 		}
 		return null;
 	}

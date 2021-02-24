@@ -382,35 +382,33 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <P extends CtElement> P getParent(Class<P> parentType) throws ParentNotInitializedException {
-		if (parent == null) {
-			return null;
+	public <P extends CtElement> P getParent(Class<P> parentType) {
+		CtElement current = this;
+		while (current.isParentInitialized()) {
+			current = current.getParent();
+			if (parentType.isAssignableFrom(current.getClass())) {
+				return (P) current;
+			}
 		}
-		if (parentType.isAssignableFrom(getParent().getClass())) {
-			return (P) getParent();
-		}
-		return getParent().getParent(parentType);
+
+		return null;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <E extends CtElement> E getParent(Filter<E> filter) throws ParentNotInitializedException {
-		E current = (E) getParent();
-		while (true) {
+	public <E extends CtElement> E getParent(Filter<E> filter) {
+		CtElement current = this;
+		while (current.isParentInitialized()) {
+			current = current.getParent();
 			try {
-				while (current != null && !filter.matches(current)) {
-					current = (E) current.getParent();
+				if (filter.matches((E) current)) {
+					return (E) current;
 				}
-				break;
-			} catch (ClassCastException e) {
+			} catch (ClassCastException ignored) {
 				// expected, some elements are not of type
-				current = (E) current.getParent();
 			}
 		}
 
-		if (current != null && filter.matches(current)) {
-			return current;
-		}
 		return null;
 	}
 

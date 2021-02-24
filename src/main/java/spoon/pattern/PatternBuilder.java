@@ -126,6 +126,7 @@ public class PatternBuilder {
 				t = (CtType) ctElement;
 				type = mergeType(type, t);
 			}
+
 			t = ctElement.getParent(CtType.class);
 			if (t != null) {
 				type = mergeType(type, t);

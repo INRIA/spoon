@@ -64,14 +64,10 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		if (targetParent instanceof CtExecutable) {
 			throw new SpoonException("cannot insert in this context (use insertEnd?)");
 		}
-		try {
-			if (target.getParent(CtConstructor.class) != null) {
-				if (target instanceof CtInvocation && ((CtInvocation<?>) target).getExecutable().getSimpleName().startsWith(CtExecutableReference.CONSTRUCTOR_NAME)) {
-					throw new SpoonException("cannot insert a statement before a super or this invocation.");
-				}
+		if (target.getParent(CtConstructor.class) != null) {
+			if (target instanceof CtInvocation && ((CtInvocation<?>) target).getExecutable().getSimpleName().startsWith(CtExecutableReference.CONSTRUCTOR_NAME)) {
+				throw new SpoonException("cannot insert a statement before a super or this invocation.");
 			}
-		} catch (ParentNotInitializedException ignore) {
-			// no parent set somewhere
 		}
 		new InsertVisitor(target, statementsToBeInserted, InsertType.BEFORE).scan(targetParent);
 	}

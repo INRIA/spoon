@@ -22,6 +22,7 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.intercession.IntercessionScanner;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -44,7 +45,6 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -67,9 +67,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class ParentTest {
 
@@ -374,12 +376,8 @@ public class ParentTest {
 					if (setParent == null) {
 						return;
 					}
-					try {
-						if (setParent.getParent(CtIf.class) == null) {
-							fail("Missing condition in " + element.getSignature() + " declared in the class " + element.getDeclaringType().getQualifiedName());
-						}
-					} catch (ParentNotInitializedException e) {
-						fail("Missing parent condition in " + element.getSignature() + " declared in the class " + element.getDeclaringType().getQualifiedName());
+					if (setParent.getParent(CtIf.class) == null) {
+						fail("Missing condition in " + element.getSignature() + " declared in the class " + element.getDeclaringType().getQualifiedName());
 					}
 				}
 			}
@@ -428,4 +426,22 @@ public class ParentTest {
 		l.run();
 	}
 
+
+	@Test
+	public void testGetParentOverloadsInNoParentElements() {
+		CtStatement statement = createFactory().Code().createCodeSnippetStatement("String hello = \"t1\";").compile();
+
+		assertThrows(ParentNotInitializedException.class, () -> statement.getParent());
+		assertNull(statement.getParent(CtBlock.class));
+		assertNull(statement.getParent(new TypeFilter<>(CtBlock.class)));
+	}
+
+	@Test
+	public void testGetParentOverloadsWithNoMatchingElements() {
+		CtStatement statement = createFactory().Code().createCodeSnippetStatement("String hello = \"t1\";").compile();
+		CtExpression<?> expression = ((CtLocalVariable<?>) statement).getAssignment();
+
+		assertNull(expression.getParent(CtBlock.class));
+		assertNull(expression.getParent(new TypeFilter<>(CtBlock.class)));
+	}
 }

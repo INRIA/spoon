@@ -50,10 +50,8 @@ public class SerializableTest {
 		String sigBef = sta2.getShortRepresentation();
 		String sigAf = deserializedSta2.getShortRepresentation();
 
-		CtType<?> typeBef = sta2.getParent(CtType.class);
-
 		// sta2 comes from a snippet, and snippets have no parent (#2318)
-		assertNull(typeBef);
+		assertFalse(sta2.isParentInitialized());
 
 		assertEquals(sigBef, sigAf);
 
@@ -63,10 +61,7 @@ public class SerializableTest {
 
 		assertEquals(toSBef, toSgAf);
 
-		CtType<?> typeDes = deserializedSta2.getParent(CtType.class);
-
 		// typeDes comes from a serialized snippet, and snippets have no parent (#2318)
-		assertNull(typeDes);
 		assertFalse(deserializedSta2.isParentInitialized());
 	}
 
