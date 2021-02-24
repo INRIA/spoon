@@ -38,11 +38,13 @@ jobs:
         run: mv chore/travis/logback.xml src/test/resources/
       - name: Build and test
         env:
-          MAVEN_OPTS: -Djava.src.version=${{ matrix.java }}
+          MAVEN_OPTS: -Djava.src.version=${{ matrix.java }} -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
         run: mvn test
 
   coverage:
     runs-on: ubuntu-latest
+    env:
+      MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
     name: Test with coverage
     steps:
       - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # v2.3.4
@@ -59,6 +61,8 @@ jobs:
 
   extra:
     runs-on: ubuntu-latest
+    env:
+      MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
     name: Extra checks
     steps:
       - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # v2.3.4
