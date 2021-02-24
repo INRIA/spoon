@@ -9,6 +9,7 @@ package spoon.test.processing.processors;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ import spoon.processing.AbstractParallelProcessor;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
+import spoon.test.GitHubIssue;
 
 public class ParallelProcessorTest {
 	private static final String INPUT_FILES = "src/test/resources/deprecated/input";
@@ -48,8 +50,11 @@ public class ParallelProcessorTest {
 		return processor;
 	}
 
+	@GitHubIssue(issueNumber = 3806)
 	@Test
 	public void compareWithSingleThreaded1() throws IOException {
+		assumeNotWindows(); // FIXME Flaky on Windows, see #3806
+
 		// contract: running with 4 processors parallel must produce the same result as
 		// single threaded processor.
 		// for testing this a simple processor counting visited nodes is used.
@@ -136,8 +141,11 @@ public class ParallelProcessorTest {
 		assertTrue(singleThreadCounter.get() == 0);
 	}
 
+	@GitHubIssue(issueNumber = 3806)
 	@Test
 	public void compareWithSingleThreaded3() throws IOException {
+		assumeNotWindows(); // FIXME Flaky on Windows, see #3806
+
 		// contract: using an iterable with more elements than used should only use the
 		// given number. Result must be correct too.
 		// Here the iterable<Processor> has size 4 and only 3 are used.
