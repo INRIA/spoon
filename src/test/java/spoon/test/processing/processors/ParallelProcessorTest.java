@@ -7,6 +7,8 @@
  */
 package spoon.test.processing.processors;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -15,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.stream.IntStream;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -77,14 +80,9 @@ public class ParallelProcessorTest {
 			}
 		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
 
-		// after processing both |singleThreadCounter| == sum(|atomicCounter|) must be
-		// true.
-		// for checking this subtract each array value from the
-		// singleThreadCounter and check for == 0
-		for (int j = 0; j < atomicCounter.length(); j++) {
-			singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(j));
-		}
-		assertTrue(singleThreadCounter.get() == 0);
+		// after processing both |singleThreadCounter| == sum(|atomicCounter|) must be true.
+		int parallelCount = IntStream.range(0, atomicCounter.length()).map(atomicCounter::get).sum();
+		assertThat(parallelCount, equalTo(singleThreadCounter.get()));
 	}
 
 	@Test
@@ -108,8 +106,8 @@ public class ParallelProcessorTest {
 				singleThreadCounter.incrementAndGet();
 			}
 		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
-		singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(0));
-		assertTrue(singleThreadCounter.get() == 0);
+
+		assertThat(atomicCounter.get(0), equalTo(singleThreadCounter));
 	}
 
 	@Test
@@ -130,10 +128,10 @@ public class ParallelProcessorTest {
 				singleThreadCounter.incrementAndGet();
 			}
 		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
-		for (int j = 0; j < atomicCounter.length(); j++) {
-			singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(j));
-		}
-		assertTrue(singleThreadCounter.get() == 0);
+
+		// after processing both |singleThreadCounter| == sum(|atomicCounter|) must be true.
+		int parallelCount = IntStream.range(0, atomicCounter.length()).map(atomicCounter::get).sum();
+		assertThat(parallelCount, equalTo(singleThreadCounter.get()));
 	}
 
 	@Test
@@ -160,12 +158,12 @@ public class ParallelProcessorTest {
 				singleThreadCounter.incrementAndGet();
 			}
 		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
-		for (int j = 0; j < atomicCounter.length(); j++) {
-			singleThreadCounter.set(singleThreadCounter.get() - atomicCounter.get(j));
-		}
-		assertTrue(singleThreadCounter.get() == 0);
+
+
+		int parallelCount = IntStream.range(0, atomicCounter.length()).map(atomicCounter::get).sum();
+		assertThat(parallelCount, equalTo(singleThreadCounter.get()));
 		// because only 3 are used
-		assertTrue(atomicCounter.get(3) == 0);
+		assertThat(atomicCounter.get(atomicCounter.length() - 1), equalTo(0));
 	}
 
 	@Test
