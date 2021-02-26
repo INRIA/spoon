@@ -107,7 +107,7 @@ public class ParallelProcessorTest {
 			}
 		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
 
-		assertThat(atomicCounter.get(0), equalTo(singleThreadCounter));
+		assertThat(atomicCounter.get(0), equalTo(singleThreadCounter.get()));
 	}
 
 	@Test
