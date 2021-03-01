@@ -129,9 +129,9 @@ public class ParallelProcessorTest {
 			}
 		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
 
-		// after processing both |singleThreadCounter| == sum(|atomicCounter|) must be true.
+		int sequentialCount = singleThreadCounter.get();
 		int parallelCount = IntStream.range(0, atomicCounter.length()).map(atomicCounter::get).sum();
-		assertThat(parallelCount, equalTo(singleThreadCounter.get()));
+		assertThat(parallelCount, equalTo(sequentialCount));
 	}
 
 	@Test
@@ -140,10 +140,11 @@ public class ParallelProcessorTest {
 		// given number. Result must be correct too.
 		// Here the iterable<Processor> has size 4 and only 3 are used.
 		AtomicReferenceArray<Integer> atomicCounter = createCounter();
+		int expectedUnusedCounterIdx = atomicCounter.length() - 1;
 		Processor<CtElement> p1 = createProcessor(atomicCounter, 0);
 		Processor<CtElement> p2 = createProcessor(atomicCounter, 1);
 		Processor<CtElement> p3 = createProcessor(atomicCounter, 2);
-		Processor<CtElement> p4 = createProcessor(atomicCounter, 3);
+		Processor<CtElement> p4 = createProcessor(atomicCounter, expectedUnusedCounterIdx);
 
 		new FluentLauncher().inputResource(INPUT_FILES)
 				.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1, p2, p3, p4), 3) {
@@ -160,10 +161,10 @@ public class ParallelProcessorTest {
 		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
 
 
+		int sequentialCount = singleThreadCounter.get();
 		int parallelCount = IntStream.range(0, atomicCounter.length()).map(atomicCounter::get).sum();
-		assertThat(parallelCount, equalTo(singleThreadCounter.get()));
-		// because only 3 are used
-		assertThat(atomicCounter.get(atomicCounter.length() - 1), equalTo(0));
+		assertThat(parallelCount, equalTo(sequentialCount));
+		assertThat(atomicCounter.get(expectedUnusedCounterIdx), equalTo(0));
 	}
 
 	@Test
