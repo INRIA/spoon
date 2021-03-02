@@ -424,7 +424,6 @@ private transient  ClassLoader inputClassloader;
 					throw new SpoonException("Spoon does not support a URLClassLoader containing other resources than local file.");
 				}
 			}
-			return;
 		}
 		this.classloader = aClassLoader;
 	}
