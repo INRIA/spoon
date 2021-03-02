@@ -29,12 +29,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /** Helper class for working with snippets */
 public class SnippetCompilationHelper {
@@ -67,7 +62,7 @@ public class SnippetCompilationHelper {
 		initialClass.removeModifier(ModifierKind.PUBLIC);
 
 		// we need to delete the current class from its package
-		// otherwsise the new type is not added because it has the same fully qualified name
+		// otherwise the new type is not added because it has the same fully qualified name
 		initialClass.delete();
 
 		try {
@@ -82,7 +77,17 @@ public class SnippetCompilationHelper {
 
 		// we find the snippets that are now ASTs
 		for (CtPath p : elements2before.keySet()) {
-			elements2after.put(p, p.evaluateOn(f.getModel().getRootPackage()).iterator().next());
+            // Find p n the right context, and evaluate it there
+            List<CtElement> pp = p.evaluateOn(f.getModel().getRootPackage());
+            // Find the very next element, if there is any
+            if (!pp.isEmpty()){
+                CtElement nextp = pp.iterator().next();
+                // Stitch the items in the right order
+                elements2after.put(p, nextp);
+            } else {
+                // elements2after.put(p, p);
+                continue;
+            }
 		}
 
 		// and we replace the new class in the factory by the initial one
