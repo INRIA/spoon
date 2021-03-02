@@ -47,9 +47,10 @@ public class SnippetCompilationHelper {
 	 *
 	 */
 	public static void compileAndReplaceSnippetsIn(CtType<?> initialClass) {
-
+        // Initialize two empty Maps for the new ASTs
 		Map<CtPath, CtElement> elements2before = new HashMap<>();
 		Map<CtPath, CtElement> elements2after = new HashMap<>();
+		// Split into items to process (Snippets) and others
 		for (Object o : initialClass.filterChildren(new TypeFilter<>(CtCodeSnippet.class)).list()) {
 			CtElement el = (CtElement) o;
 			elements2before.put(el.getPath(), el);
@@ -85,7 +86,6 @@ public class SnippetCompilationHelper {
                 // Stitch the items in the right order
                 elements2after.put(p, nextp);
             } else {
-                // elements2after.put(p, p);
                 continue;
             }
 		}
@@ -96,6 +96,8 @@ public class SnippetCompilationHelper {
 		// and we replace the snippets
 		for (Map.Entry<CtPath, CtElement> ctPath : elements2before.entrySet()) {
 			CtElement toReplace = ctPath.getValue();
+			// This seems to produce the duplicate of #6587
+            // Something seems to be off with where what is in the path's index
 			toReplace.replace(elements2after.get(ctPath.getKey()));
 		}
 	}
