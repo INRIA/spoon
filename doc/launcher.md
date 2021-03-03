@@ -19,11 +19,11 @@ Launcher launcher = new Launcher();
 
 // path can be a folder or a file
 // addInputResource can be called several times
-launcher.addInputResource("<path_to_source>"); 
+        launcher.addInputResource("<path_to_source>");
 
-launcher.buildModel();
+        launcher.buildModel();
 
-CtModel model = launcher.getModel();
+        CtModel model = launcher.getModel();
 ```
 
 ### Pretty-printing modes
@@ -34,7 +34,7 @@ See <http://spoon.gforge.inria.fr/custom-pretty-printing.html>.
 
 The Spoon `MavenLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/MavenLauncher.html)) is used to create the AST model of a Maven project.
 It automatically infers the list of source folders and the dependencies from the `pom.xml` file.
-This Launcher handles multi-module Maven projects.
+This launcher handles multi-module Maven projects.
 
 ```java
 // the second parameter can be APP_SOURCE / TEST_SOURCE / ALL_SOURCE
@@ -53,7 +53,7 @@ for(CtType<?> s : model.getAllTypes()) {
 
 ```
 
-Note that by default, MavenLauncher relies on an existing local maven binary to build the project's classpath. But a constructor allowing the user to skip this step and to provide a custom classpath is available.
+Note that by default, `MavenLauncher` relies on an existing local maven binary to build the project's classpath. But a constructor allowing the user to skip this step and to provide a custom classpath is available.
 ```java
 MavenLauncher launcher = new MavenLauncher("<path_to_maven_project>",
         MavenLauncher.SOURCE_TYPE.APP_SOURCE,
@@ -70,8 +70,8 @@ To avoid invoking maven over and over to build a classpath that has not changed,
 
 There are two ways to analyze bytecode with spoon:
 
- * Bytecode resources can be added in the classpath, (some information will be extracted through reflection)
- * A decompiler may be used, and then, the analyzes will be performed on the decompiled sources.
+* Bytecode resources can be added in the classpath, (some information will be extracted through reflection)
+* A decompiler may be used, and then, the analyzes will be performed on the decompiled sources.
 
 The Spoon `JarLauncher` ([JavaDoc](https://github.com/INRIA/spoon/blob/master/spoon-decompiler/src/main/java/spoon/JarLauncher.java)) is used to create the AST model from a jar.
 It automatically decompiles class files contained in the jar and analyzes them.
@@ -123,15 +123,15 @@ launcher.addInputResource(
 
 Spoon analyzes source code. However, this source code may refer to libraries (as a field, parameter, or method return type). There are two cases:
 
-* Full classpath: all dependencies are in the JVM classpath or are given to the Laucher with `launcher.getEnvironment().setSourceClasspath("<classpath_project>");` (optional)
+* Full classpath: all dependencies are in the JVM classpath or are given to the laucher with `launcher.getEnvironment().setSourceClasspath("<classpath_project>");` (optional)
 * No classpath: some dependencies are unknown and `launcher.getEnvironment().setNoClasspath(true)` is set.
 
 This has a direct impact on Spoon references.
-When you're consider a reference object (say, a TypeReference), there are three cases:
+When you're consider a reference object (say, a `CtTypeReference`), there are three cases:
 
-- Case 1 (code available as source code): the reference points to a code element for which the source code is present. In this case, reference.getDeclaration() returns this code element (e.g. TypeReference.getDeclaration returns the CtType representing the given java file). reference.getTypeDeclaration() is identical to reference.getDeclaration().
-- Case 2 (code available as binary in the classpath): the reference points to a code element for which the source code is NOT present, but for which the binary class is in the classpath (either the JVM classpath or the --source-classpath argument). In this case, reference.getDeclaration() returns null and reference.getTypeDeclaration returns a partial CtType built using runtime reflection. Those objects built using runtime reflection are called shadow objects; and you can identify them with method isShadow. (This also holds for getFieldDeclaration and getExecutableDeclaration)
-- Case 3 (code not available, aka noclasspath): the reference points to a code element for which the source code is NOT present, but for which the binary class is NOT in the classpath. This is called in Spoon the noclasspath mode. In this case, both reference.getDeclaration() and reference.getTypeDeclaration() return null. (This also holds for getFieldDeclaration and getExecutableDeclaration)
+- Case 1 (code available as source code): the reference points to a code element for which the source code is present. In this case, `reference.getDeclaration()` returns this code element (e.g. `TypeReference.getDeclaration` returns the `CtType` representing the given java file). `reference.getTypeDeclaration()` is identical to `reference.getDeclaration()`.
+- Case 2 (code available as binary in the classpath): the reference points to a code element for which the source code is NOT present, but for which the binary class is in the classpath (either the JVM classpath or the `--source-classpath` argument). In this case, `reference.getDeclaration()` returns `null` and `reference.getTypeDeclaration` returns a partial `CtType` built using runtime reflection. Those objects built using runtime reflection are called shadow objects; and you can identify them with method `isShadow`. (This also holds for `getFieldDeclaration` and `getExecutableDeclaration`)
+- Case 3 (code not available, aka noclasspath): the reference points to a code element for which the source code is NOT present, but for which the binary class is NOT in the classpath. This is called in Spoon the noclasspath mode. In this case, both `reference.getDeclaration()` and `reference.getTypeDeclaration()` return `null`. (This also holds for `getFieldDeclaration` and `getExecutableDeclaration`)
 
 
 ## Declaring the dependency to Spoon
@@ -157,7 +157,7 @@ compile 'fr.inria.gforge.spoon:spoon-core:{{site.spoon_release}}'
 
 ### Incremental Launcher
 
-`IncrementalLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/IncrementalLauncher.html)) allows cache AST and compiled classes. Any spoon analysis can then be restarted from where it stopped instead of restarting from scratch.
+`IncrementalLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/IncrementalLauncher.html)) allows cached ASTs and compiled classes. Any Spoon analysis can then be restarted from where it stopped instead of restarting from scratch.
 
 ```java
 final File cache = new File("<path_to_cache>");
@@ -179,7 +179,7 @@ launcher.saveCache();
 ```
 ### Fluent LauncherAPI
 
-`FluentLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/FluentLauncher.html)) allows simple, fluent launcher usage with setting most options directly.
+`FluentLauncher` ([JavaDoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/FluentLauncher.html)) allows setting most options directly for simple and fluent launcher usage.
 
 For the classic launcher it's simply:
 
@@ -191,12 +191,12 @@ CtModel model = new FluentLauncher()
                 .processor(....)
                 .buildModel();
 ```
-If you want to use other launchers like the MavenLauncher:
+If you want to use other launchers like the `MavenLauncher`:
 
 ```java
 MavenLauncher launcher = new MavenLauncher(....);
-CtModel model = new FluentLauncher(launcher)
-                .processor(....)
-                .encoding(...)
-                .buildModel();
+        CtModel model = new FluentLauncher(launcher)
+        .processor(....)
+        .encoding(...)
+        .buildModel();
 ```
