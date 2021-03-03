@@ -127,11 +127,11 @@ Spoon analyzes source code. However, this source code may refer to libraries (as
 * No classpath: some dependencies are unknown and `launcher.getEnvironment().setNoClasspath(true)` is set.
 
 This has a direct impact on Spoon references.
-When you're consider a reference object (say, a `CtTypeReference`), there are three cases:
+When you consider a reference object (say, a `CtTypeReference`), there are three cases:
 
 - Case 1 (code available as source code): the reference points to a code element for which the source code is present. In this case, `reference.getDeclaration()` returns this code element (e.g. `TypeReference.getDeclaration` returns the `CtType` representing the given java file). `reference.getTypeDeclaration()` is identical to `reference.getDeclaration()`.
-- Case 2 (code available as binary in the classpath): the reference points to a code element for which the source code is NOT present, but for which the binary class is in the classpath (either the JVM classpath or the `--source-classpath` argument). In this case, `reference.getDeclaration()` returns `null` and `reference.getTypeDeclaration` returns a partial `CtType` built using runtime reflection. Those objects built using runtime reflection are called shadow objects; and you can identify them with method `isShadow`. (This also holds for `getFieldDeclaration` and `getExecutableDeclaration`)
-- Case 3 (code not available, aka noclasspath): the reference points to a code element for which the source code is NOT present, but for which the binary class is NOT in the classpath. This is called in Spoon the noclasspath mode. In this case, both `reference.getDeclaration()` and `reference.getTypeDeclaration()` return `null`. (This also holds for `getFieldDeclaration` and `getExecutableDeclaration`)
+- Case 2 (code available as binary in the classpath): the reference points to a code element for which the source code is NOT present, but for which the binary class is in the classpath (either the JVM classpath or the `--source-classpath` argument). In this case, `reference.getDeclaration()` returns `null` and `reference.getTypeDeclaration` returns a partial `CtType` built using runtime reflection. Those objects built using runtime reflection are called shadow objects; and you can identify them with method `isShadow`. (This also holds for `getFieldDeclaration` and `getExecutableDeclaration`).
+- Case 3 (code not available, aka noclasspath): the reference points to a code element for which the source code is NOT present, but for which the binary class is NOT in the classpath. This is called in Spoon the noclasspath mode. In this case, both `reference.getDeclaration()` and `reference.getTypeDeclaration()` return `null`. (This also holds for `getFieldDeclaration` and `getExecutableDeclaration`).
 
 
 ## Declaring the dependency to Spoon
