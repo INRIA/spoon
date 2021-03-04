@@ -218,7 +218,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	protected boolean ignoreImplicit = true;
 
 	/**
-	 * EXPERIMENTAL: If true, the printer will print only required parentheses in expressions.
+	 * EXPERIMENTAL: If true, the printer will attempt to print a minimal set of parentheses that
+	 * preserve the syntactical structure of the AST.
 	 */
 	private boolean optimizeParentheses = false;
 
