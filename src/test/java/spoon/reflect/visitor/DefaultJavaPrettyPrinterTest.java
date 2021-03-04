@@ -32,10 +32,8 @@ public class DefaultJavaPrettyPrinterTest {
     public void testParenOptimizationCorrectlyPrintsParenthesesForExpressions(String rawExpression) {
         // contract: When input expressions are minimally parenthesized, pretty-printed output should
         // match the input
-
-        Launcher launcher = createLauncherWithOptimizeParenthesesPrinter();
-        CtExpression<?> expr = launcher.getFactory()
-                .createCodeSnippetExpression(rawExpression).compile();
+        CtExpression<?> expr = createLauncherWithOptimizeParenthesesPrinter()
+                .getFactory().createCodeSnippetExpression(rawExpression).compile();
         assertThat(expr.toString(), equalTo(rawExpression));
     }
 
@@ -48,10 +46,8 @@ public class DefaultJavaPrettyPrinterTest {
     public void testParenOptimizationCorrectlyPrintsParenthesesForStatements(String rawStatement) {
         // contract: When input expressions as part of statements are minimally parenthesized,
         // pretty-printed output should match the input
-
-        Launcher launcher = createLauncherWithOptimizeParenthesesPrinter();
-        CtStatement statement = launcher.getFactory()
-                .createCodeSnippetStatement(rawStatement);
+        CtStatement statement = createLauncherWithOptimizeParenthesesPrinter()
+                .getFactory().createCodeSnippetStatement(rawStatement);
         assertThat(statement.toString(), equalTo(rawStatement));
     }
 
