@@ -151,6 +151,30 @@ class OperatorHelper {
 	}
 
 	/**
+	 * Get the precedence of a unary operator as defined by
+	 * https://introcs.cs.princeton.edu/java/11precedence/
+	 *
+	 * @param o A unary operator kind.
+	 * @return The precedence of the given operator.
+	 */
+	public static int getOperatorPrecedence(UnaryOperatorKind o) {
+		switch (o) {
+			case POS:
+			case NEG:
+			case NOT:
+			case COMPL:
+			case PREINC:
+			case PREDEC:
+				return 14;
+			case POSTINC:
+			case POSTDEC:
+				return 15;
+			default:
+				throw new SpoonException("Unsupported operator " + o.name());
+		}
+	}
+
+	/**
 	 * Get the associativity of a binary operator as defined by
 	 * https://introcs.cs.princeton.edu/java/11precedence/
 	 *
@@ -173,30 +197,6 @@ class OperatorHelper {
 				return OperatorAssociativity.NONE;
 			default:
 				return OperatorAssociativity.LEFT;
-		}
-	}
-
-	/**
-	 * Get the precedence of a unary operator as defined by
-	 * https://introcs.cs.princeton.edu/java/11precedence/
-	 *
-	 * @param o A unary operator kind.
-	 * @return The precedence of the given operator.
-	 */
-	public static int getOperatorPrecedence(UnaryOperatorKind o) {
-		switch (o) {
-			case POS:
-			case NEG:
-			case NOT:
-			case COMPL:
-			case PREINC:
-			case PREDEC:
-				return 14;
-			case POSTINC:
-			case POSTDEC:
-				return 15;
-			default:
-				throw new SpoonException("Unsupported operator " + o.name());
 		}
 	}
 
