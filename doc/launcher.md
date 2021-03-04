@@ -133,6 +133,9 @@ When you're consider a reference object (say, a TypeReference), there are three 
 - Case 2 (code available as binary in the classpath): the reference points to a code element for which the source code is NOT present, but for which the binary class is in the classpath (either the JVM classpath or the --source-classpath argument). In this case, reference.getDeclaration() returns null and reference.getTypeDeclaration returns a partial CtType built using runtime reflection. Those objects built using runtime reflection are called shadow objects; and you can identify them with method isShadow. (This also holds for getFieldDeclaration and getExecutableDeclaration)
 - Case 3 (code not available, aka noclasspath): the reference points to a code element for which the source code is NOT present, but for which the binary class is NOT in the classpath. This is called in Spoon the noclasspath mode. In this case, both reference.getDeclaration() and reference.getTypeDeclaration() return null. (This also holds for getFieldDeclaration and getExecutableDeclaration)
 
+### Default and custom classloaders
+
+Spoon uses a `URLClassLoader` by default to load binaries before parsing them. A `URLClassLoader` will load a class with the parent classloader first. This means that if there is a name conflict between the JVM classpath and the manual classpath then the former will be chosen. To give priority to the manual classpath, a child-first classloader can be used. Classloaders are set with `launcher.getEnvironment().setInputClassLoader(customClassloader)`.
 
 ## Declaring the dependency to Spoon
 
