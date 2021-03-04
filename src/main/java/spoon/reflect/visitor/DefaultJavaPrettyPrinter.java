@@ -2147,7 +2147,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private static boolean shouldSetBracketOptimized(CtExpression<?> operator) {
-	    assert isOperator(operator) && isOperator(operator.getParent());
+		assert isOperator(operator) && isOperator(operator.getParent());
 
 		if (!operator.isParentInitialized()) {
 			return false;
@@ -2169,12 +2169,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	private static int getOperatorPrecedence(CtElement e) {
-	    if (e instanceof CtBinaryOperator) {
-	    	return OperatorHelper.getOperatorPrecedence(((CtBinaryOperator<?>) e).getKind());
+		if (e instanceof CtBinaryOperator) {
+			return OperatorHelper.getOperatorPrecedence(((CtBinaryOperator<?>) e).getKind());
 		} else if (e instanceof CtUnaryOperator) {
-	    	return OperatorHelper.getOperatorPrecedence(((CtUnaryOperator<?>) e).getKind());
+			return OperatorHelper.getOperatorPrecedence(((CtUnaryOperator<?>) e).getKind());
 		} else {
-	    	return 0;
+			return 0;
 		}
 	}
 
@@ -2191,9 +2191,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	private static OperatorHelper.OperatorAssociativity getPositionInParent(CtElement e) {
 		CtElement parent = e.getParent();
 		if (parent instanceof CtBinaryOperator) {
-			return ((CtBinaryOperator<?>) parent).getLeftHandOperand() == e ?
-					OperatorHelper.OperatorAssociativity.LEFT :
-					OperatorHelper.OperatorAssociativity.RIGHT;
+			return ((CtBinaryOperator<?>) parent).getLeftHandOperand() == e
+					? OperatorHelper.OperatorAssociativity.LEFT
+					: OperatorHelper.OperatorAssociativity.RIGHT;
 		} else {
 			return OperatorHelper.OperatorAssociativity.NONE;
 		}
