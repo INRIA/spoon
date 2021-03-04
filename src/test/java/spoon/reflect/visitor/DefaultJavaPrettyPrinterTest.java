@@ -15,9 +15,11 @@ public class DefaultJavaPrettyPrinterTest {
             "1 + 2 + 3",
             "1 + (2 + 3)",
             "\"Sum: \" + (1 + 2)",
-            "-(1 + 2 + 3)"
+            "-(1 + 2 + 3)",
+            "true || true && false",
+            "(true || false) && false"
     })
-    public void testParenOptimizationCorrectlyPrintsParentheses(String rawExpression) {
+    public void testParenOptimizationCorrectlyPrintsParenthesesForExpressions(String rawExpression) {
         Launcher launcher = createLauncherWithOptimizeParenthesesPrinter();
         CtExpression<?> expr =  launcher.getFactory()
                 .createCodeSnippetExpression(rawExpression).compile();

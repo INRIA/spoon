@@ -2164,6 +2164,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		int parentPrecedence = OperatorHelper.getBinaryOperatorPrecedence(parent.getKind());
 		int precedence = OperatorHelper.getBinaryOperatorPrecedence(operator.getKind());
-		return precedence < parentPrecedence || associativity != positionInParent;
+		return precedence < parentPrecedence
+				|| (precedence == parentPrecedence && associativity != positionInParent);
 	}
 }
