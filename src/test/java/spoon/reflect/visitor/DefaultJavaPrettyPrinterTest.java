@@ -28,6 +28,19 @@ public class DefaultJavaPrettyPrinterTest {
         assertThat(expr.toString(), equalTo(rawExpression));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "int sum = 1 + 2 + 3",
+            "java.lang.String s = \"Sum: \" + (1 + 2)",
+            "java.lang.String s = \"Sum: \" + 1 + 2"
+    })
+    public void testParenOptimizationCorrectlyPrintsParenthesesForStatements(String rawStatement) {
+        Launcher launcher = createLauncherWithOptimizeParenthesesPrinter();
+        CtStatement statement = launcher.getFactory()
+                .createCodeSnippetStatement(rawStatement);
+        assertThat(statement.toString(), equalTo(rawStatement));
+    }
+
     private static Launcher createLauncherWithOptimizeParenthesesPrinter() {
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setPrettyPrinterCreator(() -> {
