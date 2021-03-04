@@ -53,6 +53,19 @@ public class DefaultJavaPrettyPrinterTest {
         assertThat(statement.toString(), equalTo(originalStatement));
     }
 
+    @Test
+    public void testParenOptimizationPreservesSemanticsOfUnaryOperator() {
+        // contract: Unary operator parentheses should be preserved when required
+
+        Launcher launcher = createLauncherWithOptimizeParenthesesPrinter();
+        String originalExpression = "-(1 + 2 + 3)";
+
+        CtExpression<?> expr = launcher.getFactory()
+                .createCodeSnippetExpression(originalExpression).compile();
+
+        assertThat(expr.toString(), equalTo(originalExpression));
+    }
+
     private static Launcher createLauncherWithOptimizeParenthesesPrinter() {
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setPrettyPrinterCreator(() -> {
