@@ -397,7 +397,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		try {
 			if (isOptimizeParentheses() && isOperator(e) && isOperator(e.getParent())) {
-				return shouldSetBracketOptimized(e);
+				return shouldSetBracketAroundNestedOperator(e);
 			}
 			if ((e.getParent() instanceof CtBinaryOperator) || (e.getParent() instanceof CtUnaryOperator)) {
 				return (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator) || e instanceof CtBinaryOperator;
@@ -2146,12 +2146,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		this.optimizeParentheses = optimizeParentheses;
 	}
 
-	private static boolean shouldSetBracketOptimized(CtExpression<?> operator) {
+	/**
+	 * Given that the input is a nested operator (i.e. both element and parent are either unary or
+	 * binary operators), determine whether or not the the input element must be parenthesized.
+	 *
+	 * @param operator A unary or binary operator.
+	 * @return true if the operator should be parenthesized.
+	 */
+	private static boolean shouldSetBracketAroundNestedOperator(CtExpression<?> operator) {
 		assert isOperator(operator) && isOperator(operator.getParent());
 
-		if (!operator.isParentInitialized()) {
-			return false;
-		} else if (!(operator.getParent() instanceof CtBinaryOperator)) {
+		if (!(operator.getParent() instanceof CtBinaryOperator)) {
 			return true;
 		}
 

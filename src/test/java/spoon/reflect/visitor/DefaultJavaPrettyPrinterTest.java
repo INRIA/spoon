@@ -30,8 +30,8 @@ public class DefaultJavaPrettyPrinterTest {
             "(1 | 2) ^ 3"
     })
     public void testParenOptimizationCorrectlyPrintsParenthesesForExpressions(String rawExpression) {
-        // contract: When input expressions are minimally parenthesized, pretty-printed output should
-        // match the input
+        // contract: When input expressions are minimally parenthesized, pretty-printed output
+        // should match the input
         CtExpression<?> expr = createLauncherWithOptimizeParenthesesPrinter()
                 .getFactory().createCodeSnippetExpression(rawExpression).compile();
         assertThat(expr.toString(), equalTo(rawExpression));
