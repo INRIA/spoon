@@ -19,11 +19,11 @@ Launcher launcher = new Launcher();
 
 // path can be a folder or a file
 // addInputResource can be called several times
-        launcher.addInputResource("<path_to_source>");
+launcher.addInputResource("<path_to_source>"); 
 
-        launcher.buildModel();
+launcher.buildModel();
 
-        CtModel model = launcher.getModel();
+CtModel model = launcher.getModel();
 ```
 
 ### Pretty-printing modes
@@ -70,8 +70,8 @@ To avoid invoking maven over and over to build a classpath that has not changed,
 
 There are two ways to analyze bytecode with spoon:
 
-* Bytecode resources can be added in the classpath, (some information will be extracted through reflection)
-* A decompiler may be used, and then, the analyzes will be performed on the decompiled sources.
+ * Bytecode resources can be added in the classpath, (some information will be extracted through reflection)
+ * A decompiler may be used, and then, the analyzes will be performed on the decompiled sources.
 
 The Spoon `JarLauncher` ([JavaDoc](https://github.com/INRIA/spoon/blob/master/spoon-decompiler/src/main/java/spoon/JarLauncher.java)) is used to create the AST model from a jar.
 It automatically decompiles class files contained in the jar and analyzes them.
@@ -195,8 +195,8 @@ If you want to use other launchers like the `MavenLauncher`:
 
 ```java
 MavenLauncher launcher = new MavenLauncher(....);
-        CtModel model = new FluentLauncher(launcher)
-        .processor(....)
-        .encoding(...)
-        .buildModel();
+CtModel model = new FluentLauncher(launcher)
+                .processor(....)
+                .encoding(...)
+                .buildModel();
 ```
