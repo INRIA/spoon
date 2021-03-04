@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.experimental.CtUnresolvedImport;
+import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CaseKind;
@@ -217,6 +218,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	protected boolean ignoreImplicit = true;
 
+	/**
+	 * EXPERIMENTAL: If true, the printer will print only required parentheses in expressions.
+	 */
+	private boolean optimizeParentheses = false;
+
 	public boolean inlineElseIf = true;
 
 	/**
@@ -391,6 +397,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return true;
 		}
 		try {
+		    if (optimizeParentheses && e.getParent() instanceof CtBinaryOperator && e instanceof CtBinaryOperator) {
+		    	return shouldSetBracketOptimized((CtBinaryOperator<?>) e);
+			}
 			if ((e.getParent() instanceof CtBinaryOperator) || (e.getParent() instanceof CtUnaryOperator)) {
 				return (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator) || e instanceof CtBinaryOperator;
 			}
@@ -2029,6 +2038,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void calculate(CtCompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		reset();
+
 		if (types.isEmpty()) {
 			// is package-info.java, we cannot call types.get(0) in the then branch
 		} else {
@@ -2052,6 +2062,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		}
 		applyPreProcessors(sourceCompilationUnit);
+
 		scan(sourceCompilationUnit);
 	}
 
@@ -2126,5 +2137,26 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		scan(statement.getExpression());
 		exitCtStatement(statement);
+	}
+
+	boolean isOptimizeParentheses() {
+		return optimizeParentheses;
+	}
+
+	void setOptimizeParentheses(boolean optimizeParentheses) {
+		this.optimizeParentheses = optimizeParentheses;
+	}
+
+	private static boolean shouldSetBracketOptimized(CtBinaryOperator<?> operator) {
+		if (!operator.isParentInitialized()) {
+			return false;
+		} else if (!(operator.getParent() instanceof CtBinaryOperator)) {
+			return true;
+		}
+		int parentPrecedence = OperatorHelper.getBinaryOperatorPrecedence(
+				((CtBinaryOperator<?>) operator.getParent()).getKind());
+		int precedence = OperatorHelper.getBinaryOperatorPrecedence(operator.getKind());
+
+		return precedence < parentPrecedence;
 	}
 }

@@ -101,4 +101,47 @@ class OperatorHelper {
 				throw new SpoonException("Unsupported operator " + o.name());
 		}
 	}
+
+	/**
+	 * Operator precedences as defined at https://introcs.cs.princeton.edu/java/11precedence/
+	 *
+	 * @return The precedence of the given operator.
+	 */
+	public static int getBinaryOperatorPrecedence(BinaryOperatorKind o) {
+		switch (o) {
+			case OR: // ||
+                return 3;
+			case AND: // &&
+				return 4;
+			case BITOR: // |
+				return 5;
+			case BITXOR: // ^
+				return 6;
+			case BITAND: // &
+				return 7;
+			case EQ: // ==
+			case NE: // !=
+				return 8;
+			case LT: // <
+			case GT: // >
+			case LE: // <=
+			case GE: // >=
+			case INSTANCEOF:
+			    return 9;
+			case SL: // <<
+			case SR: // >>
+			case USR: // >>>
+				return 10;
+			case PLUS: // +
+			case MINUS: // -
+				return 11;
+			case MUL: // *
+			case DIV: // /
+			case MOD: // %
+				return 12;
+			default:
+				throw new SpoonException("Unsupported operator " + o.name());
+		}
+
+	}
 }
