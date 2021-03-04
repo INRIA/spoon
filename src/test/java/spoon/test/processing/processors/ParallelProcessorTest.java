@@ -80,9 +80,9 @@ public class ParallelProcessorTest {
 			}
 		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
 
-		// after processing both |singleThreadCounter| == sum(|atomicCounter|) must be true.
+		int sequentialCount = singleThreadCounter.get();
 		int parallelCount = IntStream.range(0, atomicCounter.length()).map(atomicCounter::get).sum();
-		assertThat(parallelCount, equalTo(singleThreadCounter.get()));
+		assertThat(parallelCount, equalTo(sequentialCount));
 	}
 
 	@Test
