@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.experimental.CtUnresolvedImport;
-import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CaseKind;
@@ -397,8 +396,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return true;
 		}
 		try {
-		    if (optimizeParentheses && e.getParent() instanceof CtBinaryOperator && e instanceof CtBinaryOperator) {
-		    	return shouldSetBracketOptimized((CtBinaryOperator<?>) e);
+			if (isOptimizeParentheses() && isOperator(e) && isOperator(e.getParent())) {
+				return shouldSetBracketOptimized(e);
 			}
 			if ((e.getParent() instanceof CtBinaryOperator) || (e.getParent() instanceof CtUnaryOperator)) {
 				return (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator) || e instanceof CtBinaryOperator;
@@ -2147,24 +2146,56 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		this.optimizeParentheses = optimizeParentheses;
 	}
 
-	private static boolean shouldSetBracketOptimized(CtBinaryOperator<?> operator) {
+	private static boolean shouldSetBracketOptimized(CtExpression<?> operator) {
+	    assert isOperator(operator) && isOperator(operator.getParent());
+
 		if (!operator.isParentInitialized()) {
 			return false;
 		} else if (!(operator.getParent() instanceof CtBinaryOperator)) {
 			return true;
 		}
-		CtBinaryOperator<?> parent = (CtBinaryOperator<?>) operator.getParent();
 
-		OperatorHelper.OperatorAssociativity associativity =
-				OperatorHelper.getBinaryOperatorAssociativity(operator.getKind());
-		OperatorHelper.OperatorAssociativity positionInParent =
-				parent.getLeftHandOperand() == operator ?
-						OperatorHelper.OperatorAssociativity.LEFT :
-						OperatorHelper.OperatorAssociativity.RIGHT;
+		OperatorHelper.OperatorAssociativity associativity = getOperatorAssociativity(operator);
+		OperatorHelper.OperatorAssociativity positionInParent = getPositionInParent(operator);
 
-		int parentPrecedence = OperatorHelper.getBinaryOperatorPrecedence(parent.getKind());
-		int precedence = OperatorHelper.getBinaryOperatorPrecedence(operator.getKind());
+		int parentPrecedence = getOperatorPrecedence(operator.getParent());
+		int precedence = getOperatorPrecedence(operator);
 		return precedence < parentPrecedence
 				|| (precedence == parentPrecedence && associativity != positionInParent);
+	}
+
+	private static boolean isOperator(CtElement e) {
+		return e instanceof CtBinaryOperator || e instanceof CtUnaryOperator;
+	}
+
+	private static int getOperatorPrecedence(CtElement e) {
+	    if (e instanceof CtBinaryOperator) {
+	    	return OperatorHelper.getOperatorPrecedence(((CtBinaryOperator<?>) e).getKind());
+		} else if (e instanceof CtUnaryOperator) {
+	    	return OperatorHelper.getOperatorPrecedence(((CtUnaryOperator<?>) e).getKind());
+		} else {
+	    	return 0;
+		}
+	}
+
+	private static OperatorHelper.OperatorAssociativity getOperatorAssociativity(CtElement e) {
+		if (e instanceof CtBinaryOperator) {
+			return OperatorHelper.getOperatorAssociativity(((CtBinaryOperator<?>) e).getKind());
+		} else if (e instanceof CtUnaryOperator) {
+			return OperatorHelper.getOperatorAssociativity(((CtUnaryOperator<?>) e).getKind());
+		} else {
+			return OperatorHelper.OperatorAssociativity.NONE;
+		}
+	}
+
+	private static OperatorHelper.OperatorAssociativity getPositionInParent(CtElement e) {
+		CtElement parent = e.getParent();
+		if (parent instanceof CtBinaryOperator) {
+			return ((CtBinaryOperator<?>) parent).getLeftHandOperand() == e ?
+					OperatorHelper.OperatorAssociativity.LEFT :
+					OperatorHelper.OperatorAssociativity.RIGHT;
+		} else {
+			return OperatorHelper.OperatorAssociativity.NONE;
+		}
 	}
 }

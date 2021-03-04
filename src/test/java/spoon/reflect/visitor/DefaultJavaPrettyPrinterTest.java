@@ -15,6 +15,8 @@ public class DefaultJavaPrettyPrinterTest {
     @ValueSource(strings = {
             "1 + 2 + 3",
             "1 + (2 + 3)",
+            "1 + 2 + -3",
+            "1 + 2 + -(2 + 3)",
             "\"Sum: \" + (1 + 2)",
             "\"Sum: \" + 1 + 2",
             "-(1 + 2 + 3)",

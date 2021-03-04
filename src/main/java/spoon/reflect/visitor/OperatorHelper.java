@@ -16,6 +16,10 @@ import spoon.reflect.code.UnaryOperatorKind;
  */
 class OperatorHelper {
 
+	public enum OperatorAssociativity {
+		LEFT, RIGHT, NONE
+	}
+
 	private OperatorHelper() {
 	}
 
@@ -103,11 +107,13 @@ class OperatorHelper {
 	}
 
 	/**
-	 * Operator precedences as defined at https://introcs.cs.princeton.edu/java/11precedence/
+	 * Get the precedence of a binary operator as defined by
+	 * https://introcs.cs.princeton.edu/java/11precedence/
 	 *
+	 * @param o A binary operator kind.
 	 * @return The precedence of the given operator.
 	 */
-	public static int getBinaryOperatorPrecedence(BinaryOperatorKind o) {
+	public static int getOperatorPrecedence(BinaryOperatorKind o) {
 		switch (o) {
 			case OR: // ||
 				return 3;
@@ -145,7 +151,8 @@ class OperatorHelper {
 	}
 
 	/**
-	 * Operator associativities as defined by https://introcs.cs.princeton.edu/java/11precedence/
+	 * Get the associativity of a binary operator as defined by
+	 * https://introcs.cs.princeton.edu/java/11precedence/
 	 *
 	 * All binary operators are left-associative in Java, except for the relational operators that
 	 * have no associativity (i.e. you can't chain them).
@@ -153,9 +160,10 @@ class OperatorHelper {
 	 * There's an exception: the ternary operator ?: is right-associative, but that's not an
 	 * operator kind in Spoon so we don't deal with it.
 	 *
+	 * @param o A binary operator kind.
 	 * @return The associativity of the operator.
 	 */
-	public static OperatorAssociativity getBinaryOperatorAssociativity(BinaryOperatorKind o) {
+	public static OperatorAssociativity getOperatorAssociativity(BinaryOperatorKind o) {
 		switch (o) {
 			case LT: // <
 			case GT: // >
@@ -168,7 +176,47 @@ class OperatorHelper {
 		}
 	}
 
-	public enum OperatorAssociativity {
-		LEFT, RIGHT, NONE
+	/**
+	 * Get the precedence of a unary operator as defined by
+	 * https://introcs.cs.princeton.edu/java/11precedence/
+	 *
+	 * @param o A unary operator kind.
+	 * @return The precedence of the given operator.
+	 */
+	public static int getOperatorPrecedence(UnaryOperatorKind o) {
+		switch (o) {
+			case POS:
+			case NEG:
+			case NOT:
+			case COMPL:
+			case PREINC:
+			case PREDEC:
+				return 14;
+			case POSTINC:
+			case POSTDEC:
+				return 15;
+			default:
+				throw new SpoonException("Unsupported operator " + o.name());
+		}
+	}
+
+	/**
+	 * Get the associativity of a unary operator, as defined by
+	 * https://introcs.cs.princeton.edu/java/11precedence/
+	 *
+	 * All unary operators are right-associative, except for post increment and decrement, which
+	 * are not associative.
+	 *
+	 * @param o A unary operator kind.
+	 * @return The associativity of the operator.
+	 */
+	public static OperatorAssociativity getOperatorAssociativity(UnaryOperatorKind o) {
+		switch (o) {
+			case POSTINC:
+			case POSTDEC:
+				return OperatorAssociativity.NONE;
+			default:
+				return OperatorAssociativity.RIGHT;
+		}
 	}
 }
