@@ -2156,7 +2156,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	private static boolean shouldSetBracketAroundNestedOperator(CtExpression<?> operator) {
 		assert isOperator(operator) && isOperator(operator.getParent());
 
-		if (!(operator.getParent() instanceof CtBinaryOperator)) {
+		if (operator.getParent() instanceof CtUnaryOperator) {
 			return true;
 		}
 
