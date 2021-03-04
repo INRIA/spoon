@@ -54,7 +54,13 @@
  		<version>5.7.1</version>
  		<scope>test</scope>
 	</dependency>
-  
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-params</artifactId>
+        <version>5.7.1</version>
+        <scope>test</scope>
+    </dependency>
+
   <dependency>
     <!-- must come after junit5 deps, otherwise it overrides the junit version -->
     <!-- must be here in the parent POM, because the parent always comes last, see https://stackoverflow.com/questions/28999057/order-of-inherited-dependencies-in-maven-3 -->
