@@ -30,6 +30,9 @@ public class DefaultJavaPrettyPrinterTest {
             "(1 | 2) ^ 3"
     })
     public void testParenOptimizationCorrectlyPrintsParenthesesForExpressions(String rawExpression) {
+        // contract: When input expressions are minimally parenthesized, pretty-printed output should
+        // match the input
+
         Launcher launcher = createLauncherWithOptimizeParenthesesPrinter();
         CtExpression<?> expr = launcher.getFactory()
                 .createCodeSnippetExpression(rawExpression).compile();
@@ -43,6 +46,9 @@ public class DefaultJavaPrettyPrinterTest {
             "java.lang.String s = \"Sum: \" + 1 + 2"
     })
     public void testParenOptimizationCorrectlyPrintsParenthesesForStatements(String rawStatement) {
+        // contract: When input expressions as part of statements are minimally parenthesized,
+        // pretty-printed output should match the input
+
         Launcher launcher = createLauncherWithOptimizeParenthesesPrinter();
         CtStatement statement = launcher.getFactory()
                 .createCodeSnippetStatement(rawStatement);
