@@ -110,7 +110,7 @@ class OperatorHelper {
 	public static int getBinaryOperatorPrecedence(BinaryOperatorKind o) {
 		switch (o) {
 			case OR: // ||
-                return 3;
+				return 3;
 			case AND: // &&
 				return 4;
 			case BITOR: // |
@@ -127,7 +127,7 @@ class OperatorHelper {
 			case LE: // <=
 			case GE: // >=
 			case INSTANCEOF:
-			    return 9;
+				return 9;
 			case SL: // <<
 			case SR: // >>
 			case USR: // >>>
@@ -142,6 +142,33 @@ class OperatorHelper {
 			default:
 				throw new SpoonException("Unsupported operator " + o.name());
 		}
+	}
 
+	/**
+	 * Operator associativities as defined by https://introcs.cs.princeton.edu/java/11precedence/
+	 *
+	 * All binary operators are left-associative in Java, except for the relational operators that
+	 * have no associativity (i.e. you can't chain them).
+	 *
+	 * There's an exception: the ternary operator ?: is right-associative, but that's not an
+	 * operator kind in Spoon so we don't deal with it.
+	 *
+	 * @return The associativity of the operator.
+	 */
+	public static OperatorAssociativity getBinaryOperatorAssociativity(BinaryOperatorKind o) {
+		switch (o) {
+			case LT: // <
+			case GT: // >
+			case LE: // <=
+			case GE: // >=
+			case INSTANCEOF:
+				return OperatorAssociativity.NONE;
+			default:
+				return OperatorAssociativity.LEFT;
+		}
+	}
+
+	public enum OperatorAssociativity {
+		LEFT, RIGHT, NONE
 	}
 }

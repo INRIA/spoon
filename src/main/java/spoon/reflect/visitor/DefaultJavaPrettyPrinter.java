@@ -2153,10 +2153,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else if (!(operator.getParent() instanceof CtBinaryOperator)) {
 			return true;
 		}
-		int parentPrecedence = OperatorHelper.getBinaryOperatorPrecedence(
-				((CtBinaryOperator<?>) operator.getParent()).getKind());
-		int precedence = OperatorHelper.getBinaryOperatorPrecedence(operator.getKind());
+		CtBinaryOperator<?> parent = (CtBinaryOperator<?>) operator.getParent();
 
-		return precedence < parentPrecedence;
+		OperatorHelper.OperatorAssociativity associativity =
+				OperatorHelper.getBinaryOperatorAssociativity(operator.getKind());
+		OperatorHelper.OperatorAssociativity positionInParent =
+				parent.getLeftHandOperand() == operator ?
+						OperatorHelper.OperatorAssociativity.LEFT :
+						OperatorHelper.OperatorAssociativity.RIGHT;
+
+		int parentPrecedence = OperatorHelper.getBinaryOperatorPrecedence(parent.getKind());
+		int precedence = OperatorHelper.getBinaryOperatorPrecedence(operator.getKind());
+		return precedence < parentPrecedence || associativity != positionInParent;
 	}
 }
