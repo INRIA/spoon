@@ -388,6 +388,9 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testCalculateCrashesWithInformativeMessageWhenSniperPrinterSetAfterModelBuild() {
+		// contract: The sniper printer must be set before building the model, and the error message
+		// one gets when this has not been done should say so.
+
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(getResourcePath("visibility.YamlRepresenter"));
 
