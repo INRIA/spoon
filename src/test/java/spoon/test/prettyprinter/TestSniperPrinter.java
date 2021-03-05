@@ -414,6 +414,7 @@ public class TestSniperPrinter {
 		}
 	}
 
+	@Test
 	public void testNewlineInsertedBetweenCommentAndTypeMemberWithAddedModifier() {
 		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: newline must be inserted after comment when a succeeding type member has had a
