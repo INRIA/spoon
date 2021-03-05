@@ -90,7 +90,9 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 	private ChangeCollector getChangeCollector() {
 		ChangeCollector changeCollector = ChangeCollector.getChangeCollector(env);
 		if (changeCollector == null) {
-			throw new SpoonException(ChangeCollector.class.getSimpleName() + " was not attached to the Environment");
+			throw new SpoonException(ChangeCollector.class.getSimpleName() + " was not attached to the Environment. "
+					+ "This typically means that the Sniper printer was set after building the model. It must "
+					+ "be set before building the model.");
 		}
 		return changeCollector;
 	}

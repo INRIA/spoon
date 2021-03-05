@@ -387,7 +387,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
-	public void testCalculateCrashesWhenSniperPrinterSetAfterModelBuild() {
+	public void testCalculateCrashesWithInformativeMessageWhenSniperPrinterSetAfterModelBuild() {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource(getResourcePath("visibility.YamlRepresenter"));
 
@@ -398,9 +398,17 @@ public class TestSniperPrinter {
 
 		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getMap().values().stream()
 				.findFirst().get();
+
 		// crash because sniper was set after model was built, and so the ChangeCollector was not
 		// attached to the environment
-		launcher.createPrettyPrinter().calculate(cu, cu.getDeclaredTypes());
+		try {
+			launcher.createPrettyPrinter().calculate(cu, cu.getDeclaredTypes());
+		} catch (SpoonException e) {
+			assertThat(e.getMessage(), containsString(
+					"This typically means that the Sniper printer was set after building the model."));
+			assertThat(e.getMessage(), containsString(
+					"It must be set before building the model."));
+		}
 	}
 
 	public void testNewlineInsertedBetweenCommentAndTypeMemberWithAddedModifier() {
