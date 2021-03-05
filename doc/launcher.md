@@ -64,13 +64,13 @@ MavenLauncher launcher = new MavenLauncher("<path_to_maven_project>",
 launcher.buildModel();
 CtModel model = launcher.getModel();
 ```
-To avoid invoking maven over and over to build a classpath that has not changed, it is stored in a file `spoon.classpath.tmp` (or depending on the scope `spoon.classpath-app.tmp` or `spoon.classpath-test.tmp`) in the same folder as the `pom.xml`. This classpath will be refreshed is the file is deleted or if it has not been modified since 1h.
+To avoid invoking Maven over and over to build a classpath that has not changed, it is stored in the file `spoon.classpath.tmp` (or depending on the scope `spoon.classpath-app.tmp` or `spoon.classpath-test.tmp`) in the same folder as the `pom.xml`. This classpath will be refreshed if the file is deleted or if it has not been modified for 1h.
 
 ### Analyzing bytecode with JarLauncher
 
-There are two ways to analyze bytecode with spoon:
+There are two ways to analyze bytecode with Spoon:
 
- * Bytecode resources can be added in the classpath, (some information will be extracted through reflection)
+ * Bytecode resources can be added to the classpath (some information will be extracted through reflection).
  * A decompiler may be used, and then, the analyzes will be performed on the decompiled sources.
 
 The Spoon `JarLauncher` ([JavaDoc](https://github.com/INRIA/spoon/blob/master/spoon-decompiler/src/main/java/spoon/JarLauncher.java)) is used to create the AST model from a jar.
@@ -97,7 +97,7 @@ JarLauncher launcher = new JarLauncher("<path_to_jar>", "<path_to_output_src_dir
 );
 ```
 
-Spoon provides two out of the shelf decompilers, CFR by default, and Fernflower. You can use the later like this:
+Spoon provides two out of the shelf decompilers, CFR by default, and Fernflower. You can use the latter like this:
 
 ```java
 JarLauncher launcher = new JarLauncher(
@@ -123,14 +123,14 @@ launcher.addInputResource(
 
 Spoon analyzes source code. However, this source code may refer to libraries (as a field, parameter, or method return type). There are two cases:
 
-* Full classpath: all dependencies are in the JVM classpath or are given to the laucher with `launcher.getEnvironment().setSourceClasspath("<classpath_project>");` (optional)
+* Full classpath: all dependencies are in the JVM classpath or are given to the launcher with `launcher.getEnvironment().setSourceClasspath("<classpath_project>");` (optional).
 * No classpath: some dependencies are unknown and `launcher.getEnvironment().setNoClasspath(true)` is set.
 
 This has a direct impact on Spoon references.
 When you consider a reference object (say, a `CtTypeReference`), there are three cases:
 
-- Case 1 (code available as source code): the reference points to a code element for which the source code is present. In this case, `reference.getDeclaration()` returns this code element (e.g. `TypeReference.getDeclaration` returns the `CtType` representing the given java file). `reference.getTypeDeclaration()` is identical to `reference.getDeclaration()`.
-- Case 2 (code available as binary in the classpath): the reference points to a code element for which the source code is NOT present, but for which the binary class is in the classpath (either the JVM classpath or the `--source-classpath` argument). In this case, `reference.getDeclaration()` returns `null` and `reference.getTypeDeclaration` returns a partial `CtType` built using runtime reflection. Those objects built using runtime reflection are called shadow objects; and you can identify them with method `isShadow`. (This also holds for `getFieldDeclaration` and `getExecutableDeclaration`).
+- Case 1 (code available as source code): the reference points to a code element for which the source code is present. In this case, `reference.getDeclaration()` returns this code element (e.g. `TypeReference.getDeclaration` returns the `CtType` representing the given Java file). `reference.getTypeDeclaration()` is identical to `reference.getDeclaration()`.
+- Case 2 (code available as binary in the classpath): the reference points to a code element for which the source code is NOT present, but for which the binary class is in the classpath (either the JVM classpath or the `--source-classpath` argument). In this case, `reference.getDeclaration()` returns `null` and `reference.getTypeDeclaration` returns a partial `CtType` built using runtime reflection. Those objects built using runtime reflection are called shadow objects, and you can identify them with method `isShadow`. (This also holds for `getFieldDeclaration` and `getExecutableDeclaration`).
 - Case 3 (code not available, aka noclasspath): the reference points to a code element for which the source code is NOT present, but for which the binary class is NOT in the classpath. This is called in Spoon the noclasspath mode. In this case, both `reference.getDeclaration()` and `reference.getTypeDeclaration()` return `null`. (This also holds for `getFieldDeclaration` and `getExecutableDeclaration`).
 
 
