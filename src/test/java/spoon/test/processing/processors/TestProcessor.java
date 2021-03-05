@@ -18,13 +18,13 @@ package spoon.test.processing.processors;
 
 import java.util.Date;
 
-import org.apache.logging.log4j.Level;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtTypedElement;
+import spoon.support.Level;
 import spoon.template.Substitution;
 import spoon.test.template.testclasses.constructors.TemplateWithConstructor;
 

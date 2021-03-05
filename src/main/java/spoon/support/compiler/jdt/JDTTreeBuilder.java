@@ -7,8 +7,7 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
 import org.eclipse.jdt.internal.compiler.ast.AND_AND_Expression;
@@ -113,6 +112,7 @@ import org.eclipse.jdt.internal.compiler.lookup.ProblemMethodBinding;
 import org.eclipse.jdt.internal.compiler.lookup.Scope;
 import org.eclipse.jdt.internal.compiler.lookup.TypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
+import org.slf4j.LoggerFactory;
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtArrayAccess;
@@ -159,6 +159,8 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
 
+import java.lang.invoke.MethodHandles;
+
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getBinaryOperatorKind;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getUnaryOperator;
@@ -187,7 +189,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return LOGGER;
 	}
 
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	public PositionBuilder getPositionBuilder() {
 		return position;
@@ -1507,7 +1509,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(reference, qualifiedTypeReference);
 			return true;
 		} else if (context.stack.peekFirst().element instanceof CtCatch) {
-			context.enter(helper.createCatchVariable(qualifiedTypeReference), qualifiedTypeReference);
+			context.enter(helper.createCatchVariable(qualifiedTypeReference, scope), qualifiedTypeReference);
 			return true;
 		}
 		context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.buildTypeReference(qualifiedTypeReference, scope)), qualifiedTypeReference);
@@ -1591,7 +1593,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		if (!(context.stack.peekFirst().node instanceof Argument)) {
 			throw new SpoonException("UnionType is only supported for CtCatch.");
 		}
-		context.enter(helper.createCatchVariable(unionTypeReference), unionTypeReference);
+		context.enter(helper.createCatchVariable(unionTypeReference, scope), unionTypeReference);
 		return true;
 	}
 
@@ -1617,7 +1619,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 			return true;
 		} else if (context.stack.peekFirst().element instanceof CtCatch) {
-			context.enter(helper.createCatchVariable(singleTypeReference), singleTypeReference);
+			context.enter(helper.createCatchVariable(singleTypeReference, scope), singleTypeReference);
 			return true;
 		}
 		CtTypeReference<?> typeRef = references.buildTypeReference(singleTypeReference, scope);
@@ -1726,15 +1728,14 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
-		if ("package-info".equals(new String(typeDeclaration.name))) {
+		if (typeDeclaration.binding == null && getFactory().getEnvironment().isIgnoreDuplicateDeclarations()) {
+			// skip the type declaration that are already declared
+			return false;
+		} else if ("package-info".equals(new String(typeDeclaration.name))) {
 			context.enter(factory.Package().getOrCreate(new String(typeDeclaration.binding.fPackage.readableName())), typeDeclaration);
 			return true;
 		} else {
 			CtModule module;
-			// skip the type declaration that are already declared
-			if (typeDeclaration.binding == null && getFactory().getEnvironment().isIgnoreDuplicateDeclarations()) {
-				return false;
-			}
 			if (typeDeclaration.binding.module != null && !typeDeclaration.binding.module.isUnnamed() && typeDeclaration.binding.module.shortReadableName() != null && typeDeclaration.binding.module.shortReadableName().length > 0) {
 				module = factory.Module().getOrCreate(String.valueOf(typeDeclaration.binding.module.shortReadableName()));
 			} else {
@@ -1752,7 +1753,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 			return true;
 		}
 	}
-
 	@Override
 	public boolean visit(UnaryExpression unaryExpression, BlockScope scope) {
 		CtUnaryOperator<?> op = factory.Core().createUnaryOperator();

@@ -42,6 +42,7 @@ public class FileCompilerConfig implements SpoonModelBuilder.InputType {
 	public void initializeCompiler(JDTBatchCompiler compiler) {
 		JDTBasedSpoonCompiler jdtCompiler = compiler.getJdtCompiler();
 		List<CompilationUnit> cuList = new ArrayList<>();
+		Environment env = jdtCompiler.getEnvironment();
 
 		for (SpoonFile f : getFiles(compiler)) {
 
@@ -50,7 +51,6 @@ public class FileCompilerConfig implements SpoonModelBuilder.InputType {
 			}
 
 			String fName = f.isActualFile() ? f.getPath() : f.getName();
-			Environment env = jdtCompiler.getEnvironment();
 			cuList.add(new CompilationUnit(f.getContentChars(env), fName, env.getEncoding().displayName()));
 		}
 

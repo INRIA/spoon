@@ -38,6 +38,7 @@ import spoon.support.util.ModelList;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -85,7 +86,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			return;
 		}
 
-		if (target != null && target.isImplicit()) {
+		if (target.isImplicit()) {
 			if (target instanceof CtTypeAccess) {
 				if (targetedExpression instanceof CtFieldAccess) {
 					context.addImport(((CtFieldAccess<?>) targetedExpression).getVariable());
@@ -183,8 +184,15 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				//java.lang is always imported implicitly. Ignore it
 				return;
 			}
-			if (Objects.equals(packageQName, packageRef.getQualifiedName())) {
+			if (Objects.equals(packageQName, packageRef.getQualifiedName()) && !isStaticExecutableRef(ref)) {
 				//it is reference to a type of the same package. Do not add it
+				return;
+			}
+			if (isStaticExecutableRef(ref) && inheritsFrom(ref.getParent(CtType.class).getReference(), typeRef)) {
+				// Static method is inherited from parent class. At worst, importing an inherited
+				// static method results in a compile error, if the static method is defined in
+				// the default package (not allowed to import methods from default package).
+				// At best, it's pointless. So we skip it.
 				return;
 			}
 			String importRefID = getImportRefID(ref);
@@ -197,7 +205,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			ModelList<CtImport> existingImports = compilationUnit.getImports();
 			Set<CtImport> computedImports = new HashSet<>(this.computedImports.values());
 			topfor: for (CtImport oldImport : new ArrayList<>(existingImports)) {
-				if (!computedImports.remove(oldImport)) {
+				if (!removeImport(oldImport, computedImports)) {
 
 					// case: import is required in Javadoc
 					for (CtType type: compilationUnit.getDeclaredTypes()) {
@@ -252,7 +260,24 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				existingImports.set(existingImports.stream().sorted(importComparator).collect(Collectors.toList()));
 			}
 		}
+
+		/**
+		 * Remove an import from the given collection based on equality or textual equality.
+		 */
+		private boolean removeImport(CtImport toRemove, Collection<CtImport> imports) {
+			String toRemoveStr = toRemove.toString();
+			Iterator<CtImport> it = imports.iterator();
+			while (it.hasNext()) {
+				CtImport imp = it.next();
+				if (toRemove.equals(imp) || toRemoveStr.equals(imp.toString())) {
+					it.remove();
+					return true;
+				}
+			}
+			return false;
+		}
 	}
+
 
 	/**
 	 * @return fast unique identification of reference. It is not the same like printing of import, because it needs to handle access path.
@@ -392,5 +417,18 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 	public ImportCleaner setImportComparator(Comparator<CtImport> importComparator) {
 		this.importComparator = importComparator;
 		return this;
+	}
+
+	/** @return true if ref inherits from potentialBase */
+	private static boolean inheritsFrom(CtTypeReference<?> ref, CtTypeReference<?> potentialBase) {
+		CtTypeReference<?> superClass = ref.getSuperclass();
+		return superClass != null
+				&& (superClass.getQualifiedName().equals(potentialBase.getQualifiedName())
+						|| inheritsFrom(superClass, potentialBase));
+	}
+
+	private static boolean isStaticExecutableRef(CtElement element) {
+		return element instanceof CtExecutableReference<?>
+				&& ((CtExecutableReference<?>) element).isStatic();
 	}
 }

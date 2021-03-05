@@ -34,24 +34,24 @@
     </repositories>
 
     <dependencies>
-        
+
         <!-- we all depend on Junit with scope=test -->
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>5.7.0</version>
+            <version>5.7.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>org.mockito</groupId>
           <artifactId>mockito-core</artifactId>
-          <version>3.6.0</version>
+          <version>3.8.0</version>
           <scope>test</scope>
         </dependency>
  	<dependency>
  		<groupId>org.junit.jupiter</groupId>
  		<artifactId>junit-jupiter-engine</artifactId>
- 		<version>5.7.0</version>
+ 		<version>5.7.1</version>
  		<scope>test</scope>
 	</dependency>
   
@@ -102,24 +102,6 @@
 
     <build>
         <defaultGoal>clean install</defaultGoal>
-
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-                <excludes>
-                    <exclude>log4j.properties</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>log4j.properties</include>
-                </includes>
-            </resource>
-        </resources>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -175,7 +157,7 @@
                     <dependency>
                         <groupId>org.apache.maven.wagon</groupId>
                         <artifactId>wagon-ssh</artifactId>
-                        <version>3.4.0</version>
+                        <version>3.4.3</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -304,6 +286,7 @@
                 <configuration>
                     <!-- see https://stackoverflow.com/a/57430117 -->
                     <doclint>none</doclint>
+                    <detectJavaApiLink>false</detectJavaApiLink>
                 </configuration>
                 <reportSets>
                     <reportSet>

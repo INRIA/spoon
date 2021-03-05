@@ -68,7 +68,6 @@ public class TypeFactoryTest {
 			Constable, ConstantDesc. To support the CI with jdk8 and newer CIs for local testing this assertion is needed.
 			*/
 			() -> assertTrue(3 == s.getSuperInterfaces().size() || 5 == s.getSuperInterfaces().size()),
-			() -> assertEquals(3, s.getSuperInterfaces().size()),
 			() -> assertEquals(2, s.getMethodsByName("toLowerCase").size()));
 	}
 

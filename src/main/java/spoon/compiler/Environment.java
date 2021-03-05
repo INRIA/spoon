@@ -7,7 +7,6 @@
  */
 package spoon.compiler;
 
-import org.apache.logging.log4j.Level;
 import spoon.OutputType;
 import spoon.compiler.builder.EncodingProvider;
 import spoon.processing.FileGenerator;
@@ -18,6 +17,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.CompressionType;
+import spoon.support.Level;
 import spoon.support.OutputDestinationHandler;
 import spoon.support.compiler.SpoonProgress;
 import spoon.support.modelobs.FineModelChangeListener;

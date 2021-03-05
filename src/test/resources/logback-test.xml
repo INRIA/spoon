@@ -1,0 +1,2 @@
+<!-- disable log output in unit tests -->
+<configuration />

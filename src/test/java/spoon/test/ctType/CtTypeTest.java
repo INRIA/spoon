@@ -37,6 +37,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.ctType.testclasses.X;
 
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +48,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -247,5 +249,22 @@ public class CtTypeTest {
 		model.getAllTypes().forEach(type -> {
 			type.getUsedTypes(false);
 			});
+	}
+
+	@Test
+	public void testTypeDeclarationToReferenceRoundTripInNamedModule() {
+		// contract: It's possible to go from a type declaration, to a reference, and back to the declaration
+		// when the declaration is contained within a named module
+
+		final Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.addInputResource("./src/test/resources/spoon/test/module/simple_module_with_code");
+		launcher.buildModel();
+
+		CtType<?> typeDecl = launcher.getFactory().Type().get("fr.simplemodule.pack.SimpleClass");
+		CtTypeReference<?> typeRef = typeDecl.getReference();
+		CtType<?> reFetchedTypeDecl = typeRef.getTypeDeclaration();
+
+		assertSame(reFetchedTypeDecl, typeDecl);
 	}
 }

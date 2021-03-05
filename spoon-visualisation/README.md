@@ -13,7 +13,7 @@ The app requires a JDK 11.
 We currently do not provide any packaging of the app (`jlink` cannot package apps having non-modular libraries, such as Spoon).
 
 So, to run the app, run: `mvn clean package`. 
-Then go into the `target/modules` folder and launch: `java --module-path . --add-modules=javafx.controls,javafx.fxml,interacto.javafx,interacto.java.api,spoon.core,org.eclipse.jdt.core,annotations -jar visualisation-1.1.jar`
+Then go into the `target/modules` folder and launch: `java --module-path . --add-modules=ALL-MODULE-PATH -jar visualisation-1.1.jar`
 
 ## Features Summary
 

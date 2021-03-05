@@ -27,7 +27,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
@@ -325,11 +324,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public CtType<?> getDeclaringType() {
-		try {
-			return getParent(CtType.class);
-		} catch (ParentNotInitializedException ex) {
-			return null;
-		}
+		return getParent(CtType.class);
 	}
 
 	@SuppressWarnings("unchecked")

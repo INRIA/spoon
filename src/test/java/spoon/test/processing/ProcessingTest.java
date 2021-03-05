@@ -18,7 +18,6 @@ package spoon.test.processing;
 
 import com.google.common.io.Files;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -36,6 +35,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.Level;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.test.processing.processors.RenameProcessor;
 import spoon.test.processing.processors.CtClassProcessor;

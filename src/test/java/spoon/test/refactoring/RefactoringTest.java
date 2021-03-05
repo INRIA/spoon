@@ -29,8 +29,10 @@ import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import spoon.Launcher;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.code.BinaryOperatorKind;
@@ -148,10 +150,8 @@ public class RefactoringTest {
 		assertEquals("spoon.test.refactoring.testclasses.AClassX", instanceofInvocation.getRightHandOperand().toString());
 	}
 	@Test
+	@DisabledForJreRange(max = JRE.JAVA_8)
 	public void testRemoveDeprecatedMethods() {
-		if (checkJavaVersion()) {
-			return;
-		}
 		// clean dir if exists
 		try {
 			Files.walk(Paths.get("target/deprecated-refactoring")).sorted(Comparator.reverseOrder())
@@ -183,17 +183,5 @@ public class RefactoringTest {
 		} catch (Exception e) {
 			// error is kinda okay
 		}
-	}
-	/**
-	 * checks if current java version is >=9.
-	 * True if <=8 else false;
-	 */
-	private boolean checkJavaVersion() {
-		String property = System.getProperty("java.version");
-		if (property != null && !property.isEmpty()) {
-			// java 8 and less are versionning "1.X" where 9 and more are directly versioned "X"
-		return property.startsWith("1.");
-		}
-		return false;
 	}
 }

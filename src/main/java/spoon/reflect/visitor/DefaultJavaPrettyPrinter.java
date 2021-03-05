@@ -7,8 +7,8 @@
  */
 package spoon.reflect.visitor;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.experimental.CtUnresolvedImport;
@@ -120,6 +120,7 @@ import spoon.reflect.visitor.printer.CommentOffset;
 import spoon.support.util.ModelList;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -244,7 +245,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 
-	protected static final Logger LOGGER = LogManager.getLogger();
+	protected static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	public static final String ERROR_MESSAGE_TO_STRING = "Error in printing the node. One parent isn't initialized!";
 	/**
 	 * Prints an element. This method shall be called by the toString() method of an element.
@@ -1084,14 +1085,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				//note: the package-info.java may contain type declarations too
 			break;
 		case TYPE_DECLARATION:
-				scan(compilationUnit.getPackageDeclaration());
-				for (CtImport imprt : getImports(compilationUnit)) {
-					scan(imprt);
-					printer.writeln();
-				}
-				for (CtType<?> t : compilationUnit.getDeclaredTypes()) {
-					scan(t);
-				}
+			scan(compilationUnit.getPackageDeclaration());
+
+			CtPackage pkg = compilationUnit.getDeclaredPackage();
+			if (pkg != null && !pkg.isUnnamedPackage()) {
+				printer.writeln();
+			}
+
+			for (CtImport imprt : getImports(compilationUnit)) {
+				scan(imprt);
+				printer.writeln();
+			}
+			for (CtType<?> t : compilationUnit.getDeclaredTypes()) {
+				scan(t);
+			}
 			break;
 		default:
 				throw new SpoonException("Unexpected compilation unit type: " + compilationUnit.getUnitType());
@@ -1111,7 +1118,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		CtPackageReference ctPackage = packageDeclaration.getReference();
 		elementPrinterHelper.writeComment(ctPackage, CommentOffset.BEFORE);
 		if (!ctPackage.isUnnamedPackage()) {
-			elementPrinterHelper.writePackageLine(ctPackage.getQualifiedName());
+			elementPrinterHelper.writePackageStatement(ctPackage.getQualifiedName());
 		}
 	}
 
@@ -1294,12 +1301,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (invocation.getExecutable().isConstructor()) {
 			// It's a constructor (super or this)
 			elementPrinterHelper.writeActualTypeArguments(invocation.getExecutable());
-			CtType<?> parentType;
-			try {
-				parentType = invocation.getParent(CtType.class);
-			} catch (ParentNotInitializedException e) {
-				parentType = null;
-			}
+			CtType<?> parentType = invocation.getParent(CtType.class);
 			if (parentType == null || parentType.getQualifiedName() != null && parentType.getQualifiedName().equals(invocation.getExecutable().getDeclaringType().getQualifiedName())) {
 				printer.writeKeyword("this");
 			} else {
@@ -1453,13 +1455,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@SuppressWarnings("rawtypes")
 	public <T> void visitCtNewArray(CtNewArray<T> newArray) {
 		enterCtExpression(newArray);
-		boolean isNotInAnnotation;
-		try {
-			isNotInAnnotation = (newArray.getParent(CtAnnotationType.class) == null) && (newArray.getParent(CtAnnotation.class) == null);
-		} catch (ParentNotInitializedException e) {
-			isNotInAnnotation = true;
-		}
 
+		boolean isNotInAnnotation = (newArray.getParent(CtAnnotationType.class) == null) && (newArray.getParent(CtAnnotation.class) == null);
 		if (isNotInAnnotation) {
 			CtTypeReference<?> ref = newArray.getType();
 

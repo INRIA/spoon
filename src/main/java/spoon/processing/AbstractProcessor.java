@@ -7,11 +7,11 @@
  */
 package spoon.processing;
 
-import org.apache.logging.log4j.Level;
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
+import spoon.support.Level;
 import spoon.testing.utils.ProcessorUtils;
 
 import java.lang.reflect.Method;

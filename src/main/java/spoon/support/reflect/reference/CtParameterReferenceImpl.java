@@ -10,7 +10,6 @@ package spoon.support.reflect.reference;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -51,22 +50,19 @@ public class CtParameterReferenceImpl<T> extends CtVariableReferenceImpl<T> impl
 		CtElement element = this;
 		CtParameter optional = null;
 		String name = getSimpleName();
-		try {
-			do {
-				CtExecutable executable = element.getParent(CtExecutable.class);
-				if (executable == null) {
-					return null;
+		do {
+			CtExecutable executable = element.getParent(CtExecutable.class);
+			if (executable == null) {
+				return null;
+			}
+			for (CtParameter parameter : (List<CtParameter>) executable.getParameters()) {
+				if (name.equals(parameter.getSimpleName())) {
+					optional = parameter;
 				}
-				for (CtParameter parameter : (List<CtParameter>) executable.getParameters()) {
-					if (name.equals(parameter.getSimpleName())) {
-						optional = parameter;
-					}
-				}
-				element = executable;
-			} while (optional == null);
-		} catch (ParentNotInitializedException e) {
-			return null;
-		}
+			}
+			element = executable;
+		} while (optional == null);
+
 		return optional;
 	}
 

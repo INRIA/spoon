@@ -598,19 +598,22 @@ public class ReferenceBuilder {
 		}
 
 		AllocationExpression alloc = (AllocationExpression) stack.peek().node;
-		if (alloc.expectedType() == null || !(alloc.expectedType() instanceof ParameterizedTypeBinding)) {
-			// the expected type is not available/parameterized if the constructor call occurred in e.g. an unresolved
-			// method, or in a method that did not expect a parameterized argument
-			type.addActualTypeArgument(jdtTreeBuilder.getFactory().Type().OMITTED_TYPE_ARG_TYPE.clone());
-		} else {
+		if (alloc.expectedType() instanceof ParameterizedTypeBinding) {
 			ParameterizedTypeBinding expectedType = (ParameterizedTypeBinding) alloc.expectedType();
-			// type arguments can be recovered from the expected type
-			for (TypeBinding binding : expectedType.typeArguments()) {
-				CtTypeReference<?> typeArgRef = getTypeReference(binding);
-				typeArgRef.setImplicit(true);
-				type.addActualTypeArgument(typeArgRef);
+			if (expectedType.typeArguments() != null) {
+				// type arguments can be recovered from the expected type
+				for (TypeBinding binding : expectedType.typeArguments()) {
+					CtTypeReference<?> typeArgRef = getTypeReference(binding);
+					typeArgRef.setImplicit(true);
+					type.addActualTypeArgument(typeArgRef);
+				}
 			}
+			return;
 		}
+
+		// the expected type is not available/parameterized if the constructor call occurred in e.g. an unresolved
+		// method, or in a method that did not expect a parameterized argument
+		type.addActualTypeArgument(jdtTreeBuilder.getFactory().Type().OMITTED_TYPE_ARG_TYPE.clone());
 	}
 
 	/**

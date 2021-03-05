@@ -17,10 +17,11 @@
 package spoon.test.module;
 
 import org.junit.AfterClass;
-import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.CtModel;
@@ -53,15 +54,6 @@ import static org.junit.Assert.fail;
 
 public class TestModule {
 	private static final String MODULE_RESOURCES_PATH = "./src/test/resources/spoon/test/module";
-
-	private void checkJavaVersion() {
-		String property = System.getProperty("java.version");
-		if (property != null && !property.isEmpty()) {
-
-			// java 8 and less are versionning "1.X" where 9 and more are directly versioned "X"
-			Assume.assumeFalse(property.startsWith("1."));
-		}
-	}
 
 	@BeforeClass
 	public static void setUp() throws IOException {
@@ -292,9 +284,9 @@ public class TestModule {
 		assertSame(module, moduleNewName);
 	}
 
-	@Test
+	@org.junit.jupiter.api.Test
+	@DisabledForJreRange(max = JRE.JAVA_8)
 	public void testSimpleModuleCanBeBuilt() {
-		checkJavaVersion();
 		// contract: Spoon is able to build a simple model with a module in full classpath
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(9);
@@ -304,20 +296,15 @@ public class TestModule {
 
 		CtModel model = launcher.getModel();
 
-		// unnamed module and module 'simple_module_with_code'
-		assertEquals(2, model.getAllModules().size());
+		// unnamed module
+		assertEquals(1, model.getAllModules().size());
 		assertEquals(1, model.getAllTypes().size());
 
 		CtClass simpleClass = model.getElements(new TypeFilter<>(CtClass.class)).get(0);
 		assertEquals("SimpleClass", simpleClass.getSimpleName());
 
-		CtModule simpleModule = model.getElements(new NamedElementFilter<>(CtModule.class, "simple_module_with_code")).get(0);
-		assertNotNull(simpleModule);
-		assertEquals("simple_module_with_code", simpleModule.getSimpleName());
-
 		CtModule module = simpleClass.getParent(CtModule.class);
 		assertNotNull(module);
-		assertSame(simpleModule, module);
 	}
 
 	@Ignore

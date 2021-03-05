@@ -28,30 +28,7 @@ CtModel model = launcher.getModel();
 
 ### Pretty-printing modes
 
-Spoon has three pretty-printing modes:
-
-**Fully-qualified** Spoon can pretty-print code where all classes and methods  are fully-qualified. This is the default behavior on `toString()` on AST elements.
-This is not readable for humans but is useful when name collisions happen. If `launcher.getEnvironment().getToStringMode() == FULLYQUALIFIED`, the files written on disk are also fully qualified. 
-
-
-**Autoimport** Spoon can pretty-print code where all classes and methods  are imported as long as no conflict exists. 
-
-```java
-launcher.getEnvironment().setAutoImports(true);
-```
-
-The autoimport mode computes the required imports, add the imports in the pretty-printed files, and writes class names unqualified (w/o package names). This involves changing the field `implicit` of some elements of the model, through a set of `ImportAnalyzer`, most notable `ImportCleaner` and `ImportConflictDetector`.
-When pretty-printing, Spoon reformats the code according to its own formatting rules that can be configured by providing a custom `TokenWriter`.
-
-**Sniper mode** The sniper mode enables to rewrite only the transformed AST elements, so that the rest of the code is printed identically to the origin version. This is useful to get small diffs after automated refactoring. 
-
-```java
-launcher.getEnvironment().setPrettyPrinterCreator(() -> {
-   return new SniperJavaPrettyPrinter(launcher.getEnvironment());
-  }
-);
-```
-**Comments** In addition, depending on the value of `Environment#getCommentEnabled`, the comments are removed or kept from the Java files saved to disk (call `Environment#setCommentEnabled(true)` to keep comments).
+See <http://spoon.gforge.inria.fr/custom-pretty-printing.html>.
 
 ### The MavenLauncher class
 
@@ -156,6 +133,9 @@ When you're consider a reference object (say, a TypeReference), there are three 
 - Case 2 (code available as binary in the classpath): the reference points to a code element for which the source code is NOT present, but for which the binary class is in the classpath (either the JVM classpath or the --source-classpath argument). In this case, reference.getDeclaration() returns null and reference.getTypeDeclaration returns a partial CtType built using runtime reflection. Those objects built using runtime reflection are called shadow objects; and you can identify them with method isShadow. (This also holds for getFieldDeclaration and getExecutableDeclaration)
 - Case 3 (code not available, aka noclasspath): the reference points to a code element for which the source code is NOT present, but for which the binary class is NOT in the classpath. This is called in Spoon the noclasspath mode. In this case, both reference.getDeclaration() and reference.getTypeDeclaration() return null. (This also holds for getFieldDeclaration and getExecutableDeclaration)
 
+### Default and custom classloaders
+
+Spoon uses a `URLClassLoader` by default to load binaries before parsing them. A `URLClassLoader` will load a class with the parent classloader first. This means that if there is a name conflict between the JVM classpath and the manual classpath then the former will be chosen. To give priority to the manual classpath, a child-first classloader can be used. Classloaders are set with `launcher.getEnvironment().setInputClassLoader(customClassloader)`.
 
 ## Declaring the dependency to Spoon
 

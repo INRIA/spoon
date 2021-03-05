@@ -8,8 +8,7 @@
 package spoon.support;
 
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
@@ -26,7 +25,6 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.visitor.DefaultImportComparator;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.ForceFullyQualifiedProcessor;
@@ -98,7 +96,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private transient  Logger logger = Launcher.LOGGER;
 
-	private Level level = Level.OFF;
+	private Level level = Level.ERROR;
 
 	private boolean shouldCompile = false;
 
@@ -193,7 +191,13 @@ public class StandardEnvironment implements Serializable, Environment {
 		if (level == null || level.isEmpty()) {
 			throw new SpoonException("Wrong level given at Spoon.");
 		}
-		return Level.toLevel(level, Level.ALL);
+		Level levelEnum;
+		try {
+			levelEnum = Level.valueOf(level);
+		} catch (IllegalArgumentException e) {
+			return Level.TRACE;
+		}
+		return levelEnum;
 	}
 
 	@Override
@@ -241,22 +245,19 @@ public class StandardEnvironment implements Serializable, Environment {
 		buffer.append(message);
 
 		// Add sourceposition (javac format)
-		try {
-			CtType<?> type = (element instanceof CtType) ? (CtType<?>) element : element.getParent(CtType.class);
-			SourcePosition sp = element.getPosition();
+		CtType<?> type = (element instanceof CtType) ? (CtType<?>) element : element.getParent(CtType.class);
+		SourcePosition sp = element.getPosition();
 
-			if (sp == null) {
-				buffer.append(" (Unknown Source)");
-			} else {
-				buffer.append(" at " + type.getQualifiedName() + ".");
-				CtExecutable<?> exe = (element instanceof CtExecutable) ? (CtExecutable<?>) element : element.getParent(CtExecutable.class);
-				if (exe != null) {
-					buffer.append(exe.getSimpleName());
-				}
-				buffer.append("(" + sp.getFile().getName() + ":" + sp.getLine() + ")");
+		if (sp == null) {
+			buffer.append(" (Unknown Source)");
+		} else {
+			// TODO: will explode if type == null
+			buffer.append(" at " + type.getQualifiedName() + ".");
+			CtExecutable<?> exe = (element instanceof CtExecutable) ? (CtExecutable<?>) element : element.getParent(CtExecutable.class);
+			if (exe != null) {
+				buffer.append(exe.getSimpleName());
 			}
-		} catch (ParentNotInitializedException e) {
-			buffer.append(" (invalid parent)");
+			buffer.append("(" + sp.getFile().getName() + ":" + sp.getLine() + ")");
 		}
 
 		print(buffer.toString(), level);
@@ -273,8 +274,18 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	private void print(String message, Level messageLevel) {
-		if (messageLevel.isMoreSpecificThan(this.level)) {
-			logger.log(messageLevel, message);
+		if (messageLevel.toInt() <= this.level.toInt()) {
+			switch (messageLevel) {
+				case ERROR: logger.error(message);
+					break;
+				case WARN: logger.warn(message);
+					break;
+				case INFO: logger.info(message);
+					break;
+				case DEBUG: logger.debug(message);
+					break;
+				case TRACE: logger.trace(message);
+			}
 		}
 	}
 
