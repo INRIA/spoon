@@ -462,7 +462,7 @@ public class CompilationTest {
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/resources/classloader-test/LauncherUser.java");
 		launcher.getEnvironment().setNoClasspath(false);
-		String classpath = "src/test/java/spoon/test/compilation";
+		String classpath = "src/test/resources/classloader-test/";
 		URL url = new File(classpath).toURI().toURL();
 		URL[] urls = new URL[]{url};
 		URLClassLoader urlClassloaderNullParent = new URLClassLoader(urls,null);
@@ -475,16 +475,13 @@ public class CompilationTest {
 
 	@Test
 	public void testPathRetrievalFromURLClassLoader() throws Exception {
-		// contract: Spoon retrieves path elements from a set URLClassloader
-
+		// contract: Spoon retrieves path elements from a manually set URLClassloader
 		String expected = "target/classes/";
-
 		File f = new File(expected);
-		URL[] urls = {f.toURL()};
+		URL[] urls = {f.toURI().toURL()};
 		URLClassLoader urlClassLoader = new URLClassLoader(urls);
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setInputClassLoader(urlClassLoader);
-
 		String[] sourceClassPath = launcher.getEnvironment().getSourceClasspath();
 		assertEquals(1, sourceClassPath.length);
 		String tail = sourceClassPath[0].substring(sourceClassPath[0].length() - expected.length());
