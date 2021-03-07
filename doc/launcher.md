@@ -53,7 +53,7 @@ for(CtType<?> s : model.getAllTypes()) {
 
 ```
 
-Note that by default, `MavenLauncher` relies on an existing local maven binary to build the project's classpath. But a constructor allowing the user to skip this step and to provide a custom classpath is available.
+Note that by default, `MavenLauncher` relies on an existing local Maven binary to build the project's classpath. But a constructor allowing the user to skip this step and to provide a custom classpath is available.
 ```java
 MavenLauncher launcher = new MavenLauncher("<path_to_maven_project>",
         MavenLauncher.SOURCE_TYPE.APP_SOURCE,
