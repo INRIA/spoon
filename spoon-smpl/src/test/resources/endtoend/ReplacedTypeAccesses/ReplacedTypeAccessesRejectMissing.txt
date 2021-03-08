@@ -1,0 +1,29 @@
+[name]
+ReplacedTypeAccessesRejectMissing
+
+[contract]
+the sub-expression "LARGER" in the patch should NOT match the expression "WebSettings.TextSize.LARGER" in the code, no transformation should be applied (missing information version).
+
+[patch]
+@@ @@
+- setTextSize(LARGER);
+
+[input]
+/* intentionally-does-not-compile */
+class A {
+  /* skip */ public void setTextSize(Object x) {}
+
+  public void m1() {
+    setTextSize(WebSettings.TextSize.LARGER);
+  }
+}
+
+[expected]
+/* intentionally-does-not-compile */
+class A {
+  /* skip */ public void setTextSize(Object x) {}
+
+  public void m1() {
+    setTextSize(WebSettings.TextSize.LARGER);
+  }
+}

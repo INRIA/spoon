@@ -1,0 +1,29 @@
+[name]
+TernaryExpression
+
+[contract]
+patches should be able to match on ternary expressions
+
+[patch]
+@@ @@
++ log(result);
+  return result;
+
+
+[input]
+class A {
+    int sgn(int x) {
+        int result = (x > 0) ? 1 : 0;
+        return result;
+    }
+}
+
+
+[expected]
+class A {
+    int sgn(int x) {
+        int result = (x > 0) ? 1 : 0;
+        log(result);
+        return result;
+    }
+}

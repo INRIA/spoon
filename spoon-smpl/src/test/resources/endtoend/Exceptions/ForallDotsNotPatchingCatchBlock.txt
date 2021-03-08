@@ -1,0 +1,50 @@
+[name]
+ForallDotsNotPatchingCatchBlock
+
+[contract]
+dots in forall mode should not patch a statement only found in the catch block
+
+[patch]
+@@ @@
+  a();
+  ...
+- c();
+
+
+[input]
+class A {
+  void a() {}
+  void b() {}
+  void c() {}
+  void d() {}
+  
+  void m() {
+    a();
+    try {
+      b();
+    }
+    catch (Exception e) {
+      c();
+    }
+    d();
+  }
+}
+
+
+[expected]
+class A {
+    void a() {}
+    void b() {}
+    void c() {}
+    void d() {}
+    
+    void m() {
+        a();
+        try {
+            b();
+        } catch (Exception e) {
+            c();
+        }
+        d();
+    }
+}

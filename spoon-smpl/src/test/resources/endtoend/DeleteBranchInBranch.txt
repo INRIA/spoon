@@ -1,0 +1,47 @@
+[name]
+DeleteBranchInBranch
+
+[contract]
+a patch should be able to delete a complete branch statement nested inside another branch
+
+[input]
+class A {
+    void before() {}
+    void after() {}
+    
+    void m1() {
+        boolean somevariable = Math.random() < 0.5;
+        
+        if (somevariable) {
+            before();
+            
+            if (true) {
+                int x = 0;
+            }
+            
+            after();
+        }
+    }
+}
+
+[expected]
+class A {
+    void before() {}
+    void after() {}
+    
+    void m1() {
+        boolean somevariable = Math.random() < 0.5;
+        
+        if (somevariable) {
+            before();
+            after();
+        }
+    }
+}
+
+[patch]
+@@
+@@
+- if (true) {
+-     int x = 0;
+- }

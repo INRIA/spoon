@@ -1,0 +1,30 @@
+[name]
+MissingSubstitutionInAddedLocalVarDeclBug
+
+[contract]
+bound metavariable should be substituted in addition of local variable declaration
+
+[patch]
+@@ identifier y; @@
+  void m1() {
+-   int y;
++   float y;
+    y = 2;
+  }
+
+[input]
+class A {
+    void m1() {
+      int x;
+      x = 2;
+    }
+}
+
+
+[expected]
+class A {
+    void m1() {
+        float x;
+        x = 2;
+    }
+}

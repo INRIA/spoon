@@ -1,0 +1,48 @@
+[name]
+FieldReads
+
+[contract]
+correct matching of field reads
+
+[patch]
+@@
+Point p;
+@@
+- logger.log(p.x);
++ logger.log("The X coordinate is " + p.x.toString());
+
+[input]
+class A {
+    class Point { Integer x,y; public Point(Integer x, Integer y) {} }
+    class Logger { public void log(Object x) {} }
+    
+    void m1() {
+        Point point = new Point(1,2);
+        Logger logger = new Logger();
+        logger.log(point);
+    }
+    
+    void m2() {
+        Point point = new Point(1,2);
+        Logger logger = new Logger();
+        logger.log(point.x);
+    }
+}
+
+[expected]
+class A {
+    class Point { Integer x,y; public Point(Integer x, Integer y) {} }
+    class Logger { public void log(Object x) {} }
+    
+    void m1() {
+        Point point = new Point(1,2);
+        Logger logger = new Logger();
+        logger.log(point);
+    }
+    
+    void m2() {
+        Point point = new Point(1,2);
+        Logger logger = new Logger();
+        logger.log("The X coordinate is " + point.x.toString());
+    }
+}

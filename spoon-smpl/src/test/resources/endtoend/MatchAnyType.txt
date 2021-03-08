@@ -1,0 +1,45 @@
+[name]
+MatchAnyType
+
+[contract]
+a 'type' metavariable should match any type
+
+[input]
+class A {
+    class ASpecificType {}
+    
+    void foo() {
+        int x;
+    }
+    
+    void bar() {
+        float x;
+    }
+    
+    void baz() {
+        ASpecificType x;
+    }
+}
+
+[expected]
+class A {
+    class ASpecificType {}
+    
+    void foo() {
+        
+    }
+    
+    void bar() {
+        
+    }
+    
+    void baz() {
+        
+    }
+}
+
+[patch]
+@@
+type T;
+@@
+- T x;

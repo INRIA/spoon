@@ -1,0 +1,44 @@
+[name]
+MatchSpecificType
+
+[contract]
+a concretely given type in SmPL should match that precise type
+
+[input]
+class A {
+    class ASpecificType {}
+    
+    void foo() {
+        int x;
+    }
+    
+    void bar() {
+        float x;
+    }
+    
+    void baz() {
+        ASpecificType x;
+    }
+}
+
+[expected]
+class A {
+    class ASpecificType {}
+    
+    void foo() {
+        int x;
+    }
+    
+    void bar() {
+        float x;
+    }
+    
+    void baz() {
+        
+    }
+}
+
+[patch]
+@@
+@@
+- ASpecificType x;

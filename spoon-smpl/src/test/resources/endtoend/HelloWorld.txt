@@ -1,0 +1,25 @@
+[name]
+HelloWorld
+
+[contract]
+hello world template test
+
+[input]
+class A {
+    void foo() {
+        int x = 1;
+    }
+}
+
+[expected]
+class A {
+    void foo() {
+        
+    }
+}
+
+[patch]
+@@
+identifier v1;
+@@
+- int v1 = 1;

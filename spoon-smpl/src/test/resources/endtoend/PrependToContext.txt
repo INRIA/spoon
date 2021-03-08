@@ -1,0 +1,36 @@
+[name]
+PrependToContext
+
+[contract]
+a patch should be able to prepend elements to a context statement
+
+[input]
+class A {
+    void m1() {
+        int x;
+    }
+    
+    void m2() {
+        int y;
+    }
+}
+
+[expected]
+class A {
+    void m1() {
+        int prepended1;
+        int prepended2;
+        int x;
+    }
+    
+    void m2() {
+        int y;
+    }
+}
+
+[patch]
+@@
+@@
++ int prepended1;
++ int prepended2;
+  int x;

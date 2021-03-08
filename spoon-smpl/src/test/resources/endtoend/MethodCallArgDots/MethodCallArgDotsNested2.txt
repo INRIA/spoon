@@ -1,0 +1,46 @@
+[name]
+MethodCallArgDotsNested2
+
+[contract]
+the expression 'f(..., g(..., 1, ...), ...)' should match any method call to 'f' with any argument list where a call to 'g' occurs containing the argument 1 in its argument list
+
+[patch]
+@@ @@
+- f(..., g(..., 1, ...), ...);
+
+[input]
+class A {
+    int f(int ... xs) { return 0; }
+    int g(int ... xs) { return 0; }
+    
+    void m1() {
+        f();
+        f(1);
+        f(2, 3);
+        f(g());
+        f(g(), 1);
+        f(2, g(), 3);
+        f(1, 2, g());
+        f(g(1, 2));
+        f(g(2, 1), 1);
+        f(2, g(1, 3), 3);
+        f(1, 2, g(2, 3));
+    }
+}
+
+[expected]
+class A {
+    int f(int ... xs) { return 0; }
+    int g(int ... xs) { return 0; }
+    
+    void m1() {
+        f();
+        f(1);
+        f(2, 3);
+        f(g());
+        f(g(), 1);
+        f(2, g(), 3);
+        f(1, 2, g());
+        f(1, 2, g(2, 3));
+    }
+}

@@ -1,0 +1,42 @@
+[name]
+AddToMethodBottom
+
+[contract]
+a patch should be able to add statements at the bottom of methods
+
+[patch]
+@@ identifier fn; @@
+void fn() {
+  ...
++ foo();
++ bar();
+}
+
+
+[input]
+class A {
+    /* skip */ void a() {}
+    
+    void m1() {
+    }
+
+    void m2() {
+        a();
+    }
+}
+
+[expected]
+class A {
+    /* skip */ void a() {}
+    
+    void m1() {
+        foo();
+        bar();
+    }
+
+    void m2() {
+        a();
+        foo();
+        bar();
+    }
+}

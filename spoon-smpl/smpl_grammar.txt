@@ -1,0 +1,41 @@
+TODO: further update this file to reflect the "final" implementation used in the thesis
+TODO: markdownify this file
+
+
+    Adapted from http://coccinelle.lip6.fr/docs/main_grammar.pdf
+    
+    
+    Note: This grammar is incomplete as it does not cover dots variant < ... >
+          and pattern disjunction ( a | b )
+    
+    
+    
+    program        ::= changeset+
+    
+    changeset      ::= metavariables transformation
+    
+    metavariables  ::= @@ metadecl* @@ | @ rulename @ metadecl* @@
+    
+    rulename       ::= id
+    
+    metadecl ::= metatype ids (when matches "regex")? ;
+    
+    metatype ::= identifier
+               | type
+               | expression
+               | statement
+               | constant
+               | JavaType
+    
+    ids ::= id (, id)*
+    
+    transformation ::= OPTDOTSEQ(top, when)
+    
+    top ::= java_expr | java_decl_stmt+ | java_fundecl          //this is where the java lives
+    
+    when ::= when != when_code
+           | when exists
+           | when any
+    
+    OPTDOTSEQ(grammar, when) = [... (when)*] grammar (... (when)* grammar)* [... (when)*]
+    

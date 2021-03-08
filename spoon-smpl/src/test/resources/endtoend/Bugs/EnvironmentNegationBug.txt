@@ -1,0 +1,33 @@
+[name]
+EnvironmentNegationBug
+
+[contract]
+the bug where the environments (Tv1=int, v1=x) and (Tv1=(int), v1=(y)) could not be joined should be fixed
+
+[patch]
+@@ type Tf, Tv1; identifier v1, f; @@
+Tf f(Tv1 v1, ...) {
++ a(v1);
+...
+}
+
+[input]
+class A {
+    /* skip */ void a(int x) {}
+    /* skip */ int f(int x, int y) { return 1; }
+
+    int m1(int x, int y) {
+        return f(x, y);
+    }
+}
+
+[expected]
+class A {
+    /* skip */ void a(int x) {}
+    /* skip */ int f(int x, int y) { return 1; }
+
+    int m1(int x, int y) {
+        a(x);
+        return f(x, y);
+    }
+}

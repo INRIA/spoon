@@ -1,0 +1,42 @@
+[name]
+MethodCallArgDotsMatchAny
+
+[contract]
+the expression 'f(...)' should match any method call to 'f' regardless of argument list
+
+[patch]
+@@ @@
+- f(...);
+
+[input]
+class A {
+    // Skip
+    int f() { return 0; }
+    
+    // Skip
+    int f(int x) { return 0; }
+    
+    // Skip
+    int f(int x, int y) { return 0; }
+    
+    void m1() {
+        f();
+        f(1);
+        f(2, 3);
+    }
+}
+
+[expected]
+class A {
+    // Skip
+    int f() { return 0; }
+    
+    // Skip
+    int f(int x) { return 0; }
+    
+    // Skip
+    int f(int x, int y) { return 0; }
+    
+    void m1() {
+    }
+}

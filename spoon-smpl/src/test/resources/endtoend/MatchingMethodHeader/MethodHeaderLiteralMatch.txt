@@ -1,0 +1,39 @@
+[name]
+MethodHeaderLiteralMatch
+
+[contract]
+literal matching on the method header
+
+[patch]
+@@
+expression E;
+@@
+  int square(int x) {
++     log("square called");
+      return E;
+  }
+
+
+
+[input]
+class A {
+    int square(int x) {
+        return x*x;
+    }
+    
+    int cube(int x) {
+        return x*x*x;
+    }
+}
+
+[expected]
+class A {
+    int square(int x) {
+        log("square called");
+        return x*x;
+    }
+    
+    int cube(int x) {
+        return x*x*x;
+    }
+}

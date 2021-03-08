@@ -1,0 +1,12 @@
+diff -ur /tmp/a/src/org/thoughtcrime/securesms/MediaOverviewActivity.java /tmp/b/src/org/thoughtcrime/securesms/MediaOverviewActivity.java
+--- /tmp/a/src/org/thoughtcrime/securesms/MediaOverviewActivity.java	2020-07-15 13:23:36.000000000 +0200
++++ /tmp/b/src/org/thoughtcrime/securesms/MediaOverviewActivity.java	2018-08-06 16:50:06.000000000 +0200
+@@ -331,7 +331,7 @@
+                                                                            R.string.MediaOverviewActivity_Media_delete_progress_message)
+         {
+           @Override
+-          protected Void doInBackground(MediaDatabase.MediaRecord records) {
++          protected Void doInBackground(MediaDatabase.MediaRecord... records) {
+             if (records == null || records.length == 0) {
+               return null;
+             }

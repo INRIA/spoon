@@ -1,0 +1,36 @@
+[name]
+AppendToContext
+
+[contract]
+a patch should be able to append elements to a context statement
+
+[input]
+class A {
+    void m1() {
+        int x;
+    }
+    
+    void m2() {
+        int y;
+    }
+}
+
+[expected]
+class A {
+    void m1() {
+        int x;
+        int appended1;
+        int appended2;
+    }
+    
+    void m2() {
+        int y;
+    }
+}
+
+[patch]
+@@
+@@
+  int x;
++ int appended1;
++ int appended2;

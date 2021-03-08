@@ -1,0 +1,26 @@
+[name]
+MethodHeaderTransformationChangeAll
+
+[contract]
+a patch should be able to specify multiple modifications to a matched method header
+
+[patch]
+@@ @@
+- void m1() {
++ int sgn(int x) {
++   if (x > 0) return 1 else return 0;
+}
+
+[input]
+class A {
+    void m1() {
+    }
+}
+
+
+[expected]
+class A {
+    int sgn(int x) {
+      if (x > 0) return 1 else return 0;
+    }
+}

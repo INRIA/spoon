@@ -1,0 +1,52 @@
+[name]
+MethodHeaderDots
+
+[contract]
+using dots to match arbitrary sequences of parameters in method header
+
+[patch]
+@@
+type T;
+identifier fn, pt;
+@@
+  T fn(..., Point pt, ...) {
+      ...
+-     log("Coordinates: " + pt.x.toString() + ", " + pt.y.toString());
++     log("Point: " + pt.toString());
+  }
+
+[input]
+class A {
+    static class Point {
+        public Integer x;
+        public Integer y;
+    }
+
+    /* skip */ void log(String message) {}
+
+    void drawCircle(Point origin, float radius) {
+        log("Coordinates: " + origin.x.toString() + ", " + origin.y.toString());
+    }
+
+    void drawRectangle(float width, float height, Point topLeftCorner) {
+        log("Coordinates: " + topLeftCorner.x.toString() + ", " + topLeftCorner.y.toString());
+    }
+}
+
+[expected]
+class A {
+    static class Point {
+        public Integer x;
+        public Integer y;
+    }
+
+    /* skip */ void log(String message) {}
+
+    void drawCircle(Point origin, float radius) {
+        log("Point: " + origin.toString());
+    }
+
+    void drawRectangle(float width, float height, Point topLeftCorner) {
+        log("Point: " + topLeftCorner.toString());
+    }
+}

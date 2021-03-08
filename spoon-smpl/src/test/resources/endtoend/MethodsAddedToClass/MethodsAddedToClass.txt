@@ -1,0 +1,56 @@
+[name]
+MethodsAddedToClass
+
+[contract]
+a patch should be able to add entire methods to the parent class of a patch-context-matching method
+
+[patch]
+@@ identifier fn; @@
++ void b() {
++   System.out.println("Hello, World!");
++   logCallToB();
++ }
+
+void fn() {
+- a();
++ b();
+}
+
++ void logCallToB() {
++   logger.log("b called");
++ }
+
+
+[input]
+class A {
+  void a() {}
+  
+  void m1() {
+    a();
+  }
+  void m2() {
+    a();
+  }
+}
+
+[expected]
+class A {
+    void a() {}
+    
+    void m1() {
+        b();
+    }
+
+    void m2() {
+        b();
+    }
+
+    void b() {
+        System.out.println("Hello, World!");
+        logCallToB();
+    }
+
+    void logCallToB() {
+        logger.log("b called");
+    }
+}

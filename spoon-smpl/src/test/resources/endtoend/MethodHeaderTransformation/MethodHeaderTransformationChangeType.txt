@@ -1,0 +1,24 @@
+[name]
+MethodHeaderTransformationChangeType
+
+[contract]
+a patch should be able to specify a change of return type on a matched method header
+
+[patch]
+@@ @@
+- void m1() {
++ int m1() {
+}
+
+[input]
+class A {
+    void m1() {
+    }
+}
+
+
+[expected]
+class A {
+    int m1() {
+    }
+}

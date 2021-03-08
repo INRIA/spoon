@@ -1,0 +1,94 @@
+[name]
+RemoveLocalsReturningConstants001
+
+[contract]
+correct application of remove-locals-returning-constants patch example
+
+
+[patch]
+@@
+type T;
+identifier ret;
+constant C;
+@@
+- T ret = C;
+  ... when != ret
+- return ret;
++ return C;
+
+
+[input]
+class A {
+    float square(float x) { return x*x; }
+    void print(Object x) { System.out.println(x); }
+    
+    int m1() {
+        int x = 0;
+        return x;
+    }
+    
+    int m1b() {
+        int x = 0;
+        x = x + 1;
+        return x;
+    }
+    
+    float m2() {
+        float x = 3.0f;
+        return x;
+    }
+    
+    float m2b() {
+        float x = 3.0f;
+        float y = square(x);
+        return x;
+    }
+    
+    String m3() {
+        String x = "Hello, World!";
+        return x;
+    }
+    
+    String m3b() {
+        String x = "Hello, World!";
+        print(x);
+        return x;
+    }
+}
+
+
+[expected]
+class A {
+    float square(float x) { return x*x; }
+    void print(Object x) { System.out.println(x); }
+    
+    int m1() {
+        return 0;
+    }
+    
+    int m1b() {
+        int x = 0;
+        x = x + 1;
+        return x;
+    }
+    
+    float m2() {
+        return 3.0f;
+    }
+    
+    float m2b() {
+        float x = 3.0f;
+        float y = square(x);
+        return x;
+    }
+    
+    String m3() {
+        return "Hello, World!";
+    }
+    
+    String m3b() {
+        String x = "Hello, World!";
+        print(x);
+        return x;
+    }
+}
