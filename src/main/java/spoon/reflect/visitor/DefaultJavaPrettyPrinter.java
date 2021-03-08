@@ -2041,7 +2041,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void calculate(CtCompilationUnit sourceCompilationUnit, List<CtType<?>> types) {
 		reset();
-
 		if (types.isEmpty()) {
 			// is package-info.java, we cannot call types.get(0) in the then branch
 		} else {
@@ -2065,7 +2064,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 		}
 		applyPreProcessors(sourceCompilationUnit);
-
 		scan(sourceCompilationUnit);
 	}
 
