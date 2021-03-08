@@ -397,8 +397,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return true;
 		}
 		try {
-			if (isOptimizeParentheses() && isOperator(e) && isOperator(e.getParent())) {
-				return shouldSetBracketAroundNestedOperator(e);
+			if (isOptimizeParentheses()) {
+				ParenOptimizer.MustParenthesize mustSetParens = ParenOptimizer.mustParenthesize(e);
+				if (mustSetParens != ParenOptimizer.MustParenthesize.UNKNOWN) {
+					return mustSetParens == ParenOptimizer.MustParenthesize.YES;
+				}
 			}
 			if ((e.getParent() instanceof CtBinaryOperator) || (e.getParent() instanceof CtUnaryOperator)) {
 				return (e instanceof CtAssignment) || (e instanceof CtConditional) || (e instanceof CtUnaryOperator) || e instanceof CtBinaryOperator;
@@ -2150,61 +2153,4 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		this.optimizeParentheses = optimizeParentheses;
 	}
 
-	/**
-	 * Given that the input is a nested operator (i.e. both element and parent are either unary or
-	 * binary operators), determine whether or not the the input element must be parenthesized.
-	 *
-	 * @param operator A unary or binary operator.
-	 * @return true if the operator should be parenthesized.
-	 */
-	private static boolean shouldSetBracketAroundNestedOperator(CtExpression<?> operator) {
-		assert isOperator(operator) && isOperator(operator.getParent());
-
-		if (operator.getParent() instanceof CtUnaryOperator) {
-			return true;
-		}
-
-		OperatorHelper.OperatorAssociativity associativity = getOperatorAssociativity(operator);
-		OperatorHelper.OperatorAssociativity positionInParent = getPositionInParent(operator);
-
-		int parentPrecedence = getOperatorPrecedence(operator.getParent());
-		int precedence = getOperatorPrecedence(operator);
-		return precedence < parentPrecedence
-				|| (precedence == parentPrecedence && associativity != positionInParent);
-	}
-
-	private static boolean isOperator(CtElement e) {
-		return e instanceof CtBinaryOperator || e instanceof CtUnaryOperator;
-	}
-
-	private static int getOperatorPrecedence(CtElement e) {
-		if (e instanceof CtBinaryOperator) {
-			return OperatorHelper.getOperatorPrecedence(((CtBinaryOperator<?>) e).getKind());
-		} else if (e instanceof CtUnaryOperator) {
-			return OperatorHelper.getOperatorPrecedence(((CtUnaryOperator<?>) e).getKind());
-		} else {
-			return 0;
-		}
-	}
-
-	private static OperatorHelper.OperatorAssociativity getOperatorAssociativity(CtElement e) {
-		if (e instanceof CtBinaryOperator) {
-			return OperatorHelper.getOperatorAssociativity(((CtBinaryOperator<?>) e).getKind());
-		} else if (e instanceof CtUnaryOperator) {
-			return OperatorHelper.getOperatorAssociativity(((CtUnaryOperator<?>) e).getKind());
-		} else {
-			return OperatorHelper.OperatorAssociativity.NONE;
-		}
-	}
-
-	private static OperatorHelper.OperatorAssociativity getPositionInParent(CtElement e) {
-		CtElement parent = e.getParent();
-		if (parent instanceof CtBinaryOperator) {
-			return ((CtBinaryOperator<?>) parent).getLeftHandOperand() == e
-					? OperatorHelper.OperatorAssociativity.LEFT
-					: OperatorHelper.OperatorAssociativity.RIGHT;
-		} else {
-			return OperatorHelper.OperatorAssociativity.NONE;
-		}
-	}
 }
