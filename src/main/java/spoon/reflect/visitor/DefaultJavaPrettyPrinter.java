@@ -2145,11 +2145,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtStatement(statement);
 	}
 
-	boolean isOptimizeParentheses() {
+	protected boolean isOptimizeParentheses() {
 		return optimizeParentheses;
 	}
 
-	void setOptimizeParentheses(boolean optimizeParentheses) {
+	protected void setOptimizeParentheses(boolean optimizeParentheses) {
 		this.optimizeParentheses = optimizeParentheses;
 	}
 

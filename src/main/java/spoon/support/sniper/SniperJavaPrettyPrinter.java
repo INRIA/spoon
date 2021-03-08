@@ -82,6 +82,9 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 
 		// newly added elements are not fully qualified
 		this.setIgnoreImplicit(false);
+
+		// don't print redundant parentheses
+		this.setOptimizeParentheses(true);
 	}
 
 	/**

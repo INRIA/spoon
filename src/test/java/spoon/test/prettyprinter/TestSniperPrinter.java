@@ -609,6 +609,26 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	public void testOptimizesParenthesesForAddedNestedOperators() {
+		// contract: The sniper printer should optimize parentheses for newly inserted elements
+
+		// without parentheses optimization, the expression will be printed as `(1 + 2) + (-(2 + 3))`
+		String declaration = "int a = 1 + 2 + -(2 + 3)";
+		Launcher launcher = new Launcher();
+		CtStatement nestedOps = launcher.getFactory().createCodeSnippetStatement(declaration).compile();
+
+		Consumer<CtType<?>> addNestedOperator = type -> {
+			CtMethod<?> method = type.getMethodsByName("main").get(0);
+			method.getBody().addStatement(nestedOps);
+		};
+		BiConsumer<CtType<?>, String> assertCorrectlyPrinted =
+				(type, result) -> assertThat(result, containsString(declaration));
+
+		testSniper("methodimport.ClassWithStaticMethod", addNestedOperator, assertCorrectlyPrinted);
+	}
+
+
+	@Test
 	public void testPrintTypeWithMethodImportAboveMethodDefinition() {
 		// contract: The type references of a method import (e.g. its return type) has source
 		// positions in the file the method was imported from. The resolved source end position
