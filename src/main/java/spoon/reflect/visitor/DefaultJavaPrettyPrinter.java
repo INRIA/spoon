@@ -2102,7 +2102,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
-	 * @param preprocessors list of {@link CompilationUnitValidator}, which have to be used to validate and fix model before it's printing
+	 * Set preprocessors that the printer automatically runs on the model before printing it.
+	 * Typically, such preprocessors validate or adjust the model before printing.
+	 *
+	 * @param preprocessors list of processors to run on the model before printing
 	 */
 	public void setPreprocessors(List<Processor<CtElement>> preprocessors) {
 		this.preprocessors.clear();
@@ -2110,7 +2113,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
-	 * @return list of {@link CompilationUnitValidator}, which are used to validate and fix model before it's printing
+	 * @return all processors currently set to run on the model before printing
 	 */
 	public List<Processor<CtElement>> getPreprocessors() {
 		return this.preprocessors;

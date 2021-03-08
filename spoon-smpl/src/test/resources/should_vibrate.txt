@@ -1,0 +1,9 @@
+The code in C4JShouldVibrate.zip has been modified according to should_vibrate.patch,
+essentially changing a single method signature as follows:
+
+    - protected Void doInBackground(MediaDatabase.MediaRecord... records)
+    + protected Void doInBackground(MediaDatabase.MediaRecord records)
+
+Neither the method nor the file it lives in are relevant to the associated C4J patch. 
+The reason for the change is that Spoon produces an error when pretty-printing the 
+original file/CU using the DefaultJavaPrettyPrinter, which is possibly a bug in Spoon.

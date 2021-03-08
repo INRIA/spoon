@@ -1,0 +1,41 @@
+[name]
+AnchorAfterDotsBug
+
+[contract]
+an addition must not be anchored to an element on the opposite side of an intermediate dots operator
+
+[patch]
+@@
+@@
+a();
+...
++ c();
+b();
+
+[input]
+class A {
+    void a() {}
+    void b() {}
+    void somethingElse() {}
+    
+    void foo() {
+        a();
+        somethingElse();
+        b();
+    }
+}
+
+
+[expected]
+class A {
+    void a() {}
+    void b() {}
+    void somethingElse() {}
+    
+    void foo() {
+        a();
+        somethingElse();
+        c();
+        b();
+    }
+}

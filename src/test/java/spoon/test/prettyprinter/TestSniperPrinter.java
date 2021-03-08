@@ -387,6 +387,34 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	public void testCalculateCrashesWithInformativeMessageWhenSniperPrinterSetAfterModelBuild() {
+		// contract: The sniper printer must be set before building the model, and the error message
+		// one gets when this has not been done should say so.
+
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(getResourcePath("visibility.YamlRepresenter"));
+
+		// build model, then set sniper
+		launcher.buildModel();
+		launcher.getEnvironment().setPrettyPrinterCreator(
+				() -> new SniperJavaPrettyPrinter(launcher.getEnvironment()));
+
+		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getMap().values().stream()
+				.findFirst().get();
+
+		// crash because sniper was set after model was built, and so the ChangeCollector was not
+		// attached to the environment
+		try {
+			launcher.createPrettyPrinter().calculate(cu, cu.getDeclaredTypes());
+		} catch (SpoonException e) {
+			assertThat(e.getMessage(), containsString(
+					"This typically means that the Sniper printer was set after building the model."));
+			assertThat(e.getMessage(), containsString(
+					"It must be set before building the model."));
+		}
+	}
+
+	@Test
 	public void testNewlineInsertedBetweenCommentAndTypeMemberWithAddedModifier() {
 		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: newline must be inserted after comment when a succeeding type member has had a

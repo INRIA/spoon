@@ -1,0 +1,136 @@
+[name]
+DotsLeavingScopeBug02
+
+[contract]
+dots should be prevented from traversing out of the enclosing scope (when exists version)
+
+[patch]
+@@ @@
+if (true) {
+  ... when exists
+- a();
+  ...
+}
+
+
+[input]
+class A {
+  void a() {}
+  boolean whatever;
+  
+  void m1() {
+    if (true) {
+    }
+    a();
+    if (true) {
+    }
+  }
+
+  void m2() {
+    if (true) {
+      a();
+    }
+    a();
+    if (true) {
+    }
+  }
+
+  void m3() {
+    if (true) {
+    }
+    a();
+    if (true) {
+      a();
+    }
+  }
+
+  void m4() {
+    if (true) {
+      a();
+    }
+    a();
+    if (true) {
+      a();
+    }
+  }
+
+  void m5() {
+    if (true) {
+      if (true) {
+        a();
+      }
+    }
+    a();
+    if (true) {
+    }
+  }
+
+  void m6() {
+    if (true) {
+      if (whatever) {
+        a();
+      }
+    }
+    a();
+    if (true) {
+    }
+  }
+}
+
+[expected]
+class A {
+    void a() {}
+    boolean whatever;
+
+    void m1() {
+        if (true) {
+        }
+        a();
+        if (true) {
+        }
+    }
+
+    void m2() {
+        if (true) {
+        }
+        a();
+        if (true) {
+        }
+    }
+
+    void m3() {
+        if (true) {
+        }
+        a();
+        if (true) {
+        }
+    }
+
+    void m4() {
+        if (true) {
+        }
+        a();
+        if (true) {
+        }
+    }
+
+    void m5() {
+        if (true) {
+            if (true) {
+            }
+        }
+        a();
+        if (true) {
+        }
+    }
+
+    void m6() {
+        if (true) {
+            if (whatever) {
+            }
+        }
+        a();
+        if (true) {
+        }
+    }
+}

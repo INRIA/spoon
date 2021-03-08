@@ -76,6 +76,18 @@ git diff
 mvn -q -Djava.src.version=11 test
 
 ##################################################################
+# Spoon-smpl
+##################################################################
+cd ../spoon-smpl
+
+# always depends on the latest snapshot, just installed with "mvn install" above
+mvn -q versions:use-latest-versions -DallowSnapshots=true -Dincludes=fr.inria.gforge.spoon
+git diff
+
+mvn -q -Djava.src.version=11 test
+mvn -q checkstyle:checkstyle license:check
+
+##################################################################
 ## Trigerring extra tasks that we don't want to commit to master
 ## (For experimental CI features, short lived tasks, etc)
 

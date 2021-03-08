@@ -130,6 +130,13 @@ entries:
           product: all
           version: all
 
+        - title: Semantic patching
+          url: /spoon_smpl.html
+          audience: writers, designers
+          platform: all
+          product: all
+          version: all
+
         - title: Code Generation
           url: '/pattern.html#generator'
           audience: writers, designers

@@ -1,0 +1,37 @@
+[name]
+EncloseInBranch
+
+[contract]
+a patch should be able to add a branch statement enclosing context
+
+[input]
+class A {
+    void anchor() {}
+    void foo() {}
+    
+    void m1() {
+        anchor();
+        foo();
+    }
+}
+
+[expected]
+class A {
+    void anchor() {}
+    void foo() {}
+    
+    void m1() {
+        anchor();
+        if (debug) {
+            foo();
+        }
+    }
+}
+
+[patch]
+@@
+@@
+  anchor();
++ if (debug) {
+      foo();
++ }

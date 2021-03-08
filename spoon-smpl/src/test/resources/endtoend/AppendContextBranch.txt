@@ -1,0 +1,32 @@
+[name]
+AppendContextBranch
+
+[contract]
+a patch should be able to append elements below a context branch
+
+[input]
+class A {
+    void m1() {
+        if (true) {
+            int x = 0;
+        }
+    }
+}
+
+[expected]
+class A {
+    void m1() {
+        if (true) {
+            int x = 0;
+        }
+        int y = 1;
+    }
+}
+
+[patch]
+@@
+@@
+  if (true) {
+      int x = 0;
+  }
++ int y = 1;

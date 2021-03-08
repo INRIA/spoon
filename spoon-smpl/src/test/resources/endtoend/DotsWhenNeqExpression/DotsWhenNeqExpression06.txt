@@ -1,0 +1,87 @@
+[name]
+DotsWhenNeqExpression06
+
+[contract]
+dots for arguments in constructor calls should be supported in when != expr, none of m1,m2,m3 should match
+
+[patch]
+@@ @@
+- a();
+  ... when != new Point(...)
+- c();
+
+
+[input]
+class A {
+    /* skip */ void a() {}
+    /* skip */ void c() {}
+
+    public static class Point {
+        public Point(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public final int x;
+        public final int y;
+    }
+
+    void m1() {
+      a();
+      Point p = new Point(2,2);
+      c();
+    }
+
+    void m2() {
+      a();
+      Point p = new Point(2,3);
+      c();
+    }
+
+    void m3() {
+      a();
+      Point p = new Point(1,1);
+      c();
+    }
+}
+
+
+[expected]
+class A {
+    /* skip */
+    void a() {
+    }
+
+    /* skip */
+    void c() {
+    }
+
+    public static class Point {
+        public Point(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public final int x;
+
+        public final int y;
+    }
+
+    void m1() {
+      a();
+      Point p = new Point(2,2);
+      c();
+    }
+
+    void m2() {
+      a();
+      Point p = new Point(2,3);
+      c();
+    }
+
+    void m3() {
+      a();
+      Point p = new Point(1,1);
+      c();
+    }
+}

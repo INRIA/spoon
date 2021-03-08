@@ -1,0 +1,51 @@
+[name]
+RemoveLocalsReturningConstantsRejectUsageInBranchCondition
+
+[contract]
+correct application of remove-locals-returning-constants patch example
+
+
+[patch]
+@@
+type T;
+identifier ret;
+constant C;
+@@
+- T ret = C;
+  ... when != ret
+- return ret;
++ return C;
+
+
+[input]
+class input
+{
+    public int foo()
+    {
+        int y = 42;
+        
+        if (y > 0)
+        {
+            return y;
+        }
+        
+        return y;
+    }
+}
+
+
+[expected]
+class input
+{
+    public int foo()
+    {
+        int y = 42;
+        
+        if (y > 0)
+        {
+            return y;
+        }
+        
+        return y;
+    }
+}

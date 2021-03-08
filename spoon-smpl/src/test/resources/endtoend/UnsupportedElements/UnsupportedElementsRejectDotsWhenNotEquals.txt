@@ -1,0 +1,40 @@
+[name]
+UnsupportedElementsRejectDotsWhenNotEquals
+
+[contract]
+dots constrained by "when != x" should not be allowed to traverse across unsupported elements even if there is no post-context
+
+[patch]
+@@
+@@
+- a();
+... when != x
+
+[input]
+class A {
+    /* skip */ void a() {}
+    /* skip */ void b() {}
+    boolean loopsNotSupported;
+    
+    void foo() {
+        a();
+        while (loopsNotSupported) {
+          break;
+        }
+    }
+}
+
+
+[expected]
+class A {
+    /* skip */ void a() {}
+    /* skip */ void b() {}
+    boolean loopsNotSupported;
+    
+    void foo() {
+        a();
+        while (loopsNotSupported) {
+            break;
+        }
+    }
+}

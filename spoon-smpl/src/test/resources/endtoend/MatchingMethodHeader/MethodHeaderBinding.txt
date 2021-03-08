@@ -1,0 +1,49 @@
+[name]
+MethodHeaderBinding
+
+[contract]
+binding metavariables on the method header
+
+[patch]
+@@
+type T1;
+expression E;
+@@
+  T1 square(T1 x) {
++     T1 y = 0;
+      return E;
+  }
+
+
+
+[input]
+class A {
+    int square(int x) {
+        return x*x;
+    }
+
+    float square(float x) {
+        return x*x;
+    }
+
+    double square(Float x) {
+        return x*x;
+    }
+}
+
+[expected]
+class A {
+    int square(int x) {
+        int y = 0;
+        return x*x;
+    }
+
+    float square(float x) {
+        float y = 0;
+        return x*x;
+    }
+
+    double square(Float x) {
+        return x*x;
+    }
+}

@@ -1,0 +1,34 @@
+[name]
+DotsWhenAny
+
+[contract]
+dots shortest path restriction is lifted by using when any
+
+[patch]
+@@
+@@
+- foo(x);
+  ... when any
+- bar(x);
+
+[input]
+class A {
+    void foo(Object x) {}
+    void bar(Object x) {}
+    
+    void m1(Object x) {
+        foo(x);
+        foo(x);
+        bar(x);
+        bar(x);
+    }
+}
+
+[expected]
+class A {
+    void foo(Object x) {}
+    void bar(Object x) {}
+    
+    void m1(Object x) {
+    }
+}

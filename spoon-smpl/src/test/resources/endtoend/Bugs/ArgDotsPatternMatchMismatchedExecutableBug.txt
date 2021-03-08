@@ -1,0 +1,29 @@
+[name]
+ArgDotsPatternMatchMismatchedExecutableBug
+
+[contract]
+pattern matching the expression "f(...)" should not fail to find a mismatch in the executable of the invocation
+
+[patch]
+@@ @@
+- b(...)
+
+[input]
+class A {
+    /* skip */ void a(int x, int y, int z) {}
+    void m1() {
+      a(1,2,3);
+    }
+}
+
+
+[expected]
+class A {
+    /* skip */
+    void a(int x, int y, int z) {
+    }
+
+    void m1() {
+        a(1, 2, 3);
+    }
+}

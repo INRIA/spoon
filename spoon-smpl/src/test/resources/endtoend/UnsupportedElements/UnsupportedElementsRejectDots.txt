@@ -1,0 +1,43 @@
+[name]
+UnsupportedElementsRejectDots
+
+[contract]
+dots with post-context should not be allowed to traverse across unsupported elements
+
+[patch]
+@@
+@@
+a();
+...
+- b();
+
+[input]
+class A {
+    /* skip */ void a() {}
+    /* skip */ void b() {}
+    boolean loopsNotSupported;
+    
+    void foo() {
+        a();
+        while (loopsNotSupported) {
+          break;
+        }
+        b();
+    }
+}
+
+
+[expected]
+class A {
+    /* skip */ void a() {}
+    /* skip */ void b() {}
+    boolean loopsNotSupported;
+    
+    void foo() {
+        a();
+        while (loopsNotSupported) {
+            break;
+        }
+        b();
+    }
+}

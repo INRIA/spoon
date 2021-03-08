@@ -1,0 +1,56 @@
+[name]
+DeleteEnclosingBranch
+
+[contract]
+a patch should be able to delete an enclosing branch statement while keeping inner context
+
+[input]
+class A {
+    void m1() {
+        if (true) {
+            int x = 0;
+        }
+    }
+    
+    void m2() {
+        if (true) {
+            if (true) {
+                int x = 0;
+            }
+        }
+    }
+    
+    void m3() {
+        if (false) {
+            if (true) {
+                int x = 0;
+            }
+        }
+    }
+}
+
+[expected]
+class A {
+    void m1() {
+        int x = 0;
+    }
+    
+    void m2() {
+        if (true) {
+            int x = 0;
+        }
+    }
+    
+    void m3() {
+        if (false) {
+            int x = 0;
+        }
+    }
+}
+
+[patch]
+@@
+@@
+- if (true) {
+      int x = 0;
+- }

@@ -1,0 +1,66 @@
+[name]
+RemoveLocalsReturningConstantsBranchMultiple
+
+[contract]
+correct application of remove-locals-returning-constants patch example
+
+
+[patch]
+@@
+type T;
+identifier ret;
+constant C;
+@@
+- T ret = C;
+  ... when != ret
+- return ret;
++ return C;
+
+
+[input]
+class input
+{
+    public int foo(int n)
+    {
+        int a = 123;
+        int b = 234;
+        int c = 345;
+        
+        if (n == 0)
+        {
+            return a;
+        }
+        else if (n == 1)
+        {
+            return b;
+        }
+        else
+        {
+            return c;
+        }
+    }
+}
+
+[expected]
+class input
+{
+    public int foo(int n)
+    {
+        int a = 123;
+        int b = 234;
+        int c = 345;
+        
+        if (n == 0)
+        {
+            return a;
+        }
+        else if (n == 1)
+        {
+            return b;
+        }
+        else
+        {
+            return c;
+        }
+    }
+}

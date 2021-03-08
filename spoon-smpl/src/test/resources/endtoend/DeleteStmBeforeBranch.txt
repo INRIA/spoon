@@ -1,0 +1,48 @@
+[name]
+DeleteStmBeforeBranch
+
+[contract]
+only the statement above the branch should be removed
+
+[input]
+class A {
+    int positive(int input) {
+        int ans = 0;
+        
+        ans = 1;
+        
+        if (input > 0) {
+            ans = 1;
+        }
+        
+        ans = 1;
+        
+        return ans;
+    }
+}
+
+[expected]
+class A {
+    int positive(int input) {
+        int ans = 0;
+        
+        if (input > 0) {
+            ans = 1;
+        }
+        
+        ans = 1;
+        
+        return ans;
+    }
+}
+
+
+[patch]
+@@
+identifier v1;
+constant C;
+@@
+- v1 = C;
+  if (input > 0) {
+  ...
+  }

@@ -1,0 +1,47 @@
+[name]
+DotsWithOptionalMatchShortestPath
+
+[contract]
+optdots should match the shortest path between surrounding context elements
+
+[patch]
+@@ @@
+void test() {
+  ... when any
+  pre();
+<...
+- a();
+...>
+  post();
+}
+
+
+[input]
+class A {
+  void pre() {}
+  void post() {}
+  void a() {}
+  
+  void test() {
+    pre();
+    a();
+    pre();
+    a();
+    a();
+    post();
+  }
+}
+
+[expected]
+class A {
+    void pre() {}
+    void post() {}
+    void a() {}
+    
+    void test() {
+        pre();
+        a();
+        pre();
+        post();
+    }
+}
