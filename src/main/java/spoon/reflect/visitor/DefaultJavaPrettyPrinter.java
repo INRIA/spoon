@@ -2145,10 +2145,26 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtStatement(statement);
 	}
 
+	/**
+	 * @return true if the printer is optimizing parentheses around expressions
+	 */
 	protected boolean isOptimizeParentheses() {
 		return optimizeParentheses;
 	}
 
+	/**
+	 * When set to true, this activates parenthesis optimization for expressions. This means that
+	 * the printer will attempt to only write those strictly necessary for preserving syntactical
+	 * structure (and by extension, semantics).
+     *
+	 * As an example, the expression <code>1 + 2 + 3 + 4</code> is written as
+	 * <code>((1 + 2) + 3) + 4</code> without parenthesis optimization, but entirely without
+	 * parentheses when optimization is enabled. However, an expression <code>1 + 2 + (3 + 4)</code>
+	 * is still written as <code>1 + 2 + (3 + 4)</code> to preserve syntactical structure, even though
+	 * the parentheses are semantically redundant.
+	 *
+	 * @param optimizeParentheses set whether or not to optimize parentheses around expressions
+	 */
 	protected void setOptimizeParentheses(boolean optimizeParentheses) {
 		this.optimizeParentheses = optimizeParentheses;
 	}
