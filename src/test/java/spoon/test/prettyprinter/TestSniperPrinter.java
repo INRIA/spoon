@@ -627,7 +627,6 @@ public class TestSniperPrinter {
 		testSniper("methodimport.ClassWithStaticMethod", addNestedOperator, assertCorrectlyPrinted);
 	}
 
-
 	@Test
 	public void testPrintTypeWithMethodImportAboveMethodDefinition() {
 		// contract: The type references of a method import (e.g. its return type) has source
