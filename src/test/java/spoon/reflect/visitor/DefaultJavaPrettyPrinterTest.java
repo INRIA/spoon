@@ -47,7 +47,7 @@ public class DefaultJavaPrettyPrinterTest {
         // contract: When input expressions as part of statements are minimally parenthesized,
         // pretty-printed output should match the input
         CtStatement statement = createLauncherWithOptimizeParenthesesPrinter()
-                .getFactory().createCodeSnippetStatement(rawStatement);
+                .getFactory().createCodeSnippetStatement(rawStatement).compile();
         assertThat(statement.toString(), equalTo(rawStatement));
     }
 
