@@ -14,6 +14,9 @@ class ParenOptimizer {
 		YES, NO, UNKNOWN;
 	}
 
+	private ParenOptimizer() {
+	}
+
 	/**
 	 * Determine whether or not the expression must be parenthesized.
 	 *
