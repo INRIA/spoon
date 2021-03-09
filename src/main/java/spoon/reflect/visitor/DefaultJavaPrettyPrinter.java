@@ -218,10 +218,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	protected boolean ignoreImplicit = true;
 
 	/**
-	 * EXPERIMENTAL: If true, the printer will attempt to print a minimal set of parentheses that
-	 * preserve the syntactical structure of the AST.
+	 * EXPERIMENTAL: If true, the printer will attempt to print a minimal set of round brackets in
+	 * expressions while preserving the syntactical structure of the AST.
 	 */
-	private boolean optimizeParentheses = false;
+	private boolean minimizeRoundBrackets = false;
 
 	public boolean inlineElseIf = true;
 
@@ -397,10 +397,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			return true;
 		}
 		try {
-			if (isOptimizeParentheses()) {
-				ParenOptimizer.MustParenthesize mustSetParens = ParenOptimizer.mustParenthesize(e);
-				if (mustSetParens != ParenOptimizer.MustParenthesize.UNKNOWN) {
-					return mustSetParens == ParenOptimizer.MustParenthesize.YES;
+			if (isMinimizeRoundBrackets()) {
+				RoundBracketAnalyzer.EncloseInRoundBrackets requiresBrackets =
+						RoundBracketAnalyzer.requiresRoundBrackets(e);
+				if (requiresBrackets != RoundBracketAnalyzer.EncloseInRoundBrackets.UNKNOWN) {
+					return requiresBrackets == RoundBracketAnalyzer.EncloseInRoundBrackets.YES;
 				}
 			}
 			if ((e.getParent() instanceof CtBinaryOperator) || (e.getParent() instanceof CtUnaryOperator)) {
@@ -2144,27 +2145,27 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	/**
-	 * @return true if the printer is optimizing parentheses around expressions
+	 * @return true if the printer is minimizing the amount of round brackets in expressions
 	 */
-	protected boolean isOptimizeParentheses() {
-		return optimizeParentheses;
+	protected boolean isMinimizeRoundBrackets() {
+		return minimizeRoundBrackets;
 	}
 
 	/**
-	 * When set to true, this activates parenthesis optimization for expressions. This means that
-	 * the printer will attempt to only write those strictly necessary for preserving syntactical
-	 * structure (and by extension, semantics).
+	 * When set to true, this activates round bracket minimization for expressions. This means that
+	 * the printer will attempt to only write round brackets strictly necessary for preserving
+	 * syntactical structure (and by extension, semantics).
      *
 	 * As an example, the expression <code>1 + 2 + 3 + 4</code> is written as
-	 * <code>((1 + 2) + 3) + 4</code> without parenthesis optimization, but entirely without
-	 * parentheses when optimization is enabled. However, an expression <code>1 + 2 + (3 + 4)</code>
+	 * <code>((1 + 2) + 3) + 4</code> without round bracket minimization, but entirely without
+	 * parentheses when minimization is enabled. However, an expression <code>1 + 2 + (3 + 4)</code>
 	 * is still written as <code>1 + 2 + (3 + 4)</code> to preserve syntactical structure, even though
-	 * the parentheses are semantically redundant.
+	 * the brackets are semantically redundant.
 	 *
-	 * @param optimizeParentheses set whether or not to optimize parentheses around expressions
+	 * @param minimizeRoundBrackets set whether or not to minimize round brackets in expressions
 	 */
-	protected void setOptimizeParentheses(boolean optimizeParentheses) {
-		this.optimizeParentheses = optimizeParentheses;
+	protected void setMinimizeRoundBrackets(boolean minimizeRoundBrackets) {
+		this.minimizeRoundBrackets = minimizeRoundBrackets;
 	}
 
 }

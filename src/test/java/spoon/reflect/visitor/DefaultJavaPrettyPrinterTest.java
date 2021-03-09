@@ -55,7 +55,7 @@ public class DefaultJavaPrettyPrinterTest {
         Launcher launcher = new Launcher();
         launcher.getEnvironment().setPrettyPrinterCreator(() -> {
             DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(launcher.getEnvironment());
-            printer.setOptimizeParentheses(true);
+            printer.setMinimizeRoundBrackets(true);
             return printer;
         });
         return launcher;

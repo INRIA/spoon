@@ -84,7 +84,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 		this.setIgnoreImplicit(false);
 
 		// don't print redundant parentheses
-		this.setOptimizeParentheses(true);
+		this.setMinimizeRoundBrackets(true);
 	}
 
 	/**
