@@ -394,7 +394,6 @@ public class StandardEnvironment implements Serializable, Environment {
 		this.tabulationSize = tabulationSize;
 	}
 
-	private transient  ClassLoader classloader;
 	/*
 	 * cache class loader which loads classes from source class path
 	 * we must cache it to make all the loaded classes compatible
@@ -425,14 +424,10 @@ private transient  ClassLoader inputClassloader;
 				}
 			}
 		}
-		this.classloader = aClassLoader;
 	}
 
 	@Override
 	public ClassLoader getInputClassLoader() {
-		if (classloader != null) {
-			return classloader;
-		}
 		if (inputClassloader == null) {
 			inputClassloader = new URLClassLoader(urlClasspath(), Thread.currentThread().getContextClassLoader());
 		}
