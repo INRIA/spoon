@@ -13,13 +13,15 @@ expression E;
 + ContextCompat.getColor(ctx , E)
 ``` 
 
-Spoon-SmPL has been implemented by Mikael Forsberg in his master's thesis 'Design and Implementation of Semantic Patch Support for the Spoon Java Transformation Engine' at KTH Royal Institute of Technology.
+Spoon-SmPL's initial version has been implemented by Mikael Forsberg as part of his master's thesis ["Design and Implementation of Semantic Patch Support for the Spoon Java Transformation Engine' at KTH Royal Institute of Technology"](http://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-291226).
 
 References:
 * [SmPL: A Domain-Specific Language for Specifying Collateral Evolutions in Linux Device Drivers](http://coccinelle.lip6.fr/papers/ercim.pdf)
 * [A Foundation for Flow-Based Program Matching Using Temporal Logic and Model Checking](http://coccinelle.lip6.fr/papers/popl09.pdf)
 * [Semantic Patches for Java Program Transformation](https://drops.dagstuhl.de/opus/volltexte/2019/10814/pdf/LIPIcs-ECOOP-2019-22.pdf)
-
+* [Semantic Patches for Java Program Transformation](https://drops.dagstuhl.de/opus/volltexte/2019/10814/pdf/LIPIcs-ECOOP-2019-22.pdf)
+* [Design and Implementation of Semantic Patch Support for the Spoon Java Transformation Engine' at KTH Royal Institute of Technology](http://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-291226)
+ 
 ## Architecture Notes
 
 * Parsing SMPL: see SmPLLexer
