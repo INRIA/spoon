@@ -22,6 +22,10 @@ mvn -q  checkstyle:checkstyle -Pcheckstyle-test
 
 python ./chore/check-links-in-doc.py
 
+# Analyze the usage of dependencies through DepClean.
+# The build fails if DepClean detects at least one unused direct dependency.
+mvn -q se.kth.castor:depclean-maven-plugin:2.0.0:depclean -Pdepclean
+
 ##################################################################
 # Spoon-decompiler
 ##################################################################
