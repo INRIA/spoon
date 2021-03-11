@@ -4,7 +4,7 @@
 # it runs verify and site maven goals
 # and to check documentation links
 #
-# It also run test, verify and checkstyle goals on spoon-decompiler
+# It also run test, verify, checkstyle, and depclean goals on spoon-decompiler
 
 # fails if anything fails
 set -e
@@ -33,6 +33,7 @@ git diff
 
 mvn -q test
 mvn -q checkstyle:checkstyle license:check
+mvn -q se.kth.castor:depclean-maven-plugin:2.0.0:depclean -DfailIfUnusedDirect=true
 
 ##################################################################
 # Spoon-control-flow
