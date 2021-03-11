@@ -75,7 +75,7 @@ jobs:
       - name: Use silent log config
         run: mv chore/travis/logback.xml src/test/resources/
       - name: Run extra checks
-        run: ./chore/travis/travis-extra.sh
+        run: ./chore/travis/ci-extra.sh
 
   depclean:
     runs-on: ubuntu-latest

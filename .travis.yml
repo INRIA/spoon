@@ -7,11 +7,11 @@ env:
   global:
   - M2_HOME="/usr/local/maven"
   matrix:
-  - SCRIPT=travis-jdk8.sh
-  - SCRIPT=travis-jdk11.sh
-  - SCRIPT=travis-jdk15.sh
-  - SCRIPT=travis-coverage.sh
-  - SCRIPT=travis-extra.sh
+  - SCRIPT=ci-jdk8.sh
+  - SCRIPT=ci-jdk11.sh
+  - SCRIPT=ci-jdk15.sh
+  - SCRIPT=ci-coverage.sh
+  - SCRIPT=ci-extra.sh
 
 # in langage:java, Travis executes by default "mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V"
 # This is not what we want because:
@@ -25,7 +25,7 @@ install:
 script: ./chore/travis/$SCRIPT
 
 # last step, see https://docs.travis-ci.com/user/job-lifecycle/
-after_script: ./chore/travis/travis-master.sh
+after_script: ./chore/travis/ci-master.sh
 
 cache:
   directories:
