@@ -33,7 +33,7 @@ git diff
 
 mvn -q test
 mvn -q checkstyle:checkstyle license:check
-mvn -q se.kth.castor:depclean-maven-plugin:2.0.0:depclean -DfailIfUnusedDirect=true
+mvn -q se.kth.castor:depclean-maven-plugin:2.0.0:depclean -Pdepclean
 
 ##################################################################
 # Spoon-control-flow
