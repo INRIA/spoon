@@ -11,6 +11,7 @@ env:
   - SCRIPT=travis-jdk11.sh
   - SCRIPT=travis-jdk15.sh
   - SCRIPT=travis-coverage.sh
+  - SCRIPT=travis-depclean.sh
   - SCRIPT=travis-extra.sh
 
 # in langage:java, Travis executes by default "mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V"
