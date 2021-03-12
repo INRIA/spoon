@@ -31,13 +31,13 @@
           <distribution>repo</distribution>
       </license>
   </licenses>
-  
+
   <properties>
     <java.src.version>1.8</java.src.version>
     <sonar.coverage.exclusions>
         **/support/gui/*
     </sonar.coverage.exclusions>
-  </properties> 
+  </properties>
 
   <dependencies>
     <dependency>
@@ -186,7 +186,7 @@
                     </goals>
                 </execution>
                 <execution>
-                  <!-- reference: 
+                  <!-- reference:
                   * https://www.jacoco.org/jacoco/trunk/doc/check-mojo.html
                   * https://stackoverflow.com/questions/41891739/how-to-fail-a-maven-build-if-junit-coverage-falls-below-certain-threshold
                   -->
@@ -199,7 +199,7 @@
                     <rule implementation="org.jacoco.maven.RuleConfiguration">
                       <element>CLASS</element>
                       <excludes>
-                        <!-- we exclude the GUI classes, because we don't have Swing GUI tests in CI --> 
+                        <!-- we exclude the GUI classes, because we don't have Swing GUI tests in CI -->
                         <exclude>spoon.support.gui.*</exclude>
                         <!-- we exclude the generated inner classes of ReplacementVisitor -->
                         <exclude>spoon.support.visitor.replace.ReplacementVisitor.*</exclude>
@@ -279,6 +279,24 @@
             <classpathDependencyExclude>ch.qos.logback:logback-classic</classpathDependencyExclude>
           </classpathDependencyExcludes>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <!-- see https://github.com/castor-software/depclean -->
+        <groupId>se.kth.castor</groupId>
+        <artifactId>depclean-maven-plugin</artifactId>
+        <version>2.0.0</version>
+        <executions>
+          <execution>
+              <goals>
+                <goal>depclean</goal>
+              </goals>
+             <configuration>
+               <!-- the build fails if there are unused direct dependencies -->
+               <failIfUnusedDirect>true</failIfUnusedDirect>
+             </configuration>
+           </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
