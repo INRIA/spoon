@@ -27,6 +27,8 @@ jobs:
             java: 11
           - os: windows-latest
             java: 15
+    env:
+      MAVEN_OPTS: -Djava.src.version=${{ matrix.java }} -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
 
     name: Tests with Java ${{ matrix.java }} on ${{ matrix.os }}
     steps:
@@ -36,9 +38,9 @@ jobs:
           java-version: ${{ matrix.java }}
       - name: Use silent log config
         run: mv chore/travis/logback.xml src/test/resources/
-      - name: Build and test
-        env:
-          MAVEN_OPTS: -Djava.src.version=${{ matrix.java }} -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
+      - name: Build
+        run: mvn -B install -DskipTests
+      - name: Test
         run: mvn test
 
   coverage:
@@ -53,7 +55,9 @@ jobs:
           java-version: 15
       - name: Use silent log config
         run: mv chore/travis/logback.xml src/test/resources/
-      - name: Build and test
+      - name: Build
+        run: mvn -B install -DskipTests
+      - name: Test with coverage
         run: mvn -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
