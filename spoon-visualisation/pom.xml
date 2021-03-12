@@ -125,6 +125,31 @@
                         -Dprism.order=sw</argLine>
                 </configuration>
             </plugin>
+            <plugin>
+                <!-- see https://github.com/castor-software/depclean -->
+                <groupId>se.kth.castor</groupId>
+                <artifactId>depclean-maven-plugin</artifactId>
+                <version>2.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>depclean</goal>
+                        </goals>
+                        <configuration>
+                            <ignoreDependencies>
+                                <!-- DepClean should ignore these dependencies (they act as aggregators of others dependencies)-->
+                                <dependency>org.junit.jupiter:junit-jupiter-engine:5.7.1:test</dependency>
+                                <dependency>org.openjfx:javafx-graphics:11.0.2:compile</dependency>
+                                <dependency>org.openjfx:javafx-controls:11.0.2:compile</dependency>
+                                <dependency>org.openjfx:javafx-fxml:11.0.2:compile</dependency>
+                                <dependency>org.openjfx:javafx-base:11.0.2:compile</dependency>
+                            </ignoreDependencies>
+                            <!-- the build fails if there are unused direct dependencies -->
+                            <failIfUnusedDirect>true</failIfUnusedDirect>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
