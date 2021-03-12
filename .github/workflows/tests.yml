@@ -39,7 +39,9 @@ jobs:
       - name: Use silent log config
         run: mv chore/travis/logback.xml src/test/resources/
       - name: Build
-        run: mvn -B install -DskipTests
+        run: |
+          mvn -B test-compile -DskipTests
+          mvn -B dependency:go-offline
       - name: Test
         run: mvn test
 
@@ -56,7 +58,9 @@ jobs:
       - name: Use silent log config
         run: mv chore/travis/logback.xml src/test/resources/
       - name: Build
-        run: mvn -B install -DskipTests
+        run: |
+          mvn -B test-compile -DskipTests
+          mvn -B dependency:go-offline
       - name: Test with coverage
         run: mvn -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
         env:
