@@ -42,10 +42,9 @@ jobs:
         run: |
           mvn -B test-compile
       - name: Fetch final dependencies
-        if: ${{ matrix.os != 'windows-latest' }}
-        run: |
-          # this is a hack to download the final test dependencies required to actually run the tests
-          timeout 20 mvn -B test || echo "Done fetching dependencies"
+        # this is a hack to download the final test dependencies required to actually run the tests
+        run: timeout 20 mvn -B test || echo "Done fetching dependencies"
+        shell: bash
       - name: Test
         run: mvn test
 
