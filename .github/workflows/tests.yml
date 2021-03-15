@@ -40,13 +40,11 @@ jobs:
         run: mv chore/travis/logback.xml src/test/resources/
       - name: Build
         run: |
-          mvn -B dependency:go-offline
-          mvn test-compile
+          mvn -B test-compile
       - name: Fetch final dependencies
         if: ${{ matrix.os != 'windows-latest' }}
         run: |
-          # this is a hack to download the final test dependencies, that for
-          # some reason aren't downloaded by dependency:go-offline
+          # this is a hack to download the final test dependencies required to actually run the tests
           timeout 20 mvn -B test || echo "Done fetching dependencies"
       - name: Test
         run: mvn test
@@ -65,8 +63,7 @@ jobs:
         run: mv chore/travis/logback.xml src/test/resources/
       - name: Build
         run: |
-          mvn -B dependency:go-offline
-          mvn test-compile
+          mvn -B test-compile
       - name: Test with coverage
         run: mvn -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
         env:
