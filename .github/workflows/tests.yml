@@ -43,7 +43,7 @@ jobs:
           mvn -B dependency:go-offline
           mvn test-compile
       - name: Fetch final dependencies
-        if: ${{ matrix.os != "windows-latest" }}
+        if: ${{ matrix.os != 'windows-latest' }}
         run: |
           # this is a hack to download the final test dependencies, that for
           # some reason aren't downloaded by dependency:go-offline
