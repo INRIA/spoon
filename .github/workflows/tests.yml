@@ -65,6 +65,20 @@ jobs:
       - uses: actions/setup-java@d202f5dbf7256730fb690ec59f6381650114feb2 # v1.4.3
         with:
           java-version: 15
+
+      - name: Get date for cache # see https://github.com/actions/cache README
+        id: get-date
+        run: echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
+        shell: bash
+      - name: Use Maven dependency cache
+        uses: actions/cache@26968a09c0ea4f3e233fdddbafd1166051a095f6 # v2.1.4
+        with:
+          path: ~/.m2/repository
+          key: |
+            # date is used in the key ==> cache hits are never more than 24 hours old
+            ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+
       - name: Use silent log config
         run: mv chore/travis/logback.xml src/test/resources/
       - name: Build and test
@@ -86,6 +100,20 @@ jobs:
       - uses: actions/setup-python@41b7212b1668f5de9d65e9c82aa777e6bbedb3a8 # v2.1.4
         with:
           python-version: 3.6
+
+      - name: Get date for cache # see https://github.com/actions/cache README
+        id: get-date
+        run: echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
+        shell: bash
+      - name: Use Maven dependency cache
+        uses: actions/cache@26968a09c0ea4f3e233fdddbafd1166051a095f6 # v2.1.4
+        with:
+          path: ~/.m2/repository
+          key: |
+            # date is used in the key ==> cache hits are never more than 24 hours old
+            ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+
       - name: Use silent log config
         run: mv chore/travis/logback.xml src/test/resources/
       - name: Run extra checks
