@@ -43,9 +43,7 @@ jobs:
         uses: actions/cache@26968a09c0ea4f3e233fdddbafd1166051a095f6 # v2.1.4
         with:
           path: ~/.m2/repository
-          key: |
-            # date is used in the key ==> cache hits are never more than 24 hours old
-            ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
 
       - name: Use silent log config
@@ -74,9 +72,7 @@ jobs:
         uses: actions/cache@26968a09c0ea4f3e233fdddbafd1166051a095f6 # v2.1.4
         with:
           path: ~/.m2/repository
-          key: |
-            # date is used in the key ==> cache hits are never more than 24 hours old
-            ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
 
       - name: Use silent log config
@@ -109,9 +105,7 @@ jobs:
         uses: actions/cache@26968a09c0ea4f3e233fdddbafd1166051a095f6 # v2.1.4
         with:
           path: ~/.m2/repository
-          key: |
-            # date is used in the key ==> cache hits are never more than 24 hours old
-            ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
 
       - name: Use silent log config
