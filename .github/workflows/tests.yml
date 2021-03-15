@@ -40,8 +40,12 @@ jobs:
         run: mv chore/travis/logback.xml src/test/resources/
       - name: Build
         run: |
-          mvn -B test-compile -DskipTests
           mvn -B dependency:go-offline
+          mvn test-compile
+
+          # this is a hack to download the final test dependencies, that for
+          # some reason aren't donwloaded by dependency:go-offline
+          timeout 10 mvn -B test || echo "Done fetching dependencies"
       - name: Test
         run: mvn test
 
@@ -59,8 +63,12 @@ jobs:
         run: mv chore/travis/logback.xml src/test/resources/
       - name: Build
         run: |
-          mvn -B test-compile -DskipTests
           mvn -B dependency:go-offline
+          mvn test-compile
+
+          # this is a hack to download the final test dependencies, that for
+          # some reason aren't donwloaded by dependency:go-offline
+          timeout 10 mvn -B test || echo "Done fetching dependencies"
       - name: Test with coverage
         run: mvn -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
         env:
