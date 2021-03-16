@@ -27,6 +27,8 @@ jobs:
             java: 11
           - os: windows-latest
             java: 15
+    env:
+      MAVEN_OPTS: -Djava.src.version=${{ matrix.java }} -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
 
     name: Tests with Java ${{ matrix.java }} on ${{ matrix.os }}
     steps:
@@ -48,9 +50,14 @@ jobs:
 
       - name: Use silent log config
         run: mv chore/travis/logback.xml src/test/resources/
-      - name: Build and test
-        env:
-          MAVEN_OPTS: -Djava.src.version=${{ matrix.java }} -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
+      - name: Build
+        run: |
+          mvn -B test-compile
+      - name: Fetch final dependencies
+        # this is a hack to download the final test dependencies required to actually run the tests
+        run: timeout 20 mvn -B test || echo "Done fetching dependencies"
+        shell: bash
+      - name: Test
         run: mvn test
 
   coverage:
@@ -77,7 +84,10 @@ jobs:
 
       - name: Use silent log config
         run: mv chore/travis/logback.xml src/test/resources/
-      - name: Build and test
+      - name: Build
+        run: |
+          mvn -B test-compile
+      - name: Test with coverage
         run: mvn -Pcoveralls test jacoco:report coveralls:report -DrepoToken=$GITHUB_TOKEN -DserviceName=github -DpullRequest=$PR_NUMBER --fail-never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
