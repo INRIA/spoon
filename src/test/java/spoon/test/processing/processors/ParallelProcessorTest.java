@@ -229,4 +229,50 @@ public class ParallelProcessorTest {
 				.outputDirectory(folderFactory.newFolder())
 				.buildModel());
 	}
+
+	@Test
+	public void testRaceConditionOnProcessorTermination() throws IOException {
+		// contract: All processors should be allowed to terminate before terminating the executor
+		// service and exiting. Initial implementation had a race condition, see #3806
+
+		long sleepTimeMs = 200;
+		AtomicReferenceArray<Integer> counters = createCounter();
+		Processor<CtElement> p1 = createSlowIncrementingProcessor(counters, 0, sleepTimeMs);
+		Processor<CtElement> p2 = createSlowIncrementingProcessor(counters, 1, sleepTimeMs);
+		Processor<CtElement> p3 = createSlowIncrementingProcessor(counters, 2, sleepTimeMs);
+		Processor<CtElement> p4 = createSlowIncrementingProcessor(counters, 3, sleepTimeMs);
+
+		String input = "./src/test/resources/TypeMemberComments.java";
+		new FluentLauncher().inputResource(input)
+				.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1, p2, p3, p4)) {})
+				.buildModel();
+
+		AtomicInteger singleThreadCounter = new AtomicInteger(0);
+		new FluentLauncher().inputResource(input).processor(new AbstractProcessor<CtElement>() {
+			@Override
+			public void process(CtElement element) {
+				singleThreadCounter.incrementAndGet();
+			}
+		}).buildModel();
+
+		int sequentialCount = singleThreadCounter.get();
+		int parallelCount = IntStream.range(0, counters.length()).map(counters::get).sum();
+		assertThat(parallelCount, equalTo(sequentialCount));
+	}
+
+	private static Processor<CtElement> createSlowIncrementingProcessor(
+			AtomicReferenceArray<Integer> counters, int idx, long sleepTimeMs) {
+		return new AbstractProcessor<CtElement>() {
+			@Override
+			public void process(CtElement element) {
+			    try {
+					Thread.sleep(sleepTimeMs);
+				} catch (InterruptedException e) {
+			        Thread.currentThread().interrupt();
+				}
+				counters.getAndUpdate(idx, i -> i + 1);
+			}
+		};
+	}
+
 }
