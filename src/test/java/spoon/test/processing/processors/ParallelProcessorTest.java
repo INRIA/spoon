@@ -265,10 +265,10 @@ public class ParallelProcessorTest {
 		return new AbstractProcessor<CtElement>() {
 			@Override
 			public void process(CtElement element) {
-			    try {
+				try {
 					Thread.sleep(sleepTimeMs);
 				} catch (InterruptedException e) {
-			        Thread.currentThread().interrupt();
+					Thread.currentThread().interrupt();
 				}
 				counters.getAndUpdate(idx, i -> i + 1);
 			}
