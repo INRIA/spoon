@@ -43,7 +43,7 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 	private ArrayBlockingQueue<Processor<E>> processorQueue;
 
 	// Maps each processor to its last submitted job to be able to wait for all processors to finish
-	private final Map<Processor<E>, Future<?>> lastSubmittedJob;
+	private final Map<Processor<E>, Future<?>> lastSubmittedJobs;
 
 	/**
 	 * Creates a new AbstractParallelProcessor from given iterable. The iterable is
@@ -61,7 +61,7 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 		processorQueue = new ArrayBlockingQueue<>(processorNumber);
 		processors.forEach(processorQueue::add);
 		service = Executors.newFixedThreadPool(processorNumber);
-		lastSubmittedJob = new IdentityHashMap<>();
+		lastSubmittedJobs = new IdentityHashMap<>();
 	}
 
 	/**
@@ -86,7 +86,7 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 			}
 			processorQueue.add(it.next());
 		}
-		lastSubmittedJob = new IdentityHashMap<>();
+		lastSubmittedJobs = new IdentityHashMap<>();
 	}
 
 	/**
@@ -109,7 +109,7 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 			});
 		}
 		service = Executors.newFixedThreadPool(numberOfProcessors);
-		lastSubmittedJob = new IdentityHashMap<>();
+		lastSubmittedJobs = new IdentityHashMap<>();
 	}
 
 	@Override
@@ -131,7 +131,7 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 					throw e;
 				}
 			});
-			lastSubmittedJob.put(currentProcessor, job);
+			lastSubmittedJobs.put(currentProcessor, job);
 		} catch (InterruptedException e) {
 			// because rethrow is not possible here.
 			awaitJobCompletion();
@@ -152,7 +152,7 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 	}
 
 	private void awaitJobCompletion() {
-		for (Future<?> job : lastSubmittedJob.values()) {
+		for (Future<?> job : lastSubmittedJobs.values()) {
 			try {
 				job.get();
 			} catch (InterruptedException | ExecutionException e) {
