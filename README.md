@@ -143,7 +143,7 @@ Maven:
 
 ## License
 
-Spoon is Free and Open Source ([CeCILL-C license](https://cecill.info/licences.en.html) - French equivalent to LGPL).
+Spoon is Free and Open Source, double-licensed under the ([CeCILL-C license](https://cecill.info/licences.en.html) - French equivalent to LGPL) and the MIT license.
 
 ## Github Contributors
 
