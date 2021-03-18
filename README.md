@@ -141,6 +141,9 @@ Maven:
 - September 30, 2013: Spoon 1.6 is released.
 - April 12, 2012: Spoon 1.5 is released.
 
+## License
+
+Spoon is Free and Open Source, double-licensed under the ([CeCILL-C license](https://cecill.info/licences.en.html) - French equivalent to LGPL) and the MIT license.
 
 ## Github Contributors
 
