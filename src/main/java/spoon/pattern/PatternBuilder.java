@@ -303,6 +303,10 @@ public class PatternBuilder {
 		return false;
 	}
 
+	/**
+	 * Builds a Pattern, if the pattern isn't built yet
+	 * @return {@link Pattern} which is built after executing this method
+	 */
 	public Pattern build() {
 		if (built) {
 			throw new SpoonException("The Pattern may be built only once");

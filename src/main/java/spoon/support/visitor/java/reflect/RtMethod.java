@@ -137,6 +137,11 @@ public class RtMethod {
 		return getDeclaringClass().getName().hashCode() ^ getName().hashCode();
 	}
 
+	/**
+	 * Creates a new {@link RtMethod}
+	 * @param method is passed as Method
+	 * @return {@link RtMethod}
+	 */
 	public static RtMethod create(Method method) {
 		return new RtMethod(method.getDeclaringClass(), method, method.getName(), method.getReturnType(),
 				method.getGenericReturnType(), method.getTypeParameters(), method.getParameterTypes(), method.getGenericParameterTypes(), method.getExceptionTypes(),
