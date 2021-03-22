@@ -546,6 +546,7 @@ public class SpoonPom implements SpoonResource {
 		} catch (IOException e) {
 			throw new SpoonException("Maven home detection has failed.");
 		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 			throw new SpoonException("Maven home detection was interrupted.");
 		}
 		return mvnHome;
