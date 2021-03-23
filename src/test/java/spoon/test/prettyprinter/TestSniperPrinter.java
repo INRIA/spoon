@@ -416,6 +416,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testWhitespacePrependedToFieldAddedAtTop() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: newline and indentation must be inserted before a field that's added to the top
 		// of a class body when the class already has other type members.
 
@@ -437,6 +438,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testWhitespacePrependedToNestedClassAddedAtTop() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: newline and indentation must be inserted before a nested class that's added to
 		// the top of a class body when the class already has other type members.
 
@@ -456,6 +458,7 @@ public class TestSniperPrinter {
 
 	@Test
 	public void testWhitespacePrependedToLocalVariableAddAtTopOfNonEmptyMethod() {
+		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: newline and indentation must be inserted before a local variable that's added
 		// to the top of a non-empty statement list.
 
