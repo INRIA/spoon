@@ -446,7 +446,7 @@ public class TestSniperPrinter {
         // contract: newline and indentation must be inserted before a nested class that's added to
         // the top of a class body when the class already has other type members.
 
-        String expectedClassSource = "Nested {}";
+        String expectedClassSource = "class Nested {}";
         Consumer<CtType<?>> addNestedClassAtTop = type -> {
             CtClass<?> nestedClass = type.getFactory().createClass("Nested");
             type.addTypeMemberAt(0, nestedClass);
