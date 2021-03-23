@@ -58,6 +58,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -417,21 +418,19 @@ public class TestSniperPrinter {
 	@Test
 	public void testNewlineInsertedBeforeAddedFirstField() {
 		// contract: newline must be inserted before a field that's added to the top of a class body
+		// when the class already has other type members.
 
-		String expectedFieldSource = "private int newFieldAtTop;";
+		String expectedFieldSource = "private int newFieldAtTop = 2;";
 		Consumer<CtType<?>> addFieldAtTop = type -> {
 			Factory fact = type.getFactory();
-			CtField<?> field = fact.createField(
-					type,
-					Collections.singleton(ModifierKind.PRIVATE),
-					fact.Type().INTEGER_PRIMITIVE,
-					"newFieldAtTop");
+			CtField<?> field = fact.createCtField(
+					"newFieldAtTop", fact.Type().INTEGER_PRIMITIVE, "2", ModifierKind.PRIVATE);
 			type.addFieldAtTop(field);
 		};
 
 		BiConsumer<CtType<?>,String> assertTopAddedFieldOnSeparateLine = (type, result) -> {
 			assertThat(result, containsString(expectedFieldSource));
-			assertThat(result, containsString("\n    " + expectedFieldSource));
+			assertThat(result, containsString("{\n    " + expectedFieldSource));
 		};
 
 		testSniper("EmptyClass", addFieldAtTop, assertTopAddedFieldOnSeparateLine);
