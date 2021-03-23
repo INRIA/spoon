@@ -415,6 +415,29 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	public void testNewlineInsertedBeforeAddedFirstField() {
+		// contract: newline must be inserted before a field that's added to the top of a class body
+
+		String expectedFieldSource = "private int newFieldAtTop;";
+		Consumer<CtType<?>> addFieldAtTop = type -> {
+			Factory fact = type.getFactory();
+			CtField<?> field = fact.createField(
+					type,
+					Collections.singleton(ModifierKind.PRIVATE),
+					fact.Type().INTEGER_PRIMITIVE,
+					"newFieldAtTop");
+			type.addFieldAtTop(field);
+		};
+
+		BiConsumer<CtType<?>,String> assertTopAddedFieldOnSeparateLine = (type, result) -> {
+			assertThat(result, containsString(expectedFieldSource));
+			assertThat(result, containsString("\n    " + expectedFieldSource));
+		};
+
+		testSniper("EmptyClass", addFieldAtTop, assertTopAddedFieldOnSeparateLine);
+	}
+
+	@Test
 	public void testNewlineInsertedBetweenCommentAndTypeMemberWithAddedModifier() {
 		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: newline must be inserted after comment when a succeeding type member has had a
