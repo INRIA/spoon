@@ -423,7 +423,6 @@ public class TestSniperPrinter {
         // contract: newline and indentation must be inserted before a field that's added to the top
         // of a class body when the class already has other type members.
 
-        String expectedFieldSource = "int newFieldAtTop = 2;";
         Consumer<CtType<?>> addFieldAtTop = type -> {
             Factory fact = type.getFactory();
             CtField<?> field = fact.createCtField(
@@ -431,10 +430,9 @@ public class TestSniperPrinter {
             type.addFieldAtTop(field);
         };
 
-        BiConsumer<CtType<?>, String> assertTopAddedFieldOnSeparateLine = (type, result) -> {
-            assertThat(result, containsString(expectedFieldSource));
+        final String expectedFieldSource = "int newFieldAtTop = 2;";
+        BiConsumer<CtType<?>, String> assertTopAddedFieldOnSeparateLine = (type, result) ->
             assertThat(result, containsString("{\n    " + expectedFieldSource));
-        };
 
         // it doesn't matter which test resource is used, as long as it has a non-empty class
         String nonEmptyClass = "TypeMemberComments";
@@ -446,12 +444,12 @@ public class TestSniperPrinter {
         // contract: newline and indentation must be inserted before a nested class that's added to
         // the top of a class body when the class already has other type members.
 
-        String expectedClassSource = "class Nested {}";
         Consumer<CtType<?>> addNestedClassAtTop = type -> {
             CtClass<?> nestedClass = type.getFactory().createClass("Nested");
             type.addTypeMemberAt(0, nestedClass);
         };
 
+        final String expectedClassSource = "class Nested {}";
         BiConsumer<CtType<?>, String> assertTopAddedClassOnSeparateLine = (type, result) ->
             assertThat(result, containsString("{\n    " + expectedClassSource));
 
@@ -476,7 +474,7 @@ public class TestSniperPrinter {
             method.getBody().addStatement(0, localVar);
         };
 
-        String expectedVariableSource = "int localVar = 2;";
+        final String expectedVariableSource = "int localVar = 2;";
         BiConsumer<CtType<?>, String> assertTopAddedVariableOnSeparateLine = (type, result) ->
                 assertThat(result, containsString("{\n        " + expectedVariableSource));
 
