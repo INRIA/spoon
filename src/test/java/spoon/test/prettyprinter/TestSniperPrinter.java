@@ -452,13 +452,37 @@ public class TestSniperPrinter {
             type.addTypeMemberAt(0, nestedClass);
         };
 
-        BiConsumer<CtType<?>, String> assertTopAddedClassOnSeparateLine = (type, result) -> {
+        BiConsumer<CtType<?>, String> assertTopAddedClassOnSeparateLine = (type, result) ->
             assertThat(result, containsString("{\n    " + expectedClassSource));
-        };
 
         // it doesn't matter which test resource is used, as long as it has a non-empty class
         String nonEmptyClass = "TypeMemberComments";
         testSniper(nonEmptyClass, addNestedClassAtTop, assertTopAddedClassOnSeparateLine);
+    }
+
+    @Test
+    public void testWhitespacePrependedToLocalVariableAddAtTopOfNonEmptyMethod() {
+        // contract: newline and indentation must be inserted before a local variable that's added
+        // to the top of a non-empty statement list.
+
+        Consumer<CtType<?>> addLocalVariableAtTopOfMethod = type -> {
+            Factory factory = type.getFactory();
+            CtMethod<?> method = type.getMethods().stream()
+                    .filter(m -> !m.getBody().getStatements().isEmpty())
+                    .findFirst()
+                    .get();
+            CtLocalVariable<?> localVar = factory.createLocalVariable(
+                    factory.Type().INTEGER_PRIMITIVE, "localVar", factory.createCodeSnippetExpression("2"));
+            method.getBody().addStatement(0, localVar);
+        };
+
+        String expectedVariableSource = "int localVar = 2;";
+        BiConsumer<CtType<?>, String> assertTopAddedVariableOnSeparateLine = (type, result) ->
+                assertThat(result, containsString("{\n        " + expectedVariableSource));
+
+        // the test resource must have a class with a non-empty method
+        String classWithNonEmptyMethod = "methodimport.ClassWithStaticMethod";
+        testSniper(classWithNonEmptyMethod, addLocalVariableAtTopOfMethod, assertTopAddedVariableOnSeparateLine);
     }
 
     @Test
