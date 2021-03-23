@@ -1,8 +1,8 @@
 /**
  * SPDX-License-Identifier: (MIT OR CECILL-C)
- * <p>
+ *
  * Copyright (C) 2006-2019 INRIA and contributors
- * <p>
+ *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.test.prettyprinter;
@@ -58,7 +58,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -134,11 +133,11 @@ public class TestSniperPrinter {
 		}, (type, printed) -> {
 			assertIsPrintedWithExpectedChanges(type, printed,
 					"\\Qvoid foo(int x) {\n"
-							+ "\t\tnew IllegalArgumentException(\"x must be nonnegative\");\n"
-							+ "\t}",
+					+ "\t\tnew IllegalArgumentException(\"x must be nonnegative\");\n"
+					+ "\t}",
 					"void foo(int x) {\n"
-							+ "\t\tthrow new java.lang.IllegalArgumentException(\"x must be nonnegative\");\n"
-							+ "\t}");
+					+ "\t\tthrow new java.lang.IllegalArgumentException(\"x must be nonnegative\");\n"
+					+ "\t}");
 		});
 	}
 
@@ -164,19 +163,17 @@ public class TestSniperPrinter {
 		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: joint local declarations can be sniper-printed in whole unmodified method
 		testSniper(OneLineMultipleVariableDeclaration.class.getName(), type -> {
-			type.getFields().stream().forEach(x -> {
-				x.delete();
-			});
+			type.getFields().stream().forEach(x -> { x.delete(); });
 		}, (type, printed) -> {
 			assertEquals("package spoon.test.prettyprinter.testclasses;\n"
-					+ "\n"
-					+ "public class OneLineMultipleVariableDeclaration {\n"
-					+ "\n"
-					+ "\tvoid foo(int a) {\n"
+					+	"\n"
+					+	"public class OneLineMultipleVariableDeclaration {\n"
+					+	"\n"
+					+	"\tvoid foo(int a) {\n"
 					+ "\t\tint b = 0, e = 1;\n"
 					+ "\t\ta = a;\n"
-					+ "\t}\n"
-					+ "}", printed);
+					+	"\t}\n"
+					+	"}", printed);
 		});
 	}
 
@@ -188,15 +185,15 @@ public class TestSniperPrinter {
 			type.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0).delete();
 		}, (type, printed) -> {
 			assertEquals("package spoon.test.prettyprinter.testclasses;\n"
+					+	"\n"
+					+	"public class OneLineMultipleVariableDeclaration {int a;\n"
 					+ "\n"
-					+ "public class OneLineMultipleVariableDeclaration {int a;\n"
-					+ "\n"
-					+ "\tint c;\n"
-					+ "\n"
+					+	"\tint c;\n"
+					+	"\n"
 					+ "\tvoid foo(int a) {int e = 1;\n"
 					+ "\t\ta = a;\n"
 					+ "\t}\n"
-					+ "}", printed);
+					+	"}", printed);
 		});
 	}
 
@@ -209,9 +206,9 @@ public class TestSniperPrinter {
 			type.getMethodsByName("foo").get(0).delete();
 		}, (type, printed) -> {
 			assertEquals("package spoon.test.prettyprinter.testclasses;\n"
-					+ "\n"
-					+ "public class OneLineMultipleVariableDeclaration {int a;\n"
-					+ "\n"
+					+	"\n"
+					+	"public class OneLineMultipleVariableDeclaration {int a;\n"
+					+	"\n"
 					+ "\tint c;\n"
 					+ "}", printed);
 		});
@@ -364,8 +361,7 @@ public class TestSniperPrinter {
 		String printTypesString = printTypesLauncher.createPrettyPrinter()
 				.printTypes(printTypesLauncher.getModel().getAllTypes().toArray(new CtType[0]));
 
-		testSniper(resourceName, ctType -> {
-		}, (type, prettyPrint) -> {
+		testSniper(resourceName, ctType -> {}, (type, prettyPrint) -> {
 			assertEquals(prettyPrint, printTypesString);
 		});
 	}
@@ -386,7 +382,7 @@ public class TestSniperPrinter {
 			launcher.getEnvironment().createPrettyPrinter().printTypes(types);
 			fail("Expected an IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
-			// pass
+		    // pass
 		}
 	}
 
@@ -432,7 +428,7 @@ public class TestSniperPrinter {
 
 		final String expectedFieldSource = "int newFieldAtTop = 2;";
 		BiConsumer<CtType<?>, String> assertTopAddedFieldOnSeparateLine = (type, result) ->
-			assertThat(result, containsString("{\n    " + expectedFieldSource));
+				assertThat(result, containsString("{\n    " + expectedFieldSource));
 
 		// it doesn't matter which test resource is used, as long as it has a non-empty class
 		String nonEmptyClass = "TypeMemberComments";
@@ -451,7 +447,7 @@ public class TestSniperPrinter {
 
 		final String expectedClassSource = "class Nested {}";
 		BiConsumer<CtType<?>, String> assertTopAddedClassOnSeparateLine = (type, result) ->
-			assertThat(result, containsString("{\n    " + expectedClassSource));
+				assertThat(result, containsString("{\n    " + expectedClassSource));
 
 		// it doesn't matter which test resource is used, as long as it has a non-empty class
 		String nonEmptyClass = "TypeMemberComments";
@@ -496,7 +492,7 @@ public class TestSniperPrinter {
 			type.getNestedType("NonStaticInnerClass").addModifier(ModifierKind.STATIC);
 		};
 		BiConsumer<CtType<?>, String> assertCommentsCorrectlyPrinted = (type, result) -> {
-			assertThat(result, containsString("// field comment\n"));
+		    assertThat(result, containsString("// field comment\n"));
 			assertThat(result, containsString("// method comment\n"));
 			assertThat(result, containsString("// nested type comment\n"));
 		};
@@ -559,12 +555,12 @@ public class TestSniperPrinter {
 		};
 
 		BiConsumer<CtType<?>, String> assertFieldCommentPrinted = (type, result) ->
-				assertThat(result, allOf(
+			assertThat(result, allOf(
 						containsString("// field comment\n    int NON_FINAL_FIELD"),
 						containsString("// method comment\n    void nonStaticMethod"),
 						containsString("// nested type comment\n    class NonStaticInnerClass")
-						)
-				);
+					)
+			);
 
 		testSniper("TypeMemberComments", removeTypeMemberModifiers, assertFieldCommentPrinted);
 	}
@@ -617,9 +613,9 @@ public class TestSniperPrinter {
 		// indentation as in the rest of the file
 
 		Consumer<CtType<?>> addElements = type -> {
-			Factory fact = type.getFactory();
-			fact.createField(type, new HashSet<>(), fact.Type().INTEGER_PRIMITIVE, "z", fact.createLiteral(3));
-			type.getMethod("sum").getBody()
+		    Factory fact = type.getFactory();
+		    fact.createField(type, new HashSet<>(), fact.Type().INTEGER_PRIMITIVE, "z", fact.createLiteral(3));
+		    type.getMethod("sum").getBody()
 					.addStatement(0, fact.createCodeSnippetStatement("System.out.println(z);"));
 		};
 		BiConsumer<CtType<?>, String> assertTabs = (type, result) -> {
@@ -627,8 +623,8 @@ public class TestSniperPrinter {
 			assertThat(result, containsString("\n\t\tSystem"));
 		};
 		BiConsumer<CtType<?>, String> assertTwoSpaces = (type, result) -> {
-			assertThat(result, containsString("\n  int z = 3;"));
-			assertThat(result, containsString("\n    System"));
+		    assertThat(result, containsString("\n  int z = 3;"));
+		    assertThat(result, containsString("\n    System"));
 		};
 		BiConsumer<CtType<?>, String> assertFourSpaces = (type, result) -> {
 			assertThat(result, containsString("\n    int z = 3;"));
@@ -851,7 +847,7 @@ public class TestSniperPrinter {
 
 
 	private static String fileAsString(String path, Charset encoding)
-			throws IOException {
+			throws IOException	{
 		byte[] encoded = Files.readAllBytes(Paths.get(path));
 		return new String(encoded, encoding);
 	}
@@ -877,7 +873,7 @@ public class TestSniperPrinter {
 
 		ops.stream()
 				.filter(el -> !(el instanceof spoon.reflect.CtModelImpl.CtRootPackage)
-						&& !(el instanceof spoon.reflect.factory.ModuleFactory.CtUnnamedModule)
+				&& !(el instanceof spoon.reflect.factory.ModuleFactory.CtUnnamedModule)
 				).forEach(el -> {
 			try {
 				sp.reset();
