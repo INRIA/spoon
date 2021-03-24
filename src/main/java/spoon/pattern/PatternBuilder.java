@@ -304,8 +304,9 @@ public class PatternBuilder {
 	}
 
 	/**
-	 * Builds a Pattern, if the pattern isn't built yet
-	 * @return {@link Pattern} which is built after executing this method
+	 * Builds a Pattern and returns it
+	 * @throws SpoonException if the patter has been built already
+	 * @return the built patter
 	 */
 	public Pattern build() {
 		if (built) {

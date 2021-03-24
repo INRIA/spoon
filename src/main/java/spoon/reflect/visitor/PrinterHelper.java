@@ -231,10 +231,9 @@ public class PrinterHelper {
 	}
 
 	/**
-	 * If the environment in which spoon is executed tries to preserve the original line number and the the passed
-	 * indexes of CtElement e are known then it will generate new lines
-	 * @param e is a {@link CtElement} on which new lines are going to be generated
-	 * @return {@link PrinterHelper}
+	 * writes as many newlines as needed for the current line to match the end line of the passed element
+	 * @param e is a CtElement whose line number will be preserved by adding newlines
+	 * @return PrinterHelper
 	 */
 	public PrinterHelper adjustEndPosition(CtElement e) {
 		if (env != null && env.isPreserveLineNumbers() && e.getPosition().isValidPosition()) {
