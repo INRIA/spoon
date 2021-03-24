@@ -7,10 +7,14 @@
  */
 package spoon.processing;
 
+import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
@@ -38,6 +42,9 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 	private ExecutorService service;
 	private ArrayBlockingQueue<Processor<E>> processorQueue;
 
+	// Maps each processor to its last submitted job to be able to wait for all processors to finish
+	private final Map<Processor<E>, Future<?>> lastSubmittedJobs;
+
 	/**
 	 * Creates a new AbstractParallelProcessor from given iterable. The iterable is
 	 * fully consumed. Giving an endless iterable of processors will result in
@@ -54,6 +61,7 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 		processorQueue = new ArrayBlockingQueue<>(processorNumber);
 		processors.forEach(processorQueue::add);
 		service = Executors.newFixedThreadPool(processorNumber);
+		lastSubmittedJobs = new IdentityHashMap<>();
 	}
 
 	/**
@@ -78,6 +86,7 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 			}
 			processorQueue.add(it.next());
 		}
+		lastSubmittedJobs = new IdentityHashMap<>();
 	}
 
 	/**
@@ -100,13 +109,14 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 			});
 		}
 		service = Executors.newFixedThreadPool(numberOfProcessors);
+		lastSubmittedJobs = new IdentityHashMap<>();
 	}
 
 	@Override
 	public final void process(E element) {
 		try {
 			Processor<E> currentProcessor = processorQueue.take();
-			service.execute(() -> {
+			Future<?> job = service.submit(() -> {
 				try {
 					currentProcessor.process(element);
 					processorQueue.put(currentProcessor);
@@ -121,8 +131,10 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 					throw e;
 				}
 			});
+			lastSubmittedJobs.put(currentProcessor, job);
 		} catch (InterruptedException e) {
 			// because rethrow is not possible here.
+			awaitJobCompletion();
 			Thread.currentThread().interrupt();
 			e.printStackTrace();
 		}
@@ -133,7 +145,19 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 	 */
 	@Override
 	public void processingDone() {
+		// await termination of the latest jobs
+		awaitJobCompletion();
 		service.shutdown();
 		super.processingDone();
+	}
+
+	private void awaitJobCompletion() {
+		for (Future<?> job : lastSubmittedJobs.values()) {
+			try {
+				job.get();
+			} catch (InterruptedException | ExecutionException e) {
+				throw new SpoonException("failed to wait for parallel processor to finish", e);
+			}
+		}
 	}
 }
