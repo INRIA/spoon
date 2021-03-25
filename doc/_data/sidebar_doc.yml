@@ -47,7 +47,7 @@ entries:
           version: all
 
         - title: Javadoc
-          external_url: http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs
+          external_url: /mvnsites/spoon-core/apidocs
           audience: writers, designers
           platform: all
           product: all
