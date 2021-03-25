@@ -176,15 +176,15 @@ public class SpoonArchitectureEnforcerTest {
 
 							// GOOD FIRST ISSUE
 							// ideally we want that **all** public methods are documented
-							// so far, we have this arbitrary limit in the condition below (35)
+							// so far, we have this arbitrary limit in the condition below (32)
 							// because it's a huge task to document everything at once
 							// so to contribute to Spoon, what you can do is
-							// 1) you lower the threshold (eg 33)
+							// 1) you lower the threshold (eg 30)
 							// 2) you run test `documentedTest`, it will output a list on undocumented methods
 							// 3) you document those methods
 							// 4) you run the test again to check that it passes
 							// 4) you commit your changes and create the corresponding pull requests
-							|| method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 33  // means that only large methods must be documented
+							|| method.filterChildren(new TypeFilter<>(CtCodeElement.class)).list().size() > 32  // means that only large methods must be documented
 			)) {
 
 				// OK it should be properly documented

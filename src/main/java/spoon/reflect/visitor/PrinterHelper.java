@@ -230,6 +230,11 @@ public class PrinterHelper {
 		return this;
 	}
 
+	/**
+	 * writes as many newlines as needed for the current line to match the end line of the passed element
+	 * @param e is a CtElement whose line number will be preserved by adding newlines
+	 * @return PrinterHelper
+	 */
 	public PrinterHelper adjustEndPosition(CtElement e) {
 		if (env != null && env.isPreserveLineNumbers() && e.getPosition().isValidPosition()) {
 			// let's add lines if required

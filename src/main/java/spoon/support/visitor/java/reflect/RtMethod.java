@@ -137,6 +137,10 @@ public class RtMethod {
 		return getDeclaringClass().getName().hashCode() ^ getName().hashCode();
 	}
 
+	/**
+	 * @param method is the Method which is to be wrapped in a RtMethod
+	 * @return an object of RtMethod after calling the parameterized constructor of the RtMethod class
+	 */
 	public static RtMethod create(Method method) {
 		return new RtMethod(method.getDeclaringClass(), method, method.getName(), method.getReturnType(),
 				method.getGenericReturnType(), method.getTypeParameters(), method.getParameterTypes(), method.getGenericParameterTypes(), method.getExceptionTypes(),
