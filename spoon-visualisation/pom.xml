@@ -157,7 +157,7 @@
         <dependency>
             <groupId>io.github.interacto</groupId>
             <artifactId>interacto-javafx</artifactId>
-            <version>3.4</version>
+            <version>4.3.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>

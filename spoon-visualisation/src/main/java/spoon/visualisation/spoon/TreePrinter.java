@@ -22,6 +22,7 @@
 package spoon.visualisation.spoon;
 
 import io.github.interacto.command.library.OpenWebPage;
+import java.awt.Desktop;
 import java.net.URI;
 import java.util.List;
 import javafx.scene.control.Hyperlink;
@@ -72,8 +73,7 @@ public class TreePrinter extends SpoonElementVisitor {
 		// Clicking on the link opens the doc
 		// 'new Thread' because otherwise the app freezes (run in the UI thread)
 		classLink.setOnAction(evt -> new Thread(() -> {
-			final OpenWebPage cmd = new OpenWebPage();
-			cmd.setUri(URI.create(url));
+			final OpenWebPage cmd = new OpenWebPage(Desktop.getDesktop(), URI.create(url));
 			if(cmd.canDo()) {
 				cmd.doIt();
 			}

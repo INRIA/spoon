@@ -1,8 +1,6 @@
 package spoon.visualisation.instrument;
 
-import io.github.interacto.command.CmdHandler;
 import io.github.interacto.command.CommandsRegistry;
-import io.github.interacto.command.library.OpenWebPage;
 import io.github.interacto.fsm.TimeoutTransition;
 import java.io.File;
 import java.io.IOException;
@@ -105,8 +103,7 @@ class SpoonCodeInstrumentTest {
 
 	@BeforeEach
 	void setUp(final FxRobot robot) {
-		CommandsRegistry.INSTANCE.clear();
-		CommandsRegistry.INSTANCE.removeAllHandlers();
+		CommandsRegistry.getInstance().clear();
 		spoonAST = robot.lookup("#spoonAST").query();
 		spoonCode = robot.lookup("#spoonCode").query();
 		treeLevel = robot.lookup("#treeLevel").query();
@@ -206,22 +203,6 @@ class SpoonCodeInstrumentTest {
 
 		AssertionsForClassTypes.assertThat(hyperlinks.size()).isEqualTo(2);
 	}
-
-	@Disabled("Does not work on headless server")
-	@Test
-	void testClickHyperlink(final FxRobot robot) {
-		robot.clickOn(spoonCode).write("class Foo { }");
-		waitForTimeoutTransitions();
-		final CmdHandler handler = Mockito.mock(CmdHandler.class);
-		CommandsRegistry.INSTANCE.addHandler(handler);
-		final Set<Node> hyperlinks = robot.lookup(CoreMatchers.instanceOf(Hyperlink.class)).queryAll();
-		robot.clickOn(hyperlinks.iterator().next());
-		WaitForAsyncUtils.waitForFxEvents();
-		waitForThread("OPEN_SPOON_DOC_THREAD");
-
-		Mockito.verify(handler, Mockito.times(1)).onCmdExecuted(Mockito.any(OpenWebPage.class));
-	}
-
 
 	@Disabled("Does not work on headless servers")
 	@Test
