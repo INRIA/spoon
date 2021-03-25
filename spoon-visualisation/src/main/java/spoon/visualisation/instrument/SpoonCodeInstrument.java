@@ -92,7 +92,8 @@ public class SpoonCodeInstrument extends JfxInstrument implements Initializable 
 	@Override
 	protected void configureBindings() {
 		// On text change, the spoon tree is rebuilt
-		textInputBinder(i -> new UpdateSpoonTree(spoonAST, hideImplicit.isSelected(), "", treeLevel.getValue()))
+		textInputBinder()
+			.toProduce(i -> new UpdateSpoonTree(spoonAST, hideImplicit.isSelected(), "", treeLevel.getValue()))
 			.on(spoonCode)
 			.then((i, c) -> c.setCode(i.getWidget().getText()))
 			.bind();
@@ -101,17 +102,21 @@ public class SpoonCodeInstrument extends JfxInstrument implements Initializable 
 			() -> new UpdateSpoonTree(spoonAST, hideImplicit.isSelected(), spoonCode.getText(), treeLevel.getValue());
 
 		// Checking the checkbox hides or shows the implicit elements
-		checkboxBinder(cmdsupplier)
+		checkboxBinder()
+			.toProduce(cmdsupplier)
 			.on(hideImplicit)
 			.bind();
 
 		// Selecting an item of the combo box recomputes the spoon tree using the new analysis level
-		comboboxBinder(cmdsupplier)
+		comboboxBinder()
+			.toProduce(cmdsupplier)
 			.on(treeLevel)
 			.bind();
 
 		// Clicking on a tree item selects the corresponding Java code
-		nodeBinder(new Click(), i -> {
+		nodeBinder()
+			.usingInteraction(Click::new)
+			.toProduce(i -> {
 				final SpoonTreeItem item = i.getSrcObject()
 					.filter(o -> o.getParent() instanceof TreeCell)
 					.map(o -> ((SpoonTreeItem) ((TreeCell<?>) o.getParent()).getTreeItem()))
@@ -124,12 +129,15 @@ public class SpoonCodeInstrument extends JfxInstrument implements Initializable 
 
 		// Clicking in the text area (ie changing the caret position) selects (when relevant)
 		// the corresponding item in the Spoon tree
-		nodeBinder(new Click(), i -> new SelectCodeItem(spoonCode.getCaretPosition(), spoonAST))
+		nodeBinder()
+			.usingInteraction(Click::new)
+			.toProduce(i -> new SelectCodeItem(spoonCode.getCaretPosition(), spoonAST))
 			.on(spoonCode)
 			.bind();
 
 		// Clicking on the save button saves in a text file the text version of the Spoon tree
-		buttonBinder(i -> new SaveTreeText(getFileChooser().showSaveDialog(null), hideImplicit.isSelected(),
+		buttonBinder()
+			.toProduce(i -> new SaveTreeText(getFileChooser().showSaveDialog(null), hideImplicit.isSelected(),
 				spoonCode.getText(), treeLevel.getValue()))
 			.on(save)
 			.bind();
