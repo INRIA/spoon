@@ -138,8 +138,8 @@ public class RtMethod {
 	}
 
 	/**
-	 * @param method is the Method which is to be wrapped in a RtMethod
-	 * @return an object of RtMethod after calling the parameterized constructor of the RtMethod class
+	 * @param method is the {@link Method} which is to be wrapped in a RtMethod
+	 * @return a wrapper around the passed method
 	 */
 	public static RtMethod create(Method method) {
 		return new RtMethod(method.getDeclaringClass(), method, method.getName(), method.getReturnType(),

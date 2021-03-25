@@ -305,8 +305,8 @@ public class PatternBuilder {
 
 	/**
 	 * Builds a Pattern and returns it
-	 * @throws SpoonException if the patter has been built already
-	 * @return the built patter
+	 * @throws SpoonException if the pattern has been built already
+	 * @return the built pattern
 	 */
 	public Pattern build() {
 		if (built) {
