@@ -19,9 +19,9 @@ The javadoc is at <http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs>
 </dependencies>
 <repositories>
 	<repository>
-      <id>maven.inria.fr-snapshot</id>
+      <id>spoon-snapshot</id>
       <name>Maven Repository for Spoon Snapshots</name>
-      <url>https://maven.irisa.fr/artifactory/spoon-public-snapshot</url>
+      <url>https://repository.ow2.org/nexus/content/repositories/snapshots/</url>
     </repository>
 </repositories>
 ```
