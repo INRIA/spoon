@@ -17,7 +17,7 @@ package spoon;
 public class LovecraftException extends SpoonException {
 	private static final long serialVersionUID = 1L;
 
-	public static String lovecraft =
+	public static final String lovecraft =
 		"It was from the artists and poets that the pertinent answers came, and I\n"
 		+ "know that panic would have broken loose had they been able to compare notes.\n"
 		+ "As it was, lacking their original letters, I half suspected the compiler of\n"

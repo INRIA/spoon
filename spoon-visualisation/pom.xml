@@ -129,7 +129,7 @@
                 <!-- see https://github.com/castor-software/depclean -->
                 <groupId>se.kth.castor</groupId>
                 <artifactId>depclean-maven-plugin</artifactId>
-                <version>2.0.0</version>
+                <version>2.0.1</version>
                 <executions>
                     <execution>
                         <goals>
@@ -157,7 +157,7 @@
         <dependency>
             <groupId>io.github.interacto</groupId>
             <artifactId>interacto-javafx</artifactId>
-            <version>3.4</version>
+            <version>4.3.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -168,7 +168,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>8.3.0</version>
+            <version>9.0.0</version>
             <exclusions>
                     <exclusion>
                         <artifactId>*</artifactId>
