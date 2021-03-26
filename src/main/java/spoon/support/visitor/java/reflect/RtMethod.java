@@ -137,6 +137,10 @@ public class RtMethod {
 		return getDeclaringClass().getName().hashCode() ^ getName().hashCode();
 	}
 
+	/**
+	 * @param method is the {@link Method} which is to be wrapped in a RtMethod
+	 * @return a wrapper around the passed method
+	 */
 	public static RtMethod create(Method method) {
 		return new RtMethod(method.getDeclaringClass(), method, method.getName(), method.getReturnType(),
 				method.getGenericReturnType(), method.getTypeParameters(), method.getParameterTypes(), method.getGenericParameterTypes(), method.getExceptionTypes(),
