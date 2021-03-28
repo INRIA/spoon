@@ -142,9 +142,9 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			@Override
 			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
 				switch (role) {
-				case SUPER_TYPE:
-					ctClass.setSuperclass(typeReference);
-					return;
+					case SUPER_TYPE:
+						ctClass.setSuperclass(typeReference);
+						return;
 				}
 				super.addTypeReference(role, typeReference);
 			}
@@ -291,8 +291,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			Set<ModifierKind> modifiers = RtHelper.getModifiers(field.getModifiers());
 			if (modifiers.contains(ModifierKind.STATIC)
 					&& modifiers.contains(ModifierKind.PUBLIC)
-					&& (field.getType().isPrimitive() || String.class.isAssignableFrom(field.getType()))
-				) {
+					&& (field.getType().isPrimitive() || String.class.isAssignableFrom(field.getType()))) {
 				CtLiteral<Object> defaultExpression = factory.createLiteral(field.get(null));
 				ctField.setDefaultExpression(defaultExpression);
 			}
@@ -356,13 +355,13 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			@Override
 			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
 				switch (role) {
-				case SUPER_TYPE:
-					if (typeParameter.getSuperclass() != null) {
-						typeParameter.setSuperclass(typeParameter.getFactory().createIntersectionTypeReferenceWithBounds(Arrays.asList(typeParameter.getSuperclass(), typeReference)));
-					} else {
-						typeParameter.setSuperclass(typeReference);
-					}
-					return;
+					case SUPER_TYPE:
+						if (typeParameter.getSuperclass() != null) {
+							typeParameter.setSuperclass(typeParameter.getFactory().createIntersectionTypeReferenceWithBounds(Arrays.asList(typeParameter.getSuperclass(), typeReference)));
+						} else {
+							typeParameter.setSuperclass(typeReference);
+						}
+						return;
 				}
 				super.addTypeReference(role, typeReference);
 			}
@@ -379,13 +378,6 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		typeParameterReference.setSimpleName(parameter.getName());
 
 		RuntimeBuilderContext runtimeBuilderContext = new TypeReferenceRuntimeBuilderContext(parameter, typeParameterReference);
-		if (contexts.contains(runtimeBuilderContext)) {
-			// we are in the case of a loop
-			exit();
-			enter(new TypeReferenceRuntimeBuilderContext(Object.class, factory.Type().OBJECT));
-			return;
-		}
-
 		GenericDeclaration genericDeclaration = parameter.getGenericDeclaration();
 		for (RuntimeBuilderContext context : contexts) {
 			CtTypeParameter typeParameter = context.getTypeParameter(genericDeclaration, parameter.getName());
@@ -404,9 +396,14 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	@Override
 	public void visitTypeReference(CtRole role, ParameterizedType type) {
+		Type[] typeArguments = type.getActualTypeArguments();
+		if(role == CtRole.SUPER_TYPE && typeArguments.length > 0){
+			if(hasProcessedRecursiveBound(typeArguments)){
+				return;
+			}
+		}
 		final CtTypeReference<?> ctTypeReference = factory.Core().createTypeReference();
 		ctTypeReference.setSimpleName(((Class) type.getRawType()).getSimpleName());
-
 		RuntimeBuilderContext context = new TypeReferenceRuntimeBuilderContext(type, ctTypeReference) {
 
 			@Override
@@ -418,27 +415,26 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 		enter(context);
 		super.visitTypeReference(role, type);
-
-		// in case of a loop we have replaced a context:
-		// we do not want to addTypeName then
-		// and we have to rely on the instance reference to check that
-		boolean contextStillExisting = false;
-		for (RuntimeBuilderContext context1 : contexts) {
-			contextStillExisting = contextStillExisting || (context1 == context);
-		}
 		exit();
 
-		if (contextStillExisting) {
-			contexts.peek().addTypeReference(role, ctTypeReference);
-		}
+		contexts.peek().addTypeReference(role, ctTypeReference);
 	}
 
 	@Override
 	public void visitTypeReference(CtRole role, WildcardType type) {
 		final CtWildcardReference wildcard = factory.Core().createWildcardReference();
-		//looks like type.getUpperBounds() always returns single value array with Object.class
+		//type.getUpperBounds() returns at least a single value array with Object.class
 		//so we cannot distinguish between <? extends Object> and <?>, which must be upper==true too!
-		wildcard.setUpper((type.getLowerBounds() != null && type.getLowerBounds().length > 0) == false);
+		wildcard.setUpper((type.getLowerBounds().length > 0) == false);
+
+		if (!type.getUpperBounds()[0].equals(Object.class)) {
+			if (hasProcessedRecursiveBound(type.getUpperBounds())) {
+				return;
+			}
+		}
+		if(hasProcessedRecursiveBound(type.getLowerBounds())){
+			return;
+		}
 
 		enter(new TypeReferenceRuntimeBuilderContext(type, wildcard));
 		super.visitTypeReference(role, type);
@@ -447,7 +443,21 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		contexts.peek().addTypeReference(role, wildcard);
 	}
 
-
+	// check if a type parameter that is bounded by some expression involving itself has already been processed
+	private boolean hasProcessedRecursiveBound(Type[] types){
+		for(Type type : types) {
+			if(type instanceof TypeVariable) {
+				TypeVariable t = (TypeVariable) type;
+				final CtTypeParameterReference typeParameterReference = factory.Core().createTypeParameterReference();
+				typeParameterReference.setSimpleName(t.getName());
+				RuntimeBuilderContext runtimeBuilderContext = new TypeReferenceRuntimeBuilderContext(t, typeParameterReference);
+				if (contexts.contains(runtimeBuilderContext)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	@Override
 	public <T> void visitArrayReference(CtRole role, final Type typeArray) {
@@ -457,9 +467,9 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			@Override
 			public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
 				switch (role) {
-				case DECLARING_TYPE:
-					arrayTypeReference.setDeclaringType(typeReference);
-					return;
+					case DECLARING_TYPE:
+						arrayTypeReference.setDeclaringType(typeReference);
+						return;
 				}
 				arrayTypeReference.setComponentType(typeReference);
 			}
