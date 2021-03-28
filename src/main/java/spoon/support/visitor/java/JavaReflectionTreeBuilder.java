@@ -397,8 +397,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	@Override
 	public void visitTypeReference(CtRole role, ParameterizedType type) {
 		Type[] typeArguments = type.getActualTypeArguments();
-		if(role == CtRole.SUPER_TYPE && typeArguments.length > 0){
-			if(hasProcessedRecursiveBound(typeArguments)){
+		if (role == CtRole.SUPER_TYPE && typeArguments.length > 0) {
+			if (hasProcessedRecursiveBound(typeArguments)) {
 				return;
 			}
 		}
@@ -432,7 +432,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 				return;
 			}
 		}
-		if(hasProcessedRecursiveBound(type.getLowerBounds())){
+		if (hasProcessedRecursiveBound(type.getLowerBounds())) {
 			return;
 		}
 
@@ -444,9 +444,9 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 	// check if a type parameter that is bounded by some expression involving itself has already been processed
-	private boolean hasProcessedRecursiveBound(Type[] types){
-		for(Type type : types) {
-			if(type instanceof TypeVariable) {
+	private boolean hasProcessedRecursiveBound(Type[] types) {
+		for (Type type : types) {
+			if (type instanceof TypeVariable) {
 				TypeVariable t = (TypeVariable) type;
 				final CtTypeParameterReference typeParameterReference = factory.Core().createTypeParameterReference();
 				typeParameterReference.setSimpleName(t.getName());
