@@ -17,6 +17,7 @@ import spoon.reflect.declaration.CtElement;
  * source files.
  */
 public class CtLineElementComparator implements Comparator<CtElement>, Serializable {
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Returns 0 if o1 has the same position as o2, or both positions are invalid and o1.equals(o2).

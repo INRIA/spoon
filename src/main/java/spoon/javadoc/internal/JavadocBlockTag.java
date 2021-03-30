@@ -27,6 +27,7 @@ import java.io.Serializable;
 * </code>
 */
 public class JavadocBlockTag implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private CtJavaDocTag.TagType type;
 	private JavadocDescription content;
