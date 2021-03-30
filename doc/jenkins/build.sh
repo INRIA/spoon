@@ -156,8 +156,7 @@ xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n groupId -v "fr.inria.gforge.spoon" pom.bak.xml > pom.bak2.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n artifactId -v "spoon-maven-plugin" pom.bak2.xml > pom.bak3.xml
 
-# we depend on the latest version of spoon-maven-plugin, one that does not use http://spoon.gforge.inria.fr/repositories/snapshots/ (decommissioned)
-# but the correct http://maven.inria.fr/artifactory/spoon-public-snapshot/ (Inria's artifactory) 
+# we depend on the latest version of spoon-maven-plugin) 
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n version -v "3.1" pom.bak3.xml > pom.bak4.xml
 
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n executions -v "" pom.bak4.xml > pom.bak5.xml
