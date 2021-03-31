@@ -13,6 +13,14 @@ expression E;
 + ContextCompat.getColor(ctx , E)
 ``` 
 
+Spoon-SmPL's initial version has been implemented by Mikael Forsberg as part of his master's thesis ["Design and Implementation of Semantic Patch Support for the Spoon Java Transformation Engine' at KTH Royal Institute of Technology"](http://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-291226).
+
+References:
+* [SmPL: A Domain-Specific Language for Specifying Collateral Evolutions in Linux Device Drivers](http://coccinelle.lip6.fr/papers/ercim.pdf)
+* [A Foundation for Flow-Based Program Matching Using Temporal Logic and Model Checking](http://coccinelle.lip6.fr/papers/popl09.pdf)
+* [Semantic Patches for Java Program Transformation](https://drops.dagstuhl.de/opus/volltexte/2019/10814/pdf/LIPIcs-ECOOP-2019-22.pdf)
+* [Design and Implementation of Semantic Patch Support for the Spoon Java Transformation Engine' at KTH Royal Institute of Technology](http://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-291226)
+
 ## Supported SmPL Features
 
 The following table shows some of the currently supported SmPL syntax/features:
@@ -41,14 +49,6 @@ Additional helpful resources currently available are:
 3. [PatternBuilder.java](https://github.com/INRIA/spoon/blob/master/spoon-smpl/src/main/java/spoon/smpl/pattern/PatternBuilder.java): shows the set of matchable Java elements, but can be cumbersome to read.
 4. [Substitutor.java](https://github.com/INRIA/spoon/blob/master/spoon-smpl/src/main/java/spoon/smpl/Substitutor.java): shows the set of transformable Java elements, but can be cumbersome to read.
 
-Spoon-SmPL's initial version has been implemented by Mikael Forsberg as part of his master's thesis ["Design and Implementation of Semantic Patch Support for the Spoon Java Transformation Engine' at KTH Royal Institute of Technology"](http://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-291226).
-
-References:
-* [SmPL: A Domain-Specific Language for Specifying Collateral Evolutions in Linux Device Drivers](http://coccinelle.lip6.fr/papers/ercim.pdf)
-* [A Foundation for Flow-Based Program Matching Using Temporal Logic and Model Checking](http://coccinelle.lip6.fr/papers/popl09.pdf)
-* [Semantic Patches for Java Program Transformation](https://drops.dagstuhl.de/opus/volltexte/2019/10814/pdf/LIPIcs-ECOOP-2019-22.pdf)
-* [Design and Implementation of Semantic Patch Support for the Spoon Java Transformation Engine' at KTH Royal Institute of Technology](http://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-291226)
- 
 ## Architecture Notes
 
 * Parsing SMPL: see SmPLLexer
