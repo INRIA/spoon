@@ -23,7 +23,6 @@ TODO: markdownify this file
     metatype ::= identifier
                | type
                | expression
-               | statement
                | constant
                | JavaType
     
