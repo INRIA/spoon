@@ -19,6 +19,18 @@
         <version>1.0</version>
         <relativePath>../spoon-pom</relativePath>
     </parent>
+
+    <repositories>
+        <repository>
+            <!-- Required for spoon-control-flow SNAPSHOT -->
+            <id>ow2.org-snapshot</id>
+            <name>Maven Repository for Spoon Snapshots</name>
+            <url>https://repository.ow2.org/nexus/content/repositories/snapshots/</url>
+            <snapshots><enabled>true</enabled></snapshots>
+            <releases><enabled>false</enabled></releases>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
             <plugin>
