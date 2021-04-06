@@ -461,7 +461,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public void visitTypeReference(CtRole role, WildcardType type) {
-		if (type.getUpperBounds() != null && type.getUpperBounds().length > 0 && !type.getUpperBounds()[0].equals(Object.class)) {
+		if (!type.getUpperBounds()[0].equals(Object.class)) {
 			for (Type upper : type.getUpperBounds()) {
 				visitTypeReference(CtRole.BOUNDING_TYPE, upper);
 			}
