@@ -17,6 +17,7 @@ SPOON_SNAPSHOT_REPO = """
     <id>ow2.org-snapshot</id>
     <name>Maven Repository for Spoon Snapshots</name>
     <url>https://repository.ow2.org/nexus/content/repositories/snapshots/</url>
+    <snapshots/>
 </repository>
 """
 MAVEN_NAMESPACE = "http://maven.apache.org/POM/4.0.0"
