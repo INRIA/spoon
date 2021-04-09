@@ -25,14 +25,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>ow2.org-snapshot</id>
-            <name>Maven Repository for Spoon Snapshots</name>
-            <url>https://repository.ow2.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
 
         <!-- we all depend on Junit with scope=test -->

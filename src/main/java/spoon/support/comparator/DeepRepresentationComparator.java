@@ -16,6 +16,7 @@ import java.util.Comparator;
  * Compares based on a toString representation.
  */
 public class DeepRepresentationComparator implements Comparator<CtElement>, Serializable {
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public int compare(CtElement o1, CtElement o2) {

@@ -62,10 +62,10 @@ $ java -cp <classpath> spoon.smpl.CommandlineApplication
 Due in large to the prototypical nature of the current implementation there is a lack of clear
 specification and documentation. The most helpful resources currently available are:
 
-1. [smpl_grammar.txt](https://github.com/mkforsb/spoon/blob/smpl/spoon-smpl/smpl_grammar.txt): covers parts of the currently supported grammar.
-2. [Test cases](https://github.com/mkforsb/spoon/tree/smpl/spoon-smpl/src/test/resources/endtoend): contains easy-to-read test cases that reveal both supported patch language features and supported Java elements.
-3. [PatternBuilder.java](https://github.com/mkforsb/spoon/blob/smpl/spoon-smpl/src/main/java/spoon/smpl/pattern/PatternBuilder.java): shows the set of matchable Java elements, but can be cumbersome to read.
-4. [Substitutor.java](https://github.com/mkforsb/spoon/blob/smpl/spoon-smpl/src/main/java/spoon/smpl/Substitutor.java): shows the set of transformable Java elements, but can be cumbersome to read.
+1. [smpl_grammar.txt](https://github.com/INRIA/spoon/blob/master/spoon-smpl/smpl_grammar.txt): covers parts of the currently supported grammar.
+2. [Test cases](https://github.com/INRIA/spoon/tree/master/spoon-smpl/src/test/resources/endtoend): contains easy-to-read test cases that reveal both supported patch language features and supported Java elements.
+3. [PatternBuilder.java](https://github.com/INRIA/spoon/blob/master/spoon-smpl/src/main/java/spoon/smpl/pattern/PatternBuilder.java): shows the set of matchable Java elements, but can be cumbersome to read.
+4. [Substitutor.java](https://github.com/INRIA/spoon/blob/master/spoon-smpl/src/main/java/spoon/smpl/Substitutor.java): shows the set of transformable Java elements, but can be cumbersome to read.
 
 ### Basic usage
 

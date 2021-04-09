@@ -336,6 +336,15 @@ public class GenericsTest {
 	}
 
 	@Test
+	public void testRecursiveUpperBound() throws Exception {
+		// contract: wildcards with a recursive upper bound are properly parsed with runtime reflection
+		CtClass<?> type = build("spoon.test.generics.testclasses3", "UpperBoundedWildcardUser");
+		CtField field = type.getElements(new TypeFilter<>(CtField.class)).get(0);
+		assertTrue(field.getType().getTypeDeclaration().toString()
+				.startsWith("public class UpperBoundedWildcard<Q extends java.lang.Comparable<? extends Q>>"));
+	}
+
+	@Test
 	public void testInstanceOfMapEntryGeneric() throws Exception {
 		CtClass<?> type = build("spoon.test.generics.testclasses3", "InstanceOfMapEntryGeneric");
 		CtMethod<?> meth = type.getMethodsByName("methode").get(0);

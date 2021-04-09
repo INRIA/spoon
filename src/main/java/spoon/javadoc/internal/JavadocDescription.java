@@ -22,6 +22,7 @@ package spoon.javadoc.internal;
 	* A javadoc text, potentially containing inline tags.
 	*/
 	public class JavadocDescription implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private List<JavadocDescriptionElement> elements;
 

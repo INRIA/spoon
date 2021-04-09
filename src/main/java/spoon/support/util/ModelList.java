@@ -213,6 +213,7 @@ public abstract class ModelList<T extends CtElement> extends AbstractList<T> imp
 	 * See https://docs.oracle.com/javase/7/docs/api/java/util/AbstractList.html#modCount
 	 */
 	private static class InternalList<T> extends ArrayList<T> {
+		private static final long serialVersionUID = 1L;
 		InternalList(int initialCapacity) {
 			super(initialCapacity);
 		}

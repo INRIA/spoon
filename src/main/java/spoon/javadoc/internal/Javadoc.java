@@ -34,6 +34,7 @@ import spoon.reflect.code.CtComment;
 * writing this comment does not contain any block tags (such as <code>@see AnotherClass</code>)
 */
 public class Javadoc implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private JavadocDescription description;
 	private List<JavadocBlockTag> blockTags;

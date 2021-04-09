@@ -20,6 +20,7 @@ import java.io.Serializable;
  * ModifierKind in kept for sake of full backward-compatibility.
  */
 public class CtExtendedModifier implements SourcePositionHolder, Serializable {
+	private static final long serialVersionUID = 1L;
 	private boolean implicit;
 	private ModifierKind kind;
 	private SourcePosition position;
