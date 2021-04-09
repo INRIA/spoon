@@ -24,6 +24,7 @@ MAVEN_NAMESPACE = "http://maven.apache.org/POM/4.0.0"
 NAMESPACES = {"": MAVEN_NAMESPACE}
 
 MAVEN_VERSIONS_COMMAND = "mvn -B -U versions:use-latest-versions -DallowSnapshots -Dincludes=fr.inria.gforge.spoon".split()
+PURGE_LOCAL_REPO_COMMAND = "mvn -B -U dependency:purge-local-repository -DmanualInclude='fr.inria.gforge.spoon:spoon-core' -DsnapshotsOnly=true".split()
 
 
 def main():
@@ -31,6 +32,7 @@ def main():
     pom_file = pathlib.Path("pom.xml")
     inject_snapshot_repo(pom_file)
     subprocess.run(MAVEN_VERSIONS_COMMAND, cwd=str(pom_file.parent))
+    subprocess.run(PURGE_LOCAL_REPO_COMMAND, cwd=str(pom_file.parent))
 
 
 def inject_snapshot_repo(pom_file: pathlib.Path) -> None:
@@ -54,6 +56,7 @@ def inject_snapshot_repo(pom_file: pathlib.Path) -> None:
 
     tree.write(str(pom_file))
 
+
 def in_maven_namespace(tag: str) -> str:
     """Wrap the tag in the default Maven namespace.
 
@@ -65,6 +68,7 @@ def in_maven_namespace(tag: str) -> str:
     This does not appear to work in Python 3.5
     """
     return "{{{}}}{}".format(MAVEN_NAMESPACE, tag)
+
 
 if __name__ == "__main__":
     main()
