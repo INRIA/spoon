@@ -31,7 +31,7 @@ jobs:
 
     env:
       MAVEN_OPTS: -Djava.src.version=${{ matrix.java }} -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
-      JAVA_DISTRIBUTION: 'zulu'
+      JAVA_DISTRIBUTION: adopt
 
 
     name: Tests with Java ${{ matrix.java }} on ${{ matrix.os }}
