@@ -213,7 +213,6 @@ public class TestSourceFragment {
 
 	@Test
 	public void testExactSourceFragments() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: SourceFragments of some tricky sources are as expected
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(false);
@@ -252,7 +251,6 @@ public class TestSourceFragment {
 	
 	@Test
 	public void testSourceFragmentsOfCompilationUnit() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: SourceFragments of compilation unit children like, package declaration, imports, types
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(false);

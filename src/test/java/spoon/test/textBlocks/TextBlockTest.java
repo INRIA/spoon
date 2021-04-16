@@ -97,7 +97,6 @@ public class TextBlockTest{
 
 	@Test
 	public void testTextBlockCreation(){
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: Test creation of TextBlock and prettyprinting
 		Factory factory = getSpoonFactory();
 		CtClass<?> c = Launcher.parseClass("class Test{public String m1(){String s = \"\";}}");

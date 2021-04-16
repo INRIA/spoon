@@ -118,7 +118,6 @@ public class TemplateTest {
 
 	@Test
 	public void testTemplateInheritance() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.getFactory();
 		spoon.getEnvironment().setCommentEnabled(true);

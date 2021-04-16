@@ -455,7 +455,6 @@ public class DefaultPrettyPrinterTest {
 
 	@Test
 	public void testElseIf() {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: else if statements should be printed without break else and if
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/A6.java");

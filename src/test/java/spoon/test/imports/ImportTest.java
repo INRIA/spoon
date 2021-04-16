@@ -1584,7 +1584,6 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 	}
 	@Test
 	public void testImportOnSpoon() throws IOException {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 
 		File targetDir = new File("./target/import-test");
 		Launcher spoon = new Launcher();

@@ -139,7 +139,6 @@ public class MavenLauncherTest {
 
 	@Test
 	public void testSystemDependency() {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: scope dependencies are added to classpath
 		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/system-dependency", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 		assertEquals(1, launcher.getEnvironment().getSourceClasspath().length);

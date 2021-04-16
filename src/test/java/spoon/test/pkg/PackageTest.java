@@ -66,7 +66,6 @@ public class PackageTest {
 
 	@Test
 	public void testPackage() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		final String classFilePath = "./src/test/java/spoon/test/pkg/name/PackageTestClass.java";
 		final String packageInfoFilePath = "./src/test/java/spoon/test/pkg/package-info.java";
 		final File packageInfoFile = new File(packageInfoFilePath);

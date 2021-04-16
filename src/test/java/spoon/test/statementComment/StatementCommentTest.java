@@ -97,7 +97,6 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testBlockStatementWithinBody(){
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: test a CtBlock within body is commented out as a block comment
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
@@ -125,7 +124,6 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testMethodBodyNonEmptyStatement(){
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: test CtBlock representing method body is commented out by commenting all contained statements individually
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
@@ -182,7 +180,6 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testIfStatement(){
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: test commenting of if statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
@@ -215,7 +212,6 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testLoopStatement(){
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: test commenting of loop statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
@@ -231,7 +227,6 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testSwitchStatement(){
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: test commenting of switch statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
@@ -252,7 +247,6 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testSynchronousStatement(){
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: test commenting of synchronous statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
@@ -268,7 +262,6 @@ public class StatementCommentTest {
 	
 	@Test
 	public void testTryStatement(){
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: test commenting of try-catch statement
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");

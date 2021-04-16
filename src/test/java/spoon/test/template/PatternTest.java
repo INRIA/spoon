@@ -1159,7 +1159,6 @@ public class PatternTest {
 
 	@Test
 	public void testPatternToString() {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: Pattern can be printed to String and each parameter is defined there
 		String nl = System.getProperty("line.separator");
 		Factory f = ModelUtils.build(

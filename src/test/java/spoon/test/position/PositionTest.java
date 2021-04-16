@@ -118,7 +118,6 @@ public class PositionTest {
 
 	@Test
 	public void testPositionClass() {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooClazz> foo = build.Type().get(FooClazz.class);
 		String classContent = getClassContent(foo);
@@ -150,7 +149,6 @@ public class PositionTest {
 	
 	@Test
 	public void testPositionClassWithComments() {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: check that comments before and after the 'class' keyword are handled well by PositionBuilder
 		//and it produces correct `modifierEnd`
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
@@ -191,7 +189,6 @@ public class PositionTest {
 
 	@Test
 	public void testPositionParameterTypeReference() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: the parameterized type reference has a source position which includes parameter types, etc.
 		final CtType<?> foo = buildClass(PositionParameterTypeWithReference.class);
 		String classContent = getClassContent(foo);
@@ -239,7 +236,6 @@ public class PositionTest {
 	
 	@Test
 	public void testPositionInterface() {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooInterface> foo = build.Type().get(FooInterface.class);
 		String classContent = getClassContent(foo);
@@ -274,7 +270,6 @@ public class PositionTest {
 
 	@Test
 	public void testPositionAnnotation() {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		final Factory build = build(new File("src/test/java/spoon/test/position/testclasses/"));
 		final CtType<FooAnnotation> foo = build.Type().get(FooAnnotation.class);
 		String classContent = getClassContent(foo);
@@ -318,7 +313,6 @@ public class PositionTest {
 
 	@Test
 	public void testPositionField() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		final Factory build = build(FooField.class);
 		final CtType<FooField> foo = build.Type().get(FooField.class);
 		String classContent = getClassContent(foo);
@@ -382,7 +376,6 @@ public class PositionTest {
 
 	@Test
 	public void testPositionGeneric() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		final Factory build = build(FooGeneric.class);
 		final CtClass<FooGeneric> foo = build.Class().get(FooGeneric.class);
 		String classContent = getClassContent(foo);
@@ -444,7 +437,6 @@ public class PositionTest {
 
 	@Test
 	public void testPositionMethod() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		final Factory build = build(FooMethod.class);
 		final CtClass<FooMethod> foo = build.Class().get(FooMethod.class);
 		String classContent = getClassContent(foo);
@@ -515,7 +507,6 @@ public class PositionTest {
 
 	@Test
 	public void testPositionAbstractMethod() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		final Factory build = build(FooAbstractMethod.class);
 		final CtClass<FooMethod> foo = build.Class().get(FooAbstractMethod.class);
 		String classContent = getClassContent(foo);
@@ -550,7 +541,6 @@ public class PositionTest {
 
 	@Test
 	public void testPositionStatement() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		final Factory build = build(FooStatement.class);
 		final CtType<FooStatement> foo = build.Type().get(FooStatement.class);
 		String classContent = getClassContent(foo);
@@ -744,7 +734,6 @@ public class PositionTest {
 	
 	@Test
 	public void testPositionOfAnnonymousType() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: the annonymous type has consistent position
 		final CtEnum foo = (CtEnum) buildClass(SomeEnum.class);
 		String classContent = getClassContent(foo);
@@ -929,7 +918,6 @@ public class PositionTest {
 	}
 	@Test
 	public void testArrayArgParameter() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: the parameter declared like `String arg[]`, `String[] arg` and `String []arg` has correct positions
 		final CtType<?> foo = buildClass(ArrayArgParameter.class);
 		String classContent = getClassContent(foo);
@@ -980,7 +968,6 @@ public class PositionTest {
 	
 	@Test
 	public void testExpressions() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: the expression including type casts has correct position which includes all brackets too
 		final CtType<?> foo = buildClass(Expressions.class);
 		String classContent = getClassContent(foo);
@@ -1027,7 +1014,6 @@ public class PositionTest {
 	}
 	@Test
 	public void testCatchPosition() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: check the catch position
 		final CtType<?> foo = buildClass(CatchPosition.class);
 		String classContent = getClassContent(foo);
@@ -1090,7 +1076,6 @@ public class PositionTest {
 	}
 	@Test
 	public void testEnumConstructorCallComment() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: check position the enum constructor call 
 		final CtType<?> foo = buildClass(FooEnum.class);
 		
@@ -1108,7 +1093,6 @@ public class PositionTest {
 	}
 	@Test
 	public void testSwitchCase() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: check position of the statements of the case of switch
 		final CtType<?> foo = buildClass(FooSwitch.class);
 		
@@ -1146,7 +1130,6 @@ public class PositionTest {
 	}
 	@Test
 	public void testFooForEach() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: check position of the for each position
 		final CtType<?> foo = buildClass(FooForEach.class);
 		
@@ -1288,7 +1271,6 @@ public class PositionTest {
 
 	@Test
 	public void testImportPosition() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: import position includes its comment
 		CtType<?> type = ModelUtils.buildClass(cfg -> {
 			cfg.getEnvironment().setCommentEnabled(true);
@@ -1306,7 +1288,6 @@ public class PositionTest {
 
 	@Test
 	public void testPackageDeclarationWithCommentPosition() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: package declaration position includes its comment. The file comment is not included
 		CtType<?> type = ModelUtils.buildClass(cfg -> {
 			cfg.getEnvironment().setCommentEnabled(true);

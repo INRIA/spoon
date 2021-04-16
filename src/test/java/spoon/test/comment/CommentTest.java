@@ -799,7 +799,6 @@ public class CommentTest {
 
 	@Test
 	public void testDocumentationContract() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: all metamodel classes must be commented with an example.
 		
 		final Launcher launcher = new Launcher();
