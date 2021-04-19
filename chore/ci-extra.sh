@@ -93,14 +93,3 @@ git diff
 mvn -q -Djava.src.version=11 test
 mvn -q checkstyle:checkstyle license:check
 mvn -q depclean:depclean
-
-##################################################################
-## Trigerring extra tasks that we don't want to commit to master
-## (For experimental CI features, short lived tasks, etc)
-
-# TODO migrate to GitHub Actions context or remove
-if [[ "$TRAVIS_REPO_SLUG" == "INRIA/spoon" ]] && [[ "$TRAVIS_PULL_REQUEST" != "false" ]]
-then
-  echo "downloading extra CI PR script from SpoonLabs/spoon-ci-external"
-  curl https://raw.githubusercontent.com/SpoonLabs/spoon-ci-external/master/spoon-pull-request.sh | bash
-fi
