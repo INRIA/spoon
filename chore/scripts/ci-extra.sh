@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script intends to be run on TravisCI
+# This script intends to be run in continuous integration.
 # it runs verify and site maven goals
 # and to check documentation links
 #
@@ -98,6 +98,7 @@ mvn -q depclean:depclean
 ## Trigerring extra tasks that we don't want to commit to master
 ## (For experimental CI features, short lived tasks, etc)
 
+# TODO migrate to GitHub Actions context or remove
 if [[ "$TRAVIS_REPO_SLUG" == "INRIA/spoon" ]] && [[ "$TRAVIS_PULL_REQUEST" != "false" ]]
 then
   echo "downloading extra CI PR script from SpoonLabs/spoon-ci-external"
