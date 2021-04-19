@@ -55,7 +55,7 @@ jobs:
           restore-keys: ${{ runner.os }}-maven-
 
       - name: Use silent log config
-        run: mv chore/travis/logback.xml src/test/resources/
+        run: mv chore/scripts/logback.xml src/test/resources/
       - name: Build
         run: |
           mvn -B test-compile
@@ -90,7 +90,7 @@ jobs:
           restore-keys: ${{ runner.os }}-maven-
 
       - name: Use silent log config
-        run: mv chore/travis/logback.xml src/test/resources/
+        run: mv chore/scripts/logback.xml src/test/resources/
       - name: Build
         run: |
           mvn -B test-compile
@@ -127,6 +127,6 @@ jobs:
           restore-keys: ${{ runner.os }}-maven-
 
       - name: Use silent log config
-        run: mv chore/travis/logback.xml src/test/resources/
+        run: mv chore/scripts/logback.xml src/test/resources/
       - name: Run extra checks
-        run: ./chore/travis/ci-extra.sh
+        run: ./chore/scripts/ci-extra.sh
