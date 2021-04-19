@@ -1,4 +1,4 @@
-<!-- minimal configuration for Travis -->
+<!-- minimal configuration for CI -->
 <configuration>
   <root level="INFO"/>            
 </configuration>
