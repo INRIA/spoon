@@ -88,7 +88,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
 
 // main test of Spoon's patterns

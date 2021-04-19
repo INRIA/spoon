@@ -2,7 +2,6 @@ package spoon.test.textBlocks;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
 import org.junit.Test;
 
