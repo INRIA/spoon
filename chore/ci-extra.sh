@@ -93,3 +93,9 @@ git diff
 mvn -q -Djava.src.version=11 test
 mvn -q checkstyle:checkstyle license:check
 mvn -q depclean:depclean
+
+if [[ "$GITHUB_REPOSITORY" == "INRIA/spoon" ]] && [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]
+then
+  echo "downloading extra CI PR script from SpoonLabs/spoon-ci-external"
+  curl https://raw.githubusercontent.com/SpoonLabs/spoon-ci-external/master/spoon-pull-request.sh | bash
+fi
