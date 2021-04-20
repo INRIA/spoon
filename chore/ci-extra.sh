@@ -94,6 +94,10 @@ mvn -q -Djava.src.version=11 test
 mvn -q checkstyle:checkstyle license:check
 mvn -q depclean:depclean
 
+##################################################################
+## Trigerring extra tasks that we don't want to commit to master
+## (For experimental CI features, short lived tasks, etc)
+
 if [[ "$GITHUB_REPOSITORY" == "INRIA/spoon" ]] && [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]
 then
   echo "downloading extra CI PR script from SpoonLabs/spoon-ci-external"
