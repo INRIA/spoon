@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -177,6 +179,34 @@ public class ConstructorCallTest {
 		String sourceFile = "./src/test/resources/noclasspath/GenericTypeEmptyDiamond.java";
 		CtTypeReference<?> executableType = getConstructorCallTypeFrom("ArrayList", sourceFile);
 		assertTrue(executableType.isParameterized());
+	}
+
+	@Test
+	public void test_addArgumentAt_addsArgumentToSpecifiedPosition() {
+		// contract: addArgumentAt should add arguments to the specified position.
+
+		// arrange
+		Factory factory = new Launcher().getFactory();
+		factory.getEnvironment().setAutoImports(true);
+		CtConstructorCall<?> newLinkedHashMap = (CtConstructorCall<?>) factory
+                // make it raw on purpose to simplify assertion
+				.createCodeSnippetExpression("new java.util.LinkedHashMap()")
+				.compile();
+
+		// act
+		// LinkedHashMap has multiple constructors, we're going for:
+		// LinkedHashMap(int initialCapacity, float loadFactor, boolean accessOrder) by adding
+		// arguments a bit haphazardly
+
+		// 10
+		newLinkedHashMap.addArgumentAt(0, factory.createCodeSnippetExpression("10").compile());
+		// 10, true
+		newLinkedHashMap.addArgumentAt(1, factory.createCodeSnippetExpression("true").compile());
+		// 10, 1.4, true
+		newLinkedHashMap.addArgumentAt(1, factory.createCodeSnippetExpression("1.4").compile());
+
+		// assert
+		assertThat(newLinkedHashMap.toString(), equalTo("new LinkedHashMap(10, 1.4, true)"));
 	}
 
 	private CtTypeReference<?> getConstructorCallTypeFrom(String simpleName, String sourceFile) {

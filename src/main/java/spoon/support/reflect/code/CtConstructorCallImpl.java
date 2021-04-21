@@ -124,6 +124,11 @@ public class CtConstructorCallImpl<T> extends CtTargetedExpressionImpl<T, CtExpr
 	}
 
 	@Override
+	public <C extends CtAbstractInvocation<T>> C addArgumentAt(int position, CtExpression<?> argument) {
+		return addArgument(position, argument);
+	}
+
+	@Override
 	public void removeArgument(CtExpression<?> argument) {
 		if (arguments == CtElementImpl.<CtExpression<?>>emptyList()) {
 			return;
