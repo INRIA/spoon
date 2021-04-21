@@ -119,15 +119,15 @@ public class InvocationTest {
 		// order, but we do it haphazardly with addArgumentAt.
 
 		// AL
-		addAllInv.addArgumentAt(0, factory.createCodeSnippetExpression("new java.util.ArrayList<Integer>()").compile());
-		// AL, 99
-		addAllInv.addArgumentAt(1, factory.createLiteral(99));
-		// AL, 99, -2
-		addAllInv.addArgumentAt(2, factory.createLiteral(-2));
-		// AL, 4, 99, -2
-		addAllInv.addArgumentAt(1, factory.createLiteral(4));
-		// AL, 4, 99, 7, -2
-		addAllInv.addArgumentAt(3, factory.createLiteral(7));
+		addAllInv.addArgumentAt(0, factory.createCodeSnippetExpression("new java.util.ArrayList<Integer>()").compile())
+			// AL, 99
+			.addArgumentAt(1, factory.createLiteral(99))
+			// AL, 99, -2
+			.addArgumentAt(2, factory.createLiteral(-2))
+			// AL, 4, 99, -2
+			.addArgumentAt(1, factory.createLiteral(4))
+			// AL, 4, 99, 7, -2
+			.addArgumentAt(3, factory.createLiteral(7));
 
 		// assert
 		assertThat(addAllInv.toString(), equalTo("Collections.addAll(new ArrayList<Integer>(), 4, 99, 7, -2)"));

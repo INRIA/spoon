@@ -199,11 +199,11 @@ public class ConstructorCallTest {
 		// arguments a bit haphazardly
 
 		// 10
-		newLinkedHashMap.addArgumentAt(0, factory.createCodeSnippetExpression("10").compile());
-		// 10, true
-		newLinkedHashMap.addArgumentAt(1, factory.createCodeSnippetExpression("true").compile());
-		// 10, 1.4, true
-		newLinkedHashMap.addArgumentAt(1, factory.createCodeSnippetExpression("1.4").compile());
+		newLinkedHashMap.addArgumentAt(0, factory.createLiteral(10))
+			// 10, true
+			.addArgumentAt(1, factory.createLiteral(true))
+			// 10, 1.4, true
+			.addArgumentAt(1, factory.createLiteral(1.4));
 
 		// assert
 		assertThat(newLinkedHashMap.toString(), equalTo("new LinkedHashMap(10, 1.4, true)"));
