@@ -84,11 +84,15 @@
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
                     <configuration>
-                        <header>LICENSE.txt</header>
-                        <basedir>src</basedir>
-                        <includes>
-                            <include>main/java/**</include>
-                        </includes>
+                        <licenseSets>
+                            <licenseSet>
+                                <header>LICENSE.txt</header>
+                                <basedir>src</basedir>
+                                <includes>
+                                    <include>main/java/**</include>
+                                </includes>
+                            </licenseSet>
+                        </licenseSets>
                     </configuration>
                     <executions>
                         <execution>
