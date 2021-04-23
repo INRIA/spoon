@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
