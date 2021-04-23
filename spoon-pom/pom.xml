@@ -236,14 +236,18 @@
                 <plugin>
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <version>3.0</version>
+                    <version>4.0</version>
                     <configuration>
-                        <header>LICENSE-short.txt</header>
-                        <includes>
-                            <include>src/main/java/**</include>
-                            <!-- We also want to check the license in templates to generate files with the proper header -->
-                            <include>src/test/java/spoon/generating/clone/*</include>
-                        </includes>
+                        <licenseSets>
+                            <licenseSet>
+                                <header>LICENSE-short.txt</header>
+                                <includes>
+                                    <include>src/main/java/**</include>
+                                    <!-- We also want to check the license in templates to generate files with the proper header -->
+                                    <include>src/test/java/spoon/generating/clone/*</include>
+                                </includes>
+                            </licenseSet>
+                        </licenseSets>
                         <excludes>
 		            <!--  excluding the code coming from Javaparser -->
 		            <exclude>src/main/java/spoon/javadoc/internal/*</exclude>
