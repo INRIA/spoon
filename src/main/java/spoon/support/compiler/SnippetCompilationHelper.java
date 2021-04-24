@@ -105,22 +105,10 @@ public class SnippetCompilationHelper {
 	private static void addDummyStatements(CtType<?> clonedInitialClass) {
 		Factory factory = clonedInitialClass.getFactory();
 		CtConstructorCall call = factory.createConstructorCall(factory.createCtTypeReference(Object.class));
-		List<CtStatement> list = clonedInitialClass.filterChildren((CtStatement element) ->
-				((element instanceof CtCodeSnippet && containsOnlyComment((CtCodeSnippetStatement) element))
-						|| element instanceof CtComment)).list();
-		for (CtStatement statement : list) {
-			statement.insertBefore(call);
-			statement.delete();
-		}
-	}
-
-	private static boolean containsOnlyComment(CtCodeSnippetStatement snippet) {
-		char[] charArray = snippet.toString().toCharArray();
-		int next = PositionBuilder.findNextNonWhitespace(charArray, charArray.length - 1, 0);
-		if (next == -1) {
-			return true;
-		} else {
-			return false;
+		List<CtComment> list = clonedInitialClass.filterChildren(new TypeFilter<>(CtComment.class)).list();
+		for (CtComment comment : list) {
+			comment.insertBefore(call);
+			comment.delete();
 		}
 	}
 
