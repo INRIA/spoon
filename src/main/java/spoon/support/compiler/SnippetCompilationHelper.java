@@ -15,6 +15,8 @@ import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCodeSnippet;
 import spoon.reflect.declaration.CtElement;
@@ -27,6 +29,7 @@ import spoon.reflect.path.CtPath;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
+import spoon.support.compiler.jdt.PositionBuilder;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.EnumSet;
@@ -67,11 +70,15 @@ public class SnippetCompilationHelper {
 		initialClass.removeModifier(ModifierKind.PUBLIC);
 
 		// we need to delete the current class from its package
-		// otherwsise the new type is not added because it has the same fully qualified name
+		// otherwise the new type is not added because it has the same fully qualified name
 		initialClass.delete();
 
+		// add dummy statements for each comment so paths are same for initial and new class
+		CtType<?> clonedInitialClass = initialClass.clone();
+		addDummyStatements(clonedInitialClass);
+
 		try {
-			build(f, "package " + initialClass.getPackage().getQualifiedName() + ";" + initialClass.toString());
+			build(f, "package " + initialClass.getPackage().getQualifiedName() + ";" + clonedInitialClass.toString());
 		} finally {
 			// restore modifiers
 			initialClass.setModifiers(backup);
@@ -92,6 +99,28 @@ public class SnippetCompilationHelper {
 		for (Map.Entry<CtPath, CtElement> ctPath : elements2before.entrySet()) {
 			CtElement toReplace = ctPath.getValue();
 			toReplace.replace(elements2after.get(ctPath.getKey()));
+		}
+	}
+
+	private static void addDummyStatements(CtType<?> clonedInitialClass) {
+		Factory factory = clonedInitialClass.getFactory();
+		CtConstructorCall call = factory.createConstructorCall(factory.createCtTypeReference(Object.class));
+		List<CtStatement> list = clonedInitialClass.filterChildren((CtStatement element) ->
+				((element instanceof CtCodeSnippet && containsOnlyComment((CtCodeSnippetStatement) element))
+						|| element instanceof CtComment)).list();
+		for (CtStatement statement : list) {
+			statement.insertBefore(call);
+			statement.delete();
+		}
+	}
+
+	private static boolean containsOnlyComment(CtCodeSnippetStatement snippet) {
+		char[] charArray = snippet.toString().toCharArray();
+		int next = PositionBuilder.findNextNonWhitespace(charArray, charArray.length - 1, 0);
+		if (next == -1) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 
