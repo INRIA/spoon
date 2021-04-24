@@ -29,7 +29,6 @@ import spoon.reflect.path.CtPath;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
-import spoon.support.compiler.jdt.PositionBuilder;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.EnumSet;
