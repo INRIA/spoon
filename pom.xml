@@ -27,7 +27,7 @@
       <license>
           <name>CeCILL-C</name>
           <comments>French equivalent to LGPL</comments>
-          <url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
+          <url>http://cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
           <distribution>repo</distribution>
       </license>
   </licenses>
