@@ -25,6 +25,7 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
@@ -32,9 +33,12 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.invocations.testclasses.Bar;
 import spoon.test.invocations.testclasses.Foo;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
@@ -96,5 +100,36 @@ public class InvocationTest {
 		assertEquals(1, executables.size());
 		final CtExecutable exe = executables.get(0);
 		assertNotNull(exe.getReference().getDeclaration());
+	}
+
+	@Test
+	public void test_addArgumentAt_addsArgumentAtSpecifiedPosition() {
+		// contract: addArgumentAt should add arguments to the specified position.
+
+		// arrange
+		Factory factory = new Launcher().getFactory();
+		factory.getEnvironment().setAutoImports(true);;
+		CtType<?> collections = factory.Type().get(Collections.class);
+		CtInvocation<?> addAllInv = factory.createInvocation(
+				factory.createTypeAccess(collections.getReference()),
+				collections.getMethodsByName("addAll").get(0).getReference());
+
+		// act
+		// want to add the arguments new ArrayList<Integer>, 4, 99, 7, -2 s.t. they end up in that
+		// order, but we do it haphazardly with addArgumentAt.
+
+		// AL
+		addAllInv.addArgumentAt(0, factory.createCodeSnippetExpression("new java.util.ArrayList<Integer>()").compile())
+			// AL, 99
+			.addArgumentAt(1, factory.createLiteral(99))
+			// AL, 99, -2
+			.addArgumentAt(2, factory.createLiteral(-2))
+			// AL, 4, 99, -2
+			.addArgumentAt(1, factory.createLiteral(4))
+			// AL, 4, 99, 7, -2
+			.addArgumentAt(3, factory.createLiteral(7));
+
+		// assert
+		assertThat(addAllInv.toString(), equalTo("Collections.addAll(new ArrayList<Integer>(), 4, 99, 7, -2)"));
 	}
 }
