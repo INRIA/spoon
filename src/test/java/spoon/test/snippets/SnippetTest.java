@@ -239,7 +239,7 @@ public class SnippetTest {
 	}
 
 	@Test
-	public void testSnippetsInEmptyBody() {
+	public void testSnippetCompilationInUnnamedPackage() {
 		// contract: a snippet can be successfully compiled in a class with an unnamed package
 		Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();
