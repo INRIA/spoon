@@ -197,4 +197,61 @@ public class SnippetTest {
 		assertEquals(0,body.getStatements().get(2).getComments().size());
 		assertEquals(0,body.getStatements().get(3).getComments().size());
 	}
+
+	@Test
+	public void testCommentSnippetCompilation() {
+		// contract: snippets with only a comment should be embedded in the next element
+		Launcher launcher = new Launcher();
+		Factory factory = launcher.getFactory();
+		launcher.addInputResource("src/test/resources/snippet/SnippetCommentResource.java");
+		launcher.buildModel();
+		CtClass<?> snippetClass = factory.Class().get("snippet.test.resources.SnippetCommentResource");
+		CtMethod method = snippetClass.getMethodsByName("methodForCommentOnlySnippet").get(0);
+		CtBlock body = method.getBody();
+		body.addStatement(0,factory.createCodeSnippetStatement("int x"));
+		body.addStatement(0,factory.createCodeSnippetStatement("// comment"));
+		snippetClass.compileAndReplaceSnippets();
+
+		assertTrue(body.getStatements().get(0) instanceof CtLocalVariable);
+		assertTrue(body.getStatements().get(1) instanceof CtReturn);
+		assertEquals(2,body.getStatements().size());
+		assertEquals(1,body.getStatements().get(0).getComments().size());
+	}
+
+	@Test
+	public void testLastInBlockCommentSnippetCompilation() {
+		// contract: if a snippet with only a comment is last in a block
+		// or followed by CtComments or comment-only snippets exclusively,
+		// it should be compiled to a CtComment
+		Launcher launcher = new Launcher();
+		Factory factory = launcher.getFactory();
+		launcher.addInputResource("src/test/resources/snippet/SnippetCommentResource.java");
+		launcher.buildModel();
+		CtClass<?> snippetClass = factory.Class().get("snippet.test.resources.SnippetCommentResource");
+		CtMethod method = snippetClass.getMethodsByName("methodWithComment").get(0);
+		CtBlock body = method.getBody();
+		body.addStatement(0,factory.createCodeSnippetStatement("// comment"));
+		snippetClass.compileAndReplaceSnippets();
+
+		assertTrue(body.getStatements().get(0) instanceof CtComment);
+		assertTrue(body.getStatements().get(1) instanceof CtComment);
+		assertEquals(2,body.getStatements().size());
+	}
+
+	@Test
+	public void testSnippetsInEmptyBody() {
+		// contract: a snippet can be successfully compiled in a class with an unnamed package
+		Launcher launcher = new Launcher();
+		Factory factory = launcher.getFactory();
+		launcher.addInputResource("src/test/resources/snippet/UnnamedPackageSnippetResource.java");
+		launcher.buildModel();
+		CtClass<?> snippetClass = factory.Class().get("UnnamedPackageSnippetResource");
+		CtMethod method = snippetClass.getMethodsByName("method").get(0);
+		CtBlock body = method.getBody();
+		body.addStatement(0,factory.createCodeSnippetStatement("int x"));
+		snippetClass.compileAndReplaceSnippets();
+
+		assertTrue(body.getStatements().get(0) instanceof CtLocalVariable);
+		assertEquals(1,body.getStatements().size());
+	}
 }

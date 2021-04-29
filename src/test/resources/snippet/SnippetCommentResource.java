@@ -10,4 +10,12 @@ public class SnippetCommentResource {
 
     void invokedMethod() {
     }
+
+    public void methodWithComment() {
+        // comment
+    }
+
+    public void methodForCommentOnlySnippet(){
+        return;
+    }
 }
