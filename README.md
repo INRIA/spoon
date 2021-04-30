@@ -149,52 +149,77 @@ Spoon is Free and Open Source, double-licensed under the ([CeCILL-C license](htt
 
 Alphabetical order of last names
 
-    git log --pretty="%an" | sed -e '/Spoon Bot/d' | sort -u | awk 'NF>=2 {print "* " $0}' | sort -k3
+    # the final sed is for removing duplicates
+    git log --pretty="%an" | sed -e '/Spoon Bot/d' | sort -u | awk 'NF>=2 {print "* " $0}' | sort -k3 | sed -e '/Zielinski/ d' -e '/Gerard Paligot/ d'
 
-* David Bernard
+* Lakshya A Agrawal
+* Haris Adzemovic
+* Muhammet Ali AKBAY
+* Clemens Bartz
+* Sébastien Bertrand
 * Artur Bosch
 * Egor Bredikhin
 * Maxime CLEMENT
-* Benoit Cornu
-* Andre Cruz
+* Rhys Compton
+* Horia Constantin
+* André Cruz
 * Benjamin DANGLOT
 * Scott Dickerson
 * Yann Diorcet
+* Fabien DUMINY
 * Thomas Durieux
 * Sergey Fedorov
 * Alcides Fonseca
-* Clement Fournier
+* Mikael Forsberg
+* Clément Fournier
 * Jan Galinski
 * Nicolas Harrand
 * Mickael Istria
 * Mehdi Kaytoue
 * Urs Keller
+* Rick Kellogg
 * Filip Krakowski
 * Lukas Krejci
+* Rohitesh Kumar Jain
 * Ashutosh Kumar Verma
+* Simon Larsén
+* Quentin LE DILAVREC
 * Roman Leventov
 * Fan Long
 * Kai Luo
-* Matias Martinez
+* Fernanda Madeiral
+* Marcel Manseer
 * Luke Merrick
 * Martin Monperrus
+* Antoine Mottier
 * Vincenzo Musco
-* Carlos Noguera
-* Gerard Paligot
-* Renaud Pawlak
+* Gérard Paligot
 * Nicolas Petitprez
+* Scott Pinwell
+* Noah Santschi-Cooney
+* Darius Sas
 * Phillip Schichtel
+* Wolfgang Schmiesing
+* Ondřej Šebek
 * Lionel Seinturier
+* Alexander Shopov
+* Wouter Smeenk
+* César Soto Valero
 * Miguel Sozinho Ramalho
+* Maxim Stefanov
 * Marcel Steinbeck
 * Christopher Stokes
 * Eddie T
+* Michael Täge
 * Simon Urli
+* Rijnard van Tonder
 * Pavel Vojtechovsky
 * Stefan Wolf
+* Zhang Xindong
 * Diorcet Yann
 * Gregor Zeitlinger
-* Tomasz Zielinski
+* Tomasz Zieliński
+
 
 Early contributors:
 
