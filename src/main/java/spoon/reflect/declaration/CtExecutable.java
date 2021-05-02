@@ -69,6 +69,16 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	<T extends CtExecutable<R>> T addParameter(CtParameter<?> parameter);
 
 	/**
+	 * Add a parameter at a specific position in the executable.
+	 *
+	 * @param position index where the `parameter` needs to be inserted
+	 * @param parameter parameter to be inserted
+	 * @return an object or sub-type of {@link CtExecutable}
+	 */
+	@PropertySetter(role = PARAMETER)
+	<T extends CtExecutable<R>> T addParameterAt(int position, CtParameter<?> parameter);
+
+	/**
 	 * Remove a parameter for this executable
 	 *
 	 * @param parameter
