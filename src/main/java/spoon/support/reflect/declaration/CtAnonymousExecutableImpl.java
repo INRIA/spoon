@@ -118,6 +118,13 @@ public class CtAnonymousExecutableImpl extends CtExecutableImpl<Void> implements
 
 	@Override
 	@UnsettableProperty
+	public CtExecutable addParameterAt(int position, CtParameter parameter) {
+		// unsettable property
+		return this;
+	}
+
+	@Override
+	@UnsettableProperty
 	public boolean removeParameter(CtParameter parameter) {
 		return false;
 	}
