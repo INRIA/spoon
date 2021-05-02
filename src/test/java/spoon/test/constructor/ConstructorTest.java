@@ -23,6 +23,7 @@ import spoon.SpoonAPI;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtIntersectionTypeReference;
@@ -35,12 +36,16 @@ import spoon.test.constructor.testclasses.Tacos;
 import spoon.testing.utils.ModelUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -157,5 +162,43 @@ public class ConstructorTest {
 
 		assertEquals("Serializable", bounds.get(1).getSimpleName());
 		assertEquals(1, bounds.get(1).getAnnotations().size());
+	}
+
+	@Test
+	public void test_addParameterAt_addsParameterToSpecifiedPosition() {
+		Factory factory = new Launcher().getFactory();
+
+		CtConstructor<?> constructor = factory.createConstructor();
+
+		CtParameter<?> first = factory.createParameter();
+		CtTypeReference<String> firstType = factory.Type().stringType();
+		first.setSimpleName("x");
+		first.setType((CtTypeReference) firstType);
+
+		CtParameter<?> second = factory.createParameter();
+		CtTypeReference<Integer> secondType = factory.Type().integerType();
+		second.setSimpleName("y");
+		second.setType((CtTypeReference) secondType);
+
+		CtParameter<?> third = factory.createParameter();
+		CtTypeReference<Boolean> thirdType = factory.Type().booleanType();
+		third.setSimpleName("z");
+		third.setType((CtTypeReference) thirdType);
+
+		constructor.addParameterAt(0, second);
+		constructor.addParameterAt(1, third);
+		constructor.addParameterAt(0, first);
+
+		assertThat(constructor.getParameters(), equalTo(Arrays.asList(first, second, third)));
+	}
+
+	@Test
+	public void test_addParameterAt_throwsOutOfBoundsException_whenPositionIsOutOfBounds() {
+		Factory factory = new Launcher().getFactory();
+		CtConstructor<?> constructor = factory.createConstructor();
+		CtParameter<?> paramater = factory.createParameter();
+
+		assertThrows(IndexOutOfBoundsException.class,
+				() -> constructor.addParameterAt(2, paramater));
 	}
 }
