@@ -54,15 +54,19 @@ import spoon.test.lambda.testclasses.Tacos;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -535,5 +539,43 @@ public class LambdaTest {
 				fail();
 			}
 		}
+	}
+
+	@Test
+	public void test_addParameterAt_addsParameterToSpecifiedPosition() {
+		Factory factory = new Launcher().getFactory();
+
+		CtLambda<?> lambda = factory.createLambda();
+
+		CtParameter<String> first = factory.createParameter();
+		CtTypeReference<String> firstType = factory.Type().stringType();
+		first.setSimpleName("x");
+		first.setType(firstType);
+
+		CtParameter<Integer> second = factory.createParameter();
+		CtTypeReference<Integer> secondType = factory.Type().integerType();
+		second.setSimpleName("y");
+		second.setType(secondType);
+
+		CtParameter<Boolean> third = factory.createParameter();
+		CtTypeReference<Boolean> thirdType = factory.Type().booleanType();
+		third.setSimpleName("z");
+		third.setType(thirdType);
+
+		lambda.addParameterAt(0, second);
+		lambda.addParameterAt(1, third);
+		lambda.addParameterAt(0, first);
+
+		assertThat(lambda.getParameters(), equalTo(Arrays.asList(first, second, third)));
+	}
+
+	@Test
+	public void test_addParameterAt_throwsOutOfBoundsException_whenPositionIsOutOfBounds() {
+		Factory factory = new Launcher().getFactory();
+		CtLambda<?> lamda = factory.createLambda();
+		CtParameter<?> paramater = factory.createParameter();
+
+		assertThrows(IndexOutOfBoundsException.class,
+				() -> lamda.addParameterAt(2, paramater));
 	}
 }
