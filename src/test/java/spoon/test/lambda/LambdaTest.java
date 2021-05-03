@@ -543,6 +543,7 @@ public class LambdaTest {
 
 	@Test
 	public void test_addParameterAt_addsParameterToSpecifiedPosition() {
+		// contract: the parameter should be added at the specified position
 		Factory factory = new Launcher().getFactory();
 
 		CtLambda<?> lambda = factory.createLambda();
@@ -571,6 +572,8 @@ public class LambdaTest {
 
 	@Test
 	public void test_addParameterAt_throwsOutOfBoundsException_whenPositionIsOutOfBounds() {
+		// contract: `addParameterAt` should throw an out of bounds exception when the specified position is out of
+		// bounds of the parameter collection
 		Factory factory = new Launcher().getFactory();
 		CtLambda<?> lamda = factory.createLambda();
 		CtParameter<?> paramater = factory.createParameter();
