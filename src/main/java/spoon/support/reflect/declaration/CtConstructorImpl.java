@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
@@ -25,7 +26,6 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
-import spoon.support.reflect.internal.CtFormalTypeDeclarerHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,8 +104,15 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 
 	@Override
 	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameterAt(int position, CtTypeParameter formalTypeParameter) {
-		formalCtTypeParameters = CtFormalTypeDeclarerHelper.addFormalCtTypeParameterAt(
-				this, formalCtTypeParameters, position, formalTypeParameter);
+		if (formalTypeParameter == null) {
+			return (C) this;
+		}
+		if (formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
+			formalCtTypeParameters = new ArrayList<>(ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		formalTypeParameter.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
+		formalCtTypeParameters.add(position, formalTypeParameter);
 		return (C) this;
 	}
 

@@ -23,7 +23,6 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
-import spoon.support.reflect.internal.CtFormalTypeDeclarerHelper;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.util.ArrayList;
@@ -110,8 +109,15 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 
 	@Override
 	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameterAt(int position, CtTypeParameter formalTypeParameter) {
-		formalCtTypeParameters = CtFormalTypeDeclarerHelper.addFormalCtTypeParameterAt(
-				this, formalCtTypeParameters, position, formalTypeParameter);
+		if (formalTypeParameter == null) {
+			return (C) this;
+		}
+		if (formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
+			formalCtTypeParameters = new ArrayList<>(ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
+		}
+		formalTypeParameter.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
+		formalCtTypeParameters.add(position, formalTypeParameter);
 		return (C) this;
 	}
 
