@@ -170,20 +170,20 @@ public class ConstructorTest {
 
 		CtConstructor<?> constructor = factory.createConstructor();
 
-		CtParameter<?> first = factory.createParameter();
+		CtParameter<String> first = factory.createParameter();
 		CtTypeReference<String> firstType = factory.Type().stringType();
 		first.setSimpleName("x");
-		first.setType((CtTypeReference) firstType);
+		first.setType(firstType);
 
-		CtParameter<?> second = factory.createParameter();
+		CtParameter<Integer> second = factory.createParameter();
 		CtTypeReference<Integer> secondType = factory.Type().integerType();
 		second.setSimpleName("y");
-		second.setType((CtTypeReference) secondType);
+		second.setType(secondType);
 
-		CtParameter<?> third = factory.createParameter();
+		CtParameter<Boolean> third = factory.createParameter();
 		CtTypeReference<Boolean> thirdType = factory.Type().booleanType();
 		third.setSimpleName("z");
-		third.setType((CtTypeReference) thirdType);
+		third.setType(thirdType);
 
 		constructor.addParameterAt(0, second);
 		constructor.addParameterAt(1, third);
