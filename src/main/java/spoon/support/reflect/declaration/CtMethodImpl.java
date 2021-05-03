@@ -115,8 +115,8 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		if (formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
 			formalCtTypeParameters = new ArrayList<>(ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
-		formalTypeParameter.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
+		formalTypeParameter.setParent(this);
 		formalCtTypeParameters.add(position, formalTypeParameter);
 		return (C) this;
 	}

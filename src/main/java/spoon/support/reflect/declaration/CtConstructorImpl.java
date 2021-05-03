@@ -106,11 +106,11 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 		if (formalTypeParameter == null) {
 			return (C) this;
 		}
+		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
 		if (formalCtTypeParameters == CtElementImpl.<CtTypeParameter>emptyList()) {
 			formalCtTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		formalTypeParameter.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
 		formalCtTypeParameters.add(position, formalTypeParameter);
 		return (C) this;
 	}
