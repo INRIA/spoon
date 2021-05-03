@@ -15,7 +15,6 @@ def clean(raw_contributors):
   cleaned = []
   for i in raw_contributors:
     name = i
-    print(i)
     if len(i) == 0: continue
     # full name for pre-Git era commits
     if i == 'noguera': name = "Carlos Noguera" # Spoon co-founder
