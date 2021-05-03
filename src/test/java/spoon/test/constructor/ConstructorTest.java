@@ -35,12 +35,16 @@ import spoon.test.constructor.testclasses.Tacos;
 import spoon.testing.utils.ModelUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -157,5 +161,42 @@ public class ConstructorTest {
 
 		assertEquals("Serializable", bounds.get(1).getSimpleName());
 		assertEquals(1, bounds.get(1).getAnnotations().size());
+	}
+
+	@Test
+	public void test_addFormalCtTypeParameterAt_addsTypeParameterToSpecifiedPosition() {
+		// contract: addFormalCtTypeParameterAt should respect the position provided to it.
+
+		// arrange
+		Factory factory = new Launcher().getFactory();
+
+		CtConstructor<?> constructor = factory.createConstructor();
+
+		CtTypeParameter first = factory.createTypeParameter();
+		first.setSimpleName("T");
+		CtTypeParameter second = factory.createTypeParameter();
+		second.setSimpleName("E");
+		CtTypeParameter third = factory.createTypeParameter();
+		third.setSimpleName("C");
+
+		// act
+		// add the type parameters out-of-order but in the correct positions
+		constructor.addFormalCtTypeParameterAt(0, second);
+		constructor.addFormalCtTypeParameterAt(0, first);
+		constructor.addFormalCtTypeParameterAt(2, third);
+
+		assertThat(constructor.getFormalCtTypeParameters(), equalTo(Arrays.asList(first, second, third)));
+	}
+
+	@Test
+	public void test_addFormalCtTypeParameterAt_throwsOutOfBoundsException_whenPositionIsOutOfBounds() {
+		// contract: addFormalCtTypeParameterAt should throw an out ouf bounds exception when the
+		// specified position is out of bounds
+		Factory factory = new Launcher().getFactory();
+		CtConstructor<?> constructor = factory.createConstructor();
+		CtTypeParameter typeParam = factory.createTypeParameter();
+
+		assertThrows(IndexOutOfBoundsException.class,
+				() -> constructor.addFormalCtTypeParameterAt(1, typeParam));
 	}
 }
