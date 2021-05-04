@@ -349,4 +349,20 @@ public class CtClassTest {
 
 		assertEquals(newClassInvocation.toString(), newClassInvocationCloned.toString());
 	}
+
+
+	@Test(timeout = 5000L)
+	public void test_buildParameterizedClass_withTypeParameterUsedAsQualifier() {
+		// contract: It should be possible to build a generic class when one of the type parameters
+		// is used in the qualified name of another type.
+        //
+		// See https://github.com/INRIA/spoon/issues/3903
+
+		CtClass<?> cls = Launcher.parseClass(
+				"public class Main<T extends java.util.Map<String, String>> { "
+				// Here we add a field with type `T.Entry`, i.e. T is used in a qualified type name
+				+ "T.Entry<String, String> entry; }");
+
+		assertThat(cls.getField("entry"), is(notNullValue()));
+	}
 }
