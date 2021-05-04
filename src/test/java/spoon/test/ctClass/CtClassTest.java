@@ -352,7 +352,7 @@ public class CtClassTest {
 	}
 
 	@Test(timeout = 5000L)
-	public void test_buildParameterizedClass_withTypeParameterUsedAsQualifier() {
+	public void test_buildParameterizedClass_withTypeParameterUsedInQualifiedName() {
 		// contract: It should be possible to build a generic class when one of the type parameters
 		// is used in the qualified name of another type.
         //
