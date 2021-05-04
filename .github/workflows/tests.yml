@@ -132,3 +132,5 @@ jobs:
         run: mv chore/logback.xml src/test/resources/
       - name: Run extra checks
         run: ./chore/ci-extra.sh
+      - name: Run Javadoc quality check
+        run: ./chore/ci-checkstyle-javadoc.sh
