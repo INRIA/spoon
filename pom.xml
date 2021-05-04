@@ -42,6 +42,7 @@
     <sonar.coverage.exclusions>
         **/support/gui/*
     </sonar.coverage.exclusions>
+    <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
   </properties>
 
   <dependencies>
@@ -259,7 +260,6 @@
         <version>3.1.2</version>
         <configuration>
           <failsOnError>true</failsOnError>
-          <configLocation>checkstyle.xml</configLocation>
           <consoleOutput>true</consoleOutput>
           <!-- we exclude the generated files, see CtGenerationTest -->
           <excludes>spoon/support/visitor/clone/CloneBuilder.java</excludes>
