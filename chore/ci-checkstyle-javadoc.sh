@@ -26,11 +26,11 @@ function compute_num_errors() {
 
 # compute compare score
 cd "$(git rev-parse --show-toplevel)"
-git checkout --force "$COMPARE_BRANCH" &> /dev/null
+git checkout --force "$COMPARE_BRANCH"
 compare_num_errors=`compute_num_errors`
 
 # compute current score
-git checkout - &> /dev/null
+git checkout -
 current_num_errors=`compute_num_errors`
 
 echo "JAVADOC QUALITY SCORE (lower is better)
