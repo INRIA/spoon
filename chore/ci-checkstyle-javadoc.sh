@@ -11,7 +11,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-COMPARE_BRANCH="master"
+COMPARE_BRANCH="origin/master"
 JAVADOC_CHECKSTYLE_CONFIG="checkstyle-javadoc.xml"
 
 if [[ $(git branch --show-current) == "$COMPARE_BRANCH" ]]; then
