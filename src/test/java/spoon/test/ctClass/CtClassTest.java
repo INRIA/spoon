@@ -350,7 +350,6 @@ public class CtClassTest {
 		assertEquals(newClassInvocation.toString(), newClassInvocationCloned.toString());
 	}
 
-
 	@Test(timeout = 5000L)
 	public void test_buildParameterizedClass_withTypeParameterUsedAsQualifier() {
 		// contract: It should be possible to build a generic class when one of the type parameters
