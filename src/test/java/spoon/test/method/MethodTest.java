@@ -22,6 +22,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
@@ -179,5 +180,42 @@ public class MethodTest {
 
 		assertThrows(IndexOutOfBoundsException.class,
 				() -> method.addParameterAt(2, paramater));
+	}
+
+	@Test
+	public void test_addFormalCtTypeParameterAt_addsTypeParameterToSpecifiedPosition() {
+		// contract: addFormalCtTypeParameterAt should respect the position provided to it.
+
+		// arrange
+		Factory factory = new Launcher().getFactory();
+
+		CtMethod<?> method = factory.createMethod();
+
+		CtTypeParameter first = factory.createTypeParameter();
+		first.setSimpleName("T");
+		CtTypeParameter second = factory.createTypeParameter();
+		second.setSimpleName("E");
+		CtTypeParameter third = factory.createTypeParameter();
+		third.setSimpleName("C");
+
+		// act
+		// add the type parameters out-of-order but in the correct positions
+		method.addFormalCtTypeParameterAt(0, second);
+		method.addFormalCtTypeParameterAt(0, first);
+		method.addFormalCtTypeParameterAt(2, third);
+
+		assertThat(method.getFormalCtTypeParameters(), equalTo(Arrays.asList(first, second, third)));
+	}
+
+	@Test
+	public void test_addFormalCtTypeParameterAt_throwsOutOfBoundsException_whenPositionIsOutOfBounds() {
+		// contract: addFormalCtTypeParameterAt should throw an out ouf bounds exception when the
+		// specified position is out of bounds
+		Factory factory = new Launcher().getFactory();
+		CtMethod<?> method = factory.createMethod();
+		CtTypeParameter typeParam = factory.createTypeParameter();
+
+		assertThrows(IndexOutOfBoundsException.class,
+				() -> method.addFormalCtTypeParameterAt(1, typeParam));
 	}
 }

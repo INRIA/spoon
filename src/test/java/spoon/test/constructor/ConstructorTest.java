@@ -204,4 +204,41 @@ public class ConstructorTest {
 		assertThrows(IndexOutOfBoundsException.class,
 				() -> constructor.addParameterAt(2, paramater));
 	}
+
+	@Test
+	public void test_addFormalCtTypeParameterAt_addsTypeParameterToSpecifiedPosition() {
+		// contract: addFormalCtTypeParameterAt should respect the position provided to it.
+
+		// arrange
+		Factory factory = new Launcher().getFactory();
+
+		CtConstructor<?> constructor = factory.createConstructor();
+
+		CtTypeParameter first = factory.createTypeParameter();
+		first.setSimpleName("T");
+		CtTypeParameter second = factory.createTypeParameter();
+		second.setSimpleName("E");
+		CtTypeParameter third = factory.createTypeParameter();
+		third.setSimpleName("C");
+
+		// act
+		// add the type parameters out-of-order but in the correct positions
+		constructor.addFormalCtTypeParameterAt(0, second);
+		constructor.addFormalCtTypeParameterAt(0, first);
+		constructor.addFormalCtTypeParameterAt(2, third);
+
+		assertThat(constructor.getFormalCtTypeParameters(), equalTo(Arrays.asList(first, second, third)));
+	}
+
+	@Test
+	public void test_addFormalCtTypeParameterAt_throwsOutOfBoundsException_whenPositionIsOutOfBounds() {
+		// contract: addFormalCtTypeParameterAt should throw an out ouf bounds exception when the
+		// specified position is out of bounds
+		Factory factory = new Launcher().getFactory();
+		CtConstructor<?> constructor = factory.createConstructor();
+		CtTypeParameter typeParam = factory.createTypeParameter();
+
+		assertThrows(IndexOutOfBoundsException.class,
+				() -> constructor.addFormalCtTypeParameterAt(1, typeParam));
+	}
 }
