@@ -104,6 +104,12 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 
 	@Override
 	public <T extends CtExecutable<R>> T addParameter(CtParameter<?> parameter) {
+		addParameterAt(parameters.size(), parameter);
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtExecutable<R>> T addParameterAt(int position, CtParameter<?> parameter) {
 		if (parameter == null) {
 			return (T) this;
 		}
@@ -112,7 +118,7 @@ public abstract class CtExecutableImpl<R> extends CtNamedElementImpl implements 
 		}
 		parameter.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, PARAMETER, this.parameters, parameter);
-		parameters.add(parameter);
+		parameters.add(position, parameter);
 		return (T) this;
 	}
 
