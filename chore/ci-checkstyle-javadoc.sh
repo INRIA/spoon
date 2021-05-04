@@ -21,8 +21,7 @@ fi
 
 function compute_num_errors() {
     mvn -B --fail-never checkstyle:check -Dcheckstyle.config.location="$JAVADOC_CHECKSTYLE_CONFIG" \
-        | grep '^\[ERROR\].*\[JavadocMethod\]$' \
-        | wc -l
+        | grep -Po '(?<=There are )\d+(?= errors reported by Checkstyle)'
 }
 
 # compute compare score
