@@ -16,6 +16,7 @@
  */
 package spoon.test.ctClass;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
 import static org.hamcrest.core.Is.is;
@@ -362,6 +363,8 @@ public class CtClassTest {
 				// Here we add a field with type `T.Entry`, i.e. T is used in a qualified type name
 				+ "T.Entry<String, String> entry; }");
 
-		assertThat(cls.getField("entry"), is(notNullValue()));
+		CtField<?> field = cls.getField("entry");
+		assertThat(field.getType().getQualifiedName(), equalTo("T$Entry"));
+		assertThat(field.getType().isSimplyQualified(), is(false));
 	}
 }
