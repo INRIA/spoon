@@ -23,6 +23,7 @@ import spoon.SpoonAPI;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtIntersectionTypeReference;
@@ -161,6 +162,47 @@ public class ConstructorTest {
 
 		assertEquals("Serializable", bounds.get(1).getSimpleName());
 		assertEquals(1, bounds.get(1).getAnnotations().size());
+	}
+
+	@Test
+	public void test_addParameterAt_addsParameterToSpecifiedPosition() {
+		// contract: the parameter should be added at the specified position
+		Factory factory = new Launcher().getFactory();
+
+		CtConstructor<?> constructor = factory.createConstructor();
+
+		CtParameter<String> first = factory.createParameter();
+		CtTypeReference<String> firstType = factory.Type().stringType();
+		first.setSimpleName("x");
+		first.setType(firstType);
+
+		CtParameter<Integer> second = factory.createParameter();
+		CtTypeReference<Integer> secondType = factory.Type().integerType();
+		second.setSimpleName("y");
+		second.setType(secondType);
+
+		CtParameter<Boolean> third = factory.createParameter();
+		CtTypeReference<Boolean> thirdType = factory.Type().booleanType();
+		third.setSimpleName("z");
+		third.setType(thirdType);
+
+		constructor.addParameterAt(0, second);
+		constructor.addParameterAt(1, third);
+		constructor.addParameterAt(0, first);
+
+		assertThat(constructor.getParameters(), equalTo(Arrays.asList(first, second, third)));
+	}
+
+	@Test
+	public void test_addParameterAt_throwsOutOfBoundsException_whenPositionIsOutOfBounds() {
+		// contract: `addParameterAt` should throw an out of bounds exception when the specified position is out of
+		// bounds of the parameter collection
+		Factory factory = new Launcher().getFactory();
+		CtConstructor<?> constructor = factory.createConstructor();
+		CtParameter<?> paramater = factory.createParameter();
+
+		assertThrows(IndexOutOfBoundsException.class,
+				() -> constructor.addParameterAt(2, paramater));
 	}
 
 	@Test

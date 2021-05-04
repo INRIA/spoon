@@ -20,10 +20,12 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.test.delete.testclasses.Adobada;
 import spoon.test.method.testclasses.Methods;
@@ -137,6 +139,47 @@ public class MethodTest {
 		}
 
 		assertTrue(compareFound);
+	}
+
+	@Test
+	public void test_addParameterAt_addsParameterToSpecifiedPosition() {
+		// contract: the parameter should be added at the specified position
+		Factory factory = new Launcher().getFactory();
+
+		CtMethod<?> method = factory.createMethod();
+
+		CtParameter<String> first = factory.createParameter();
+		CtTypeReference<String> firstType = factory.Type().stringType();
+		first.setSimpleName("x");
+		first.setType(firstType);
+
+		CtParameter<Integer> second = factory.createParameter();
+		CtTypeReference<Integer> secondType = factory.Type().integerType();
+		second.setSimpleName("y");
+		second.setType(secondType);
+
+		CtParameter<Boolean> third = factory.createParameter();
+		CtTypeReference<Boolean> thirdType = factory.Type().booleanType();
+		third.setSimpleName("z");
+		third.setType(thirdType);
+
+		method.addParameterAt(0, second);
+		method.addParameterAt(1, third);
+		method.addParameterAt(0, first);
+
+		assertThat(method.getParameters(), equalTo(Arrays.asList(first, second, third)));
+	}
+
+	@Test
+	public void test_addParameterAt_throwsOutOfBoundsException_whenPositionIsOutOfBounds() {
+		// contract: `addParameterAt` should throw an out of bounds exception when the specified position is out of
+		// bounds of the parameter collection
+		Factory factory = new Launcher().getFactory();
+		CtMethod<?> method = factory.createMethod();
+		CtParameter<?> paramater = factory.createParameter();
+
+		assertThrows(IndexOutOfBoundsException.class,
+				() -> method.addParameterAt(2, paramater));
 	}
 
 	@Test
