@@ -20,8 +20,8 @@ if [[ $(git branch --show-current) == "$COMPARE_BRANCH" ]]; then
 fi
 
 function compute_num_errors() {
-    mvn -B --fail-never checkstyle:check -Dcheckstyle.config.location="$JAVADOC_CHECKSTYLE_CONFIG" \
-        | grep -Po '(?<=There are )\d+(?= errors reported by Checkstyle)'
+    echo $(mvn -B checkstyle:check --fail-never -Dcheckstyle.config.location="$JAVADOC_CHECKSTYLE_CONFIG" \
+        | grep -Po '(?<=There are )\d+(?= errors reported by Checkstyle)')
 }
 
 # compute compare score
