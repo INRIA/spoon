@@ -46,12 +46,12 @@ function main() {
     cd "$(git rev-parse --show-toplevel)"
 
     # compute compare score
-    git checkout --force "$COMPARE_BRANCH" > /dev/null
+    git checkout --force "$COMPARE_BRANCH" &> /dev/null
     create_checkstyle_config
     compare_num_errors=`compute_num_errors`
 
     # compute current score
-    git checkout --force - > /dev/null
+    git checkout --force - &> /dev/null
     create_checkstyle_config
     current_num_errors=`compute_num_errors`
 
