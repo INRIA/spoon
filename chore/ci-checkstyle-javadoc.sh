@@ -12,12 +12,31 @@ set -o nounset
 set -o pipefail
 
 COMPARE_BRANCH="master"
-JAVADOC_CHECKSTYLE_CONFIG="checkstyle-javadoc.xml"
+JAVADOC_CHECKSTYLE_CONFIG="__SPOON_CI_checkstyle-javadoc.xml"
 
 if [[ $(git branch --show-current) == "$COMPARE_BRANCH" ]]; then
     # nothing to compare, we're on the main branch
     exit 0
 fi
+
+function cleanup() {
+    rm "$JAVADOC_CHECKSTYLE_CONFIG"
+}
+
+trap cleanup EXIT
+
+function create_checkstyle_config() {
+    echo '
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN" "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+<module name="Checker">
+  <module name="TreeWalker">
+    <module name="JavadocMethod">
+      <property name="scope" value="public"/>
+    </module>
+  </module>
+</module>' > "$JAVADOC_CHECKSTYLE_CONFIG"
+}
 
 function compute_num_errors() {
     echo $(mvn -B checkstyle:check --fail-never -Dcheckstyle.config.location="$JAVADOC_CHECKSTYLE_CONFIG" \
@@ -27,10 +46,12 @@ function compute_num_errors() {
 # compute compare score
 cd "$(git rev-parse --show-toplevel)"
 git checkout --force "$COMPARE_BRANCH"
+create_checkstyle_config
 compare_num_errors=`compute_num_errors`
 
 # compute current score
 git checkout -
+create_checkstyle_config
 current_num_errors=`compute_num_errors`
 
 echo "JAVADOC QUALITY SCORE (lower is better)
