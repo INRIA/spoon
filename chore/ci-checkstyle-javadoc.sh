@@ -26,8 +26,7 @@ function cleanup() {
 trap cleanup EXIT
 
 function create_checkstyle_config() {
-    echo '
-<?xml version="1.0"?>
+    echo '<?xml version="1.0"?>
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN" "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 <module name="Checker">
   <module name="TreeWalker">
