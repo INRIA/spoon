@@ -64,6 +64,7 @@ import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.support.reflect.CtExtendedModifier;
@@ -521,6 +522,9 @@ public class JDTTreeBuilderHelper {
 					 */
 					return;
 					//throw new SpoonException("Unexpected type reference simple name: \"" + token + "\" expected: \"" + typeRef.getSimpleName() + "\"");
+				} else if (typeRef instanceof CtTypeParameterReference) {
+					// if a type parameter is part of a qualified name, it's never implicit
+					return;
 				}
 				CtTypeReference<?> declTypeRef = typeRef.getDeclaringType();
 				if (declTypeRef != null) {
