@@ -42,28 +42,33 @@ function compute_num_errors() {
         | grep -Po '(?<=There are )\d+(?= errors reported by Checkstyle)')
 }
 
-# compute compare score
-cd "$(git rev-parse --show-toplevel)"
-git checkout --force "$COMPARE_BRANCH"
-create_checkstyle_config
-compare_num_errors=`compute_num_errors`
+function main() {
+    cd "$(git rev-parse --show-toplevel)"
 
-# compute current score
-git checkout --force -
-create_checkstyle_config
-current_num_errors=`compute_num_errors`
+    # compute compare score
+    git checkout --force "$COMPARE_BRANCH" > /dev/null
+    create_checkstyle_config
+    compare_num_errors=`compute_num_errors`
 
-echo "JAVADOC QUALITY SCORE (lower is better)
-Compare: $compare_num_errors
-Current: $current_num_errors
-"
+    # compute current score
+    git checkout --force - > /dev/null
+    create_checkstyle_config
+    current_num_errors=`compute_num_errors`
 
-if [[ $compare_num_errors == 0 || $current_num_errors == 0 ]]; then
-    echo "Unexpectedly low score, either script is no longer needed or something went wrong!"
-    exit 1
-elif [[ $compare_num_errors < $current_num_errors ]]; then
-    echo "Javadoc quality has deteriorated!"
-    exit 1
-else
-    echo "Javadoc quality has not deteriorated"
-fi
+    echo "JAVADOC QUALITY SCORE (lower is better)
+    Compare: $compare_num_errors
+    Current: $current_num_errors
+    "
+
+    if [[ $compare_num_errors == 0 || $current_num_errors == 0 ]]; then
+        echo "Unexpectedly low score, either script is no longer needed or something went wrong!"
+        exit 1
+    elif [[ $compare_num_errors < $current_num_errors ]]; then
+        echo "Javadoc quality has deteriorated!"
+        exit 1
+    else
+        echo "Javadoc quality has not deteriorated"
+    fi
+}
+
+main
