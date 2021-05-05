@@ -50,7 +50,7 @@ create_checkstyle_config
 compare_num_errors=`compute_num_errors`
 
 # compute current score
-git checkout -
+git checkout --force -
 create_checkstyle_config
 current_num_errors=`compute_num_errors`
 
