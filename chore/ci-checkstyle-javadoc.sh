@@ -60,9 +60,12 @@ function main() {
     Current: $current_num_errors
     "
 
-    if [[ $compare_num_errors == 0 || $current_num_errors == 0 ]]; then
-        echo "Unexpectedly low score, either script is no longer needed or something went wrong!"
-        exit 1
+    if [[ -z $compare_num_errors ]]; then
+        echo "Failed to compute compare score";
+        exit 1;
+    elif [[ -z $current_num_errors ]]; then
+        echo "Failed to compute current score";
+        exit 1;
     elif [[ $compare_num_errors < $current_num_errors ]]; then
         echo "Javadoc quality has deteriorated!"
         exit 1
