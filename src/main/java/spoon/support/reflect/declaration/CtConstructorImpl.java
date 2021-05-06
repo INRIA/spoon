@@ -102,7 +102,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	}
 
 	@Override
-	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
+	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameterAt(int position, CtTypeParameter formalTypeParameter) {
 		if (formalTypeParameter == null) {
 			return (C) this;
 		}
@@ -111,8 +111,13 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 			formalCtTypeParameters = new ArrayList<>(TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		formalTypeParameter.setParent(this);
-		formalCtTypeParameters.add(formalTypeParameter);
+		formalCtTypeParameters.add(position, formalTypeParameter);
 		return (C) this;
+	}
+
+	@Override
+	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
+		return addFormalCtTypeParameterAt(formalCtTypeParameters.size(), formalTypeParameter);
 	}
 
 	@Override

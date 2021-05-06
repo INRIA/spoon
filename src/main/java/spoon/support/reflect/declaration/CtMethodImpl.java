@@ -108,7 +108,7 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 	}
 
 	@Override
-	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
+	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameterAt(int position, CtTypeParameter formalTypeParameter) {
 		if (formalTypeParameter == null) {
 			return (C) this;
 		}
@@ -117,8 +117,13 @@ public class CtMethodImpl<T> extends CtExecutableImpl<T> implements CtMethod<T> 
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
 		formalTypeParameter.setParent(this);
-		formalCtTypeParameters.add(formalTypeParameter);
+		formalCtTypeParameters.add(position, formalTypeParameter);
 		return (C) this;
+	}
+
+	@Override
+	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
+		return addFormalCtTypeParameterAt(formalCtTypeParameters.size(), formalTypeParameter);
 	}
 
 	@Override

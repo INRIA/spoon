@@ -654,7 +654,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	}
 
 	@Override
-	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
+	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameterAt(int position, CtTypeParameter formalTypeParameter) {
 		if (formalTypeParameter == null) {
 			return (C) this;
 		}
@@ -663,8 +663,13 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 		formalTypeParameter.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CtRole.TYPE_PARAMETER, this.formalCtTypeParameters, formalTypeParameter);
-		formalCtTypeParameters.add(formalTypeParameter);
+		formalCtTypeParameters.add(position, formalTypeParameter);
 		return (C) this;
+	}
+
+	@Override
+	public <C extends CtFormalTypeDeclarer> C addFormalCtTypeParameter(CtTypeParameter formalTypeParameter) {
+		return addFormalCtTypeParameterAt(formalCtTypeParameters.size(), formalTypeParameter);
 	}
 
 	@Override
