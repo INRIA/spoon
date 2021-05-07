@@ -142,7 +142,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Run Sorald Buildbreaker
-        uses: SpoonLabs/sorald-buildbreaker@f3ce916e2a3f83cfbee20bf6fa743c565c2e3696 # dev version
+        uses: SpoonLabs/sorald-buildbreaker@70d81bc6aa8edfe64e2945ce64d485254e17aeec # dev version
         with:
           source: 'src/main/java'
           ratchet-from: 'origin/master'
