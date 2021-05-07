@@ -33,6 +33,7 @@ public class FluentLauncher {
 	 *
 	 */
 	public FluentLauncher() {
+        int a = 2;
 		this.launcher = new Launcher();
 	}
 
