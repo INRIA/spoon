@@ -22,6 +22,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.Launcher;
 import spoon.MavenLauncher;
+import spoon.processing.Processor;
+import spoon.reflect.declaration.CtElement;
+import spoon.support.JavaOutputProcessor;
 import spoon.support.Level;
 import uk.org.lidalia.slf4jtest.TestLogger;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
@@ -43,7 +46,8 @@ public class LogTest {
 					{Level.DEBUG, 6 },
 					{Level.INFO, 2 },
 					{Level.WARN, 0 },
-					{Level.ERROR, 0 }
+					{Level.ERROR, 0 },
+					{Level.OFF, 0}
 			});
 		}
 
@@ -87,5 +91,24 @@ public class LogTest {
 			mavenLauncher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE, new String[]{"./"});
 			assertEquals("Running in FULLCLASSPATH mode. Classpath is manually set (doc: http://spoon.gforge.inria.fr/launcher.html).",logger.getLoggingEvents().get(0).getMessage());
 		}
+
+		@Test
+		public void testLoggingOff() {
+			final TestLogger logger = TestLoggerFactory.getTestLogger(Launcher.class);
+			final Launcher launcher = new Launcher();
+			logger.clear();
+			launcher.setArgs(new String[] {
+					"-i", "./src/test/java/spoon/test/logging",
+					"--level", Level.OFF.toString()
+			});
+
+			for (Level level : Level.values()) {
+				launcher.getEnvironment().report(new JavaOutputProcessor(), level,
+						"This is a message with level " + level.toString());
+			}
+			assertEquals(0, logger.getLoggingEvents().size());
+		}
 	}
+
+
 }
