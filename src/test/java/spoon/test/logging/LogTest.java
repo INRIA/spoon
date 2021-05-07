@@ -94,6 +94,7 @@ public class LogTest {
 
 		@Test
 		public void testLoggingOff() {
+			// contract: When logging is off, no message should me logged independent of logging level.
 			final TestLogger logger = TestLoggerFactory.getTestLogger(Launcher.class);
 			final Launcher launcher = new Launcher();
 			logger.clear();
@@ -102,6 +103,7 @@ public class LogTest {
 					"--level", Level.OFF.toString()
 			});
 
+			// test messages with all logging levels
 			for (Level level : Level.values()) {
 				launcher.getEnvironment().report(new JavaOutputProcessor(), level,
 						"This is a message with level " + level.toString());
