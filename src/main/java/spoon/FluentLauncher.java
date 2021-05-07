@@ -33,7 +33,6 @@ public class FluentLauncher {
 	 *
 	 */
 	public FluentLauncher() {
-        int a = 2;
 		this.launcher = new Launcher();
 	}
 
@@ -61,6 +60,7 @@ public class FluentLauncher {
 	 * Adds an input resource to be processed by Spoon (either a file or a folder).
 	 */
 	public FluentLauncher inputResource(Iterable<String> paths) {
+        int a = 2;
 		for (String path : paths) {
 			launcher.addInputResource(path);
 		}
