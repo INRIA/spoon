@@ -668,7 +668,7 @@ public class PositionBuilder {
 	 * Note: all kinds of java comments are understood as whitespace too.
 	 * The search must start out of comment or on the first character of the comment
 	 */
-	static int findNextNonWhitespace(char[] content, int maxOff, int off) {
+	public static int findNextNonWhitespace(char[] content, int maxOff, int off) {
 		return findNextNonWhitespace(true, content, maxOff, off);
 	}
 
@@ -779,7 +779,7 @@ public class PositionBuilder {
 	 * @return if the off points at start of comment then it returns offset which points on last character of the comment
 	 * if the off does not point at start of comment then it returns -1
 	 */
-	static int getEndOfComment(char[] content, int maxOff, int off) {
+	public static int getEndOfComment(char[] content, int maxOff, int off) {
 		maxOff = Math.min(maxOff, content.length - 1);
 		if (off + 1 <= maxOff) {
 			if (content[off] == '/' && content[off + 1] == '*') {

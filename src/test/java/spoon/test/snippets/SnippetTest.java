@@ -200,7 +200,7 @@ public class SnippetTest {
 
 	@Test
 	public void testCommentSnippetCompilation() {
-		// contract: snippets with only a comment should be embedded in the next element
+		// contract: a snippet with only a comment should be replaced with a CtComment
 		Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();
 		launcher.addInputResource("src/test/resources/snippet/SnippetCommentResource.java");
@@ -208,34 +208,24 @@ public class SnippetTest {
 		CtClass<?> snippetClass = factory.Class().get("snippet.test.resources.SnippetCommentResource");
 		CtMethod method = snippetClass.getMethodsByName("methodForCommentOnlySnippet").get(0);
 		CtBlock body = method.getBody();
+		body.addStatement(1,factory.createCodeSnippetStatement("/* a \n block \n comment */\n// inline"));
+		body.addStatement(0,factory.createCodeSnippetStatement("/* a \n block \n comment */"));
 		body.addStatement(0,factory.createCodeSnippetStatement("int x"));
-		body.addStatement(0,factory.createCodeSnippetStatement("// comment"));
-		snippetClass.compileAndReplaceSnippets();
+		body.addStatement(0,factory.createCodeSnippetStatement("  // inline"));
 
-		assertTrue(body.getStatements().get(0) instanceof CtLocalVariable);
-		assertTrue(body.getStatements().get(1) instanceof CtReturn);
-		assertEquals(2,body.getStatements().size());
-		assertEquals(1,body.getStatements().get(0).getComments().size());
-	}
-
-	@Test
-	public void testLastInBlockCommentSnippetCompilation() {
-		// contract: if a snippet with only a comment is last in a block
-		// or followed by CtComments or comment-only snippets exclusively,
-		// it should be compiled to a CtComment
-		Launcher launcher = new Launcher();
-		Factory factory = launcher.getFactory();
-		launcher.addInputResource("src/test/resources/snippet/SnippetCommentResource.java");
-		launcher.buildModel();
-		CtClass<?> snippetClass = factory.Class().get("snippet.test.resources.SnippetCommentResource");
-		CtMethod method = snippetClass.getMethodsByName("methodWithComment").get(0);
-		CtBlock body = method.getBody();
-		body.addStatement(0,factory.createCodeSnippetStatement("// comment"));
 		snippetClass.compileAndReplaceSnippets();
 
 		assertTrue(body.getStatements().get(0) instanceof CtComment);
-		assertTrue(body.getStatements().get(1) instanceof CtComment);
-		assertEquals(2,body.getStatements().size());
+		assertTrue(body.getStatements().get(1) instanceof CtLocalVariable);
+		assertTrue(body.getStatements().get(2) instanceof CtComment);
+		assertTrue(body.getStatements().get(3) instanceof CtReturn);
+		assertTrue(body.getStatements().get(4) instanceof CtComment);
+		assertTrue(body.getStatements().get(5) instanceof CtComment);
+		assertEquals(CtComment.CommentType.INLINE,((CtComment) body.getStatements().get(0)).getCommentType());
+		assertEquals(CtComment.CommentType.BLOCK,((CtComment) body.getStatements().get(2)).getCommentType());
+		assertEquals(CtComment.CommentType.BLOCK,((CtComment) body.getStatements().get(4)).getCommentType());
+		assertEquals(CtComment.CommentType.INLINE,((CtComment) body.getStatements().get(5)).getCommentType());
+		assertEquals(6,body.getStatements().size());
 	}
 
 	@Test
