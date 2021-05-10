@@ -48,6 +48,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -367,5 +368,22 @@ public class TryCatchTest {
 		assertThat(paramTypes.size(), equalTo(2));
 		assertTrue("first type reference is fully qualified", paramTypes.get(0).isSimplyQualified());
 		assertTrue("second type reference is fully qualified", paramTypes.get(1).isSimplyQualified());
+	}
+
+	@Test
+	public void testCatchWithQualifiedAndUnqualifiedTypeReferencesInSameCatcher() throws Exception {
+		// contract: It should be possible for qualified and unqualified type references to exist in
+		// the same catcher
+
+		CtClass<?> clazz = build(
+				"spoon.test.trycatch.testclasses", "CatcherWithQualifiedAndUnqualifiedTypeRefs");
+		List<CtCatch> catches = clazz.getElements(e -> true);
+		assertEquals(1, catches.size());
+
+		CtCatch targetCatch = catches.get(0);
+		List<CtTypeReference<?>> paramTypes = targetCatch.getParameter().getMultiTypes();
+		assertThat(paramTypes.size(), equalTo(2));
+		assertTrue("first type reference should be unqualified", paramTypes.get(0).isSimplyQualified());
+		assertFalse("second type reference should be qualified", paramTypes.get(1).isSimplyQualified());
 	}
 }
