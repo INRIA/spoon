@@ -45,6 +45,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -348,5 +350,22 @@ public class TryCatchTest {
 		CtCatch targetCatch = catches.get(0);
 		CtTypeReference<?> catchParamType = targetCatch.getParameter().getType();
 		assertTrue(catchParamType.isSimplyQualified());
+	}
+
+	@Test
+	public void testCatchUnqualifiedReferenceMarkedSimplyQualifiedWhenMultipleTypesAreSpecified() throws Exception {
+		// contract: Unqualified type references should have implicit packages when there are
+		// multiple types in a single catcher
+
+		CtClass<?> clazz = build(
+				"spoon.test.trycatch.testclasses", "MultipleUnqualifiedTypesInSingleCatcher");
+		List<CtCatch> catches = clazz.getElements(e -> true);
+		assertEquals(1, catches.size());
+
+		CtCatch targetCatch = catches.get(0);
+		List<CtTypeReference<?>> paramTypes = targetCatch.getParameter().getMultiTypes();
+		assertThat(paramTypes.size(), equalTo(2));
+		assertTrue("first type reference is fully qualified", paramTypes.get(0).isSimplyQualified());
+		assertTrue("second type reference is fully qualified", paramTypes.get(1).isSimplyQualified());
 	}
 }
