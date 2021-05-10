@@ -22,8 +22,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.Launcher;
 import spoon.MavenLauncher;
-import spoon.processing.Processor;
-import spoon.reflect.declaration.CtElement;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.Level;
 import uk.org.lidalia.slf4jtest.TestLogger;
