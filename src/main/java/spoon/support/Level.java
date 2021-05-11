@@ -11,7 +11,7 @@ package spoon.support;
  * Enum for representing logging levels.
  */
 public enum Level {
-	ERROR(100), WARN(200), INFO(300), DEBUG(400), TRACE(500);
+	OFF(0), ERROR(100), WARN(200), INFO(300), DEBUG(400), TRACE(500);
 
 	private final int levelValue;
 
