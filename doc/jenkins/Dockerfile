@@ -1,4 +1,4 @@
-FROM stackbrew/ubuntu:14.10
+FROM stackbrew/ubuntu:16.04
 MAINTAINER Gerard Paligot "gerard.paligot@inria.fr"
 
 RUN apt-get update && apt-get clean
