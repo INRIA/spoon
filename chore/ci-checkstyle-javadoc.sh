@@ -15,6 +15,7 @@ COMPARE_BRANCH="master"
 JAVADOC_CHECKSTYLE_CONFIG="__SPOON_CI_checkstyle-javadoc.xml"
 
 COMPARE_WITH_MASTER_ARG="COMPARE_WITH_MASTER"
+RELATED_ISSUE_URL="https://github.com/inria/spoon/issues/3923"
 
 if [[ $(git branch --show-current) == "$COMPARE_BRANCH" ]]; then
     # nothing to compare, we're on the main branch
@@ -73,6 +74,7 @@ function main() {
     elif [[ $compare_num_errors < $current_num_errors ]]; then
         echo "Javadoc quality has deteriorated!"
         echo "Run the chore/ci-checkstyle-javadoc.sh script locally to find errors"
+        echo "See $RELATED_ISSUE_URL for details"
         exit 1
     else
         echo "Javadoc quality has not deteriorated"
@@ -87,6 +89,8 @@ function usage_and_exit() {
         branch with those on master and exit non-zero if the current branch has
         more errors. WARNING: Never run this with uncommitted changes, they
         will be lost!
+
+See $RELATED_ISSUE_URL for info related to using this script locally to improve Javadoc quality.
 
 To list all errors in a particular .java file, just run with '/<CLASS_NAME>.java' as the argument. For example:
 
