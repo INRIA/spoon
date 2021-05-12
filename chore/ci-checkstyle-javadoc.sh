@@ -75,6 +75,7 @@ function main() {
         exit 1
     else
         echo "Javadoc quality has not deteriorated"
+        echo "Run the chore/ci-checkstyle-javadoc.sh script locally to find errors"
     fi
 }
 
