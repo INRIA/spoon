@@ -84,13 +84,9 @@ function usage_and_exit() {
     <regex>: A regex to filter output lines by (typically just a file path)
     RUN_CI_CHECK: Run the continuous integration check
 
-Example use to list all errors in src/main/java/spoon/Launcher.java:
+To list all errors in a particular .java file, just run with '/<CLASS_NAME>.java' as the argument. For example:
 
-    \$ ./chore/ci-checkstyle-javadoc.sh src/main/java/spoon/Launcher.java
-
-Example use to count the errors in the same file:
-
-    \$ ./chore/ci-checkstyle-javadoc.sh src/main/java/spoon/Launcher.java | wc -l"
+    \$ ./chore/ci-checkstyle-javadoc.sh '/Launcher.java'"
     exit 1
 }
 
