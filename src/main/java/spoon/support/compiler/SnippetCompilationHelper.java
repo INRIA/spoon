@@ -59,7 +59,7 @@ public class SnippetCompilationHelper {
 		Map<CtPath, CtElement> elements2after = new HashMap<>();
 		for (Object o : initialClass.filterChildren(new TypeFilter<>(CtCodeSnippet.class)).list()) {
 			CtElement el = (CtElement) o;
-			if(el instanceof CtCodeSnippetStatement && containsOnlyWhiteSpace(el)){
+			if (el instanceof CtCodeSnippetStatement && containsOnlyWhiteSpace(el)) {
 				replaceComments((CtStatement) el);
 				continue;
 			}
@@ -82,7 +82,7 @@ public class SnippetCompilationHelper {
 		removeIllegalDummyStatements(clonedInitialClass);
 
 		String pkg = initialClass.getPackage().getQualifiedName();
-		if(!pkg.equals("")){
+		if (!pkg.equals("")) {
 			pkg = "package " + pkg + ";";
 		}
 		try {
@@ -112,35 +112,34 @@ public class SnippetCompilationHelper {
 
 	private static boolean containsOnlyWhiteSpace(CtElement element) {
 		char[] snippet = (element.toString() + '\n').toCharArray();
-		int next = PositionBuilder.findNextNonWhitespace(snippet,snippet.length-1,0);
+		int next = PositionBuilder.findNextNonWhitespace(snippet, snippet.length - 1, 0);
 		if (next == -1) {
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
 
 	private static void replaceComments(CtStatement element) {
-		replaceComments(element,(element.toString() + '\n').toCharArray());
+		replaceComments(element, (element.toString() + '\n').toCharArray());
 		element.delete();
 	}
 
 	private static void replaceComments(CtStatement element, char[] snippet) {
 		Factory factory = element.getFactory();
 		CtComment comment;
-		for(int i = 0; i < snippet.length;i++){
-			if(Character.isWhitespace(snippet[i])){
+		for (int i = 0; i < snippet.length; i++) {
+			if (Character.isWhitespace(snippet[i])) {
 				continue;
 			}
-			int end = PositionBuilder.getEndOfComment(snippet,snippet.length-1,i);
-			if(snippet[i+1] == '*') {
-				comment = factory.createComment(new String(Arrays.copyOfRange(snippet, i+2, end-1)),CtComment.CommentType.BLOCK);
+			int end = PositionBuilder.getEndOfComment(snippet, snippet.length - 1, i);
+			if (snippet[i + 1] == '*') {
+				comment = factory.createComment(new String(Arrays.copyOfRange(snippet, i + 2, end - 1)), CtComment.CommentType.BLOCK);
 			} else {
-				comment = factory.createComment(new String(Arrays.copyOfRange(snippet, i+2, end)),CtComment.CommentType.INLINE);
+				comment = factory.createComment(new String(Arrays.copyOfRange(snippet, i + 2, end)), CtComment.CommentType.INLINE);
 			}
 			element.insertBefore(comment);
-			if(end+1<snippet.length) {
+			if (end + 1 < snippet.length) {
 				replaceComments(element, Arrays.copyOfRange(snippet, end + 1, snippet.length));
 			}
 			break;
@@ -161,9 +160,9 @@ public class SnippetCompilationHelper {
 		for (Object o : clonedInitialClass.filterChildren(new TypeFilter<>(CtReturn.class)).list()) {
 			CtStatement returnStmt = (CtStatement) o;
 			CtBlock block = (CtBlock) returnStmt.getParent();
-			for(int i = block.getStatements().size()-1; i>0; i--){
+			for (int i = block.getStatements().size() - 1; i > 0; i--) {
 				CtStatement currentStatement = block.getStatement(i);
-				if(currentStatement == returnStmt){
+				if (currentStatement == returnStmt) {
 					break;
 				} else {
 					currentStatement.delete();
