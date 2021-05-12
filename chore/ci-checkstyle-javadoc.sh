@@ -72,10 +72,10 @@ function main() {
         exit 1;
     elif [[ $compare_num_errors < $current_num_errors ]]; then
         echo "Javadoc quality has deteriorated!"
+        echo "Run the chore/ci-checkstyle-javadoc.sh script locally to find errors"
         exit 1
     else
         echo "Javadoc quality has not deteriorated"
-        echo "Run the chore/ci-checkstyle-javadoc.sh script locally to find errors"
     fi
 }
 
