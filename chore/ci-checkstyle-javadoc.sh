@@ -14,13 +14,15 @@ set -o pipefail
 COMPARE_BRANCH="master"
 JAVADOC_CHECKSTYLE_CONFIG="__SPOON_CI_checkstyle-javadoc.xml"
 
+RUN_CI_CHECK_ARG="RUN_CI_CHECK"
+
 if [[ $(git branch --show-current) == "$COMPARE_BRANCH" ]]; then
     # nothing to compare, we're on the main branch
     exit 0
 fi
 
 function cleanup() {
-    rm "$JAVADOC_CHECKSTYLE_CONFIG"
+    rm -f "$JAVADOC_CHECKSTYLE_CONFIG"
 }
 
 trap cleanup EXIT
@@ -37,9 +39,13 @@ function create_checkstyle_config() {
 </module>' > "$JAVADOC_CHECKSTYLE_CONFIG"
 }
 
+function run_checkstyle() {
+    create_checkstyle_config
+    mvn -B checkstyle:check --fail-never -Dcheckstyle.config.location="$JAVADOC_CHECKSTYLE_CONFIG"
+}
+
 function compute_num_errors() {
-    echo $(mvn -B checkstyle:check --fail-never -Dcheckstyle.config.location="$JAVADOC_CHECKSTYLE_CONFIG" \
-        | grep -Po '(?<=There are )\d+(?= errors reported by Checkstyle)')
+     grep -Po '(?<=There are )\d+(?= errors reported by Checkstyle)' <<< `run_checkstyle`
 }
 
 function main() {
@@ -47,12 +53,10 @@ function main() {
 
     # compute compare score
     git checkout --force "$COMPARE_BRANCH" &> /dev/null
-    create_checkstyle_config
     compare_num_errors=`compute_num_errors`
 
     # compute current score
     git checkout --force - &> /dev/null
-    create_checkstyle_config
     current_num_errors=`compute_num_errors`
 
     echo "JAVADOC QUALITY SCORE (lower is better)
@@ -74,4 +78,28 @@ function main() {
     fi
 }
 
-main
+function usage_and_exit() {
+    echo "usage: ci-checkstyle-javadoc.sh [<regex>|$RUN_CI_CHECK_ARG]
+
+    <regex>: A regex to filter output lines by (typically just a file path)
+    RUN_CI_CHECK: Run the continuous integration check
+
+Example use to list all errors in src/main/java/spoon/Launcher.java:
+
+    \$ ./chore/ci-checkstyle-javadoc.sh src/main/java/spoon/Launcher.java
+
+Example use to count the errors in the same file:
+
+    \$ ./chore/ci-checkstyle-javadoc.sh src/main/java/spoon/Launcher.java | wc -l"
+    exit 1
+}
+
+if [[ "$#" != 1 ]]; then
+    usage_and_exit
+fi
+
+if [[ "$1" == "$RUN_CI_CHECK_ARG" ]]; then
+    main
+else
+    grep "$1" <<< `run_checkstyle`
+fi
