@@ -14,7 +14,7 @@ set -o pipefail
 COMPARE_BRANCH="master"
 JAVADOC_CHECKSTYLE_CONFIG="__SPOON_CI_checkstyle-javadoc.xml"
 
-RUN_CI_CHECK_ARG="RUN_CI_CHECK"
+COMPARE_WITH_MASTER_ARG="COMPARE_WITH_MASTER"
 
 if [[ $(git branch --show-current) == "$COMPARE_BRANCH" ]]; then
     # nothing to compare, we're on the main branch
@@ -80,10 +80,13 @@ function main() {
 }
 
 function usage_and_exit() {
-    echo "usage: ci-checkstyle-javadoc.sh [<regex>|$RUN_CI_CHECK_ARG]
+    echo "usage: ci-checkstyle-javadoc.sh [<regex>|$COMPARE_WITH_MASTER_ARG]
 
     <regex>: A regex to filter output lines by (typically just a file path)
-    RUN_CI_CHECK: Run the continuous integration check
+    $COMPARE_WITH_MASTER_ARG: Compare the amount of errors on the current
+        branch with those on master and exit non-zero if the current branch has
+        more errors. WARNING: Never run this with uncommitted changes, they
+        will be lost!
 
 To list all errors in a particular .java file, just run with '/<CLASS_NAME>.java' as the argument. For example:
 
@@ -95,7 +98,7 @@ if [[ "$#" != 1 ]]; then
     usage_and_exit
 fi
 
-if [[ "$1" == "$RUN_CI_CHECK_ARG" ]]; then
+if [[ "$1" == "$COMPARE_WITH_MASTER_ARG" ]]; then
     main
 else
     grep "$1" <<< `run_checkstyle`
