@@ -877,10 +877,4 @@ public class TestSniperPrinter {
 	public void testToStringWithSniperOnElementScan() throws Exception {
 		testToStringWithSniperPrinter("src/test/java/spoon/test/prettyprinter/testclasses/ElementScan.java");
 	}
-
-	@org.junit.Test
-	public void test() {
-
-	}
-
 }
