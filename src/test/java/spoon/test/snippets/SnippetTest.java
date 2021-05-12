@@ -181,9 +181,7 @@ public class SnippetTest {
 		CtBlock innerBlock = body.getStatement(0);
 		innerBlock.addStatement(0,factory.createCodeSnippetStatement("invokedMethod()"));
 		body.addStatement(0,factory.createComment("block comment", CtComment.CommentType.BLOCK));
-
 		testClass.compileAndReplaceSnippets();
-
 		assertTrue(body.getStatements().get(0) instanceof CtComment);
 		assertTrue(body.getStatements().get(1) instanceof CtBlock);
 		assertTrue(body.getStatements().get(2) instanceof CtComment);
@@ -200,7 +198,7 @@ public class SnippetTest {
 
 	@Test
 	public void testCommentSnippetCompilation() {
-		// contract: a snippet with only a comment should be replaced with a CtComment
+		// contract: a snippet with only comments should be replaced with corresponding CtComments
 		Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();
 		launcher.addInputResource("src/test/resources/snippet/SnippetCommentResource.java");
@@ -212,9 +210,7 @@ public class SnippetTest {
 		body.addStatement(0,factory.createCodeSnippetStatement("/* a \n block \n comment */"));
 		body.addStatement(0,factory.createCodeSnippetStatement("int x"));
 		body.addStatement(0,factory.createCodeSnippetStatement("  // inline"));
-
 		snippetClass.compileAndReplaceSnippets();
-
 		assertTrue(body.getStatements().get(0) instanceof CtComment);
 		assertTrue(body.getStatements().get(1) instanceof CtLocalVariable);
 		assertTrue(body.getStatements().get(2) instanceof CtComment);
@@ -240,7 +236,6 @@ public class SnippetTest {
 		CtBlock body = method.getBody();
 		body.addStatement(0,factory.createCodeSnippetStatement("int x"));
 		snippetClass.compileAndReplaceSnippets();
-
 		assertTrue(body.getStatements().get(0) instanceof CtLocalVariable);
 		assertEquals(1,body.getStatements().size());
 	}

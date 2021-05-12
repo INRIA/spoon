@@ -31,8 +31,13 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.compiler.jdt.PositionBuilder;
 import spoon.support.reflect.declaration.CtElementImpl;
-
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Arrays;
 
 /** Helper class for working with snippets */
 public class SnippetCompilationHelper {
@@ -76,8 +81,12 @@ public class SnippetCompilationHelper {
 		addDummyStatements(clonedInitialClass);
 		removeIllegalDummyStatements(clonedInitialClass);
 
+		String pkg = initialClass.getPackage().getQualifiedName();
+		if(!pkg.equals("")){
+			pkg = "package " + pkg + ";";
+		}
 		try {
-			build(f, "package " + initialClass.getPackage().getQualifiedName() + ";" + clonedInitialClass.toString());
+			build(f, pkg + clonedInitialClass.toString());
 		} finally {
 			// restore modifiers
 			initialClass.setModifiers(backup);
