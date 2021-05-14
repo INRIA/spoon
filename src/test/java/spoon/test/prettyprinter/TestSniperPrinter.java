@@ -7,14 +7,12 @@
  */
 package spoon.test.prettyprinter;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.CtModel;
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
@@ -60,43 +58,39 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestSniperPrinter {
 
-	@Rule
-	public TemporaryFolder folder = new TemporaryFolder();
-
 	@Test
-	public void testClassRename1() throws Exception {
+	public void testClassRename1(@TempDir File tempDir) throws Exception {
 		// contract: one can sniper out of the box after Refactoring.changeTypeName
-		testClassRename(type -> {
+		testClassRename(tempDir, type -> {
 			Refactoring.changeTypeName(type, "Bar");
 		});
 	}
 
 	@Test
-	public void testClassRename2() throws Exception {
+	public void testClassRename2(@TempDir File tempDir) throws Exception {
 		// contract: one can sniper after setSimpleName
 		// with the necessary tweaks
-		testClassRename(type -> {
+		testClassRename(tempDir, type -> {
 			type.setSimpleName("Bar");
 			type.getFactory().CompilationUnit().addType(type);
 		});
 
 	}
 
-	public void testClassRename(Consumer<CtType<?>> renameTransfo) throws Exception {
+	public void testClassRename(File tempdir, Consumer<CtType<?>> renameTransfo) throws Exception {
 		// contract: sniper supports class rename
 		String testClass = ToBeChanged.class.getName();
 		Launcher launcher = new Launcher();
@@ -104,7 +98,7 @@ public class TestSniperPrinter {
 		launcher.getEnvironment().setPrettyPrinterCreator(() -> {
 			return new SniperJavaPrettyPrinter(launcher.getEnvironment());
 		});
-		launcher.setBinaryOutputDirectory(folder.newFolder());
+		launcher.setBinaryOutputDirectory(tempdir);
 		launcher.buildModel();
 		Factory f = launcher.getFactory();
 
@@ -117,7 +111,7 @@ public class TestSniperPrinter {
 
 
 		String contentOfPrettyPrintedClassFromDisk = getContentOfPrettyPrintedClassFromDisk(type);
-		assertTrue(contentOfPrettyPrintedClassFromDisk, contentOfPrettyPrintedClassFromDisk.contains("EOLs*/ Bar<T, K>"));
+		assertTrue(contentOfPrettyPrintedClassFromDisk.contains("EOLs*/ Bar<T, K>"), contentOfPrettyPrintedClassFromDisk);
 
 	}
 
@@ -559,7 +553,7 @@ public class TestSniperPrinter {
 
 		Consumer<CtType<?>> addArrayListImport = type -> {
 			Factory factory = type.getFactory();
-			assertTrue("there should be no package statement in this test file", type.getPackage().isUnnamedPackage());
+			assertTrue(type.getPackage().isUnnamedPackage(), "there should be no package statement in this test file");
 			CtCompilationUnit cu = factory.CompilationUnit().getOrCreate(type);
 			CtTypeReference<?> arrayListRef = factory.Type().get(java.util.ArrayList.class).getReference();
 			cu.getImports().add(factory.createImport(arrayListRef));
@@ -580,7 +574,7 @@ public class TestSniperPrinter {
 
 		Consumer<CtType<?>> addArrayListImport = type -> {
 			Factory factory = type.getFactory();
-			assertFalse("there should be a package statement in this test file", type.getPackage().isUnnamedPackage());
+			assertFalse(type.getPackage().isUnnamedPackage(), "there should be a package statement in this test file");
 			CtCompilationUnit cu = factory.CompilationUnit().getOrCreate(type);
 			CtTypeReference<?> arrayListRef = factory.Type().get(java.util.ArrayList.class).getReference();
 			cu.getImports().add(factory.createImport(arrayListRef));
@@ -870,8 +864,8 @@ public class TestSniperPrinter {
 					assertTrue(result.length() > 0);
 				}
 
-				assertTrue("ToString() on element (" + el.getClass().getName() + ") =  \"" + el + "\" is not in original content",
-						originalContent.contains(result.replace("\t", "")));
+				assertTrue(originalContent.contains(result.replace("\t", "")),
+						"ToString() on element (" + el.getClass().getName() + ") =  \"" + el + "\" is not in original content");
 			} catch (UnsupportedOperationException | SpoonException e) {
 				//Printer should not throw exception on printable element. (Unless there is a bug in the printer...)
 				fail("ToString() on Element (" + el.getClass().getName() + "): at " + el.getPath() + " lead to an exception: " + e);
@@ -883,5 +877,4 @@ public class TestSniperPrinter {
 	public void testToStringWithSniperOnElementScan() throws Exception {
 		testToStringWithSniperPrinter("src/test/java/spoon/test/prettyprinter/testclasses/ElementScan.java");
 	}
-
 }
