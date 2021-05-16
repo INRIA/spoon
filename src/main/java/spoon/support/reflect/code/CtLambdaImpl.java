@@ -188,6 +188,12 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <C extends CtExecutable<T>> C addParameter(CtParameter<?> parameter) {
+		addParameterAt(parameters.size(), parameter);
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtExecutable<T>> C addParameterAt(int position, CtParameter<?> parameter) {
 		if (parameter == null) {
 			return (C) this;
 		}
@@ -196,7 +202,7 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 		}
 		parameter.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, PARAMETER, this.parameters, parameter);
-		parameters.add(parameter);
+		parameters.add(position, parameter);
 		return (C) this;
 	}
 

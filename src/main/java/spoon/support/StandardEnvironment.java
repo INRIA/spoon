@@ -274,7 +274,7 @@ public class StandardEnvironment implements Serializable, Environment {
 	}
 
 	private void print(String message, Level messageLevel) {
-		if (messageLevel.toInt() <= this.level.toInt()) {
+		if (this.level != Level.OFF && messageLevel.toInt() <= this.level.toInt()) {
 			switch (messageLevel) {
 				case ERROR: logger.error(message);
 					break;

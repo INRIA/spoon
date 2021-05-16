@@ -27,7 +27,12 @@
       <license>
           <name>CeCILL-C</name>
           <comments>French equivalent to LGPL</comments>
-          <url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
+          <url>https://cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
+          <distribution>repo</distribution>
+      </license>
+      <license>
+          <name>MIT</name>
+          <url>https://opensource.org/licenses/MIT</url>
           <distribution>repo</distribution>
       </license>
   </licenses>
@@ -37,6 +42,7 @@
     <sonar.coverage.exclusions>
         **/support/gui/*
     </sonar.coverage.exclusions>
+    <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
   </properties>
 
   <dependencies>
@@ -172,7 +178,7 @@
         <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.6</version>
+            <version>0.8.7</version>
             <executions>
                 <execution>
                     <goals>
@@ -254,7 +260,6 @@
         <version>3.1.2</version>
         <configuration>
           <failsOnError>true</failsOnError>
-          <configLocation>checkstyle.xml</configLocation>
           <consoleOutput>true</consoleOutput>
           <!-- we exclude the generated files, see CtGenerationTest -->
           <excludes>spoon/support/visitor/clone/CloneBuilder.java</excludes>
@@ -302,4 +307,3 @@
     </plugins>
   </build>
 </project>
-

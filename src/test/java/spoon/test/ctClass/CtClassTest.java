@@ -16,6 +16,7 @@
  */
 package spoon.test.ctClass;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
 import static org.hamcrest.core.Is.is;
@@ -348,5 +349,22 @@ public class CtClassTest {
 		assertFalse(newClassInvocationCloned.toString().isEmpty());
 
 		assertEquals(newClassInvocation.toString(), newClassInvocationCloned.toString());
+	}
+
+	@Test(timeout = 5000L)
+	public void test_buildParameterizedClass_withTypeParameterUsedInQualifiedName() {
+		// contract: It should be possible to build a generic class when one of the type parameters
+		// is used in the qualified name of another type.
+        //
+		// See https://github.com/INRIA/spoon/issues/3903
+
+		CtClass<?> cls = Launcher.parseClass(
+				"public class Main<T extends java.util.Map<String, String>> { "
+				// Here we add a field with type `T.Entry`, i.e. T is used in a qualified type name
+				+ "T.Entry<String, String> entry; }");
+
+		CtField<?> field = cls.getField("entry");
+		assertThat(field.getType().getQualifiedName(), equalTo("T$Entry"));
+		assertThat(field.getType().isSimplyQualified(), is(false));
 	}
 }
