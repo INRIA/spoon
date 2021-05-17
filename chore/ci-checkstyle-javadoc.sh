@@ -23,7 +23,9 @@ if [[ $(git branch --show-current) == "$COMPARE_BRANCH" ]]; then
 fi
 
 function cleanup() {
-    rm -f "$JAVADOC_CHECKSTYLE_CONFIG"
+    if [ -f "$JAVADOC_CHECKSTYLE_CONFIG" ]; then
+        rm "$JAVADOC_CHECKSTYLE_CONFIG"
+    fi
 }
 
 trap cleanup EXIT
