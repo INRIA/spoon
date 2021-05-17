@@ -67,13 +67,13 @@ function main() {
     Current: $current_num_errors
     "
 
-    if [[ -z $compare_num_errors ]]; then
+    if [ -z $compare_num_errors ]; then
         echo "Failed to compute compare score";
         exit 1;
-    elif [[ -z $current_num_errors ]]; then
+    elif [ -z $current_num_errors ]; then
         echo "Failed to compute current score";
         exit 1;
-    elif [[ $compare_num_errors < $current_num_errors ]]; then
+    elif [ $compare_num_errors -lt $current_num_errors ]; then
         echo "Javadoc quality has deteriorated!"
         echo "Run the chore/ci-checkstyle-javadoc.sh script locally to find errors"
         echo "See $RELATED_ISSUE_URL for details"
@@ -100,11 +100,11 @@ To list all errors in a particular .java file, just run with '/<CLASS_NAME>.java
     exit 1
 }
 
-if [[ "$#" != 1 ]]; then
+if [ "$#" != 1 ]; then
     usage_and_exit
 fi
 
-if [[ "$1" == "$COMPARE_WITH_MASTER_ARG" ]]; then
+if [ "$1" == "$COMPARE_WITH_MASTER_ARG" ]; then
     main
 else
     grep "$1" <<< `run_checkstyle`
