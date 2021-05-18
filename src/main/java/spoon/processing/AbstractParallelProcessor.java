@@ -156,6 +156,9 @@ public abstract class AbstractParallelProcessor<E extends CtElement> extends Abs
 			try {
 				job.get();
 			} catch (InterruptedException | ExecutionException e) {
+				if (e instanceof InterruptedException) {
+					Thread.currentThread().interrupt();
+				}
 				throw new SpoonException("failed to wait for parallel processor to finish", e);
 			}
 		}
