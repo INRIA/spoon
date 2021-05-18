@@ -135,7 +135,7 @@ jobs:
       - name: Run extra checks
         run: ./chore/ci-extra.sh
       - name: Run Javadoc quality check
-        run: ./chore/ci-checkstyle-javadoc.sh
+        run: ./chore/ci-checkstyle-javadoc.sh COMPARE_WITH_MASTER
 
   sorald-buildbreaker:
     runs-on: ubuntu-latest
