@@ -237,6 +237,6 @@ public class SnippetTest {
 		body.addStatement(0,factory.createCodeSnippetStatement("int x"));
 		snippetClass.compileAndReplaceSnippets();
 		assertTrue(body.getStatements().get(0) instanceof CtLocalVariable);
-		assertEquals(1,body.getStatements().size());
+		assertEquals(1,body.getStatements().size()); 
 	}
 }
