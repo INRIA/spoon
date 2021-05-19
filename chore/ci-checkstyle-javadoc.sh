@@ -14,13 +14,18 @@ set -o pipefail
 COMPARE_BRANCH="master"
 JAVADOC_CHECKSTYLE_CONFIG="__SPOON_CI_checkstyle-javadoc.xml"
 
+COMPARE_WITH_MASTER_ARG="COMPARE_WITH_MASTER"
+RELATED_ISSUE_URL="https://github.com/inria/spoon/issues/3923"
+
 if [[ $(git branch --show-current) == "$COMPARE_BRANCH" ]]; then
     # nothing to compare, we're on the main branch
     exit 0
 fi
 
 function cleanup() {
-    rm "$JAVADOC_CHECKSTYLE_CONFIG"
+    if [ -f "$JAVADOC_CHECKSTYLE_CONFIG" ]; then
+        rm "$JAVADOC_CHECKSTYLE_CONFIG"
+    fi
 }
 
 trap cleanup EXIT
@@ -37,9 +42,13 @@ function create_checkstyle_config() {
 </module>' > "$JAVADOC_CHECKSTYLE_CONFIG"
 }
 
+function run_checkstyle() {
+    create_checkstyle_config
+    mvn -B checkstyle:check --fail-never -Dcheckstyle.config.location="$JAVADOC_CHECKSTYLE_CONFIG"
+}
+
 function compute_num_errors() {
-    echo $(mvn -B checkstyle:check --fail-never -Dcheckstyle.config.location="$JAVADOC_CHECKSTYLE_CONFIG" \
-        | grep -Po '(?<=There are )\d+(?= errors reported by Checkstyle)')
+     grep -Po '(?<=There are )\d+(?= errors reported by Checkstyle)' <<< `run_checkstyle`
 }
 
 function main() {
@@ -47,12 +56,10 @@ function main() {
 
     # compute compare score
     git checkout --force "$COMPARE_BRANCH" &> /dev/null
-    create_checkstyle_config
     compare_num_errors=`compute_num_errors`
 
     # compute current score
     git checkout --force - &> /dev/null
-    create_checkstyle_config
     current_num_errors=`compute_num_errors`
 
     echo "JAVADOC QUALITY SCORE (lower is better)
@@ -60,18 +67,45 @@ function main() {
     Current: $current_num_errors
     "
 
-    if [[ -z $compare_num_errors ]]; then
+    if [ -z $compare_num_errors ]; then
         echo "Failed to compute compare score";
         exit 1;
-    elif [[ -z $current_num_errors ]]; then
+    elif [ -z $current_num_errors ]; then
         echo "Failed to compute current score";
         exit 1;
-    elif [[ $compare_num_errors < $current_num_errors ]]; then
+    elif [ $compare_num_errors -lt $current_num_errors ]; then
         echo "Javadoc quality has deteriorated!"
+        echo "Run the chore/ci-checkstyle-javadoc.sh script locally to find errors"
+        echo "See $RELATED_ISSUE_URL for details"
         exit 1
     else
         echo "Javadoc quality has not deteriorated"
     fi
 }
 
-main
+function usage_and_exit() {
+    echo "usage: ci-checkstyle-javadoc.sh [<regex>|$COMPARE_WITH_MASTER_ARG]
+
+    <regex>: A regex to filter output lines by (typically just a file path)
+    $COMPARE_WITH_MASTER_ARG: Compare the amount of errors on the current
+        branch with those on master and exit non-zero if the current branch has
+        more errors. WARNING: Never run this with uncommitted changes, they
+        will be lost!
+
+See $RELATED_ISSUE_URL for info related to using this script locally to improve Javadoc quality.
+
+To list all errors in a particular .java file, just run with '/<CLASS_NAME>.java' as the argument. For example:
+
+    \$ ./chore/ci-checkstyle-javadoc.sh '/Launcher.java'"
+    exit 1
+}
+
+if [ "$#" != 1 ]; then
+    usage_and_exit
+fi
+
+if [ "$1" == "$COMPARE_WITH_MASTER_ARG" ]; then
+    main
+else
+    grep "$1" <<< `run_checkstyle`
+fi
