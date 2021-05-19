@@ -662,7 +662,9 @@ public class PositionBuilder {
 	}
 
 	/**
-	 * @param maxOff maximum acceptable return value
+	 * @param content the character array on which the search will be performed.
+	 * @param maxOff maximum acceptable return value.
+	 * @param off the offset of {@code content} where the search begins.
 	 * @return index of first non whitespace char, searching forward.
 	 * Can return 'off' if it is non whitespace.
 	 * Note: all kinds of java comments are understood as whitespace too.
@@ -775,7 +777,9 @@ public class PositionBuilder {
 		return -1;
 	}
 	/**
-	 * @param maxOff maximum acceptable return value
+	 * @param content the character array on which the search will be performed.
+	 * @param maxOff maximum acceptable return value.
+	 * @param off the offset of {@code content} where the search begins.
 	 * @return if the off points at start of comment then it returns offset which points on last character of the comment
 	 * if the off does not point at start of comment then it returns -1
 	 */
