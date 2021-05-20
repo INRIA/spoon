@@ -5,8 +5,12 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+      commit_message:
+        prefix: "chore(deps)"
 
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
       interval: "daily"
+      commit_message:
+        prefix: "chore(deps)"
