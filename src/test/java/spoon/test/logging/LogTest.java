@@ -16,10 +16,10 @@
  */
 package spoon.test.logging;
 
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.ParameterizedTest;
 import spoon.Launcher;
 import spoon.MavenLauncher;
 import spoon.support.JavaOutputProcessor;
@@ -27,88 +27,80 @@ import spoon.support.Level;
 import uk.org.lidalia.slf4jtest.TestLogger;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(Enclosed.class)
 public class LogTest {
 
-	@RunWith(Parameterized.class)
-	public static class ParameterizedTest {
-		@Parameterized.Parameters
-		public static Collection<Object[]> data() {
-			return Arrays.asList(new Object[][] {
-					{Level.DEBUG, 6 },
-					{Level.INFO, 2 },
-					{Level.WARN, 0 },
-					{Level.ERROR, 0 },
-					{Level.OFF, 0}
-			});
-		}
+	@ParameterizedTest
+	@MethodSource("getLogLevelsAndExpectedCounts")
+	public void testAllLevelsForLogs(Pair<Level, Integer> levelAndExpectedCount) {
+		final Level level = levelAndExpectedCount.getLeft();
+		final int expectedCount = levelAndExpectedCount.getRight();
+		final TestLogger logger = TestLoggerFactory.getTestLogger(Launcher.class);
+		final Launcher launcher = new Launcher();
+		logger.clear();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/logging",
+				"--level", level.toString()
+		});
 
-		@Parameterized.Parameter(0)
-		public Level level;
+		// launcher provides two logging methods
+		launcher.getEnvironment().debugMessage("debugMessage");
+		launcher.getEnvironment().reportProgressMessage("reportProgressMessage");
 
-		@Parameterized.Parameter(1)
-		public int nbLogMessagesMinimum;
+		// contract: the --level arguments sets the level
+		assertEquals(level, launcher.getFactory().getEnvironment().getLevel());
 
-		@Test
-		public void testAllLevelsForLogs() {
-			final TestLogger logger = TestLoggerFactory.getTestLogger(Launcher.class);
-			final Launcher launcher = new Launcher();
-			logger.clear();
-			launcher.setArgs(new String[] {
-					"-i", "./src/test/java/spoon/test/logging",
-					"--level", level.toString()
-			});
+		// contract: the number of messages increases with the log level
+		assertTrue(logger.getLoggingEvents().size() >= expectedCount);
 
-			// launcher provides two logging methods
-			launcher.getEnvironment().debugMessage("debugMessage");
-			launcher.getEnvironment().reportProgressMessage("reportProgressMessage");
-
-			// contract: the --level arguments sets the level
-			assertEquals(level, launcher.getFactory().getEnvironment().getLevel());
-
-			// contract: the number of messages increases with the log level
-			assertTrue(logger.getLoggingEvents().size() >= nbLogMessagesMinimum);
-		}
 	}
 
-	public static class NonParameterizedTest {
-
-		@Test
-		public void testMavenLauncherLogs() {
-			// contract: MavenLauncher should output different logs depending on whether the classpath is inferred or manually set
-			final TestLogger logger = TestLoggerFactory.getTestLogger(MavenLauncher.class);
-			MavenLauncher mavenLauncher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
-			assertEquals("Running in FULLCLASSPATH mode. Source folders and dependencies are inferred from the pom.xml file (doc: http://spoon.gforge.inria.fr/launcher.html).",logger.getLoggingEvents().get(0).getMessage());
-			logger.clear();
-			mavenLauncher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE, new String[]{"./"});
-			assertEquals("Running in FULLCLASSPATH mode. Classpath is manually set (doc: http://spoon.gforge.inria.fr/launcher.html).",logger.getLoggingEvents().get(0).getMessage());
-		}
-
-		@Test
-		public void testLoggingOff() {
-			// contract: When logging is off, no message should me logged independent of logging level.
-			final TestLogger logger = TestLoggerFactory.getTestLogger(Launcher.class);
-			final Launcher launcher = new Launcher();
-			logger.clear();
-			launcher.setArgs(new String[] {
-					"-i", "./src/test/java/spoon/test/logging",
-					"--level", Level.OFF.toString()
-			});
-
-			// test messages with all logging levels
-			for (Level level : Level.values()) {
-				launcher.getEnvironment().report(new JavaOutputProcessor(), level,
-						"This is a message with level " + level.toString());
-			}
-			assertEquals(0, logger.getLoggingEvents().size());
-		}
+	/**
+	 * @return log level and expected amount of logs for that level for the
+	 * {@link LogTest::testAllLevelsForLogs} test.
+	 */
+	private static Stream<Pair<Level, Integer>> getLogLevelsAndExpectedCounts() {
+		return Stream.of(
+				Pair.of(Level.DEBUG, 6),
+				Pair.of(Level.INFO, 2),
+				Pair.of(Level.WARN, 0),
+				Pair.of(Level.ERROR, 0),
+				Pair.of(Level.OFF, 0)
+		);
 	}
 
 
+	@Test
+	public void testMavenLauncherLogs() {
+		// contract: MavenLauncher should output different logs depending on whether the classpath is inferred or manually set
+		final TestLogger logger = TestLoggerFactory.getTestLogger(MavenLauncher.class);
+		MavenLauncher mavenLauncher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE);
+		assertEquals("Running in FULLCLASSPATH mode. Source folders and dependencies are inferred from the pom.xml file (doc: http://spoon.gforge.inria.fr/launcher.html).",logger.getLoggingEvents().get(0).getMessage());
+		logger.clear();
+		mavenLauncher = new MavenLauncher("./pom.xml", MavenLauncher.SOURCE_TYPE.APP_SOURCE, new String[]{"./"});
+		assertEquals("Running in FULLCLASSPATH mode. Classpath is manually set (doc: http://spoon.gforge.inria.fr/launcher.html).",logger.getLoggingEvents().get(0).getMessage());
+	}
+
+	@Test
+	public void testLoggingOff() {
+		// contract: When logging is off, no message should me logged independent of logging level.
+		final TestLogger logger = TestLoggerFactory.getTestLogger(Launcher.class);
+		final Launcher launcher = new Launcher();
+		logger.clear();
+		launcher.setArgs(new String[] {
+				"-i", "./src/test/java/spoon/test/logging",
+				"--level", Level.OFF.toString()
+		});
+
+		// test messages with all logging levels
+		for (Level level : Level.values()) {
+			launcher.getEnvironment().report(new JavaOutputProcessor(), level,
+					"This is a message with level " + level.toString());
+		}
+		assertEquals(0, logger.getLoggingEvents().size());
+	}
 }
