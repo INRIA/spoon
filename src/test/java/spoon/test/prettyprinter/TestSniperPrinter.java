@@ -753,9 +753,8 @@ public class TestSniperPrinter {
         	ctFor.getForUpdate().forEach(CtElement::delete);
 			ctFor.getForInit().forEach(CtElement::delete);
 		};
-		BiConsumer<CtType<?>, String> assertNotStaticFindFirstIsEmpty = (type, result) -> {
+		BiConsumer<CtType<?>, String> assertNotStaticFindFirstIsEmpty = (type, result) ->
             assertThat(result, containsString("for (; i < 10;)"));
-		};
 
 		testSniper("ForLoop", deleteForUpdate, assertNotStaticFindFirstIsEmpty);
 	}
