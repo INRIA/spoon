@@ -744,17 +744,31 @@ public class TestSniperPrinter {
 	}
 
 	@Test
-	void testSniperRespectsDeletionInForLoopHeader() {
-		// contract: The sniper printer should detect deletions in for loop headers as modifications
+	void testSniperRespectsDeletionInForInit() {
+		// contract: The sniper printer should detect deletions in for loop init as modifications
 		// and print the model accordingly.
 
         Consumer<CtType<?>> deleteForUpdate = type -> {
         	CtFor ctFor = type.filterChildren(CtFor.class::isInstance).first();
-        	ctFor.getForUpdate().forEach(CtElement::delete);
 			ctFor.getForInit().forEach(CtElement::delete);
 		};
 		BiConsumer<CtType<?>, String> assertNotStaticFindFirstIsEmpty = (type, result) ->
-            assertThat(result, containsString("for (; i < 10;)"));
+            assertThat(result, containsString("for (; i < 10; i++)"));
+
+		testSniper("ForLoop", deleteForUpdate, assertNotStaticFindFirstIsEmpty);
+	}
+
+	@Test
+	void testSniperRespectsDeletionInForUpdate() {
+		// contract: The sniper printer should detect deletions in for loop update as modifications
+		// and print the model accordingly.
+
+		Consumer<CtType<?>> deleteForUpdate = type -> {
+			CtFor ctFor = type.filterChildren(CtFor.class::isInstance).first();
+			ctFor.getForUpdate().forEach(CtElement::delete);
+		};
+		BiConsumer<CtType<?>, String> assertNotStaticFindFirstIsEmpty = (type, result) ->
+				assertThat(result, containsString("for (int i = 0; i < 10;)"));
 
 		testSniper("ForLoop", deleteForUpdate, assertNotStaticFindFirstIsEmpty);
 	}
