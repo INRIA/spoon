@@ -47,7 +47,7 @@ import spoon.support.DerivedProperty;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.OutputDestinationHandler;
 import spoon.support.UnsettableProperty;
-import spoon.support.compiler.SnippetCompilationError;
+import spoon.support.compiler.jdt.SnippetCompilationError;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.template.Local;
 import spoon.template.TemplateMatcher;

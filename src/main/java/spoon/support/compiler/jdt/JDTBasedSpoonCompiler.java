@@ -43,7 +43,6 @@ import spoon.reflect.visitor.Query;
 import spoon.support.Level;
 import spoon.support.QueueProcessingManager;
 import spoon.support.comparator.FixedOrderBasedOnFileNameCompilationUnitComparator;
-import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.SpoonProgress;
 import spoon.support.compiler.VirtualFolder;
 import spoon.support.modelobs.SourceFragmentCreator;

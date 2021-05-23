@@ -5,7 +5,7 @@
  *
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
-package spoon.support.compiler;
+package spoon.support.compiler.jdt;
 
 import spoon.SpoonModelBuilder;
 import spoon.compiler.ModelBuildingException;
@@ -28,8 +28,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.compiler.jdt.JDTSnippetCompiler;
-import spoon.support.compiler.jdt.PositionBuilder;
 import spoon.support.reflect.declaration.CtElementImpl;
 import java.util.EnumSet;
 import java.util.HashMap;

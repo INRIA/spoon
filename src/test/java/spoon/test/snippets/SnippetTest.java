@@ -35,7 +35,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.compiler.SnippetCompilationHelper;
+import spoon.support.compiler.jdt.SnippetCompilationHelper;
 import spoon.support.compiler.VirtualFile;
 
 import static org.junit.Assert.assertEquals;
