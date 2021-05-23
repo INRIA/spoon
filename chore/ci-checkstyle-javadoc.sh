@@ -17,11 +17,6 @@ JAVADOC_CHECKSTYLE_CONFIG="__SPOON_CI_checkstyle-javadoc.xml"
 COMPARE_WITH_MASTER_ARG="COMPARE_WITH_MASTER"
 RELATED_ISSUE_URL="https://github.com/inria/spoon/issues/3923"
 
-if [[ $(git branch --show-current) == "$COMPARE_BRANCH" ]]; then
-    # nothing to compare, we're on the main branch
-    exit 0
-fi
-
 function cleanup() {
     if [ -f "$JAVADOC_CHECKSTYLE_CONFIG" ]; then
         rm "$JAVADOC_CHECKSTYLE_CONFIG"
@@ -105,6 +100,12 @@ if [ "$#" != 1 ]; then
 fi
 
 if [ "$1" == "$COMPARE_WITH_MASTER_ARG" ]; then
+    if [ $(git branch --show-current) == "$COMPARE_BRANCH" ]; then
+        # nothing to compare, we're on the main branch
+        echo "Already on branch $COMPARE_BRANCH, nothing to compare"
+        exit 0
+    fi
+
     main
 else
     grep "$1" <<< `run_checkstyle`

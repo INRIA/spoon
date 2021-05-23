@@ -134,6 +134,9 @@ public abstract class CtScanner implements CtVisitor {
 
 	/**
 	 * Generically scans a collection of meta-model elements.
+	 *
+	 * @param role Role of the collection in the parent element
+	 * @param elements A collection of elements to scan (generally sibling elements)
 	 */
 	public void scan(CtRole role, Collection<? extends CtElement> elements) {
 		if (elements != null) {
@@ -147,6 +150,9 @@ public abstract class CtScanner implements CtVisitor {
 
 	/**
 	 * Generically scans a Map of meta-model elements.
+	 *
+	 * @param role Role of the map in the parent element
+	 * @param elements A map of elements to scan (generally sibling elements)
 	 */
 	public void scan(CtRole role, Map<String, ? extends CtElement> elements) {
 		if (elements != null) {
@@ -158,6 +164,8 @@ public abstract class CtScanner implements CtVisitor {
 
 	/**
 	 * Generically scans a collection of meta-model elements.
+	 *
+	 * @param elements A collection of elements
 	 */
 	public void scan(Collection<? extends CtElement> elements) {
 		scan(null, elements);
@@ -165,6 +173,9 @@ public abstract class CtScanner implements CtVisitor {
 
 	/**
 	 * Generically scans a meta-model element.
+	 *
+	 * @param role Role of the element in its parent
+	 * @param element An element to scan
 	 */
 	public void scan(CtRole role, CtElement element) {
 		scan(element);
@@ -172,6 +183,8 @@ public abstract class CtScanner implements CtVisitor {
 
 	/**
 	 * Generically scans a meta-model element.
+	 *
+	 * @param element An element to scan
 	 */
 	public void scan(CtElement element) {
 		if (element != null) {
@@ -192,6 +205,8 @@ public abstract class CtScanner implements CtVisitor {
 	/**
 	 * Generically scans an object that can be an element, a reference, or a
 	 * collection of those.
+	 *
+	 * @param o A {@link CtElement}, or a {@link Map} or {@link Collection} of elements
 	 */
 	public void scan(Object o) {
 		scan(null, o);
@@ -200,6 +215,9 @@ public abstract class CtScanner implements CtVisitor {
 	/**
 	 * Generically scans an object that can be an element, a reference, or a
 	 * collection of those.
+	 *
+	 * @param role Role of the object in its parent
+	 * @param o A {@link CtElement}, or a {@link Map} or {@link Collection} of elements
 	 */
 	public void scan(CtRole role, Object o) {
 		if (o instanceof CtElement) {
