@@ -16,8 +16,8 @@
  */
 package spoon.test.filters;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.legacy.NameFilter;
 import spoon.reflect.code.CtCFlowBreak;
@@ -97,14 +97,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class FilterTest {
 
 	Factory factory;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		factory = build(Foo.class);
 	}
@@ -1134,7 +1134,7 @@ public class FilterTest {
 		class Context {
 			boolean wasTerminated = false;
 			void failIfTerminated(String place) {
-				assertTrue("The "+place+" is called after query was terminated.", wasTerminated==false);
+				assertTrue(wasTerminated==false, "The "+place+" is called after query was terminated.");
 			}
 		}
 		
@@ -1277,7 +1277,7 @@ public class FilterTest {
 			
 		})).forEach(ele->{
 			context2.nrOfResults++;
-			assertTrue("ele instanceof "+ele.getClass(),ele instanceof CtPackage || ele instanceof CtType || ele instanceof CtModule);
+			assertTrue(ele instanceof CtPackage || ele instanceof CtType || ele instanceof CtModule, "ele instanceof "+ele.getClass());
 			//check that first and second query returned same results
 			assertSame(ele, iter.next());
 		});
