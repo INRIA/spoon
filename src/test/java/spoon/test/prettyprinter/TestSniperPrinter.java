@@ -16,6 +16,7 @@ import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
@@ -31,6 +32,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -62,6 +64,7 @@ import java.util.function.Consumer;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -738,6 +741,36 @@ public class TestSniperPrinter {
 		SniperJavaPrettyPrinter sniper = (SniperJavaPrettyPrinter) launcher.getEnvironment().createPrettyPrinter();
 
 		assertThrows(IllegalArgumentException.class, () -> sniper.calculate(cu, Collections.singletonList(primaryType)));
+	}
+
+	@Test
+	void testSniperRespectsDeletionInForInit() {
+		// contract: The sniper printer should detect deletions in for loop init as modifications
+		// and print the model accordingly.
+
+        Consumer<CtType<?>> deleteForUpdate = type -> {
+        	CtFor ctFor = type.filterChildren(CtFor.class::isInstance).first();
+			ctFor.getForInit().forEach(CtElement::delete);
+		};
+		BiConsumer<CtType<?>, String> assertNotStaticFindFirstIsEmpty = (type, result) ->
+            assertThat(result, containsString("for (; i < 10; i++)"));
+
+		testSniper("ForLoop", deleteForUpdate, assertNotStaticFindFirstIsEmpty);
+	}
+
+	@Test
+	void testSniperRespectsDeletionInForUpdate() {
+		// contract: The sniper printer should detect deletions in for loop update as modifications
+		// and print the model accordingly.
+
+		Consumer<CtType<?>> deleteForUpdate = type -> {
+			CtFor ctFor = type.filterChildren(CtFor.class::isInstance).first();
+			ctFor.getForUpdate().forEach(CtElement::delete);
+		};
+		BiConsumer<CtType<?>, String> assertNotStaticFindFirstIsEmpty = (type, result) ->
+				assertThat(result, containsString("for (int i = 0; i < 10;)"));
+
+		testSniper("ForLoop", deleteForUpdate, assertNotStaticFindFirstIsEmpty);
 	}
 
 	/**

@@ -76,11 +76,11 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 
 	@Override
 	public <T extends CtFor> T setForInit(List<CtStatement> statements) {
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, FOR_INIT, this.forInit, new ArrayList<>(this.forInit));
 		if (statements == null || statements.isEmpty()) {
 			this.forInit = CtElementImpl.emptyList();
 			return (T) this;
 		}
-		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, FOR_INIT, this.forInit, new ArrayList<>(this.forInit));
 		this.forInit.clear();
 		for (CtStatement stmt : statements) {
 			addForInit(stmt);
@@ -118,11 +118,11 @@ public class CtForImpl extends CtLoopImpl implements CtFor {
 
 	@Override
 	public <T extends CtFor> T setForUpdate(List<CtStatement> statements) {
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, FOR_UPDATE, this.forUpdate, new ArrayList<>(this.forUpdate));
 		if (statements == null || statements.isEmpty()) {
 			this.forUpdate = CtElementImpl.emptyList();
 			return (T) this;
 		}
-		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, FOR_UPDATE, this.forUpdate, new ArrayList<>(this.forUpdate));
 		this.forUpdate.clear();
 		for (CtStatement stmt : statements) {
 			addForUpdate(stmt);
