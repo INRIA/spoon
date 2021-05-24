@@ -24,6 +24,7 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
@@ -266,5 +267,22 @@ public class CtTypeTest {
 		CtType<?> reFetchedTypeDecl = typeRef.getTypeDeclaration();
 
 		assertSame(reFetchedTypeDecl, typeDecl);
+	}
+
+	@Test
+	public void testGetOrCreateCompilationUnit() {
+		// contract: the compilation unit should be returned using the shortcut method
+		final Launcher launcher = new Launcher();
+		final Factory factory = launcher.getFactory();
+
+		// create the elements required
+		CtCompilationUnit expectedCu = factory.createCompilationUnit();
+		CtClass<?> klass = factory.createClass("CompilationUnit");
+
+		// modify the elements according to the contract
+		expectedCu.addDeclaredType(klass);
+		CtCompilationUnit actualCu = klass.getOrCreateCompilationUnit();
+
+		assertEquals(expectedCu, actualCu);
 	}
 }
