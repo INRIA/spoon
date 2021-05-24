@@ -9,6 +9,7 @@ package spoon.support.reflect.declaration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spoon.SpoonException;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
@@ -18,10 +19,13 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.factory.CompilationUnitFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.meta.RoleHandler;
@@ -184,6 +188,24 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			}
 		}
 		return "";
+	}
+
+	public CtCompilationUnit getOrCreateCompilationUnit() {
+		CompilationUnitFactory cuFactory = getFactory().CompilationUnit();
+		if (this instanceof CtType<?>) {
+			return cuFactory.getOrCreate((CtType<?>) this);
+		} else if (this instanceof CtPackage) {
+			return cuFactory.getOrCreate((CtPackage) this);
+		} else if (this instanceof CtModule) {
+			return cuFactory.getOrCreate((CtModule) this);
+		} else {
+			CtType<?> enclosingType = getParent(CtType.class);
+			if (enclosingType != null) {
+				return cuFactory.getOrCreate(enclosingType);
+			} else {
+				throw new SpoonException(this.getShortRepresentation() + " does not belong to a compilation unit");
+			}
+		}
 	}
 
 	@Override

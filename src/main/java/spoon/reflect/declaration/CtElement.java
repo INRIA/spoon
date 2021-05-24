@@ -116,6 +116,11 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	String getDocComment();
 
 	/**
+	 * Gets the compilation unit in which the element resides or tries to create one corresponding to the element.
+	 */
+	CtCompilationUnit getOrCreateCompilationUnit();
+
+	/**
 	 * Build a short representation of any element.
 	 */
 	@DerivedProperty
