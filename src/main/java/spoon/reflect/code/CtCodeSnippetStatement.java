@@ -9,7 +9,7 @@ package spoon.reflect.code;
 
 import spoon.reflect.declaration.CtCodeSnippet;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.support.compiler.jdt.SnippetCompilationError;
+import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.jdt.SnippetCompilationHelper;
 
 /**

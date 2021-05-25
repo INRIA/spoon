@@ -17,6 +17,7 @@ import spoon.compiler.SpoonFile;
 import spoon.compiler.builder.JDTBuilder;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.factory.Factory;
+import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.VirtualFile;
 
 public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {

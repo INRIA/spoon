@@ -28,6 +28,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.reflect.declaration.CtElementImpl;
 import java.util.EnumSet;
 import java.util.HashMap;
