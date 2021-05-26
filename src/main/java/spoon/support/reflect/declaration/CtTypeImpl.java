@@ -43,7 +43,7 @@ import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
-import spoon.support.compiler.jdt.SnippetCompilationHelper;
+import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 import spoon.support.util.QualifiedNameBasedSortedSet;

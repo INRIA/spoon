@@ -13,7 +13,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtCodeSnippet;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.compiler.SnippetCompilationError;
-import spoon.support.compiler.jdt.SnippetCompilationHelper;
+import spoon.support.compiler.SnippetCompilationHelper;
 
 import static spoon.reflect.path.CtRole.SNIPPET;
 

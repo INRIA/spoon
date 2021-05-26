@@ -303,7 +303,7 @@ public class SpoonArchitectureEnforcerTest {
 //		spoon.compiler.SpoonResourceHelper
 //		spoon.reflect.visitor.Query
 //		spoon.support.compiler.jdt.JDTTreeBuilderQuery
-//		spoon.support.compiler.jdt.SnippetCompilationHelper
+//		spoon.support.compiler.SnippetCompilationHelper
 //		spoon.support.util.ByteSerialization
 //		spoon.support.util.RtHelper
 //		spoon.support.visitor.equals.CloneHelper
