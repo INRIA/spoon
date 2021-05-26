@@ -75,13 +75,12 @@ class JDTTreeBuilderQuery {
 		for (CompilationUnitDeclaration unitToProcess : unitsToProcess) {
 			if (unitToProcess.types != null) {
 				for (TypeDeclaration type : unitToProcess.types) {
-					if (type.binding != null
-							&& qualifiedName.equals(CharOperation.toString(type.binding.compoundName))) {
+					if (qualifiedNameEqualsBindingCompoundName(qualifiedName, type)) {
 						return type.binding;
 					}
 					if (type.memberTypes != null) {
 						for (TypeDeclaration memberType : type.memberTypes) {
-							if (qualifiedName.equals(CharOperation.toString(memberType.binding.compoundName))) {
+							if (qualifiedNameEqualsBindingCompoundName(qualifiedName, memberType)) {
 								return type.binding;
 							}
 						}
@@ -90,6 +89,13 @@ class JDTTreeBuilderQuery {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Compare the qualified name to the type binding's compound name.
+	 */
+	private static boolean qualifiedNameEqualsBindingCompoundName(String qualifiedName, TypeDeclaration type) {
+		return type.binding != null && qualifiedName.equals(CharOperation.toString(type.binding.compoundName));
 	}
 
 	/**
