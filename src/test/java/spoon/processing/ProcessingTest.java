@@ -153,7 +153,7 @@ public class ProcessingTest {
 		l.run();
 
 		// If template is applied to itself then there will be modified spoon/...Template.java on output
-		assertArrayEquals(new String[]{"SimpleAssert.java"}, outputPath.toFile().list(), () -> "Template source found in output");
+		assertArrayEquals(new String[]{"SimpleAssert.java"}, outputPath.toFile().list(),"Template source found in output");
 		// Check that the template worked as intended
 		assertThat(outputPath.toString() + "/SimpleAssert.java")
 			.isEqualTo(resourcePath + "SimpleIfAsserted.java");
