@@ -1,7 +1,7 @@
 package spoon.generating;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import spoon.FluentLauncher;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -29,21 +29,21 @@ public class CorrectIdentifierTest {
 		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName(";tacos"));
 	}
 
-	@Ignore
+	@Disabled
 	@Test
 	public void keyWord() {
 		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
 		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("class"));
 	}
 
-	@Ignore
+	@Disabled
 	@Test
 	public void keyWord2() {
 		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
 		assertThrows(SpoonException.class, () -> localVariableRef.setSimpleName("null"));
 	}
 
-	@Ignore
+	@Disabled
 	@Test
 	public void keyWord3() {
 		CtLocalVariableReference<Object> localVariableRef = new Launcher().getFactory().createLocalVariableReference();
