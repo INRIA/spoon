@@ -16,9 +16,9 @@
  */
 package spoon.processing;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.generating.CloneVisitorGenerator;
 import spoon.generating.CtBiScannerGenerator;
@@ -43,14 +43,14 @@ import static spoon.testing.utils.ModelUtils.build;
 public class CtGenerationTest {
 	private String oldLineSeparator;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		this.oldLineSeparator = System.getProperty("line.separator", "\n");
 		//use always LINUX line separator, because generated files are committed to Spoon repository which expects that.
 		System.setProperty("line.separator", "\n");
 	}
 
-	@After
+	@AfterEach
 	public void teardown() {
 		System.setProperty("line.separator", this.oldLineSeparator);
 	}
