@@ -748,54 +748,6 @@ public class ReferenceBuilder {
 		return getTypeReference(binding, false);
 	}
 
-	private <T> CtTypeReference<T> getParameterizedTypeReference(TypeBinding binding) {
-		CtTypeReference<T> ref;
-		if (binding.actualType() != null && binding.actualType() instanceof LocalTypeBinding) {
-			// When we define a nested class in a method and when the enclosing class of this method
-			// is a parameterized type binding, JDT give a ParameterizedTypeBinding for the nested class
-			// and hide the real class in actualType().
-			ref = getTypeReference(binding.actualType());
-		} else {
-			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-			this.exploringParameterizedBindings.put(binding, ref);
-			if (binding.isAnonymousType()) {
-				ref.setSimpleName("");
-			} else {
-				ref.setSimpleName(String.valueOf(binding.sourceName()));
-				if (binding.enclosingType() != null) {
-					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
-				} else {
-					ref.setPackage(getPackageReference(binding.getPackage()));
-				}
-			}
-		}
-		if (binding.actualType() instanceof MissingTypeBinding) {
-			ref = getTypeReference(binding.actualType());
-		}
-
-		if (((ParameterizedTypeBinding) binding).arguments != null) {
-			for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
-				if (bindingCache.containsKey(b)) {
-					ref.addActualTypeArgument(getCtCircularTypeReference(b));
-				} else {
-					if (!this.exploringParameterizedBindings.containsKey(b)) {
-						this.exploringParameterizedBindings.put(b, null);
-						CtTypeReference<T> typeRefB = getTypeReference(b);
-						this.exploringParameterizedBindings.put(b, typeRefB);
-						ref.addActualTypeArgument(typeRefB);
-					} else {
-						@SuppressWarnings("unchecked")
-						CtTypeReference<T> typeRefB = this.exploringParameterizedBindings.get(b);
-						if (typeRefB != null) {
-							ref.addActualTypeArgument(typeRefB.clone());
-						}
-					}
-				}
-			}
-		}
-		return ref;
-	}
-
 	/**
 	 * @param resolveGeneric if true then it never returns CtTypeParameterReference, but it's superClass instead
 	 */
@@ -995,6 +947,54 @@ public class ReferenceBuilder {
 		this.exploringParameterizedBindings.remove(binding);
 		return (CtTypeReference<T>) ref;
 	}
+
+	private CtTypeReference<?> getParameterizedTypeReference(TypeBinding binding) {
+		CtTypeReference<?> ref;
+		if (binding.actualType() != null && binding.actualType() instanceof LocalTypeBinding) {
+			// When we define a nested class in a method and when the enclosing class of this method
+			// is a parameterized type binding, JDT give a ParameterizedTypeBinding for the nested class
+			// and hide the real class in actualType().
+			ref = getTypeReference(binding.actualType());
+		} else {
+			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+			this.exploringParameterizedBindings.put(binding, ref);
+			if (binding.isAnonymousType()) {
+				ref.setSimpleName("");
+			} else {
+				ref.setSimpleName(String.valueOf(binding.sourceName()));
+				if (binding.enclosingType() != null) {
+					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
+				} else {
+					ref.setPackage(getPackageReference(binding.getPackage()));
+				}
+			}
+		}
+		if (binding.actualType() instanceof MissingTypeBinding) {
+			ref = getTypeReference(binding.actualType());
+		}
+
+		if (((ParameterizedTypeBinding) binding).arguments != null) {
+			for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
+				if (bindingCache.containsKey(b)) {
+					ref.addActualTypeArgument(getCtCircularTypeReference(b));
+				} else {
+					if (!this.exploringParameterizedBindings.containsKey(b)) {
+						this.exploringParameterizedBindings.put(b, null);
+						CtTypeReference<?> typeRefB = getTypeReference(b);
+						this.exploringParameterizedBindings.put(b, typeRefB);
+						ref.addActualTypeArgument(typeRefB);
+					} else {
+						CtTypeReference<?> typeRefB = this.exploringParameterizedBindings.get(b);
+						if (typeRefB != null) {
+							ref.addActualTypeArgument(typeRefB.clone());
+						}
+					}
+				}
+			}
+		}
+		return ref;
+	}
+
 
 	private CtTypeReference<?> getCtCircularTypeReference(TypeBinding b) {
 		return bindingCache.get(b).clone();
