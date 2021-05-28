@@ -90,8 +90,10 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchPackage;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchType;
@@ -984,31 +986,33 @@ public class ReferenceBuilder {
 	 * Get the type arguments from the binding, or an empty list if no type arguments can be found.
 	 */
 	private List<CtTypeReference<?>> getTypeArguments(TypeBinding binding) {
-	    if (!(binding instanceof ParameterizedTypeBinding)
+		if (!(binding instanceof ParameterizedTypeBinding)
 				|| ((ParameterizedTypeBinding) binding).arguments == null) {
 			return Collections.emptyList();
 		}
 
-	    List<CtTypeReference<?>> typeArguments = new ArrayList<>();
-		for (TypeBinding typeArgBinding : ((ParameterizedTypeBinding) binding).arguments) {
-			if (bindingCache.containsKey(typeArgBinding)) {
-				typeArguments.add(getCtCircularTypeReference(typeArgBinding));
-			} else {
-				if (!this.exploringParameterizedBindings.containsKey(typeArgBinding)) {
-					this.exploringParameterizedBindings.put(typeArgBinding, null);
-					CtTypeReference<?> typeRefB = getTypeReference(typeArgBinding);
-					this.exploringParameterizedBindings.put(typeArgBinding, typeRefB);
-					typeArguments.add(typeRefB);
-				} else {
-					CtTypeReference<?> typeRefB = this.exploringParameterizedBindings.get(typeArgBinding);
-					if (typeRefB != null) {
-						typeArguments.add(typeRefB.clone());
-					}
-				}
-			}
-		}
+		return Arrays.stream(((ParameterizedTypeBinding) binding).arguments)
+				.map(this::getTypeReferenceFromTypeArgument)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
+	}
 
-		return typeArguments;
+	/**
+	 * Get the type reference for a type argument binding. May return null when called recursively.
+	 */
+	private CtTypeReference<?> getTypeReferenceFromTypeArgument(TypeBinding typeArgBinding) {
+		if (bindingCache.containsKey(typeArgBinding)) {
+			return getCtCircularTypeReference(typeArgBinding);
+		} else if (exploringParameterizedBindings.containsKey(typeArgBinding)) {
+			// note: can be null if this method is called recursively
+			CtTypeReference<?> typeRefBeingExplored = exploringParameterizedBindings.get(typeArgBinding);
+			return typeRefBeingExplored == null ? null : typeRefBeingExplored.clone();
+		} else {
+			this.exploringParameterizedBindings.put(typeArgBinding, null);
+			CtTypeReference<?> typeRefB = getTypeReference(typeArgBinding);
+			this.exploringParameterizedBindings.put(typeArgBinding, typeRefB);
+			return typeRefB;
+		}
 	}
 
 	private CtTypeReference<?> getCtCircularTypeReference(TypeBinding b) {
