@@ -973,28 +973,37 @@ public class ReferenceBuilder {
 			ref = getTypeReference(binding.actualType());
 		}
 
-		if (((ParameterizedTypeBinding) binding).arguments != null) {
-			for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
-				if (bindingCache.containsKey(b)) {
-					ref.addActualTypeArgument(getCtCircularTypeReference(b));
+		getTypeArguments(binding).forEach(ref::addActualTypeArgument);
+		return ref;
+	}
+
+	private List<CtTypeReference<?>> getTypeArguments(TypeBinding binding) {
+	    if (!(binding instanceof ParameterizedTypeBinding)
+				|| ((ParameterizedTypeBinding) binding).arguments == null) {
+			return Collections.emptyList();
+		}
+
+	    List<CtTypeReference<?>> typeArguments = new ArrayList<>();
+		for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
+			if (bindingCache.containsKey(b)) {
+				typeArguments.add(getCtCircularTypeReference(b));
+			} else {
+				if (!this.exploringParameterizedBindings.containsKey(b)) {
+					this.exploringParameterizedBindings.put(b, null);
+					CtTypeReference<?> typeRefB = getTypeReference(b);
+					this.exploringParameterizedBindings.put(b, typeRefB);
+					typeArguments.add(typeRefB);
 				} else {
-					if (!this.exploringParameterizedBindings.containsKey(b)) {
-						this.exploringParameterizedBindings.put(b, null);
-						CtTypeReference<?> typeRefB = getTypeReference(b);
-						this.exploringParameterizedBindings.put(b, typeRefB);
-						ref.addActualTypeArgument(typeRefB);
-					} else {
-						CtTypeReference<?> typeRefB = this.exploringParameterizedBindings.get(b);
-						if (typeRefB != null) {
-							ref.addActualTypeArgument(typeRefB.clone());
-						}
+					CtTypeReference<?> typeRefB = this.exploringParameterizedBindings.get(b);
+					if (typeRefB != null) {
+						typeArguments.add(typeRefB.clone());
 					}
 				}
 			}
 		}
-		return ref;
-	}
 
+		return typeArguments;
+	}
 
 	private CtTypeReference<?> getCtCircularTypeReference(TypeBinding b) {
 		return bindingCache.get(b).clone();
