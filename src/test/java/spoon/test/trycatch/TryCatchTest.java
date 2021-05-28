@@ -23,6 +23,7 @@ import spoon.SpoonModelBuilder;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.declaration.CtClass;
@@ -30,6 +31,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtCatchVariableReference;
+import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
@@ -385,5 +387,24 @@ public class TryCatchTest {
 		assertThat(paramTypes.size(), equalTo(2));
 		assertTrue("first type reference should be unqualified", paramTypes.get(0).isSimplyQualified());
 		assertFalse("second type reference should be qualified", paramTypes.get(1).isSimplyQualified());
+	}
+
+	@Test
+	public void testNonCloseableGenericTypeInTryWithResources() throws Exception {
+		// contract: When a non-closeable generic type is used in a try-with-resources, it's type
+		// becomes a problem type in JDT, with the type parameters included in the compound name.
+		// This is as opposed to a parameterized type, so we need to take special care in parsing
+		// these problem types to make sure they are properly identified as parameterized types.
+		//
+		// This previously caused a crash, see https://github.com/INRIA/spoon/issues/3951
+
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/NonClosableGenericInTryWithResources.java");
+
+		CtModel model = launcher.buildModel();
+		CtLocalVariableReference<?> varRef = model.filterChildren(CtLocalVariableReference.class::isInstance).first();
+
+		assertThat(varRef.getType().getSimpleName(), equalTo("GenericType"));
+		assertThat(varRef.getType().getActualTypeArguments().size(), equalTo(2));
 	}
 }
