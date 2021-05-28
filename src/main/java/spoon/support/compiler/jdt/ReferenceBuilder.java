@@ -948,9 +948,12 @@ public class ReferenceBuilder {
 		return (CtTypeReference<T>) ref;
 	}
 
+	/**
+	 * Create a parameterized type reference based on the provided binding.
+	 */
 	private CtTypeReference<?> getParameterizedTypeReference(TypeBinding binding) {
 		CtTypeReference<?> ref;
-		if (binding.actualType() != null && binding.actualType() instanceof LocalTypeBinding) {
+		if (binding.actualType() instanceof LocalTypeBinding) {
 			// When we define a nested class in a method and when the enclosing class of this method
 			// is a parameterized type binding, JDT give a ParameterizedTypeBinding for the nested class
 			// and hide the real class in actualType().
@@ -977,6 +980,9 @@ public class ReferenceBuilder {
 		return ref;
 	}
 
+	/**
+	 * Get the type arguments from the binding, or an empty list if no type arguments can be found.
+	 */
 	private List<CtTypeReference<?>> getTypeArguments(TypeBinding binding) {
 	    if (!(binding instanceof ParameterizedTypeBinding)
 				|| ((ParameterizedTypeBinding) binding).arguments == null) {
@@ -984,17 +990,17 @@ public class ReferenceBuilder {
 		}
 
 	    List<CtTypeReference<?>> typeArguments = new ArrayList<>();
-		for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
-			if (bindingCache.containsKey(b)) {
-				typeArguments.add(getCtCircularTypeReference(b));
+		for (TypeBinding typeArgBinding : ((ParameterizedTypeBinding) binding).arguments) {
+			if (bindingCache.containsKey(typeArgBinding)) {
+				typeArguments.add(getCtCircularTypeReference(typeArgBinding));
 			} else {
-				if (!this.exploringParameterizedBindings.containsKey(b)) {
-					this.exploringParameterizedBindings.put(b, null);
-					CtTypeReference<?> typeRefB = getTypeReference(b);
-					this.exploringParameterizedBindings.put(b, typeRefB);
+				if (!this.exploringParameterizedBindings.containsKey(typeArgBinding)) {
+					this.exploringParameterizedBindings.put(typeArgBinding, null);
+					CtTypeReference<?> typeRefB = getTypeReference(typeArgBinding);
+					this.exploringParameterizedBindings.put(typeArgBinding, typeRefB);
 					typeArguments.add(typeRefB);
 				} else {
-					CtTypeReference<?> typeRefB = this.exploringParameterizedBindings.get(b);
+					CtTypeReference<?> typeRefB = this.exploringParameterizedBindings.get(typeArgBinding);
 					if (typeRefB != null) {
 						typeArguments.add(typeRefB.clone());
 					}
