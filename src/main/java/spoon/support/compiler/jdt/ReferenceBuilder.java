@@ -749,7 +749,6 @@ public class ReferenceBuilder {
 	<T> CtTypeReference<T> getTypeReference(TypeBinding binding) {
 		return getTypeReference(binding, false);
 	}
-
 	/**
 	 * @param resolveGeneric if true then it never returns CtTypeParameterReference, but it's superClass instead
 	 */
