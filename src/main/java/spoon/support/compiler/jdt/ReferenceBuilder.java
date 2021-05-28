@@ -762,7 +762,7 @@ public class ReferenceBuilder {
 		if (binding instanceof RawTypeBinding) {
 			ref = getTypeReference(((ParameterizedTypeBinding) binding).genericType());
 		} else if (binding instanceof ParameterizedTypeBinding) {
-			ref = getParameterizedTypeReference(binding);
+			ref = getParameterizedTypeReference((ParameterizedTypeBinding) binding);
 		} else if (binding instanceof MissingTypeBinding) {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			ref.setSimpleName(new String(binding.sourceName()));
@@ -952,7 +952,7 @@ public class ReferenceBuilder {
 	/**
 	 * Create a parameterized type reference based on the provided binding.
 	 */
-	private CtTypeReference<?> getParameterizedTypeReference(TypeBinding binding) {
+	private CtTypeReference<?> getParameterizedTypeReference(ParameterizedTypeBinding binding) {
 		CtTypeReference<?> ref;
 		if (binding.actualType() instanceof LocalTypeBinding) {
 			// When we define a nested class in a method and when the enclosing class of this method
@@ -984,16 +984,13 @@ public class ReferenceBuilder {
 	/**
 	 * Get the type arguments from the binding, or an empty list if no type arguments can be found.
 	 */
-	private List<CtTypeReference<?>> getTypeArguments(TypeBinding binding) {
-		if (!(binding instanceof ParameterizedTypeBinding)
-				|| ((ParameterizedTypeBinding) binding).arguments == null) {
-			return Collections.emptyList();
-		}
-
-		return Arrays.stream(((ParameterizedTypeBinding) binding).arguments)
-				.map(this::getTypeReferenceFromTypeArgument)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toList());
+	private List<CtTypeReference<?>> getTypeArguments(ParameterizedTypeBinding binding) {
+		return binding.arguments == null
+				? Collections.emptyList()
+				: Arrays.stream((binding.arguments))
+					.map(this::getTypeReferenceFromTypeArgument)
+					.filter(Objects::nonNull)
+					.collect(Collectors.toList());
 	}
 
 	/**
