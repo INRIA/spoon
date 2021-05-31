@@ -215,7 +215,7 @@ public interface Environment {
 	/**
 	 * Tells if Spoon uses tabulations in the source code.
 	 *
-	 * @return true iff Spoon uses tabsulationswhen pretty-printing
+	 * @return true iff Spoon uses tabulations when pretty-printing
 	 */
 	boolean isUsingTabulations();
 
