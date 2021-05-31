@@ -659,7 +659,7 @@ public class ReferenceBuilder {
 			CtPackageReference packageReference = index >= 0 ? packageFactory.getOrCreate(concatSubArray(namesParameterized, index)).getReference() : packageFactory.topLevel();
 			inner.setPackage(packageReference);
 		}
-		if (!res.toStringDebug().replace(", ?", ",?").endsWith(nameParameterized)) {
+		if (!res.toStringDebug().replace(", ", ",").endsWith(nameParameterized)) {
 			// verify that we did not match a class that have the same name in a different package
 			return this.jdtTreeBuilder.getFactory().Type().createReference(typeName);
 		}
