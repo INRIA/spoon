@@ -18,10 +18,13 @@ package spoon.test.constructorcallnewclass;
 
 import org.junit.Before;
 import org.junit.Test;
+import spoon.FluentLauncher;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -33,6 +36,10 @@ import spoon.test.constructorcallnewclass.testclasses.Foo2;
 
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -200,5 +207,26 @@ public class NewClassTest {
 		assertEquals(1, anonymousClass.getMethods().size());
 
 		canBeBuilt("./target/new-class", 8, true);
+	}
+
+	@Test
+	public void testBadConstructorCallToAnonymousGenericType() {
+		// contract: Spoon should be able to resolve the type of a constructor call to an anonymous
+		// subclass of a generic type, when the constructor does not exist.
+		// See https://github.com/INRIA/spoon/issues/3913 for details.
+
+		CtModel model = new FluentLauncher()
+				.inputResource("./src/test/resources/noclasspath/BadAnonymousClassOfNestedType.java")
+				.buildModel();
+		CtNewClass<?> newClass = model.filterChildren(CtNewClass.class::isInstance).first();
+		CtType<?> anonymousClass = newClass.getAnonymousClass();
+
+		CtType<?> expectedSuperclass = model
+				.getUnnamedModule()
+				.getFactory()
+				.Type()
+				.get("BadAnonymousClassOfNestedType$GenericType");
+		assertThat(anonymousClass.getQualifiedName(), startsWith("BadAnonymousClassOfNestedType"));
+		assertThat(anonymousClass.getSuperclass().getTypeDeclaration(), equalTo(expectedSuperclass));
 	}
 }
