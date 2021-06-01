@@ -920,21 +920,27 @@ public class ReferenceBuilder {
 			// In this case, we return a type Object because we can't know more about it.
 			ref = this.jdtTreeBuilder.getFactory().Type().objectType();
 		} else if (binding instanceof ProblemReferenceBinding) {
-			// Spoon is able to analyze also without the classpath
-			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-			char[] readableName = binding.readableName();
-			StringBuilder sb = new StringBuilder();
-			for (int i = readableName.length - 1; i >= 0; i--) {
-				char c = readableName[i];
-				if (c == '.') {
-					break;
+			TypeBinding actualBinding;
+			if ((actualBinding = searchForActualBinding((ProblemReferenceBinding) binding)) != null
+					&& !(actualBinding instanceof ProblemReferenceBinding)) {
+				ref = getTypeReference(actualBinding, resolveGeneric);
+			} else {
+				// Spoon is able to analyze also without the classpath
+				ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+				char[] readableName = binding.readableName();
+				StringBuilder sb = new StringBuilder();
+				for (int i = readableName.length - 1; i >= 0; i--) {
+					char c = readableName[i];
+					if (c == '.') {
+						break;
+					}
+					sb.append(c);
 				}
-				sb.append(c);
+				sb.reverse();
+				ref.setSimpleName(sb.toString());
+				final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
+				setPackageOrDeclaringType(ref, declaring);
 			}
-			sb.reverse();
-			ref.setSimpleName(sb.toString());
-			final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
-			setPackageOrDeclaringType(ref, declaring);
 		} else if (binding instanceof IntersectionTypeBinding18) {
 			List<CtTypeReference<?>> bounds = new ArrayList<>();
 			for (ReferenceBinding superInterface : binding.getIntersectingTypes()) {
@@ -947,6 +953,61 @@ public class ReferenceBuilder {
 		bindingCache.remove(binding);
 		this.exploringParameterizedBindings.remove(binding);
 		return (CtTypeReference<T>) ref;
+	}
+
+	private CompilationUnitDeclaration[] getCompilationUnitDeclarations() {
+		return ((TreeBuilderCompiler) jdtTreeBuilder
+				.getContextBuilder()
+				.compilationunitdeclaration
+				.scope
+				.environment
+				.typeRequestor).unitsToProcess;
+	}
+
+	private static boolean isParameterizedProblemReferenceBinding(TypeBinding binding) {
+		String sourceName = String.valueOf(binding.sourceName());
+		return binding instanceof ProblemReferenceBinding
+				&& !sourceName.startsWith("<")
+				&& sourceName.endsWith(">");
+	}
+
+	/**
+	 * Search for the actual type binding for this problem reference binding.
+	 *
+	 * @param binding An unresolved reference binding.
+	 * @return A type binding to the actual referenced type, or null if the type can't be found.
+	 */
+	private TypeBinding searchForActualBinding(ProblemReferenceBinding binding) {
+		if (isParameterizedProblemReferenceBinding(binding)) {
+			return getActualTypeBindingOfParameterizedProblemReferenceBinding(binding);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * In some rare noclasspath cases, JDT parses a parameterized type reference to a
+	 * ProblemReferenceBinding * (as opposed to a ParameterizedTypeBinding). This makes it very
+	 * difficult to extract the * parameterized types as it essentially requires full-on parsing of
+	 * the type arguments.
+	 *
+	 * Currently, we try to extract the actual type binding of the generic type, but ignore the type
+	 * arguments as they * are too much effort to parse for this very, very rare case.
+	 *
+	 * See https://github.com/inria/spoon/issues/3951 for more details.
+	 *
+	 * @param binding A problem binding that contains type arguments in the compound name.
+	 * @return The actual type binding if it can be found by searching compilation units,
+	 * otherwise null.
+	 */
+	private TypeBinding getActualTypeBindingOfParameterizedProblemReferenceBinding(ProblemReferenceBinding binding) {
+		String nameWithTypeArgs = CharOperation.toString(binding.compoundName);
+		int typeArgsStart = nameWithTypeArgs.indexOf('<');
+
+		final CompilationUnitDeclaration[] units = getCompilationUnitDeclarations();
+		String qualname = nameWithTypeArgs.substring(0, typeArgsStart);
+
+		return searchTypeBinding(qualname, units);
 	}
 
 	/**
