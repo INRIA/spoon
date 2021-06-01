@@ -951,12 +951,10 @@ public class ReferenceBuilder {
 
 	private static boolean isParameterizedProblemReferenceBinding(TypeBinding binding) {
 		String sourceName = String.valueOf(binding.sourceName());
-		return binding instanceof ProblemReferenceBinding
-				&& !sourceName.startsWith("<")
-				&& sourceName.endsWith(">");
+		return binding instanceof ProblemReferenceBinding && typeRefContainsTypeArgs(sourceName);
 	}
 
-	private String stripTypeParametersFromTypeReference(String typeReference) {
+	private static String stripTypeParametersFromTypeReference(String typeReference) {
 		if (typeRefContainsTypeArgs(typeReference)) {
 			return typeReference.substring(0, typeReference.indexOf('<'));
 		} else {
@@ -964,7 +962,7 @@ public class ReferenceBuilder {
 		}
 	}
 
-	private boolean typeRefContainsTypeArgs(String typeRef) {
+	private static boolean typeRefContainsTypeArgs(String typeRef) {
 		return !typeRef.startsWith("<") && typeRef.endsWith(">");
 	}
 
