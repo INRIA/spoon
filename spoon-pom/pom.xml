@@ -59,7 +59,7 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
+  <dependency>
     <!-- must come after junit5 deps, otherwise it overrides the junit version -->
     <!-- must be here in the parent POM, because the parent always comes last, see https://stackoverflow.com/questions/28999057/order-of-inherited-dependencies-in-maven-3 -->
     <groupId>com.github.stefanbirkner</groupId>
