@@ -16,7 +16,7 @@
  */
 package spoon.processing;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtAssert;
@@ -33,10 +33,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.Assert.assertThat;
 
 public class ProcessingTest {
@@ -153,7 +153,7 @@ public class ProcessingTest {
 		l.run();
 
 		// If template is applied to itself then there will be modified spoon/...Template.java on output
-		assertArrayEquals("Template source found in output", new String[]{"SimpleAssert.java"}, outputPath.toFile().list());
+		assertArrayEquals(new String[]{"SimpleAssert.java"}, outputPath.toFile().list(), "Template source found in output");
 		// Check that the template worked as intended
 		assertThat(outputPath.toString() + "/SimpleAssert.java")
 			.isEqualTo(resourcePath + "SimpleIfAsserted.java");

@@ -90,8 +90,10 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchPackage;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchType;
@@ -657,7 +659,7 @@ public class ReferenceBuilder {
 			CtPackageReference packageReference = index >= 0 ? packageFactory.getOrCreate(concatSubArray(namesParameterized, index)).getReference() : packageFactory.topLevel();
 			inner.setPackage(packageReference);
 		}
-		if (!res.toStringDebug().replace(", ?", ",?").endsWith(nameParameterized)) {
+		if (!res.toStringDebug().replace(", ", ",").endsWith(nameParameterized)) {
 			// verify that we did not match a class that have the same name in a different package
 			return this.jdtTreeBuilder.getFactory().Type().createReference(typeName);
 		}
@@ -760,48 +762,7 @@ public class ReferenceBuilder {
 		if (binding instanceof RawTypeBinding) {
 			ref = getTypeReference(((ParameterizedTypeBinding) binding).genericType());
 		} else if (binding instanceof ParameterizedTypeBinding) {
-			if (binding.actualType() != null && binding.actualType() instanceof LocalTypeBinding) {
-				// When we define a nested class in a method and when the enclosing class of this method
-				// is a parameterized type binding, JDT give a ParameterizedTypeBinding for the nested class
-				// and hide the real class in actualType().
-				ref = getTypeReference(binding.actualType());
-			} else {
-				ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-				this.exploringParameterizedBindings.put(binding, ref);
-				if (binding.isAnonymousType()) {
-					ref.setSimpleName("");
-				} else {
-					ref.setSimpleName(String.valueOf(binding.sourceName()));
-					if (binding.enclosingType() != null) {
-						ref.setDeclaringType(getTypeReference(binding.enclosingType()));
-					} else {
-						ref.setPackage(getPackageReference(binding.getPackage()));
-					}
-				}
-			}
-			if (binding.actualType() instanceof MissingTypeBinding) {
-				ref = getTypeReference(binding.actualType());
-			}
-
-			if (((ParameterizedTypeBinding) binding).arguments != null) {
-				for (TypeBinding b : ((ParameterizedTypeBinding) binding).arguments) {
-					if (bindingCache.containsKey(b)) {
-						ref.addActualTypeArgument(getCtCircularTypeReference(b));
-					} else {
-						if (!this.exploringParameterizedBindings.containsKey(b)) {
-							this.exploringParameterizedBindings.put(b, null);
-							CtTypeReference typeRefB = getTypeReference(b);
-							this.exploringParameterizedBindings.put(b, typeRefB);
-							ref.addActualTypeArgument(typeRefB);
-						} else {
-							CtTypeReference typeRefB = this.exploringParameterizedBindings.get(b);
-							if (typeRefB != null) {
-								ref.addActualTypeArgument(typeRefB.clone());
-							}
-						}
-					}
-				}
-			}
+			ref = getParameterizedTypeReference((ParameterizedTypeBinding) binding);
 		} else if (binding instanceof MissingTypeBinding) {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			ref.setSimpleName(new String(binding.sourceName()));
@@ -986,6 +947,68 @@ public class ReferenceBuilder {
 		bindingCache.remove(binding);
 		this.exploringParameterizedBindings.remove(binding);
 		return (CtTypeReference<T>) ref;
+	}
+
+	/**
+	 * Create a parameterized type reference based on the provided binding.
+	 */
+	private CtTypeReference<?> getParameterizedTypeReference(ParameterizedTypeBinding binding) {
+		CtTypeReference<?> ref;
+		if (binding.actualType() instanceof LocalTypeBinding) {
+			// When we define a nested class in a method and when the enclosing class of this method
+			// is a parameterized type binding, JDT give a ParameterizedTypeBinding for the nested class
+			// and hide the real class in actualType().
+			ref = getTypeReference(binding.actualType());
+		} else {
+			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+			this.exploringParameterizedBindings.put(binding, ref);
+			if (binding.isAnonymousType()) {
+				ref.setSimpleName("");
+			} else {
+				ref.setSimpleName(String.valueOf(binding.sourceName()));
+				if (binding.enclosingType() != null) {
+					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
+				} else {
+					ref.setPackage(getPackageReference(binding.getPackage()));
+				}
+			}
+		}
+		if (binding.actualType() instanceof MissingTypeBinding) {
+			ref = getTypeReference(binding.actualType());
+		}
+
+		getTypeArguments(binding).forEach(ref::addActualTypeArgument);
+		return ref;
+	}
+
+	/**
+	 * Get the type arguments from the binding, or an empty list if no type arguments can be found.
+	 */
+	private List<CtTypeReference<?>> getTypeArguments(ParameterizedTypeBinding binding) {
+		return binding.arguments == null
+				? Collections.emptyList()
+				: Arrays.stream((binding.arguments))
+					.map(this::getTypeReferenceFromTypeArgument)
+					.filter(Objects::nonNull)
+					.collect(Collectors.toList());
+	}
+
+	/**
+	 * Get the type reference for a type argument binding. May return null when called recursively.
+	 */
+	private CtTypeReference<?> getTypeReferenceFromTypeArgument(TypeBinding typeArgBinding) {
+		if (bindingCache.containsKey(typeArgBinding)) {
+			return getCtCircularTypeReference(typeArgBinding);
+		} else if (exploringParameterizedBindings.containsKey(typeArgBinding)) {
+			// note: can be null if this method is called recursively
+			CtTypeReference<?> typeRefBeingExplored = exploringParameterizedBindings.get(typeArgBinding);
+			return typeRefBeingExplored == null ? null : typeRefBeingExplored.clone();
+		} else {
+			this.exploringParameterizedBindings.put(typeArgBinding, null);
+			CtTypeReference<?> typeRefB = getTypeReference(typeArgBinding);
+			this.exploringParameterizedBindings.put(typeArgBinding, typeRefB);
+			return typeRefB;
+		}
 	}
 
 	private CtTypeReference<?> getCtCircularTypeReference(TypeBinding b) {

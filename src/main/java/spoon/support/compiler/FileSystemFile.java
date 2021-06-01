@@ -110,6 +110,9 @@ public class FileSystemFile implements SpoonFile {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
 		return toFile().equals(((SpoonResource) obj).toFile());
 	}
 

@@ -197,7 +197,7 @@ public class TypeTest {
 		CtModel model = launcher.buildModel();
 
 		Set<String> expectedTypeNames = new HashSet<>(
-				Arrays.asList("duplicates.Duplicate", "duplicates.Main", "duplicates.WithNestedEnum"));
+				Arrays.asList("AlsoWithNestedEnum", "duplicates.Duplicate", "duplicates.Main", "duplicates.WithNestedEnum"));
 		Set<String> typeNames = model.getAllTypes().stream().map(CtType::getQualifiedName).collect(Collectors.toSet());
 
 		assertEquals(expectedTypeNames, typeNames);
