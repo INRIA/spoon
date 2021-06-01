@@ -949,34 +949,11 @@ public class ReferenceBuilder {
 		return (CtTypeReference<T>) ref;
 	}
 
-	private CompilationUnitDeclaration[] getCompilationUnitDeclarations() {
-		return ((TreeBuilderCompiler) jdtTreeBuilder
-				.getContextBuilder()
-				.compilationunitdeclaration
-				.scope
-				.environment
-				.typeRequestor).unitsToProcess;
-	}
-
 	private static boolean isParameterizedProblemReferenceBinding(TypeBinding binding) {
 		String sourceName = String.valueOf(binding.sourceName());
 		return binding instanceof ProblemReferenceBinding
 				&& !sourceName.startsWith("<")
 				&& sourceName.endsWith(">");
-	}
-
-	/**
-	 * Search for the actual type binding for this problem reference binding.
-	 *
-	 * @param binding An unresolved reference binding.
-	 * @return A type binding to the actual referenced type, or null if the type can't be found.
-	 */
-	private TypeBinding searchForActualBinding(ProblemReferenceBinding binding) {
-		if (isParameterizedProblemReferenceBinding(binding)) {
-			return getActualTypeBindingOfParameterizedProblemReferenceBinding(binding);
-		} else {
-			return null;
-		}
 	}
 
 	private String stripTypeParametersFromTypeReference(String typeReference) {
@@ -989,31 +966,6 @@ public class ReferenceBuilder {
 
 	private boolean typeRefContainsTypeArgs(String typeRef) {
 		return !typeRef.startsWith("<") && typeRef.endsWith(">");
-	}
-
-	/**
-	 * In some rare noclasspath cases, JDT parses a parameterized type reference to a
-	 * ProblemReferenceBinding * (as opposed to a ParameterizedTypeBinding). This makes it very
-	 * difficult to extract the * parameterized types as it essentially requires full-on parsing of
-	 * the type arguments.
-	 *
-	 * Currently, we try to extract the actual type binding of the generic type, but ignore the type
-	 * arguments as they * are too much effort to parse for this very, very rare case.
-	 *
-	 * See https://github.com/inria/spoon/issues/3951 for more details.
-	 *
-	 * @param binding A problem binding that contains type arguments in the compound name.
-	 * @return The actual type binding if it can be found by searching compilation units,
-	 * otherwise null.
-	 */
-	private TypeBinding getActualTypeBindingOfParameterizedProblemReferenceBinding(ProblemReferenceBinding binding) {
-		String nameWithTypeArgs = CharOperation.toString(binding.compoundName);
-		int typeArgsStart = nameWithTypeArgs.indexOf('<');
-
-		final CompilationUnitDeclaration[] units = getCompilationUnitDeclarations();
-		String qualname = nameWithTypeArgs.substring(0, typeArgsStart);
-
-		return searchTypeBinding(qualname, units);
 	}
 
 	/**
