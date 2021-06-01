@@ -922,14 +922,18 @@ public class ReferenceBuilder {
 			ref = this.jdtTreeBuilder.getFactory().Type().objectType();
 		} else if (binding instanceof ProblemReferenceBinding) {
 			// Spoon is able to analyze also without the classpath
+			String readableName = String.valueOf(binding.readableName());
 			if (isParameterizedProblemReferenceBinding(binding)) {
+				// on some rare occasions, such as the one explained in #3951, the name of the problem
+				// binding contains type arguments. We currently ignore the type arguments themselves
+				// as parsing them is a massive pain, but we must strip them from the name.
+				readableName = readableName.substring(0, readableName.indexOf('<'));
 				jdtTreeBuilder.getFactory().getEnvironment().report(
 						null,
 						Level.WARN,
 						"Ignoring type parameters for problem binding: " + binding);
 			}
 
-			String readableName = stripTypeParametersFromTypeReference(String.valueOf(binding.readableName()));
 			String simpleName = readableName.substring(Math.max(0, readableName.lastIndexOf('.') + 1));
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			ref.setSimpleName(simpleName);
@@ -952,14 +956,6 @@ public class ReferenceBuilder {
 	private static boolean isParameterizedProblemReferenceBinding(TypeBinding binding) {
 		String sourceName = String.valueOf(binding.sourceName());
 		return binding instanceof ProblemReferenceBinding && typeRefContainsTypeArgs(sourceName);
-	}
-
-	private static String stripTypeParametersFromTypeReference(String typeReference) {
-		if (typeRefContainsTypeArgs(typeReference)) {
-			return typeReference.substring(0, typeReference.indexOf('<'));
-		} else {
-			return typeReference;
-		}
 	}
 
 	private static boolean typeRefContainsTypeArgs(String typeRef) {
