@@ -389,11 +389,13 @@ public class TryCatchTest {
 	}
 
 	@Test
-	public void testNonCloseableGenericTypeInTryWithResources() throws Exception {
+	public void testNonCloseableGenericTypeInTryWithResources() {
 		// contract: When a non-closeable generic type is used in a try-with-resources, it's type
 		// becomes a problem type in JDT, with the type parameters included in the compound name.
 		// This is as opposed to a parameterized type, so we need to take special care in parsing
 		// these problem types to make sure they are properly identified as parameterized types.
+		//
+		// Currently, we do NOT extract type references to type arguments for such bindings.
 		//
 		// This previously caused a crash, see https://github.com/INRIA/spoon/issues/3951
 
@@ -404,6 +406,8 @@ public class TryCatchTest {
 		CtLocalVariableReference<?> varRef = model.filterChildren(CtLocalVariableReference.class::isInstance).first();
 
 		assertThat(varRef.getType().getSimpleName(), equalTo("GenericType"));
-		assertThat(varRef.getType().getActualTypeArguments().size(), equalTo(2));
+
+		// We don't extract the type arguments
+		assertThat(varRef.getType().getActualTypeArguments().size(), equalTo(0));
 	}
 }
