@@ -80,6 +80,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.support.Level;
 import spoon.support.reflect.CtExtendedModifier;
 
 
@@ -920,27 +921,20 @@ public class ReferenceBuilder {
 			// In this case, we return a type Object because we can't know more about it.
 			ref = this.jdtTreeBuilder.getFactory().Type().objectType();
 		} else if (binding instanceof ProblemReferenceBinding) {
-			TypeBinding actualBinding;
-			if ((actualBinding = searchForActualBinding((ProblemReferenceBinding) binding)) != null
-					&& !(actualBinding instanceof ProblemReferenceBinding)) {
-				ref = getTypeReference(actualBinding, resolveGeneric);
-			} else {
-				// Spoon is able to analyze also without the classpath
-				ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-				char[] readableName = binding.readableName();
-				StringBuilder sb = new StringBuilder();
-				for (int i = readableName.length - 1; i >= 0; i--) {
-					char c = readableName[i];
-					if (c == '.') {
-						break;
-					}
-					sb.append(c);
-				}
-				sb.reverse();
-				ref.setSimpleName(sb.toString());
-				final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
-				setPackageOrDeclaringType(ref, declaring);
+			// Spoon is able to analyze also without the classpath
+			if (isParameterizedProblemReferenceBinding(binding)) {
+				jdtTreeBuilder.getFactory().getEnvironment().report(
+						null,
+						Level.WARN,
+						"Ignoring type parameters for problem binding: " + binding);
 			}
+
+			String readableName = stripTypeParametersFromTypeReference(String.valueOf(binding.readableName()));
+			String simpleName = readableName.substring(Math.max(0, readableName.lastIndexOf('.') + 1));
+			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+			ref.setSimpleName(simpleName);
+			final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
+			setPackageOrDeclaringType(ref, declaring);
 		} else if (binding instanceof IntersectionTypeBinding18) {
 			List<CtTypeReference<?>> bounds = new ArrayList<>();
 			for (ReferenceBinding superInterface : binding.getIntersectingTypes()) {
@@ -983,6 +977,18 @@ public class ReferenceBuilder {
 		} else {
 			return null;
 		}
+	}
+
+	private String stripTypeParametersFromTypeReference(String typeReference) {
+		if (typeRefContainsTypeArgs(typeReference)) {
+			return typeReference.substring(0, typeReference.indexOf('<'));
+		} else {
+			return typeReference;
+		}
+	}
+
+	private boolean typeRefContainsTypeArgs(String typeRef) {
+		return !typeRef.startsWith("<") && typeRef.endsWith(">");
 	}
 
 	/**
