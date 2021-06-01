@@ -3,6 +3,7 @@ package spoon.reflect.reference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
@@ -34,7 +35,7 @@ public class CtTypeReferenceTest {
         when(factory.Type()).thenReturn(typeFactory);
         when(factory.getEnvironment()).thenReturn(environment);
         when(environment.getModelChangeListener()).thenReturn(listener);
-        when(environment.getInputClassLoader()).thenReturn(classLoader);
+        Mockito.lenient().when(environment.getInputClassLoader()).thenReturn(classLoader);
     }
 
     /**
@@ -77,7 +78,7 @@ public class CtTypeReferenceTest {
         reference.setFactory(factory);
         reference.setSimpleName(inputClass.getName());
         if (mockClassLoader) {
-            when(classLoader.loadClass(inputClass.getName()))
+            Mockito.lenient().when(classLoader.loadClass(inputClass.getName()))
                 .thenAnswer((Answer<Object>) invocationOnMock -> inputClass);
         }
 
