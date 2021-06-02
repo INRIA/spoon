@@ -80,6 +80,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
+import spoon.support.Level;
 import spoon.support.reflect.CtExtendedModifier;
 
 
@@ -921,18 +922,21 @@ public class ReferenceBuilder {
 			ref = this.jdtTreeBuilder.getFactory().Type().objectType();
 		} else if (binding instanceof ProblemReferenceBinding) {
 			// Spoon is able to analyze also without the classpath
-			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-			char[] readableName = binding.readableName();
-			StringBuilder sb = new StringBuilder();
-			for (int i = readableName.length - 1; i >= 0; i--) {
-				char c = readableName[i];
-				if (c == '.') {
-					break;
-				}
-				sb.append(c);
+			String readableName = String.valueOf(binding.readableName());
+			if (isParameterizedProblemReferenceBinding(binding)) {
+				// on some rare occasions, such as the one explained in #3951, the name of the problem
+				// binding contains type arguments. We currently ignore the type arguments themselves
+				// as parsing them is a massive pain, but we must strip them from the name.
+				readableName = readableName.substring(0, readableName.indexOf('<'));
+				jdtTreeBuilder.getFactory().getEnvironment().report(
+						null,
+						Level.WARN,
+						"Ignoring type parameters for problem binding: " + binding);
 			}
-			sb.reverse();
-			ref.setSimpleName(sb.toString());
+
+			String simpleName = readableName.substring(Math.max(0, readableName.lastIndexOf('.') + 1));
+			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+			ref.setSimpleName(simpleName);
 			final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
 			setPackageOrDeclaringType(ref, declaring);
 		} else if (binding instanceof IntersectionTypeBinding18) {
@@ -947,6 +951,15 @@ public class ReferenceBuilder {
 		bindingCache.remove(binding);
 		this.exploringParameterizedBindings.remove(binding);
 		return (CtTypeReference<T>) ref;
+	}
+
+	private static boolean isParameterizedProblemReferenceBinding(TypeBinding binding) {
+		String sourceName = String.valueOf(binding.sourceName());
+		return binding instanceof ProblemReferenceBinding && typeRefContainsTypeArgs(sourceName);
+	}
+
+	private static boolean typeRefContainsTypeArgs(String typeRef) {
+		return !typeRef.startsWith("<") && typeRef.endsWith(">");
 	}
 
 	/**
