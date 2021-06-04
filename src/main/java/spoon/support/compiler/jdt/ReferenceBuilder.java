@@ -844,21 +844,7 @@ public class ReferenceBuilder {
 		} else if (binding instanceof BaseTypeBinding) {
 			ref = getTypeReferenceFromBaseTypeBinding((BaseTypeBinding) binding);
 		} else if (binding instanceof WildcardBinding) {
-			WildcardBinding wildcardBinding = (WildcardBinding) binding;
-			CtWildcardReference wref = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
-			ref = wref;
-
-			if (wildcardBinding.boundKind == Wildcard.SUPER) {
-				wref.setUpper(false);
-			}
-
-			if (wildcardBinding.bound != null) {
-				if (bindingCache.containsKey(wildcardBinding.bound)) {
-					wref.setBoundingType(getCtCircularTypeReference(wildcardBinding.bound));
-				} else {
-					wref.setBoundingType(getTypeReference(((WildcardBinding) binding).bound));
-				}
-			}
+		    ref = getTypeReferenceFromWildcardBinding((WildcardBinding) binding);
 		} else if (binding instanceof LocalTypeBinding) {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			if (binding.isAnonymousType()) {
@@ -1040,6 +1026,24 @@ public class ReferenceBuilder {
 		CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 		ref.setSimpleName(name);
 		return ref;
+	}
+
+	private CtTypeReference<?> getTypeReferenceFromWildcardBinding(WildcardBinding binding) {
+		CtWildcardReference wref = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
+
+		if (binding.boundKind == Wildcard.SUPER) {
+			wref.setUpper(false);
+		}
+
+		if (binding.bound != null) {
+			if (bindingCache.containsKey(binding.bound)) {
+				wref.setBoundingType(getCtCircularTypeReference(binding.bound));
+			} else {
+				wref.setBoundingType(getTypeReference(binding.bound));
+			}
+		}
+
+		return wref;
 	}
 
 	private CtTypeReference<?> getCtCircularTypeReference(TypeBinding b) {
