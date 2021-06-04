@@ -381,13 +381,12 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public <P extends CtElement> P getParent(Class<P> parentType) {
 		CtElement current = this;
 		while (current.isParentInitialized()) {
 			current = current.getParent();
 			if (parentType.isAssignableFrom(current.getClass())) {
-				return (P) current;
+				return parentType.cast(current);
 			}
 		}
 
