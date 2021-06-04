@@ -846,19 +846,7 @@ public class ReferenceBuilder {
 		} else if (binding instanceof WildcardBinding) {
 		    ref = getTypeReferenceFromWildcardBinding((WildcardBinding) binding);
 		} else if (binding instanceof LocalTypeBinding) {
-			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-			if (binding.isAnonymousType()) {
-				ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(((SourceTypeBinding) binding).constantPoolName()));
-				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
-			} else {
-				ref.setSimpleName(new String(binding.sourceName()));
-				if (((LocalTypeBinding) binding).enclosingMethod == null && binding.enclosingType() != null && binding.enclosingType() instanceof LocalTypeBinding) {
-					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
-				} else if (binding.enclosingMethod() != null) {
-					ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(((SourceTypeBinding) binding).constantPoolName()));
-					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
-				}
-			}
+		    ref = getTypeReferenceFromLocalTypeBinding((LocalTypeBinding) binding);
 		} else if (binding instanceof SourceTypeBinding) {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			if (binding.isAnonymousType()) {
@@ -1044,6 +1032,24 @@ public class ReferenceBuilder {
 		}
 
 		return wref;
+	}
+
+	private CtTypeReference<?> getTypeReferenceFromLocalTypeBinding(LocalTypeBinding binding) {
+		CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+		if (binding.isAnonymousType()) {
+			ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(binding.constantPoolName()));
+			ref.setDeclaringType(getTypeReference(binding.enclosingType()));
+		} else {
+			ref.setSimpleName(new String(binding.sourceName()));
+			if (binding.enclosingMethod == null && binding.enclosingType() != null && binding.enclosingType() instanceof LocalTypeBinding) {
+				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
+			} else if (binding.enclosingMethod() != null) {
+				ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(binding.constantPoolName()));
+				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
+			}
+		}
+
+		return ref;
 	}
 
 	private CtTypeReference<?> getCtCircularTypeReference(TypeBinding b) {
