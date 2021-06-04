@@ -858,11 +858,7 @@ public class ReferenceBuilder {
 		} else if (binding instanceof ProblemReferenceBinding) {
 		    ref = getTypeReferenceFromProblemReferenceBinding((ProblemReferenceBinding) binding);
 		} else if (binding instanceof IntersectionTypeBinding18) {
-			List<CtTypeReference<?>> bounds = new ArrayList<>();
-			for (ReferenceBinding superInterface : binding.getIntersectingTypes()) {
-				bounds.add(getTypeReference(superInterface));
-			}
-			ref = this.jdtTreeBuilder.getFactory().Type().createIntersectionTypeReferenceWithBounds(bounds);
+		    ref = getTypeReferenceFromIntersectionTypeBinding((IntersectionTypeBinding18) binding);
 		} else {
 			throw new RuntimeException("Unknown TypeBinding: " + binding.getClass() + " " + binding);
 		}
@@ -1067,6 +1063,14 @@ public class ReferenceBuilder {
 		setPackageOrDeclaringType(ref, declaring);
 
 		return ref;
+	}
+
+	private CtTypeReference<?> getTypeReferenceFromIntersectionTypeBinding(IntersectionTypeBinding18 binding) {
+		List<CtTypeReference<?>> boundingTypes = new ArrayList<>();
+		for (ReferenceBinding superInterface : binding.getIntersectingTypes()) {
+			boundingTypes.add(getTypeReference(superInterface));
+		}
+		return this.jdtTreeBuilder.getFactory().Type().createIntersectionTypeReferenceWithBounds(boundingTypes);
 	}
 
 	private CtTypeReference<?> getCtCircularTypeReference(TypeBinding b) {
