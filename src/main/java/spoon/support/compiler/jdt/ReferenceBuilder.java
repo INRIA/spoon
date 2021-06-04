@@ -114,13 +114,6 @@ public class ReferenceBuilder {
 		this.jdtTreeBuilder = jdtTreeBuilder;
 	}
 
-	private CtTypeReference<?> getBoundedTypeReference(TypeBinding binding) {
-		bounds = true;
-		CtTypeReference<?> ref = getTypeReference(binding);
-		bounds = false;
-		return ref;
-	}
-
 	/**
 	 * Builds a type reference from a {@link TypeReference}.
 	 *
@@ -1028,20 +1021,6 @@ public class ReferenceBuilder {
 		return bindingCache.get(b).clone();
 	}
 
-	@SuppressWarnings("unchecked")
-	<T> CtVariableReference<T> getVariableReference(MethodBinding methbin) {
-		CtFieldReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createFieldReference();
-		ref.setSimpleName(new String(methbin.selector));
-		ref.setType(getTypeReference(methbin.returnType));
-
-		if (methbin.declaringClass != null) {
-			ref.setDeclaringType(getTypeReference(methbin.declaringClass));
-		} else {
-			ref.setDeclaringType(ref.getType());
-		}
-		return ref;
-	}
-
 	<T> CtFieldReference<T> getVariableReference(FieldBinding varbin) {
 		CtFieldReference<T> ref = this.jdtTreeBuilder.getFactory().Core().createFieldReference();
 		if (varbin == null) {
@@ -1108,14 +1087,6 @@ public class ReferenceBuilder {
 		ref.setSimpleName(new String(binding.name));
 		ref.setType(getTypeReference(binding.searchType));
 		return ref;
-	}
-
-	List<CtTypeReference<?>> getBoundedTypesReferences(TypeBinding[] genericTypeArguments) {
-		List<CtTypeReference<?>> res = new ArrayList<>(genericTypeArguments.length);
-		for (TypeBinding tb : genericTypeArguments) {
-			res.add(getBoundedTypeReference(tb));
-		}
-		return res;
 	}
 
 	/**
