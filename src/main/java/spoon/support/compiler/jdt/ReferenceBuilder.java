@@ -856,24 +856,7 @@ public class ReferenceBuilder {
 			// In this case, we return a type Object because we can't know more about it.
 			ref = this.jdtTreeBuilder.getFactory().Type().objectType();
 		} else if (binding instanceof ProblemReferenceBinding) {
-			// Spoon is able to analyze also without the classpath
-			String readableName = String.valueOf(binding.readableName());
-			if (isParameterizedProblemReferenceBinding(binding)) {
-				// on some rare occasions, such as the one explained in #3951, the name of the problem
-				// binding contains type arguments. We currently ignore the type arguments themselves
-				// as parsing them is a massive pain, but we must strip them from the name.
-				readableName = readableName.substring(0, readableName.indexOf('<'));
-				jdtTreeBuilder.getFactory().getEnvironment().report(
-						null,
-						Level.WARN,
-						"Ignoring type parameters for problem binding: " + binding);
-			}
-
-			String simpleName = readableName.substring(Math.max(0, readableName.lastIndexOf('.') + 1));
-			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-			ref.setSimpleName(simpleName);
-			final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
-			setPackageOrDeclaringType(ref, declaring);
+		    ref = getTypeReferenceFromProblemReferenceBinding((ProblemReferenceBinding) binding);
 		} else if (binding instanceof IntersectionTypeBinding18) {
 			List<CtTypeReference<?>> bounds = new ArrayList<>();
 			for (ReferenceBinding superInterface : binding.getIntersectingTypes()) {
@@ -1059,6 +1042,29 @@ public class ReferenceBuilder {
 			ref = tmp;
 		}
 		ref.setComponentType(getTypeReference(binding.leafComponentType(), resolveGeneric));
+
+		return ref;
+	}
+
+	private CtTypeReference<?> getTypeReferenceFromProblemReferenceBinding(ProblemReferenceBinding binding) {
+		// Spoon is able to analyze also without the classpath
+		String readableName = String.valueOf(binding.readableName());
+		if (isParameterizedProblemReferenceBinding(binding)) {
+			// on some rare occasions, such as the one explained in #3951, the name of the problem
+			// binding contains type arguments. We currently ignore the type arguments themselves
+			// as parsing them is a massive pain, but we must strip them from the name.
+			readableName = readableName.substring(0, readableName.indexOf('<'));
+			jdtTreeBuilder.getFactory().getEnvironment().report(
+					null,
+					Level.WARN,
+					"Ignoring type parameters for problem binding: " + binding);
+		}
+
+		String simpleName = readableName.substring(Math.max(0, readableName.lastIndexOf('.') + 1));
+		CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+		ref.setSimpleName(simpleName);
+		final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
+		setPackageOrDeclaringType(ref, declaring);
 
 		return ref;
 	}
