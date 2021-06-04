@@ -850,15 +850,7 @@ public class ReferenceBuilder {
 		} else if (binding instanceof SourceTypeBinding) {
 			ref = getTypeReferenceFromSourceTypeBinding((SourceTypeBinding) binding);
 		} else if (binding instanceof ArrayBinding) {
-			CtArrayTypeReference<Object> arrayref;
-			arrayref = this.jdtTreeBuilder.getFactory().Core().createArrayTypeReference();
-			ref = arrayref;
-			for (int i = 1; i < binding.dimensions(); i++) {
-				CtArrayTypeReference<Object> tmp = this.jdtTreeBuilder.getFactory().Core().createArrayTypeReference();
-				arrayref.setComponentType(tmp);
-				arrayref = tmp;
-			}
-			arrayref.setComponentType(getTypeReference(binding.leafComponentType(), resolveGeneric));
+		    ref = getTypeReferenceFromArrayBinding((ArrayBinding) binding, resolveGeneric);
 		} else if (binding instanceof PolyTypeBinding) {
 			// JDT can't resolve the type of this binding and we only have a string.
 			// In this case, we return a type Object because we can't know more about it.
@@ -1054,6 +1046,19 @@ public class ReferenceBuilder {
 				ref.setPackage(getPackageReference(binding.getPackage()));
 			}
 		}
+
+		return ref;
+	}
+
+	private CtTypeReference<?> getTypeReferenceFromArrayBinding(ArrayBinding binding, boolean resolveGeneric) {
+		CtArrayTypeReference<Object> ref;
+		ref = this.jdtTreeBuilder.getFactory().Core().createArrayTypeReference();
+		for (int i = 1; i < binding.dimensions(); i++) {
+			CtArrayTypeReference<Object> tmp = this.jdtTreeBuilder.getFactory().Core().createArrayTypeReference();
+			ref.setComponentType(tmp);
+			ref = tmp;
+		}
+		ref.setComponentType(getTypeReference(binding.leafComponentType(), resolveGeneric));
 
 		return ref;
 	}
