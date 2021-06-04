@@ -765,17 +765,7 @@ public class ReferenceBuilder {
 		} else if (binding instanceof ParameterizedTypeBinding) {
 			ref = getParameterizedTypeReference((ParameterizedTypeBinding) binding);
 		} else if (binding instanceof MissingTypeBinding) {
-			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-			ref.setSimpleName(new String(binding.sourceName()));
-			ref.setPackage(getPackageReference(binding.getPackage()));
-			if (!this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports) {
-				final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
-				if (declaring instanceof CtPackageReference) {
-					ref.setPackage((CtPackageReference) declaring);
-				} else if (declaring instanceof CtTypeReference) {
-					ref.setDeclaringType((CtTypeReference) declaring);
-				}
-			}
+		    ref = getTypeReferenceFromMissingTypeBinding((MissingTypeBinding) binding);
 		} else if (binding instanceof BinaryTypeBinding) {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
 			if (binding.enclosingType() != null) {
@@ -1022,6 +1012,23 @@ public class ReferenceBuilder {
 			this.exploringParameterizedBindings.put(typeArgBinding, typeRefB);
 			return typeRefB;
 		}
+	}
+
+	private CtTypeReference<?> getTypeReferenceFromMissingTypeBinding(MissingTypeBinding binding) {
+		CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+		ref.setSimpleName(new String(binding.sourceName()));
+		ref.setPackage(getPackageReference(binding.getPackage()));
+
+		if (!this.jdtTreeBuilder.getContextBuilder().ignoreComputeImports) {
+			final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
+			if (declaring instanceof CtPackageReference) {
+				ref.setPackage((CtPackageReference) declaring);
+			} else if (declaring instanceof CtTypeReference) {
+				ref.setDeclaringType((CtTypeReference) declaring);
+			}
+		}
+
+		return ref;
 	}
 
 	private CtTypeReference<?> getCtCircularTypeReference(TypeBinding b) {
