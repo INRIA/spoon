@@ -767,14 +767,7 @@ public class ReferenceBuilder {
 		} else if (binding instanceof MissingTypeBinding) {
 		    ref = getTypeReferenceFromMissingTypeBinding((MissingTypeBinding) binding);
 		} else if (binding instanceof BinaryTypeBinding) {
-			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-			if (binding.enclosingType() != null) {
-				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
-			} else {
-				CtPackageReference packageReference = getPackageReference(binding.getPackage());
-				ref.setPackage(packageReference);
-			}
-			ref.setSimpleName(new String(binding.sourceName()));
+		    ref = getTypeReferenceFromBinaryTypeBinding((BinaryTypeBinding) binding);
 		} else if (binding instanceof TypeVariableBinding) {
 			boolean oldBounds = bounds;
 
@@ -1030,6 +1023,20 @@ public class ReferenceBuilder {
 
 		return ref;
 	}
+
+	private CtTypeReference<?> getTypeReferenceFromBinaryTypeBinding(BinaryTypeBinding binding) {
+		CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+		if (binding.enclosingType() != null) {
+			ref.setDeclaringType(getTypeReference(binding.enclosingType()));
+		} else {
+			CtPackageReference packageReference = getPackageReference(binding.getPackage());
+			ref.setPackage(packageReference);
+		}
+		ref.setSimpleName(new String(binding.sourceName()));
+
+		return ref;
+	}
+
 
 	private CtTypeReference<?> getCtCircularTypeReference(TypeBinding b) {
 		return bindingCache.get(b).clone();
