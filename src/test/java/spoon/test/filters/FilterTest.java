@@ -108,6 +108,7 @@ public class FilterTest {
 		factory = build(Foo.class);
 	}
 
+
 	@Test
 	public void testFilters() {
 		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
