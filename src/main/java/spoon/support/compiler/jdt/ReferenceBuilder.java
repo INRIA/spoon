@@ -842,10 +842,7 @@ public class ReferenceBuilder {
 				bounds = false;
 			}
 		} else if (binding instanceof BaseTypeBinding) {
-			String name = new String(binding.sourceName());
-			//always create new TypeReference, because clonning from a cache clones invalid SourcePosition
-			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-			ref.setSimpleName(name);
+			ref = getTypeReferenceFromBaseTypeBinding((BaseTypeBinding) binding);
 		} else if (binding instanceof WildcardBinding) {
 			WildcardBinding wildcardBinding = (WildcardBinding) binding;
 			CtWildcardReference wref = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
@@ -1037,6 +1034,13 @@ public class ReferenceBuilder {
 		return ref;
 	}
 
+	private CtTypeReference<?> getTypeReferenceFromBaseTypeBinding(BaseTypeBinding binding) {
+		String name = new String(binding.sourceName());
+		//always create new TypeReference, because clonning from a cache clones invalid SourcePosition
+		CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+		ref.setSimpleName(name);
+		return ref;
+	}
 
 	private CtTypeReference<?> getCtCircularTypeReference(TypeBinding b) {
 		return bindingCache.get(b).clone();
