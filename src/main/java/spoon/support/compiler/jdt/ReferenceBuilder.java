@@ -848,18 +848,7 @@ public class ReferenceBuilder {
 		} else if (binding instanceof LocalTypeBinding) {
 		    ref = getTypeReferenceFromLocalTypeBinding((LocalTypeBinding) binding);
 		} else if (binding instanceof SourceTypeBinding) {
-			ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-			if (binding.isAnonymousType()) {
-				ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(((SourceTypeBinding) binding).constantPoolName()));
-				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
-			} else {
-				ref.setSimpleName(new String(binding.sourceName()));
-				if (binding.enclosingType() != null) {
-					ref.setDeclaringType(getTypeReference(binding.enclosingType()));
-				} else {
-					ref.setPackage(getPackageReference(binding.getPackage()));
-				}
-			}
+			ref = getTypeReferenceFromSourceTypeBinding((SourceTypeBinding) binding);
 		} else if (binding instanceof ArrayBinding) {
 			CtArrayTypeReference<Object> arrayref;
 			arrayref = this.jdtTreeBuilder.getFactory().Core().createArrayTypeReference();
@@ -1046,6 +1035,23 @@ public class ReferenceBuilder {
 			} else if (binding.enclosingMethod() != null) {
 				ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(binding.constantPoolName()));
 				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
+			}
+		}
+
+		return ref;
+	}
+
+	private CtTypeReference<?> getTypeReferenceFromSourceTypeBinding(SourceTypeBinding binding) {
+		CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
+		if (binding.isAnonymousType()) {
+			ref.setSimpleName(JDTTreeBuilderHelper.computeAnonymousName(binding.constantPoolName()));
+			ref.setDeclaringType(getTypeReference(binding.enclosingType()));
+		} else {
+			ref.setSimpleName(new String(binding.sourceName()));
+			if (binding.enclosingType() != null) {
+				ref.setDeclaringType(getTypeReference(binding.enclosingType()));
+			} else {
+				ref.setPackage(getPackageReference(binding.getPackage()));
 			}
 		}
 
