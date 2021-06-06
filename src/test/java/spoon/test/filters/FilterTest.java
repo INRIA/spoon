@@ -120,11 +120,6 @@ public class FilterTest {
 		assertThrows(IllegalArgumentException.class, () -> foo.getElements(new NameFilter<>(null)));
 	}
 
-	@Test()
-	public void testNameFilterThrowsException() {
-		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
-		assertThrows(IllegalArgumentException.class, () -> foo.getElements(new NameFilter<>(null)));
-	}
 
 	@Test
 	public void testFilters() {
