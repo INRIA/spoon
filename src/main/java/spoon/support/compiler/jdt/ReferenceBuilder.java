@@ -1030,8 +1030,8 @@ public class ReferenceBuilder {
 	}
 
 	private CtTypeReference<?> getTypeReferenceFromArrayBinding(ArrayBinding binding, boolean resolveGeneric) {
-		CtArrayTypeReference<Object> ref;
-		ref = this.jdtTreeBuilder.getFactory().Core().createArrayTypeReference();
+		CtArrayTypeReference<Object> ref = this.jdtTreeBuilder.getFactory().Core().createArrayTypeReference();
+		CtTypeReference<?> outermostRef = ref;
 		for (int i = 1; i < binding.dimensions(); i++) {
 			CtArrayTypeReference<Object> tmp = this.jdtTreeBuilder.getFactory().Core().createArrayTypeReference();
 			ref.setComponentType(tmp);
@@ -1039,7 +1039,7 @@ public class ReferenceBuilder {
 		}
 		ref.setComponentType(getTypeReference(binding.leafComponentType(), resolveGeneric));
 
-		return ref;
+		return outermostRef;
 	}
 
 	private CtTypeReference<?> getTypeReferenceFromProblemReferenceBinding(ProblemReferenceBinding binding) {
