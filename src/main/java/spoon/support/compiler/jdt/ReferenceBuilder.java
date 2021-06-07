@@ -765,9 +765,9 @@ public class ReferenceBuilder {
 		} else if (binding instanceof ParameterizedTypeBinding) {
 			ref = getParameterizedTypeReference((ParameterizedTypeBinding) binding);
 		} else if (binding instanceof MissingTypeBinding) {
-		    ref = getTypeReferenceFromMissingTypeBinding((MissingTypeBinding) binding);
+			ref = getTypeReferenceFromMissingTypeBinding((MissingTypeBinding) binding);
 		} else if (binding instanceof BinaryTypeBinding) {
-		    ref = getTypeReferenceFromBinaryTypeBinding((BinaryTypeBinding) binding);
+			ref = getTypeReferenceFromBinaryTypeBinding((BinaryTypeBinding) binding);
 		} else if (binding instanceof TypeVariableBinding) {
 			boolean oldBounds = bounds;
 
@@ -844,21 +844,21 @@ public class ReferenceBuilder {
 		} else if (binding instanceof BaseTypeBinding) {
 			ref = getTypeReferenceFromBaseTypeBinding((BaseTypeBinding) binding);
 		} else if (binding instanceof WildcardBinding) {
-		    ref = getTypeReferenceFromWildcardBinding((WildcardBinding) binding);
+			ref = getTypeReferenceFromWildcardBinding((WildcardBinding) binding);
 		} else if (binding instanceof LocalTypeBinding) {
-		    ref = getTypeReferenceFromLocalTypeBinding((LocalTypeBinding) binding);
+			ref = getTypeReferenceFromLocalTypeBinding((LocalTypeBinding) binding);
 		} else if (binding instanceof SourceTypeBinding) {
 			ref = getTypeReferenceFromSourceTypeBinding((SourceTypeBinding) binding);
 		} else if (binding instanceof ArrayBinding) {
-		    ref = getTypeReferenceFromArrayBinding((ArrayBinding) binding, resolveGeneric);
+			ref = getTypeReferenceFromArrayBinding((ArrayBinding) binding, resolveGeneric);
 		} else if (binding instanceof PolyTypeBinding) {
 			// JDT can't resolve the type of this binding and we only have a string.
 			// In this case, we return a type Object because we can't know more about it.
 			ref = this.jdtTreeBuilder.getFactory().Type().objectType();
 		} else if (binding instanceof ProblemReferenceBinding) {
-		    ref = getTypeReferenceFromProblemReferenceBinding((ProblemReferenceBinding) binding);
+			ref = getTypeReferenceFromProblemReferenceBinding((ProblemReferenceBinding) binding);
 		} else if (binding instanceof IntersectionTypeBinding18) {
-		    ref = getTypeReferenceFromIntersectionTypeBinding((IntersectionTypeBinding18) binding);
+			ref = getTypeReferenceFromIntersectionTypeBinding((IntersectionTypeBinding18) binding);
 		} else {
 			throw new RuntimeException("Unknown TypeBinding: " + binding.getClass() + " " + binding);
 		}
