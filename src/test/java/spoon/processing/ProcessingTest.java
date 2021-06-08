@@ -87,8 +87,13 @@ public class ProcessingTest {
 
 	@Test
 	public void testSpoonTagger() {
+		// contract: this tests the process method of the SpoonTagger class.
 		final Launcher launcher = new Launcher();
 		launcher.addProcessor("spoon.processing.SpoonTagger");
+		// we need to make sure that the spoon/Spoon.java file doesn't already exist in the system, as it will cause the assertion to be irrelevant
+		File file = new File (launcher.getModelBuilder().getSourceOutputDirectory() + "/spoon/Spoon.java");
+		// deleting the Spoon.java if it exists
+		file.delete();
 		launcher.run();
 		assertTrue(new File(launcher.getModelBuilder().getSourceOutputDirectory() + "/spoon/Spoon.java").exists());
 	}
