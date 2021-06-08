@@ -113,11 +113,16 @@ public class FilterTest {
 	public void testNameFilter() throws Exception {
 		// contract: legacy NameFilter is tested and works
 		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
+		assertEquals("Foo", foo.getSimpleName());
 		List<CtNamedElement> elements = foo.getElements(new NameFilter<>("i"));
+		// contract: tests NameFilter constructor for cases other than null
 		assertEquals(1, elements.size());
-		assertEquals("CtNamedElement",new NameFilter<>("i").getType().getSimpleName());
-		assertTrue(new NameFilter<>("i").matches(elements.get(0)));
+		// contract: tests NameFilter constructor for null value case
 		assertThrows(IllegalArgumentException.class, () -> foo.getElements(new NameFilter<>(null)));
+		// contract: tests the getType method of the NameFilter class
+		assertEquals("CtNamedElement",new NameFilter<>("i").getType().getSimpleName());
+		// contract: tests the matches method of the NameFilter class
+		assertTrue(new NameFilter<>("i").matches(elements.get(0)));
 	}
 
 
