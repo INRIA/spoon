@@ -111,20 +111,45 @@ public class FilterTest {
 
 	@Test
 	public void testNameFilter() throws Exception {
-		// contract: legacy NameFilter is tested and works
+		// contract: the constructor of the class NameFilter creates and initialises an object.
+
 		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
 		List<CtNamedElement> elements = foo.getElements(new NameFilter<>("i"));
-		// contract: tests NameFilter constructor for cases other than null
 		assertEquals(1, elements.size());
-		// contract: tests NameFilter constructor for null value case
-		assertThrows(IllegalArgumentException.class, () -> foo.getElements(new NameFilter<>(null)));
-		// contract: tests the getType method of the NameFilter class
-		assertEquals("CtNamedElement",new NameFilter<>("i").getType().getSimpleName());
-		// contract: tests the matches method of the NameFilter class
-		assertTrue(new NameFilter<>("i").matches(elements.get(0)));
 	}
 
+	@Test
+	void testNameFilterMatchesReturnsTrueForMatchingName() {
+		// contract: NameFilter.matches should return true for an element with a matching name
+
+		// arrange
+		String name = "someNiceName";
+		NameFilter<CtNamedElement> nameFilter = new NameFilter<>(name);
+		CtNamedElement elemWithMatchingName = new Launcher().getFactory().createLocalVariable();
+		elemWithMatchingName.setSimpleName(name);
+
+		// act
+		boolean matches = nameFilter.matches(elemWithMatchingName);
+
+		// assert
+		assertTrue(matches);
+	}
+
+	@Test()
+	public void testNameFilterThrowsExceptionForNull() {
+		// contract: NameFilter constructor should throw IllegalArgumentException when passed null
+
+		assertThrows(IllegalArgumentException.class, () -> new NameFilter<>(null));
+	}
+
+	@Test()
+	public void testNameFilterGetType() {
+		// contract: getType method returns the object of class NameFilter
+
+		NameFilter<CtNamedElement> nameFilter = new NameFilter<>("i");
+		assertEquals(CtNamedElement.class, nameFilter.getType());
+	}
 
 	@Test
 	public void testFilters() {
