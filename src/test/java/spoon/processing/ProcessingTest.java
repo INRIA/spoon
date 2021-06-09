@@ -17,6 +17,7 @@
 package spoon.processing;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.code.CtAssert;
@@ -86,14 +87,11 @@ public class ProcessingTest {
 	}
 
 	@Test
-	public void testSpoonTagger() {
-		// contract: this tests the process method of the SpoonTagger class.
+	public void testSpoonTagger(@TempDir File tempDir) {
+		// contract: after running SpoonTagger, the file spoon/Spoon.java should exist in the output directory
 		final Launcher launcher = new Launcher();
+		launcher.setSourceOutputDirectory(tempDir.getAbsolutePath());
 		launcher.addProcessor("spoon.processing.SpoonTagger");
-		// we need to make sure that the spoon/Spoon.java file doesn't already exist in the system, as it will cause the assertion to be irrelevant
-		File file = new File (launcher.getModelBuilder().getSourceOutputDirectory() + "/spoon/Spoon.java");
-		// deleting the Spoon.java if it exists
-		file.delete();
 		launcher.run();
 		assertTrue(new File(launcher.getModelBuilder().getSourceOutputDirectory() + "/spoon/Spoon.java").exists());
 	}
