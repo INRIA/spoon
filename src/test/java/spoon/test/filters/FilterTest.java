@@ -111,7 +111,7 @@ public class FilterTest {
 
 	@Test
 	public void testNameFilter() throws Exception {
-		// contract: the constructor of the class NameFilter creates and initialises an object.
+		// contract: NameFilter finds the expected amount of elements when filtering
 
 		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
