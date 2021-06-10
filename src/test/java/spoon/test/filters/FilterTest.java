@@ -136,16 +136,16 @@ public class FilterTest {
 		assertTrue(matches);
 	}
 
-	@Test()
+	@Test
 	public void testNameFilterThrowsExceptionForNull() {
 		// contract: NameFilter constructor should throw IllegalArgumentException when passed null
 
 		assertThrows(IllegalArgumentException.class, () -> new NameFilter<>(null));
 	}
 
-	@Test()
+	@Test
 	public void testNameFilterGetType() {
-		// contract: getType method returns the object of class NameFilter
+		// contract: getType method returns the datatype that the NameFilter class returns
 
 		NameFilter<CtNamedElement> nameFilter = new NameFilter<>("i");
 		assertEquals(CtNamedElement.class, nameFilter.getType());
