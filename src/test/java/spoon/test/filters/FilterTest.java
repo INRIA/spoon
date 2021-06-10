@@ -145,7 +145,7 @@ public class FilterTest {
 
 	@Test
 	public void testNameFilterGetType() {
-		// contract: getType method returns the datatype that the NameFilter class returns
+		// contract: NameFilter.getType() should return the CtNamedElement class
 
 		NameFilter<CtNamedElement> nameFilter = new NameFilter<>("i");
 		assertEquals(CtNamedElement.class, nameFilter.getType());
