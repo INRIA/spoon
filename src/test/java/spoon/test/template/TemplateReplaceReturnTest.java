@@ -16,12 +16,12 @@
  */
 package spoon.test.template;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static spoon.testing.utils.ModelUtils.getOptimizedString;
 
 import java.io.File;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import spoon.Launcher;
 import spoon.OutputType;
