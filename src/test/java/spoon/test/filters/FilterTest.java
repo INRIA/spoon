@@ -111,11 +111,44 @@ public class FilterTest {
 
 	@Test
 	public void testNameFilter() throws Exception {
-		// contract: legacy NameFilter is tested and works
+		// contract: NameFilter finds the expected amount of elements when filtering
+
 		CtClass<?> foo = factory.Package().get("spoon.test.filters.testclasses").getType("Foo");
 		assertEquals("Foo", foo.getSimpleName());
 		List<CtNamedElement> elements = foo.getElements(new NameFilter<>("i"));
 		assertEquals(1, elements.size());
+	}
+
+	@Test
+	void testNameFilterMatchesReturnsTrueForMatchingName() {
+		// contract: NameFilter.matches should return true for an element with a matching name
+
+		// arrange
+		String name = "someNiceName";
+		NameFilter<CtNamedElement> nameFilter = new NameFilter<>(name);
+		CtNamedElement elemWithMatchingName = new Launcher().getFactory().createLocalVariable();
+		elemWithMatchingName.setSimpleName(name);
+
+		// act
+		boolean matches = nameFilter.matches(elemWithMatchingName);
+
+		// assert
+		assertTrue(matches);
+	}
+
+	@Test
+	public void testNameFilterThrowsExceptionForNull() {
+		// contract: NameFilter constructor should throw IllegalArgumentException when passed null
+
+		assertThrows(IllegalArgumentException.class, () -> new NameFilter<>(null));
+	}
+
+	@Test
+	public void testNameFilterGetType() {
+		// contract: NameFilter.getType() should return the CtNamedElement class
+
+		NameFilter<CtNamedElement> nameFilter = new NameFilter<>("i");
+		assertEquals(CtNamedElement.class, nameFilter.getType());
 	}
 
 	@Test
