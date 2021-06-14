@@ -16,7 +16,7 @@
  */
 package spoon.test.template;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.pattern.ConflictResolutionMode;
 import spoon.pattern.Match;
@@ -81,13 +81,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
 
@@ -592,10 +592,10 @@ public class PatternTest {
 			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
 
 			// Quantifier.POSSESSIVE matches exactly the right number of times
-			assertEquals("count="+countFinal, countFinal, getCollectionSize(matches.get(0).getParameters().getValue("statements2")));
+			assertEquals(countFinal, getCollectionSize(matches.get(0).getParameters().getValue("statements2")), "count="+countFinal);
 
 			// Quantifier.GREEDY gets the rest
-			assertEquals("count="+countFinal, 5-countFinal, getCollectionSize(matches.get(0).getParameters().getValue("statements1")));
+			assertEquals(5-countFinal, getCollectionSize(matches.get(0).getParameters().getValue("statements1")), "count="+countFinal);
 		}
 	}
 
@@ -629,10 +629,10 @@ public class PatternTest {
 
 			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
 			//the last template has nothing to match -> no match
-			assertEquals("count="+countFinal, 1, matches.size());
-			assertEquals("count="+countFinal, 4-countFinal, getCollectionSize(matches.get(0).getParameters().getValue("statements1")));
-			assertEquals("count="+countFinal, countFinal, getCollectionSize(matches.get(0).getParameters().getValue("statements2")));
-			assertEquals("count="+countFinal, 2, getCollectionSize(matches.get(0).getParameters().getValue("inlinedSysOut")));
+			assertEquals(1, matches.size(), "count="+countFinal);
+			assertEquals(4-countFinal, getCollectionSize(matches.get(0).getParameters().getValue("statements1")), "count="+countFinal);
+			assertEquals(countFinal, getCollectionSize(matches.get(0).getParameters().getValue("statements2")), "count="+countFinal);
+			assertEquals(2, getCollectionSize(matches.get(0).getParameters().getValue("inlinedSysOut")), "count="+countFinal);
 		}
 
 		for (int count = 5; count < 7; count++) {
@@ -642,7 +642,7 @@ public class PatternTest {
 
 			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
 			//the possessive matcher eats too much. There is no target element for last `printedValue` variable
-			assertEquals("count="+countFinal, 0, matches.size());
+			assertEquals(0, matches.size(), "count="+countFinal);
 		}
 	}
 
@@ -667,13 +667,13 @@ public class PatternTest {
 
 			if (count < 7) {
 				//the last template has nothing to match -> no match
-				assertEquals("count=" + count, 1, matches.size());
-				assertEquals("count=" + count, Math.max(0, 3 - count), getCollectionSize(matches.get(0).getParameters().getValue("statements1")));
-				assertEquals("count=" + count, count - Math.max(0, count - 4), getCollectionSize(matches.get(0).getParameters().getValue("statements2")));
-				assertEquals("count=" + count, Math.max(2, 3 - Math.max(0, count - 3)), getCollectionSize(matches.get(0).getParameters().getValue("printedValue")));
+				assertEquals(1, matches.size(), "count=" + count);
+				assertEquals(Math.max(0, 3 - count), getCollectionSize(matches.get(0).getParameters().getValue("statements1")), "count=" + count);
+				assertEquals(count - Math.max(0, count - 4), getCollectionSize(matches.get(0).getParameters().getValue("statements2")), "count=" + count);
+				assertEquals(Math.max(2, 3 - Math.max(0, count - 3)), getCollectionSize(matches.get(0).getParameters().getValue("printedValue")), "count=" + count);
 			} else {
 				//the possessive matcher eats too much. There is no target element for last `printedValue` variable
-				assertEquals("count=" + count, 0, matches.size());
+				assertEquals(0, matches.size(), "count=" + count);
 			}
 		}
 	}
