@@ -900,7 +900,7 @@ public class ReferenceBuilder {
 		} else if (resolveGeneric) {
 			//it is called e.g. by ExecutableReference, which must not use CtParameterTypeReference
 			//but it needs it's bounding type instead
-			ref = getTypeReferenceOfBoundingType(binding);
+			ref = getTypeReferenceOfBoundingType(binding).clone();
 		} else {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
 			ref.setSimpleName(new String(binding.sourceName()));
@@ -942,34 +942,33 @@ public class ReferenceBuilder {
 	private CtTypeReference<?> getTypeReferenceOfBoundingType(TypeVariableBinding binding) {
 		final boolean resolveGeneric = true;
 
-		CtTypeReference<?> ref;
 		ReferenceBinding superClass = binding.superclass;
 		ReferenceBinding[] superInterfaces = binding.superInterfaces();
 
-		CtTypeReference<?> refSuperClass = null;
-
-		// if the type parameter has a super class other than java.lang.Object, we get it
-		// superClass.superclass() is null if it's java.lang.Object
-		if (superClass != null && superClass.superclass() != null) {
-
-			// this case could happen with Enum<E extends Enum<E>> for example:
-			// in that case we only want to have E -> Enum -> E
-			// to conserve the same behavior as JavaReflectionTreeBuilder
-			if (!(superClass instanceof ParameterizedTypeBinding) || !this.exploringParameterizedBindings.containsKey(superClass)) {
-				refSuperClass = this.getTypeReference(superClass, resolveGeneric);
-			}
-
+		if (isViableAsBoundingType(superClass)) {
+			return getTypeReference(superClass, resolveGeneric);
 		} else if (superInterfaces != null && superInterfaces.length == 1) {
 			// if the type parameter has a super interface, then we'll get it too, as a superclass
 			// type parameter can only extends an interface or a class, so we don't make the distinction
 			// in Spoon. Moreover we can only have one extends in a type parameter.
-			refSuperClass = this.getTypeReference(superInterfaces[0], resolveGeneric);
+			return getTypeReference(superInterfaces[0], resolveGeneric);
+		} else {
+			return jdtTreeBuilder.getFactory().Type().getDefaultBoundingType();
 		}
-		if (refSuperClass == null) {
-			refSuperClass = this.jdtTreeBuilder.getFactory().Type().getDefaultBoundingType();
-		}
-		ref = refSuperClass.clone();
-		return ref;
+	}
+
+	private boolean isViableAsBoundingType(ReferenceBinding binding) {
+		return binding != null
+				&& !"java.lang.Object".equals(CharOperation.toString(binding.compoundName))
+				&& !isParameterizedBindingCurrentlyBeingExplored(binding);
+	}
+
+	private boolean isParameterizedBindingCurrentlyBeingExplored(ReferenceBinding binding) {
+		// this case could happen with Enum<E extends Enum<E>> for example:
+		// in that case we only want to have E -> Enum -> E
+		// to conserve the same behavior as JavaReflectionTreeBuilder
+		return binding instanceof ParameterizedTypeBinding
+				&& exploringParameterizedBindings.containsKey(binding);
 	}
 
 	private CtTypeReference<?> getTypeReferenceFromBaseTypeBinding(BaseTypeBinding binding) {
