@@ -319,7 +319,7 @@ public class CommentTest {
 		CtAnonymousExecutable ctAnonymousExecutable = type.getAnonymousExecutables().get(0);
 		assertEquals(1, ctAnonymousExecutable.getComments().size());
 		assertEquals(createFakeComment(f, "comment static block"), ctAnonymousExecutable.getComments().get(0));
-		assertEquals(createFakeComment(f, "comment inside static"), ctAnonymousExecutable.getBody().getStatement(0));
+		assertEquals(createFakeComment(f, "comment inside static"), ctAnonymousExecutable.getMyBody().getStatement(0));
 		assertEquals("// comment static block" + newLine
 				+ "static {" + newLine
 				+ "    // comment inside static" + newLine
@@ -329,7 +329,7 @@ public class CommentTest {
 		assertEquals(1, constructor.getComments().size());
 		assertEquals(createFakeComment(f, "comment constructor"), constructor.getComments().get(0));
 		// index 0 is the implicit super call
-		assertEquals(createFakeComment(f, "Comment in constructor"), constructor.getBody().getStatement(1));
+		assertEquals(createFakeComment(f, "Comment in constructor"), constructor.getMyBody().getStatement(1));
 		assertEquals("// comment constructor" + newLine
 				+ "public InlineComment() {" + newLine
 				+ "    // Comment in constructor" + newLine
@@ -338,7 +338,7 @@ public class CommentTest {
 		CtMethod<Object> m = type.getMethod("m");
 		assertEquals(1, m.getComments().size());
 		assertEquals(createFakeComment(f, "comment method"), m.getComments().get(0));
-		assertEquals(createFakeComment(f, "comment empty method block"), m.getBody().getStatement(0));
+		assertEquals(createFakeComment(f, "comment empty method block"), m.getMyBody().getStatement(0));
 		assertEquals("// comment method" + newLine
 				+ "public void m() {" + newLine
 				+ "    // comment empty method block" + newLine
@@ -347,7 +347,7 @@ public class CommentTest {
 
 		CtMethod<Object> m1 = type.getMethod("m1");
 
-		CtSwitch ctSwitch = m1.getBody().getStatement(0);
+		CtSwitch ctSwitch = m1.getMyBody().getStatement(0);
 		assertEquals(createFakeComment(f, "comment switch"), ctSwitch.getComments().get(0));
 		assertEquals("// comment switch" + newLine
 				+ "switch (1) {" + newLine
@@ -361,14 +361,14 @@ public class CommentTest {
 				+ "        // comment default" + newLine
 				+ "}", ctSwitch.toString());
 
-		CtFor ctFor = m1.getBody().getStatement(1);
+		CtFor ctFor = m1.getMyBody().getStatement(1);
 		assertEquals(createFakeComment(f, "comment for"), ctFor.getComments().get(0));
 		assertEquals("// comment for" + newLine
 				+ "for (int i = 0; i < 10; i++) {" + newLine
 				+ "    // comment for block" + newLine
 				+ "}", ctFor.toString());
 
-		CtIf ctIf = m1.getBody().getStatement(2);
+		CtIf ctIf = m1.getMyBody().getStatement(2);
 		assertEquals(createFakeComment(f, "comment if"), ctIf.getComments().get(0));
 		assertEquals("// comment if" + newLine
 				+ "if ((1 % 2) == 0) {" + newLine
@@ -376,27 +376,27 @@ public class CommentTest {
 				+ "    field++;" + newLine
 				+ "}", ctIf.toString());
 
-		CtConstructorCall ctConstructorCall = m1.getBody().getStatement(3);
+		CtConstructorCall ctConstructorCall = m1.getMyBody().getStatement(3);
 		assertEquals(createFakeComment(f, "comment constructor call"), ctConstructorCall.getComments().get(0));
 		assertEquals("// comment constructor call" + newLine
 				+ "new spoon.test.comment.testclasses.InlineComment()", ctConstructorCall.toString());
 
-		CtInvocation ctInvocation = m1.getBody().getStatement(4);
+		CtInvocation ctInvocation = m1.getMyBody().getStatement(4);
 		assertEquals(createFakeComment(f, "comment invocation"), ctInvocation.getComments().get(0));
 		assertEquals("// comment invocation" + newLine
 				+ "this.m()", ctInvocation.toString());
 
-		CtLocalVariable ctLocalVariable = m1.getBody().getStatement(5);
+		CtLocalVariable ctLocalVariable = m1.getMyBody().getStatement(5);
 		assertEquals(createFakeComment(f, "comment local variable"), ctLocalVariable.getComments().get(0));
 		assertEquals("// comment local variable" + newLine
 				+ "int i = 0", ctLocalVariable.toString());
 
-		CtLocalVariable ctLocalVariable2 = m1.getBody().getStatement(6);
+		CtLocalVariable ctLocalVariable2 = m1.getMyBody().getStatement(6);
 		assertEquals(createFakeComment(f, "comment multi assignments"), ctLocalVariable2.getComments().get(0));
 		assertEquals("// comment multi assignments" + newLine
 				+ "int j = 2", ctLocalVariable2.toString());
 
-		CtDo ctDo = m1.getBody().getStatement(7);
+		CtDo ctDo = m1.getMyBody().getStatement(7);
 		assertEquals(createFakeComment(f, "comment dowhile"), ctDo.getComments().get(0));
 		assertEquals("// comment dowhile" + newLine
 				+ "do {" + newLine
@@ -405,7 +405,7 @@ public class CommentTest {
 				+ "    // comment end do while" + newLine
 				+ "} while (i < 10 )", ctDo.toString());
 
-		CtTry ctTry = m1.getBody().getStatement(8);
+		CtTry ctTry = m1.getMyBody().getStatement(8);
 		assertEquals(createFakeComment(f, "comment try"), ctTry.getComments().get(0));
 		assertEquals("// comment try" + newLine
 				+ "try {" + newLine
@@ -417,14 +417,14 @@ public class CommentTest {
 				+ "    // comment in catch" + newLine
 				+ "}", ctTry.toString());
 
-		CtSynchronized ctSynchronized = m1.getBody().getStatement(9);
+		CtSynchronized ctSynchronized = m1.getMyBody().getStatement(9);
 		assertEquals(createFakeComment(f, "comment synchronized"), ctSynchronized.getComments().get(0));
 		assertEquals("// comment synchronized" + newLine
 				+ "synchronized(this) {" + newLine
 				+ "    // comment in synchronized" + newLine
 				+ "}", ctSynchronized.toString());
 
-		CtLocalVariable ctLocalVariable1 = m1.getBody().getStatement(10);
+		CtLocalVariable ctLocalVariable1 = m1.getMyBody().getStatement(10);
 		CtConditional ctConditional = (CtConditional) ctLocalVariable1.getDefaultExpression();
 		assertEquals(createFakeComment(f, "comment after condition CtConditional"), ctConditional.getCondition().getComments().get(0));
 		assertEquals(createFakeComment(f, "comment before then CtConditional"), ctConditional.getThenExpression().getComments().get(0));
@@ -437,7 +437,7 @@ public class CommentTest {
 				+ " : // comment before else CtConditional" + newLine
 				+ "new java.lang.Double(j / ((double) (i - 1)))// comment after else CtConditional" + newLine, ctLocalVariable1.toString());
 
-		CtNewArray ctNewArray = (CtNewArray) ((CtLocalVariable) m1.getBody().getStatement(11)).getDefaultExpression();
+		CtNewArray ctNewArray = (CtNewArray) ((CtLocalVariable) m1.getMyBody().getStatement(11)).getDefaultExpression();
 		assertEquals(createFakeComment(f, "last comment at the end of array"), ctNewArray.getComments().get(0));
 
 		CtElement arrayValue = (CtElement) ctNewArray.getElements().get(0);
@@ -445,17 +445,17 @@ public class CommentTest {
 		assertEquals(createFakeComment(f, "comment after array value"), arrayValue.getComments().get(1));
 
 
-		CtLocalVariable ctLocalVariableString = m1.getBody().getStatement(12);
+		CtLocalVariable ctLocalVariableString = m1.getMyBody().getStatement(12);
 		assertEquals(createFakeComment(f, "comment multi line string"), ((CtBinaryOperator) ((CtBinaryOperator) ctLocalVariableString.getDefaultExpression()).getRightHandOperand()).getLeftHandOperand().getComments().get(0));
 		assertEquals("\"\" + (\"\"// comment multi line string" + newLine
 				+ " + \"\")", ctLocalVariableString.getDefaultExpression().toString());
 
-		ctLocalVariable1 = m1.getBody().getStatement(13);
+		ctLocalVariable1 = m1.getMyBody().getStatement(13);
 		assertEquals("boolean c = (i == 1) ? // comment before then boolean CtConditional" + newLine
 				+ "i == 1// comment after then boolean CtConditional" + newLine
 				+ " : i == 2", ctLocalVariable1.toString());
 
-		CtReturn ctReturn = m1.getBody().getStatement(14);
+		CtReturn ctReturn = m1.getMyBody().getStatement(14);
 		assertEquals(createFakeComment(f, "comment return"), ctReturn.getComments().get(0));
 		assertEquals("// comment return" + newLine
 				+ "return", ctReturn.toString());
@@ -514,7 +514,7 @@ public class CommentTest {
 		CtAnonymousExecutable ctAnonymousExecutable = type.getAnonymousExecutables().get(0);
 		assertEquals(1, ctAnonymousExecutable.getComments().size());
 		assertEquals(createFakeBlockComment(f, "comment static block"), ctAnonymousExecutable.getComments().get(0));
-		assertEquals(createFakeBlockComment(f, "comment inside static"), ctAnonymousExecutable.getBody().getStatement(0));
+		assertEquals(createFakeBlockComment(f, "comment inside static"), ctAnonymousExecutable.getMyBody().getStatement(0));
 		assertEquals("/* comment static block */" + newLine
 				+ "static {" + newLine
 				+ "    /* comment inside static */" + newLine
@@ -524,7 +524,7 @@ public class CommentTest {
 		assertEquals(1, constructor.getComments().size());
 		assertEquals(createFakeBlockComment(f, "comment constructor"), constructor.getComments().get(0));
 		// index 0 is the implicit super call
-		assertEquals(createFakeBlockComment(f, "Comment in constructor"), constructor.getBody().getStatement(1));
+		assertEquals(createFakeBlockComment(f, "Comment in constructor"), constructor.getMyBody().getStatement(1));
 		assertEquals("/* comment constructor */" + newLine
 				+ "public BlockComment() {" + newLine
 				+ "    /* Comment in constructor */" + newLine
@@ -533,7 +533,7 @@ public class CommentTest {
 		CtMethod<Object> m = type.getMethod("m");
 		assertEquals(1, m.getComments().size());
 		assertEquals(createFakeBlockComment(f, "comment method"), m.getComments().get(0));
-		assertEquals(createFakeBlockComment(f, "comment empty method block"), m.getBody().getStatement(0));
+		assertEquals(createFakeBlockComment(f, "comment empty method block"), m.getMyBody().getStatement(0));
 		assertEquals("/* comment method */" + newLine
 				+ "public void m() {" + newLine
 				+ "    /* comment empty method block */" + newLine
@@ -542,7 +542,7 @@ public class CommentTest {
 
 		CtMethod<Object> m1 = type.getMethod("m1");
 
-		CtSwitch ctSwitch = m1.getBody().getStatement(0);
+		CtSwitch ctSwitch = m1.getMyBody().getStatement(0);
 		assertEquals(createFakeBlockComment(f, "comment switch"), ctSwitch.getComments().get(0));
 		assertEquals("/* comment switch */" + newLine
 				+ "switch (1) {" + newLine
@@ -556,14 +556,14 @@ public class CommentTest {
 				+ "        /* comment default */" + newLine
 				+ "}", ctSwitch.toString());
 
-		CtFor ctFor = m1.getBody().getStatement(1);
+		CtFor ctFor = m1.getMyBody().getStatement(1);
 		assertEquals(createFakeBlockComment(f, "comment for"), ctFor.getComments().get(0));
 		assertEquals("/* comment for */" + newLine
 				+ "for (int i = 0; i < 10; i++) {" + newLine
 				+ "    /* comment for block */" + newLine
 				+ "}", ctFor.toString());
 
-		CtIf ctIf = m1.getBody().getStatement(2);
+		CtIf ctIf = m1.getMyBody().getStatement(2);
 		assertEquals(createFakeBlockComment(f, "comment if"), ctIf.getComments().get(0));
 		assertEquals("/* comment if */" + newLine
 				+ "if ((1 % 2) == 0) {" + newLine
@@ -571,27 +571,27 @@ public class CommentTest {
 				+ "    field++;" + newLine
 				+ "}", ctIf.toString());
 
-		CtConstructorCall ctConstructorCall = m1.getBody().getStatement(3);
+		CtConstructorCall ctConstructorCall = m1.getMyBody().getStatement(3);
 		assertEquals(createFakeBlockComment(f, "comment constructor call"), ctConstructorCall.getComments().get(0));
 		assertEquals("/* comment constructor call */" + newLine
 				+ "new spoon.test.comment.testclasses.BlockComment()", ctConstructorCall.toString());
 
-		CtInvocation ctInvocation = m1.getBody().getStatement(4);
+		CtInvocation ctInvocation = m1.getMyBody().getStatement(4);
 		assertEquals(createFakeBlockComment(f, "comment invocation"), ctInvocation.getComments().get(0));
 		assertEquals("/* comment invocation */" + newLine
 				+ "this.m()", ctInvocation.toString());
 
-		CtLocalVariable ctLocalVariable = m1.getBody().getStatement(5);
+		CtLocalVariable ctLocalVariable = m1.getMyBody().getStatement(5);
 		assertEquals(createFakeBlockComment(f, "comment local variable"), ctLocalVariable.getComments().get(0));
 		assertEquals("/* comment local variable */" + newLine
 				+ "int i = 0", ctLocalVariable.toString());
 
-		CtLocalVariable ctLocalVariable2 = m1.getBody().getStatement(6);
+		CtLocalVariable ctLocalVariable2 = m1.getMyBody().getStatement(6);
 		assertEquals(createFakeBlockComment(f, "comment multi assignments"), ctLocalVariable2.getComments().get(0));
 		assertEquals("/* comment multi assignments */" + newLine
 				+ "int j = 2", ctLocalVariable2.toString());
 
-		CtDo ctDo = m1.getBody().getStatement(7);
+		CtDo ctDo = m1.getMyBody().getStatement(7);
 		assertEquals(createFakeBlockComment(f, "comment dowhile"), ctDo.getComments().get(0));
 		assertEquals("/* comment dowhile */" + newLine
 				+ "do {" + newLine
@@ -600,7 +600,7 @@ public class CommentTest {
 				+ "    /* comment end do while */" + newLine
 				+ "} while (i < 10 )", ctDo.toString());
 
-		CtTry ctTry = m1.getBody().getStatement(8);
+		CtTry ctTry = m1.getMyBody().getStatement(8);
 		assertEquals(createFakeBlockComment(f, "comment try"), ctTry.getComments().get(0));
 		assertEquals("/* comment try */" + newLine
 				+ "try {" + newLine
@@ -610,14 +610,14 @@ public class CommentTest {
 				+ "    /* comment in catch */" + newLine
 				+ "}", ctTry.toString());
 
-		CtSynchronized ctSynchronized = m1.getBody().getStatement(9);
+		CtSynchronized ctSynchronized = m1.getMyBody().getStatement(9);
 		assertEquals(createFakeBlockComment(f, "comment synchronized"), ctSynchronized.getComments().get(0));
 		assertEquals("/* comment synchronized */" + newLine
 				+ "synchronized(this) {" + newLine
 				+ "    /* comment in synchronized */" + newLine
 				+ "}", ctSynchronized.toString());
 
-		CtReturn ctReturn = m1.getBody().getStatement(10);
+		CtReturn ctReturn = m1.getMyBody().getStatement(10);
 		assertEquals(createFakeBlockComment(f, "comment return"), ctReturn.getComments().get(0));
 		assertEquals("/* comment return */" + newLine
 				+ "return", ctReturn.toString());
@@ -678,18 +678,18 @@ public class CommentTest {
 		type.addMethod(method);
 
 		method.addComment(createFakeComment(f, "comment method"));
-		method.getBody().addStatement(createFakeComment(f, "comment empty block"));
+		method.getMyBody().addStatement(createFakeComment(f, "comment empty block"));
 
 		assertEquals("// comment method" + newLine
 				+ "void newMethod() {" + newLine
 				+ "    // comment empty block" + newLine
 				+ "}", method.toString());
 
-		method.getBody().removeStatement(method.getBody().getStatement(0));
+		method.getMyBody().removeStatement(method.getMyBody().getStatement(0));
 
 		CtLocalVariable<Integer> i = f.Code().createLocalVariable(f.Type().INTEGER_PRIMITIVE, "i", null);
 		i.addComment(createFakeComment(f, "comment local variable"));
-		method.getBody().addStatement(i);
+		method.getMyBody().addStatement(i);
 
 
 		assertEquals("// comment method" + newLine
@@ -768,7 +768,7 @@ public class CommentTest {
 		assertEquals(1, methodString.getComments().size());
 		assertEquals("method javadoc comment", methodString.getComments().get(0).getContent());
 
-		CtReturn<?> returnSt = methodString.getBody().getStatement(0);
+		CtReturn<?> returnSt = methodString.getMyBody().getStatement(0);
 
 		assertEquals(2, returnSt.getComments().size());
 		assertEquals("method body comment", returnSt.getComments().get(0).getContent());
@@ -1065,7 +1065,7 @@ public class CommentTest {
 
 		CtModel model = launcher.buildModel();
 
-		List<CtStatement> statements = launcher.getFactory().Type().get(CommentsOnStatements.class).getMethodsByName("m1").get(0).getBody().getStatements();
+		List<CtStatement> statements = launcher.getFactory().Type().get(CommentsOnStatements.class).getMethodsByName("m1").get(0).getMyBody().getStatements();
 		assertEquals(2, statements.size());
 		CtIf ifStatement = (CtIf) statements.get(0);
 		assertEquals(Arrays.asList("// c1"), getCommentStrings(ifStatement));
@@ -1177,9 +1177,9 @@ public class CommentTest {
 		assertEquals("comment", lambdas.get(3).getParent().getComments().get(0).getContent());
 		assertEquals("", lambdas.get(4).getExpression().getComments().get(0).getContent());
 
-		assertEquals("comment", lambdas.get(5).getBody().getStatement(0).getComments().get(0).getContent());
+		assertEquals("comment", lambdas.get(5).getMyBody().getStatement(0).getComments().get(0).getContent());
 		assertEquals("comment", lambdas.get(6).getComments().get(0).getContent());
-		assertEquals("comment", lambdas.get(7).getBody().getStatement(0).getComments().get(0).getContent());
+		assertEquals("comment", lambdas.get(7).getMyBody().getStatement(0).getComments().get(0).getContent());
 
 		assertTrue(lambdas.get(8).getParent().getComments().isEmpty());
 		assertTrue(lambdas.get(8).getComments().isEmpty());
@@ -1215,7 +1215,7 @@ public class CommentTest {
 		List<CtCatch> catches = model.getElements(new TypeFilter<>(CtCatch.class));
 		assertEquals(1, catches.get(0).getComments().size());
 		assertEquals("first comment", catches.get(0).getComments().get(0).getContent());
-		assertEquals(1, catches.get(0).getBody().getComments().size());
-		assertEquals("second comment", catches.get(0).getBody().getComments().get(0).getContent());
+		assertEquals(1, catches.get(0).getMyBody().getComments().size());
+		assertEquals("second comment", catches.get(0).getMyBody().getComments().get(0).getContent());
 	}
 }

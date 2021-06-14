@@ -58,7 +58,7 @@ public class VisibilityTest {
 		CtMethod<?> m = type.getMethodsByName("method").get(0);
 		assertEquals(
 				"new spoon.test.visibility.packageprotected.AccessibleClassFromNonAccessibleInterf().method(new spoon.test.visibility.packageprotected.AccessibleClassFromNonAccessibleInterf())",
-				m.getBody().getStatement(0).toString()
+				m.getMyBody().getStatement(0).toString()
 		);
 	}
 

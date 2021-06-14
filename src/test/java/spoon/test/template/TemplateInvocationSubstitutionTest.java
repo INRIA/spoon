@@ -46,7 +46,7 @@ public class TemplateInvocationSubstitutionTest {
 		spoon.buildModel();
 		Factory factory = spoon.getFactory();
 
-		CtBlock<?> templateArg = factory.Templates().Class().get(InvocationSubstitutionByStatementTemplate.class).getMethod("sample").getBody();
+		CtBlock<?> templateArg = factory.Templates().Class().get(InvocationSubstitutionByStatementTemplate.class).getMethod("sample").getMyBody();
 		
 		CtClass<?> resultKlass = factory.Class().create("Result");
 		CtStatement result = new InvocationSubstitutionByStatementTemplate(templateArg).apply(resultKlass);

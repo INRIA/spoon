@@ -173,7 +173,7 @@ public class CtClassTest {
 		final Set<? extends CtConstructor<?>> constructors = cook.getConstructors();
 		final String expectedConstructor = "public Cook() {" + System.lineSeparator() + "}";
 		assertEquals(expectedConstructor, constructors.toArray(new CtConstructor[constructors.size()])[0].toString());
-		CtLocalVariable m = cook.getMethod("m").getBody().getStatement(0);
+		CtLocalVariable m = cook.getMethod("m").getMyBody().getStatement(0);
 		assertEquals("final java.lang.Class<Cook> cookClass = Cook.class", m.toString());
 		CtFieldAccess ac = (CtFieldAccess) m.getAssignment();
 		assertEquals("class", ac.getVariable().getSimpleName());

@@ -22,7 +22,7 @@ public interface CtBodyHolder extends CtElement {
 	 * Gets the body of this element
 	 */
 	@PropertyGetter(role = BODY)
-	CtStatement getBody();
+	CtStatement getMyBody();
 
 	/**
 	 * Sets the body of this element.

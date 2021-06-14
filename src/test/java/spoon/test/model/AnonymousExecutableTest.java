@@ -36,7 +36,7 @@ public class AnonymousExecutableTest {
 			type.
 			getElements(new TypeFilter<>(CtAnonymousExecutable.class)).
 			get(0);
-		List<CtStatement> stats = anonexec.getBody().getStatements();
+		List<CtStatement> stats = anonexec.getMyBody().getStatements();
 		assertEquals(1, stats.size());
 	}
 }

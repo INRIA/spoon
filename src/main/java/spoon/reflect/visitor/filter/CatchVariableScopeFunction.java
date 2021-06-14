@@ -43,7 +43,7 @@ public class CatchVariableScopeFunction implements CtConsumableFunction<CtCatchV
 	@Override
 	public void apply(CtCatchVariable<?> catchVariable, CtConsumer<Object> outputConsumer) {
 		catchVariable
-			.getParent(CtCatch.class).getBody()
+			.getParent(CtCatch.class).getMyBody()
 			.map(new CtScannerFunction().setListener(this.listener))
 			.forEach(outputConsumer);
 	}

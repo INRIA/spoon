@@ -458,7 +458,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.writeComment(impl);
 		elementPrinterHelper.writeAnnotations(impl);
 		elementPrinterHelper.writeModifiers(impl);
-		scan(impl.getBody());
+		scan(impl.getMyBody());
 	}
 
 	@Override
@@ -625,7 +625,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			scan(parameter);
 		}
 		printer.writeSeparator(")").writeSpace();
-		scan(catchBlock.getBody());
+		scan(catchBlock.getMyBody());
 	}
 
 	@Override
@@ -714,7 +714,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.writeExecutableParameters(constructor);
 		elementPrinterHelper.writeThrowsClause(constructor);
 		printer.writeSpace();
-		scan(constructor.getBody());
+		scan(constructor.getMyBody());
 	}
 
 	@Override
@@ -731,7 +731,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void visitCtDo(CtDo doLoop) {
 		enterCtStatement(doLoop);
 		printer.writeKeyword("do");
-		elementPrinterHelper.writeIfOrLoopBlock(doLoop.getBody());
+		elementPrinterHelper.writeIfOrLoopBlock(doLoop.getMyBody());
 		printer.writeKeyword("while").writeSpace().writeSeparator("(");
 		scan(doLoop.getLoopingExpression());
 		printer.writeSpace().writeSeparator(")");
@@ -1225,7 +1225,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			null, false, null, false, true, ",", true, false, null,
 			s -> scan(s));
 		printer.writeSeparator(")");
-		elementPrinterHelper.writeIfOrLoopBlock(forLoop.getBody());
+		elementPrinterHelper.writeIfOrLoopBlock(forLoop.getMyBody());
 		exitCtStatement(forLoop);
 	}
 
@@ -1237,7 +1237,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSpace().writeSeparator(":").writeSpace();
 		scan(foreach.getExpression());
 		printer.writeSeparator(")");
-		elementPrinterHelper.writeIfOrLoopBlock(foreach.getBody());
+		elementPrinterHelper.writeIfOrLoopBlock(foreach.getMyBody());
 		exitCtStatement(foreach);
 	}
 
@@ -1427,13 +1427,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeIdentifier(m.getSimpleName());
 		elementPrinterHelper.writeExecutableParameters(m);
 		elementPrinterHelper.writeThrowsClause(m);
-		if (m.getBody() != null) {
+		if (m.getMyBody() != null) {
 			printer.writeSpace();
-			scan(m.getBody());
-			if (m.getBody().getPosition().isValidPosition()) {
-				if (m.getBody().getPosition().getCompilationUnit() == sourceCompilationUnit) {
-					if (m.getBody().getStatements().isEmpty() || !(m.getBody().getStatements().get(m.getBody().getStatements().size() - 1) instanceof CtReturn)) {
-						getPrinterHelper().putLineNumberMapping(m.getBody().getPosition().getEndLine());
+			scan(m.getMyBody());
+			if (m.getMyBody().getPosition().isValidPosition()) {
+				if (m.getMyBody().getPosition().getCompilationUnit() == sourceCompilationUnit) {
+					if (m.getMyBody().getStatements().isEmpty() || !(m.getMyBody().getStatements().get(m.getMyBody().getStatements().size() - 1) instanceof CtReturn)) {
+						getPrinterHelper().putLineNumberMapping(m.getMyBody().getPosition().getEndLine());
 					}
 				} else {
 					getPrinterHelper().undefineLine();
@@ -1590,8 +1590,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSeparator("->");
 		printer.writeSpace();
 
-		if (lambda.getBody() != null) {
-			scan(lambda.getBody());
+		if (lambda.getMyBody() != null) {
+			scan(lambda.getMyBody());
 		} else {
 			scan(lambda.getExpression());
 		}
@@ -1753,7 +1753,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	public void visitCtTry(CtTry tryBlock) {
 		enterCtStatement(tryBlock);
 		printer.writeKeyword("try").writeSpace();
-		scan(tryBlock.getBody());
+		scan(tryBlock.getMyBody());
 		for (CtCatch c : tryBlock.getCatchers()) {
 			scan(c);
 		}
@@ -1775,7 +1775,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				r -> scan(r));
 		}
 		printer.writeSpace();
-		scan(tryWithResource.getBody());
+		scan(tryWithResource.getMyBody());
 		for (CtCatch c : tryWithResource.getCatchers()) {
 			scan(c);
 		}
@@ -1968,7 +1968,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		scan(whileLoop.getLoopingExpression());
 		printer.writeSeparator(")");
 
-		elementPrinterHelper.writeIfOrLoopBlock(whileLoop.getBody());
+		elementPrinterHelper.writeIfOrLoopBlock(whileLoop.getMyBody());
 		exitCtStatement(whileLoop);
 	}
 

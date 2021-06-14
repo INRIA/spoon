@@ -53,10 +53,10 @@ public class EvalTest {
 		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
-		CtBlock<?> b = type.getMethodsByName("testStrings").get(0).getBody();
+		CtBlock<?> b = type.getMethodsByName("testStrings").get(0).getMyBody();
 		assertEquals(4, b.getStatements().size());
 		b = b.partiallyEvaluate();
-		b = type.getMethodsByName("testInts").get(0).getBody();
+		b = type.getMethodsByName("testInts").get(0).getMyBody();
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();
 		assertEquals("// if removed", b.getStatements().get(0).toString());
@@ -67,7 +67,7 @@ public class EvalTest {
 		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
-		CtBlock<?> b = type.getMethodsByName("testArray").get(0).getBody();
+		CtBlock<?> b = type.getMethodsByName("testArray").get(0).getMyBody();
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();
 		assertEquals("// if removed", b.getStatements().get(0).toString());
@@ -78,7 +78,7 @@ public class EvalTest {
 		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
-		CtBlock<?> b = type.getMethodsByName("testDoNotSimplify").get(0).getBody();
+		CtBlock<?> b = type.getMethodsByName("testDoNotSimplify").get(0).getMyBody();
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();
 		assertEquals("java.lang.System.out.println(((\"enter: \" + className) + \" - \") + methodName)", b.getStatements().get(0).toString());
@@ -89,7 +89,7 @@ public class EvalTest {
 		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
-		CtBlock<?> b = type.getMethodsByName("testDoNotSimplifyCasts").get(0).getBody();
+		CtBlock<?> b = type.getMethodsByName("testDoNotSimplifyCasts").get(0).getMyBody();
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();
 		assertEquals("return ((U) ((java.lang.Object) (spoon.test.eval.testclasses.ToEvaluate.castTarget(element).getClass())))", b.getStatements().get(0).toString());
@@ -101,7 +101,7 @@ public class EvalTest {
 		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
-		CtBlock<?> b = type.getMethodsByName("testDoNotSimplifyCasts").get(0).getBody();
+		CtBlock<?> b = type.getMethodsByName("testDoNotSimplifyCasts").get(0).getMyBody();
 		assertEquals(1, b.getStatements().size());
 		b = b.partiallyEvaluate();
 
@@ -115,7 +115,7 @@ public class EvalTest {
 		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
-		CtBlock<?> b = type.getMethodsByName("tryCatchAndStatement").get(0).getBody();
+		CtBlock<?> b = type.getMethodsByName("tryCatchAndStatement").get(0).getMyBody();
 		assertEquals(2, b.getStatements().size());
 		b = b.partiallyEvaluate();
 		assertEquals(2, b.getStatements().size());
@@ -126,7 +126,7 @@ public class EvalTest {
 		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
 
-		CtBlock<?> b = type.getMethodsByName("simplifyOnlyWhenPossible").get(0).getBody();
+		CtBlock<?> b = type.getMethodsByName("simplifyOnlyWhenPossible").get(0).getMyBody();
 		assertEquals(3, b.getStatements().size());
 		b = b.partiallyEvaluate();
 		assertEquals("spoon.test.eval.testclasses.ToEvaluate.class.getName()", b.getStatements().get(0).toString());
@@ -143,13 +143,13 @@ public class EvalTest {
 
 		CtClass<?> type = build("spoon.test.eval.testclasses", "ToEvaluate");
 		assertEquals("ToEvaluate", type.getSimpleName());
-		CtExpression<?> foo = ((CtReturn)type.getMethodsByName("foo").get(0).getBody().getStatement(0)).getReturnedExpression();
+		CtExpression<?> foo = ((CtReturn)type.getMethodsByName("foo").get(0).getMyBody().getStatement(0)).getReturnedExpression();
 		assertFalse(EvalHelper.isKnownAtCompileTime(foo));
 
-		CtExpression<?> foo2 = ((CtReturn)type.getMethodsByName("foo2").get(0).getBody().getStatement(0)).getReturnedExpression();
+		CtExpression<?> foo2 = ((CtReturn)type.getMethodsByName("foo2").get(0).getMyBody().getStatement(0)).getReturnedExpression();
 		assertTrue(EvalHelper.isKnownAtCompileTime(foo2));
 
-		CtExpression<?> foo3 = ((CtReturn)type.getMethodsByName("foo3").get(0).getBody().getStatement(0)).getReturnedExpression();
+		CtExpression<?> foo3 = ((CtReturn)type.getMethodsByName("foo3").get(0).getMyBody().getStatement(0)).getReturnedExpression();
 		assertTrue(EvalHelper.isKnownAtCompileTime(foo3));
 
 	}

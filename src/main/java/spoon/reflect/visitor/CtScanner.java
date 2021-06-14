@@ -242,7 +242,7 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtAnonymousExecutable(final CtAnonymousExecutable anonymousExec) {
 		enter(anonymousExec);
 		scan(CtRole.ANNOTATION, anonymousExec.getAnnotations());
-		scan(CtRole.BODY, anonymousExec.getBody());
+		scan(CtRole.BODY, anonymousExec.getMyBody());
 		scan(CtRole.COMMENT, anonymousExec.getComments());
 		exit(anonymousExec);
 	}
@@ -340,7 +340,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(catchBlock);
 		scan(CtRole.ANNOTATION, catchBlock.getAnnotations());
 		scan(CtRole.PARAMETER, catchBlock.getParameter());
-		scan(CtRole.BODY, catchBlock.getBody());
+		scan(CtRole.BODY, catchBlock.getMyBody());
 		scan(CtRole.COMMENT, catchBlock.getComments());
 		exit(catchBlock);
 	}
@@ -383,7 +383,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.PARAMETER, c.getParameters());
 		scan(CtRole.THROWN, c.getThrownTypes());
 		scan(CtRole.TYPE_PARAMETER, c.getFormalCtTypeParameters());
-		scan(CtRole.BODY, c.getBody());
+		scan(CtRole.BODY, c.getMyBody());
 		scan(CtRole.COMMENT, c.getComments());
 		exit(c);
 	}
@@ -399,7 +399,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(doLoop);
 		scan(CtRole.ANNOTATION, doLoop.getAnnotations());
 		scan(CtRole.EXPRESSION, doLoop.getLoopingExpression());
-		scan(CtRole.BODY, doLoop.getBody());
+		scan(CtRole.BODY, doLoop.getMyBody());
 		scan(CtRole.COMMENT, doLoop.getComments());
 		exit(doLoop);
 	}
@@ -479,7 +479,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.FOR_INIT, forLoop.getForInit());
 		scan(CtRole.EXPRESSION, forLoop.getExpression());
 		scan(CtRole.FOR_UPDATE, forLoop.getForUpdate());
-		scan(CtRole.BODY, forLoop.getBody());
+		scan(CtRole.BODY, forLoop.getMyBody());
 		scan(CtRole.COMMENT, forLoop.getComments());
 		exit(forLoop);
 	}
@@ -489,7 +489,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.ANNOTATION, foreach.getAnnotations());
 		scan(CtRole.FOREACH_VARIABLE, foreach.getVariable());
 		scan(CtRole.EXPRESSION, foreach.getExpression());
-		scan(CtRole.BODY, foreach.getBody());
+		scan(CtRole.BODY, foreach.getMyBody());
 		scan(CtRole.COMMENT, foreach.getComments());
 		exit(foreach);
 	}
@@ -581,7 +581,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.TYPE, m.getType());
 		scan(CtRole.PARAMETER, m.getParameters());
 		scan(CtRole.THROWN, m.getThrownTypes());
-		scan(CtRole.BODY, m.getBody());
+		scan(CtRole.BODY, m.getMyBody());
 		scan(CtRole.COMMENT, m.getComments());
 		exit(m);
 	}
@@ -638,7 +638,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.TYPE, lambda.getType());
 		scan(CtRole.CAST, lambda.getTypeCasts());
 		scan(CtRole.PARAMETER, lambda.getParameters());
-		scan(CtRole.BODY, lambda.getBody());
+		scan(CtRole.BODY, lambda.getMyBody());
 		scan(CtRole.EXPRESSION, lambda.getExpression());
 		scan(CtRole.COMMENT, lambda.getComments());
 		exit(lambda);
@@ -753,7 +753,7 @@ public abstract class CtScanner implements CtVisitor {
 	public void visitCtTry(final CtTry tryBlock) {
 		enter(tryBlock);
 		scan(CtRole.ANNOTATION, tryBlock.getAnnotations());
-		scan(CtRole.BODY, tryBlock.getBody());
+		scan(CtRole.BODY, tryBlock.getMyBody());
 		scan(CtRole.CATCH, tryBlock.getCatchers());
 		scan(CtRole.FINALIZER, tryBlock.getFinalizer());
 		scan(CtRole.COMMENT, tryBlock.getComments());
@@ -765,7 +765,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(tryWithResource);
 		scan(CtRole.ANNOTATION, tryWithResource.getAnnotations());
 		scan(CtRole.TRY_RESOURCE, tryWithResource.getResources());
-		scan(CtRole.BODY, tryWithResource.getBody());
+		scan(CtRole.BODY, tryWithResource.getMyBody());
 		scan(CtRole.CATCH, tryWithResource.getCatchers());
 		scan(CtRole.FINALIZER, tryWithResource.getFinalizer());
 		scan(CtRole.COMMENT, tryWithResource.getComments());
@@ -856,7 +856,7 @@ public abstract class CtScanner implements CtVisitor {
 		enter(whileLoop);
 		scan(CtRole.ANNOTATION, whileLoop.getAnnotations());
 		scan(CtRole.EXPRESSION, whileLoop.getLoopingExpression());
-		scan(CtRole.BODY, whileLoop.getBody());
+		scan(CtRole.BODY, whileLoop.getMyBody());
 		scan(CtRole.COMMENT, whileLoop.getComments());
 		exit(whileLoop);
 	}

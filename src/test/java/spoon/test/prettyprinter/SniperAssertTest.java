@@ -48,7 +48,7 @@ public class SniperAssertTest {
 		CtModel model = launcher.buildModel();
 		CtMethod method = model.getElements(new TypeFilter<>(CtMethod.class)).get(0);
 
-		method.getBody().insertBegin(launcher.getFactory().Code().createComment("test", CommentType.BLOCK));
+		method.getMyBody().insertBegin(launcher.getFactory().Code().createComment("test", CommentType.BLOCK));
 
 		launcher.process();
 		launcher.prettyprint();

@@ -42,7 +42,7 @@ public class RemoveTest {
 				.compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-		CtBlock<?> body = foo.getBody();
+		CtBlock<?> body = foo.getMyBody();
 
 		assertEquals(2, body.getStatements().size());
 

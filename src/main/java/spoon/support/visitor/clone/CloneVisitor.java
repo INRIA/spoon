@@ -56,7 +56,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.declaration.CtAnonymousExecutable aCtAnonymousExecutable = anonymousExec.getFactory().Core().createAnonymousExecutable();
 		this.builder.copy(anonymousExec, aCtAnonymousExecutable);
 		aCtAnonymousExecutable.setAnnotations(this.cloneHelper.clone(anonymousExec.getAnnotations()));
-		aCtAnonymousExecutable.setBody(this.cloneHelper.clone(anonymousExec.getBody()));
+		aCtAnonymousExecutable.setBody(this.cloneHelper.clone(anonymousExec.getMyBody()));
 		aCtAnonymousExecutable.setComments(this.cloneHelper.clone(anonymousExec.getComments()));
 		this.cloneHelper.tailor(anonymousExec, aCtAnonymousExecutable);
 		this.other = aCtAnonymousExecutable;
@@ -184,7 +184,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		this.builder.copy(catchBlock, aCtCatch);
 		aCtCatch.setAnnotations(this.cloneHelper.clone(catchBlock.getAnnotations()));
 		aCtCatch.setParameter(this.cloneHelper.clone(catchBlock.getParameter()));
-		aCtCatch.setBody(this.cloneHelper.clone(catchBlock.getBody()));
+		aCtCatch.setBody(this.cloneHelper.clone(catchBlock.getMyBody()));
 		aCtCatch.setComments(this.cloneHelper.clone(catchBlock.getComments()));
 		this.cloneHelper.tailor(catchBlock, aCtCatch);
 		this.other = aCtCatch;
@@ -239,7 +239,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtConstructor.setParameters(this.cloneHelper.clone(c.getParameters()));
 		aCtConstructor.setThrownTypes(this.cloneHelper.clone(c.getThrownTypes()));
 		aCtConstructor.setFormalCtTypeParameters(this.cloneHelper.clone(c.getFormalCtTypeParameters()));
-		aCtConstructor.setBody(this.cloneHelper.clone(c.getBody()));
+		aCtConstructor.setBody(this.cloneHelper.clone(c.getMyBody()));
 		aCtConstructor.setComments(this.cloneHelper.clone(c.getComments()));
 		this.cloneHelper.tailor(c, aCtConstructor);
 		this.other = aCtConstructor;
@@ -261,7 +261,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		this.builder.copy(doLoop, aCtDo);
 		aCtDo.setAnnotations(this.cloneHelper.clone(doLoop.getAnnotations()));
 		aCtDo.setLoopingExpression(this.cloneHelper.clone(doLoop.getLoopingExpression()));
-		aCtDo.setBody(this.cloneHelper.clone(doLoop.getBody()));
+		aCtDo.setBody(this.cloneHelper.clone(doLoop.getMyBody()));
 		aCtDo.setComments(this.cloneHelper.clone(doLoop.getComments()));
 		this.cloneHelper.tailor(doLoop, aCtDo);
 		this.other = aCtDo;
@@ -365,7 +365,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtFor.setForInit(this.cloneHelper.clone(forLoop.getForInit()));
 		aCtFor.setExpression(this.cloneHelper.clone(forLoop.getExpression()));
 		aCtFor.setForUpdate(this.cloneHelper.clone(forLoop.getForUpdate()));
-		aCtFor.setBody(this.cloneHelper.clone(forLoop.getBody()));
+		aCtFor.setBody(this.cloneHelper.clone(forLoop.getMyBody()));
 		aCtFor.setComments(this.cloneHelper.clone(forLoop.getComments()));
 		this.cloneHelper.tailor(forLoop, aCtFor);
 		this.other = aCtFor;
@@ -378,7 +378,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtForEach.setAnnotations(this.cloneHelper.clone(foreach.getAnnotations()));
 		aCtForEach.setVariable(this.cloneHelper.clone(foreach.getVariable()));
 		aCtForEach.setExpression(this.cloneHelper.clone(foreach.getExpression()));
-		aCtForEach.setBody(this.cloneHelper.clone(foreach.getBody()));
+		aCtForEach.setBody(this.cloneHelper.clone(foreach.getMyBody()));
 		aCtForEach.setComments(this.cloneHelper.clone(foreach.getComments()));
 		this.cloneHelper.tailor(foreach, aCtForEach);
 		this.other = aCtForEach;
@@ -500,7 +500,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtMethod.setType(this.cloneHelper.clone(m.getType()));
 		aCtMethod.setParameters(this.cloneHelper.clone(m.getParameters()));
 		aCtMethod.setThrownTypes(this.cloneHelper.clone(m.getThrownTypes()));
-		aCtMethod.setBody(this.cloneHelper.clone(m.getBody()));
+		aCtMethod.setBody(this.cloneHelper.clone(m.getMyBody()));
 		aCtMethod.setComments(this.cloneHelper.clone(m.getComments()));
 		this.cloneHelper.tailor(m, aCtMethod);
 		this.other = aCtMethod;
@@ -572,7 +572,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtLambda.setType(this.cloneHelper.clone(lambda.getType()));
 		aCtLambda.setTypeCasts(this.cloneHelper.clone(lambda.getTypeCasts()));
 		aCtLambda.setParameters(this.cloneHelper.clone(lambda.getParameters()));
-		aCtLambda.setBody(this.cloneHelper.clone(lambda.getBody()));
+		aCtLambda.setBody(this.cloneHelper.clone(lambda.getMyBody()));
 		aCtLambda.setExpression(this.cloneHelper.clone(lambda.getExpression()));
 		aCtLambda.setComments(this.cloneHelper.clone(lambda.getComments()));
 		this.cloneHelper.tailor(lambda, aCtLambda);
@@ -726,7 +726,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.code.CtTry aCtTry = tryBlock.getFactory().Core().createTry();
 		this.builder.copy(tryBlock, aCtTry);
 		aCtTry.setAnnotations(this.cloneHelper.clone(tryBlock.getAnnotations()));
-		aCtTry.setBody(this.cloneHelper.clone(tryBlock.getBody()));
+		aCtTry.setBody(this.cloneHelper.clone(tryBlock.getMyBody()));
 		aCtTry.setCatchers(this.cloneHelper.clone(tryBlock.getCatchers()));
 		aCtTry.setFinalizer(this.cloneHelper.clone(tryBlock.getFinalizer()));
 		aCtTry.setComments(this.cloneHelper.clone(tryBlock.getComments()));
@@ -741,7 +741,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		this.builder.copy(tryWithResource, aCtTryWithResource);
 		aCtTryWithResource.setAnnotations(this.cloneHelper.clone(tryWithResource.getAnnotations()));
 		aCtTryWithResource.setResources(this.cloneHelper.clone(tryWithResource.getResources()));
-		aCtTryWithResource.setBody(this.cloneHelper.clone(tryWithResource.getBody()));
+		aCtTryWithResource.setBody(this.cloneHelper.clone(tryWithResource.getMyBody()));
 		aCtTryWithResource.setCatchers(this.cloneHelper.clone(tryWithResource.getCatchers()));
 		aCtTryWithResource.setFinalizer(this.cloneHelper.clone(tryWithResource.getFinalizer()));
 		aCtTryWithResource.setComments(this.cloneHelper.clone(tryWithResource.getComments()));
@@ -858,7 +858,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		this.builder.copy(whileLoop, aCtWhile);
 		aCtWhile.setAnnotations(this.cloneHelper.clone(whileLoop.getAnnotations()));
 		aCtWhile.setLoopingExpression(this.cloneHelper.clone(whileLoop.getLoopingExpression()));
-		aCtWhile.setBody(this.cloneHelper.clone(whileLoop.getBody()));
+		aCtWhile.setBody(this.cloneHelper.clone(whileLoop.getMyBody()));
 		aCtWhile.setComments(this.cloneHelper.clone(whileLoop.getComments()));
 		this.cloneHelper.tailor(whileLoop, aCtWhile);
 		this.other = aCtWhile;

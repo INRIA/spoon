@@ -75,7 +75,7 @@ public class LoopSniperJavaPrettyPrinterTest {
 	public class LoopProcessor extends AbstractProcessor<CtLoop> {
 		@Override
 		public void process(CtLoop element) {
-			CtBlock block = element.getFactory().Code().getOrCreateCtBlock(element.getBody());
+			CtBlock block = element.getFactory().Code().getOrCreateCtBlock(element.getMyBody());
 			element.setBody(block);
 			System.out.println(element);
 		}

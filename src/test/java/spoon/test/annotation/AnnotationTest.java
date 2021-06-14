@@ -615,7 +615,7 @@ public class AnnotationTest {
 		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get(AnnotationsAppliedOnAnyTypeInAClass.class);
 
 		final CtMethod<?> method = ctClass.getMethodsByName("m6").get(0);
-		final CtLocalVariable<?> ctLocalVariable = method.getBody().getElements(new AbstractFilter<CtLocalVariable<?>>(CtLocalVariable.class) {
+		final CtLocalVariable<?> ctLocalVariable = method.getMyBody().getElements(new AbstractFilter<CtLocalVariable<?>>(CtLocalVariable.class) {
 			@Override
 			public boolean matches(CtLocalVariable<?> element) {
 				return true;
@@ -712,7 +712,7 @@ public class AnnotationTest {
 		assertEquals("Method has 1 generic parameter", 1, typeParameters.size());
 		assertEquals("Method with an type annotation must be well printed", "@spoon.test.annotation.testclasses.TypeAnnotation" + System.lineSeparator() + "T", typeParameters.get(0).toString());
 
-		final CtBlock<?> body = method.getBody();
+		final CtBlock<?> body = method.getMyBody();
 		final String expectedFirstStatement =
 				"java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation"
 						+ System.lineSeparator() + "T> list = new java.util.ArrayList<>()";
@@ -755,37 +755,37 @@ public class AnnotationTest {
 		final CtMethod<?> method = ctClass.getMethodsByName("m5").get(0);
 
 		final String integerParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(integer = 1)" + System.lineSeparator() + "T> list";
-		assertEquals("integer parameter in type annotation", integerParam, method.getBody().getStatement(0).toString());
+		assertEquals("integer parameter in type annotation", integerParam, method.getMyBody().getStatement(0).toString());
 
 		final String arrayIntegerParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(integers = { 1 })" + System.lineSeparator() + "T> list2";
-		assertEquals("array of integers parameter in type annotation", arrayIntegerParam, method.getBody().getStatement(1).toString());
+		assertEquals("array of integers parameter in type annotation", arrayIntegerParam, method.getMyBody().getStatement(1).toString());
 
 		final String stringParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(string = \"\")" + System.lineSeparator() + "T> list3";
-		assertEquals("string parameter in type annotation", stringParam, method.getBody().getStatement(2).toString());
+		assertEquals("string parameter in type annotation", stringParam, method.getMyBody().getStatement(2).toString());
 
 		final String arrayStringParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(strings = { \"\" })" + System.lineSeparator() + "T> list4";
-		assertEquals("array of strings parameter in type annotation", arrayStringParam, method.getBody().getStatement(3).toString());
+		assertEquals("array of strings parameter in type annotation", arrayStringParam, method.getMyBody().getStatement(3).toString());
 
 		final String classParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(clazz = java.lang.String.class)" + System.lineSeparator() + "T> list5";
-		assertEquals("class parameter in type annotation", classParam, method.getBody().getStatement(4).toString());
+		assertEquals("class parameter in type annotation", classParam, method.getMyBody().getStatement(4).toString());
 
 		final String arrayClassParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(classes = { java.lang.String.class })" + System.lineSeparator() + "T> list6";
-		assertEquals("array of classes parameter in type annotation", arrayClassParam, method.getBody().getStatement(5).toString());
+		assertEquals("array of classes parameter in type annotation", arrayClassParam, method.getMyBody().getStatement(5).toString());
 
 		final String primitiveParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(b = true)" + System.lineSeparator() + "T> list7";
-		assertEquals("primitive parameter in type annotation", primitiveParam, method.getBody().getStatement(6).toString());
+		assertEquals("primitive parameter in type annotation", primitiveParam, method.getMyBody().getStatement(6).toString());
 
 		final String enumParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(e = spoon.test.annotation.testclasses.AnnotParamTypeEnum.R)" + System.lineSeparator() + "T> list8";
-		assertEquals("enum parameter in type annotation", enumParam, method.getBody().getStatement(7).toString());
+		assertEquals("enum parameter in type annotation", enumParam, method.getMyBody().getStatement(7).toString());
 
 		final String annotationParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(ia = @spoon.test.annotation.testclasses.InnerAnnot(\"\"))" + System.lineSeparator() + "T> list9";
-		assertEquals("annotation parameter in type annotation", annotationParam, method.getBody().getStatement(8).toString());
+		assertEquals("annotation parameter in type annotation", annotationParam, method.getMyBody().getStatement(8).toString());
 
 		final String arrayAnnotationParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(ias = { @spoon.test.annotation.testclasses.InnerAnnot(\"\") })" + System.lineSeparator() + "T> list10";
-		assertEquals("array of annotations parameter in type annotation", arrayAnnotationParam, method.getBody().getStatement(9).toString());
+		assertEquals("array of annotations parameter in type annotation", arrayAnnotationParam, method.getMyBody().getStatement(9).toString());
 
 		final String complexArrayParam = "java.util.List<@spoon.test.annotation.testclasses.TypeAnnotation(inceptions = { @spoon.test.annotation.testclasses.Inception(value = @spoon.test.annotation.testclasses.InnerAnnot(\"\"), values = { @spoon.test.annotation.testclasses.InnerAnnot(\"\") }) })" + System.lineSeparator() + "T> list11";
-		assertEquals("array of complexes parameters in type annotation", complexArrayParam, method.getBody().getStatement(10).toString());
+		assertEquals("array of complexes parameters in type annotation", complexArrayParam, method.getMyBody().getStatement(10).toString());
 	}
 
 	@Test
@@ -894,7 +894,7 @@ public class AnnotationTest {
 		Factory factory = launcher.getFactory();
 		final CtClass<?> ctClass = (CtClass<?>) factory.Type().get(AnnotationsRepeated.class);
 		final CtMethod<?> method = ctClass.getMethodsByName("methodWithLocalVariable").get(0);
-		final CtLocalVariable<?> ctLocalVariable = method.getBody().getElements(new AbstractFilter<CtLocalVariable<?>>(CtLocalVariable.class) {
+		final CtLocalVariable<?> ctLocalVariable = method.getMyBody().getElements(new AbstractFilter<CtLocalVariable<?>>(CtLocalVariable.class) {
 			@Override
 			public boolean matches(CtLocalVariable<?> element) {
 				return true;
@@ -1010,7 +1010,7 @@ public class AnnotationTest {
 		Factory factory = launcher.getFactory();
 		CtClass<Object> aClass = factory.Class().get(AnnotationIntrospection.class);
 		CtMethod<?> mMethod = aClass.getMethod("m");
-		CtStatement statement = mMethod.getBody().getStatement(1);
+		CtStatement statement = mMethod.getMyBody().getStatement(1);
 		assertEquals("annotation.equals(null)", statement.toString());
 	}
 

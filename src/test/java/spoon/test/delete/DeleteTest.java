@@ -52,13 +52,13 @@ public class DeleteTest {
 		final List<CtAnonymousExecutable> anonymousExecutables = adobada.getAnonymousExecutables();
 		final CtAnonymousExecutable instanceExec = anonymousExecutables.get(0);
 
-		assertEquals(2, instanceExec.getBody().getStatements().size());
+		assertEquals(2, instanceExec.getMyBody().getStatements().size());
 
-		final CtStatement statement = instanceExec.getBody().getStatement(1);
+		final CtStatement statement = instanceExec.getMyBody().getStatement(1);
 		statement.delete();
 
-		assertEquals(1, instanceExec.getBody().getStatements().size());
-		assertFalse(instanceExec.getBody().getStatements().contains(statement));
+		assertEquals(1, instanceExec.getMyBody().getStatements().size());
+		assertFalse(instanceExec.getMyBody().getStatements().contains(statement));
 	}
 
 	@Test
@@ -69,13 +69,13 @@ public class DeleteTest {
 		final List<CtAnonymousExecutable> anonymousExecutables = adobada.getAnonymousExecutables();
 		final CtAnonymousExecutable staticExec = anonymousExecutables.get(1);
 
-		assertEquals(2, staticExec.getBody().getStatements().size());
+		assertEquals(2, staticExec.getMyBody().getStatements().size());
 
-		final CtStatement statement = staticExec.getBody().getStatement(1);
+		final CtStatement statement = staticExec.getMyBody().getStatement(1);
 		statement.delete();
 
-		assertEquals(1, staticExec.getBody().getStatements().size());
-		assertFalse(staticExec.getBody().getStatements().contains(statement));
+		assertEquals(1, staticExec.getMyBody().getStatements().size());
+		assertFalse(staticExec.getMyBody().getStatements().contains(statement));
 	}
 
 	@Test
@@ -85,13 +85,13 @@ public class DeleteTest {
 
 		final CtConstructor<Adobada> constructor = adobada.getConstructor();
 
-		assertEquals(3, constructor.getBody().getStatements().size());
+		assertEquals(3, constructor.getMyBody().getStatements().size());
 
-		final CtStatement statement = constructor.getBody().getStatement(1);
+		final CtStatement statement = constructor.getMyBody().getStatement(1);
 		statement.delete();
 
-		assertEquals(2, constructor.getBody().getStatements().size());
-		assertFalse(constructor.getBody().getStatements().contains(statement));
+		assertEquals(2, constructor.getMyBody().getStatements().size());
+		assertFalse(constructor.getMyBody().getStatements().contains(statement));
 	}
 
 	@Test
@@ -101,13 +101,13 @@ public class DeleteTest {
 
 		final CtMethod method = adobada.getMethod("m");
 
-		assertEquals(2, method.getBody().getStatements().size());
+		assertEquals(2, method.getMyBody().getStatements().size());
 
-		final CtStatement statement = method.getBody().getStatement(1);
+		final CtStatement statement = method.getMyBody().getStatement(1);
 		statement.delete();
 
-		assertEquals(1, method.getBody().getStatements().size());
-		assertFalse(method.getBody().getStatements().contains(statement));
+		assertEquals(1, method.getMyBody().getStatements().size());
+		assertFalse(method.getMyBody().getStatements().contains(statement));
 	}
 
 	@Test
@@ -117,13 +117,13 @@ public class DeleteTest {
 
 		final CtMethod method = adobada.getMethod("m2");
 
-		assertEquals(1, method.getBody().getStatements().size());
+		assertEquals(1, method.getMyBody().getStatements().size());
 
-		final CtStatement statement = method.getBody().getStatement(0);
+		final CtStatement statement = method.getMyBody().getStatement(0);
 		statement.delete();
 
-		assertEquals(0, method.getBody().getStatements().size());
-		assertFalse(method.getBody().getStatements().contains(statement));
+		assertEquals(0, method.getMyBody().getStatements().size());
+		assertFalse(method.getMyBody().getStatements().contains(statement));
 	}
 
 	@Test
@@ -199,11 +199,11 @@ public class DeleteTest {
 
 		final CtMethod method = adobada.getMethod("m");
 
-		assertNotNull(method.getBody());
+		assertNotNull(method.getMyBody());
 
-		method.getBody().delete();
+		method.getMyBody().delete();
 
-		assertNull(method.getBody());
+		assertNull(method.getMyBody());
 	}
 
 	@Test

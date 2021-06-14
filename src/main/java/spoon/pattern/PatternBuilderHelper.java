@@ -95,7 +95,7 @@ public class PatternBuilderHelper {
 	 * @param filter the {@link Filter} whose match defines to be used {@link CtMethod}
 	 */
 	private void setBodyOfMethod(Filter<CtMethod<?>> filter) {
-		CtBlock<?> body =  getOneByFilter(filter).getBody();
+		CtBlock<?> body =  getOneByFilter(filter).getMyBody();
 		setElements(body.getStatements());
 	}
 
@@ -113,7 +113,7 @@ public class PatternBuilderHelper {
 	 */
 	private void setReturnExpressionOfMethod(Filter<CtMethod<?>> filter) {
 		CtMethod<?> method = getOneByFilter(filter);
-		CtBlock<?> body = method.getBody();
+		CtBlock<?> body = method.getMyBody();
 		if (body.getStatements().size() != 1) {
 			throw new SpoonException("The body of " + method.getSignature() + " must contain exactly one statement. But there is:\n" + body.toString());
 		}

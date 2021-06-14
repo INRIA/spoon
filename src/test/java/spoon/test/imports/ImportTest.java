@@ -265,7 +265,7 @@ public class ImportTest {
 		assertEquals("externallib", type.getPackage().getSimpleName());
 
 		CtMethod<?> mainMethod = factory.Class().getAll().get(0).getMethodsByName("main").get(0);
-		List<CtStatement> statements = mainMethod.getBody().getStatements();
+		List<CtStatement> statements = mainMethod.getMyBody().getStatements();
 
 		CtStatement invocationStatement = statements.get(1);
 
@@ -352,7 +352,7 @@ public class ImportTest {
 		launcher.buildModel();
 
 		final CtType<Object> aTacos = launcher.getFactory().Type().get(Tacos.class);
-		final CtStatement assignment = aTacos.getMethod("m").getBody().getStatement(0);
+		final CtStatement assignment = aTacos.getMethod("m").getMyBody().getStatement(0);
 		assertTrue(assignment instanceof CtLocalVariable);
 		assertEquals("spoon.test.imports.testclasses.internal4.Constants.CONSTANT.foo", ((CtLocalVariable) assignment).getAssignment().toString());
 	}
@@ -367,7 +367,7 @@ public class ImportTest {
 		launcher.buildModel();
 
 		final CtType<Object> aTacos = launcher.getFactory().Type().get(Tacos.class);
-		final CtStatement assignment = aTacos.getMethod("m").getBody().getStatement(0);
+		final CtStatement assignment = aTacos.getMethod("m").getMyBody().getStatement(0);
 		assertTrue(assignment instanceof CtLocalVariable);
 		assertEquals("Constants.CONSTANT.foo", printByPrinter(((CtLocalVariable) assignment).getAssignment()));
 	}
@@ -1536,7 +1536,7 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 
 		CtClass<?> clazz = (CtClass<?>) launcher.getFactory().Type().get("fr.inria.PageButtonNoClassPath");
 		CtConstructor<?> ctor = clazz.getConstructors().stream().findFirst().get();
-		List<CtStatement> statements = ctor.getBody().getStatements();
+		List<CtStatement> statements = ctor.getMyBody().getStatements();
 
 		assertEquals("super(context, attributeSet)", statements.get(0).toString());
 		assertEquals("mButton = ((Button) (findViewById(page_button_button)))", statements.get(1).toString());
@@ -1770,7 +1770,7 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		}
 
 		//delete first statement of method m
-		type.getMethodsByName("m").get(0).getBody().getStatement(0).delete();
+		type.getMethodsByName("m").get(0).getMyBody().getStatement(0).delete();
 		//check that there is still javadoc comment which contains "List"
 		assertTrue(type.getMethodsByName("m").get(0).getComments().toString().contains("List"));
 		{

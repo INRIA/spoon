@@ -85,7 +85,7 @@ public class QualifiedThisRefTest {
 		CtThisAccess th = (CtThisAccess) m2.getElements(new TypeFilter(CtThisAccess.class)).get(0);
 		assertTrue(th.isImplicit());
 		assertEquals("notify()",th.getParent().toString());
-		CtInvocation<?> clone = m2.clone().getBody().getStatement(0);
+		CtInvocation<?> clone = m2.clone().getMyBody().getStatement(0);
 		// clone preserves implicitness
 		assertTrue(clone.getTarget().isImplicit());
 		assertEquals("notify()", clone.toString()); // the original bug
@@ -104,7 +104,7 @@ public class QualifiedThisRefTest {
 
 		assertEquals(1, methods.size());
 
-		CtStatement invocation = methods.get(0).getBody().getStatement(0);
+		CtStatement invocation = methods.get(0).getMyBody().getStatement(0);
 
 		assertTrue(invocation instanceof CtInvocation);
 		CtInvocation<?> arg0 = (CtInvocation) invocation;

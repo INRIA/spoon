@@ -515,7 +515,7 @@ public class PatternTest {
 		CtType<?> ctClass = ModelUtils.buildClass(MatchMultiple.class);
 		Pattern pattern = MatchMultiple.createPattern(Quantifier.POSSESSIVE, null, null);
 
-		List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
+		List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getMyBody());
 
 		// template:
 //		public void matcher1() {
@@ -589,7 +589,7 @@ public class PatternTest {
 					})
 					.build();
 
-			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
+			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getMyBody());
 
 			// Quantifier.POSSESSIVE matches exactly the right number of times
 			assertEquals(countFinal, getCollectionSize(matches.get(0).getParameters().getValue("statements2")), "count="+countFinal);
@@ -627,7 +627,7 @@ public class PatternTest {
 			})
 			.build();
 
-			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
+			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getMyBody());
 			//the last template has nothing to match -> no match
 			assertEquals(1, matches.size(), "count="+countFinal);
 			assertEquals(4-countFinal, getCollectionSize(matches.get(0).getParameters().getValue("statements1")), "count="+countFinal);
@@ -640,7 +640,7 @@ public class PatternTest {
 			Pattern pattern = PatternBuilder.create(new PatternBuilderHelper(ctClass).setBodyOfMethod("matcher1").getPatternElements())
 					.configurePatternParameters().build();
 
-			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
+			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getMyBody());
 			//the possessive matcher eats too much. There is no target element for last `printedValue` variable
 			assertEquals(0, matches.size(), "count="+countFinal);
 		}
@@ -662,7 +662,7 @@ public class PatternTest {
 						pb.parameter("printedValue").setMatchingStrategy(Quantifier.GREEDY).setContainerKind(ContainerKind.LIST).setMinOccurrence(2);
 					})
 					.build();
-			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getBody());
+			List<Match> matches = pattern.getMatches(ctClass.getMethodsByName("testMatch1").get(0).getMyBody());
 
 
 			if (count < 7) {
@@ -1527,7 +1527,7 @@ public class PatternTest {
 	}
 
 	private <T extends CtElement> T getFirstStmt(CtType type, String methodName, Class<T> stmtType) {
-		return (T) type.filterChildren((CtMethod m) -> m.getSimpleName().equals(methodName)).first(CtMethod.class).getBody().getStatement(0);
+		return (T) type.filterChildren((CtMethod m) -> m.getSimpleName().equals(methodName)).first(CtMethod.class).getMyBody().getStatement(0);
 	}
 
 	private int indexOf(List list, Object o) {
@@ -1557,7 +1557,7 @@ public class PatternTest {
 		Map<String, Object> params = new HashMap<>();
 		params.put("_classname_", factory.Code().createLiteral(aTargetType.getSimpleName()));
 		params.put("_methodName_", factory.Code().createLiteral(toBeLoggedMethod.getSimpleName()));
-		params.put("_block_", toBeLoggedMethod.getBody());
+		params.put("_block_", toBeLoggedMethod.getMyBody());
 		//create a patter from the LoggerModel#block
 		CtType<?> type = factory.Templates().Type().get(LoggerModel.class);
 
@@ -1572,13 +1572,13 @@ public class PatternTest {
 		final List<CtMethod> aMethods = pattern.generator().generate(params);
 		assertEquals(1, aMethods.size());
 		final CtMethod<?> aMethod = aMethods.get(0);
-		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);
-		final CtTry aTry = (CtTry) aMethod.getBody().getStatement(0);
+		assertTrue(aMethod.getMyBody().getStatement(0) instanceof CtTry);
+		final CtTry aTry = (CtTry) aMethod.getMyBody().getStatement(0);
 		assertTrue(aTry.getFinalizer().getStatement(0) instanceof CtInvocation);
 		assertEquals("spoon.test.template.testclasses.logger.Logger.exit(\"enter\")", aTry.getFinalizer().getStatement(0).toString());
-		assertTrue(aTry.getBody().getStatement(0) instanceof CtInvocation);
-		assertEquals("spoon.test.template.testclasses.logger.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
-		assertTrue(aTry.getBody().getStatements().size() > 1);
+		assertTrue(aTry.getMyBody().getStatement(0) instanceof CtInvocation);
+		assertEquals("spoon.test.template.testclasses.logger.Logger.enter(\"Logger\", \"enter\")", aTry.getMyBody().getStatement(0).toString());
+		assertTrue(aTry.getMyBody().getStatements().size() > 1);
 	}
 
 	@Test
@@ -1630,7 +1630,7 @@ public class PatternTest {
 				//substitute NAME of method
 				pb.parameter("methodName").byRole(CtRole.NAME, tobeSubstititedMethod);
 				//substitute Body of method
-				pb.parameter("methodBody").byElement(tobeSubstititedMethod.getBody());
+				pb.parameter("methodBody").byElement(tobeSubstititedMethod.getMyBody());
 			}).build();
 		
 		List<Match> matches = pattern.getMatches(aTargetType);
@@ -1638,7 +1638,7 @@ public class PatternTest {
 		Match match = matches.get(0);
 		assertSame(aTargetType, match.getMatchingElement());
 		assertEquals("enter", match.getParameters().getValue("methodName"));
-		assertSame(tobeSubstititedMethod.getBody(), match.getParameters().getValue("methodBody"));
+		assertSame(tobeSubstititedMethod.getMyBody(), match.getParameters().getValue("methodBody"));
 	}
 
 	private Map<String, Object> getMap(Match match, String name) {

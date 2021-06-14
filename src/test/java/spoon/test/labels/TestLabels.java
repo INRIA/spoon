@@ -50,7 +50,7 @@ public class TestLabels {
 
         CtMethod mainMethod = launcher.getFactory().getModel().getElements(new NamedElementFilter<>(CtMethod.class,"main")).get(0);
 
-        CtBlock body = mainMethod.getBody();
+        CtBlock body = mainMethod.getMyBody();
         assertEquals(2, body.getStatements().size());
 
         CtBlock block = (CtBlock) body.getStatement(0);
@@ -91,11 +91,11 @@ public class TestLabels {
         assertNull(finalBreak.getTargetLabel());
         assertNull(finalBreak.getLabelledStatement());
 
-        CtBlock doBlock = (CtBlock) ctDo.getBody();
+        CtBlock doBlock = (CtBlock) ctDo.getMyBody();
         CtWhile ctWhile = (CtWhile) doBlock.getStatement(1);
         assertEquals("lWhile", ctWhile.getLabel());
 
-        CtBlock whileBlock = (CtBlock) ctWhile.getBody();
+        CtBlock whileBlock = (CtBlock) ctWhile.getMyBody();
         CtFor forLoop = (CtFor) whileBlock.getStatement(0);
         CtBreak breakSwitch = (CtBreak) whileBlock.getStatement(1);
 
@@ -103,7 +103,7 @@ public class TestLabels {
         assertSame(ctSwitch, breakSwitch.getLabelledStatement());
 
         assertEquals("forloop", forLoop.getLabel());
-        CtBlock forBlock = (CtBlock) forLoop.getBody();
+        CtBlock forBlock = (CtBlock) forLoop.getMyBody();
 
         assertEquals(7, forBlock.getStatements().size());
         CtIf firstForIf = (CtIf) forBlock.getStatement(1);

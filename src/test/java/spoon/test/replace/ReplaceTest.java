@@ -114,7 +114,7 @@ public class ReplaceTest {
 				new NamedElementFilter<>(CtMethod.class,"foo")).get(0);
 		assertEquals("foo", m.getSimpleName());
 
-		final CtStatement parent = m.getBody().getStatements().get(2);
+		final CtStatement parent = m.getMyBody().getStatements().get(2);
 		CtAssignment<?, ?> assignment = (CtAssignment<?, ?>) parent;
 
 		CtExpression<Integer> s1 = (CtExpression<Integer>) assignment.getAssignment();
@@ -150,20 +150,20 @@ public class ReplaceTest {
 				new NamedElementFilter<>(CtMethod.class,"bar")).get(0);
 		assertEquals("bar", barMethod.getSimpleName());
 
-		CtLocalVariable<?> assignment = (CtLocalVariable<?>) fooMethod.getBody()
+		CtLocalVariable<?> assignment = (CtLocalVariable<?>) fooMethod.getMyBody()
 				.getStatements().get(0);
-		CtLocalVariable<?> newAssignment = barMethod.getBody().getStatement(0);
+		CtLocalVariable<?> newAssignment = barMethod.getMyBody().getStatement(0);
 
 		assignment.replace(newAssignment);
 
-		assertEquals(fooMethod.getBody(), newAssignment.getParent());
+		assertEquals(fooMethod.getMyBody(), newAssignment.getParent());
 
 		CtLiteral<Integer> lit = (CtLiteral<Integer>) foo.getElements(new TypeFilter<CtLiteral<?>>(CtLiteral.class))
 				.get(0);
 		final CtElement parent = lit.getParent();
 		CtLiteral<Integer> newLit = factory.Code().createLiteral(0);
 		lit.replace(newLit);
-		assertEquals("int y = 0", fooMethod.getBody().getStatement(0).toString());
+		assertEquals("int y = 0", fooMethod.getMyBody().getStatement(0).toString());
 		assertEquals(parent, newLit.getParent());
 	}
 
@@ -173,15 +173,15 @@ public class ReplaceTest {
 				.getType("Foo");
 
 		// replace retry content by statements
-		CtStatement stmt = sample.getMethod("retry").getBody().getStatement(0);
-		CtBlock lst = sample.getMethod("statements").getBody();
+		CtStatement stmt = sample.getMethod("retry").getMyBody().getStatement(0);
+		CtBlock lst = sample.getMethod("statements").getMyBody();
 
 		// replace a single statement by a statement list
 		stmt.replace(lst);
 
 		// we should have only 2 statements after (from the stmt list)
-		assertEquals(1, sample.getMethod("retry").getBody().getStatements().size());
-		assertEquals(2, ((CtBlock) sample.getMethod("retry").getBody().getStatement(0)).getStatements().size());
+		assertEquals(1, sample.getMethod("retry").getMyBody().getStatements().size());
+		assertEquals(2, ((CtBlock) sample.getMethod("retry").getMyBody().getStatement(0)).getStatements().size());
 	}
 
 	@Test
@@ -190,14 +190,14 @@ public class ReplaceTest {
 				.getType("Foo");
 
 		// replace retry content by statements
-		CtStatement stmt = sample.getMethod("retry").getBody().getStatement(0);
-		List<CtStatement> lst = sample.getMethod("statements").getBody().getStatements();
+		CtStatement stmt = sample.getMethod("retry").getMyBody().getStatement(0);
+		List<CtStatement> lst = sample.getMethod("statements").getMyBody().getStatements();
 
 		// replace a single statement by a statement list
 		stmt.replace(lst);
 
 		// we should have only 2 statements after (from the stmt list)
-		assertEquals(2, sample.getMethod("retry").getBody().getStatements().size());
+		assertEquals(2, sample.getMethod("retry").getMyBody().getStatements().size());
 	}
 
 	@Test
@@ -207,8 +207,8 @@ public class ReplaceTest {
 				.getType("Foo");
 
 		// replace retry content by statements
-		CtStatement stmt = sample.getMethod("retry").getBody().getStatement(0);
-		List<CtStatement> lst = sample.getMethod("statements").getBody().getStatements();
+		CtStatement stmt = sample.getMethod("retry").getMyBody().getStatement(0);
+		List<CtStatement> lst = sample.getMethod("statements").getMyBody().getStatements();
 		List<CtStatement> lstWithNulls = new ArrayList<>();
 		lstWithNulls.add(null);
 		lstWithNulls.add(lst.get(0));
@@ -220,7 +220,7 @@ public class ReplaceTest {
 		stmt.replace(lstWithNulls);
 
 		// we should have only 2 statements after (from the stmt list)
-		assertEquals(2, sample.getMethod("retry").getBody().getStatements().size());
+		assertEquals(2, sample.getMethod("retry").getMyBody().getStatements().size());
 	}
 
 	@Test
@@ -292,7 +292,7 @@ public class ReplaceTest {
 		CtMethod<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo").getMethod("foo");
 
-		CtVariable<?> var = sample.getBody().getStatement(0);
+		CtVariable<?> var = sample.getMyBody().getStatement(0);
 
 		assertTrue(var.getDefaultExpression() instanceof CtLiteral);
 		assertEquals(3, ((CtLiteral<?>) var.getDefaultExpression()).getValue());
@@ -310,12 +310,12 @@ public class ReplaceTest {
 		CtMethod<?> sample = factory.Package().get("spoon.test.replace.testclasses")
 				.getType("Foo").getMethod("foo");
 
-		assertTrue(sample.getBody().getStatement(0) instanceof CtVariable);
+		assertTrue(sample.getMyBody().getStatement(0) instanceof CtVariable);
 
 		CtStatement replacement = factory.Core().createInvocation();
-		sample.getBody().getStatement(0).replace(replacement);
+		sample.getMyBody().getStatement(0).replace(replacement);
 
-		assertTrue(sample.getBody().getStatement(0) instanceof CtInvocation);
+		assertTrue(sample.getMyBody().getStatement(0) instanceof CtInvocation);
 	}
 
 	@Test
@@ -433,8 +433,8 @@ public class ReplaceTest {
 		final CtBlock<?> newBlock = aMole.getFactory().Code().createCtBlock(aMole.getFactory().Code().createCodeSnippetStatement("int j = 0;").compile());
 		final CtTry ctTry = aMole.getMethod("m").getElements(new TypeFilter<>(CtTry.class)).get(0);
 
-		assertNotEquals(newBlock, ctTry.getBody());
-		ctTry.getBody().replace(newBlock);
-		assertEquals(newBlock, ctTry.getBody());
+		assertNotEquals(newBlock, ctTry.getMyBody());
+		ctTry.getMyBody().replace(newBlock);
+		assertEquals(newBlock, ctTry.getMyBody());
 	}
 }

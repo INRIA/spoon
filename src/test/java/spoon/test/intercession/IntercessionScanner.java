@@ -59,13 +59,13 @@ public abstract class IntercessionScanner extends CtScanner {
 	}
 
 	protected boolean avoidThrowUnsupportedOperationException(CtMethod<?> candidate) {
-		if (candidate.getBody().getStatements().size() != 1) {
+		if (candidate.getMyBody().getStatements().size() != 1) {
 			return true;
 		}
-		if (!(candidate.getBody().getStatement(0) instanceof CtThrow)) {
+		if (!(candidate.getMyBody().getStatement(0) instanceof CtThrow)) {
 			return true;
 		}
-		CtThrow ctThrow = candidate.getBody().getStatement(0);
+		CtThrow ctThrow = candidate.getMyBody().getStatement(0);
 		if (!(ctThrow.getThrownExpression() instanceof CtConstructorCall)) {
 			return true;
 		}
@@ -81,6 +81,6 @@ public abstract class IntercessionScanner extends CtScanner {
 	}
 
 	protected boolean avoidInterfaces(CtMethod<?> candidate) {
-		return candidate.getBody() != null;
+		return candidate.getMyBody() != null;
 	}
 }

@@ -449,7 +449,7 @@ public abstract class Substitution {
 		CtExecutable<?> sourceExecutable = executableName.equals(template.getClass().getSimpleName())
 				? sourceClass.getConstructor(parameterTypes)
 				: sourceClass.getMethod(executableName, parameterTypes);
-		return substitute(targetClass, template, sourceExecutable.getBody());
+		return substitute(targetClass, template, sourceExecutable.getMyBody());
 	}
 
 	/**
@@ -474,7 +474,7 @@ public abstract class Substitution {
 		CtExecutable<?> sourceExecutable = executableName.equals(template.getClass().getSimpleName())
 				? sourceClass.getConstructor(parameterTypes)
 				: sourceClass.getMethod(executableName, parameterTypes);
-		return substitute(targetClass, template, sourceExecutable.getBody().getStatement(statementIndex));
+		return substitute(targetClass, template, sourceExecutable.getMyBody().getStatement(statementIndex));
 	}
 
 	/**

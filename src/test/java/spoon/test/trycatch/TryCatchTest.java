@@ -67,10 +67,10 @@ public class TryCatchTest {
 
 		CtMethod<Void> m = type.getMethod("test");
 		assertNotNull(m);
-		assertEquals(2, m.getBody().getStatements().size());
-		assertTrue(m.getBody().getStatements().get(0) instanceof CtTry);
-		assertTrue(m.getBody().getStatements().get(1) instanceof CtTryWithResource);
-		CtTryWithResource t2 = m.getBody().getStatement(1);
+		assertEquals(2, m.getMyBody().getStatements().size());
+		assertTrue(m.getMyBody().getStatements().get(0) instanceof CtTry);
+		assertTrue(m.getMyBody().getStatements().get(1) instanceof CtTryWithResource);
+		CtTryWithResource t2 = m.getMyBody().getStatement(1);
 		assertNotNull(t2.getResources());
 
 	}
@@ -106,7 +106,7 @@ public class TryCatchTest {
 		assertEquals(
 				RuntimeException.class,
 				tryStmt.getCatchers().get(0).getParameter().getType().getActualClass());
-		assertEquals("java.lang.System.exit(0)", tryStmt.getCatchers().get(0).getBody().getStatement(0).toString());
+		assertEquals("java.lang.System.exit(0)", tryStmt.getCatchers().get(0).getMyBody().getStatement(0).toString());
 
 		assertEquals(
 				Exception.class,
@@ -140,7 +140,7 @@ public class TryCatchTest {
 				catchers.get(0).getParameter().getMultiTypes().get(1).getActualClass());
 
 		// the code of the catch block is duplicated
-		assertEquals("java.lang.System.exit(0)", catchers.get(0).getBody().getStatement(0).toString());
+		assertEquals("java.lang.System.exit(0)", catchers.get(0).getMyBody().getStatement(0).toString());
 	}
 
 	@Test

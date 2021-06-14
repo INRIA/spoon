@@ -68,7 +68,7 @@ public class CtBodyHolderTest {
 		CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
 		assertEquals(2, cwbClass.getMethods().size());
 		CtMethod<?> method = cwbClass.getMethod("method2");
-		CtBlock<?> methodBody = method.getBody();
+		CtBlock<?> methodBody = method.getMyBody();
 		assertTrue(methodBody.getStatement(0) instanceof CtTry);
 		CtTry tryStmnt = (CtTry) methodBody.getStatement(0);
 		checkCtBody(tryStmnt, "try_body", 0);
@@ -83,7 +83,7 @@ public class CtBodyHolderTest {
 		CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
 		assertEquals(2, cwbClass.getMethods().size());
 		CtMethod<?> method = cwbClass.getMethod("method2");
-		CtBlock<?> methodBody = method.getBody();
+		CtBlock<?> methodBody = method.getMyBody();
 		assertTrue(methodBody.getStatement(1) instanceof CtFor);
 		CtFor forStmnt = (CtFor) methodBody.getStatement(1);
 		checkCtBody(forStmnt, "for_statemnt", 0);
@@ -95,7 +95,7 @@ public class CtBodyHolderTest {
 		CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
 		assertEquals(2, cwbClass.getMethods().size());
 		CtMethod<?> method = cwbClass.getMethod("method2");
-		CtBlock<?> methodBody = method.getBody();
+		CtBlock<?> methodBody = method.getMyBody();
 		assertTrue(methodBody.getStatement(2) instanceof CtFor);
 		CtFor forStmnt = (CtFor) methodBody.getStatement(2);
 		checkCtBody(forStmnt, "for_block", 0);
@@ -107,14 +107,14 @@ public class CtBodyHolderTest {
 		CtClass<?> cwbClass = (CtClass<?>) factory.Type().get(ClassWithBodies.class);
 		assertEquals(2, cwbClass.getMethods().size());
 		CtMethod<?> method = cwbClass.getMethod("method2");
-		CtBlock<?> methodBody = method.getBody();
+		CtBlock<?> methodBody = method.getMyBody();
 		assertTrue(methodBody.getStatement(3) instanceof CtWhile);
 		CtWhile whileStmnt = (CtWhile) methodBody.getStatement(3);
 		checkCtBody(whileStmnt, "while_block", 0);
 	}
 
 	private void checkCtBody(CtBodyHolder p_bodyHolder, String p_constant, int off) {
-		CtStatement body = p_bodyHolder.getBody();
+		CtStatement body = p_bodyHolder.getMyBody();
 		assertTrue(body instanceof CtBlock<?>);
 
 		CtBlock<?> block = (CtBlock) body;
@@ -136,7 +136,7 @@ public class CtBodyHolderTest {
 		}
 		//try to set statement and get CtBlock
 		p_bodyHolder.setBody(newStat);
-		CtBlock newBlock = (CtBlock) p_bodyHolder.getBody();
+		CtBlock newBlock = (CtBlock) p_bodyHolder.getMyBody();
 		assertSame(p_bodyHolder, newBlock.getParent());
 		assertSame(newBlock, newStat.getParent());
 
@@ -158,7 +158,7 @@ public class CtBodyHolderTest {
 		}
 
 		p_bodyHolder.setBody(newBlock2);
-		assertSame(newBlock2, p_bodyHolder.getBody());
+		assertSame(newBlock2, p_bodyHolder.getMyBody());
 		assertSame(p_bodyHolder, newBlock2.getParent());
 		assertSame(newBlock2, newStat2.getParent());
 	}

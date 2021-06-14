@@ -69,7 +69,7 @@ public class ConstructorFactory extends ExecutableFactory {
 		CtMethod<T> method = (CtMethod<T>) source.clone();
 		CtConstructor<T> newConstructor = factory.Core().createConstructor();
 		newConstructor.setAnnotations(method.getAnnotations());
-		newConstructor.setBody(method.getBody());
+		newConstructor.setBody(method.getMyBody());
 		newConstructor.setDocComment(method.getDocComment());
 		newConstructor.setFormalCtTypeParameters(method.getFormalCtTypeParameters());
 		newConstructor.setModifiers(method.getModifiers());

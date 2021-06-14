@@ -119,7 +119,7 @@ public class SignatureTest {
 		assertEquals("foo(java.util.List)", method.getSignature());
 
 
-		CtInvocation<?> invo = (CtInvocation<?>) method.getBody().getStatement(0);
+		CtInvocation<?> invo = (CtInvocation<?>) method.getMyBody().getStatement(0);
 
 		CtExpression<?> argument1 = invo.getArguments().get(0);
 
@@ -224,14 +224,14 @@ public class SignatureTest {
 		CtMethod<?> methodInteger = methodArray[0];
 		assertEquals("foo(int)", methodInteger.getSignature());
 
-		CtInvocation<?> invoToInt1 = (CtInvocation<?>) methodInteger.getBody().getStatement(1);
+		CtInvocation<?> invoToInt1 = (CtInvocation<?>) methodInteger.getMyBody().getStatement(1);
 		CtExpression<?> argumentToInt1 = invoToInt1.getArguments().get(0);
 
 		//----------From the second method we take the Method Inv
 		CtMethod<?> methodString = (CtMethod<?>) methodArray[1];
 		assertEquals("foo(java.lang.String)", methodString.getSignature());
 
-		CtInvocation<?> invoToString = (CtInvocation<?>) methodString.getBody().getStatement(1);
+		CtInvocation<?> invoToString = (CtInvocation<?>) methodString.getMyBody().getStatement(1);
 		CtExpression<?> argumentToString = invoToString.getArguments().get(0);
 
 		//we compare the signatures of " this.foo(s);"	from both methods
@@ -243,10 +243,10 @@ public class SignatureTest {
 		assertNotEquals(argumentToInt1, argumentToString);
 
 		/// ***SECOND PART, passing Parameters
-		CtInvocation<?> invoToString2 = (CtInvocation<?>) methodInteger.getBody().getStatement(2);
+		CtInvocation<?> invoToString2 = (CtInvocation<?>) methodInteger.getMyBody().getStatement(2);
 		CtExpression<?> argumentToString2 = invoToString2.getArguments().get(0);
 
-		CtInvocation<?> invoToInt2 = (CtInvocation<?>) methodString.getBody().getStatement(2);
+		CtInvocation<?> invoToInt2 = (CtInvocation<?>) methodString.getMyBody().getStatement(2);
 		CtExpression<?> argumentToInt2 = invoToInt2.getArguments().get(0);
 		///
 
@@ -290,7 +290,7 @@ public class SignatureTest {
 		CtMethod<?> methodString = (CtMethod<?>) clazz1.getMethods().toArray()[0];
 		assertEquals("foo(java.lang.String)", methodString.getSignature());
 
-		CtAssignment<?,?> invoToInt1 = (CtAssignment<?,?>) methodString.getBody().getStatement(0);
+		CtAssignment<?,?> invoToInt1 = (CtAssignment<?,?>) methodString.getMyBody().getStatement(0);
 
 		CtExpression<?> left = invoToInt1.getAssigned();
 		assertEquals("this.mfield",left.toString());

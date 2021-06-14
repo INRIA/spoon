@@ -392,7 +392,7 @@ public class ContextBuilder {
 							return;
 						} else if (astPair.element instanceof CtExecutable) {
 							final CtExecutable executable = (CtExecutable) astPair.element;
-							if (executable.getBody() == parentOfPotentialVariable) {
+							if (executable.getMyBody() == parentOfPotentialVariable) {
 								finish(potentialVariable);
 								return;
 							}

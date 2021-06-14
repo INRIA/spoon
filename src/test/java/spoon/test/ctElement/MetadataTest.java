@@ -36,12 +36,12 @@ public class MetadataTest {
 		final Factory factory = build(Returner.class);
 		final CtClass<Returner> returnerClass = factory.Class().get(Returner.class);
 		final CtMethod<?> staticMethod = returnerClass.getMethodsByName("get").get(0);
-		final CtReturn<Integer> ret = staticMethod.getBody().getLastStatement();
+		final CtReturn<Integer> ret = staticMethod.getMyBody().getLastStatement();
 
 		assertNotNull(ret.getMetadataKeys());
 
 		final CtMethod<?> staticMethod2 = returnerClass.getMethodsByName("get2").get(0);
-		final CtReturn<Integer> ret2 = staticMethod2.getBody().getLastStatement();
+		final CtReturn<Integer> ret2 = staticMethod2.getMyBody().getLastStatement();
 
 		ret.putMetadata("foo", "bar");
 		ret.putMetadata("fiz", 1);

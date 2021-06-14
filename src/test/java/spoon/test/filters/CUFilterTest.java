@@ -58,7 +58,7 @@ public class CUFilterTest {
         assertEquals("A", model.getAllTypes().iterator().next().getSimpleName());
         // make sure declaration of `B` is known in `model`
         final CtReturn ctReturn = model.getAllTypes().iterator().next()
-                .getMethod("createB").getBody().getStatement(0);
+                .getMethod("createB").getMyBody().getStatement(0);
         final CtConstructorCall ctConstructorCall =
                 (CtConstructorCall)ctReturn.getReturnedExpression();
         assertEquals("spoon.test.same.B", ctConstructorCall.getType().getQualifiedName());
@@ -77,7 +77,7 @@ public class CUFilterTest {
         assertEquals("A", model.getAllTypes().iterator().next().getSimpleName());
         // make sure declaration of `B` is unknown in `model`
         final CtReturn ctReturn = model.getAllTypes().iterator().next()
-                .getMethod("createB").getBody().getStatement(0);
+                .getMethod("createB").getMyBody().getStatement(0);
         final CtConstructorCall ctConstructorCall =
                 (CtConstructorCall)ctReturn.getReturnedExpression();
         assertEquals("spoon.test.same.B", ctConstructorCall.getType().getQualifiedName());

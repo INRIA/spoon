@@ -423,7 +423,7 @@ public class DefaultPrettyPrinterTest {
 
 		CtClass<?> type = (CtClass) ModelUtils.buildClass(spoon.test.prettyprinter.testclasses.ArrayRealVector.class);
 		CtConstructor<?> constr = type.getConstructors().stream().filter(c -> c.getParameters().size() == 1).findFirst().get();
-		assertEquals("this(v, true)", constr.getBody().getStatement(0).toString());
+		assertEquals("this(v, true)", constr.getMyBody().getStatement(0).toString());
 	}
 
 	@Test
@@ -442,7 +442,7 @@ public class DefaultPrettyPrinterTest {
 						c.getParameters().size() == 1
 						&& "ArrayRealVector".equals(c.getParameters().get(0).getType().getSimpleName())
 					).findFirst().get();
-			assertEquals("this(v, true)", constr.getBody().getStatement(0).toString());
+			assertEquals("this(v, true)", constr.getMyBody().getStatement(0).toString());
 		}
 		{
 			String printed = type.toString();

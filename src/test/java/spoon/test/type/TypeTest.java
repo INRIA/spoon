@@ -101,7 +101,7 @@ public class TypeTest {
 						+ "}};").compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-		CtBlock<?> body = foo.getBody();
+		CtBlock<?> body = foo.getMyBody();
 		CtLocalVariable<?> ass = body.getStatement(1);
 		CtBinaryOperator<?> op = (CtBinaryOperator<?>) ass.getDefaultExpression();
 		assertEquals("Class", op.getLeftHandOperand().getType().getSimpleName());
@@ -396,7 +396,7 @@ public class TypeTest {
 
 		for (CtMethod<?> ctMethod : objectCtClass.getMethods()) {
 			assertTrue(methodNameList.contains(ctMethod.getSimpleName()));
-			assertTrue(ctMethod.getBody().getStatements().isEmpty());
+			assertTrue(ctMethod.getMyBody().getStatements().isEmpty());
 		}
 
 	}

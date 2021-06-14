@@ -44,7 +44,7 @@ public class SniperDoubleForInitializerTest {
 
     CtMethod method = model.getElements(new TypeFilter<>(CtMethod.class)).get(0);
 
-    method.getBody().addComment(launcher.getFactory().Code().createComment("test", CommentType.BLOCK));
+    method.getMyBody().addComment(launcher.getFactory().Code().createComment("test", CommentType.BLOCK));
 
     launcher.process();
     launcher.prettyprint();

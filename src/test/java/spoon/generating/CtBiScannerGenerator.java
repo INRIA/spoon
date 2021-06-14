@@ -44,7 +44,7 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 		final CtLocalVariable<?> peekElement = getFactory().Class()
 				.get(GENERATING_BISCANNER_PACKAGE + ".PeekElementTemplate")
 				.getMethod("statement")
-				.getBody().getStatement(0);
+				.getMyBody().getStatement(0);
 		final CtClass<Object> target = createBiScanner();
 
 		for (CtTypeMember tm : getFactory().Class().get(CtScanner.class).getTypeMembers()) {
@@ -66,19 +66,19 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 			type.getActualTypeArguments().clear();
 			peek.getDefaultExpression().addTypeCast(type);
 			peek.setType(type);
-			clone.getBody().insertBegin(peek);
+			clone.getMyBody().insertBegin(peek);
 
-			for (int i = 2; i < clone.getBody().getStatements().size() - 1; i++) {
-				List<CtExpression> invArgs = ((CtInvocation) clone.getBody().getStatement(i)).getArguments();
+			for (int i = 2; i < clone.getMyBody().getStatements().size() - 1; i++) {
+				List<CtExpression> invArgs = ((CtInvocation) clone.getMyBody().getStatement(i)).getArguments();
 				if (invArgs.size() <= 1) {
 					throw new RuntimeException("You forget the role argument in line " + i + " of method " + element.getSimpleName() + " from " + element.getDeclaringType().getQualifiedName());
 				}
 				final CtInvocation targetInvocation = (CtInvocation) invArgs.get(1);
 				if ("getValue".equals(targetInvocation.getExecutable().getSimpleName()) && "CtLiteral".equals(targetInvocation.getExecutable().getDeclaringType().getSimpleName())) {
-					clone.getBody().getStatement(i--).delete();
+					clone.getMyBody().getStatement(i--).delete();
 					continue;
 				}
-				CtInvocation<?> replace = (CtInvocation<?>) clone.getBody().getStatement(i).clone();
+				CtInvocation<?> replace = (CtInvocation<?>) clone.getMyBody().getStatement(i).clone();
 
 				// Changes to biScan method.
 				replace.getExecutable().setSimpleName("biScan");
@@ -92,7 +92,7 @@ public class CtBiScannerGenerator extends AbstractManualProcessor {
 					CtInvocation invocation = factory.Code().createInvocation(replace.getArguments().get(2).clone(), factory.Executable().createReference("List Map#values()"));
 					replace.getArguments().get(2).replace(invocation);
 				}
-				clone.getBody().getStatement(i).replace(replace);
+				clone.getMyBody().getStatement(i).replace(replace);
 			}
 			target.addMethod(clone);
 		}

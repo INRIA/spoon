@@ -37,10 +37,10 @@ public class ImplicitStaticFieldReferenceTest
     	Launcher launcher = checkFile(false, "ImplicitStaticFieldReference.java");
     	if(expectImplicit) {
         	CtClass<?> cls = launcher.getFactory().Class().get(ImplicitStaticFieldReference.class);
-        	assertEquals("return ImplicitStaticFieldReference", cls.getMethod("reader").getBody().getStatements().get(0).toString());
-        	assertEquals("ImplicitStaticFieldReference = value", cls.getMethodsByName("writer").get(0).getBody().getStatements().get(0).toString());
-        	assertEquals("reader()", cls.getMethodsByName("testLocalMethodInvocations").get(0).getBody().getStatements().get(0).toString());
-        	assertEquals("longWriter(7)", cls.getMethodsByName("testLocalMethodInvocations").get(0).getBody().getStatements().get(1).toString());
+        	assertEquals("return ImplicitStaticFieldReference", cls.getMethod("reader").getMyBody().getStatements().get(0).toString());
+        	assertEquals("ImplicitStaticFieldReference = value", cls.getMethodsByName("writer").get(0).getMyBody().getStatements().get(0).toString());
+        	assertEquals("reader()", cls.getMethodsByName("testLocalMethodInvocations").get(0).getMyBody().getStatements().get(0).toString());
+        	assertEquals("longWriter(7)", cls.getMethodsByName("testLocalMethodInvocations").get(0).getMyBody().getStatements().get(1).toString());
     	}
     }
 
@@ -49,10 +49,10 @@ public class ImplicitStaticFieldReferenceTest
     	Launcher launcher = checkFile(true, "ImplicitStaticFieldReference.java");
     	if(expectImplicit) {
         	CtClass<?> cls = launcher.getFactory().Class().get(ImplicitStaticFieldReference.class);
-        	assertEquals("return ImplicitStaticFieldReference", cls.getMethod("reader").getBody().getStatements().get(0).toString());
-        	assertEquals("ImplicitStaticFieldReference = value", cls.getMethodsByName("writer").get(0).getBody().getStatements().get(0).toString());
-        	assertEquals("reader()", cls.getMethodsByName("testLocalMethodInvocations").get(0).getBody().getStatements().get(0).toString());
-        	assertEquals("longWriter(7)", cls.getMethodsByName("testLocalMethodInvocations").get(0).getBody().getStatements().get(1).toString());
+        	assertEquals("return ImplicitStaticFieldReference", cls.getMethod("reader").getMyBody().getStatements().get(0).toString());
+        	assertEquals("ImplicitStaticFieldReference = value", cls.getMethodsByName("writer").get(0).getMyBody().getStatements().get(0).toString());
+        	assertEquals("reader()", cls.getMethodsByName("testLocalMethodInvocations").get(0).getMyBody().getStatements().get(0).toString());
+        	assertEquals("longWriter(7)", cls.getMethodsByName("testLocalMethodInvocations").get(0).getMyBody().getStatements().get(1).toString());
     	}
     }
 
@@ -61,10 +61,10 @@ public class ImplicitStaticFieldReferenceTest
     	Launcher launcher = checkFile(false, "ImplicitFieldReference.java");
     	if(expectImplicit) {
         	CtClass<?> cls = launcher.getFactory().Class().get(ImplicitFieldReference.class);
-        	assertEquals("return memberField", cls.getMethod("getMemberField").getBody().getStatements().get(0).toString());
-        	assertEquals("memberField = p_memberField", cls.getMethodsByName("setMemberField").get(0).getBody().getStatements().get(0).toString());
+        	assertEquals("return memberField", cls.getMethod("getMemberField").getMyBody().getStatements().get(0).toString());
+        	assertEquals("memberField = p_memberField", cls.getMethodsByName("setMemberField").get(0).getMyBody().getStatements().get(0).toString());
 //        	assertEquals("this.memberField = memberField", cls.getMethodsByName("setMemberField2").get(0).getBody().getStatements().get(0).toString());
-        	assertEquals("getMemberField()", cls.getMethodsByName("testLocalMethodInvocations").get(0).getBody().getStatements().get(0).toString());
+        	assertEquals("getMemberField()", cls.getMethodsByName("testLocalMethodInvocations").get(0).getMyBody().getStatements().get(0).toString());
     	}
     }
     @Test
@@ -72,10 +72,10 @@ public class ImplicitStaticFieldReferenceTest
     	Launcher launcher = checkFile(true, "ImplicitFieldReference.java");
     	if(expectImplicit) {
         	CtClass<?> cls = launcher.getFactory().Class().get(ImplicitFieldReference.class);
-        	assertEquals("return memberField", cls.getMethod("getMemberField").getBody().getStatements().get(0).toString());
-        	assertEquals("memberField = p_memberField", cls.getMethodsByName("setMemberField").get(0).getBody().getStatements().get(0).toString());
+        	assertEquals("return memberField", cls.getMethod("getMemberField").getMyBody().getStatements().get(0).toString());
+        	assertEquals("memberField = p_memberField", cls.getMethodsByName("setMemberField").get(0).getMyBody().getStatements().get(0).toString());
 //        	assertEquals("this.memberField = memberField", cls.getMethodsByName("setMemberField2").get(0).getBody().getStatements().get(0).toString());
-        	assertEquals("getMemberField()", cls.getMethodsByName("testLocalMethodInvocations").get(0).getBody().getStatements().get(0).toString());
+        	assertEquals("getMemberField()", cls.getMethodsByName("testLocalMethodInvocations").get(0).getMyBody().getStatements().get(0).toString());
     	}
     }
     
@@ -84,10 +84,10 @@ public class ImplicitStaticFieldReferenceTest
     	Launcher launcher = checkFile(false, "AmbiguousImplicitFieldReference.java");
     	if(expectImplicit) {
         	CtClass<?> cls = launcher.getFactory().Class().get(AmbiguousImplicitFieldReference.class);
-        	assertEquals("return memberField", cls.getMethod("getMemberField").getBody().getStatements().get(0).toString());
-        	assertEquals("memberField = p_memberField", cls.getMethodsByName("setMemberField").get(0).getBody().getStatements().get(0).toString());
+        	assertEquals("return memberField", cls.getMethod("getMemberField").getMyBody().getStatements().get(0).toString());
+        	assertEquals("memberField = p_memberField", cls.getMethodsByName("setMemberField").get(0).getMyBody().getStatements().get(0).toString());
 //        	assertEquals("this.memberField = memberField", cls.getMethodsByName("setMemberField2").get(0).getBody().getStatements().get(0).toString());
-        	assertEquals("getMemberField()", cls.getMethodsByName("testLocalMethodInvocations").get(0).getBody().getStatements().get(0).toString());
+        	assertEquals("getMemberField()", cls.getMethodsByName("testLocalMethodInvocations").get(0).getMyBody().getStatements().get(0).toString());
     	}
     }
     @Test
@@ -95,10 +95,10 @@ public class ImplicitStaticFieldReferenceTest
     	Launcher launcher = checkFile(true, "AmbiguousImplicitFieldReference.java");
     	if(expectImplicit) {
         	CtClass<?> cls = launcher.getFactory().Class().get(AmbiguousImplicitFieldReference.class);
-        	assertEquals("return memberField", cls.getMethod("getMemberField").getBody().getStatements().get(0).toString());
-        	assertEquals("memberField = p_memberField", cls.getMethodsByName("setMemberField").get(0).getBody().getStatements().get(0).toString());
+        	assertEquals("return memberField", cls.getMethod("getMemberField").getMyBody().getStatements().get(0).toString());
+        	assertEquals("memberField = p_memberField", cls.getMethodsByName("setMemberField").get(0).getMyBody().getStatements().get(0).toString());
 //        	assertEquals("this.memberField = memberField", cls.getMethodsByName("setMemberField2").get(0).getBody().getStatements().get(0).toString());
-        	assertEquals("getMemberField()", cls.getMethodsByName("testLocalMethodInvocations").get(0).getBody().getStatements().get(0).toString());
+        	assertEquals("getMemberField()", cls.getMethodsByName("testLocalMethodInvocations").get(0).getMyBody().getStatements().get(0).toString());
     	}
     }
 
@@ -132,7 +132,7 @@ public class ImplicitStaticFieldReferenceTest
         	//The toString of the method does not have a context of class, so it different result 
 //        	assertEquals("spoon.test.staticFieldAccess2.testclasses.GenericsWithAmbiguousStaticField.<V, C>genericMethod()", cls.getMethod("m1").getBody().getStatements().get(0).toString());
         	assertTrue(cls.toString().contains("spoon.test.staticFieldAccess2.testclasses.GenericsWithAmbiguousStaticField.<V, C>genericMethod()"));
-        	assertEquals("genericMethod()", cls.getMethod("m1").getBody().getStatements().get(1).toString());
+        	assertEquals("genericMethod()", cls.getMethod("m1").getMyBody().getStatements().get(1).toString());
     	}
     }
 

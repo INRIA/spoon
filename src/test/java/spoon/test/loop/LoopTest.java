@@ -57,8 +57,8 @@ public class LoopTest {
 	public void testForeachShouldHaveAlwaysABlockInItsBody() throws Exception {
 		final CtClass<Join> aType = build(Join.class, Condition.class).Class().get(Join.class);
 		final CtConstructor<Join> joinCtConstructor = aType.getConstructors().stream().findFirst().get();
-		final CtLoop ctLoop = joinCtConstructor.getBody().getElements(new TypeFilter<>(CtLoop.class)).get(0);
-		assertTrue(ctLoop.getBody() instanceof CtBlock);
+		final CtLoop ctLoop = joinCtConstructor.getMyBody().getElements(new TypeFilter<>(CtLoop.class)).get(0);
+		assertTrue(ctLoop.getMyBody() instanceof CtBlock);
 		// contract: the implicit block is not pretty printed
 		String expectedPrettyPrinted = //
 				"for (Condition<? super T> condition : conditions)" + nl //
@@ -83,6 +83,6 @@ public class LoopTest {
 		assertTrue(ctFor.getForInit().isEmpty());
 		assertNull(ctFor.getExpression());
 		assertTrue(ctFor.getForUpdate().isEmpty());
-		assertEquals("x = 5", ((CtBlock)ctFor.getBody()).getStatement(0).toString().trim());
+		assertEquals("x = 5", ((CtBlock)ctFor.getMyBody()).getStatement(0).toString().trim());
 	}
 }

@@ -70,24 +70,24 @@ public class ProcessingTest {
 	public void testInsertBegin() throws Exception {
 		CtClass<?> type = build("spoon.test.processing.testclasses", "SampleForInsertBefore");
 		for (CtMethod<?> meth : type.getMethods()) {
-			int i = meth.getBody().getStatements().size();
-			meth.getBody().insertBegin(type.getFactory().Code()
+			int i = meth.getMyBody().getStatements().size();
+			meth.getMyBody().insertBegin(type.getFactory().Code()
 					.createCodeSnippetStatement("int i = 0;"));
 			assertEquals("insert failed for method " + meth.getSimpleName(),
-					i + 1, meth.getBody().getStatements().size());
+					i + 1, meth.getMyBody().getStatements().size());
 			assertEquals("insert failed for method " + meth.getSimpleName(),
-					"int i = 0;", meth.getBody().getStatement(0).toString());
+					"int i = 0;", meth.getMyBody().getStatement(0).toString());
 		}
 		for (CtConstructor<?> constructor : type.getConstructors()) {
-			int i = constructor.getBody().getStatements().size();
-			constructor.getBody().insertBegin(type.getFactory().Code()
+			int i = constructor.getMyBody().getStatements().size();
+			constructor.getMyBody().insertBegin(type.getFactory().Code()
 					.createCodeSnippetStatement("int i = 0;"));
 			assertEquals("insert failed for constructor " + constructor.getSimpleName(),
 					i + 1,
-					constructor.getBody().getStatements().size());
+					constructor.getMyBody().getStatements().size());
 			assertEquals("insert failed for constructor " + constructor.getSimpleName(),
 					"int i = 0;",
-					constructor.getBody().getStatement(1).toString());
+					constructor.getMyBody().getStatement(1).toString());
 		}
 
 		CtConstructor<?> constructor = type.getConstructor(type.getFactory().Type().INTEGER_PRIMITIVE);
@@ -96,12 +96,12 @@ public class ProcessingTest {
 			ctSwitch.insertBefore(type.getFactory().Code()
 					.createCodeSnippetStatement(myBeforeStatementAsString));
 		}
-		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(3).toString());
-		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(5).toString());
-		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(7).toString());
+		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getMyBody().getStatement(3).toString());
+		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getMyBody().getStatement(5).toString());
+		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getMyBody().getStatement(7).toString());
 
-		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6), constructor.getBody().getStatement(8));
-		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6).toString(), constructor.getBody().getStatement(8).toString());
+		assertNotEquals("switch should not be the same", constructor.getMyBody().getStatement(6), constructor.getMyBody().getStatement(8));
+		assertNotEquals("switch should not be the same", constructor.getMyBody().getStatement(6).toString(), constructor.getMyBody().getStatement(8).toString());
 
 	}
 
@@ -109,24 +109,24 @@ public class ProcessingTest {
 	public void testInsertEnd() throws Exception {
 		CtClass<?> type = build("spoon.test.processing.testclasses", "SampleForInsertBefore");
 		for (CtMethod<?> meth : type.getMethods()) {
-			int i = meth.getBody().getStatements().size();
-			meth.getBody().insertEnd(type.getFactory().Code()
+			int i = meth.getMyBody().getStatements().size();
+			meth.getMyBody().insertEnd(type.getFactory().Code()
 					.createCodeSnippetStatement("int i = 0"));
 			assertEquals("insert failed for method " + meth.getSimpleName(),
-					i + 1, meth.getBody().getStatements().size());
+					i + 1, meth.getMyBody().getStatements().size());
 			assertEquals("insert failed for method " + meth.getSimpleName(),
-					"int i = 0", meth.getBody().getStatement(meth.getBody().getStatements().size() - 1).toString());
+					"int i = 0", meth.getMyBody().getStatement(meth.getMyBody().getStatements().size() - 1).toString());
 		}
 		for (CtConstructor<?> constructor : type.getConstructors()) {
-			int i = constructor.getBody().getStatements().size();
-			constructor.getBody().insertEnd(type.getFactory().Code()
+			int i = constructor.getMyBody().getStatements().size();
+			constructor.getMyBody().insertEnd(type.getFactory().Code()
 					.createCodeSnippetStatement("int i = 0"));
 			assertEquals("insert failed for constructor " + constructor.getSimpleName(),
 					i + 1,
-					constructor.getBody().getStatements().size());
+					constructor.getMyBody().getStatements().size());
 			assertEquals("insert failed for constructor",
 					"int i = 0",
-					constructor.getBody().getStatement(constructor.getBody().getStatements().size() - 1).toString());
+					constructor.getMyBody().getStatement(constructor.getMyBody().getStatements().size() - 1).toString());
 		}
 
 		CtConstructor<?> constructor = type.getConstructor(type.getFactory().Type().INTEGER_PRIMITIVE);
@@ -135,12 +135,12 @@ public class ProcessingTest {
 			ctSwitch.insertAfter(type.getFactory().Code()
 					.createCodeSnippetStatement(myBeforeStatementAsString));
 		}
-		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(3).toString());
-		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(5).toString());
-		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(7).toString());
+		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getMyBody().getStatement(3).toString());
+		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getMyBody().getStatement(5).toString());
+		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getMyBody().getStatement(7).toString());
 
-		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6), constructor.getBody().getStatement(8));
-		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6).toString(), constructor.getBody().getStatement(8).toString());
+		assertNotEquals("switch should not be the same", constructor.getMyBody().getStatement(6), constructor.getMyBody().getStatement(8));
+		assertNotEquals("switch should not be the same", constructor.getMyBody().getStatement(6).toString(), constructor.getMyBody().getStatement(8).toString());
 
 	}
 

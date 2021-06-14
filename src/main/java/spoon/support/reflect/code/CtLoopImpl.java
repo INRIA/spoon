@@ -24,7 +24,7 @@ public abstract class CtLoopImpl extends CtStatementImpl implements CtLoop {
 	CtStatement body;
 
 	@Override
-	public CtStatement getBody() {
+	public CtStatement getMyBody() {
 		return body;
 	}
 

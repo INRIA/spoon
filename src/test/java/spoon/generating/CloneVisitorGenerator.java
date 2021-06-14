@@ -105,28 +105,28 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 				final CtVariableAccess localVarRead = factory.Code().createVariableRead(localCloningElement.getReference(), false);
 
 				// Changes body of the cloned method.
-				for (int i = 1; i < clone.getBody().getStatements().size() - 1; i++) {
-					List<CtExpression> invArgs = ((CtInvocation) clone.getBody().getStatement(i)).getArguments();
+				for (int i = 1; i < clone.getMyBody().getStatements().size() - 1; i++) {
+					List<CtExpression> invArgs = ((CtInvocation) clone.getMyBody().getStatement(i)).getArguments();
 					if (invArgs.size() <= 1) {
 						throw new RuntimeException("You forget the role argument in line " + i + " of method " + element.getSimpleName() + " from " + element.getDeclaringType().getQualifiedName());
 					}
 					final CtInvocation targetInvocation = (CtInvocation) invArgs.get(1);
 					if ("getValue".equals(targetInvocation.getExecutable().getSimpleName()) && "CtLiteral".equals(targetInvocation.getExecutable().getDeclaringType().getSimpleName())) {
-						clone.getBody().getStatement(i--).delete();
+						clone.getMyBody().getStatement(i--).delete();
 						continue;
 					}
-					clone.getBody().getStatement(i) //
-							.replace(createSetter((CtInvocation) clone.getBody().getStatement(i), localVarRead));
+					clone.getMyBody().getStatement(i) //
+							.replace(createSetter((CtInvocation) clone.getMyBody().getStatement(i), localVarRead));
 				}
 
 				// Delete enter and exit methods.
-				clone.getBody().getStatement(0).delete();
-				clone.getBody().getStatement(clone.getBody().getStatements().size() - 1).delete();
+				clone.getMyBody().getStatement(0).delete();
+				clone.getMyBody().getStatement(clone.getMyBody().getStatements().size() - 1).delete();
 
-				clone.getBody().insertBegin(createCloneBuilderCopyInvocation(elementVarRead, localVarRead)); // call to copy
-				clone.getBody().insertBegin(localCloningElement); // declaration of local variable
-				clone.getBody().insertEnd(createTailorerScanInvocation(elementVarRead, localVarRead)); // call to tailor
-				clone.getBody().insertEnd(factory.createVariableAssignment(other, false, localVarRead)); // final assignment
+				clone.getMyBody().insertBegin(createCloneBuilderCopyInvocation(elementVarRead, localVarRead)); // call to copy
+				clone.getMyBody().insertBegin(localCloningElement); // declaration of local variable
+				clone.getMyBody().insertEnd(createTailorerScanInvocation(elementVarRead, localVarRead)); // call to tailor
+				clone.getMyBody().insertEnd(factory.createVariableAssignment(other, false, localVarRead)); // final assignment
 
 
 				// Add auto-generated comment.
@@ -239,7 +239,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 				}
 
 				CtMethod<T> clone = element.clone();
-				clone.getBody().getStatements().clear();
+				clone.getMyBody().getStatements().clear();
 				for (CtField<?> ctField : declaration.getFields()) {
 					if (excludesFields.contains(ctField.getSimpleName())) {
 						continue;
@@ -256,13 +256,13 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 							createGetterInvocation(element.getParameters().get(0), getGetterOf(ctField)));
 					final List<CtMethod<?>> methodsToAvoid = getCtMethodThrowUnsupportedOperation(setterOfField);
 					if (!methodsToAvoid.isEmpty()) {
-						clone.getBody().addStatement(createProtectionToException(setterInvocation, methodsToAvoid));
+						clone.getMyBody().addStatement(createProtectionToException(setterInvocation, methodsToAvoid));
 					} else {
-						clone.getBody().addStatement(setterInvocation);
+						clone.getMyBody().addStatement(setterInvocation);
 					}
 				}
-				if (!clone.getBody().getStatements().isEmpty()) {
-					clone.getBody().insertEnd(createSuperInvocation(element));
+				if (!clone.getMyBody().getStatements().isEmpty()) {
+					clone.getMyBody().insertEnd(createSuperInvocation(element));
 
 					// Add auto-generated comment.
 					final CtComment comment = factory.Core().createComment();
@@ -331,17 +331,17 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 * Check if the candidate method throw an UnsupportedOperationException.
 			 */
 			private boolean avoidThrowUnsupportedOperationException(CtMethod<?> candidate) {
-				if (candidate.getBody() == null) {
+				if (candidate.getMyBody() == null) {
 					//abstract method of interface
 					return true;
 				}
-				if (candidate.getBody().getStatements().size() != 1) {
+				if (candidate.getMyBody().getStatements().size() != 1) {
 					return true;
 				}
-				if (!(candidate.getBody().getStatement(0) instanceof CtThrow)) {
+				if (!(candidate.getMyBody().getStatement(0) instanceof CtThrow)) {
 					return true;
 				}
-				CtThrow ctThrow = candidate.getBody().getStatement(0);
+				CtThrow ctThrow = candidate.getMyBody().getStatement(0);
 				if (!(ctThrow.getThrownExpression() instanceof CtConstructorCall)) {
 					return true;
 				}
@@ -441,7 +441,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 				final List<CtMethod> matchers = ctField.getDeclaringType().getElements(new TypeFilter<CtMethod>(CtMethod.class) {
 					@Override
 					public boolean matches(CtMethod element) {
-						final CtBlock body = element.getBody();
+						final CtBlock body = element.getMyBody();
 						if (body == null || body.getStatements().size() != 3) {
 							return false;
 						}
@@ -486,12 +486,12 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					}
 				}
 				// Search with template.
-				final CtBlock<?> templateRoot = GETTER_TEMPLATE_MATCHER_CLASS.getMethod("getElement").getBody();
+				final CtBlock<?> templateRoot = GETTER_TEMPLATE_MATCHER_CLASS.getMethod("getElement").getMyBody();
 				((CtReturn) templateRoot.getStatement(0)).setReturnedExpression(factory.Code().createVariableRead(ctField.getReference(), true));
 				List<CtMethod> matchers = ctField.getDeclaringType().getElements(new TypeFilter<CtMethod>(CtMethod.class) {
 					@Override
 					public boolean matches(CtMethod element) {
-						return element.getBody().toString().equals(templateRoot.toString());
+						return element.getMyBody().toString().equals(templateRoot.toString());
 					}
 				});
 				if (matchers.isEmpty()) {

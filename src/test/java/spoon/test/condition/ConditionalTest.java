@@ -75,7 +75,7 @@ public class ConditionalTest {
 				"} else {" + newLine +
 				"    java.lang.System.out.println();" + newLine +
 				"}",
-				method.getBody().getStatement(0).toString());
+				method.getMyBody().getStatement(0).toString());
 	}
 
 	@Test
@@ -100,7 +100,7 @@ public class ConditionalTest {
 				+ "    java.lang.System.out.println();" + newLine
 				+ "else" + newLine
 				+ "    java.lang.System.out.println();" + newLine,
-				method.getBody().getStatement(0).toString());
+				method.getMyBody().getStatement(0).toString());
 	}
 
 	@Test

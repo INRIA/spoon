@@ -56,7 +56,7 @@ public class StaticAccessTest {
     @Test
     public void testReferences() {
         CtType<?> type = factory.Type().get("spoon.test.staticFieldAccess.StaticAccessBug");
-        CtBlock<?> block = type.getMethod("references").getBody();
+        CtBlock<?> block = type.getMethod("references").getMyBody();
         assertTrue(block.getStatement(0).toString().contains("Extends.MY_STATIC_VALUE"));
         assertTrue(block.getStatement(1).toString().contains("Extends.MY_OTHER_STATIC_VALUE"));
     }

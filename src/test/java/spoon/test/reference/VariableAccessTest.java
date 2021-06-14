@@ -129,7 +129,7 @@ public class VariableAccessTest {
 
 				final CtParameterReference<?> param = guiParams.get(0);
 
-				exec.getBody().getElements(new TypeFilter<CtParameterReference<?>>(CtParameterReference.class) {
+				exec.getMyBody().getElements(new TypeFilter<CtParameterReference<?>>(CtParameterReference.class) {
 					@Override
 					public boolean matches(CtParameterReference<?> p) {
 						assertEquals(p.getSimpleName(), param.getSimpleName());
@@ -157,8 +157,8 @@ public class VariableAccessTest {
 		final CtMethod<Object> methodA2 = getMethod(launcher, a2);
 		final CtMethod<Object> methodA2Cloned = getMethod(launcher, a2Cloned);
 
-		final CtLocalVariable declaration = methodA2.getBody().getStatement(0);
-		final CtLocalVariable declarationCloned = methodA2Cloned.getBody().getStatement(0);
+		final CtLocalVariable declaration = methodA2.getMyBody().getStatement(0);
+		final CtLocalVariable declarationCloned = methodA2Cloned.getMyBody().getStatement(0);
 
 		final CtLocalVariableReference localVarRef = getLocalVariableRefF1(methodA2);
 		final CtLocalVariableReference localVarRefCloned = getLocalVariableRefF1(methodA2Cloned);
@@ -179,7 +179,7 @@ public class VariableAccessTest {
 		final CtType<Tortillas> aTortillas = buildClass(Tortillas.class);
 		final CtMethod<Object> make = aTortillas.getMethod("make", aTortillas.getFactory().Type().stringType());
 
-		final CtLocalVariable localVar = make.getBody().getStatement(0);
+		final CtLocalVariable localVar = make.getMyBody().getStatement(0);
 		final CtLocalVariable localVarCloned = localVar.clone();
 
 		final CtLocalVariableReference localVarRef = localVar.getReference();
@@ -204,7 +204,7 @@ public class VariableAccessTest {
 		final CtType<Tortillas> aTortillas = buildClass(Tortillas.class);
 		final CtMethod<Object> make = aTortillas.getMethod("make", aTortillas.getFactory().Type().stringType());
 		
-		final CtLocalVariable localVarNumber = make.getBody().getStatement(1);
+		final CtLocalVariable localVarNumber = make.getMyBody().getStatement(1);
 		List<CtLocalVariableReference<?>> refs = localVarNumber.map(new LocalVariableReferenceFunction()).list();
 		assertEquals(1, refs.size());
 		assertSame(localVarNumber, refs.get(0).getParent(CtLocalVariable.class));
@@ -275,7 +275,7 @@ public class VariableAccessTest {
 		// contract: the type of "super" variable is set and correct		
 		CtClass<?> type = build("spoon.test.reference.testclasses", "SuperAccess");
 		CtMethod<?> method = type.getMethodsByName("method").get(0);
-		CtInvocation<?> invocation = method.getBody().getStatement(0);
+		CtInvocation<?> invocation = method.getMyBody().getStatement(0);
 		CtSuperAccess<?> superAccess = (CtSuperAccess<?>) invocation.getTarget();
 		assertNotNull(superAccess.getType());
 		assertEquals("spoon.test.reference.testclasses.Parent", superAccess.getType().getQualifiedName());

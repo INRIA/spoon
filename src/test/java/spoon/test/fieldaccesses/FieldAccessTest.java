@@ -211,7 +211,7 @@ public class FieldAccessTest {
 			r.replace(s);
 		}
 
-		assertEquals("f(f(f(t.ta).ta).ta).ta = t", type.getMethodsByName("foo").get(0).getBody().getStatement(1).toString());
+		assertEquals("f(f(f(t.ta).ta).ta).ta = t", type.getMethodsByName("foo").get(0).getMyBody().getStatement(1).toString());
 	}
 
 	@Test
@@ -451,7 +451,7 @@ public class FieldAccessTest {
 		//first is the field printed with implicit "this."
  		assertEquals("age", ageFR.getParent().toString());
  		//add local variable declaration which hides the field declaration 
- 		method.getBody().insertBegin((CtStatement) mouse.getFactory().createCodeSnippetStatement("int age = 1").compile());
+ 		method.getMyBody().insertBegin((CtStatement) mouse.getFactory().createCodeSnippetStatement("int age = 1").compile());
  		//run model validator to fix the problem
  		new ImportConflictDetector().process(mouse.getPosition().getCompilationUnit());
 		//now the field access must use explicit "this."

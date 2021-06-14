@@ -140,7 +140,7 @@ public abstract class CtStatementImpl extends CtCodeElementImpl implements CtSta
 		public void scanCtLoop(CtLoop loop) {
 			super.scanCtLoop(loop);
 
-			CtStatement stat = loop.getBody();
+			CtStatement stat = loop.getMyBody();
 			if (stat instanceof CtBlock) {
 				insertType.insert((CtBlock<?>) stat, statementsToBeInserted);
 			} else {

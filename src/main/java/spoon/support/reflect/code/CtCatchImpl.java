@@ -33,7 +33,7 @@ public class CtCatchImpl extends CtCodeElementImpl implements CtCatch {
 	}
 
 	@Override
-	public CtBlock<?> getBody() {
+	public CtBlock<?> getMyBody() {
 		return body;
 	}
 

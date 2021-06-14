@@ -49,7 +49,7 @@ public class CastTest {
 
 		assertEquals(
 				"java.lang.String x = ((java.lang.String) (new java.lang.Object()))",
-				foo.getBody().getStatements().get(0).toString());
+				foo.getMyBody().getStatements().get(0).toString());
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class CastTest {
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 		assertEquals(
 				"java.lang.Class<java.lang.String> x = ((java.lang.Class<java.lang.String>) (new java.lang.Object()))",
-				foo.getBody().getStatements().get(0).toString());
+				foo.getMyBody().getStatements().get(0).toString());
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class CastTest {
 				new TypeFilter<>(CtVariableRead.class)).get(0);
 		assertEquals(1, a.getTypeCasts().size());
 		assertEquals("addConsumedAnnotationType(((java.lang.Class<A>) (x)))",
-				foo.getBody().getStatements().get(1).toString());
+				foo.getMyBody().getStatements().get(1).toString());
 	}
 
 	@Test

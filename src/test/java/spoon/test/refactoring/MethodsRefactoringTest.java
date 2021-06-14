@@ -252,7 +252,7 @@ public class MethodsRefactoringTest {
 			CtElement ele = exec;
 			if (exec instanceof CtLambda) {
 				//lambda is marked by annotation on the first statement of the lambda body.
-				List<CtStatement> stats = exec.getBody().getStatements();
+				List<CtStatement> stats = exec.getMyBody().getStatements();
 				if(!stats.isEmpty()) {
 					ele = stats.get(0);
 				}

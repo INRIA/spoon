@@ -321,7 +321,7 @@ public class ImportScannerTest {
 		}
 
 		//delete first statement of method m
-		type.getMethodsByName("m").get(0).getBody().getStatement(0).delete();
+		type.getMethodsByName("m").get(0).getMyBody().getStatement(0).delete();
 		//check that there is still javadoc comment which contains "List"
 		assertTrue(type.getMethodsByName("m").get(0).getComments().toString().contains("List"));
 		{

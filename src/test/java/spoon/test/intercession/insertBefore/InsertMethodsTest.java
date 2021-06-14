@@ -70,7 +70,7 @@ public class InsertMethodsTest {
 	public void testInsertBefore() {
 		CtMethod<Void> foo = (CtMethod<Void>) assignmentClass.getMethods().toArray()[0];
 
-		CtBlock<?> body = foo.getBody();
+		CtBlock<?> body = foo.getMyBody();
 		assertEquals(3, body.getStatements().size());
 
 		CtStatement s = body.getStatements().get(2);
@@ -89,7 +89,7 @@ public class InsertMethodsTest {
 	public void testInsertAfter() {
 		CtMethod<Void> foo = (CtMethod<Void>) assignmentClass.getMethods().toArray()[0];
 
-		CtBlock<?> body = foo.getBody();
+		CtBlock<?> body = foo.getMyBody();
 		assertEquals(3, body.getStatements().size());
 
 		CtStatement s = body.getStatements().get(2);

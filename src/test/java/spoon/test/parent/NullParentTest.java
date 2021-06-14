@@ -53,7 +53,7 @@ public class NullParentTest {
 	private <T extends CtElement> T get(Class<T> elemType) {
 		CtClass<Object> fooClass = factory.Class().get(Foo.class);
 		CtMethod nullParent = fooClass.getMethodsByName("nullParent").get(0);
-		return (T) nullParent.getBody().getElements(elemType::isInstance).get(0);
+		return (T) nullParent.getMyBody().getElements(elemType::isInstance).get(0);
 	}
 
 	@Test

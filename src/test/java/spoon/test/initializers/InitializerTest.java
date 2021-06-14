@@ -45,7 +45,7 @@ public class InitializerTest {
 		assertTrue(InternalClass.getModifiers().contains(ModifierKind.STATIC));
 		CtAnonymousExecutable staticBlock = type.getElements(new TypeFilter<>(CtAnonymousExecutable.class)).get(0);
 		assertTrue(staticBlock.getModifiers().contains(ModifierKind.STATIC));
-		assertEquals(1, staticBlock.getBody().getStatements().size());
+		assertEquals(1, staticBlock.getMyBody().getStatements().size());
 
 		// this fails: regression or known bug?
 		// RP: this look OK. Spoon adds the full path
@@ -76,7 +76,7 @@ public class InitializerTest {
 
 		// static initializer
 		CtAnonymousExecutable ex = type.getElements(new TypeFilter<>(CtAnonymousExecutable.class)).get(0);
-		assertEquals("x = 3", ex.getBody().getStatements().get(0).toString());
+		assertEquals("x = 3", ex.getMyBody().getStatements().get(0).toString());
 	}
 
 	@Test
@@ -91,9 +91,9 @@ public class InitializerTest {
 		CtAnonymousExecutable ex = ctClass.getElements(new TypeFilter<>(CtAnonymousExecutable.class)).get(0);
 		// we are indeed in autoimport
 		assertEquals("UnicodeUtil.UTF8Result temp = new UnicodeUtil.UTF8Result()",
-				ex.getBody().getStatements().get(0).toString());
+				ex.getMyBody().getStatements().get(0).toString());
 		assertEquals("temp.result = new byte[0]",
-				ex.getBody().getStatements().get(1).toString());
+				ex.getMyBody().getStatements().get(1).toString());
 		assertTrue(ImportTest.printByPrinter(ctClass).contains("UnicodeUtil.UTF8Result temp = new UnicodeUtil.UTF8Result()"));
 	}
 }

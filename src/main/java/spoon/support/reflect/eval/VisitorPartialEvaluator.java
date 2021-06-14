@@ -265,7 +265,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 	public void visitCtDo(CtDo doLoop) {
 		CtDo w = doLoop.clone();
 		w.setLoopingExpression(evaluate(doLoop.getLoopingExpression()));
-		w.setBody(evaluate(doLoop.getBody()));
+		w.setBody(evaluate(doLoop.getMyBody()));
 		setResult(w);
 	}
 
@@ -423,7 +423,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 			// (including superclasses)
 			if (executable != null && aType != null && invocation.getType() != null && execDeclaringType != null
 					&& execDeclaringType.isSubtypeOf(aType.getReference())) {
-				CtBlock<?> b = evaluate(executable.getBody());
+				CtBlock<?> b = evaluate(executable.getMyBody());
 				flowEnded = false;
 				CtStatement last = b.getStatements().get(b.getStatements().size() - 1);
 				if ((last instanceof CtReturn)) {
@@ -576,7 +576,7 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 			setResult(null);
 			return;
 		}
-		w.setBody(evaluate(whileLoop.getBody()));
+		w.setBody(evaluate(whileLoop.getMyBody()));
 		setResult(w);
 	}
 

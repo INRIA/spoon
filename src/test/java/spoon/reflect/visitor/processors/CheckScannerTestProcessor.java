@@ -55,12 +55,12 @@ public class CheckScannerTestProcessor extends AbstractProcessor<CtClass<?>> {
 		}
 
 		final CtMethod<?> visit = visits.get(0);
-		if (visit.getBody().getStatements().size() < 2) {
+		if (visit.getMyBody().getStatements().size() < 2) {
 			throw new AssertionError("You must have minimum 2 statements in the visit method to call enter and exit in visit" + theInterface.getSimpleName());
 		}
 
-		checkInvocation("enter", visit.getBody().getStatement(0));
-		checkInvocation("exit", visit.getBody().getLastStatement());
+		checkInvocation("enter", visit.getMyBody().getStatement(0));
+		checkInvocation("exit", visit.getMyBody().getLastStatement());
 	}
 
 	private void checkInvocation(String expected, CtStatement statement) {

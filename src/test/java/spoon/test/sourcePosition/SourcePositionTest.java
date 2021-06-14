@@ -85,7 +85,7 @@ public class SourcePositionTest {
 		 * from the return type of owner method
 		 */
 		CtType<?> type = ModelUtils.buildClass(Brambora.class);
-		CtInvocation<?> invocation = type.getMethodsByName("sourcePositionOfMyReturnTypeMustNotBeCopied").get(0).getBody().getStatement(0);
+		CtInvocation<?> invocation = type.getMethodsByName("sourcePositionOfMyReturnTypeMustNotBeCopied").get(0).getMyBody().getStatement(0);
 		CtExecutableReference<?> execRef = invocation.getExecutable();
 		CtTypeReference<?> typeOfReturnValueOfPrintln = execRef.getType();
 		assertEquals("void", typeOfReturnValueOfPrintln.getQualifiedName());

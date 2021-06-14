@@ -188,7 +188,7 @@ public class FilterTest {
 		assertTrue(expressions.get(1).getParent(new LineFilter()) instanceof CtLoop);
 
 		method = foo.getMethod("loopNoBody");
-		CtFor lastStatement = (CtFor) method.getBody().getLastStatement();
+		CtFor lastStatement = (CtFor) method.getMyBody().getLastStatement();
 		expressions = method.getElements(new LineFilter());
 		assertEquals(1, expressions.size());
 		assertEquals(lastStatement, lastStatement.getExpression().getParent(new LineFilter()));
@@ -1421,7 +1421,7 @@ public class FilterTest {
 		spoon.buildModel();
 
 		CtType<?> type = spoon.getFactory().Type().get(Foo.class);
-		CtStatement s = type.getMethodsByName("foo").get(0).getBody().getStatement(0);
+		CtStatement s = type.getMethodsByName("foo").get(0).getMyBody().getStatement(0);
 		assertEquals("int x = 3", s.toString());
 
 		class ContainFilter implements Filter {

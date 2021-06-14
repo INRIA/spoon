@@ -203,7 +203,7 @@ public class IncrementalLauncherTest {
 
 		CtType<?> b1 = getTypeByName(originalModel.getAllTypes(), "B");
 		CtMethod<?> method1 = b1.getMethodsByName("func").get(0);
-		CtStatement stmt1 = method1.getBody().getStatement(0);
+		CtStatement stmt1 = method1.getMyBody().getStatement(0);
 		CtAssignment<?, ?> assignment1 = (CtAssignment<?, ?>) stmt1;
 		CtExpression<?> lhs1 = assignment1.getAssigned();
 		assertTrue("int".equals(assignment1.getType().getSimpleName()));
@@ -223,7 +223,7 @@ public class IncrementalLauncherTest {
 
 		CtType<?> b2 = getTypeByName(newModel.getAllTypes(), "B");
 		CtMethod<?> method2 = b2.getMethodsByName("func").get(0);
-		CtStatement stmt2 = method2.getBody().getStatement(0);
+		CtStatement stmt2 = method2.getMyBody().getStatement(0);
 		CtAssignment<?, ?> assignment2 = (CtAssignment<?, ?>) stmt2;
 		CtExpression<?> lhs2 = assignment2.getAssigned();
 		assertTrue("float".equals(assignment2.getType().getSimpleName()));

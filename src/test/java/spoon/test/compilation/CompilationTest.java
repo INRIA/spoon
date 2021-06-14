@@ -177,7 +177,7 @@ public class CompilationTest {
 	@Test
 	public void testNewInstanceFromExistingClass() throws Exception {
 		CtClass<Bar> barCtType = (CtClass<Bar>) ModelUtils.buildClass(Bar.class);
-		CtReturn<Integer> m = barCtType.getMethod("m").getBody().getStatement(0);
+		CtReturn<Integer> m = barCtType.getMethod("m").getMyBody().getStatement(0);
 		// we cannot use Bar because it causes a runtime cast exception (2 different Bar from different classloader)
 		IBar bar = barCtType.newInstance();
 		int value = bar.m();

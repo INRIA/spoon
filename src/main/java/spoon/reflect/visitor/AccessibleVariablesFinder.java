@@ -125,7 +125,7 @@ public class AccessibleVariablesFinder {
 
 			@Override
 			public void visitCtMethod(CtMethod e) {
-				this.scan(e.getBody());
+				this.scan(e.getMyBody());
 				super.visitCtMethod(e);
 			}
 

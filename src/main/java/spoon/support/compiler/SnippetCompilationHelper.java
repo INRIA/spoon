@@ -194,7 +194,7 @@ public class SnippetCompilationHelper {
 
 		CtMethod<?> wrapper = c.getMethod(WRAPPER_METHOD_NAME);
 
-		List<CtStatement> statements = wrapper.getBody().getStatements();
+		List<CtStatement> statements = wrapper.getMyBody().getStatements();
 		CtStatement ret = statements.get(statements.size() - 1);
 
 		// Clean up

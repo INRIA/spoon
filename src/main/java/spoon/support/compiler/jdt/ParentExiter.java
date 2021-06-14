@@ -207,7 +207,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void scanCtLoop(CtLoop loop) {
-		if (loop.getBody() == null && child instanceof CtStatement) {
+		if (loop.getMyBody() == null && child instanceof CtStatement) {
 			CtStatement child = (CtStatement) this.child;
 			if (!(this.child instanceof CtBlock)) {
 				child = jdtTreeBuilder.getFactory().Code().createCtBlock(child);
@@ -289,11 +289,11 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtConstructor(CtConstructor<T> e) {
-		if (e.getBody() == null && child instanceof CtBlock) {
+		if (e.getMyBody() == null && child instanceof CtBlock) {
 			e.setBody((CtBlock) child);
 			return;
 		} else if (child instanceof CtStatement) {
-			visitCtBlock(e.getBody());
+			visitCtBlock(e.getMyBody());
 			return;
 		}
 		super.visitCtConstructor(e);
@@ -301,11 +301,11 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtMethod(CtMethod<T> e) {
-		if (e.getBody() == null && child instanceof CtBlock) {
+		if (e.getMyBody() == null && child instanceof CtBlock) {
 			e.setBody((CtBlock) child);
 			return;
 		} else if (child instanceof CtStatement) {
-			visitCtBlock(e.getBody());
+			visitCtBlock(e.getMyBody());
 			return;
 		} else if (child instanceof CtTypeAccess && hasChildEqualsToType(e)) {
 			e.setType(((CtTypeAccess) child).getAccessedType());
@@ -543,7 +543,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtDo(CtDo doLoop) {
-		if (doLoop.getBody() != null && child instanceof CtExpression && doLoop.getLoopingExpression() == null) {
+		if (doLoop.getMyBody() != null && child instanceof CtExpression && doLoop.getLoopingExpression() == null) {
 			doLoop.setLoopingExpression((CtExpression<Boolean>) child);
 			return;
 		}
@@ -925,11 +925,11 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (child instanceof CtBlock) {
 			final CtBlock<?> childBlock = (CtBlock<?>) this.child;
 			CtCatch lastCatcher = getLastCatcher(tryBlock);
-			if (lastCatcher != null && lastCatcher.getBody() == null) {
+			if (lastCatcher != null && lastCatcher.getMyBody() == null) {
 				lastCatcher.setBody(childBlock);
 				//we have finally all the information needed to build full position of CtCatch element
 				lastCatcher.setPosition(jdtTreeBuilder.getPositionBuilder().buildPosition(lastCatcher));
-			} else if (tryBlock.getBody() != null && tryBlock.getFinalizer() == null) {
+			} else if (tryBlock.getMyBody() != null && tryBlock.getFinalizer() == null) {
 				tryBlock.setFinalizer(childBlock);
 			} else {
 				tryBlock.setBody(childBlock);

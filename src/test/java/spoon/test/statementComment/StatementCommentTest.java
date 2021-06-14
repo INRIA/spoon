@@ -75,9 +75,9 @@ public class StatementCommentTest {
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m1 =  allstmt.getMethod("m1");
-		m1.getBody().getStatement(0).comment();
-		assertTrue(m1.getBody().getStatement(0) instanceof CtComment);
-		CtComment assertAsComment = ((CtComment) m1.getBody().getStatement(0));
+		m1.getMyBody().getStatement(0).comment();
+		assertTrue(m1.getMyBody().getStatement(0) instanceof CtComment);
+		CtComment assertAsComment = ((CtComment) m1.getMyBody().getStatement(0));
 		assertEquals(assertAsComment.getContent(), "assert 1 == 5;");
 	}
 
@@ -87,11 +87,11 @@ public class StatementCommentTest {
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m1 =  allstmt.getMethod("m1");
-		assertTrue(m1.getBody().getStatement(2) instanceof CtAssignment);
-		CtAssignment<?, ?> assignmentStatement = (CtAssignment<?, ?>) m1.getBody().getStatement(2);
+		assertTrue(m1.getMyBody().getStatement(2) instanceof CtAssignment);
+		CtAssignment<?, ?> assignmentStatement = (CtAssignment<?, ?>) m1.getMyBody().getStatement(2);
 		assignmentStatement.comment();
-		assertTrue(m1.getBody().getStatement(2) instanceof CtComment);
-		CtComment assignmentAsComment = ((CtComment) m1.getBody().getStatement(2));
+		assertTrue(m1.getMyBody().getStatement(2) instanceof CtComment);
+		CtComment assignmentAsComment = ((CtComment) m1.getMyBody().getStatement(2));
 		assertEquals(assignmentAsComment.getContent(), "r = 20;");
 	}
 	
@@ -102,11 +102,11 @@ public class StatementCommentTest {
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m1 =  allstmt.getMethod("m1");
-		assertTrue(m1.getBody().getStatement(4) instanceof CtBlock);
-		CtBlock<?> blockWithinBody = m1.getBody().getStatement(4);
+		assertTrue(m1.getMyBody().getStatement(4) instanceof CtBlock);
+		CtBlock<?> blockWithinBody = m1.getMyBody().getStatement(4);
 		blockWithinBody.comment();
-		assertTrue(m1.getBody().getStatement(4) instanceof CtComment);
-		CtComment blockAsComment = (CtComment) m1.getBody().getStatement(4);
+		assertTrue(m1.getMyBody().getStatement(4) instanceof CtComment);
+		CtComment blockAsComment = (CtComment) m1.getMyBody().getStatement(4);
 		assertEquals("{" + EOL  + 
 				"int j = 10;" + EOL  + 
 				"}", blockAsComment.getContent());
@@ -118,9 +118,9 @@ public class StatementCommentTest {
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m2 =  allstmt.getMethod("m2");
-		m2.getBody().comment();
+		m2.getMyBody().comment();
 		assertEquals("{" + EOL +
-				"}", m2.getBody().prettyprint());
+				"}", m2.getMyBody().prettyprint());
 	}
 	
 	@Test
@@ -130,8 +130,8 @@ public class StatementCommentTest {
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m1 =  allstmt.getMethod("m1");
-		m1.getBody().comment();
-		for(CtStatement stmt: m1.getBody().getStatements()) {
+		m1.getMyBody().comment();
+		for(CtStatement stmt: m1.getMyBody().getStatements()) {
 			assertTrue(stmt instanceof CtComment);
 		}
 		assertEquals("{" + EOL  + 
@@ -143,7 +143,7 @@ public class StatementCommentTest {
 				"    int j = 10;" + EOL  + 
 				"    }" + EOL  + 
 				"     */" + EOL  + 
-				"}", m1.getBody().prettyprint());
+				"}", m1.getMyBody().prettyprint());
 	}
 	
 	@Test(expected = UnsupportedOperationException.class)
@@ -152,8 +152,8 @@ public class StatementCommentTest {
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m5 =  allstmt.getMethod("m5");
-		assertTrue(m5.getBody().getStatement(2) instanceof CtSwitch);
-		CtSwitch<?> switchStmt = (CtSwitch<?>) m5.getBody().getStatement(2);
+		assertTrue(m5.getMyBody().getStatement(2) instanceof CtSwitch);
+		CtSwitch<?> switchStmt = (CtSwitch<?>) m5.getMyBody().getStatement(2);
 		CtCase<?> caseStmt = (CtCase<?>) switchStmt.getCases().get(1);
 		caseStmt.comment();
 	}
@@ -172,12 +172,12 @@ public class StatementCommentTest {
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m6 =  allstmt.getMethod("m6");
-		assertTrue(m6.getBody().getStatement(3) instanceof CtComment);
-		CtComment comment = (CtComment) m6.getBody().getStatement(3);
+		assertTrue(m6.getMyBody().getStatement(3) instanceof CtComment);
+		CtComment comment = (CtComment) m6.getMyBody().getStatement(3);
 		final String initialContent = comment.getContent();
 		comment.comment();
-		assertTrue(m6.getBody().getStatement(3) instanceof CtComment);
-		assertEquals(((CtComment) m6.getBody().getStatement(3)).getContent(), initialContent);
+		assertTrue(m6.getMyBody().getStatement(3) instanceof CtComment);
+		assertEquals(((CtComment) m6.getMyBody().getStatement(3)).getContent(), initialContent);
 	}
 	
 	@Test
@@ -187,11 +187,11 @@ public class StatementCommentTest {
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m4 =  allstmt.getMethod("m4");
-		assertTrue(m4.getBody().getStatement(0) instanceof CtIf);
-		CtIf ifStmt = (CtIf) m4.getBody().getStatement(0);
+		assertTrue(m4.getMyBody().getStatement(0) instanceof CtIf);
+		CtIf ifStmt = (CtIf) m4.getMyBody().getStatement(0);
 		ifStmt.comment();
-		assertTrue(m4.getBody().getStatement(0) instanceof CtComment);
-		CtComment ifAsComment = (CtComment) m4.getBody().getStatement(0);
+		assertTrue(m4.getMyBody().getStatement(0) instanceof CtComment);
+		CtComment ifAsComment = (CtComment) m4.getMyBody().getStatement(0);
 		assertEquals("if (5 > 6) {" + EOL  + 
 				"java.lang.System.out.println(\"Impossible!\");" + EOL  + 
 				"} else {" + EOL  + 
@@ -205,11 +205,11 @@ public class StatementCommentTest {
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m3 =  allstmt.getMethod("m3");
-		assertTrue(m3.getBody().getStatement(1) instanceof CtLocalVariable);
-		CtLocalVariable<?> locAsStmt = (CtLocalVariable<?>) m3.getBody().getStatement(1);
+		assertTrue(m3.getMyBody().getStatement(1) instanceof CtLocalVariable);
+		CtLocalVariable<?> locAsStmt = (CtLocalVariable<?>) m3.getMyBody().getStatement(1);
 		locAsStmt.comment();
-		assertTrue(m3.getBody().getStatement(1) instanceof CtComment);
-		CtComment comm = (CtComment) m3.getBody().getStatement(1);
+		assertTrue(m3.getMyBody().getStatement(1) instanceof CtComment);
+		CtComment comm = (CtComment) m3.getMyBody().getStatement(1);
 		assertEquals("int r = 30;", comm.getContent());
 	}
 	
@@ -220,13 +220,13 @@ public class StatementCommentTest {
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m6 =  allstmt.getMethod("m6");
-		assertTrue(m6.getBody().getStatement(2) instanceof CtLoop);
-		CtLoop loopAsStmt = m6.getBody().getStatement(2);
+		assertTrue(m6.getMyBody().getStatement(2) instanceof CtLoop);
+		CtLoop loopAsStmt = m6.getMyBody().getStatement(2);
 		loopAsStmt.comment();
-		assertTrue(m6.getBody().getStatement(2) instanceof CtComment);
+		assertTrue(m6.getMyBody().getStatement(2) instanceof CtComment);
 		assertEquals("for (int i = 0; i < 10; ++i) {" + EOL  + 
 				"java.lang.System.out.println(i);" + EOL  + 
-				"}", ((CtComment) m6.getBody().getStatement(2)).getContent());
+				"}", ((CtComment) m6.getMyBody().getStatement(2)).getContent());
 	}
 	
 	@Test
@@ -236,11 +236,11 @@ public class StatementCommentTest {
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m5 =  allstmt.getMethod("m5");
-		assertTrue(m5.getBody().getStatement(2) instanceof CtSwitch);
-		CtSwitch<?> switchStmt = (CtSwitch<?>) m5.getBody().getStatement(2);
+		assertTrue(m5.getMyBody().getStatement(2) instanceof CtSwitch);
+		CtSwitch<?> switchStmt = (CtSwitch<?>) m5.getMyBody().getStatement(2);
 		switchStmt.comment();
-		assertTrue(m5.getBody().getStatement(2) instanceof CtComment);
-		CtComment switchAsComment = (CtComment) m5.getBody().getStatement(2);
+		assertTrue(m5.getMyBody().getStatement(2) instanceof CtComment);
+		CtComment switchAsComment = (CtComment) m5.getMyBody().getStatement(2);
 		assertEquals("switch (t) {" + EOL +
 				"case 1 :" + EOL +
 				"java.lang.System.out.println(\"1\");" + EOL +
@@ -257,13 +257,13 @@ public class StatementCommentTest {
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m6 =  allstmt.getMethod("m6");
-		assertTrue(m6.getBody().getStatement(1) instanceof CtSynchronized);
-		CtSynchronized synchronizedAsStmt = (CtSynchronized) m6.getBody().getStatement(1);
+		assertTrue(m6.getMyBody().getStatement(1) instanceof CtSynchronized);
+		CtSynchronized synchronizedAsStmt = (CtSynchronized) m6.getMyBody().getStatement(1);
 		synchronizedAsStmt.comment();
-		assertTrue(m6.getBody().getStatement(1) instanceof CtComment);
+		assertTrue(m6.getMyBody().getStatement(1) instanceof CtComment);
 		assertEquals("synchronized(obj) {" + EOL  + 
 				"java.lang.System.out.println(\"Executing\");" + EOL  + 
-				"}", ((CtComment) m6.getBody().getStatement(1)).getContent());
+				"}", ((CtComment) m6.getMyBody().getStatement(1)).getContent());
 	}
 	
 	@Test
@@ -273,11 +273,11 @@ public class StatementCommentTest {
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m3 =  allstmt.getMethod("m3");
-		assertTrue(m3.getBody().getStatement(0) instanceof CtTry);
-		CtTry tryStmt = (CtTry) m3.getBody().getStatement(0);
+		assertTrue(m3.getMyBody().getStatement(0) instanceof CtTry);
+		CtTry tryStmt = (CtTry) m3.getMyBody().getStatement(0);
 		tryStmt.comment();
-		assertTrue(m3.getBody().getStatement(0) instanceof CtComment);
-		CtComment tryAsComment = m3.getBody().getStatement(0);
+		assertTrue(m3.getMyBody().getStatement(0) instanceof CtComment);
+		CtComment tryAsComment = m3.getMyBody().getStatement(0);
 		assertEquals("try {" + EOL  + 
 				"throw new java.lang.Exception();" + EOL  + 
 				"} catch (java.lang.Exception e) {" + EOL  + 
@@ -291,8 +291,8 @@ public class StatementCommentTest {
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m3 =  allstmt.getMethod("m3");
-		assertTrue(m3.getBody().getStatement(0) instanceof CtTry);
-		CtTry tryStmt = (CtTry) m3.getBody().getStatement(0);
+		assertTrue(m3.getMyBody().getStatement(0) instanceof CtTry);
+		CtTry tryStmt = (CtTry) m3.getMyBody().getStatement(0);
 		Iterator<CtCatch> it = tryStmt.getCatchers().iterator();
 		while(it.hasNext()) {
 			((CtCatchImpl) it.next()).comment();
@@ -305,10 +305,10 @@ public class StatementCommentTest {
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m3 =  allstmt.getMethod("m3");
-		assertTrue(m3.getBody().getStatement(2) instanceof CtUnaryOperator);
-		CtUnaryOperator<?> incrementStmt = (CtUnaryOperator) m3.getBody().getStatement(2);
+		assertTrue(m3.getMyBody().getStatement(2) instanceof CtUnaryOperator);
+		CtUnaryOperator<?> incrementStmt = (CtUnaryOperator) m3.getMyBody().getStatement(2);
 		incrementStmt.comment();
-		CtComment incrementComment = m3.getBody().getStatement(2);
+		CtComment incrementComment = m3.getMyBody().getStatement(2);
 		assertEquals("r++;", incrementComment.getContent());
 	}
 
@@ -319,11 +319,11 @@ public class StatementCommentTest {
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
 		CtMethod<?> m6 =  allstmt.getMethod("m6");
 		CtCodeSnippetStatement codeSnippet = getSpoonFactory().createCodeSnippetStatement("int j = 10");
-		m6.getBody().insertEnd(codeSnippet);
-		assertTrue(m6.getBody().getStatement(4) instanceof CtCodeSnippetStatement);
+		m6.getMyBody().insertEnd(codeSnippet);
+		assertTrue(m6.getMyBody().getStatement(4) instanceof CtCodeSnippetStatement);
 		codeSnippet.comment();
-		assertTrue(m6.getBody().getStatement(4) instanceof CtComment);
-		CtComment comment = (CtComment) m6.getBody().getStatement(4);
+		assertTrue(m6.getMyBody().getStatement(4) instanceof CtComment);
+		CtComment comment = (CtComment) m6.getMyBody().getStatement(4);
 		assertEquals("int j = 10;", comment.getContent());
 	}
 }

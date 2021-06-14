@@ -56,7 +56,7 @@ public class CtAnnotationMethodImpl<T> extends CtMethodImpl<T> implements CtAnno
 
 	@Override
 	@DerivedProperty
-	public CtBlock<T> getBody() {
+	public CtBlock<T> getMyBody() {
 		return null;
 	}
 

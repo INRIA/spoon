@@ -455,7 +455,7 @@ public class JDTCommentBuilder {
 					} else {
 						e.addComment(comment);
 					}
-				} else if (e.getBody() != null) {
+				} else if (e.getMyBody() != null) {
 					e.addComment(comment);
 				}
 			}
@@ -480,7 +480,7 @@ public class JDTCommentBuilder {
 				if (comment.getPosition().getLine() <= e.getPosition().getLine()) {
 					e.addComment(comment);
 				} else {
-					e.getBody().addComment(comment);
+					e.getMyBody().addComment(comment);
 				}
 			}
 
@@ -568,7 +568,7 @@ public class JDTCommentBuilder {
 	 */
 	static CtElement getBody(CtElement e) {
 		if (e instanceof CtBodyHolder) {
-			return ((CtBodyHolder) e).getBody();
+			return ((CtBodyHolder) e).getMyBody();
 		}
 		return null;
 	}

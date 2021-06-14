@@ -496,8 +496,8 @@ public class PositionBuilder {
 		//offset after last bracket before catch
 		int declarationStart = getEndOfLastTryBlock(tryElement, 1) + 1;
 		DeclarationSourcePosition paramPos = (DeclarationSourcePosition) catcher.getParameter().getPosition();
-		int bodyStart = catcher.getBody().getPosition().getSourceStart();
-		int bodyEnd = catcher.getBody().getPosition().getSourceEnd();
+		int bodyStart = catcher.getMyBody().getPosition().getSourceStart();
+		int bodyEnd = catcher.getMyBody().getPosition().getSourceEnd();
 		return catcher.getFactory().Core().createBodyHolderSourcePosition(
 				tryElement.getPosition().getCompilationUnit(),
 				//on the place of name there is catch variable
@@ -536,7 +536,7 @@ public class PositionBuilder {
 	 */
 	private int getEndOfLastTryBlock(CtTry tryElement, int negIdx) {
 		//offset where we can start to search for catch
-		int endOfLastBlock = tryElement.getBody().getPosition().getSourceEnd();
+		int endOfLastBlock = tryElement.getMyBody().getPosition().getSourceEnd();
 		if (tryElement.getCatchers().size() > negIdx) {
 			CtCatch prevCatcher = tryElement.getCatchers().get(tryElement.getCatchers().size() - 1 - negIdx);
 			endOfLastBlock = prevCatcher.getPosition().getSourceEnd();

@@ -59,7 +59,7 @@ public class ParameterTest {
 		launcher.buildModel();
 
 		CtMethod<?> ctMethod = launcher.getFactory().Type().get("Tacos").getMethodsByName("setStarRatings").get(0);
-		CtParameter ctParameter = ctMethod.getBody().getStatement(0).getElements(new TypeFilter<CtParameter>(CtParameter.class) {
+		CtParameter ctParameter = ctMethod.getMyBody().getStatement(0).getElements(new TypeFilter<CtParameter>(CtParameter.class) {
 			@Override
 			public boolean matches(CtParameter element) {
 				return "entryPair".equals(element.getSimpleName()) && super.matches(element);
@@ -67,7 +67,7 @@ public class ParameterTest {
 		}).get(0);
 		assertNotNull(ctParameter.getReference());
 
-		List<CtParameterReference> elements = ctMethod.getBody().getStatement(0).getElements(new TypeFilter<CtParameterReference>(CtParameterReference.class) {
+		List<CtParameterReference> elements = ctMethod.getMyBody().getStatement(0).getElements(new TypeFilter<CtParameterReference>(CtParameterReference.class) {
 			@Override
 			public boolean matches(CtParameterReference element) {
 				return "entryPair".equals(element.getSimpleName()) && super.matches(element);

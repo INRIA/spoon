@@ -501,11 +501,11 @@ public class LambdaTest {
 
 	private void assertHasExpressionBody(CtLambda<?> lambda) {
 		assertNotNull("Lambda has an expression for its body.", lambda.getExpression());
-		assertNull("Lambda don't have a list of statements (body) for its body", lambda.getBody());
+		assertNull("Lambda don't have a list of statements (body) for its body", lambda.getMyBody());
 	}
 
 	private void assertStatementBody(CtLambda<?> lambda) {
-		assertNotNull("Lambda has a body with statements.", lambda.getBody());
+		assertNotNull("Lambda has a body with statements.", lambda.getMyBody());
 		assertNull("Lambda don't have an expression for its body", lambda.getExpression());
 	}
 

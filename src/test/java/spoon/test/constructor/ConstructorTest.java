@@ -76,10 +76,10 @@ public class ConstructorTest {
 	@Test
 	public void testTransformationOnConstructorWithInsertBegin() {
 		final CtConstructor<?> ctConstructor = aClass.getElements(new TypeFilter<CtConstructor<?>>(CtConstructor.class)).get(0);
-		ctConstructor.getBody().insertBegin(factory.Code().createCodeSnippetStatement("int i = 0"));
+		ctConstructor.getMyBody().insertBegin(factory.Code().createCodeSnippetStatement("int i = 0"));
 
-		assertEquals(2, ctConstructor.getBody().getStatements().size());
-		assertEquals("super()", ctConstructor.getBody().getStatement(0).toString());
+		assertEquals(2, ctConstructor.getMyBody().getStatements().size());
+		assertEquals("super()", ctConstructor.getMyBody().getStatement(0).toString());
 
 		canBeBuilt("./target/spooned/spoon/test/constructor/testclasses/", 8);
 	}
@@ -88,12 +88,12 @@ public class ConstructorTest {
 	public void testTransformationOnConstructorWithInsertBefore() {
 		final CtConstructor<?> ctConstructor = aClass.getElements(new TypeFilter<CtConstructor<?>>(CtConstructor.class)).get(0);
 		try {
-			ctConstructor.getBody().getStatement(0).insertBefore(factory.Code().createCodeSnippetStatement("int i = 0"));
+			ctConstructor.getMyBody().getStatement(0).insertBefore(factory.Code().createCodeSnippetStatement("int i = 0"));
 			fail();
 		} catch (RuntimeException ignore) {
 		}
-		assertEquals(1, ctConstructor.getBody().getStatements().size());
-		assertEquals("super()", ctConstructor.getBody().getStatement(0).toString());
+		assertEquals(1, ctConstructor.getMyBody().getStatements().size());
+		assertEquals("super()", ctConstructor.getMyBody().getStatement(0).toString());
 	}
 
 	@Test
@@ -102,7 +102,7 @@ public class ConstructorTest {
 		CtConstructor<Object> constructor = aClass.getConstructors().iterator().next();
 		assertEquals("{" + System.lineSeparator()
 				+ "    enclosingInstance.super();" + System.lineSeparator()
-				+ "}", constructor.getBody().toString());
+				+ "}", constructor.getMyBody().toString());
 	}
 
 	@Test

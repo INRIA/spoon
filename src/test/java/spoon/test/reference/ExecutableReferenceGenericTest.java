@@ -288,13 +288,13 @@ public class ExecutableReferenceGenericTest {
 	}
 
 	private List<CtExecutableReference<?>> getCtConstructorsByCtConstructor(CtConstructor<?> aConstructor) {
-		if (aConstructor.getBody().getStatements().isEmpty()) {
+		if (aConstructor.getMyBody().getStatements().isEmpty()) {
 			return new ArrayList<>();
 		}
-		if (!(aConstructor.getBody().getStatement(0) instanceof CtInvocation)) {
+		if (!(aConstructor.getMyBody().getStatement(0) instanceof CtInvocation)) {
 			return new ArrayList<>();
 		}
-		final CtInvocation inv = aConstructor.getBody().getStatement(0);
+		final CtInvocation inv = aConstructor.getMyBody().getStatement(0);
 		if (!inv.getExecutable().getSimpleName().equals(CtExecutableReference.CONSTRUCTOR_NAME)) {
 			return new ArrayList<>();
 		}

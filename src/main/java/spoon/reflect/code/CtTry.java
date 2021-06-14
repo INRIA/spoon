@@ -58,7 +58,7 @@ public interface CtTry extends CtStatement, TemplateParameter<Void>, CtBodyHolde
 	 */
 	@Override
 	@PropertyGetter(role = BODY)
-	CtBlock<?> getBody();
+	CtBlock<?> getMyBody();
 
 	/**
 	 * Gets the <i>finalizer</i> block of this <code>try</code> (

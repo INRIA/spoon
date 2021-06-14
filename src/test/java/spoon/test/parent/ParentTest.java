@@ -112,10 +112,10 @@ public class ParentTest {
 		CtMethod<?> fooMethod = foo.getMethodsByName("foo").get(0);
 		assertEquals("foo", fooMethod.getSimpleName());
 
-		CtLocalVariable<?> localVar = (CtLocalVariable<?>) fooMethod.getBody()
+		CtLocalVariable<?> localVar = (CtLocalVariable<?>) fooMethod.getMyBody()
 				.getStatements().get(0);
 
-		CtAssignment<?,?> assignment = (CtAssignment<?,?>) fooMethod.getBody()
+		CtAssignment<?,?> assignment = (CtAssignment<?,?>) fooMethod.getMyBody()
 				.getStatements().get(1);
 
 
@@ -244,7 +244,7 @@ public class ParentTest {
 
 		CtMethod<Object> m = clazz.getMethod("m");
 		// get three = "" in one = two = three = "";
-		CtExpression statement = ((CtAssignment)((CtAssignment)m.getBody().getStatement(3)).getAssignment()).getAssignment();
+		CtExpression statement = ((CtAssignment)((CtAssignment)m.getMyBody().getStatement(3)).getAssignment()).getAssignment();
 		CtPackage ctPackage = statement.getParent(new TypeFilter<>(CtPackage.class));
 		assertEquals(Foo.class.getPackage().getName(), ctPackage.getQualifiedName());
 
@@ -256,7 +256,7 @@ public class ParentTest {
 					}
 				});
 		// the filter has to return one = two = three = ""
-		assertEquals(m.getBody().getStatement(3), ctStatement);
+		assertEquals(m.getMyBody().getStatement(3), ctStatement);
 
 		m = clazz.getMethod("internalClass");
 		CtStatement ctStatement1 = m.getElements(
@@ -359,7 +359,7 @@ public class ParentTest {
 			}
 
 			private void checkAddStrategy(CtMethod<?> element) {
-				final CtStatement statement = element.getBody().getStatement(0);
+				final CtStatement statement = element.getMyBody().getStatement(0);
 				if (!(statement instanceof CtIf)) {
 					fail("First statement should be an if to check the parameter of the setter." + element.getSignature() + " declared in " + element.getDeclaringType().getQualifiedName());
 				}
@@ -372,7 +372,7 @@ public class ParentTest {
 			private void checkSetStrategy(CtMethod<?> element) {
 				final CtTypeReference<?> type = element.getParameters().get(0).getType();
 				if (!COLLECTIONS.contains(type) && !(type instanceof CtArrayTypeReference)) {
-					CtInvocation<?> setParent = searchSetParent(element.getBody());
+					CtInvocation<?> setParent = searchSetParent(element.getMyBody());
 					if (setParent == null) {
 						return;
 					}

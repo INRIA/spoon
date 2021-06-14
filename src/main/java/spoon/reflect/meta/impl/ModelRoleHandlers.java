@@ -2302,7 +2302,7 @@ class ModelRoleHandlers {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, U> U getValue(T element) {
-			return ((U) ((Object) (castTarget(element).getBody())));
+			return ((U) ((Object) (castTarget(element).getMyBody())));
 		}
 
 		@Override

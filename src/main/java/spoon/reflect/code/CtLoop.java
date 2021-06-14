@@ -22,7 +22,7 @@ public interface CtLoop extends CtStatement, TemplateParameter<Void>, CtBodyHold
 	 */
 	@Override
 	@PropertyGetter(role = BODY)
-	CtStatement getBody();
+	CtStatement getMyBody();
 
 	@Override
 	CtLoop clone();

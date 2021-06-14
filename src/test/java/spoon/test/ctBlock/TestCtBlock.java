@@ -51,7 +51,7 @@ public class TestCtBlock {
 
 		CtMethod foo = methods.get(0);
 
-		CtBlock block = foo.getBody();
+		CtBlock block = foo.getMyBody();
 		CtStatement lastStatement = block.getLastStatement();
 
 		assertEquals("i++", lastStatement.toString());
@@ -75,7 +75,7 @@ public class TestCtBlock {
 
 		CtClass<?> toto = spoon.getFactory().Class().get(Toto.class);
 		CtMethod foo = toto.getMethodsByName("foo").get(0);
-		CtBlock block = foo.getBody();
+		CtBlock block = foo.getMyBody();
 		CtBlock originalBlock = block.clone();
 
 		assertEquals(4, block.getStatements().size());
@@ -101,7 +101,7 @@ public class TestCtBlock {
 
 		CtClass<?> toto = spoon.getFactory().Class().get(Toto.class);
 		CtMethod bar = toto.getMethodsByName("bar").get(0);
-		CtSwitch<?> ctSwitch = (CtSwitch) bar.getBody().getStatement(0);
+		CtSwitch<?> ctSwitch = (CtSwitch) bar.getMyBody().getStatement(0);
 
 		CtCase firstCase = ctSwitch.getCases().get(0);
 		CtCase originalFirstCase = firstCase.clone();

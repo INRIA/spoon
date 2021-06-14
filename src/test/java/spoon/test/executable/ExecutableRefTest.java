@@ -119,7 +119,7 @@ public class ExecutableRefTest {
 		assertEquals(1, methods.size());
 
 		CtMethod<?> ctMethod = methods.get(0);
-		CtBlock<?> ctBody = ctMethod.getBody();
+		CtBlock<?> ctBody = ctMethod.getMyBody();
 		assertNotNull(ctBody);
 
 		List<CtStatement> ctStatements = ctBody.getStatements();

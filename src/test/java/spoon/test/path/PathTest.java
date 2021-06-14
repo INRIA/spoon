@@ -154,7 +154,7 @@ public class PathTest {
 		// match the first statement of Foo.foo() method
 		equals(
 				new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.foo#body#statement[index=0]"),
-				factory.Package().get("spoon.test.path.testclasses").getType("Foo").getMethod("foo").getBody()
+				factory.Package().get("spoon.test.path.testclasses").getType("Foo").getMethod("foo").getMyBody()
 						.getStatement(0));
 
 		equals(new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.bar/CtParameter"),
@@ -239,16 +239,16 @@ public class PathTest {
 		List<CtElement> list = new LinkedList<>();
 		list.add(factory.getModel().getRootPackage());
 		equals(new CtPathStringBuilder().fromString(".spoon.test.path.testclasses.Foo.*#body#statement[index=0]"),
-				((CtClass) factory.Package().get("spoon.test.path.testclasses").getType("Foo")).getConstructor().getBody()
+				((CtClass) factory.Package().get("spoon.test.path.testclasses").getType("Foo")).getConstructor().getMyBody()
 						.getStatement(0),
-				((CtClass) factory.Package().get("spoon.test.path.testclasses").getType("Foo")).getConstructor(factory.Type().createReference(String.class)).getBody()
+				((CtClass) factory.Package().get("spoon.test.path.testclasses").getType("Foo")).getConstructor(factory.Type().createReference(String.class)).getMyBody()
 						.getStatement(0),
-				factory.Package().get("spoon.test.path.testclasses").getType("Foo").getMethod("foo").getBody()
+				factory.Package().get("spoon.test.path.testclasses").getType("Foo").getMethod("foo").getMyBody()
 						.getStatement(0),
 				factory.Package().get("spoon.test.path.testclasses").getType("Foo").getMethod("bar",
-						factory.Type().createReference(int.class), factory.Type().createReference(int.class)).getBody()
+						factory.Type().createReference(int.class), factory.Type().createReference(int.class)).getMyBody()
 						.getStatement(0),
-				factory.Package().get("spoon.test.path.testclasses").getType("Foo").getMethodsByName("methodWithArgs").get(0).getBody()
+				factory.Package().get("spoon.test.path.testclasses").getType("Foo").getMethodsByName("methodWithArgs").get(0).getMyBody()
 						.getStatement(0)
 		);
 	}
@@ -258,7 +258,7 @@ public class PathTest {
 		// contract: the path can still use index
 		CtType<?> fooClass = factory.Package().get("spoon.test.path.testclasses").getType("Foo");
 		CtMethod<Object> method = fooClass.getMethod("foo");
-		CtStatement ifStmt = ((CtIf) method.getBody()
+		CtStatement ifStmt = ((CtIf) method.getMyBody()
 				.getStatement(2)).getElseStatement();
 
 		//check that path with index 
@@ -272,7 +272,7 @@ public class PathTest {
 		CtType<?> fooClass = factory.Package().get("spoon.test.path.testclasses").getType("Foo");
 		CtPath path = new CtPathStringBuilder().fromString(".**/CtIf#else");
 		CtMethod<Object> method = fooClass.getMethod("foo");
-		CtStatement expected = ((CtIf) method.getBody()
+		CtStatement expected = ((CtIf) method.getMyBody()
 				.getStatement(2)).getElseStatement();
 		equals(path,
 				expected
@@ -373,7 +373,7 @@ public class PathTest {
 	@Test
 	public void testAmbiguousName() {
 		//contract: path fallbacks to index if name is ambiguous
-		CtInvocation<?> inv = factory.Type().get("spoon.test.path.testclasses.Foo").getMethodsByName("methodWithArgs").get(0).getBody().getStatement(1);
+		CtInvocation<?> inv = factory.Type().get("spoon.test.path.testclasses.Foo").getMethodsByName("methodWithArgs").get(0).getMyBody().getStatement(1);
 		{
 			CtTypeReference<?> argType = inv.getExecutable().getParameters().get(0);
 			CtPath path = argType.getPath();
@@ -398,7 +398,7 @@ public class PathTest {
 	@Test
 	public void testFieldOfArrayType() {
 		//contract: path works for fields with type String[]
-		CtInvocation<?> inv = factory.Type().get("spoon.test.path.testclasses.Foo").getMethodsByName("methodWithArgs").get(0).getBody().getStatement(0);
+		CtInvocation<?> inv = factory.Type().get("spoon.test.path.testclasses.Foo").getMethodsByName("methodWithArgs").get(0).getMyBody().getStatement(0);
 		CtTypeReference<?> argType = inv.getExecutable().getParameters().get(0);
 		CtPath path = argType.getPath();
 		assertEquals("#subPackage[name=spoon]#subPackage[name=test]#subPackage[name=path]#subPackage[name=testclasses]#containedType[name=Foo]#method[signature=methodWithArgs(java.lang.String[])]#body#statement[index=0]#executableRef#argumentType[name=String[]]", path.toString());

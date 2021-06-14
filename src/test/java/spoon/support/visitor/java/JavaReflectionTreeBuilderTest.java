@@ -618,7 +618,7 @@ public class JavaReflectionTreeBuilderTest {
 					((CtLocalVariable)
 						((CtConstructor)
 								caller.getTypeMembers().get(0)
-						).getBody().getStatement(2)
+						).getMyBody().getStatement(2)
 					).getType().getTypeDeclaration().getTypeMembers().get(0)
 				).getParameters().get(0));
 

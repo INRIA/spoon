@@ -69,7 +69,7 @@ public class IntercessionTest {
 								+ "}" + "};").compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-		CtBlock<?> body = foo.getBody();
+		CtBlock<?> body = foo.getMyBody();
 		assertEquals(1, body.getStatements().size());
 
 		// adding a new statement;
@@ -90,7 +90,7 @@ public class IntercessionTest {
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 		CtMethod<?> fooClone = foo.clone();
 		assertEquals(foo, fooClone);
-		CtBlock<?> body = foo.getBody();
+		CtBlock<?> body = foo.getMyBody();
 		assertEquals(2, body.getStatements().size());
 
 		// adding a new statement;
@@ -113,7 +113,7 @@ public class IntercessionTest {
 		CtConstructor<?> fooClone = foo.clone();
 		assertEquals(foo, fooClone);
 
-		CtBlock<?> body = foo.getBody();
+		CtBlock<?> body = foo.getMyBody();
 
 		// there is an implicit call to super()
 		assertEquals(1, body.getStatements().size());
@@ -148,10 +148,10 @@ public class IntercessionTest {
 								+ "};").compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-		CtBlock<?> body = foo.getBody();
+		CtBlock<?> body = foo.getMyBody();
 		assertEquals(1, body.getStatements().size());
 
-		CtIf ifStmt = (CtIf) foo.getBody().getStatements().get(0);
+		CtIf ifStmt = (CtIf) foo.getMyBody().getStatements().get(0);
 		String s = ifStmt.prettyprint().replace("\r", "");
 		assertEquals(ifCode, s);
 		CtBlock<?> r1 = ifStmt.getThenStatement();
@@ -181,7 +181,7 @@ public class IntercessionTest {
 				.compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-		CtBlock<?> body = foo.getBody();
+		CtBlock<?> body = foo.getMyBody();
 		assertEquals(3, body.getStatements().size());
 
 		CtStatement s = body.getStatements().get(2);
@@ -291,7 +291,7 @@ public class IntercessionTest {
 					// we don't check the contracts for unsettable setters
 					return;
 				}
-				final CtStatement statement = element.getBody().getStatement(0);
+				final CtStatement statement = element.getMyBody().getStatement(0);
 				if (!(statement instanceof CtIf)) {
 					fail(log(element, "First statement should be an if to check the parameter of the setter"));
 				}

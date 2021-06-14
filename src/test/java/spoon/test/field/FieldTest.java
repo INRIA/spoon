@@ -155,7 +155,7 @@ public class FieldTest {
 
 		assertEquals(1, methods.size());
 
-		CtReturn<?> returnExpression = methods.get(0).getBody().getStatement(0);
+		CtReturn<?> returnExpression = methods.get(0).getMyBody().getStatement(0);
 
 		CtFieldRead fieldRead = (CtFieldRead) returnExpression.getReturnedExpression();
 

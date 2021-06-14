@@ -25,7 +25,7 @@ import spoon.template.Template;
 public class LoggerTemplateProcessor<T> extends AbstractProcessor<CtMethod<T>> {
 	@Override
 	public boolean isToBeProcessed(CtMethod<T> candidate) {
-		return candidate.getBody() != null && !isSubOfTemplate(candidate);
+		return candidate.getMyBody() != null && !isSubOfTemplate(candidate);
 	}
 
 	private boolean isSubOfTemplate(CtMethod<T> candidate) {
@@ -34,7 +34,7 @@ public class LoggerTemplateProcessor<T> extends AbstractProcessor<CtMethod<T>> {
 
 	@Override
 	public void process(CtMethod<T> element) {
-		final CtBlock log = new LoggerTemplate(element.getDeclaringType().getSimpleName(), element.getSimpleName(), element.getBody()).apply(element.getDeclaringType());
+		final CtBlock log = new LoggerTemplate(element.getDeclaringType().getSimpleName(), element.getSimpleName(), element.getMyBody()).apply(element.getDeclaringType());
 		element.setBody(log);
 	}
 }

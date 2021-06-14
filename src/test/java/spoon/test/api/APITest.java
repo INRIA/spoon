@@ -389,7 +389,7 @@ public class APITest {
 				if (!isSubtypeof) {
 					return false;
 				}
-				return element.getSimpleName().startsWith("set") && element.getDeclaringType().getSimpleName().startsWith("Ct") && element.getBody() != null;
+				return element.getSimpleName().startsWith("set") && element.getDeclaringType().getSimpleName().startsWith("Ct") && element.getMyBody() != null;
 			}
 		}
 		class CheckNotNullToSetParentMatcher extends CtElementImpl {
@@ -421,12 +421,12 @@ public class APITest {
 
 		// Template matcher.
 		CtClass<CheckNotNullToSetParentMatcher> matcherCtClass = launcher.getFactory().Class().get(CheckNotNullToSetParentMatcher.class);
-		CtIf templateRoot = matcherCtClass.getMethod("matcher").getBody().getStatement(0);
+		CtIf templateRoot = matcherCtClass.getMethod("matcher").getMyBody().getStatement(0);
 
 		final List<CtMethod<?>> setters = Query.getElements(launcher.getFactory(), new SetterMethodWithoutCollectionsFilter(launcher.getFactory()));
 		assertTrue("Number of setters found null", !setters.isEmpty());
 
-		for (CtStatement statement : setters.stream().map((Function<CtMethod<?>, CtStatement>) ctMethod -> ctMethod.getBody().getStatement(0)).collect(Collectors.toList())) {
+		for (CtStatement statement : setters.stream().map((Function<CtMethod<?>, CtStatement>) ctMethod -> ctMethod.getMyBody().getStatement(0)).collect(Collectors.toList())) {
 
 			// First statement should be a condition to protect the setter of the parent.
 			assertTrue("Check the method " + statement.getParent(CtMethod.class).getSignature() + " in the declaring class " + statement.getParent(CtType.class).getQualifiedName(), statement instanceof CtIf);
@@ -444,7 +444,7 @@ public class APITest {
 		assertEquals("A", l.getSimpleName());
 		assertEquals(1, l.getMethods().size());
 		assertEquals("m", l.getMethodsByName("m").get(0).getSimpleName());
-		assertEquals("System.out.println(\"yeah\")", l.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
+		assertEquals("System.out.println(\"yeah\")", l.getMethodsByName("m").get(0).getMyBody().getStatement(0).toString());
 	}
 
 	@Test

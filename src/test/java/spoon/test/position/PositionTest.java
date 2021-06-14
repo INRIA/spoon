@@ -220,11 +220,11 @@ public class PositionTest {
 			assertEquals("List<? extends List<?>>", contentAtPosition(classContent, fieldType.getPosition()));
 		}
 		{
-			CtReturn<?> retStmt = foo.getMethodsByName("m1").get(0).getBody().getStatement(0);
+			CtReturn<?> retStmt = foo.getMethodsByName("m1").get(0).getMyBody().getStatement(0);
 			assertEquals("o instanceof List<?>", contentAtPosition(classContent, retStmt.getReturnedExpression().getPosition()));
 		}
 		{
-			CtReturn<?> retStmt = foo.getMethodsByName("m2").get(0).getBody().getStatement(0);
+			CtReturn<?> retStmt = foo.getMethodsByName("m2").get(0).getMyBody().getStatement(0);
 			assertEquals("false || o instanceof List<?>", contentAtPosition(classContent, retStmt.getReturnedExpression().getPosition()));
 		}
 		{
@@ -341,7 +341,7 @@ public class PositionTest {
 		assertEquals("field2", contentAtPosition(classContent, position2.getNameStart(), position2.getNameEnd()));
 		assertEquals("", contentAtPosition(classContent, position2.getModifierSourceStart(), position2.getModifierSourceEnd()));
 
-		CtAssignment m = foo.getMethod("m").getBody().getStatement(0);
+		CtAssignment m = foo.getMethod("m").getMyBody().getStatement(0);
 		CtFieldAccess assigned = (CtFieldAccess) m.getAssigned();
 		SourcePosition position3 = assigned.getPosition();
 		assertEquals(13, position3.getLine());
@@ -545,7 +545,7 @@ public class PositionTest {
 		String classContent = getClassContent(foo);
 
 		CtMethod<?> method1 = foo.getMethodsByName("m").get(0);
-		CtBlock<?> body = method1.getBody();
+		CtBlock<?> body = method1.getMyBody();
 		SourcePosition positionBody = body.getPosition();
 
 		assertEquals(7, positionBody.getLine());
@@ -630,7 +630,7 @@ public class PositionTest {
 				+ "\t\t\t\tcount ++;\n"
 				+ "\t\t\t}", contentAtPosition(classContent, positionFor));
 
-		SourcePosition positionReturn = method1.getBody().getStatement(3).getPosition();
+		SourcePosition positionReturn = method1.getMyBody().getStatement(3).getPosition();
 
 		assertEquals(22, positionReturn.getLine());
 		assertEquals(22, positionReturn.getEndLine());
@@ -682,7 +682,7 @@ public class PositionTest {
 		CtClass<Foo> aClass = (CtClass<Foo>) buildClass(Foo.class);
 		CtConstructor<Foo> defaultConstructor = aClass.getConstructor();
 		assertEquals(SourcePosition.NOPOSITION, defaultConstructor.getPosition());
-		CtStatement implicitSuperCall = defaultConstructor.getBody().getStatement(0);
+		CtStatement implicitSuperCall = defaultConstructor.getMyBody().getStatement(0);
 		assertTrue(implicitSuperCall.isImplicit());
 		assertEquals(SourcePosition.NOPOSITION, implicitSuperCall.getPosition());
 	}
@@ -763,7 +763,7 @@ public class PositionTest {
 		final CtType<?> foo = buildClass(AnnonymousClassNewIface.class);
 		String classContent = getClassContent(foo);
 
-		CtLocalVariable<?> localVar = (CtLocalVariable<?>) foo.getMethodsByName("m").get(0).getBody().getStatement(0);
+		CtLocalVariable<?> localVar = (CtLocalVariable<?>) foo.getMethodsByName("m").get(0).getMyBody().getStatement(0);
 		CtNewClass<?> newClass = (CtNewClass<?>) localVar.getDefaultExpression();
 		CtClass<?> annonClass = newClass.getAnonymousClass();
 		BodyHolderSourcePosition bhsp = (BodyHolderSourcePosition) annonClass.getPosition();
@@ -970,7 +970,7 @@ public class PositionTest {
 		//contract: the expression including type casts has correct position which includes all brackets too
 		final CtType<?> foo = buildClass(Expressions.class);
 		String classContent = getClassContent(foo);
-		List<CtInvocation<?>> statements = (List) foo.getMethodsByName("method").get(0).getBody().getStatements();
+		List<CtInvocation<?>> statements = (List) foo.getMethodsByName("method").get(0).getMyBody().getStatements();
 
 		int idx = 0;
 		assertEquals("\"x\"", contentAtPosition(classContent, statements.get(idx++).getArguments().get(0).getPosition()));
@@ -1016,7 +1016,7 @@ public class PositionTest {
 		//contract: check the catch position
 		final CtType<?> foo = buildClass(CatchPosition.class);
 		String classContent = getClassContent(foo);
-		CtTry tryStatement = (CtTry) foo.getMethodsByName("method").get(0).getBody().getStatement(0);
+		CtTry tryStatement = (CtTry) foo.getMethodsByName("method").get(0).getMyBody().getStatement(0);
 		{
 			CtCatch catcher = tryStatement.getCatchers().get(0);
 			CtCatchVariable<?> catchVar = catcher.getParameter();
@@ -1096,7 +1096,7 @@ public class PositionTest {
 		final CtType<?> foo = buildClass(FooSwitch.class);
 		
 		String classContent = getClassContent(foo);
-		CtSwitch<?> switchStatement = foo.getMethodsByName("m1").get(0).getBody().getStatement(0);
+		CtSwitch<?> switchStatement = foo.getMethodsByName("m1").get(0).getMyBody().getStatement(0);
 		int caseIdx = 0;
 		{
 			CtCase<?> caseStmt = switchStatement.getCases().get(caseIdx++);
@@ -1133,7 +1133,7 @@ public class PositionTest {
 		final CtType<?> foo = buildClass(FooForEach.class);
 		
 		String classContent = getClassContent(foo);
-		List<CtForEach> stmts = (List) foo.getMethodsByName("m").get(0).getBody().getStatements();
+		List<CtForEach> stmts = (List) foo.getMethodsByName("m").get(0).getMyBody().getStatements();
 		int caseIdx = 0;
 		{
 			CtForEach forEach = stmts.get(caseIdx++);
@@ -1192,7 +1192,7 @@ public class PositionTest {
 		final Factory build = build(FooLabel.class);
 		final CtType<FooLabel> foo = build.Type().get(FooLabel.class);
 		String classContent = getClassContent(foo);
-		List<CtStatement> stmts = foo.getMethodsByName("m").get(0).getBody().getStatements();
+		List<CtStatement> stmts = foo.getMethodsByName("m").get(0).getMyBody().getStatements();
 		int idx = 0;
 		assertEquals("label1: while(x) {}", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
 		assertEquals("label2: getClass();", contentAtPosition(classContent, stmts.get(idx++).getPosition()));
@@ -1211,21 +1211,21 @@ public class PositionTest {
 		final CtType<FooLabel> foo = build.Type().get(FooLabel.class);
 		String classContent = getClassContent(foo);
 		{
-			CtStatement stmt = foo.getMethodsByName("m2").get(0).getBody().getStatement(0);
+			CtStatement stmt = foo.getMethodsByName("m2").get(0).getMyBody().getStatement(0);
 			assertTrue(stmt instanceof CtBlock);
 			assertFalse(stmt.isImplicit());
 			assertEquals("label1: {label2: while(x);}", contentAtPosition(classContent, stmt.getPosition()));
 			assertEquals("label2: while(x);", contentAtPosition(classContent, ((CtBlock) stmt).getStatement(0).getPosition()));
 		}
 		{
-			CtStatement stmt = foo.getMethodsByName("m2").get(0).getBody().getStatement(1);
+			CtStatement stmt = foo.getMethodsByName("m2").get(0).getMyBody().getStatement(1);
 			assertTrue(stmt instanceof CtBlock);
 			assertTrue(stmt.isImplicit());
 			assertEquals("label1: label2: while(x);", contentAtPosition(classContent, stmt.getPosition()));
 			assertEquals("label2: while(x);", contentAtPosition(classContent, ((CtBlock) stmt).getStatement(0).getPosition()));
 		}
 		{
-			CtStatementList stmts = ((CtSwitch<?>) foo.getMethodsByName("m5").get(0).getBody().getStatement(0)).getCases().get(0);
+			CtStatementList stmts = ((CtSwitch<?>) foo.getMethodsByName("m5").get(0).getMyBody().getStatement(0)).getCases().get(0);
 
 			CtStatement labelledEmtpyStatement = stmts.getStatement(0);
 			assertTrue(labelledEmtpyStatement instanceof CtBlock);
@@ -1238,12 +1238,12 @@ public class PositionTest {
 			assertEquals("laval3: label1: label2: while(true);", contentAtPosition(classContent, multiLatbelledStatement.getPosition()));
 		}
 		{
-			CtWhile stmt1 = (CtWhile) foo.getMethodsByName("m6").get(0).getBody().getStatement(0);
+			CtWhile stmt1 = (CtWhile) foo.getMethodsByName("m6").get(0).getMyBody().getStatement(0);
 			assertEquals("labelW", stmt1.getLabel());
-			CtTry stmt2 = ((CtBlock) stmt1.getBody()).getStatement(0);
+			CtTry stmt2 = ((CtBlock) stmt1.getMyBody()).getStatement(0);
 			assertNull(stmt2.getLabel());
 			assertEquals("try { label2: while(true); } finally {}", contentAtPosition(classContent, stmt2.getPosition()));
-			CtWhile stmt3 = stmt2.getBody().getStatement(0);
+			CtWhile stmt3 = stmt2.getMyBody().getStatement(0);
 			assertEquals("label2", stmt3.getLabel());
 			assertEquals("label2: while(true);", contentAtPosition(classContent, stmt3.getPosition()));
 		}
@@ -1319,7 +1319,7 @@ public class PositionTest {
 		}, FooField.class);
 		String classContent = getClassContent(foo);
 		
-		CtAssignment<?, ?> assignment =  (CtAssignment<?, ?>) foo.getMethodsByName("m").get(0).getBody().getStatements().get(0);
+		CtAssignment<?, ?> assignment =  (CtAssignment<?, ?>) foo.getMethodsByName("m").get(0).getMyBody().getStatements().get(0);
 		CtFieldWrite<?> fieldWrite = (CtFieldWrite<?>) assignment.getAssigned();
 		assertEquals("FooField.f.field2", contentAtPosition(classContent, fieldWrite.getPosition()));
 		CtFieldRead<?> fieldRead = (CtFieldRead<?>) fieldWrite.getTarget();
@@ -1427,7 +1427,7 @@ public class PositionTest {
 
 		String classContent = getClassContent(foo);
 
-		CtReturn<?> retStmt = (CtReturn<?>) foo.getMethodsByName("m").get(0).getBody().getStatement(0);
+		CtReturn<?> retStmt = (CtReturn<?>) foo.getMethodsByName("m").get(0).getMyBody().getStatement(0);
 		CtLambda<?> lambdaExpr = (CtLambda<?>) retStmt.getReturnedExpression();
 		CtParameter<?> param = lambdaExpr.getParameters().get(0);
 		assertEquals("i", contentAtPosition(classContent, param.getPosition()));

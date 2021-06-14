@@ -122,7 +122,7 @@ public class TestSniperPrinter {
 	@Test
 	public void testPrintInsertedThrow() {
 		testSniper(Throw.class.getName(), type -> {
-			CtConstructorCall<?> ctConstructorCall = (CtConstructorCall<?>) type.getMethodsByName("foo").get(0).getBody().getStatements().get(0);
+			CtConstructorCall<?> ctConstructorCall = (CtConstructorCall<?>) type.getMethodsByName("foo").get(0).getMyBody().getStatements().get(0);
 			CtThrow ctThrow = type.getFactory().createCtThrow(ctConstructorCall.toString());
 			ctConstructorCall.replace(ctThrow);
 		}, (type, printed) -> {
@@ -139,7 +139,7 @@ public class TestSniperPrinter {
 	@Test
 	public void testPrintReplacementOfInvocation() {
 		testSniper(InvocationReplacement.class.getName(), type -> {
-			CtLocalVariable<?> localVariable = (CtLocalVariable<?>) type.getMethodsByName("main").get(0).getBody().getStatements().get(0);
+			CtLocalVariable<?> localVariable = (CtLocalVariable<?>) type.getMethodsByName("main").get(0).getMyBody().getStatements().get(0);
 			CtInvocation<?> invocation = (CtInvocation<?>) localVariable.getAssignment();
 			CtExpression<?> prevTarget = invocation.getTarget();
 			CtCodeSnippetExpression<?> newTarget = type.getFactory().Code().createCodeSnippetExpression("Arrays");
@@ -262,7 +262,7 @@ public class TestSniperPrinter {
 		//contract: sniper print after remove of last statement
 		testSniper(spoon.test.prettyprinter.testclasses.Simple.class.getName(), type -> {
 			//delete first parameter of method `andSomeOtherMethod`
-			type.getMethodsByName("andSomeOtherMethod").get(0).getBody().getStatements().get(1).delete();
+			type.getMethodsByName("andSomeOtherMethod").get(0).getMyBody().getStatements().get(1).delete();
 		}, (type, printed) -> {
 			assertIsPrintedWithExpectedChanges(type, printed, "\\s*System.out.println\\(\"bbb\"\\);", "");
 		});
@@ -451,12 +451,12 @@ public class TestSniperPrinter {
 		Consumer<CtType<?>> addLocalVariableAtTopOfMethod = type -> {
 			Factory factory = type.getFactory();
 			CtMethod<?> method = type.getMethods().stream()
-					.filter(m -> !m.getBody().getStatements().isEmpty())
+					.filter(m -> !m.getMyBody().getStatements().isEmpty())
 					.findFirst()
 					.get();
 			CtLocalVariable<?> localVar = factory.createLocalVariable(
 					factory.Type().INTEGER_PRIMITIVE, "localVar", factory.createCodeSnippetExpression("2"));
-			method.getBody().addStatement(0, localVar);
+			method.getMyBody().addStatement(0, localVar);
 		};
 
 		final String expectedVariableSource = "int localVar = 2;";
@@ -597,7 +597,7 @@ public class TestSniperPrinter {
 		Consumer<CtType<?>> addElements = type -> {
 		    Factory fact = type.getFactory();
 		    fact.createField(type, new HashSet<>(), fact.Type().INTEGER_PRIMITIVE, "z", fact.createLiteral(3));
-		    type.getMethod("sum").getBody()
+		    type.getMethod("sum").getMyBody()
 					.addStatement(0, fact.createCodeSnippetStatement("System.out.println(z);"));
 		};
 		BiConsumer<CtType<?>, String> assertTabs = (type, result) -> {
@@ -666,7 +666,7 @@ public class TestSniperPrinter {
 
 		Consumer<CtType<?>> addNestedOperator = type -> {
 			CtMethod<?> method = type.getMethodsByName("main").get(0);
-			method.getBody().addStatement(nestedOps);
+			method.getMyBody().addStatement(nestedOps);
 		};
 		BiConsumer<CtType<?>, String> assertCorrectlyPrinted =
 				(type, result) -> assertThat(result, containsString(declaration));

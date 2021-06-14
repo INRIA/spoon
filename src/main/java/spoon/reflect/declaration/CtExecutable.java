@@ -45,7 +45,7 @@ public interface CtExecutable<R> extends CtNamedElement, CtTypedElement<R>, CtBo
 	 * Gets the body expression.
 	 */
 	@Override
-	CtBlock<R> getBody();
+	CtBlock<R> getMyBody();
 
 	/**
 	 * Gets the parameters list.

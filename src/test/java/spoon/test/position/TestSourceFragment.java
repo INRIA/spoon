@@ -224,9 +224,9 @@ public class TestSourceFragment {
 		final CtType<?> foo = f.Type().get(FooSourceFragments.class);
 
 		// contract: the fragment returned by getOriginalSourceFragment are correct
-		checkElementFragments(foo.getMethodsByName("m1").get(0).getBody().getStatement(0),
+		checkElementFragments(foo.getMethodsByName("m1").get(0).getMyBody().getStatement(0),
 				"if", "(", "x > 0", ")", "{this.getClass();}", "else", "{/*empty*/}");
-		checkElementFragments(foo.getMethodsByName("m2").get(0).getBody().getStatement(0),
+		checkElementFragments(foo.getMethodsByName("m2").get(0).getMyBody().getStatement(0),
 				"/*c0*/", " ", "if", "  ", "/*c1*/", "\t", "(", " ", "//c2", "\n\t\t\t\t", "x > 0", " ", "/*c3*/", " ", ")", " ", "/*c4*/", " ", "{ \n" + 
 						"			this.getClass();\n" + 
 						"		}", " ", "/*c5*/ else /*c6*/ {\n" + 
@@ -241,10 +241,10 @@ public class TestSourceFragment {
 				" ", "T", " ", "m3", "(", group("U param", ",", " ", "@Deprecated int p2"), ")", " ", "{\n" + 
 						"		return null;\n" + 
 						"	}");
-		checkElementFragments(foo.getMethodsByName("m4").get(0).getBody().getStatement(0),"label",":"," ", "while", "(", "true", ")", ";");
+		checkElementFragments(foo.getMethodsByName("m4").get(0).getMyBody().getStatement(0),"label",":"," ", "while", "(", "true", ")", ";");
 
-		checkElementFragments(foo.getMethodsByName("m5").get(0).getBody().getStatement(0),"f", " ", "=", " ", "7.2", ";");
-		checkElementFragments(((CtAssignment)foo.getMethodsByName("m5").get(0).getBody().getStatement(0)).getAssignment(),"7.2");
+		checkElementFragments(foo.getMethodsByName("m5").get(0).getMyBody().getStatement(0),"f", " ", "=", " ", "7.2", ";");
+		checkElementFragments(((CtAssignment)foo.getMethodsByName("m5").get(0).getMyBody().getStatement(0)).getAssignment(),"7.2");
 				 
 	}
 	
@@ -312,7 +312,7 @@ public class TestSourceFragment {
 		
 		final CtType<?> foo = f.Type().get(FooField.class);
 		
-		CtAssignment<?, ?> assignment =  (CtAssignment<?, ?>) foo.getMethodsByName("m").get(0).getBody().getStatements().get(0);
+		CtAssignment<?, ?> assignment =  (CtAssignment<?, ?>) foo.getMethodsByName("m").get(0).getMyBody().getStatements().get(0);
 		CtFieldWrite<?> fieldWrite = (CtFieldWrite<?>) assignment.getAssigned();
 		CtFieldReference<?> fieldRef = fieldWrite.getVariable();
 		CtFieldRead<?> fieldRead = (CtFieldRead<?>) fieldWrite.getTarget();
@@ -337,7 +337,7 @@ public class TestSourceFragment {
 		//contract: SourceFragments of constructor call is as expected
 		final CtType<?> type = ModelUtils.buildClass(NewArrayList.class);
 		
-		CtConstructorCall<?> constCall =  (CtConstructorCall<?>) type.getMethodsByName("m").get(0).getBody().getStatements().get(0);
+		CtConstructorCall<?> constCall =  (CtConstructorCall<?>) type.getMethodsByName("m").get(0).getMyBody().getStatements().get(0);
 		//new ArrayList<>();
 		ElementSourceFragment constCallSF = constCall.getOriginalSourceFragment();
 		List<SourceFragment> children = constCallSF.getChildrenFragments();
@@ -360,7 +360,7 @@ public class TestSourceFragment {
 	public void testSourceFragmentsOfNewAnnonymousClass() throws Exception {
 		//contract: it is possible to build source fragment of new anonymous class
 		final CtType<?> type = ModelUtils.buildClass(AnnonymousClassNewIface.class);
-		CtLocalVariable<?> locVar =  (CtLocalVariable<?>) type.getMethodsByName("m").get(0).getBody().getStatements().get(0);
+		CtLocalVariable<?> locVar =  (CtLocalVariable<?>) type.getMethodsByName("m").get(0).getMyBody().getStatements().get(0);
 		CtNewClass<?> newClass = (CtNewClass<?>) locVar.getDefaultExpression();
 		{
 			ElementSourceFragment newClassSF = newClass.getOriginalSourceFragment();

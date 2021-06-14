@@ -83,9 +83,9 @@ public class ReplaceScanner extends CtScanner {
 		Factory factory = element.getFactory();
 		CtMethod<T> clone = element.clone();
 		factory.Annotation().annotate(clone, Override.class);
-		clone.getBody().getStatements().clear();
-		for (int i = 1; i < element.getBody().getStatements().size() - 1; i++) {
-			CtInvocation inv = element.getBody().getStatement(i);
+		clone.getMyBody().getStatements().clear();
+		for (int i = 1; i < element.getMyBody().getStatements().size() - 1; i++) {
+			CtInvocation inv = element.getMyBody().getStatement(i);
 			List<CtExpression<?>> invArgs = new ArrayList<>(inv.getArguments());
 			if (invArgs.size() <= 1) {
 				throw new RuntimeException("You forget the role argument in line " + i + " of method " + element.getSimpleName() + " from " + element.getDeclaringType().getQualifiedName());
@@ -103,7 +103,7 @@ public class ReplaceScanner extends CtScanner {
 			}
 			Class actualClass = getter.getType().getActualClass();
 			CtInvocation<?> invocation = createInvocation(factory, element, invArgs, getter, actualClass);
-			clone.getBody().addStatement(invocation);
+			clone.getMyBody().addStatement(invocation);
 		}
 		target.addMethod(clone);
 	}
@@ -213,7 +213,7 @@ public class ReplaceScanner extends CtScanner {
 
 	private CtParameter<?> updateConstructor(CtClass listener, CtTypeReference type) {
 		final CtConstructor ctConstructor = (CtConstructor) listener.getConstructors().toArray(new CtConstructor[listener.getConstructors().size()])[0];
-		CtAssignment assign = (CtAssignment) ctConstructor.getBody().getStatement(1);
+		CtAssignment assign = (CtAssignment) ctConstructor.getMyBody().getStatement(1);
 		CtThisAccess fieldAccess = (CtThisAccess) ((CtFieldAccess) assign.getAssigned()).getTarget();
 		((CtTypeAccess) fieldAccess.getTarget()).getAccessedType().setImplicit(true);
 		final CtParameter<?> aParameter = (CtParameter<?>) ctConstructor.getParameters().get(0);

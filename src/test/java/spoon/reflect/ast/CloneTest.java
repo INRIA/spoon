@@ -197,7 +197,7 @@ public class CloneTest {
 		assertEquals("cCopy", methodClone.getSimpleName());
 
 		// useful for debug
-		methodClone.getBody().insertBegin(l.getFactory().createCodeSnippetStatement("// debug info"));
+		methodClone.getMyBody().insertBegin(l.getFactory().createCodeSnippetStatement("// debug info"));
 
 		CtExecutableReference reference = methodClone.getElements(new TypeFilter<>(CtExecutableReference.class)).get(0);
 		// all references have been updated

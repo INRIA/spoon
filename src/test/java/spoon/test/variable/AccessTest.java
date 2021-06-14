@@ -227,7 +227,7 @@ public class AccessTest {
 						+ " k++;" //
 						+ "}};").compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
-		assertEquals("(i++).toString()", foo.getBody().getStatement(1).toString());
-		assertEquals("k++", foo.getBody().getStatement(3).toString());
+		assertEquals("(i++).toString()", foo.getMyBody().getStatement(1).toString());
+		assertEquals("k++", foo.getMyBody().getStatement(3).toString());
 	}
 }

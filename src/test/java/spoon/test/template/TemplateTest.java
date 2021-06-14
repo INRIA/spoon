@@ -167,7 +167,7 @@ public class TemplateTest {
 		CtMethod<?> addedMethod2 = subc.getElements(
 				new NamedElementFilter<>(CtMethod.class,"toBeOverriden")).get(0);
 		assertEquals("toBeOverriden", addedMethod2.getSimpleName());
-		assertEquals("super.toBeOverriden()", addedMethod2.getBody()
+		assertEquals("super.toBeOverriden()", addedMethod2.getMyBody()
 				.getStatements().get(0).toString());
 		elementToGeneratedByMember.put(addedMethod2, "#toBeOverriden");
 
@@ -193,40 +193,40 @@ public class TemplateTest {
 		assertEquals("{@link SuperClass#toBeOverriden()}", varMethod.getComments().get(2).getContent());
 
 		// contract: variable are renamed
-		assertEquals("java.util.List newVarName = null// will be replaced by List newVarName = null;" + newLine, methodWithTemplatedParameters.getBody().getStatement(0).toString());
+		assertEquals("java.util.List newVarName = null// will be replaced by List newVarName = null;" + newLine, methodWithTemplatedParameters.getMyBody().getStatement(0).toString());
 
 		// contract: types are replaced by other types
-		assertEquals("java.util.LinkedList l = null// will be replaced by LinkedList l = null;" + newLine, methodWithTemplatedParameters.getBody().getStatement(1).toString());
+		assertEquals("java.util.LinkedList l = null// will be replaced by LinkedList l = null;" + newLine, methodWithTemplatedParameters.getMyBody().getStatement(1).toString());
 
 		// contract: casts are replaced by substitution types
-		assertEquals("java.util.List o = ((java.util.LinkedList) (new java.util.LinkedList()))// will be replaced by List o = (LinkedList) new LinkedList();" + newLine, methodWithTemplatedParameters.getBody().getStatement(2).toString());
+		assertEquals("java.util.List o = ((java.util.LinkedList) (new java.util.LinkedList()))// will be replaced by List o = (LinkedList) new LinkedList();" + newLine, methodWithTemplatedParameters.getMyBody().getStatement(2).toString());
 
 		// contract: invocations are replaced by actual invocations
-		assertEquals("toBeOverriden()", methodWithTemplatedParameters.getBody().getStatement(3).toString());
+		assertEquals("toBeOverriden()", methodWithTemplatedParameters.getMyBody().getStatement(3).toString());
 
 		// contract: foreach in block is inlined into that wrapping block
-		CtBlock templatedForEach = methodWithTemplatedParameters.getBody().getStatement(4);
+		CtBlock templatedForEach = methodWithTemplatedParameters.getMyBody().getStatement(4);
 		assertEquals("java.lang.System.out.println(0)// will be inlined\n", templatedForEach.getStatement(0).toString());
 		assertEquals("java.lang.System.out.println(1)// will be inlined\n", templatedForEach.getStatement(1).toString());
 		// contract: foreach with single body block are inlined without extra block
-		assertEquals("java.lang.System.out.println(0)// will be inlined\n", methodWithTemplatedParameters.getBody().getStatement(5).toString());
-		assertEquals("java.lang.System.out.println(1)// will be inlined\n", methodWithTemplatedParameters.getBody().getStatement(6).toString());
+		assertEquals("java.lang.System.out.println(0)// will be inlined\n", methodWithTemplatedParameters.getMyBody().getStatement(5).toString());
+		assertEquals("java.lang.System.out.println(1)// will be inlined\n", methodWithTemplatedParameters.getMyBody().getStatement(6).toString());
 		// contract: foreach with double body block are inlined with one extra block for each inlined statement
-		assertEquals("java.lang.System.out.println(0)// will be inlined\n", ((CtBlock) methodWithTemplatedParameters.getBody().getStatement(7)).getStatement(0).toString());
-		assertEquals("java.lang.System.out.println(1)// will be inlined\n", ((CtBlock) methodWithTemplatedParameters.getBody().getStatement(8)).getStatement(0).toString());
+		assertEquals("java.lang.System.out.println(0)// will be inlined\n", ((CtBlock) methodWithTemplatedParameters.getMyBody().getStatement(7)).getStatement(0).toString());
+		assertEquals("java.lang.System.out.println(1)// will be inlined\n", ((CtBlock) methodWithTemplatedParameters.getMyBody().getStatement(8)).getStatement(0).toString());
 		// contract: foreach with statement are inlined without extra (implicit) block
-		assertFalse(methodWithTemplatedParameters.getBody().getStatement(9) instanceof CtBlock);
-		assertEquals("java.lang.System.out.println(0)", methodWithTemplatedParameters.getBody().getStatement(9).toString());
-		assertFalse(methodWithTemplatedParameters.getBody().getStatement(10) instanceof CtBlock);
-		assertEquals("java.lang.System.out.println(1)", methodWithTemplatedParameters.getBody().getStatement(10).toString());
+		assertFalse(methodWithTemplatedParameters.getMyBody().getStatement(9) instanceof CtBlock);
+		assertEquals("java.lang.System.out.println(0)", methodWithTemplatedParameters.getMyBody().getStatement(9).toString());
+		assertFalse(methodWithTemplatedParameters.getMyBody().getStatement(10) instanceof CtBlock);
+		assertEquals("java.lang.System.out.println(1)", methodWithTemplatedParameters.getMyBody().getStatement(10).toString());
 		//contract: for each whose expression is not a template parameter is not inlined
-		assertTrue(methodWithTemplatedParameters.getBody().getStatement(11) instanceof CtForEach);
+		assertTrue(methodWithTemplatedParameters.getMyBody().getStatement(11) instanceof CtForEach);
 
 		// contract: local variable write are replaced by local variable write with modified local variable name
-		assertEquals("newVarName = o// will be replaced by newVarName = o" + newLine, methodWithTemplatedParameters.getBody().getStatement(12).toString());
+		assertEquals("newVarName = o// will be replaced by newVarName = o" + newLine, methodWithTemplatedParameters.getMyBody().getStatement(12).toString());
 
 		// contract: local variable read are replaced by local variable read with modified local variable name
-		assertEquals("l = ((java.util.LinkedList) (newVarName))// will be replaced by l = (LinkedList) newVarName" + newLine, methodWithTemplatedParameters.getBody().getStatement(13).toString());
+		assertEquals("l = ((java.util.LinkedList) (newVarName))// will be replaced by l = (LinkedList) newVarName" + newLine, methodWithTemplatedParameters.getMyBody().getStatement(13).toString());
 		
 		// contract; field access is handled same like local variable access
 		CtMethod<?> methodWithFieldAccess = subc.getElements(
@@ -235,10 +235,10 @@ public class TemplateTest {
 		elementToGeneratedByMember.put(subc.getField("newVarName"), "#var");
 
 		// contract: field write are replaced by field write with modified field name
-		assertEquals("newVarName = o", methodWithFieldAccess.getBody().getStatement(2).toString());
+		assertEquals("newVarName = o", methodWithFieldAccess.getMyBody().getStatement(2).toString());
 
 		// contract: field read are replaced by field read with modified field name
-		assertEquals("l = ((java.util.LinkedList) (newVarName))// will be replaced by l = (LinkedList) newVarName" + newLine, methodWithFieldAccess.getBody().getStatement(3).toString());
+		assertEquals("l = ((java.util.LinkedList) (newVarName))// will be replaced by l = (LinkedList) newVarName" + newLine, methodWithFieldAccess.getMyBody().getStatement(3).toString());
 		
 
 		class Context {
@@ -357,12 +357,12 @@ public class TemplateTest {
 
 		CtMethod<?> m = c1.getMethod("methodToBeInserted");
 		assertNotNull(m);
-		assertEquals("return \"testparam\"", m.getBody().getStatement(0)
+		assertEquals("return \"testparam\"", m.getMyBody().getStatement(0)
 				.toString());
 
 		CtMethod<?> m2 = c1.getMethod("methodToBeInserted2");
 		assertNotNull(m2);
-		assertEquals("return \"testparam2\"", m2.getBody().getStatement(0)
+		assertEquals("return \"testparam2\"", m2.getMyBody().getStatement(0)
 				.toString());
 
 		new ModelConsistencyChecker(factory.getEnvironment(), false, true).scan(c1);
@@ -393,7 +393,7 @@ public class TemplateTest {
 		assertNotNull(m);
 		//contract: printing of code which contains invalid field reference, fails with nice exception
 		try {
-			m.getBody().getStatement(0).toString();
+			m.getMyBody().getStatement(0).toString();
 		} catch (SpoonException e) {
 			assertTrue(e.getMessage().contains("testparam"), "The error description doesn't contain name of invalid field. There is:\n" + e.getMessage());
 		}
@@ -438,8 +438,8 @@ public class TemplateTest {
 		assertEquals("l.size() > 10", ifStmt.getCondition().toString());
 
 		// adds the bound check at the beginning of a method
-		method.getBody().insertBegin(injectedCode);
-		assertEquals(injectedCode, method.getBody().getStatement(0));
+		method.getMyBody().insertBegin(injectedCode);
+		assertEquals(injectedCode, method.getMyBody().getStatement(0));
 	}
 
 	@Test
@@ -456,7 +456,7 @@ public class TemplateTest {
 		{// testing matcher1
 			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher1")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher1")).get(0)).getMyBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
 			assertThat(asList("foo","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
@@ -470,7 +470,7 @@ public class TemplateTest {
 		{// testing matcher2
 			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher2")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher2")).get(0)).getMyBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
 			assertThat(asList("bou", "bov"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
@@ -483,7 +483,7 @@ public class TemplateTest {
 		{// testing matcher3
 			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher3")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher3")).get(0)).getMyBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(2, matcher.find(klass).size());
 			assertThat(asList("foo","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
@@ -497,7 +497,7 @@ public class TemplateTest {
 		{// testing matcher4
 			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher4")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher4")).get(0)).getMyBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(3, matcher.find(klass).size());
 			assertThat(asList("foo","foo2","fbar"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
@@ -519,7 +519,7 @@ public class TemplateTest {
 		{// testing matcher5
 			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher5")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher5")).get(0)).getMyBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(6, matcher.find(klass).size());
 			assertThat(asList("foo","foo2","fbar","baz","bou","bov"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
@@ -556,7 +556,7 @@ public class TemplateTest {
 		{// testing matcher6
 			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher6")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher6")).get(0)).getMyBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(6, matcher.find(klass).size());
 			assertThat(asList("foo","foo2","fbar","baz","bou","bov"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
@@ -593,7 +593,7 @@ public class TemplateTest {
 		{// testing matcher7
 			CtClass<?> templateKlass = factory.Templates().Class().get(CheckBoundMatcher.class);
 			CtClass<?> klass = factory.Class().get(CheckBound.class);
-			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher7")).get(0)).getBody().getStatement(0);
+			CtIf templateRoot = (CtIf) ((CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher7")).get(0)).getMyBody().getStatement(0);
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 			assertEquals(1, matcher.find(klass).size());
 			assertThat(asList("bos"), is(klass.filterChildren(matcher).map((CtElement e)->getMethodName(e)).list())) ;
@@ -675,14 +675,14 @@ public class TemplateTest {
 
 		final CtClass<Logger> aLogger = launcher.getFactory().Class().get(Logger.class);
 		final CtMethod aMethod = aLogger.getMethodsByName("enter").get(0);
-		assertTrue(aMethod.getBody().getStatement(0) instanceof CtTry);
-		final CtTry aTry = (CtTry) aMethod.getBody().getStatement(0);
+		assertTrue(aMethod.getMyBody().getStatement(0) instanceof CtTry);
+		final CtTry aTry = (CtTry) aMethod.getMyBody().getStatement(0);
 		assertTrue(aTry.getFinalizer().getStatement(0) instanceof CtInvocation);
 		assertEquals("spoon.test.template.testclasses.logger.Logger.exit(\"enter\")", aTry.getFinalizer().getStatement(0).toString());
-		assertTrue(aTry.getBody().getStatement(0) instanceof CtInvocation);
-		assertEquals("spoon.test.template.testclasses.logger.Logger.enter(\"Logger\", \"enter\")", aTry.getBody().getStatement(0).toString());
-		assertTrue(aTry.getBody().getStatements().size() > 1);
-		assertEquals("java.lang.System.out.println(((\"enter: \" + className) + \" - \") + methodName)", aTry.getBody().getStatement(1).toString());
+		assertTrue(aTry.getMyBody().getStatement(0) instanceof CtInvocation);
+		assertEquals("spoon.test.template.testclasses.logger.Logger.enter(\"Logger\", \"enter\")", aTry.getMyBody().getStatement(0).toString());
+		assertTrue(aTry.getMyBody().getStatements().size() > 1);
+		assertEquals("java.lang.System.out.println(((\"enter: \" + className) + \" - \") + methodName)", aTry.getMyBody().getStatement(1).toString());
 	}
 
 	@Test
@@ -722,7 +722,7 @@ public class TemplateTest {
 
 		CtClass<?> templateKlass = factory.Templates().Class().get(SecurityCheckerTemplate.class);
 		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher1")).get(0);
-		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
+		CtIf templateRoot = (CtIf) templateMethod.getMyBody().getStatement(0);
 		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 
 		List<CtElement> matches = matcher.find(factory.getModel().getRootPackage());
@@ -765,7 +765,7 @@ public class TemplateTest {
 
 		CtClass<?> templateKlass = factory.Templates().Class().get(SecurityCheckerTemplate.class);
 		CtMethod templateMethod = (CtMethod) templateKlass.getElements(new NamedElementFilter<>(CtMethod.class,"matcher1")).get(0);
-		CtIf templateRoot = (CtIf) templateMethod.getBody().getStatement(0);
+		CtIf templateRoot = (CtIf) templateMethod.getMyBody().getStatement(0);
 		TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 
 		//match byFieldAccessOnVariableusing legacy TemplateMatcher#find method
@@ -800,7 +800,7 @@ public class TemplateTest {
 		CtClass<?> resultKlass = factory.Class().create("Result");
 		new InvocationTemplate(factory.Type().OBJECT, "hashCode").apply(resultKlass);
 		CtMethod<?> templateMethod = (CtMethod<?>) resultKlass.getElements(new NamedElementFilter<>(CtMethod.class,"invoke")).get(0);
-		CtStatement templateRoot = (CtStatement) templateMethod.getBody().getStatement(0);
+		CtStatement templateRoot = (CtStatement) templateMethod.getMyBody().getStatement(0);
 		//iface.$method$() becomes iface.hashCode()
 		assertEquals("iface.hashCode()", templateRoot.toString());
 	}
@@ -851,20 +851,20 @@ public class TemplateTest {
 		CtClass<?> resultKlass = factory.Class().create("Result");
 		CtClass<?> templateClass = factory.Templates().Class().get(ArrayAccessTemplate.class);
 		//create array of template parameters, which contains CtBlocks
-		TemplateParameter[] params = templateClass.getMethod("sampleBlocks").getBody().getStatements().toArray(new TemplateParameter[0]);
+		TemplateParameter[] params = templateClass.getMethod("sampleBlocks").getMyBody().getStatements().toArray(new TemplateParameter[0]);
 		new ArrayAccessTemplate(params).apply(resultKlass);
 		CtMethod<?> m = resultKlass.getMethod("method");
 		//check that both TemplateParameter usages were replaced by appropriate parameter value and that substitution which miss the value is silently removed
-		assertEquals(2, m.getBody().getStatements().size());
-		assertTrue(m.getBody().getStatements().get(0) instanceof CtBlock);
-		assertEquals("int i = 0", ((CtBlock)m.getBody().getStatements().get(0)).getStatement(0).toString());
-		assertTrue(m.getBody().getStatements().get(1) instanceof CtBlock);
-		assertEquals("java.lang.String s = \"Spoon is cool!\"", ((CtBlock)m.getBody().getStatements().get(1)).getStatement(0).toString());
+		assertEquals(2, m.getMyBody().getStatements().size());
+		assertTrue(m.getMyBody().getStatements().get(0) instanceof CtBlock);
+		assertEquals("int i = 0", ((CtBlock)m.getMyBody().getStatements().get(0)).getStatement(0).toString());
+		assertTrue(m.getMyBody().getStatements().get(1) instanceof CtBlock);
+		assertEquals("java.lang.String s = \"Spoon is cool!\"", ((CtBlock)m.getMyBody().getStatements().get(1)).getStatement(0).toString());
 		//check that both @Parameter usage was replaced by appropriate parameter value
 		CtMethod<?> m2 = resultKlass.getMethod("method2");
-		assertEquals("java.lang.System.out.println(\"second\")", m2.getBody().getStatement(0).toString());
+		assertEquals("java.lang.System.out.println(\"second\")", m2.getMyBody().getStatement(0).toString());
 		//check that substitution by missing value correctly produces empty expression
-		assertEquals("java.lang.System.out.println(null)", m2.getBody().getStatement(1).toString());
+		assertEquals("java.lang.System.out.println(null)", m2.getMyBody().getStatement(1).toString());
 	}
 
 	@Test
@@ -899,7 +899,7 @@ public class TemplateTest {
 		Factory factory = spoon.getFactory();
 
 		CtClass<?> templateClass = factory.Templates().Class().get(SubstituteRootTemplate.class);
-		CtBlock<Void> templateParam = (CtBlock) templateClass.getMethod("sampleBlock").getBody();
+		CtBlock<Void> templateParam = (CtBlock) templateClass.getMethod("sampleBlock").getMyBody();
 		
 		CtClass<?> resultKlass = factory.Class().create("Result");
 		CtStatement result = new SubstituteRootTemplate(templateParam).apply(resultKlass);
@@ -989,7 +989,7 @@ public class TemplateTest {
 			assertEquals("java.lang.String stringField1 = \"value1\";", result.getField("stringField1").toString());
 			assertEquals("java.lang.String stringField2 = \"Substring value1 is substituted too - value1\";", result.getField("stringField2").toString());
 			//contract: the parameter of type string replaces only method name
-			assertEquals("java.lang.System.out.println(spoon.test.template.testclasses.Params.value1())", result.getMethodsByName("m1").get(0).getBody().getStatement(0).toString());
+			assertEquals("java.lang.System.out.println(spoon.test.template.testclasses.Params.value1())", result.getMethodsByName("m1").get(0).getMyBody().getStatement(0).toString());
 		}
 		{
 			//contract: String Literal value is substituted in String literal
@@ -997,7 +997,7 @@ public class TemplateTest {
 			assertEquals("java.lang.String stringField1 = \"value2\";", result.getField("stringField1").toString());
 			assertEquals("java.lang.String stringField2 = \"Substring value2 is substituted too - value2\";", result.getField("stringField2").toString());
 			//contract: the parameter of type String literal replaces whole invocation
-			assertEquals("java.lang.System.out.println(\"value2\")", result.getMethodsByName("m1").get(0).getBody().getStatement(0).toString());
+			assertEquals("java.lang.System.out.println(\"value2\")", result.getMethodsByName("m1").get(0).getMyBody().getStatement(0).toString());
 		}
 		{
 			//contract: simple name of type reference is substituted in String literal 
@@ -1005,7 +1005,7 @@ public class TemplateTest {
 			assertEquals("java.lang.String stringField1 = \"TypeName\";", result.getField("stringField1").toString());
 			assertEquals("java.lang.String stringField2 = \"Substring TypeName is substituted too - TypeName\";", result.getField("stringField2").toString());
 			//contract type reference is substituted in invocation as class access
-			assertEquals("java.lang.System.out.println(some.ignored.foo.TypeName.class)", result.getMethodsByName("m1").get(0).getBody().getStatement(0).toString());
+			assertEquals("java.lang.System.out.println(some.ignored.foo.TypeName.class)", result.getMethodsByName("m1").get(0).getMyBody().getStatement(0).toString());
 		}
 		{
 			//contract: number literal is substituted in String literal as number converted to string
@@ -1013,7 +1013,7 @@ public class TemplateTest {
 			assertEquals("java.lang.String stringField1 = \"7\";", result.getField("stringField1").toString());
 			assertEquals("java.lang.String stringField2 = \"Substring 7 is substituted too - 7\";", result.getField("stringField2").toString());
 			//contract number literal is substituted in invocation as number literal
-			assertEquals("java.lang.System.out.println(7)", result.getMethodsByName("m1").get(0).getBody().getStatement(0).toString());
+			assertEquals("java.lang.System.out.println(7)", result.getMethodsByName("m1").get(0).getMyBody().getStatement(0).toString());
 		}
 	}
 	@Test
@@ -1033,8 +1033,8 @@ public class TemplateTest {
 			CtMethod<?> method1 = result.getMethodsByName("setA").get(0);
 			assertEquals("setA", method1.getSimpleName());
 			assertEquals("java.lang.String p_A", method1.getParameters().get(0).toString());
-			assertEquals("this.m_A = p_A", method1.getBody().getStatement(0).toString());
-			assertEquals("setA(\"The A is here too\")", result.getMethodsByName("m").get(0).getBody().getStatements().get(0).toString());
+			assertEquals("this.m_A = p_A", method1.getMyBody().getStatement(0).toString());
+			assertEquals("setA(\"The A is here too\")", result.getMethodsByName("m").get(0).getMyBody().getStatements().get(0).toString());
 		}
 		{
 			//contract: Type value name is substituted in substring of literal, named element and reference
@@ -1044,8 +1044,8 @@ public class TemplateTest {
 			CtMethod<?> method1 = result.getMethodsByName("setObject").get(0);
 			assertEquals("setObject", method1.getSimpleName());
 			assertEquals("java.lang.String p_Object", method1.getParameters().get(0).toString());
-			assertEquals("this.m_Object = p_Object", method1.getBody().getStatement(0).toString());
-			assertEquals("setObject(\"The Object is here too\")", result.getMethodsByName("m").get(0).getBody().getStatements().get(0).toString());
+			assertEquals("this.m_Object = p_Object", method1.getMyBody().getStatement(0).toString());
+			assertEquals("setObject(\"The Object is here too\")", result.getMethodsByName("m").get(0).getMyBody().getStatements().get(0).toString());
 		}
 		{
 			//contract: Type reference value name is substituted in substring of literal, named element and reference
@@ -1055,8 +1055,8 @@ public class TemplateTest {
 			CtMethod<?> method1 = result.getMethodsByName("setObject").get(0);
 			assertEquals("setObject", method1.getSimpleName());
 			assertEquals("java.lang.String p_Object", method1.getParameters().get(0).toString());
-			assertEquals("this.m_Object = p_Object", method1.getBody().getStatement(0).toString());
-			assertEquals("setObject(\"The Object is here too\")", result.getMethodsByName("m").get(0).getBody().getStatements().get(0).toString());
+			assertEquals("this.m_Object = p_Object", method1.getMyBody().getStatement(0).toString());
+			assertEquals("setObject(\"The Object is here too\")", result.getMethodsByName("m").get(0).getMyBody().getStatements().get(0).toString());
 		}
 		{
 			//contract: String literal value name is substituted in substring of literal, named element and reference
@@ -1066,8 +1066,8 @@ public class TemplateTest {
 			CtMethod<?> method1 = result.getMethodsByName("setXxx").get(0);
 			assertEquals("setXxx", method1.getSimpleName());
 			assertEquals("java.lang.String p_Xxx", method1.getParameters().get(0).toString());
-			assertEquals("this.m_Xxx = p_Xxx", method1.getBody().getStatement(0).toString());
-			assertEquals("setXxx(\"The Xxx is here too\")", result.getMethodsByName("m").get(0).getBody().getStatements().get(0).toString());
+			assertEquals("this.m_Xxx = p_Xxx", method1.getMyBody().getStatement(0).toString());
+			assertEquals("setXxx(\"The Xxx is here too\")", result.getMethodsByName("m").get(0).getMyBody().getStatements().get(0).toString());
 		}
 		{
 			//contract: The elements which cannot be converted to String should throw exception
@@ -1108,7 +1108,7 @@ public class TemplateTest {
 			final CtClass<?> result = (CtClass<?>) new FieldAccessTemplate("value").apply(factory.Class().create("x.X"));
 			assertEquals("int value;", result.getField("value").toString());
 			
-			assertEquals("value = 7", result.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
+			assertEquals("value = 7", result.getMethodsByName("m").get(0).getMyBody().getStatement(0).toString());
 		}
 	}
 
@@ -1127,7 +1127,7 @@ public class TemplateTest {
 			final CtClass<?> innerClass = result.getNestedType("Inner");
 			assertEquals("int value;", innerClass.getField("value").toString());
 			
-			assertEquals("value = 7", innerClass.getMethodsByName("m").get(0).getBody().getStatement(0).toString());
+			assertEquals("value = 7", innerClass.getMethodsByName("m").get(0).getMyBody().getStatement(0).toString());
 		}
 	}
 
@@ -1146,7 +1146,7 @@ public class TemplateTest {
 			assertEquals("int x;", result.getField("x").toString());
 			assertEquals("int m_x;", result.getField("m_x").toString());
 
-			assertEquals("java.lang.System.out.println(x + m_x)", result.getAnonymousExecutables().get(0).getBody().getStatement(0).toString());
+			assertEquals("java.lang.System.out.println(x + m_x)", result.getAnonymousExecutables().get(0).getMyBody().getStatement(0).toString());
 		}
 	}
 
@@ -1171,12 +1171,12 @@ public class TemplateTest {
 		CtMethod<?> method = result.getMethodsByName("someMethod").get(0);
 		assertEquals("spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date>", method.getType().toString());
 		assertEquals("spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date>", method.getParameters().get(0).getType().toString());
-		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.out", method.getBody().getStatement(0).toString());
-		assertEquals("spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date> ret = new spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date>()", method.getBody().getStatement(1).toString());
-		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.currentTimeMillis()", method.getBody().getStatement(2).toString());
-		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.class", method.getBody().getStatement(3).toString());
-		assertEquals("o = o instanceof spoon.test.template.TypeReferenceClassAccess.Example<?>", method.getBody().getStatement(4).toString());
-		assertEquals("java.util.function.Supplier<java.lang.Long> p = spoon.test.template.TypeReferenceClassAccess.Example::currentTimeMillis", method.getBody().getStatement(5).toString());
+		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.out", method.getMyBody().getStatement(0).toString());
+		assertEquals("spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date> ret = new spoon.test.template.TypeReferenceClassAccess.Example<java.util.Date>()", method.getMyBody().getStatement(1).toString());
+		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.currentTimeMillis()", method.getMyBody().getStatement(2).toString());
+		assertEquals("o = spoon.test.template.TypeReferenceClassAccess.Example.class", method.getMyBody().getStatement(3).toString());
+		assertEquals("o = o instanceof spoon.test.template.TypeReferenceClassAccess.Example<?>", method.getMyBody().getStatement(4).toString());
+		assertEquals("java.util.function.Supplier<java.lang.Long> p = spoon.test.template.TypeReferenceClassAccess.Example::currentTimeMillis", method.getMyBody().getStatement(5).toString());
 	}
 
 	@Test
@@ -1195,7 +1195,7 @@ public class TemplateTest {
 		CtClass<?> klass = factory.Class().get(Flow.class);
 
 		CtMethod<?> method = (CtMethod<?>) templateKlass.getElements(new NamedElementFilter(CtMethod.class, "subFlowMatcher")).get(0);
-		CtElement templateRoot = method.getBody().getStatement(0);
+		CtElement templateRoot = method.getMyBody().getStatement(0);
 		TemplateMatcher myMatcher = new TemplateMatcher(templateRoot);
 		assertEquals(2, myMatcher.find(klass).size());
 	}

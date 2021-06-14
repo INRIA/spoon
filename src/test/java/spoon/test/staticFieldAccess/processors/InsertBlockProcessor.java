@@ -28,14 +28,14 @@ public class InsertBlockProcessor extends AbstractProcessor<CtMethod<?>> {
 
 	@Override
 	public boolean isToBeProcessed(CtMethod<?> candidate) {
-		return super.isToBeProcessed(candidate) && candidate.getBody() != null;
+		return super.isToBeProcessed(candidate) && candidate.getMyBody() != null;
 	}
 
 	@Override
 	public void process(CtMethod<?> element) {
 		CtBlock block = new CtBlockImpl();
 		// we clone the body so that there is no two elements with the same parent 
-		block.addStatement(element.getBody().clone());
+		block.addStatement(element.getMyBody().clone());
 		element.setBody(block);
 	}
 }

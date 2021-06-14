@@ -56,7 +56,7 @@ public class NtonCodeTemplate extends AbstractTemplate<CtClass<?>> implements _T
 			Substitution.insertAll(zeClass, this);
 
 			for (CtConstructor<?> c : zeClass.getConstructors()) {
-				c.getBody().insertEnd((CtStatement) Substitution.substituteMethodBody(zeClass, this, "initializer"));
+				c.getMyBody().insertEnd((CtStatement) Substitution.substituteMethodBody(zeClass, this, "initializer"));
 			}
 
 			return zeClass;

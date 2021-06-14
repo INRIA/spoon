@@ -135,7 +135,7 @@ public class GenericsTest {
 				new NamedElementFilter<>(CtMethod.class,"node5")).get(0);
 		assertEquals(
 				"this.<java.lang.Class<? extends java.lang.Throwable>>foo()",
-				node5.getBody().getStatement(0).toString());
+				node5.getMyBody().getStatement(0).toString());
 	}
 
 	@Test
@@ -151,7 +151,7 @@ public class GenericsTest {
 		CtClass<GenericConstructor> type = build("spoon.test.generics.testclasses3", "GenericConstructor");
 		assertEquals("GenericConstructor", type.getSimpleName());
 		CtConstructor<GenericConstructor> c = type.getConstructor();
-		CtLocalVariable<?> var = c.getBody().getStatement(1);
+		CtLocalVariable<?> var = c.getMyBody().getStatement(1);
 		assertEquals("java.lang.Integer", var.getType().getActualTypeArguments().get(0).getQualifiedName());
 		CtConstructorCall<?> constructorCall = (CtConstructorCall<?>) var.getDefaultExpression();
 		// diamond operator should have empty type arguments???
@@ -349,7 +349,7 @@ public class GenericsTest {
 		CtClass<?> type = build("spoon.test.generics.testclasses3", "InstanceOfMapEntryGeneric");
 		CtMethod<?> meth = type.getMethodsByName("methode").get(0);
 
-		CtBinaryOperator<?> instOf = (CtBinaryOperator<?>) ((CtLocalVariable<?>) meth.getBody().getStatement(0)).getDefaultExpression();
+		CtBinaryOperator<?> instOf = (CtBinaryOperator<?>) ((CtLocalVariable<?>) meth.getMyBody().getStatement(0)).getDefaultExpression();
 		assertEquals(BinaryOperatorKind.INSTANCEOF, instOf.getKind());
 		assertEquals("o instanceof java.util.Map.Entry<?, ?>", instOf.toString());
 	}
@@ -400,38 +400,38 @@ public class GenericsTest {
 		assertEquals(1, interfaces.getActualTypeArguments().size());
 
 		final CtMethod<?> m = aTacos.getMethodsByName("m").get(0);
-		final CtElement local1 = m.getBody().getStatement(0).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
+		final CtElement local1 = m.getMyBody().getStatement(0).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
 		final CtTypeReference<Object> leftSideLocal1 = (CtTypeReference<Object>) local1.getElements(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
 		final CtConstructorCall<Object> rightSideLocal1 = (CtConstructorCall<Object>) local1.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
 		assertEquals(1, leftSideLocal1.getActualTypeArguments().size());
 		assertEquals(1, rightSideLocal1.getType().getActualTypeArguments().size());
 		assertEquals("java.util.List<java.lang.String> l = new java.util.ArrayList<>()", local1.toString());
 
-		final CtElement local2 = m.getBody().getStatement(1).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
+		final CtElement local2 = m.getMyBody().getStatement(1).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
 		final CtTypeReference<Object> leftSideLocal2 = (CtTypeReference<Object>) local2.getElements(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
 		assertEquals(0, leftSideLocal2.getActualTypeArguments().size());
 		assertEquals("java.util.List l2", local2.toString());
 
-		final CtElement local3 = m.getBody().getStatement(2).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
+		final CtElement local3 = m.getMyBody().getStatement(2).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
 		final CtTypeReference<Object> leftSideLocal3 = (CtTypeReference<Object>) local3.getElements(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
 		final CtConstructorCall<Object> rightSideLocal3 = (CtConstructorCall<Object>) local3.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
 		assertEquals(2, leftSideLocal3.getActualTypeArguments().size());
 		assertEquals(2, rightSideLocal3.getType().getActualTypeArguments().size());
 		assertEquals("spoon.test.generics.testclasses.IBurritos<?, ?> burritos = new Burritos<>()", local3.toString());
 
-		final CtElement local4 = m.getBody().getStatement(3).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
+		final CtElement local4 = m.getMyBody().getStatement(3).getElements(new TypeFilter<>(CtLocalVariable.class)).get(0);
 		final CtTypeReference<Object> leftSideLocal4 = (CtTypeReference<Object>) local4.getElements(new ReferenceTypeFilter<>(CtTypeReference.class)).get(0);
 		final CtConstructorCall<Object> rightSideLocal4 = (CtConstructorCall<Object>) local4.getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
 		assertEquals(1, leftSideLocal4.getActualTypeArguments().size());
 		assertEquals(1, rightSideLocal4.getType().getActualTypeArguments().size());
 		assertEquals("java.util.List<?> l3 = new java.util.ArrayList<java.lang.Object>()", local4.toString());
 
-		final CtConstructorCall constructorCall1 = (CtConstructorCall) m.getBody().getStatement(4).getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
+		final CtConstructorCall constructorCall1 = (CtConstructorCall) m.getMyBody().getStatement(4).getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
 		assertEquals(1, constructorCall1.getActualTypeArguments().size());
 		assertEquals(2, constructorCall1.getType().getActualTypeArguments().size());
 		assertEquals("new <java.lang.Integer>spoon.test.generics.testclasses.Tacos<java.lang.Object, java.lang.String>()", constructorCall1.toString());
 
-		final CtConstructorCall constructorCall2 = (CtConstructorCall) m.getBody().getStatement(5).getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
+		final CtConstructorCall constructorCall2 = (CtConstructorCall) m.getMyBody().getStatement(5).getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
 		assertEquals(0, constructorCall2.getActualTypeArguments().size());
 		assertEquals(2, constructorCall2.getType().getActualTypeArguments().size());
 		assertEquals("new spoon.test.generics.testclasses.Tacos<>()", constructorCall2.toString());
@@ -450,16 +450,16 @@ public class GenericsTest {
 		final CtClass<?> aTacos = launcher.getFactory().Class().get(Tacos.class);
 
 		final CtConstructor<?> defaultConstructor = aTacos.getConstructor();
-		final CtInvocation<?> explicitConstructorCall = (CtInvocation<?>) defaultConstructor.getBody().getStatement(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+		final CtInvocation<?> explicitConstructorCall = (CtInvocation<?>) defaultConstructor.getMyBody().getStatement(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
 		assertEquals(1, explicitConstructorCall.getExecutable().getActualTypeArguments().size());
 		assertEquals("<java.lang.String>this(1)", explicitConstructorCall.toString());
 
 		final CtMethod<?> m = aTacos.getMethodsByName("m2").get(0);
-		final CtInvocation invocation1 = m.getBody().getStatement(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+		final CtInvocation invocation1 = m.getMyBody().getStatement(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
 		assertEquals(1, invocation1.getExecutable().getActualTypeArguments().size());
 		assertEquals("this.<java.lang.String>makeTacos(null)", invocation1.toString());
 
-		final CtInvocation invocation2 = m.getBody().getStatement(1).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+		final CtInvocation invocation2 = m.getMyBody().getStatement(1).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
 		assertEquals(0, invocation2.getExecutable().getActualTypeArguments().size());
 		assertEquals("this.makeTacos(null)", invocation2.toString());
 
@@ -477,12 +477,12 @@ public class GenericsTest {
 		final CtClass<?> aTacos = launcher.getFactory().Class().get(Tacos.class);
 
 		final CtMethod<?> m = aTacos.getMethodsByName("m3").get(0);
-		final CtNewClass newClass1 = m.getBody().getStatement(0).getElements(new TypeFilter<>(CtNewClass.class)).get(0);
+		final CtNewClass newClass1 = m.getMyBody().getStatement(0).getElements(new TypeFilter<>(CtNewClass.class)).get(0);
 		assertEquals(0, newClass1.getActualTypeArguments().size());
 		assertEquals(2, newClass1.getType().getActualTypeArguments().size());
 		assertEquals("new javax.lang.model.util.SimpleTypeVisitor7<spoon.test.generics.testclasses.Tacos, java.lang.Void>() {}", newClass1.toString());
 
-		final CtNewClass newClass2 = m.getBody().getStatement(1).getElements(new TypeFilter<>(CtNewClass.class)).get(0);
+		final CtNewClass newClass2 = m.getMyBody().getStatement(1).getElements(new TypeFilter<>(CtNewClass.class)).get(0);
 		assertEquals(0, newClass2.getActualTypeArguments().size());
 		assertEquals(2, newClass2.getType().getActualTypeArguments().size());
 		assertEquals("new javax.lang.model.util.SimpleTypeVisitor7<spoon.test.generics.testclasses.Tacos, java.lang.Void>() {}", newClass2.toString());
@@ -501,11 +501,11 @@ public class GenericsTest {
 		final CtClass<?> aTacos = launcher.getFactory().Class().get(Tacos.class);
 
 		final CtMethod<?> m = aTacos.getMethodsByName("m4").get(0);
-		final CtInvocation<?> invocation1 = m.getBody().getStatement(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+		final CtInvocation<?> invocation1 = m.getMyBody().getStatement(0).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
 		assertEquals(2, invocation1.getExecutable().getActualTypeArguments().size());
 		assertEquals("spoon.test.generics.testclasses.Tacos.<V, C>makeTacos()", invocation1.toString());
 
-		final CtInvocation<?> invocation2 = m.getBody().getStatement(1).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
+		final CtInvocation<?> invocation2 = m.getMyBody().getStatement(1).getElements(new TypeFilter<>(CtInvocation.class)).get(0);
 		assertEquals(0, invocation2.getExecutable().getActualTypeArguments().size());
 		assertEquals("spoon.test.generics.testclasses.Tacos.makeTacos()", invocation2.toString());
 	}
@@ -521,7 +521,7 @@ public class GenericsTest {
 		final CtClass<?> aFactory = launcher.getFactory().Class().get(Tacos.BeerFactory.class);
 
 		final CtMethod<?> m = aFactory.getMethodsByName("newBeer").get(0);
-		final CtConstructorCall constructorCall1 = m.getBody().getStatement(0).getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
+		final CtConstructorCall constructorCall1 = m.getMyBody().getStatement(0).getElements(new TypeFilter<>(CtConstructorCall.class)).get(0);
 		assertEquals("new Beer()", constructorCall1.toString());
 	}
 
@@ -1362,7 +1362,7 @@ public class GenericsTest {
 
 		CtClass<?> ctClass = launcher.getFactory().Class().get(EnumSetOf.class);
 
-		CtInvocation invocation = ctClass.getMethodsByName("m").get(0).getBody().getStatement(0);
+		CtInvocation invocation = ctClass.getMethodsByName("m").get(0).getMyBody().getStatement(0);
 		CtExecutable<?> decl = invocation.getExecutable().getDeclaration();
 		assertNull(decl);
 
@@ -1447,7 +1447,7 @@ public class GenericsTest {
 		//contract: ClassTypingContext doesn't fail on type parameters, which are defined out of the scope of ClassTypingContext
 		CtType<?> ctClass = buildClass(OuterTypeParameter.class);
 		//the method defines type parameter, which is used in super of local class
-		CtReturn<?> retStmt = (CtReturn<?>) ctClass.getMethodsByName("method").get(0).getBody().getStatements().get(0);
+		CtReturn<?> retStmt = (CtReturn<?>) ctClass.getMethodsByName("method").get(0).getMyBody().getStatements().get(0);
 		CtNewClass<?> newClassExpr = (CtNewClass<?>) retStmt.getReturnedExpression();
 		CtType<?> declaringType = newClassExpr.getAnonymousClass();
 		CtMethod<?> m1 = declaringType.getMethodsByName("iterator").get(0);
@@ -1488,7 +1488,7 @@ public class GenericsTest {
 		assertEquals("W", execParamType.getSimpleName());
 		
 		{
-			CtExecutableReference<?> mRef = ((CtInvocation) m.getBody().getStatements().get(0)).getExecutable();
+			CtExecutableReference<?> mRef = ((CtInvocation) m.getMyBody().getStatements().get(0)).getExecutable();
 	
 			CtTypeReference<?> execRefParamType = mRef.getParameters().get(0);
 			assertEquals(CtTypeReferenceImpl.class, execRefParamType.getClass());

@@ -101,7 +101,7 @@ public class CtTryImpl extends CtStatementImpl implements CtTry {
 	}
 
 	@Override
-	public CtBlock<?> getBody() {
+	public CtBlock<?> getMyBody() {
 		return body;
 	}
 

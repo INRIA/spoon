@@ -38,7 +38,7 @@ public interface CtCatch extends CtCodeElement, CtBodyHolder {
 	 */
 	@Override
 	@PropertyGetter(role = BODY)
-	CtBlock<?> getBody();
+	CtBlock<?> getMyBody();
 
 	@Override
 	CtCatch clone();

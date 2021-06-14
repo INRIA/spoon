@@ -182,7 +182,7 @@ public class AstCheckerTest {
 			if (candidate.getAnnotation(DerivedProperty.class) != null) {
 				return false;
 			}
-			return candidate.getBody() != null //
+			return candidate.getMyBody() != null //
 					&& !candidate.getParameters().isEmpty() //
 					&& candidate.hasModifier(ModifierKind.PUBLIC) //
 					&& (candidate.getSimpleName().startsWith("add")
@@ -192,9 +192,9 @@ public class AstCheckerTest {
 					&& !isNotCandidate(candidate) //
 					&& !isSurcharged(candidate) //
 					&& !isDelegateMethod(candidate) //
-					&& !isUnsupported(candidate.getBody()) //
-					&& !isCallModelCollection(candidate.getBody()) //
-					&& !hasPushToStackInvocation(candidate.getBody());
+					&& !isUnsupported(candidate.getMyBody()) //
+					&& !isCallModelCollection(candidate.getMyBody()) //
+					&& !hasPushToStackInvocation(candidate.getMyBody());
 		}
 
 		private boolean isNotCandidate(CtMethod<?> candidate) {
@@ -203,7 +203,7 @@ public class AstCheckerTest {
 		}
 
 		private boolean isSurcharged(CtMethod<?> candidate) {
-			CtBlock<?> block = candidate.getBody();
+			CtBlock<?> block = candidate.getMyBody();
 			if (block.getStatements().isEmpty()) {
 				return false;
 			}
@@ -232,16 +232,16 @@ public class AstCheckerTest {
 		}
 
 		private boolean isDelegateMethod(CtMethod<?> candidate) {
-			if (candidate.getBody().getStatements().isEmpty()) {
+			if (candidate.getMyBody().getStatements().isEmpty()) {
 				return false;
 			}
-			if (!(candidate.getBody().getStatement(0) instanceof CtIf)) {
+			if (!(candidate.getMyBody().getStatement(0) instanceof CtIf)) {
 				return false;
 			}
-			if (!(((CtIf) candidate.getBody().getStatement(0)).getThenStatement() instanceof CtBlock)) {
+			if (!(((CtIf) candidate.getMyBody().getStatement(0)).getThenStatement() instanceof CtBlock)) {
 				return false;
 			}
-			final CtBlock block = ((CtIf) candidate.getBody().getStatement(0)).getThenStatement();
+			final CtBlock block = ((CtIf) candidate.getMyBody().getStatement(0)).getThenStatement();
 			if (!(block.getStatement(0) instanceof CtInvocation || block.getStatement(0) instanceof CtReturn)) {
 				return false;
 			}

@@ -62,7 +62,7 @@ public class ExecutableTest {
 	@Test
 	public void testBlockInExecutable() throws Exception {
 		final CtType<Pozole> aPozole = ModelUtils.buildClass(Pozole.class);
-		assertTrue(aPozole.getMethod("m").getBody().getStatement(1) instanceof CtBlock);
+		assertTrue(aPozole.getMethod("m").getMyBody().getStatement(1) instanceof CtBlock);
 	}
 
 	@Test

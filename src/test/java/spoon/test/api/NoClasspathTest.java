@@ -89,7 +89,7 @@ public class NoClasspathTest {
 			assertEquals(1, invocations.size());
 			CtInvocation<?> c = invocations.get(0);
 			assertEquals("method", c.getExecutable().getSimpleName());
-			assertEquals("x.method()", method.getBody().getStatement(1).toString());
+			assertEquals("x.method()", method.getMyBody().getStatement(1).toString());
 		}
 
 		{
@@ -99,7 +99,7 @@ public class NoClasspathTest {
 			assertEquals(3, invocations.size());
 			CtInvocation<?> c = invocations.get(1);
 			assertEquals("second", c.getExecutable().getSimpleName());
-			assertEquals("x.first().second().third()", method.getBody().getStatement(1).toString());
+			assertEquals("x.first().second().third()", method.getMyBody().getStatement(1).toString());
 		}
 
 		{
@@ -108,7 +108,7 @@ public class NoClasspathTest {
 			List<CtInvocation<?>> invocations = method.getElements(new TypeFilter<>(CtInvocation.class));
 			assertEquals(1, invocations.size());
 			invocations.get(0);
-			assertEquals("x.y.z.method()", method.getBody().getStatement(0).toString());
+			assertEquals("x.y.z.method()", method.getMyBody().getStatement(0).toString());
 		}
 
 		{
@@ -117,7 +117,7 @@ public class NoClasspathTest {
 			List<CtInvocation<?>> invocations = method.getElements(new TypeFilter<>(CtInvocation.class));
 			assertEquals(1, invocations.size());
 			invocations.get(0);
-			CtLocalVariable<?> statement = method.getBody().getStatement(0);
+			CtLocalVariable<?> statement = method.getMyBody().getStatement(0);
 			CtFieldAccess<?>  fa = (CtFieldAccess<?>) statement.getDefaultExpression();
 			assertTrue(fa.getTarget() instanceof CtInvocation);
 			assertEquals("field", fa.getVariable().getSimpleName());

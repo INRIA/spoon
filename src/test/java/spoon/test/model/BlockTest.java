@@ -46,7 +46,7 @@ public class BlockTest {
 				.compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-		CtBlock<?> body = foo.getBody();
+		CtBlock<?> body = foo.getMyBody();
 		assertEquals(2, body.getStatements().size());
 
 		List<CtStatement> l = new ArrayList<>();
@@ -72,7 +72,7 @@ public class BlockTest {
 				.compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-		CtBlock<?> body = foo.getBody(); // empty block (immutable EMPTY_LIST())
+		CtBlock<?> body = foo.getMyBody(); // empty block (immutable EMPTY_LIST())
 
 		CtCodeSnippetStatement snippet = factory.Core()
 				.createCodeSnippetStatement();

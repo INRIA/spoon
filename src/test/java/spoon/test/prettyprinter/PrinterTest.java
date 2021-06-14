@@ -261,7 +261,7 @@ public class PrinterTest {
 		//It may happen during substitution operations and then it is helpful to display descriptive error message
 		type.getField("testedField").delete();
 		//contract: printer doesn't fail, but prints the field reference even if there is no declaration visible
-		assertEquals("testedField = 1", type.getMethodsByName("failingMethod").get(0).getBody().getStatement(0).toString());
+		assertEquals("testedField = 1", type.getMethodsByName("failingMethod").get(0).getMyBody().getStatement(0).toString());
 	}
 
 	private final Set<String> separators = new HashSet<>(Arrays.asList("->","::","..."));

@@ -56,7 +56,7 @@ public class SnippetTest {
 								+ "}" + "};").compile();
 		CtMethod<?> foo = (CtMethod<?>) clazz.getMethods().toArray()[0];
 
-		assertEquals(1, foo.getBody().getStatements().size());
+		assertEquals(1, foo.getMyBody().getStatements().size());
 	}
 
 	@Test
@@ -154,14 +154,14 @@ public class SnippetTest {
 		final CtCodeSnippetStatement codeSnippetStatement = factory.createCodeSnippetStatement("s.method(23)");
 		final CtClass<?> snippetClass = launcher.getFactory().Class().get("snippet.test.resources.SnippetResources");
 		CtMethod<?> staticMethod = snippetClass.getMethodsByName("staticMethod").get(0);
-		staticMethod.getBody().insertEnd(codeSnippetStatement);
+		staticMethod.getMyBody().insertEnd(codeSnippetStatement);
 
 		snippetClass.compileAndReplaceSnippets(); // should not throw any exception
 
 		assertSame(snippetClass, factory.Type().get(snippetClass.getQualifiedName()));
 
-		assertTrue(staticMethod.getBody().getLastStatement() instanceof CtInvocation<?>); // the last statement, i.e. the snippet, has been replaced by its real node: a CtInvocation
-		final CtInvocation<?> lastStatement = (CtInvocation<?>) staticMethod.getBody().getLastStatement();
+		assertTrue(staticMethod.getMyBody().getLastStatement() instanceof CtInvocation<?>); // the last statement, i.e. the snippet, has been replaced by its real node: a CtInvocation
+		final CtInvocation<?> lastStatement = (CtInvocation<?>) staticMethod.getMyBody().getLastStatement();
 		final CtLocalVariableReference<?> reference = staticMethod.getElements(new TypeFilter<>(CtLocalVariable.class)).get(0).getReference();
 		assertEquals(factory.createVariableRead(reference, false), lastStatement.getTarget()); // the target of the inserted invocation has been resolved as the reference of the declared object "s"
 	}
@@ -175,7 +175,7 @@ public class SnippetTest {
 		Factory factory = launcher.getFactory();
 		final CtClass<?> testClass = factory.Class().get("snippet.test.resources.SnippetCommentResource");
 		CtMethod method = testClass.getMethodsByName("modifiedMethod").get(0);
-		CtBlock body = method.getBody();
+		CtBlock body = method.getMyBody();
 		body.addStatement(body.getStatements().size()-1,launcher.getFactory().createInlineComment("inline comment"));
 		body.addStatement(body.getStatements().size()-1,launcher.getFactory().createCodeSnippetStatement("invokedMethod()"));
 		CtBlock innerBlock = body.getStatement(0);
@@ -205,7 +205,7 @@ public class SnippetTest {
 		launcher.buildModel();
 		CtClass<?> snippetClass = factory.Class().get("snippet.test.resources.SnippetCommentResource");
 		CtMethod method = snippetClass.getMethodsByName("methodForCommentOnlySnippet").get(0);
-		CtBlock body = method.getBody();
+		CtBlock body = method.getMyBody();
 		body.addStatement(1,factory.createCodeSnippetStatement("/* a \n block \n comment */\n// inline"));
 		body.addStatement(0,factory.createCodeSnippetStatement("/* a \n block \n comment */"));
 		body.addStatement(0,factory.createCodeSnippetStatement("int x"));
@@ -233,7 +233,7 @@ public class SnippetTest {
 		launcher.buildModel();
 		CtClass<?> snippetClass = factory.Class().get("UnnamedPackageSnippetResource");
 		CtMethod method = snippetClass.getMethodsByName("method").get(0);
-		CtBlock body = method.getBody();
+		CtBlock body = method.getMyBody();
 		body.addStatement(0,factory.createCodeSnippetStatement("int x"));
 		snippetClass.compileAndReplaceSnippets();
 		assertTrue(body.getStatements().get(0) instanceof CtLocalVariable);

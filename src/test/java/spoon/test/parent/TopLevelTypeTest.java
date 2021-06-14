@@ -51,7 +51,7 @@ public class TopLevelTypeTest
 		CtMethod<?> internalClassMethod = foo.getMethod("internalClass");
 		assertEquals(foo, internalClassMethod.getDeclaringType());
 		assertEquals(foo, internalClassMethod.getTopLevelType());
-		CtClass<?> internalClass = (CtClass<?>)internalClassMethod.getBody().getStatement(0);
+		CtClass<?> internalClass = (CtClass<?>)internalClassMethod.getMyBody().getStatement(0);
 		assertEquals(foo, internalClassMethod.getDeclaringType());
 		assertEquals(foo, internalClassMethod.getTopLevelType());
 		CtMethod<?> mm = internalClass.getMethod("m");
