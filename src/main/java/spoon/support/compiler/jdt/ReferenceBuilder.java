@@ -900,32 +900,7 @@ public class ReferenceBuilder {
 		} else if (resolveGeneric) {
 			//it is called e.g. by ExecutableReference, which must not use CtParameterTypeReference
 			//but it needs it's bounding type instead
-			ReferenceBinding superClass = binding.superclass;
-			ReferenceBinding[] superInterfaces = binding.superInterfaces();
-
-			CtTypeReference<?> refSuperClass = null;
-
-			// if the type parameter has a super class other than java.lang.Object, we get it
-			// superClass.superclass() is null if it's java.lang.Object
-			if (superClass != null && superClass.superclass() != null) {
-
-				// this case could happen with Enum<E extends Enum<E>> for example:
-				// in that case we only want to have E -> Enum -> E
-				// to conserve the same behavior as JavaReflectionTreeBuilder
-				if (!(superClass instanceof ParameterizedTypeBinding) || !this.exploringParameterizedBindings.containsKey(superClass)) {
-					refSuperClass = this.getTypeReference(superClass, resolveGeneric);
-				}
-
-				// if the type parameter has a super interface, then we'll get it too, as a superclass
-				// type parameter can only extends an interface or a class, so we don't make the distinction
-				// in Spoon. Moreover we can only have one extends in a type parameter.
-			} else if (superInterfaces != null && superInterfaces.length == 1) {
-				refSuperClass = this.getTypeReference(superInterfaces[0], resolveGeneric);
-			}
-			if (refSuperClass == null) {
-				refSuperClass = this.jdtTreeBuilder.getFactory().Type().getDefaultBoundingType();
-			}
-			ref = refSuperClass.clone();
+			ref = getTypeReferenceOfBoundingType(binding);
 		} else {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
 			ref.setSimpleName(new String(binding.sourceName()));
@@ -961,6 +936,39 @@ public class ReferenceBuilder {
 			bounds = false;
 		}
 
+		return ref;
+	}
+
+	private CtTypeReference<?> getTypeReferenceOfBoundingType(TypeVariableBinding binding) {
+		final boolean resolveGeneric = true;
+
+		CtTypeReference<?> ref;
+		ReferenceBinding superClass = binding.superclass;
+		ReferenceBinding[] superInterfaces = binding.superInterfaces();
+
+		CtTypeReference<?> refSuperClass = null;
+
+		// if the type parameter has a super class other than java.lang.Object, we get it
+		// superClass.superclass() is null if it's java.lang.Object
+		if (superClass != null && superClass.superclass() != null) {
+
+			// this case could happen with Enum<E extends Enum<E>> for example:
+			// in that case we only want to have E -> Enum -> E
+			// to conserve the same behavior as JavaReflectionTreeBuilder
+			if (!(superClass instanceof ParameterizedTypeBinding) || !this.exploringParameterizedBindings.containsKey(superClass)) {
+				refSuperClass = this.getTypeReference(superClass, resolveGeneric);
+			}
+
+		} else if (superInterfaces != null && superInterfaces.length == 1) {
+			// if the type parameter has a super interface, then we'll get it too, as a superclass
+			// type parameter can only extends an interface or a class, so we don't make the distinction
+			// in Spoon. Moreover we can only have one extends in a type parameter.
+			refSuperClass = this.getTypeReference(superInterfaces[0], resolveGeneric);
+		}
+		if (refSuperClass == null) {
+			refSuperClass = this.jdtTreeBuilder.getFactory().Type().getDefaultBoundingType();
+		}
+		ref = refSuperClass.clone();
 		return ref;
 	}
 
