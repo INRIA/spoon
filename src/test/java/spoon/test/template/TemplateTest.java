@@ -451,11 +451,7 @@ public class TemplateTest {
 			}
 		};
 
-		// act
-		boolean zeroTemplateParameters = abstractTemplate.isWellFormed();
-
-		// assert
-		assertFalse(zeroTemplateParameters);
+		assertFalse(abstractTemplate.isWellFormed());
 	}
 
 	@Test
