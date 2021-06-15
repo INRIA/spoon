@@ -44,10 +44,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
 import spoon.support.template.Parameters;
-import spoon.template.ExpressionTemplate;
-import spoon.template.Substitution;
-import spoon.template.TemplateMatcher;
-import spoon.template.TemplateParameter;
+import spoon.template.*;
 import spoon.test.template.testclasses.AnExpressionTemplate;
 import spoon.test.template.testclasses.AnotherFieldAccessTemplate;
 import spoon.test.template.testclasses.ArrayAccessTemplate;
@@ -440,6 +437,20 @@ public class TemplateTest {
 		// adds the bound check at the beginning of a method
 		method.getBody().insertBegin(injectedCode);
 		assertEquals(injectedCode, method.getBody().getStatement(0));
+	}
+
+	@Test
+	public void testAbstractTemplateIsWellFormed() {
+		// contract: IsWellFormed method of AbstractTemplate class returns false if there are zero template parameter
+
+		AbstractTemplate<CtElement> zeroParameterTemplate = new AbstractTemplate<CtElement>() {
+			@Override
+			public CtElement apply(CtType<?> targetType) {
+				return null;
+			}
+		};
+
+		assertFalse(zeroParameterTemplate.isWellFormed());
 	}
 
 	@Test
