@@ -444,9 +444,9 @@ public class TemplateTest {
 		// contract: IsWellFormed method of AbstractTemplate class returns false if there are zero template parameter
 
 		// arrange
-		AbstractTemplate abstractTemplate = new AbstractTemplate() {
+		AbstractTemplate<CtElement> abstractTemplate = new AbstractTemplate<CtElement>() {
 			@Override
-			public CtElement apply(CtType targetType) {
+			public CtElement apply(CtType<?> targetType) {
 				return null;
 			}
 		};
