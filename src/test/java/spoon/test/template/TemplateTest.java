@@ -443,15 +443,14 @@ public class TemplateTest {
 	public void testAbstractTemplateIsWellFormed() {
 		// contract: IsWellFormed method of AbstractTemplate class returns false if there are zero template parameter
 
-		// arrange
-		AbstractTemplate<CtElement> abstractTemplate = new AbstractTemplate<CtElement>() {
+		AbstractTemplate<CtElement> zeroParameterTemplate = new AbstractTemplate<CtElement>() {
 			@Override
 			public CtElement apply(CtType<?> targetType) {
 				return null;
 			}
 		};
 
-		assertFalse(abstractTemplate.isWellFormed());
+		assertFalse(zeroParameterTemplate.isWellFormed());
 	}
 
 	@Test
