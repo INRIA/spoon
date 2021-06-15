@@ -894,7 +894,7 @@ public class ReferenceBuilder {
 			return getTypeReference(((CaptureBinding) binding).wildcard, resolveGeneric);
 		} else if (binding instanceof CaptureBinding) {
 			CtWildcardReference wildcard = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
-			setBoundingTypeOnWildcard(wildcard, binding, resolveGeneric);
+			setBoundingTypeOnWildcardIfExists(wildcard, binding, resolveGeneric);
 			return wildcard;
 		} else if (resolveGeneric) {
 			//it is called e.g. by ExecutableReference, which must not use CtParameterTypeReference
@@ -939,16 +939,14 @@ public class ReferenceBuilder {
 				&& exploringParameterizedBindings.containsKey(binding);
 	}
 
-	private void setBoundingTypeOnWildcard(
+	private void setBoundingTypeOnWildcardIfExists(
 			CtWildcardReference wildcard, TypeVariableBinding binding, boolean resolveGeneric) {
 		bindingCache.put(binding, wildcard);
 
 		if (binding.superclass != null && binding.firstBound == binding.superclass) {
 			CtTypeReference<?> boundingType = getTypeReference(binding.superclass, resolveGeneric);
 			wildcard.setBoundingType(boundingType);
-		}
-
-		if (binding.superInterfaces != null && binding.superInterfaces != Binding.NO_SUPERINTERFACES) {
+		} else if (binding.superInterfaces != null && binding.superInterfaces != Binding.NO_SUPERINTERFACES) {
 			setSuperInterfaceDerivedBoundingTypeOnWildcard(wildcard, binding, resolveGeneric);
 		}
 	}
