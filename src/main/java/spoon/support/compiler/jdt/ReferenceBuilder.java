@@ -891,6 +891,10 @@ public class ReferenceBuilder {
 	}
 
 	private CtTypeReference<?> getTypeReferenceFromTypeVariableBinding(TypeVariableBinding binding, boolean resolveGeneric) {
+		if (binding instanceof CaptureBinding && ((CaptureBinding) binding).wildcard != null) {
+			return getTypeReference(((CaptureBinding) binding).wildcard, resolveGeneric);
+		}
+
 		boolean oldBounds = bounds;
 		CtTypeReference<?> ref;
 
@@ -905,32 +909,9 @@ public class ReferenceBuilder {
 			ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
 			ref.setSimpleName(new String(binding.sourceName()));
 		}
+
 		if (bounds) {
-			if (binding instanceof CaptureBinding && ((CaptureBinding) binding).wildcard != null) {
-				bounds = oldBounds;
-				return getTypeReference(((CaptureBinding) binding).wildcard, resolveGeneric);
-			} else if (binding.superclass != null && binding.firstBound == binding.superclass) {
-				bounds = false;
-				bindingCache.put(binding, ref);
-				if (ref instanceof CtWildcardReference) {
-					((CtWildcardReference) ref).setBoundingType(getTypeReference(binding.superclass, resolveGeneric));
-				}
-				bounds = oldBounds;
-			}
-		}
-		if (bounds && binding.superInterfaces != null && binding.superInterfaces != Binding.NO_SUPERINTERFACES) {
-			bindingCache.put(binding, ref);
-			List<CtTypeReference<?>> bounds = new ArrayList<>();
-			CtTypeParameterReference typeParameterReference = (CtTypeParameterReference) ref;
-			if (!(typeParameterReference.isDefaultBoundingType())) { // if it's object we can ignore it
-				bounds.add(typeParameterReference.getBoundingType());
-			}
-			for (ReferenceBinding superInterface : binding.superInterfaces) {
-				bounds.add(getTypeReference(superInterface, resolveGeneric));
-			}
-			if (ref instanceof CtWildcardReference) {
-				((CtWildcardReference) ref).setBoundingType(this.jdtTreeBuilder.getFactory().Type().createIntersectionTypeReferenceWithBounds(bounds));
-			}
+			attachTypeBounds(binding, resolveGeneric, oldBounds, ref);
 		}
 		if (binding instanceof CaptureBinding) {
 			bounds = false;
@@ -969,6 +950,35 @@ public class ReferenceBuilder {
 		// to conserve the same behavior as JavaReflectionTreeBuilder
 		return binding instanceof ParameterizedTypeBinding
 				&& exploringParameterizedBindings.containsKey(binding);
+	}
+
+	private void attachTypeBounds(
+			TypeVariableBinding binding, boolean resolveGeneric, boolean oldBounds, CtTypeReference<?> ref) {
+		bindingCache.put(binding, ref);
+
+		if (binding.superclass != null && binding.firstBound == binding.superclass) {
+			bounds = false;
+			if (ref instanceof CtWildcardReference) {
+			    CtTypeReference<?> boundingType = getTypeReference(binding.superclass, resolveGeneric);
+				((CtWildcardReference) ref).setBoundingType(boundingType);
+			}
+			bounds = oldBounds;
+		}
+
+		if (binding.superInterfaces != null && binding.superInterfaces != Binding.NO_SUPERINTERFACES) {
+			List<CtTypeReference<?>> boundingTypes = new ArrayList<>();
+			CtTypeParameterReference typeParameterReference = (CtTypeParameterReference) ref;
+			if (!(typeParameterReference.isDefaultBoundingType())) { // if it's object we can ignore it
+				boundingTypes.add(typeParameterReference.getBoundingType());
+			}
+			for (ReferenceBinding superInterface : binding.superInterfaces) {
+				boundingTypes.add(getTypeReference(superInterface, resolveGeneric));
+			}
+			if (ref instanceof CtWildcardReference) {
+				((CtWildcardReference) ref).setBoundingType(this.jdtTreeBuilder.getFactory().Type()
+						.createIntersectionTypeReferenceWithBounds(boundingTypes));
+			}
+		}
 	}
 
 	private CtTypeReference<?> getTypeReferenceFromBaseTypeBinding(BaseTypeBinding binding) {
