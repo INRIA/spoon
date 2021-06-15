@@ -106,8 +106,6 @@ public class ReferenceBuilder {
 	// when resolving parameterizedTypes (e.g. Enum<E extends Enum<E>>)
 	private Map<TypeBinding, CtTypeReference> exploringParameterizedBindings = new HashMap<>();
 
-	private boolean bounds = false;
-
 	private final JDTTreeBuilder jdtTreeBuilder;
 
 	ReferenceBuilder(JDTTreeBuilder jdtTreeBuilder) {
@@ -890,34 +888,23 @@ public class ReferenceBuilder {
 		return ref;
 	}
 
-	private CtTypeReference<?> getTypeReferenceFromTypeVariableBinding(TypeVariableBinding binding, boolean resolveGeneric) {
+	private CtTypeReference<?> getTypeReferenceFromTypeVariableBinding(
+			TypeVariableBinding binding, boolean resolveGeneric) {
 		if (binding instanceof CaptureBinding && ((CaptureBinding) binding).wildcard != null) {
 			return getTypeReference(((CaptureBinding) binding).wildcard, resolveGeneric);
-		}
-
-		boolean oldBounds = bounds;
-		CtTypeReference<?> ref;
-
-		if (binding instanceof CaptureBinding) {
-			ref = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
-			bounds = true;
+		} else if (binding instanceof CaptureBinding) {
+			CtWildcardReference wildcard = this.jdtTreeBuilder.getFactory().Core().createWildcardReference();
+			setBoundingTypeOnWildcard(wildcard, binding, resolveGeneric);
+			return wildcard;
 		} else if (resolveGeneric) {
 			//it is called e.g. by ExecutableReference, which must not use CtParameterTypeReference
 			//but it needs it's bounding type instead
-			ref = getTypeReferenceOfBoundingType(binding).clone();
+			return getTypeReferenceOfBoundingType(binding).clone();
 		} else {
-			ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
+			CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeParameterReference();
 			ref.setSimpleName(new String(binding.sourceName()));
+			return ref;
 		}
-
-		if (bounds && ref instanceof CtWildcardReference) {
-			setBoundingTypeOnWildcard((CtWildcardReference) ref, binding, resolveGeneric, oldBounds);
-		}
-		if (binding instanceof CaptureBinding) {
-			bounds = false;
-		}
-
-		return ref;
 	}
 
 	private CtTypeReference<?> getTypeReferenceOfBoundingType(TypeVariableBinding binding) {
@@ -953,14 +940,12 @@ public class ReferenceBuilder {
 	}
 
 	private void setBoundingTypeOnWildcard(
-			CtWildcardReference wildcard, TypeVariableBinding binding, boolean resolveGeneric, boolean oldBounds) {
+			CtWildcardReference wildcard, TypeVariableBinding binding, boolean resolveGeneric) {
 		bindingCache.put(binding, wildcard);
 
 		if (binding.superclass != null && binding.firstBound == binding.superclass) {
-			bounds = false;
 			CtTypeReference<?> boundingType = getTypeReference(binding.superclass, resolveGeneric);
 			wildcard.setBoundingType(boundingType);
-			bounds = oldBounds;
 		}
 
 		if (binding.superInterfaces != null && binding.superInterfaces != Binding.NO_SUPERINTERFACES) {
