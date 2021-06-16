@@ -80,6 +80,7 @@ import spoon.test.template.testclasses.logger.LoggerTemplateProcessor;
 import spoon.test.template.testclasses.types.AClassModel;
 import spoon.test.template.testclasses.types.AnEnumModel;
 import spoon.test.template.testclasses.types.AnIfaceModel;
+import spoon.test.template.testclasses.InsertAllFieldsTemplate;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -898,6 +899,28 @@ public class TemplateTest {
 		CtFieldReference<?> fr = innerType.filterChildren((CtFieldReference<?> e)->true).first();
 		//check that reference to declaring type is correctly substituted
 		assertEquals("x.Result$Inner",fr.getDeclaringType().getQualifiedName());
+	}
+
+	@Test
+	public void testSubstitutionInsertAllFields() {
+		// contract: insertAllFields method of the Substitution class inserts all the fields from a given template by substituting all the template parameters by their values.
+
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/InsertAllFieldsTemplate.java"));
+
+		spoon.buildModel();
+		Factory factory = spoon.getFactory();
+
+		CtType<?> targetType = factory.Class().create("someClass");
+		StatementTemplate template = new InsertAllFieldsTemplate("someParameter");
+
+		Substitution.insertAllFields(targetType, template);
+
+		try {
+			assertEquals("testString", targetType.getFields().get(0).getSimpleName());
+		} catch (IndexOutOfBoundsException e) {
+			fail();
+		}
 	}
 
 	@Test
