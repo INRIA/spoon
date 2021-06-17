@@ -36,25 +36,16 @@ public class SubstitutionTest {
         spoon.buildModel();
         Factory factory = spoon.getFactory();
 
+        CtField<String> expectedField = factory.createField();
+        expectedField.setSimpleName("testString");
+        expectedField.setAssignment(factory.createLiteral("goodName"));
+        expectedField.setType(factory.Type().stringType());
+
         CtType<?> targetType = factory.Class().create("someClass");
         StatementTemplate template = new SingleFieldTemplate();
 
         Substitution.insertAllFields(targetType, template);
 
-        List<String> expectedFieldNames = Collections.singletonList("testString");
-        List<String> actualFieldNames = targetType.getFields().stream()
-                .map(CtField::getSimpleName)
-                .collect(Collectors.toList());
-        // verifies that the field has correct name
-        assertEquals(expectedFieldNames, actualFieldNames);
-
-        List<String> expectedFieldAssignments = Collections.singletonList("\"goodName\"");
-        List<String> actualFieldAssignments = new ArrayList<>();
-        for (CtField<?> ctField : targetType.getFields()) {
-            CtExpression<?> assignment = ctField.getAssignment();
-            actualFieldAssignments.add(String.valueOf(assignment));
-        }
-        // verifies that the field has correct assignment
-        assertEquals(expectedFieldAssignments, actualFieldAssignments);
+        assertEquals(Collections.singletonList(expectedField), targetType.getFields());
     }
 }
