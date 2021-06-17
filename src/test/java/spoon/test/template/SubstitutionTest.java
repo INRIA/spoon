@@ -2,7 +2,6 @@ package spoon.test.template;
 
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
-import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -10,26 +9,17 @@ import spoon.support.compiler.FileSystemFile;
 import spoon.template.StatementTemplate;
 import spoon.template.Substitution;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SubstitutionTest {
 
-    private static class SingleFieldTemplate extends StatementTemplate {
-        String testString = "goodName";
-
-        @Override
-        public void statement() { }
-    }
-
     @Test
     public void testSubstitutionInsertAllFields() {
         // contract: Substitution.insertAllFields inserts the only field from a single-field template into the target class
 
+        // arrange
         Launcher spoon = new Launcher();
         spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/SubstitutionTest.java"));
 
@@ -44,8 +34,17 @@ public class SubstitutionTest {
         CtType<?> targetType = factory.Class().create("someClass");
         StatementTemplate template = new SingleFieldTemplate();
 
+        // act
         Substitution.insertAllFields(targetType, template);
 
+        // assert
         assertEquals(Collections.singletonList(expectedField), targetType.getFields());
+    }
+
+    private static class SingleFieldTemplate extends StatementTemplate {
+        String testString = "goodName";
+
+        @Override
+        public void statement() { }
     }
 }
