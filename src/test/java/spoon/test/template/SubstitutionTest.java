@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SubstitutionTest {
 
-    public class SingleFieldTemplate extends StatementTemplate {
+    private static class SingleFieldTemplate extends StatementTemplate {
         String testString = "goodName";
 
         @Override
