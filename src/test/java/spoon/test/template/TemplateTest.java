@@ -917,7 +917,11 @@ public class TemplateTest {
 		Substitution.insertAllFields(targetType, template);
 
 		try {
-			assertEquals("testString", targetType.getFields().get(0).getSimpleName());
+		List<String> expectedFieldNames = Collections.singletonList("testString");
+		List<String> actualFieldNames = targetType.getFields().stream()
+				.map(CtField::getSimpleName)
+				.collect(Collectors.toList());
+		assertEquals(expectedFieldNames, actualFieldNames);
 		} catch (IndexOutOfBoundsException e) {
 			fail();
 		}
