@@ -5,14 +5,10 @@ import spoon.Launcher;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtVisitor;
 import spoon.support.compiler.FileSystemFile;
-import spoon.support.reflect.declaration.CtTypeImpl;
 import spoon.template.StatementTemplate;
 import spoon.template.Substitution;
 
-import java.lang.annotation.Annotation;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -71,6 +67,7 @@ public class SubstitutionTest {
 
         // assert
         assertEquals(1, targetType.getNestedTypes().size());
+        assertEquals("nestedClass", targetType.getNestedType("nestedClass").getSimpleName());
     }
 
     private static class SinglyNestedTemplate extends StatementTemplate {
