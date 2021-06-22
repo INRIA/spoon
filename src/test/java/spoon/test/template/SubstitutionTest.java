@@ -47,4 +47,36 @@ public class SubstitutionTest {
         @Override
         public void statement() { }
     }
+
+    @Test
+    public void testInsertAllNestedTypes() {
+        // contract: Substitution.insertAllNestedTypes inserts the only nested class from a singly nested template into the target class
+
+        // arrange
+        Launcher spoon = new Launcher();
+        spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/SubstitutionTest.java"));
+
+        spoon.buildModel();
+        Factory factory = spoon.getFactory();
+
+        CtType<?> targetType = factory.Class().create("goodClass");
+        StatementTemplate template = new SinglyNestedTemplate();
+
+        // act
+        Substitution.insertAllNestedTypes(targetType, template);
+
+        // assert
+        assertEquals(1, targetType.getNestedTypes().size());
+        assertEquals("nestedClass", targetType.getNestedType("nestedClass").getSimpleName());
+    }
+
+    private static class SinglyNestedTemplate extends StatementTemplate {
+
+        class nestedClass {
+        }
+
+        @Override
+        public void statement() {
+        }
+    }
 }
