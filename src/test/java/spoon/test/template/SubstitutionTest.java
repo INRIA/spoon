@@ -53,7 +53,7 @@ public class SubstitutionTest {
     }
 
     @Test
-    public void testSubstitutionInsertAllNestedTypes() {
+    public void testInsertAllNestedTypes() {
         // contract: Substitution.insertAllNestedTypes inserts the only nested class from a singly nested template into the target class
 
         // arrange
