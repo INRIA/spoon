@@ -75,16 +75,7 @@ public class SubstitutionTest {
 
     private static class SinglyNestedTemplate extends StatementTemplate {
 
-        public class nestedClass<T extends Annotation> extends CtTypeImpl<T> {
-
-            @Override
-            public boolean isSubtypeOf(CtTypeReference<?> type) {
-                return false;
-            }
-
-            @Override
-            public void accept(CtVisitor visitor) {
-            }
+        class nestedClass {
         }
 
         @Override
