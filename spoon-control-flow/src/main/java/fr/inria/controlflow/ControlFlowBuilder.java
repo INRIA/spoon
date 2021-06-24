@@ -785,7 +785,7 @@ public class ControlFlowBuilder implements CtVisitor {
 			}
 			lastCase = caseStatement;
 		}
-		if(lastCase != null && !(lastCase.getLastStatement() instanceof CtReturn)
+		if (lastCase != null && !(lastCase.getLastStatement() instanceof CtReturn)
 				&& !(lastCase.getLastStatement() instanceof CtContinue)) {
 			tryAddEdge(lastNode, convergenceNode);
 		}
