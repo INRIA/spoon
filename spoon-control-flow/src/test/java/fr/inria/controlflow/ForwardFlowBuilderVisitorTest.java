@@ -164,6 +164,12 @@ public class ForwardFlowBuilderVisitorTest {
 		testMethod("switchTest", false, 1, 13, 28);
 	}
 
+	//Test last case without break or return
+	@Test
+	public void testSwitchFallThrough() throws Exception {
+		testMethod("lastCaseFallThrough", false, 1, 4, 12);
+	}
+
 	//Test some mixed conditions
 	@Test
 	public void testSimple() throws Exception {
