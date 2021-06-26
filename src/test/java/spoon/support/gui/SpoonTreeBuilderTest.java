@@ -40,7 +40,7 @@ class SpoonTreeBuilderTest {
 
     @Test
     public void testExit() {
-        // contract : SpoonTreeBuilder.exit creates removes the node for the current element while exiting the scanner
+        // contract : SpoonTreeBuilder.exit removes the node for the current element while exiting the scanner
 
         CtClass<?> testClass = factory.Class().create("testClass");
 
