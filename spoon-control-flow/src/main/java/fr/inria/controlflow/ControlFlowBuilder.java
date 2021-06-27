@@ -768,7 +768,6 @@ public class ControlFlowBuilder implements CtVisitor {
 		breakingBad.push(convergenceNode);
 
 		lastNode = switchNode;
-		CtCase lastCase = null;
 		for (CtCase caseStatement : switchStatement.getCases()) {
 
 			//Visit Case
@@ -783,12 +782,8 @@ public class ControlFlowBuilder implements CtVisitor {
 			if (lastNode.getStatement() instanceof CtBreak) {
 				lastNode = switchNode;
 			}
-			lastCase = caseStatement;
 		}
-		if (lastCase != null && !(lastCase.getLastStatement() instanceof CtReturn)
-				&& !(lastCase.getLastStatement() instanceof CtContinue)) {
-			tryAddEdge(lastNode, convergenceNode);
-		}
+		tryAddEdge(lastNode, convergenceNode);
 
 		//Return as last node the convergence node
 		lastNode = convergenceNode;
