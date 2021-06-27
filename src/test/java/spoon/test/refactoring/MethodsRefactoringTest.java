@@ -16,7 +16,7 @@
  */
 package spoon.test.refactoring;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonModelBuilder;
@@ -55,14 +55,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class MethodsRefactoringTest {
 
@@ -116,9 +116,9 @@ public class MethodsRefactoringTest {
 
 	private void checkContainsOnly(List<String> foundNames, String... expectedNames) {
 		for (String name : expectedNames) {
-			assertTrue("The "+name+" not found", foundNames.remove(name));
+			assertTrue(foundNames.remove(name), "The "+name+" not found");
 		}
-		assertTrue("Unexpected names found: "+foundNames, foundNames.isEmpty());
+		assertTrue(foundNames.isEmpty(), "Unexpected names found: "+foundNames);
 	}
 
 	@Test
@@ -141,10 +141,10 @@ public class MethodsRefactoringTest {
 		//contract: CtConstructor has no other same signature
 		CtConstructor<?> constructorTypeA = factory.Class().get(TypeA.class).getConstructors().iterator().next();
 		CtExecutable<?> exec = constructorTypeA.map(new AllMethodsSameSignatureFunction()).first();
-		assertNull("Unexpected executable found by Constructor of TypeA "+exec, exec);
+		assertNull(exec, "Unexpected executable found by Constructor of TypeA "+exec);
 		CtConstructor<?> constructorTypeB = factory.Class().get(TypeB.class).getConstructors().iterator().next();
 		exec = constructorTypeA.map(new AllMethodsSameSignatureFunction()).first();
-		assertNull("Unexpected executable found by Constructor of TypeA "+exec, exec);
+		assertNull(exec, "Unexpected executable found by Constructor of TypeA "+exec);
 		//contract: constructor is returned if includingSelf == true
 		assertSame(constructorTypeA, constructorTypeA.map(new AllMethodsSameSignatureFunction().includingSelf(true)).first());
 	}
@@ -173,7 +173,7 @@ public class MethodsRefactoringTest {
 		//contract: check that by default it returns lambdas
 		{
 			final List<CtExecutable<?>> executables = startExecutable.map(new AllMethodsSameSignatureFunction()).list();
-			assertFalse("Unexpected start executable "+startExecutable, containsSame(executables, startExecutable));
+			assertFalse(containsSame(executables, startExecutable), "Unexpected start executable "+startExecutable);
 			//check that some method was found
 			assertFalse(executables.isEmpty());
 			//check that expected methods were found and remove them 
@@ -181,28 +181,28 @@ public class MethodsRefactoringTest {
 				boolean found = removeSame(executables, m);
 				if(startExecutable==m) {
 					//it is start method. It should not be there
-					assertFalse("The signature "+getQSignature(m)+" was returned too", found);
+					assertFalse(found, "The signature "+getQSignature(m)+" was returned too");
 				} else {
-					assertTrue("The signature "+getQSignature(m)+" not found", found);
+					assertTrue(found, "The signature "+getQSignature(m)+" not found");
 				}
 			});
 			//check that there is no unexpected executable
-			assertTrue("Unexpected executables: "+executables, executables.isEmpty());
+			assertTrue(executables.isEmpty(), "Unexpected executables: "+executables);
 		}
 		
 		//contract: check that includingSelf(true) returns startMethod too
 		//contract: check that by default it still returns lambdas
 		{
 			final List<CtExecutable<?>> executables = startExecutable.map(new AllMethodsSameSignatureFunction().includingSelf(true)).list();
-			assertTrue("Missing start executable "+startExecutable, containsSame(executables, startExecutable));
+			assertTrue(containsSame(executables, startExecutable), "Missing start executable "+startExecutable);
 			//check that some method was found
 			assertFalse(executables.isEmpty());
 			//check that expected methods were found and remove them 
 			expectedExecutables.forEach(m->{
-				assertTrue("The signature "+getQSignature(m)+" not found", removeSame(executables, m));
+				assertTrue(removeSame(executables, m), "The signature "+getQSignature(m)+" not found");
 			});
 			//check that there is no unexpected executable
-			assertTrue("Unexpected executables: "+executables, executables.isEmpty());
+			assertTrue(executables.isEmpty(), "Unexpected executables: "+executables);
 		}
 		
 		//contract: check that includingLambdas(false) returns no lambda expressions
@@ -210,9 +210,9 @@ public class MethodsRefactoringTest {
 			final List<CtExecutable<?>> executables = startExecutable.map(new AllMethodsSameSignatureFunction().includingSelf(true).includingLambdas(false)).list();
 			if (startExecutable instanceof CtLambda) {
 				//lambda must not be returned even if it is first 
-				assertFalse("Unexpected start executable "+startExecutable, containsSame(executables, startExecutable));
+				assertFalse(containsSame(executables, startExecutable), "Unexpected start executable "+startExecutable);
 			} else {
-				assertTrue("Missing start executable "+startExecutable, containsSame(executables, startExecutable));
+				assertTrue(containsSame(executables, startExecutable), "Missing start executable "+startExecutable);
 			}
 			
 			//check that some method was found
@@ -223,10 +223,10 @@ public class MethodsRefactoringTest {
 					//the lambdas are not expected. Do not ask for them
 					return;
 				}
-				assertTrue("The signature "+getQSignature(m)+" not found", removeSame(executables, m));
+				assertTrue(removeSame(executables, m), "The signature "+getQSignature(m)+" not found");
 			});
 			//check that there is no unexpected executable or lambda
-			assertTrue("Unexepcted executables "+executables, executables.isEmpty());
+			assertTrue(executables.isEmpty(), "Unexepcted executables "+executables);
 		}
 		//contract: check early termination
 		//contract: check that first returned element is the startExecutable itself if includingSelf == true
@@ -301,7 +301,7 @@ public class MethodsRefactoringTest {
 			return containsSame(executables, er.getDeclaration());
 		}).forEach((CtExecutableReference er)->{
 			//check that each expected reference was found by ExecutableReferenceFilter and remove it from that list
-			assertTrue("Executable reference: "+er+" not found.", refs.remove(er));
+			assertTrue(refs.remove(er), "Executable reference: "+er+" not found.");
 		});
 		//check that no other reference was found by ExecutableReferenceFilter
 		assertSame(0, refs.size());
