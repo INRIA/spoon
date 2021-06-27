@@ -40,9 +40,6 @@ public class CtIntersectionTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> i
 			this.bounds = CtElementImpl.emptyList();
 			return (C) this;
 		}
-		if (this.bounds == CtElementImpl.<CtTypeReference<?>>emptySet()) {
-			this.bounds = new ArrayList<>();
-		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, BOUND, this.bounds, new ArrayList<>(this.bounds));
 		this.bounds.clear();
 		for (CtTypeReference<?> bound : bounds) {
