@@ -364,6 +364,10 @@ public class ClassTypingContext extends AbstractTypingContext {
 			if (declType == null) {
 				return null;
 			}
+			if (type.isInterface()) {
+				// Case: we have a declaring type and the inner type is an interface. So the nested interface is implicitly static.
+				return null;
+			}
 			if (declType.isInterface()) {
 				//nested types of interfaces are static
 				return null;

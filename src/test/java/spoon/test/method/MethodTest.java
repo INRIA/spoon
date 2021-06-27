@@ -18,6 +18,7 @@ package spoon.test.method;
 
 import org.junit.Test;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -43,6 +44,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -217,5 +219,17 @@ public class MethodTest {
 
 		assertThrows(IndexOutOfBoundsException.class,
 				() -> method.addFormalCtTypeParameterAt(1, typeParam));
+	}
+
+	@Test
+	public void testGetAllMethodsInnerClassExtended() {
+		// contract: implicit static nested interfaces are correct handled in getAllExecutables and dont throw an error.
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/extendsStaticInnerType");
+		CtModel model = launcher.buildModel();
+		CtType<?> type = model.getAllTypes().stream().filter(v -> v.getSimpleName().contains("BarBaz")).findAny().get();
+		assertDoesNotThrow(() -> type.getAllExecutables());
+		// on jdk8 there are 14 types on newer 13 because a method in Object.java was removed
+		assertTrue(13 == type.getAllExecutables().size() || 14 == type.getAllExecutables().size());
 	}
 }
