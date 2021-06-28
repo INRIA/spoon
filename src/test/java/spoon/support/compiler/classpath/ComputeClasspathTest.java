@@ -16,8 +16,8 @@
  */
 package spoon.support.compiler.classpath;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.builder.ClasspathOptions;
@@ -26,7 +26,7 @@ import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ComputeClasspathTest {
 
@@ -45,7 +45,7 @@ public class ComputeClasspathTest {
 
 	private String[] systemClasspath;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		Launcher launcher = new Launcher() {
 

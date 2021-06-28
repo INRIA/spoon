@@ -1,7 +1,7 @@
 package spoon.support.compiler;
 
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.MavenLauncher;
 import spoon.support.StandardEnvironment;
 
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SpoonPomTest {
 

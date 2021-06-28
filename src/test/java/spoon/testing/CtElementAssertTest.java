@@ -16,13 +16,14 @@
  */
 package spoon.testing;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.buildNoClasspath;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -48,23 +49,23 @@ public class CtElementAssertTest {
 		assertThat(type.getField("i")).isEqualTo("public int i;");
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test
 	public void testEqualityBetweenTwoCtElementWithTypeDifferent() {
-		assertThat(createFactory().Core().createAnnotation()).isEqualTo(createFactory().Core().createBlock());
+		assertThrows(AssertionError.class, ()-> assertThat(createFactory().Core().createAnnotation()).isEqualTo(createFactory().Core().createBlock()));
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test
 	public void testEqualityBetweenTwoCtElementWithTheSameSignatureButNotTheSameContent() throws Exception {
-		assertThat(buildNoClasspath(CtElementAssertTest.class).Type().get(CtElementAssertTest.class)).isEqualTo(createFactory().Class().create(CtElementAssertTest.class.getName()));
+		assertThrows(AssertionError.class, ()-> assertThat(buildNoClasspath(CtElementAssertTest.class).Type().get(CtElementAssertTest.class)).isEqualTo(createFactory().Class().create(CtElementAssertTest.class.getName())));
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test
 	public void testEqualityBetweenTwoDifferentCtElement() throws Exception {
 		class String {
 		}
 		final Factory build = buildNoClasspath(CtElementAssertTest.class);
 		final CtFieldAccess<Class<String>> actual = build.Code().createClassAccess(build.Type().<String>get(String.class).getReference());
 		final CtFieldAccess<Class<java.lang.String>> expected = createFactory().Code().createClassAccess(createFactory().Type().STRING);
-		assertThat(actual).isEqualTo(expected);
+		assertThrows(AssertionError.class, ()-> assertThat(actual).isEqualTo(expected));
 	}
 }

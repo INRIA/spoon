@@ -16,7 +16,7 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import spoon.Launcher;
 import java.io.File;

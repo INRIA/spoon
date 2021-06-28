@@ -17,12 +17,12 @@
 package spoon.support.compiler.jdt;
 
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JDTBasedSpoonCompilerTest {
 
@@ -44,7 +44,7 @@ public class JDTBasedSpoonCompilerTest {
 				String filenameCu0 = new String(cu0.getFileName());
 				String filenameCu1 = new String(cu1.getFileName());
 
-				assertTrue("There is a sort error: " + filenameCu0 + " should be before " + filenameCu1, filenameCu0.compareTo(filenameCu1) < 0);
+				assertTrue(filenameCu0.compareTo(filenameCu1) < 0, "There is a sort error: " + filenameCu0 + " should be before " + filenameCu1);
 			}
 		}
 	}
