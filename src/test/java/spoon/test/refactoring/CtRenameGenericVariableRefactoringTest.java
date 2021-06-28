@@ -16,13 +16,13 @@
  */
 package spoon.test.refactoring;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.refactoring.CtRenameGenericVariableRefactoring;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.*;
 
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class CtRenameGenericVariableRefactoringTest
 {
