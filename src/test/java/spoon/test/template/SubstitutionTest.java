@@ -2,6 +2,7 @@ package spoon.test.template;
 
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -10,8 +11,10 @@ import spoon.template.StatementTemplate;
 import spoon.template.Substitution;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SubstitutionTest {
 
@@ -74,6 +77,38 @@ public class SubstitutionTest {
 
         class nestedClass {
         }
+
+        @Override
+        public void statement() {
+        }
+    }
+
+    @Test
+    public void testInsertAllConstructor() {
+        // contract: Substitution.insertAllConstructor inserts the only constructor from a single constructor template into the target class
+
+        // arrange
+        Launcher spoon = new Launcher();
+        spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/SubstitutionTest.java"));
+
+        spoon.buildModel();
+        Factory factory = spoon.getFactory();
+
+        CtType<?> targetType = factory.Class().create("goodClass");
+        StatementTemplate template = new SingleConstructorTemplate();
+
+        // act
+        Substitution.insertAllConstructors(targetType, template);
+        List<?> typeMembers = targetType.getTypeMembers();
+
+        // assert
+        assertEquals(1, typeMembers.size());
+        assertTrue(typeMembers.get(0) instanceof CtConstructor);
+    }
+
+    private static class SingleConstructorTemplate extends StatementTemplate {
+
+        public SingleConstructorTemplate() { }
 
         @Override
         public void statement() {
