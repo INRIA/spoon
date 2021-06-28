@@ -63,7 +63,7 @@ public interface CtAbstractSwitch<S> extends CtElement {
 	/**
 	 * Adds a case at the specified position.
 	 */
-	@PropertyGetter(role = CASE)
+	@PropertySetter(role = CASE)
 	<T extends CtAbstractSwitch<S>> T addCaseAt(int position, CtCase<? super S> c);
 
 	/**
