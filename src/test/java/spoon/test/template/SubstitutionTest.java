@@ -6,10 +6,12 @@ import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.FileSystemFile;
 import spoon.template.StatementTemplate;
 import spoon.template.Substitution;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -114,4 +116,36 @@ public class SubstitutionTest {
         public void statement() {
         }
     }
+
+    @Test
+    public void testInsertAllSuperInterfaces() {
+        // contract: Substitution.insertAllSuperInterfaces inserts the only superInterface from a single interface implementing template into the target class
+
+        // arrange
+        Launcher spoon = new Launcher();
+        spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/SubstitutionTest.java"));
+
+        spoon.buildModel();
+        Factory factory = spoon.getFactory();
+
+        CtType<?> targetType = factory.Class().create("goodClass");
+        StatementTemplate template = new SingleInterfaceImplementingTemplate();
+
+        // act
+        Substitution.insertAllSuperInterfaces(targetType, template);
+        List<CtTypeReference> superInterfaces = new ArrayList<>(targetType.getSuperInterfaces());
+
+        // assert
+        assertEquals(1, superInterfaces.size());
+        assertTrue(superInterfaces.get(0).isInterface());
+        assertEquals("A", superInterfaces.get(0).getSimpleName());
+    }
+
+    private static class SingleInterfaceImplementingTemplate extends StatementTemplate implements A {
+
+        @Override
+        public void statement() { }
+    }
+
+    private interface A { }
 }
