@@ -36,6 +36,9 @@ Guidelines for all pull-requests:
   * The pull-request title starts with a prefix stating its kind: "fix:", "feature:", "refactor:", "perf:", "checkstyle:"
   * Pull-requests that are in progress are prefixed by "WIP".
   * Pull-requests that are ready for review are prefixed by "review", or labeled as "[review](https://github.com/INRIA/spoon/labels/review)".
+* **Avoid force-pushing** after you have marked your PR as ready for review or have received any form of feedback on your PR.
+  * While a clean and clear commit history can help in reviewing a PR, it's confusing for reviewers to have previously reviewed commits disappear.
+  * It's OK to force-push to WIP PRs as long as you are not collaborating with anyone.
 * **Your contribution is highly welcome**! If you have anything interesting, then we welcome your PR even if it is not perfect at the beginning. The Spoon community will help you to fix the remaining problems, if any.;-)
   
 Guidelines for bug-fix pull-requests:
