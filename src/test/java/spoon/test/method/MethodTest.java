@@ -222,7 +222,7 @@ public class MethodTest {
 	}
 
 	@Test
-	public void testGetAllMethodsInnerClassExtended() {
+	public void testGetAllExecutablesOnTypeImplementingNestedInterface() {
 		// contract: implicit static nested interfaces are correct handled in getAllExecutables and dont throw an error.
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("src/test/resources/extendsStaticInnerType");
