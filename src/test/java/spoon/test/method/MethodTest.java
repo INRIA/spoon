@@ -221,15 +221,4 @@ public class MethodTest {
 				() -> method.addFormalCtTypeParameterAt(1, typeParam));
 	}
 
-	@Test
-	public void testGetAllExecutablesOnTypeImplementingNestedInterface() {
-		// contract: implicit static nested interfaces are correct handled in getAllExecutables and dont throw an error.
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/extendsStaticInnerType");
-		CtModel model = launcher.buildModel();
-		CtType<?> type = model.getAllTypes().stream().filter(v -> v.getSimpleName().contains("BarBaz")).findAny().get();
-		assertDoesNotThrow(() -> type.getAllExecutables());
-		// on jdk8 there are 14 types on newer 13 because a method in Object.java was removed
-		assertTrue(13 == type.getAllExecutables().size() || 14 == type.getAllExecutables().size());
-	}
 }
