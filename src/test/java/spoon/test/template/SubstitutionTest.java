@@ -25,11 +25,7 @@ public class SubstitutionTest {
         // contract: Substitution.insertAllFields inserts the only field from a single-field template into the target class
 
         // arrange
-        Launcher spoon = new Launcher();
-        spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/SubstitutionTest.java"));
-
-        spoon.buildModel();
-        Factory factory = spoon.getFactory();
+        Factory factory = createFactoryWithTemplates();
 
         CtField<String> expectedField = factory.createField();
         expectedField.setSimpleName("testString");
@@ -58,12 +54,7 @@ public class SubstitutionTest {
         // contract: Substitution.insertAllNestedTypes inserts the only nested class from a singly nested template into the target class
 
         // arrange
-        Launcher spoon = new Launcher();
-        spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/SubstitutionTest.java"));
-
-        spoon.buildModel();
-        Factory factory = spoon.getFactory();
-
+        Factory factory = createFactoryWithTemplates();
         CtType<?> targetType = factory.Class().create("goodClass");
         StatementTemplate template = new SinglyNestedTemplate();
 
@@ -90,12 +81,7 @@ public class SubstitutionTest {
         // contract: Substitution.insertAllConstructor inserts the only constructor from a single constructor template into the target class
 
         // arrange
-        Launcher spoon = new Launcher();
-        spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/SubstitutionTest.java"));
-
-        spoon.buildModel();
-        Factory factory = spoon.getFactory();
-
+        Factory factory = createFactoryWithTemplates();
         CtType<?> targetType = factory.Class().create("goodClass");
         StatementTemplate template = new SingleConstructorTemplate();
 
@@ -122,12 +108,7 @@ public class SubstitutionTest {
         // contract: Substitution.insertAllSuperInterfaces inserts the only superInterface from a single interface implementing template into the target class
 
         // arrange
-        Launcher spoon = new Launcher();
-        spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/SubstitutionTest.java"));
-
-        spoon.buildModel();
-        Factory factory = spoon.getFactory();
-
+        Factory factory = createFactoryWithTemplates();
         CtType<?> targetType = factory.Class().create("goodClass");
         StatementTemplate template = new SingleInterfaceImplementingTemplate();
 
@@ -148,4 +129,11 @@ public class SubstitutionTest {
     }
 
     private interface A { }
+
+    private static Factory createFactoryWithTemplates() {
+        Launcher spoon = new Launcher();
+        spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/SubstitutionTest.java"));
+        spoon.buildModel();
+        return spoon.getFactory();
+    }
 }
