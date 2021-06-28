@@ -130,19 +130,5 @@ public class ExecutableTest {
 		new ContractVerifier(shadowValueOf.getParent(CtPackage.class)).checkShadow();
 	}
 
-	@Test
-	public void testGetAllExecutablesOnTypeImplementingNestedInterface() {
-		// contract: implicit static nested interfaces are correct handled in getAllExecutables.
-		Launcher launcher = new Launcher();
-		launcher.addInputResource("src/test/resources/extendsStaticInnerType");
-		CtModel model = launcher.buildModel();
-		CtType<?> type = model.getAllTypes().stream().filter(v -> v.getSimpleName().contains("BarBaz")).findAny().get();
-		int expectedNumExecutablesInJDK8 = 13;
-		int expectedNumExecutablesPostJDK8 = 14;
-		int numExecutables = type.getAllExecutables().size();
-		assertThat(numExecutables, anyOf(
-				equalTo(expectedNumExecutablesInJDK8),
-				equalTo(expectedNumExecutablesPostJDK8))
-		);	
-	}
+
 }
