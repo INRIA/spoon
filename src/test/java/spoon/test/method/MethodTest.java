@@ -18,7 +18,6 @@ package spoon.test.method;
 
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -44,7 +43,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -220,5 +218,4 @@ public class MethodTest {
 		assertThrows(IndexOutOfBoundsException.class,
 				() -> method.addFormalCtTypeParameterAt(1, typeParam));
 	}
-
 }

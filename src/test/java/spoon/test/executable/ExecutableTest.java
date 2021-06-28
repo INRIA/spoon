@@ -35,9 +35,6 @@ import spoon.testing.utils.ModelUtils;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -129,6 +126,4 @@ public class ExecutableTest {
 		assertEquals(valueOf.getDeclaration(), shadowValueOf.getDeclaration());
 		new ContractVerifier(shadowValueOf.getParent(CtPackage.class)).checkShadow();
 	}
-
-
 }
