@@ -769,7 +769,6 @@ public class ControlFlowBuilder implements CtVisitor {
 
 		lastNode = switchNode;
 		for (CtCase caseStatement : switchStatement.getCases()) {
-			//lastNode = switchNode;
 
 			//Visit Case
 			registerStatementLabel(caseStatement);
@@ -784,6 +783,7 @@ public class ControlFlowBuilder implements CtVisitor {
 				lastNode = switchNode;
 			}
 		}
+		tryAddEdge(lastNode, convergenceNode);
 
 		//Return as last node the convergence node
 		lastNode = convergenceNode;
