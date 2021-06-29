@@ -30,7 +30,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -42,7 +41,6 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.ModelConsistencyChecker;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.compiler.FileSystemFile;
-import spoon.support.compiler.FileSystemFolder;
 import spoon.support.template.Parameters;
 import spoon.template.*;
 import spoon.test.template.testclasses.AnExpressionTemplate;
@@ -57,7 +55,6 @@ import spoon.test.template.testclasses.InvocationTemplate;
 import spoon.test.template.testclasses.NtonCodeTemplate;
 import spoon.test.template.testclasses.ObjectIsNotParamTemplate;
 import spoon.test.template.testclasses.SecurityCheckerTemplate;
-import spoon.test.template.testclasses.SimpleTemplate;
 import spoon.test.template.testclasses.SubStringTemplate;
 import spoon.test.template.testclasses.SubstituteLiteralTemplate;
 import spoon.test.template.testclasses.SubstituteRootTemplate;
@@ -77,9 +74,6 @@ import spoon.test.template.testclasses.inheritance.SuperClass;
 import spoon.test.template.testclasses.inheritance.SuperTemplate;
 import spoon.test.template.testclasses.logger.Logger;
 import spoon.test.template.testclasses.logger.LoggerTemplateProcessor;
-import spoon.test.template.testclasses.types.AClassModel;
-import spoon.test.template.testclasses.types.AnEnumModel;
-import spoon.test.template.testclasses.types.AnIfaceModel;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -100,8 +94,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -817,23 +809,6 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void testSimpleTemplate() {
-		Launcher spoon = new Launcher();
-		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SimpleTemplate.java"));
-		spoon.buildModel();
-
-		Factory factory = spoon.getFactory();
-
-		CtClass<?> testSimpleTpl = factory.Class().create("TestSimpleTpl");
-		//whitespace seems wrong here
-		new SimpleTemplate("HelloWorld").apply(testSimpleTpl);
-
-		Set<CtMethod<?>> listMethods = testSimpleTpl.getMethods();
-		assertEquals(0, testSimpleTpl.getMethodsByName("apply").size());
-		assertEquals(1, listMethods.size());
-	}
-
-	@Test
 	public void testSubstitutionInsertAllNtoN() {
 		Launcher spoon = new Launcher();
 		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/NtonCodeTemplate.java"));
@@ -935,53 +910,6 @@ public class TemplateTest {
 		CtExpression result = new AnExpressionTemplate(factory.createCodeSnippetExpression("\"Spoon is cool!\"")).apply(resultKlass);
 		assertFalse(result.isParentInitialized());
 		assertEquals("new java.lang.String(\"Spoon is cool!\")", result.toString());
-	}
-
-	@Test
-	public void createTypeFromTemplate() {
-		//contract: the Substitution API provides a method createTypeFromTemplate
-		final Launcher launcher = new Launcher();
-		launcher.setArgs(new String[] {"--output-type", "nooutput" });
-		launcher.addTemplateResource(new FileSystemFolder("./src/test/java/spoon/test/template/testclasses/types"));
-
-		launcher.buildModel();
-		Factory factory = launcher.getFactory();
-		
-		Map<String, Object> parameters = new HashMap<>();
-		//replace someMethod with genMethod
-		parameters.put("someMethod", "genMethod");
-		
-		//contract: we can generate interface with createTypeFromTemplate
-		final CtType<?> aIfaceModel = launcher.getFactory().Templates().Interface().get(AnIfaceModel.class);
-		CtType<?> genIface = Substitution.createTypeFromTemplate("generated.GenIface", aIfaceModel, parameters);
-		assertNotNull(genIface);
-		CtMethod<?> generatedIfaceMethod = genIface.getMethod("genMethod");
-		assertNotNull(generatedIfaceMethod);
-		assertNull(genIface.getMethod("someMethod"));
-
-		//add new substitution request - replace AnIfaceModel by GenIface
-		parameters.put("AnIfaceModel", genIface.getReference());
-		//contract: we can generate class
-		final CtType<?> aClassModel = launcher.getFactory().Class().get(AClassModel.class);
-		CtType<?> genClass = Substitution.createTypeFromTemplate("generated.GenClass", aClassModel, parameters);
-		assertNotNull(genClass);
-		assertSame(genClass, factory.Type().get("generated.GenClass"));
-		CtMethod<?> generatedClassMethod = genClass.getMethod("genMethod");
-		assertNotNull(generatedClassMethod);
-		assertNull(genClass.getMethod("someMethod"));
-		assertNotSame(generatedIfaceMethod, generatedClassMethod);
-		assertTrue(generatedClassMethod.isOverriding(generatedIfaceMethod));
-
-		//contract: we can generate enum
-		parameters.put("case1", "GOOD");
-		parameters.put("case2", "BETTER");
-		final CtType<?> aEnumModel = launcher.getFactory().Type().get(AnEnumModel.class);
-		CtEnum<?> genEnum = (CtEnum<?>) Substitution.createTypeFromTemplate("generated.GenEnum", aEnumModel, parameters);
-		assertNotNull(genEnum);
-		assertSame(genEnum, factory.Type().get("generated.GenEnum"));
-		assertEquals(2, genEnum.getEnumValues().size());
-		assertEquals("GOOD", genEnum.getEnumValues().get(0).getSimpleName());
-		assertEquals("BETTER", genEnum.getEnumValues().get(1).getSimpleName());
 	}
 	
 	@Test
