@@ -16,8 +16,9 @@
  */
 package spoon.testing;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static spoon.testing.Assert.assertThat;
 
 public class FileAssertTest {
@@ -29,8 +30,8 @@ public class FileAssertTest {
 		assertThat(actual).isEqualTo(actual);
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test
 	public void testEqualsBetweenTwoDifferentFile() {
-		assertThat(PATH + "Foo.java").isEqualTo(PATH + "Bar.java");
+		assertThrows(AssertionError.class, ()-> assertThat(PATH + "Foo.java").isEqualTo(PATH + "Bar.java"));
 	}
 }

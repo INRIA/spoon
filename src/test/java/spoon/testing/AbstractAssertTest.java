@@ -16,7 +16,7 @@
  */
 package spoon.testing;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;

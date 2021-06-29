@@ -17,7 +17,7 @@
 package spoon.support.visitor.java;
 
 import com.mysema.query.support.ProjectableQuery;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.metamodel.MetamodelConcept;
@@ -83,12 +83,12 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class JavaReflectionTreeBuilderTest {
@@ -208,7 +208,7 @@ public class JavaReflectionTreeBuilderTest {
 			allProblems.addAll(checkShadowTypeIsEqual(concept.getImplementationClass()));
 			allProblems.addAll(checkShadowTypeIsEqual(concept.getMetamodelInterface()));
 		}
-		assertTrue("Found " + allProblems.size() + " problems:\n" + String.join("\n", allProblems), allProblems.isEmpty());
+		assertTrue(allProblems.isEmpty(), "Found " + allProblems.size() + " problems:\n" + String.join("\n", allProblems));
 	}
 
 	private List<String> checkShadowTypeIsEqual(CtType<?> type) {
@@ -501,11 +501,11 @@ public class JavaReflectionTreeBuilderTest {
 		CtTypeReference<?> aTypeRef = typeFactory.createReference(CtExpression.class);
 		CtType aType = aTypeRef.getTypeDeclaration();
 		for (CtTypeReference<?> ifaceRef : aType.getSuperInterfaces()) {
-			assertNotNull(ifaceRef.getQualifiedName() + " doesn't exist?", ifaceRef.getActualClass());
+			assertNotNull(ifaceRef.getActualClass(), ifaceRef.getQualifiedName() + " doesn't exist?");
 			assertSame(aType, ifaceRef.getParent());
 		}
 		for (CtTypeReference<?> ifaceRef : aTypeRef.getSuperInterfaces()) {
-			assertNotNull(ifaceRef.getQualifiedName() + " doesn't exist?", ifaceRef.getActualClass());
+			assertNotNull(ifaceRef.getActualClass(), ifaceRef.getQualifiedName() + " doesn't exist?");
 			assertSame(aType, ifaceRef.getParent());
 		}
 	}

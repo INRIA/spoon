@@ -16,7 +16,7 @@
  */
 package spoon.test.refactoring;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonException;
@@ -42,8 +42,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class CtRenameLocalVariableRefactoringTest
 {
@@ -125,7 +125,7 @@ public class CtRenameLocalVariableRefactoringTest
 			} catch(SpoonException e) {
 				throw new AssertionError(getParentMethodName(targetVariable)+" Rename of \""+originName+"\" should NOT fail when trying rename to \""+newName+"\"\n"+targetVariable.toString(), e);
 			}
-			assertEquals(getParentMethodName(targetVariable)+" Rename of \""+originName+"\" to \""+newName+"\" passed, but the name of variable was not changed", newName, targetVariable.getSimpleName());
+			assertEquals(newName, targetVariable.getSimpleName(), getParentMethodName(targetVariable)+" Rename of \""+originName+"\" to \""+newName+"\" passed, but the name of variable was not changed");
 			assertCorrectModel(launcher, getParentMethodName(targetVariable)+" Rename of \""+originName+"\" to \""+newName+"\"");
 		} else {
 			try {
@@ -133,7 +133,7 @@ public class CtRenameLocalVariableRefactoringTest
 				fail(getParentMethodName(targetVariable)+" Rename of \""+originName+"\" should fail when trying rename to \""+newName+"\"");
 			} catch(SpoonException e) {
 			}
-			assertEquals(getParentMethodName(targetVariable)+" Rename of \""+originName+"\" failed when trying rename to \""+newName+"\" but the name of variable should not be changed", originName, targetVariable.getSimpleName());
+			assertEquals(originName, targetVariable.getSimpleName(), getParentMethodName(targetVariable)+" Rename of \""+originName+"\" failed when trying rename to \""+newName+"\" but the name of variable should not be changed");
 		}
 		if(renameShouldPass) {
 			rollback(targetVariable, originName);

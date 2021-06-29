@@ -16,7 +16,7 @@
  */
 package spoon.testing;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
@@ -29,10 +29,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import java.io.File;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -55,17 +52,17 @@ public class CtPackageAssertTest {
 		assertThat(aRootPackage2).isEqualTo(aRootPackage);
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test
 	public void testEqualityBetweenTwoDifferentCtPackage() {
-		assertThat(build(new File("./src/test/java/spoon/testing/testclasses/")).Package().getRootPackage()).isEqualTo(createFactory().Package().getOrCreate("another.package"));
+		assertThrows(AssertionError.class, ()-> assertThat(build(new File("./src/test/java/spoon/testing/testclasses/")).Package().getRootPackage()).isEqualTo(createFactory().Package().getOrCreate("another.package")));
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test
 	public void testEqualityBetweenTwoCtPackageWithDifferentTypes() {
 		final Factory factory = createFactory();
 		final CtPackage aRootPackage = factory.Package().getOrCreate("");
 		factory.Class().create("spoon.testing.testclasses.Foo").addModifier(ModifierKind.PUBLIC);
-		assertThat(build(new File("./src/test/java/spoon/testing/testclasses/")).Package().getRootPackage()).isEqualTo(aRootPackage);
+		assertThrows(AssertionError.class, ()->assertThat(build(new File("./src/test/java/spoon/testing/testclasses/")).Package().getRootPackage()).isEqualTo(aRootPackage));
 	}
 
 	@Test
