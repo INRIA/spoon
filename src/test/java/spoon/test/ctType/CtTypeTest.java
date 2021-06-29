@@ -52,6 +52,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -269,7 +270,18 @@ public class CtTypeTest {
 
 		assertSame(reFetchedTypeDecl, typeDecl);
 	}
+  
 	@Test
+	public void testSneakyThrowsInSubClasses() {
+		// contract: Sneaky throws doesn't crash spoons method return type resolution.
+		// see e.g https://projectlombok.org/features/SneakyThrows for explanation
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/npe");
+		CtModel model = launcher.buildModel();
+		assertDoesNotThrow(() -> model.getAllTypes().stream().forEach(CtType::getAllExecutables));
+  }
+  
+  @Test
 	public void testGetAllExecutablesOnTypeImplementingNestedInterface() {
 		// contract: implicit static nested interfaces are correct handled in getAllExecutables.
 		Launcher launcher = new Launcher();
