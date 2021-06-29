@@ -1,9 +1,18 @@
-/*
- * SPDX-License-Identifier: (MIT OR CECILL-C)
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
  */
 package spoon.support.visitor.replace;
 /**
@@ -12,6 +21,20 @@ package spoon.support.visitor.replace;
  * This class is generated automatically by the processor spoon.generating.ReplacementVisitorGenerator.
  */
 public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtTypePatternVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtLocalVariable> {
+		private final spoon.reflect.code.CtTypePattern element;
+
+		CtTypePatternVariableReplaceListener(spoon.reflect.code.CtTypePattern element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtLocalVariable replace) {
+			this.element.setVariable(replace);
+		}
+	}
+
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	class CtYieldStatementExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtYieldStatement element;
@@ -2249,5 +2272,14 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(statement.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(statement));
 		replaceElementIfExist(statement.getExpression(), new spoon.support.visitor.replace.ReplacementVisitor.CtYieldStatementExpressionReplaceListener(statement));
 		replaceInListIfExist(statement.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(statement));
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
+	public <T> void visitCtTypePattern(spoon.reflect.code.CtTypePattern<T> pattern) {
+		replaceElementIfExist(pattern.getVariable(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypePatternVariableReplaceListener(pattern));
+		replaceInListIfExist(pattern.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(pattern));
+		replaceElementIfExist(pattern.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(pattern));
+		replaceInListIfExist(pattern.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(pattern));
 	}
 }
