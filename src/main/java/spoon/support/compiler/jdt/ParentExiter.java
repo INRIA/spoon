@@ -70,6 +70,7 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.CtYieldStatement;
@@ -107,6 +108,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static spoon.reflect.code.BinaryOperatorKind.INSTANCEOF;
 
 @SuppressWarnings("unchecked")
 public class ParentExiter extends CtInheritanceScanner {
@@ -406,6 +409,14 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
+		CtElement child = this.child;
+		// check if this is a type pattern, as it needs special treatment
+		// patterns are only allowed for instanceof and on the right hand
+		if (child instanceof CtLocalVariable && operator.getKind() == INSTANCEOF && operator.getLeftHandOperand() != null) {
+			CtTypePattern<?> typePattern = child.getFactory().Core().createTypePattern();
+			typePattern.setVariable((CtLocalVariable<?>) child);
+			child = typePattern; // replace the local variable with a pattern (which is a CtExpression)
+		}
 		if (child instanceof CtExpression) {
 			if (operator.getLeftHandOperand() == null) {
 				operator.setLeftHandOperand((CtExpression<?>) child);
@@ -991,4 +1002,12 @@ public class ParentExiter extends CtInheritanceScanner {
 		}
 		super.visitCtYieldStatement(e);
 	}
+
+    @Override
+    public <T> void visitCtTypePattern(CtTypePattern<T> pattern) {
+        if (child instanceof CtLocalVariable) {
+            pattern.setVariable((CtLocalVariable<T>) child);
+        }
+        super.visitCtTypePattern(pattern);
+    }
 }

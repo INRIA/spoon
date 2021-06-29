@@ -118,7 +118,8 @@ public enum CtRole {
 	IS_INFERRED,
 	TYPE_REF,
 	LITERAL_BASE,
-	CASE_KIND;
+	CASE_KIND,
+	PATTERN;
 
 	private final CtRole superRole;
 	private final List<CtRole> subRoles;

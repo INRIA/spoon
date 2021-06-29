@@ -59,6 +59,7 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -1041,5 +1042,13 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.COMMENT, statement.getComments());
 		exit(statement);
 		}
+
+    @Override
+    public <T> void visitCtTypePattern(CtTypePattern<T> pattern) {
+        enter(pattern);
+        scan(CtRole.PATTERN, pattern.getVariable());
+        exit(pattern);
+    }
+
 }
 

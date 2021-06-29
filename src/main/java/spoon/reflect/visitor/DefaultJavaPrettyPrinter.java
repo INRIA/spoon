@@ -66,6 +66,7 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -2144,7 +2145,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtStatement(statement);
 	}
 
-	/**
+    @Override
+    public <T> void visitCtTypePattern(CtTypePattern<T> pattern) {
+		enterCtExpression(pattern);
+		scan(pattern.getVariable());
+		exitCtExpression(pattern);
+    }
+
+    /**
 	 * @return true if the printer is minimizing the amount of round brackets in expressions
 	 */
 	protected boolean isMinimizeRoundBrackets() {
