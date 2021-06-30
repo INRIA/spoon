@@ -7,7 +7,7 @@ import spoon.support.UnsettableProperty;
 
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.VARIABLE;
+import static spoon.reflect.path.CtRole.PATTERN;
 
 /**
  * This code element defines a type pattern, introduced in Java 16
@@ -15,32 +15,30 @@ import static spoon.reflect.path.CtRole.VARIABLE;
  * <p>
  * Example:
  * <pre>
- *     Object obj = null;
- *     boolean longerThanTwo = false;
  *     // String s is the type pattern, declaring a local variable
  *     if (obj instanceof String s) {
- *         longerThanTwo = s.length() > 2;
+ *         return s.length() > 2;
  *     }
  * </pre>
  *
  * @param <T> the type of the variable.
  */
-public interface CtTypePattern<T> extends CtExpression<Void> {
+public interface CtTypePattern<T> extends CtPattern {
 
-	/**
-	 * Returns the local variable declared by this type pattern.
-	 */
-	@PropertyGetter(role = VARIABLE)
-	CtLocalVariable<?> getVariable();
+    /**
+     * Returns the local variable declared by this type pattern.
+     */
+    @PropertyGetter(role = PATTERN)
+    CtLocalVariable<?> getVariable();
 
 	/**
 	 * Sets the local variable for this type pattern.
 	 */
-	@PropertySetter(role = VARIABLE)
-	<C extends CtTypePattern<?>> C setVariable(CtLocalVariable<?> variable);
+    @PropertySetter(role = PATTERN)
+    <C extends CtTypePattern<?>> C setVariable(CtLocalVariable<?> variable);
 
-	@Override
-	CtTypePattern<T> clone();
+    @Override
+    CtTypePattern<T> clone();
 
 	@Override
 	@UnsettableProperty
