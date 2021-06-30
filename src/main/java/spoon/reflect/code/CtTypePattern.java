@@ -15,9 +15,11 @@ import static spoon.reflect.path.CtRole.VARIABLE;
  * <p>
  * Example:
  * <pre>
+ *     Object obj = null;
+ *     boolean longerThanTwo = false;
  *     // String s is the type pattern, declaring a local variable
  *     if (obj instanceof String s) {
- *         return s.length() > 2;
+ *         longerThanTwo = s.length() > 2;
  *     }
  * </pre>
  *
@@ -25,20 +27,20 @@ import static spoon.reflect.path.CtRole.VARIABLE;
  */
 public interface CtTypePattern<T> extends CtExpression<Void> {
 
-    /**
-     * Returns the local variable declared by this type pattern.
-     */
-    @PropertyGetter(role = VARIABLE)
-    CtLocalVariable<?> getVariable();
+	/**
+	 * Returns the local variable declared by this type pattern.
+	 */
+	@PropertyGetter(role = VARIABLE)
+	CtLocalVariable<?> getVariable();
 
 	/**
 	 * Sets the local variable for this type pattern.
 	 */
-    @PropertySetter(role = VARIABLE)
-    <C extends CtTypePattern<?>> C setVariable(CtLocalVariable<?> variable);
+	@PropertySetter(role = VARIABLE)
+	<C extends CtTypePattern<?>> C setVariable(CtLocalVariable<?> variable);
 
-    @Override
-    CtTypePattern<T> clone();
+	@Override
+	CtTypePattern<T> clone();
 
 	@Override
 	@UnsettableProperty
