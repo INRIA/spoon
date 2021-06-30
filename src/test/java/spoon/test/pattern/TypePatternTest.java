@@ -5,6 +5,7 @@ import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.code.CtTypePatternImpl;
@@ -36,5 +37,8 @@ public class TypePatternTest {
 		CtBinaryOperator<Boolean> instanceOf = model.getElements(new TypeFilter<CtBinaryOperator<Boolean>>(CtBinaryOperator.class)).get(0);
 		assertEquals(BinaryOperatorKind.INSTANCEOF, instanceOf.getKind());
 		assertEquals(CtTypePatternImpl.class, instanceOf.getRightHandOperand().getClass());
+		CtTypePattern<?> pattern = (CtTypePattern<?>) instanceOf.getRightHandOperand();
+		assertEquals("java.lang.String", pattern.getVariable().getType().toString());
+		assertEquals("s", pattern.getVariable().getSimpleName());
 	}
 }
