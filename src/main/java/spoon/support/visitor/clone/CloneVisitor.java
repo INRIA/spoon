@@ -1109,6 +1109,9 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		spoon.reflect.code.CtTypePattern<T> aCtTypePattern = pattern.getFactory().Core().createTypePattern();
 		this.builder.copy(pattern, aCtTypePattern);
 		aCtTypePattern.setVariable(this.cloneHelper.clone(pattern.getVariable()));
+		aCtTypePattern.setAnnotations(this.cloneHelper.clone(pattern.getAnnotations()));
+		aCtTypePattern.setType(this.cloneHelper.clone(pattern.getType()));
+		aCtTypePattern.setComments(this.cloneHelper.clone(pattern.getComments()));
 		this.cloneHelper.tailor(pattern, aCtTypePattern);
 		this.other = aCtTypePattern;
 	}

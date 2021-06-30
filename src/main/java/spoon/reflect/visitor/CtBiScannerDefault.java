@@ -1055,7 +1055,10 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 	public <T> void visitCtTypePattern(spoon.reflect.code.CtTypePattern<T> pattern) {
 		spoon.reflect.code.CtTypePattern other = ((spoon.reflect.code.CtTypePattern) (this.stack.peek()));
 		enter(pattern);
-		biScan(spoon.reflect.path.CtRole.PATTERN, pattern.getVariable(), other.getVariable());
+		biScan(spoon.reflect.path.CtRole.VARIABLE, pattern.getVariable(), other.getVariable());
+		biScan(spoon.reflect.path.CtRole.ANNOTATION, pattern.getAnnotations(), other.getAnnotations());
+		biScan(spoon.reflect.path.CtRole.TYPE, pattern.getType(), other.getType());
+		biScan(spoon.reflect.path.CtRole.COMMENT, pattern.getComments(), other.getComments());
 		exit(pattern);
 	}
 }

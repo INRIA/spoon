@@ -1063,13 +1063,13 @@ public class Metamodel {
 			));
 
 			types.add(new Type("CtTypePattern", spoon.reflect.code.CtTypePattern.class, spoon.support.reflect.code.CtTypePatternImpl.class, fm -> fm
-				.field(CtRole.TYPE, false, false)
 				.field(CtRole.IS_IMPLICIT, false, false)
-				.field(CtRole.COMMENT, false, false)
-				.field(CtRole.ANNOTATION, false, false)
-				.field(CtRole.CAST, false, false)
+				.field(CtRole.CAST, true, true)
 				.field(CtRole.POSITION, false, false)
-				.field(CtRole.PATTERN, false, false)
+				.field(CtRole.VARIABLE, false, false)
+				.field(CtRole.ANNOTATION, false, false)
+				.field(CtRole.TYPE, false, false)
+				.field(CtRole.COMMENT, false, false)
 
 			));
 

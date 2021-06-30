@@ -7,7 +7,7 @@ import spoon.support.UnsettableProperty;
 
 import java.util.List;
 
-import static spoon.reflect.path.CtRole.PATTERN;
+import static spoon.reflect.path.CtRole.VARIABLE;
 
 /**
  * This code element defines a type pattern, introduced in Java 16
@@ -28,13 +28,13 @@ public interface CtTypePattern<T> extends CtPattern {
     /**
      * Returns the local variable declared by this type pattern.
      */
-    @PropertyGetter(role = PATTERN)
+    @PropertyGetter(role = VARIABLE)
     CtLocalVariable<?> getVariable();
 
 	/**
 	 * Sets the local variable for this type pattern.
 	 */
-    @PropertySetter(role = PATTERN)
+    @PropertySetter(role = VARIABLE)
     <C extends CtTypePattern<?>> C setVariable(CtLocalVariable<?> variable);
 
     @Override
