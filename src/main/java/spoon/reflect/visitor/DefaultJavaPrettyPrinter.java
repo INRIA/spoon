@@ -2145,14 +2145,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		exitCtStatement(statement);
 	}
 
-    @Override
-    public <T> void visitCtTypePattern(CtTypePattern<T> pattern) {
+	@Override
+	public <T> void visitCtTypePattern(CtTypePattern<T> pattern) {
 		enterCtExpression(pattern);
 		scan(pattern.getVariable());
 		exitCtExpression(pattern);
-    }
+	}
 
-    /**
+	/**
 	 * @return true if the printer is minimizing the amount of round brackets in expressions
 	 */
 	protected boolean isMinimizeRoundBrackets() {

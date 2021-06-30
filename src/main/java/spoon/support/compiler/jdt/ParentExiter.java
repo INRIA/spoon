@@ -1003,11 +1003,11 @@ public class ParentExiter extends CtInheritanceScanner {
 		super.visitCtYieldStatement(e);
 	}
 
-    @Override
-    public <T> void visitCtTypePattern(CtTypePattern<T> pattern) {
-        if (child instanceof CtLocalVariable) {
-            pattern.setVariable((CtLocalVariable<T>) child);
-        }
-        super.visitCtTypePattern(pattern);
-    }
+	@Override
+	public <T> void visitCtTypePattern(CtTypePattern<T> pattern) {
+		if (child instanceof CtLocalVariable) {
+			pattern.setVariable((CtLocalVariable<T>) child);
+		}
+		super.visitCtTypePattern(pattern);
+	}
 }

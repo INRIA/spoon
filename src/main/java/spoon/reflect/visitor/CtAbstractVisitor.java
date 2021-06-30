@@ -537,8 +537,8 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	}
 
-    @Override
-    public <T> void visitCtTypePattern(CtTypePattern<T> pattern) {
+	@Override
+	public <T> void visitCtTypePattern(CtTypePattern<T> pattern) {
 
-    }
+	}
 }

@@ -537,8 +537,8 @@ public interface CtVisitor {
 	 */
 	void visitCtYieldStatement(CtYieldStatement statement);
 
-    /**
-     * Visits a pattern.
-     */
+	/**
+	 * Visits a pattern.
+	 */
 	<T> void visitCtTypePattern(CtTypePattern<T> pattern);
 }

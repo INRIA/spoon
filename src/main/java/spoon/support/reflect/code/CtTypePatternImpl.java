@@ -10,7 +10,7 @@ public class CtTypePatternImpl<T> extends CtExpressionImpl<Void> implements CtTy
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = CtRole.VARIABLE)
-    private CtLocalVariable<?> variable;
+	private CtLocalVariable<?> variable;
 
 	@Override
 	public CtLocalVariable<?> getVariable() {
