@@ -2,6 +2,9 @@ package spoon.test.template;
 
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
@@ -204,6 +207,61 @@ public class SubstitutionTest {
 
         @Override
         public void statement()  { }
+    }
+
+    @Test
+    public void testSubstituteMethodBody() {
+        // contract: Substitution.SubstituteMethodBody gets a body from a template consisting of an executable with single statement
+
+        // arrange
+        Factory factory = createFactoryWithTemplates();
+        CtClass<?> targetClass = factory.Class().create("testClass");
+        StatementTemplate template = new executableWithSingleStatementTemplate();
+
+        // act
+        CtBlock<?> ctBlock = Substitution.substituteMethodBody(targetClass, template, "executable");
+        List<CtStatement> statements = ctBlock.getStatements();
+        CtNamedElement statement = (CtNamedElement) statements.get(0);
+
+        // assert
+        assertEquals(1, statements.size());
+        assertEquals("testString", statement.getSimpleName());
+    }
+
+    @Test
+    public void testSubstituteStatement() {
+        // contract: Substitution.SubstituteStatement gets a statement from a template consisting of an executable with single statement, having testString at it's 0 index
+
+        Factory factory = createFactoryWithTemplates();
+        CtClass<?> targetClass = factory.Class().create("testClass");
+        StatementTemplate template = new executableWithSingleStatementTemplate();
+
+        CtStatement ctStatement = Substitution.substituteStatement(targetClass, template, 0, "executable");
+
+        assertEquals("testString", ((CtNamedElement) ctStatement).getSimpleName());
+    }
+
+    private static class executableWithSingleStatementTemplate extends StatementTemplate {
+
+        public void executable() {
+            String testString;
+        }
+
+        @Override
+        public void statement() { }
+    }
+
+    @Test
+    public void testSubstituteFieldDefaultExpression() {
+        // contract: Substitution.SubstituteFieldDefaultExpression gets a default expression from a single-field template
+
+        Factory factory = createFactoryWithTemplates();
+        CtType<?> targetType = factory.Class().create("testClass");
+        StatementTemplate template = new SingleFieldTemplate();
+
+        CtExpression<?> ctExpression = Substitution.substituteFieldDefaultExpression(targetType, template, "testString");
+
+        assertEquals("\"goodName\"", ctExpression.toString());
     }
 
     private static Factory createFactoryWithTemplates() {
