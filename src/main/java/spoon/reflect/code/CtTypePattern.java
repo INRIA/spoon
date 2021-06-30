@@ -23,7 +23,7 @@ import static spoon.reflect.path.CtRole.VARIABLE;
  *
  * @param <T> the type of the variable.
  */
-public interface CtTypePattern<T> extends CtPattern {
+public interface CtTypePattern<T> extends CtExpression<Void> {
 
     /**
      * Returns the local variable declared by this type pattern.
