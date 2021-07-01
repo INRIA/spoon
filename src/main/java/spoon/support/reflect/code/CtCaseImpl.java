@@ -28,9 +28,6 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = CtRole.EXPRESSION)
-	CtExpression<E> caseExpression;
-
-	@MetamodelPropertyField(role = CtRole.EXPRESSION)
 	List<CtExpression<E>> caseExpressions = emptyList();
 
 	@MetamodelPropertyField(role = CtRole.STATEMENT)
@@ -46,7 +43,10 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 
 	@Override
 	public CtExpression<E> getCaseExpression() {
-		return caseExpression;
+		if (caseExpressions.isEmpty()) {
+			return null;
+		}
+		return caseExpressions.get(0);
 	}
 
 	@Override
@@ -56,11 +56,13 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 
 	@Override
 	public <T extends CtCase<E>> T setCaseExpression(CtExpression<E> caseExpression) {
-		if (caseExpression != null) {
-			caseExpression.setParent(this);
+		if (caseExpression == null) {
+			this.caseExpressions = emptyList();
+			return (T) this;
 		}
-		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.CASE, caseExpression, this.caseExpression);
-		this.caseExpression = caseExpression;
+		this.caseExpressions.clear();
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.CASE, caseExpression, this.caseExpressions);
+		addCaseExpression(caseExpression);
 		return (T) this;
 	}
 
@@ -89,9 +91,6 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 			return (T) this;
 		}
 		this.ensureModifiableCaseExpressionsList();
-		if (getCaseExpression() == null) {
-			setCaseExpression(caseExpression);
-		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.CASE, caseExpressions, this.caseExpressions);
 		caseExpression.setParent(this);
 		this.caseExpressions.add(caseExpression);
