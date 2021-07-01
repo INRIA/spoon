@@ -539,6 +539,9 @@ public interface CtVisitor {
 
 	/**
 	 * Visits a pattern.
+	 *
+	 * @param pattern the pattern to visit.
+	 * @param <T> the type of the type pattern.
 	 */
 	<T> void visitCtTypePattern(CtTypePattern<T> pattern);
 }

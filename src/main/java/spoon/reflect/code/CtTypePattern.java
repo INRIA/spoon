@@ -36,12 +36,18 @@ public interface CtTypePattern<T> extends CtExpression<Void> {
 
 	/**
 	 * Returns the local variable declared by this type pattern.
+	 *
+	 * @return the local variable.
 	 */
 	@PropertyGetter(role = VARIABLE)
 	CtLocalVariable<?> getVariable();
 
 	/**
 	 * Sets the local variable for this type pattern.
+	 *
+	 * @param variable the variable to set for this type pattern.
+	 * @param <C> the type of this pattern.
+	 * @return this pattern.
 	 */
 	@PropertySetter(role = VARIABLE)
 	<C extends CtTypePattern<?>> C setVariable(CtLocalVariable<?> variable);
