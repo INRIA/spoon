@@ -312,12 +312,8 @@ public class SubstitutionTest {
     }
 
     private static class ExpressionWithTemplatedInitializer extends ExtensionTemplate {
-        @Parameter
-        CtExpression _initializer_ = new CtExpressionImpl() {
-            @Override
-            public void accept(CtVisitor visitor) { }
-        };
-        String s = (String) _initializer_.S();
+        TemplateParameter<String> _initializer_ = new CtLiteralImpl<>();
+        String s = _initializer_.S();
     }
 
     private static Factory createFactoryWithTemplates() {
