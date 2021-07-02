@@ -254,6 +254,18 @@ public class SnippetTest {
 	}
 
 	@Test
+	public void testCodeSnippetExpressionsWithEqualValuesAreEqual() {
+		// contract: Two code snippet expressions with equal values, that are also otherwise equal,
+		// are equal
+		Factory factory = new Launcher().getFactory();
+
+		CtCodeSnippetExpression<Integer> one = factory.createCodeSnippetExpression("1");
+		CtCodeSnippetExpression<Integer> alsoOne = factory.createCodeSnippetExpression("1");
+
+		assertThat(one.equals(alsoOne), is(true));
+	}
+
+	@Test
 	public void testCodeSnippetStatementsWithNonEqualValuesAreNotEqual() {
 		// contract: Two code snippet statements with non-equal values are not equal
 		Factory factory = new Launcher().getFactory();
@@ -262,5 +274,17 @@ public class SnippetTest {
 		CtCodeSnippetStatement doubleDeclaration = factory.createCodeSnippetStatement("double a;");
 
 		assertThat(intDeclaration.equals(doubleDeclaration), is(false));
+	}
+
+	@Test
+	public void testCodeSnippetStatementsWithEqualValuesAreEqual() {
+		// contract: Two code snippet statements with equal values, that are also otherwise equal,
+		// are equal
+		Factory factory = new Launcher().getFactory();
+
+		CtCodeSnippetStatement intDeclaration = factory.createCodeSnippetStatement("int a;");
+		CtCodeSnippetStatement alsoIntDeclaration = factory.createCodeSnippetStatement("int a;");
+
+		assertThat(intDeclaration.equals(alsoIntDeclaration), is(true));
 	}
 }
