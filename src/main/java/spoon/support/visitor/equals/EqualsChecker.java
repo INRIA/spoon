@@ -16,6 +16,7 @@ import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTextBlock;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.declaration.CtCodeSnippet;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
@@ -107,6 +108,15 @@ public class EqualsChecker extends CtInheritanceScanner {
 			setNotEqual(CtRole.MODIFIER);
 		}
 		super.scanCtModifiable(m);
+	}
+
+	@Override
+	public void scanCtCodeSnippet(CtCodeSnippet snippet) {
+		final CtCodeSnippet peek = (CtCodeSnippet) this.other;
+		if (!snippet.getValue().equals(peek.getValue())) {
+			setNotEqual(CtRole.SNIPPET);
+		}
+		super.scanCtCodeSnippet(snippet);
 	}
 
 	@Override
