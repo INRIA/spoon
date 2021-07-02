@@ -8,10 +8,11 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.CtVisitor;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
-import spoon.template.StatementTemplate;
-import spoon.template.Substitution;
+import spoon.support.reflect.code.CtExpressionImpl;
+import spoon.template.*;
 import spoon.test.template.testclasses.types.AClassModel;
 import spoon.test.template.testclasses.types.AnEnumModel;
 import spoon.test.template.testclasses.types.AnIfaceModel;
@@ -210,58 +211,113 @@ public class SubstitutionTest {
     }
 
     @Test
-    public void testSubstituteMethodBody() {
-        // contract: Substitution.SubstituteMethodBody gets a body from a template consisting of an executable with single statement
+    public void testSubstituteMethodBodyWithTemplatedInitializer() {
+        // contract: Given a block with a templated initializer, substituteMethodBody should return a
+        // new block with the initializer replaced with the value bound to the template parameter
 
         // arrange
         Factory factory = createFactoryWithTemplates();
-        CtClass<?> targetClass = factory.Class().create("testClass");
-        StatementTemplate template = new executableWithSingleStatementTemplate();
+        CtClass<?> targetClass = factory.Class().create("TargetClass");
+
+        String templateExecutableName = "executable";
+        String templateVariableName = "x";
+        int initializerToSubstitute = 20;
+        CtStatement expectedStatement = factory.createLocalVariable(
+                factory.Type().integerType(), templateVariableName, factory.createLiteral(initializerToSubstitute)
+        );
+        final CtBlock<?> expectedMethodBody = factory.Code().createCtBlock(expectedStatement);
+
+        BodyWithTemplatedInitializer template = new BodyWithTemplatedInitializer();
+        template._initializer_ = initializerToSubstitute;
 
         // act
-        CtBlock<?> ctBlock = Substitution.substituteMethodBody(targetClass, template, "executable");
-        List<CtStatement> statements = ctBlock.getStatements();
-        CtNamedElement statement = (CtNamedElement) statements.get(0);
+        CtBlock<?> substitutedMethodBody = Substitution.substituteMethodBody(
+                targetClass, template, templateExecutableName
+        );
 
         // assert
-        assertEquals(1, statements.size());
-        assertEquals("testString", statement.getSimpleName());
+        assertEquals(expectedMethodBody, substitutedMethodBody);
     }
 
-    @Test
-    public void testSubstituteStatement() {
-        // contract: Substitution.SubstituteStatement gets a statement from a template consisting of an executable with single statement, having testString at it's 0 index
-
-        Factory factory = createFactoryWithTemplates();
-        CtClass<?> targetClass = factory.Class().create("testClass");
-        StatementTemplate template = new executableWithSingleStatementTemplate();
-
-        CtStatement ctStatement = Substitution.substituteStatement(targetClass, template, 0, "executable");
-
-        assertEquals("testString", ((CtNamedElement) ctStatement).getSimpleName());
-    }
-
-    private static class executableWithSingleStatementTemplate extends StatementTemplate {
+    private static class BodyWithTemplatedInitializer extends ExtensionTemplate {
+        @Parameter
+        Integer _initializer_;
 
         public void executable() {
-            String testString;
+            Integer x = _initializer_;
         }
-
-        @Override
-        public void statement() { }
     }
 
     @Test
-    public void testSubstituteFieldDefaultExpression() {
-        // contract: Substitution.SubstituteFieldDefaultExpression gets a default expression from a single-field template
+    public void testSubstituteStatementWithTemplatedInitializer() {
+        // contract: Given a statement with a templated initializer, substituteStatement should
+        // return a new statement with the initializer replaced with the value bound to the template
+        // parameter
 
+        // arrange
         Factory factory = createFactoryWithTemplates();
-        CtType<?> targetType = factory.Class().create("testClass");
-        StatementTemplate template = new SingleFieldTemplate();
+        CtClass<?> targetClass = factory.Class().create("TargetClass");
 
-        CtExpression<?> ctExpression = Substitution.substituteFieldDefaultExpression(targetType, template, "testString");
+        String templateExecutableName = "executable";
+        int templateVariableIndex = 0;
+        String templateVariableName = "s";
+        String initializerToSubstitute = "My chosen initializer";
+        CtStatement expectedStatement = factory.createLocalVariable(
+                factory.Type().stringType(), templateVariableName, factory.createLiteral(initializerToSubstitute)
+        );
 
-        assertEquals("\"goodName\"", ctExpression.toString());
+        StatementWithTemplatedInitializer template = new StatementWithTemplatedInitializer();
+        template._initializer_ = factory.createLiteral(initializerToSubstitute);
+
+        // act
+        CtStatement substitutedStatement = Substitution.substituteStatement(
+                targetClass, template, templateVariableIndex, templateExecutableName
+        );
+
+        // assert
+        assertEquals(expectedStatement, substitutedStatement);
+    }
+
+    private static class StatementWithTemplatedInitializer extends ExtensionTemplate {
+        TemplateParameter<String> _initializer_;
+
+        public void executable() {
+            String s = _initializer_.S();
+        }
+    }
+
+    @Test
+    public void testSubstituteFieldDefaultExpressionWithTemplatedInitializer() {
+        // contract: Give an expression with a templated initializer, substituteFieldDefaultExpression should
+        // return a new expression with the initializer replaced with the value bound to the template parameter
+
+        // arrange
+        Factory factory = createFactoryWithTemplates();
+        CtType<?> targetType = factory.Class().create("TargetClass");
+
+        String initializerToSubstitute = "My chosen initializer";
+        String templateFieldName = "s";
+        CtExpression expectedExpression =  factory.createCodeSnippetExpression(initializerToSubstitute);
+
+        ExpressionWithTemplatedInitializer template = new ExpressionWithTemplatedInitializer();
+        template._initializer_ = factory.createCodeSnippetExpression(initializerToSubstitute);
+
+        // act
+        CtExpression<?> substitutedExpression = Substitution.substituteFieldDefaultExpression(
+                targetType, template, templateFieldName
+        );
+
+        // assert
+        assertEquals(expectedExpression, substitutedExpression);
+    }
+
+    private static class ExpressionWithTemplatedInitializer extends ExtensionTemplate {
+        @Parameter
+        CtExpression _initializer_ = new CtExpressionImpl() {
+            @Override
+            public void accept(CtVisitor visitor) { }
+        };
+        String s = (String) _initializer_.S();
     }
 
     private static Factory createFactoryWithTemplates() {
