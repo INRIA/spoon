@@ -243,13 +243,24 @@ public class SnippetTest {
 	}
 
 	@Test
-	public void testSnippetsWithDifferingValuesAreNotEqual() {
-		// contract: Two snippets with different values should be considered not equal
+	public void testCodeSnippetExpressionsWithNonEqualValuesAreNotEqual() {
+		// contract: Two code snippet expressions with non-equal values are not equal
 		Factory factory = new Launcher().getFactory();
 
 		CtExpression<Integer> one = factory.createCodeSnippetExpression("1");
 		CtExpression<Integer> two = factory.createCodeSnippetExpression("2");
 
 		assertThat(one.equals(two), is(false));
+	}
+
+	@Test
+	public void testCodeSnippetStatementsWithNonEqualValuesAreNotEqual() {
+		// contract: Two code snippet statements with non-equal values are not equal
+		Factory factory = new Launcher().getFactory();
+
+		CtStatement intDeclaration = factory.createCodeSnippetStatement("int a;");
+		CtStatement doubleDeclaration = factory.createCodeSnippetStatement("double a;");
+
+		assertThat(intDeclaration.equals(doubleDeclaration), is(false));
 	}
 }
