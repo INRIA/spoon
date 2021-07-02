@@ -38,6 +38,9 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.compiler.VirtualFile;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
@@ -238,5 +241,16 @@ public class SnippetTest {
 		snippetClass.compileAndReplaceSnippets();
 		assertTrue(body.getStatements().get(0) instanceof CtLocalVariable);
 		assertEquals(1,body.getStatements().size()); 
+	}
+
+	@Test
+	public void testSnippetsWithDifferingValuesAreNotEqual() {
+		// contract: Two snippets with different values should be considered not equal
+		Factory factory = new Launcher().getFactory();
+
+		CtExpression<Integer> one = factory.createCodeSnippetExpression("1");
+		CtExpression<Integer> two = factory.createCodeSnippetExpression("2");
+
+		assertThat(one, not(equalTo(two)));
 	}
 }
