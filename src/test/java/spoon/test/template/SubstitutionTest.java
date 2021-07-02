@@ -297,10 +297,10 @@ public class SubstitutionTest {
 
         String initializerToSubstitute = "My chosen initializer";
         String templateFieldName = "s";
-        CtExpression expectedExpression =  factory.createCodeSnippetExpression(initializerToSubstitute);
+        CtExpression<String> expectedExpression =  factory.createLiteral(initializerToSubstitute);
 
         ExpressionWithTemplatedInitializer template = new ExpressionWithTemplatedInitializer();
-        template._initializer_ = factory.createCodeSnippetExpression(initializerToSubstitute);
+        template._initializer_ = factory.createLiteral(initializerToSubstitute);
 
         // act
         CtExpression<?> substitutedExpression = Substitution.substituteFieldDefaultExpression(
