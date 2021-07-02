@@ -72,6 +72,12 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 
 	@Override
 	public <T extends CtAbstractSwitch<S>> T addCase(CtCase<? super S> c) {
+		addCaseAt(cases.size(), c);
+		return (T) this;
+	}
+
+	@Override
+	public <T extends CtAbstractSwitch<S>> T addCaseAt(int position, CtCase<? super S> c) {
 		if (c == null) {
 			return (T) this;
 		}
@@ -80,7 +86,7 @@ public class CtSwitchImpl<S> extends CtStatementImpl implements CtSwitch<S> {
 		}
 		c.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onListAdd(this, CASE, this.cases, c);
-		cases.add(c);
+		cases.add(position, c);
 		return (T) this;
 	}
 
