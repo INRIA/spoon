@@ -311,7 +311,7 @@ public class SubstitutionTest {
         assertEquals(expectedExpression, substitutedExpression);
     }
 
-    private static class ExpressionWithTemplatedInitializer extends ExtensionTemplate {
+    private static class FieldWithTemplatedInitializer extends ExtensionTemplate {
         TemplateParameter<String> _initializer_ = new CtLiteralImpl<>();
         String s = _initializer_.S();
     }
