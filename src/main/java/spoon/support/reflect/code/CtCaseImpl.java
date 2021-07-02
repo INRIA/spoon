@@ -56,11 +56,10 @@ public class CtCaseImpl<E> extends CtStatementImpl implements CtCase<E> {
 
 	@Override
 	public <T extends CtCase<E>> T setCaseExpression(CtExpression<E> caseExpression) {
-		if (caseExpression == null) {
-			this.caseExpressions = emptyList();
-			return (T) this;
+		if (caseExpression != null) {
+			caseExpression.setParent(this);
 		}
-		this.caseExpressions.clear();
+		this.caseExpressions = CtElementImpl.emptyList();
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.CASE, caseExpression, this.caseExpressions);
 		addCaseExpression(caseExpression);
 		return (T) this;
