@@ -38,8 +38,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.compiler.VirtualFile;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -251,6 +250,6 @@ public class SnippetTest {
 		CtExpression<Integer> one = factory.createCodeSnippetExpression("1");
 		CtExpression<Integer> two = factory.createCodeSnippetExpression("2");
 
-		assertThat(one, not(equalTo(two)));
+		assertThat(one.equals(two), is(false));
 	}
 }
