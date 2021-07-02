@@ -8,10 +8,9 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.CtVisitor;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
-import spoon.support.reflect.code.CtExpressionImpl;
+import spoon.support.reflect.code.CtLiteralImpl;
 import spoon.template.*;
 import spoon.test.template.testclasses.types.AClassModel;
 import spoon.test.template.testclasses.types.AnEnumModel;
@@ -220,15 +219,15 @@ public class SubstitutionTest {
         CtClass<?> targetClass = factory.Class().create("TargetClass");
 
         String templateExecutableName = "executable";
-        String templateVariableName = "x";
-        int initializerToSubstitute = 20;
+        String templateVariableName = "s";
+        String initializerToSubstitute = "My chosen initializer";
         CtStatement expectedStatement = factory.createLocalVariable(
-                factory.Type().integerType(), templateVariableName, factory.createLiteral(initializerToSubstitute)
+                factory.Type().stringType(), templateVariableName, factory.createLiteral(initializerToSubstitute)
         );
         final CtBlock<?> expectedMethodBody = factory.Code().createCtBlock(expectedStatement);
 
-        BodyWithTemplatedInitializer template = new BodyWithTemplatedInitializer();
-        template._initializer_ = initializerToSubstitute;
+        StatementWithTemplatedInitializer template = new StatementWithTemplatedInitializer();
+        template._initializer_ = factory.createLiteral(initializerToSubstitute);
 
         // act
         CtBlock<?> substitutedMethodBody = Substitution.substituteMethodBody(
@@ -237,15 +236,6 @@ public class SubstitutionTest {
 
         // assert
         assertEquals(expectedMethodBody, substitutedMethodBody);
-    }
-
-    private static class BodyWithTemplatedInitializer extends ExtensionTemplate {
-        @Parameter
-        Integer _initializer_;
-
-        public void executable() {
-            Integer x = _initializer_;
-        }
     }
 
     @Test
@@ -299,7 +289,7 @@ public class SubstitutionTest {
         String templateFieldName = "s";
         CtExpression<String> expectedExpression =  factory.createLiteral(initializerToSubstitute);
 
-        ExpressionWithTemplatedInitializer template = new ExpressionWithTemplatedInitializer();
+        FieldWithTemplatedInitializer template = new FieldWithTemplatedInitializer();
         template._initializer_ = factory.createLiteral(initializerToSubstitute);
 
         // act
