@@ -30,6 +30,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtCodeSnippet;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
@@ -247,8 +248,8 @@ public class SnippetTest {
 		// contract: Two code snippet expressions with non-equal values are not equal
 		Factory factory = new Launcher().getFactory();
 
-		CtExpression<Integer> one = factory.createCodeSnippetExpression("1");
-		CtExpression<Integer> two = factory.createCodeSnippetExpression("2");
+		CtCodeSnippetExpression<Integer> one = factory.createCodeSnippetExpression("1");
+		CtCodeSnippetExpression<Integer> two = factory.createCodeSnippetExpression("2");
 
 		assertThat(one.equals(two), is(false));
 	}
@@ -258,8 +259,8 @@ public class SnippetTest {
 		// contract: Two code snippet statements with non-equal values are not equal
 		Factory factory = new Launcher().getFactory();
 
-		CtStatement intDeclaration = factory.createCodeSnippetStatement("int a;");
-		CtStatement doubleDeclaration = factory.createCodeSnippetStatement("double a;");
+		CtCodeSnippetStatement intDeclaration = factory.createCodeSnippetStatement("int a;");
+		CtCodeSnippetStatement doubleDeclaration = factory.createCodeSnippetStatement("double a;");
 
 		assertThat(intDeclaration.equals(doubleDeclaration), is(false));
 	}
