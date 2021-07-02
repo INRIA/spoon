@@ -171,6 +171,9 @@ public class MethodTypingContext extends AbstractTypingContext {
 	 */
 	@Override
 	protected CtTypeReference<?> adaptTypeParameter(CtTypeParameter typeParam) {
+		if (typeParam == null) {
+			return null;
+		}
 		CtFormalTypeDeclarer typeParamDeclarer = typeParam.getTypeParameterDeclarer();
 		if (typeParamDeclarer instanceof CtType<?>) {
 			return getEnclosingGenericTypeAdapter().adaptType(typeParam);
