@@ -46,6 +46,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
+import spoon.support.util.EmptyClearableList;
+
 @DisplayName("Switchcase Tests")
 public class SwitchCaseTest {
 
@@ -363,6 +365,54 @@ public class SwitchCaseTest {
 			onlyCase.addStatement(caseStatement);
 
 			assertThrows(IndexOutOfBoundsException.class, () -> switchExpression.addCaseAt(3, onlyCase));
+		}
+	}
+	
+	@DisplayName("should return the first case expression")
+	@Test
+	public void test_getCaseExpression_shouldReturnTheFirstCaseExpression() {
+		Factory factory = new Launcher().getFactory();
+
+		CtCase<Integer> ctCase = factory.createCase();
+		CtExpression<Integer> first = factory.createCodeSnippetExpression("1");
+		CtExpression<Integer> second = factory.createCodeSnippetExpression("2");
+		CtExpression<Integer> third = factory.createCodeSnippetExpression("3");
+
+		ctCase.setCaseExpressions(Arrays.asList(first, second, third));
+
+		assertEquals(first, ctCase.getCaseExpression());
+	}
+
+	@Nested
+	class SetCaseExpressionInSwitchBeforeJava12 {
+		@DisplayName("should remove all existing case expressions and insert the specified case expression")
+		@Test
+		public void test_setCaseExpression_removeExistingCaseExpressionsAndInsertTheSpecified() {
+			Factory factory = new Launcher().getFactory();
+
+			CtCase<Integer> ctCase = factory.createCase();
+			CtExpression<Integer> first = factory.createCodeSnippetExpression("1");
+			CtExpression<Integer> second = factory.createCodeSnippetExpression("2");
+			CtExpression<Integer> third = factory.createCodeSnippetExpression("3");
+			CtExpression<Integer> fourth = factory.createCodeSnippetExpression("4");
+			ctCase.setCaseExpressions(Arrays.asList(first, second, third));
+
+			ctCase.setCaseExpression(fourth);
+
+			assertEquals(1, ctCase.getCaseExpressions().size());
+			assertEquals(fourth, ctCase.getCaseExpression());
+		}
+
+		@DisplayName("should clear the list of expressions when null is passed")
+		@Test
+		public void test_setCaseExpression_removeAllCaseExpressions() {
+			String code = "class A { public void f(int i) { switch(i) { case 1,2,3: break; } } }";
+			CtModel model = createModelFromString(code);
+			CtCase<?> ctCase = model.getElements(new TypeFilter<>(CtCase.class)).get(0);
+
+			ctCase.setCaseExpression(null);
+
+			assertTrue(ctCase.getCaseExpressions() instanceof EmptyClearableList);
 		}
 	}
 }
