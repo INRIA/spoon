@@ -170,9 +170,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
-		if (this instanceof CtShadowable) {
-			CtShadowable shadowable = (CtShadowable) this;
-		}
 		return unmodifiableList(annotations);
 	}
 

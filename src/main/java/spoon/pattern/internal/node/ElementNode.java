@@ -122,7 +122,6 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		List<MapEntryNode> constantMatchers = new ArrayList<>(map.size());
 		//collect Entries with variable matcher keys
 		List<MapEntryNode> variableMatchers = new ArrayList<>();
-		Matchers last = null;
 		for (Map.Entry<?, ?> entry : map.entrySet()) {
 			MapEntryNode mem = new MapEntryNode(
 					create(entry.getKey(), patternElementToSubstRequests),
