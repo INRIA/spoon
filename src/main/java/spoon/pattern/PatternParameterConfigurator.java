@@ -107,12 +107,9 @@ public class PatternParameterConfigurator {
 	}
 
 	private AbstractParameterInfo getParameterInfo(String parameterName, boolean createIfNotExist) {
-		AbstractParameterInfo pi = parameterInfos.get(parameterName);
-		if (pi == null) {
-			pi = new MapParameterInfo(parameterName).setValueConvertor(patternBuilder.getDefaultValueConvertor());
-			parameterInfos.put(parameterName, pi);
-		}
-		return pi;
+		return parameterInfos.computeIfAbsent(parameterName, k -> {
+			return new MapParameterInfo(k).setValueConvertor(patternBuilder.getDefaultValueConvertor());
+		});
 	}
 
 	/**
