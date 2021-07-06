@@ -2,8 +2,9 @@
 
 import re
 import sys
+from collections import Counter
 from pathlib import Path
-from typing import List, Dict
+from typing import List
 
 
 def filter_relevant_lines(lines: List[str]) -> List[str]:
@@ -21,40 +22,14 @@ def strip_line_number(line: str) -> str:
     return re.sub(r".java:\d+(:\d+)?:", ".java", line)
 
 
-def strip_line_numbers(lines: List[str]) -> Dict[str, int]:
-    """
-    Strips the violation line numbers to account for shifts.
-    This method returns a dictionary of "stripped line -> Count", as the same
-    error might appear multiple times.
-    """
-    output_dict: Dict[str, int] = dict()
-
-    for line in map(strip_line_number, lines):
-        if line in output_dict:
-            output_dict[line] += 1
-        else:
-            output_dict[line] = 1
-
-    return output_dict
-
-
-def try_match_lines(reference: Dict[str, int], other: Dict[str, int]) -> Dict[str, int]:
+def try_match_lines(reference: Counter[str], other: Counter[str]) -> Counter[str]:
     """Tries to find out which lines are *new* in other and which were already present in the reference."""
-    other = other.copy()
-    for line, amount in reference.items():
-        for _ in range(0, amount):
-            if line in other:
-                if other[line] > 1:
-                    other[line] -= 1
-                else:
-                    other.pop(line)
-
     # Lines that are only in the reference aren't critical, as they were
     # apparently fixed in "other"
-    return other
+    return other.copy() - reference
 
 
-def try_readd_line_numbers(without_numbers: Dict[str, int], with_numbers: List[str]) -> List[str]:
+def try_readd_line_numbers(without_numbers: Counter[str], with_numbers: List[str]) -> List[str]:
     """
     Tries to re-add the line numbers to a dict of strings.
     This is not necessarily accurate, as it doesn't know which occurrence
@@ -85,8 +60,8 @@ def main(file_reference: Path, file_other: Path):
         lines_other = filter_relevant_lines(file.readlines())
 
     new_errors = try_match_lines(
-        strip_line_numbers(lines_reference),
-        strip_line_numbers(lines_other)
+        Counter(map(strip_line_number, lines_reference)),
+        Counter(map(strip_line_number, lines_other))
     )
     with_line_numbers = try_readd_line_numbers(new_errors, lines_other)
 
