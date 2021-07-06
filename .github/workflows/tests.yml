@@ -11,8 +11,7 @@ on:
       master
   push:
     branches:
-      - master
-      - "chore/*"
+      master
   schedule:
   - cron: "0 0 * * *"
 
