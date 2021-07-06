@@ -2,13 +2,16 @@ package spoon.test.template;
 
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.FileSystemFolder;
-import spoon.template.StatementTemplate;
-import spoon.template.Substitution;
+import spoon.support.reflect.code.CtLiteralImpl;
+import spoon.template.*;
 import spoon.test.template.testclasses.types.AClassModel;
 import spoon.test.template.testclasses.types.AnEnumModel;
 import spoon.test.template.testclasses.types.AnIfaceModel;
@@ -178,32 +181,100 @@ public class SubstitutionTest {
     }
 
     @Test
-    public void testInsertAllMethods() {
+    public void testSubstituteMethodBodyWithTemplatedInitializer() {
+        // contract: Given a block with a templated initializer, substituteMethodBody should return a
+        // new block with the initializer replaced with the value bound to the template parameter
+
+        // arrange
         Factory factory = createFactoryWithTemplates();
+        CtClass<?> targetClass = factory.Class().create("TargetClass");
 
-        CtClass<?> testSimpleTpl = factory.Class().create("TestSimpleTpl");
-        //whitespace seems wrong here
-        new SimpleTemplate().apply(testSimpleTpl);
+        String templateExecutableName = "executable";
+        String templateVariableName = "s";
+        String initializerToSubstitute = "My chosen initializer";
+        CtStatement expectedStatement = factory.createLocalVariable(
+                factory.Type().stringType(), templateVariableName, factory.createLiteral(initializerToSubstitute)
+        );
+        final CtBlock<?> expectedMethodBody = factory.Code().createCtBlock(expectedStatement);
 
-        Set<CtMethod<?>> listMethods = testSimpleTpl.getMethods();
-        assertEquals(0, testSimpleTpl.getMethodsByName("apply").size());
-        assertEquals(1, listMethods.size());
+        StatementWithTemplatedInitializer template = new StatementWithTemplatedInitializer();
+        template._initializer_ = factory.createLiteral(initializerToSubstitute);
+
+        // act
+        CtBlock<?> substitutedMethodBody = Substitution.substituteMethodBody(
+                targetClass, template, templateExecutableName
+        );
+
+        // assert
+        assertEquals(expectedMethodBody, substitutedMethodBody);
     }
 
-    /**
-     * Created by urli on 31/05/2017.
-     */
-    private static class SimpleTemplate extends StatementTemplate {
+    @Test
+    public void testSubstituteStatementWithTemplatedInitializer() {
+        // contract: Given a statement with a templated initializer, substituteStatement should
+        // return a new statement with the initializer replaced with the value bound to the template
+        // parameter
 
-        @Override
-        public CtClass apply(CtType targetType) {
-            Substitution.insertAll(targetType, this);
+        // arrange
+        Factory factory = createFactoryWithTemplates();
+        CtClass<?> targetClass = factory.Class().create("TargetClass");
 
-            return (CtClass) targetType;
+        String templateExecutableName = "executable";
+        int templateVariableIndex = 0;
+        String templateVariableName = "s";
+        String initializerToSubstitute = "My chosen initializer";
+        CtStatement expectedStatement = factory.createLocalVariable(
+                factory.Type().stringType(), templateVariableName, factory.createLiteral(initializerToSubstitute)
+        );
+
+        StatementWithTemplatedInitializer template = new StatementWithTemplatedInitializer();
+        template._initializer_ = factory.createLiteral(initializerToSubstitute);
+
+        // act
+        CtStatement substitutedStatement = Substitution.substituteStatement(
+                targetClass, template, templateVariableIndex, templateExecutableName
+        );
+
+        // assert
+        assertEquals(expectedStatement, substitutedStatement);
+    }
+
+    private static class StatementWithTemplatedInitializer extends ExtensionTemplate {
+        TemplateParameter<String> _initializer_;
+
+        public void executable() {
+            String s = _initializer_.S();
         }
+    }
 
-        @Override
-        public void statement()  { }
+    @Test
+    public void testSubstituteFieldDefaultExpressionWithTemplatedInitializer() {
+        // contract: Give an expression with a templated initializer, substituteFieldDefaultExpression should
+        // return a new expression with the initializer replaced with the value bound to the template parameter
+
+        // arrange
+        Factory factory = createFactoryWithTemplates();
+        CtType<?> targetType = factory.Class().create("TargetClass");
+
+        String initializerToSubstitute = "My chosen initializer";
+        String templateFieldName = "s";
+        CtExpression<String> expectedExpression =  factory.createLiteral(initializerToSubstitute);
+
+        FieldWithTemplatedInitializer template = new FieldWithTemplatedInitializer();
+        template._initializer_ = factory.createLiteral(initializerToSubstitute);
+
+        // act
+        CtExpression<?> substitutedExpression = Substitution.substituteFieldDefaultExpression(
+                targetType, template, templateFieldName
+        );
+
+        // assert
+        assertEquals(expectedExpression, substitutedExpression);
+    }
+
+    private static class FieldWithTemplatedInitializer extends ExtensionTemplate {
+        TemplateParameter<String> _initializer_ = new CtLiteralImpl<>();
+        String s = _initializer_.S();
     }
 
     private static Factory createFactoryWithTemplates() {

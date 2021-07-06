@@ -38,6 +38,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.SnippetCompilationHelper;
 import spoon.support.compiler.VirtualFile;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
@@ -238,5 +240,51 @@ public class SnippetTest {
 		snippetClass.compileAndReplaceSnippets();
 		assertTrue(body.getStatements().get(0) instanceof CtLocalVariable);
 		assertEquals(1,body.getStatements().size()); 
+	}
+
+	@Test
+	public void testCodeSnippetExpressionsWithNonEqualValuesAreNotEqual() {
+		// contract: Two code snippet expressions with non-equal values are not equal
+		Factory factory = new Launcher().getFactory();
+
+		CtCodeSnippetExpression<Integer> one = factory.createCodeSnippetExpression("1");
+		CtCodeSnippetExpression<Integer> two = factory.createCodeSnippetExpression("2");
+
+		assertThat(one.equals(two), is(false));
+	}
+
+	@Test
+	public void testCodeSnippetExpressionsWithEqualValuesAreEqual() {
+		// contract: Two code snippet expressions with equal values, that are also otherwise equal,
+		// are equal
+		Factory factory = new Launcher().getFactory();
+
+		CtCodeSnippetExpression<Integer> one = factory.createCodeSnippetExpression("1");
+		CtCodeSnippetExpression<Integer> alsoOne = factory.createCodeSnippetExpression("1");
+
+		assertThat(one.equals(alsoOne), is(true));
+	}
+
+	@Test
+	public void testCodeSnippetStatementsWithNonEqualValuesAreNotEqual() {
+		// contract: Two code snippet statements with non-equal values are not equal
+		Factory factory = new Launcher().getFactory();
+
+		CtCodeSnippetStatement intDeclaration = factory.createCodeSnippetStatement("int a;");
+		CtCodeSnippetStatement doubleDeclaration = factory.createCodeSnippetStatement("double a;");
+
+		assertThat(intDeclaration.equals(doubleDeclaration), is(false));
+	}
+
+	@Test
+	public void testCodeSnippetStatementsWithEqualValuesAreEqual() {
+		// contract: Two code snippet statements with equal values, that are also otherwise equal,
+		// are equal
+		Factory factory = new Launcher().getFactory();
+
+		CtCodeSnippetStatement intDeclaration = factory.createCodeSnippetStatement("int a;");
+		CtCodeSnippetStatement alsoIntDeclaration = factory.createCodeSnippetStatement("int a;");
+
+		assertThat(intDeclaration.equals(alsoIntDeclaration), is(true));
 	}
 }
