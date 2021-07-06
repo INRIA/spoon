@@ -13,7 +13,6 @@ import spoon.reflect.code.CtJavaDocTag;
 import spoon.support.Internal;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
