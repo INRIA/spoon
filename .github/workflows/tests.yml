@@ -8,11 +8,11 @@ name: tests
 on:
   pull_request:
     branches:
-      - master
-      - *
+      master
   push:
     branches:
-      master
+      - master
+      - "chore/*"
   schedule:
   - cron: "0 0 * * *"
 
