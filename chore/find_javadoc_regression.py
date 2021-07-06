@@ -9,13 +9,7 @@ from typing import List
 
 def filter_relevant_lines(lines: List[str]) -> List[str]:
     """Tries to filter the checkstyle output to only include lines with violations."""
-    new_lines = []
-
-    for line in lines:
-        if re.search(r":\d+:", line) and "ERROR" in line:
-            new_lines.append(line)
-
-    return new_lines
+    return [line for line in lines if re.search(r":\d+:", line) and "ERROR" in line]
 
 
 def strip_line_number(line: str) -> str:
