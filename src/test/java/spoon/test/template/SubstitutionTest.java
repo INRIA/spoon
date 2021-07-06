@@ -181,35 +181,6 @@ public class SubstitutionTest {
     }
 
     @Test
-    public void testInsertAllMethods() {
-        Factory factory = createFactoryWithTemplates();
-
-        CtClass<?> testSimpleTpl = factory.Class().create("TestSimpleTpl");
-        //whitespace seems wrong here
-        new SimpleTemplate().apply(testSimpleTpl);
-
-        Set<CtMethod<?>> listMethods = testSimpleTpl.getMethods();
-        assertEquals(0, testSimpleTpl.getMethodsByName("apply").size());
-        assertEquals(1, listMethods.size());
-    }
-
-    /**
-     * Created by urli on 31/05/2017.
-     */
-    private static class SimpleTemplate extends StatementTemplate {
-
-        @Override
-        public CtClass apply(CtType targetType) {
-            Substitution.insertAll(targetType, this);
-
-            return (CtClass) targetType;
-        }
-
-        @Override
-        public void statement()  { }
-    }
-
-    @Test
     public void testSubstituteMethodBodyWithTemplatedInitializer() {
         // contract: Given a block with a templated initializer, substituteMethodBody should return a
         // new block with the initializer replaced with the value bound to the template parameter
