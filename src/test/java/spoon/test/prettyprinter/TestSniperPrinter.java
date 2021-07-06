@@ -7,6 +7,7 @@
  */
 package spoon.test.prettyprinter;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
@@ -40,6 +41,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
+import spoon.test.GitHubIssue;
 import spoon.test.prettyprinter.testclasses.OneLineMultipleVariableDeclaration;
 import spoon.test.prettyprinter.testclasses.Throw;
 import spoon.test.prettyprinter.testclasses.InvocationReplacement;
@@ -771,6 +773,21 @@ public class TestSniperPrinter {
 				assertThat(result, containsString("for (int i = 0; i < 10;)"));
 
 		testSniper("ForLoop", deleteForUpdate, assertNotStaticFindFirstIsEmpty);
+	}
+	
+	@Test
+	@Disabled("UnresolvedBug")
+	@GitHubIssue(issueNumber = 4021)
+	void testSniperRespectsSuperWithUnaryOperator() {
+		// Combining CtSuperAccess and CtUnaryOperator leads to SpoonException with Sniper
+		
+		// Noop
+		Consumer<CtType<?>> deleteForUpdate = type -> {};
+		
+		BiConsumer<CtType<?>, String> assertContainsSuperWithUnaryOperator = (type, result) ->
+				assertThat(result, containsString("super.a(-x);"));
+
+		testSniper("superCall.SuperCallSniperTestClass", deleteForUpdate, assertContainsSuperWithUnaryOperator);
 	}
 
 	/**
