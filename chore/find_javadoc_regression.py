@@ -16,7 +16,7 @@ def strip_line_number(line: str) -> str:
     return re.sub(r".java:\d+(:\d+)?:", ".java", line)
 
 
-def find_added_violation_lines(reference: Counter[str], other: Counter[str]) -> Counter[str]:
+def find_added_violation_lines(reference: 'Counter[str]', other: 'Counter[str]') -> 'Counter[str]':
     """
     Tries to find out which violation lines are new in "other" and which
     were already present in the "reference". These lines are added violations the
@@ -27,7 +27,7 @@ def find_added_violation_lines(reference: Counter[str], other: Counter[str]) -> 
     return other.copy() - reference
 
 
-def try_readd_line_numbers(without_numbers: Counter[str], with_numbers: List[str]) -> List[str]:
+def try_readd_line_numbers(without_numbers: 'Counter[str]', with_numbers: List[str]) -> List[str]:
     """
     Tries to re-add the line numbers to a dict of strings.
     This is not necessarily accurate, as it doesn't know which occurrence
