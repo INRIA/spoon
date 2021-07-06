@@ -43,22 +43,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.template.Parameters;
 import spoon.template.*;
-import spoon.test.template.testclasses.AnExpressionTemplate;
-import spoon.test.template.testclasses.AnotherFieldAccessTemplate;
-import spoon.test.template.testclasses.ArrayAccessTemplate;
-import spoon.test.template.testclasses.FieldAccessOfInnerClassTemplate;
-import spoon.test.template.testclasses.FieldAccessTemplate;
-import spoon.test.template.testclasses.Flow;
-import spoon.test.template.testclasses.FlowMatcher;
-import spoon.test.template.testclasses.InnerClassTemplate;
-import spoon.test.template.testclasses.InvocationTemplate;
-import spoon.test.template.testclasses.NtonCodeTemplate;
-import spoon.test.template.testclasses.ObjectIsNotParamTemplate;
-import spoon.test.template.testclasses.SecurityCheckerTemplate;
-import spoon.test.template.testclasses.SubStringTemplate;
-import spoon.test.template.testclasses.SubstituteLiteralTemplate;
-import spoon.test.template.testclasses.SubstituteRootTemplate;
-import spoon.test.template.testclasses.TypeReferenceClassAccessTemplate;
+import spoon.test.template.testclasses.*;
 import spoon.test.template.testclasses.bounds.CheckBound;
 import spoon.test.template.testclasses.bounds.CheckBoundMatcher;
 import spoon.test.template.testclasses.bounds.CheckBoundTemplate;
@@ -710,6 +695,23 @@ public class TemplateTest {
 		assertTrue(superc.getSuperInterfaces().contains(factory.Type().createReference(Comparable.class)));
 		assertTrue(superc.getSuperInterfaces().contains(factory.Type().createReference(Serializable.class)));
 		assertTrue(superc.getSuperInterfaces().contains(factory.Type().createReference(Remote.class)));
+	}
+
+	@Test
+	public void testSimpleTemplate() {
+		Launcher spoon = new Launcher();
+		spoon.addTemplateResource(new FileSystemFile("./src/test/java/spoon/test/template/testclasses/SimpleTemplate.java"));
+		spoon.buildModel();
+
+		Factory factory = spoon.getFactory();
+
+		CtClass<?> testSimpleTpl = factory.Class().create("TestSimpleTpl");
+		//whitespace seems wrong here
+		new SimpleTemplate("HelloWorld").apply(testSimpleTpl);
+
+		Set<CtMethod<?>> listMethods = testSimpleTpl.getMethods();
+		assertEquals(0, testSimpleTpl.getMethodsByName("apply").size());
+		assertEquals(1, listMethods.size());
 	}
 
 	@Test
