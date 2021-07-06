@@ -16,8 +16,12 @@ def strip_line_number(line: str) -> str:
     return re.sub(r".java:\d+(:\d+)?:", ".java", line)
 
 
-def try_match_lines(reference: Counter[str], other: Counter[str]) -> Counter[str]:
-    """Tries to find out which lines are *new* in other and which were already present in the reference."""
+def find_added_violation_lines(reference: Counter[str], other: Counter[str]) -> Counter[str]:
+    """
+    Tries to find out which violation lines are new in "other" and which
+    were already present in the "reference". These lines are added violations the
+    contributor should fix.
+    """
     # Lines that are only in the reference aren't critical, as they were
     # apparently fixed in "other"
     return other.copy() - reference
@@ -53,7 +57,7 @@ def main(file_reference: Path, file_other: Path):
     with open(file_other, "r") as file:
         lines_other = filter_relevant_lines(file.readlines())
 
-    new_errors = try_match_lines(
+    new_errors = find_added_violation_lines(
         Counter(map(strip_line_number, lines_reference)),
         Counter(map(strip_line_number, lines_other))
     )
