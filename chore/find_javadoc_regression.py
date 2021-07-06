@@ -24,7 +24,7 @@ def find_added_violation_lines(reference: 'Counter[str]', other: 'Counter[str]')
     """
     # Lines that are only in the reference aren't critical, as they were
     # apparently fixed in "other"
-    return other.copy() - reference
+    return other - reference
 
 
 def try_readd_line_numbers(without_numbers: 'Counter[str]', with_numbers: List[str]) -> List[str]:
