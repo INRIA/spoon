@@ -8,7 +8,8 @@ name: tests
 on:
   pull_request:
     branches:
-      master
+      - master
+      - *
   push:
     branches:
       master
