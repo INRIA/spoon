@@ -772,7 +772,6 @@ public class ImportScannerImpl extends CtScanner implements ImportScanner {
 
 		if (parent != null) {
 			CtBlock block = (CtBlock) parent;
-			boolean innerClass = false;
 
 			// now we have the first container block, we want to check if we're not in an inner class
 			while (parent != null && !(parent instanceof CtClass)) {

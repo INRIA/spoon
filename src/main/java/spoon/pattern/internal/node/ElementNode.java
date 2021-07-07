@@ -14,7 +14,6 @@ import spoon.metamodel.MetamodelProperty;
 import spoon.pattern.Quantifier;
 import spoon.pattern.internal.DefaultGenerator;
 import spoon.pattern.internal.ResultHolder;
-import spoon.pattern.internal.matcher.Matchers;
 import spoon.pattern.internal.matcher.TobeMatched;
 import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.declaration.CtElement;
@@ -122,7 +121,6 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		List<MapEntryNode> constantMatchers = new ArrayList<>(map.size());
 		//collect Entries with variable matcher keys
 		List<MapEntryNode> variableMatchers = new ArrayList<>();
-		Matchers last = null;
 		for (Map.Entry<?, ?> entry : map.entrySet()) {
 			MapEntryNode mem = new MapEntryNode(
 					create(entry.getKey(), patternElementToSubstRequests),
