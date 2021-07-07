@@ -8,6 +8,8 @@
 
 package spoon.test.model;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -367,34 +369,36 @@ public class SwitchCaseTest {
 			assertThrows(IndexOutOfBoundsException.class, () -> switchExpression.addCaseAt(3, onlyCase));
 		}
 	}
-	
-	@DisplayName("should return the first case expression")
-	@Test
-	public void test_getCaseExpression_shouldReturnTheFirstCaseExpression() {
-		Factory factory = new Launcher().getFactory();
-
-		CtCase<Integer> ctCase = factory.createCase();
-		CtExpression<Integer> first = factory.createCodeSnippetExpression("1");
-		CtExpression<Integer> second = factory.createCodeSnippetExpression("2");
-		CtExpression<Integer> third = factory.createCodeSnippetExpression("3");
-
-		ctCase.setCaseExpressions(Arrays.asList(first, second, third));
-
-		assertEquals(first, ctCase.getCaseExpression());
-	}
 
 	@Nested
-	class SetCaseExpressionInSwitchBeforeJava12 {
-		@DisplayName("should remove all existing case expressions and insert the specified case expression")
+	class CaseExpressionInSwitchCasesBeforeJava12 {
 		@Test
-		public void test_setCaseExpression_removeExistingCaseExpressionsAndInsertTheSpecified() {
+		public void test_getCaseExpression_shouldReturnTheFirstCaseExpression() {
+			// contract: `getCaseExpression` should return the first element in the list of case expressions stored in
+			// each instance of `CtCase`
 			Factory factory = new Launcher().getFactory();
 
 			CtCase<Integer> ctCase = factory.createCase();
-			CtExpression<Integer> first = factory.createCodeSnippetExpression("1");
-			CtExpression<Integer> second = factory.createCodeSnippetExpression("2");
-			CtExpression<Integer> third = factory.createCodeSnippetExpression("3");
-			CtExpression<Integer> fourth = factory.createCodeSnippetExpression("4");
+			CtExpression<Integer> first = factory.createLiteral(1);
+			CtExpression<Integer> second = factory.createLiteral(2);
+			CtExpression<Integer> third = factory.createLiteral(3);
+
+			ctCase.setCaseExpressions(Arrays.asList(first, second, third));
+
+			assertEquals(first, ctCase.getCaseExpression());
+		}
+
+		@Test
+		public void test_setCaseExpression_removeExistingCaseExpressionsAndInsertTheSpecified() {
+			// contract: `setCaseExpression` should clear the list of case expressions and insert the specified case
+			// expression
+			Factory factory = new Launcher().getFactory();
+
+			CtCase<Integer> ctCase = factory.createCase();
+			CtExpression<Integer> first = factory.createLiteral(1);
+			CtExpression<Integer> second = factory.createLiteral(2);
+			CtExpression<Integer> third = factory.createLiteral(3);
+			CtExpression<Integer> fourth = factory.createLiteral(4);
 			ctCase.setCaseExpressions(Arrays.asList(first, second, third));
 
 			ctCase.setCaseExpression(fourth);
@@ -403,16 +407,17 @@ public class SwitchCaseTest {
 			assertEquals(fourth, ctCase.getCaseExpression());
 		}
 
-		@DisplayName("should clear the list of expressions when null is passed")
 		@Test
 		public void test_setCaseExpression_removeAllCaseExpressions() {
+			// contract: `setCaseExpression` should clear the list of case expressions when `null` is passed as
+			// argument
 			String code = "class A { public void f(int i) { switch(i) { case 1,2,3: break; } } }";
 			CtModel model = createModelFromString(code);
 			CtCase<?> ctCase = model.getElements(new TypeFilter<>(CtCase.class)).get(0);
 
 			ctCase.setCaseExpression(null);
 
-			assertTrue(ctCase.getCaseExpressions() instanceof EmptyClearableList);
+			assertThat(ctCase.getCaseExpressions().size(), equalTo(0));
 		}
 	}
 }
