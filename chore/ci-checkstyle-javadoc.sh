@@ -13,6 +13,8 @@ set -o pipefail
 
 COMPARE_BRANCH="master"
 JAVADOC_CHECKSTYLE_CONFIG="__SPOON_CI_checkstyle-javadoc.xml"
+OUTPUT_FILE_COMPARE="__SPOON_CI_checkstyle-javadoc-compare"
+OUTPUT_FILE_OWN="__SPOON_CI_checkstyle-javadoc-own"
 
 COMPARE_WITH_MASTER_ARG="COMPARE_WITH_MASTER"
 RELATED_ISSUE_URL="https://github.com/inria/spoon/issues/3923"
@@ -20,6 +22,14 @@ RELATED_ISSUE_URL="https://github.com/inria/spoon/issues/3923"
 function cleanup() {
     if [ -f "$JAVADOC_CHECKSTYLE_CONFIG" ]; then
         rm "$JAVADOC_CHECKSTYLE_CONFIG"
+    fi
+
+    if [ -f "$OUTPUT_FILE_COMPARE" ]; then
+        rm "$OUTPUT_FILE_COMPARE"
+    fi
+
+    if [ -f "$OUTPUT_FILE_OWN" ]; then
+        rm "$OUTPUT_FILE_OWN"
     fi
 }
 
@@ -39,11 +49,12 @@ function create_checkstyle_config() {
 
 function run_checkstyle() {
     create_checkstyle_config
-    mvn -B checkstyle:check --fail-never -Dcheckstyle.config.location="$JAVADOC_CHECKSTYLE_CONFIG"
+    mvn -B checkstyle:check --fail-never -Dcheckstyle.config.location="$JAVADOC_CHECKSTYLE_CONFIG" > "$1"
+    cat "$1"
 }
 
 function compute_num_errors() {
-     grep -Po '(?<=There are )\d+(?= errors reported by Checkstyle)' <<< `run_checkstyle`
+     grep -Po '(?<=There are )\d+(?= errors reported by Checkstyle)' <<< `run_checkstyle "$1"`
 }
 
 function main() {
@@ -51,11 +62,11 @@ function main() {
 
     # compute compare score
     git checkout --force "$COMPARE_BRANCH" &> /dev/null
-    compare_num_errors=`compute_num_errors`
+    compare_num_errors=`compute_num_errors "$OUTPUT_FILE_COMPARE"`
 
     # compute current score
     git checkout --force - &> /dev/null
-    current_num_errors=`compute_num_errors`
+    current_num_errors=`compute_num_errors "$OUTPUT_FILE_OWN"`
 
     echo "JAVADOC QUALITY SCORE (lower is better)
     Compare: $compare_num_errors
@@ -72,6 +83,8 @@ function main() {
         echo "Javadoc quality has deteriorated!"
         echo "Run the chore/ci-checkstyle-javadoc.sh script locally to find errors"
         echo "See $RELATED_ISSUE_URL for details"
+        echo -e "\n"
+        python3 chore/find_javadoc_regression.py "$OUTPUT_FILE_COMPARE" "$OUTPUT_FILE_OWN"
         exit 1
     else
         echo "Javadoc quality has not deteriorated"
@@ -108,5 +121,5 @@ if [ "$1" == "$COMPARE_WITH_MASTER_ARG" ]; then
 
     main
 else
-    grep "$1" <<< `run_checkstyle`
+    grep "$1" <<< `run_checkstyle "$OUTPUT_FILE_OWN"`
 fi
