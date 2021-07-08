@@ -48,7 +48,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
-import spoon.support.util.EmptyClearableList;
 
 @DisplayName("Switchcase Tests")
 public class SwitchCaseTest {
