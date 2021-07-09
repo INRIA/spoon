@@ -21,8 +21,9 @@ _COLOR_WARNING = "\033[91;1m"
 def temporary_path(suffix: str):
     """
     Creates and returns a Path to a temporary file that will be deleted when
-    the context manager exits. This is needed as NamedTemporaryFile is
-    hopelessly broken on Windows due to mandatory file locks.
+    the context manager exits.
+
+    This is needed as NamedTemporaryFile is hopelessly broken on Windows due to mandatory file locks.
     See https://bugs.python.org/issue14243.
     """
     with NamedTemporaryFile(suffix=suffix, delete=False) as f:
@@ -115,15 +116,17 @@ def find_added_violation_lines(reference: 'Counter[str]', other: 'Counter[str]')
     Tries to find out which violation lines are new in "other" and which
     were already present in the "reference". These lines are added violations the
     contributor should fix.
+
+    Leftover lines that are only in the reference will be ignored, as they were apparently
+    fixed in other.
     """
-    # Lines that are only in the reference aren't critical, as they were
-    # apparently fixed in "other"
     return other - reference
 
 
 def try_readd_line_numbers(without_numbers: 'Counter[str]', with_numbers: List[str]) -> List[str]:
     """
     Tries to re-add the line numbers to a dict of strings.
+
     This is not necessarily accurate, as it doesn't know which occurrence
     in "with_numbers" is the real source. If the error message is unique within
     a file it will find the exact match though.
@@ -178,41 +181,53 @@ def print_compare_with_branch(target_branch: str) -> None:
 
         run_command(["git", "checkout", target_branch], stderr=PIPE)
         reference_output = run_checkstyle(config_path)
+
         run_command(["git", "checkout", "-"], stderr=PIPE)
         other_output = run_checkstyle(config_path)
 
-        reference_violation_count = extract_violation_count(reference_output)
-        other_violation_count = extract_violation_count(other_output)
+        print_compare_with_branch_result(target_branch, reference_output, other_output)
 
-        if reference_violation_count is None:
-            print(warn("The Checkstyle run for the reference branch did not yield any result."))
-            exit(1)
-        if other_violation_count is None:
-            print(warn("The Checkstyle run for your branch did not yield any result."))
-            exit(1)
 
-        print()
-        print("Current status")
-        print(
-            f"  Violations on {hl('comparison')} branch ({target_branch}): "
-            f"{hl(str(reference_violation_count))}")
-        print(
-            f"  Violations on {hl('your')} branch         {' '*len(target_branch)}: "
-            f"{hl(str(other_violation_count))}"
-        )
-        print()
+def print_compare_with_branch_result(target_branch: str, reference_output: str, other_output: str):
+    reference_violation_count = extract_violation_count(reference_output)
+    other_violation_count = extract_violation_count(other_output)
 
-        if reference_violation_count < other_violation_count:
-            print(warn("Javadoc quality has deteriorated!"))
-            print("Run the chore/ci-checkstyle-javadoc.sh script locally to find errors")
-            print(f"See {hl('https://github.com/inria/spoon/issues/3923')} for details")
-            print()
-            print_regression_lines(reference_output, other_output)
-            exit(1)
-        elif reference_violation_count == other_violation_count:
-            print(success("Javadoc quality has not deteriorated!"))
-        else:
-            print(success("You increased the Javadoc quality! Thank you :)"))
+    if reference_violation_count is None:
+        print(warn("The Checkstyle run for the reference branch did not yield any result."))
+        exit(1)
+    if other_violation_count is None:
+        print(warn("The Checkstyle run for your branch did not yield any result."))
+        exit(1)
+
+    print_current_status(target_branch, reference_violation_count, other_violation_count)
+
+    if reference_violation_count < other_violation_count:
+        print_status_deteriorated(reference_output, other_output)
+        exit(1)
+    elif reference_violation_count == other_violation_count:
+        print(success("Javadoc quality has not deteriorated!"))
+        exit(0)
+    else:
+        print(success("You improved the Javadoc quality! Thank you :)"))
+        exit(0)
+
+
+def print_current_status(target_branch: str, reference_violation_count: int, other_violation_count: int):
+    print(f"""
+Current status
+  Violations on {hl('comparison')} branch ({target_branch}): {hl(str(reference_violation_count))}
+  Violations on {hl('your')}       branch   {' '*len(target_branch)}: {hl(str(other_violation_count))}
+""")
+
+
+def print_status_deteriorated(reference_output: str, other_output: str):
+    print(f"""
+{warn("Javadoc quality has deteriorated!")}
+Run the chore/check-javadoc-regresssions.py script locally to find errors.
+See {hl('https://github.com/inria/spoon/issues/3923')} for details.
+
+""")
+    print_regression_lines(reference_output, other_output)
 
 
 def print_filtered_checkstyle_errors(regex_str: str) -> None:
