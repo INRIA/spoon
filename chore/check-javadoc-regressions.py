@@ -309,7 +309,7 @@ if __name__ == "__main__":
         exit(0)
 
     if len(sys.argv) > 2:
-        print(f"Usage: {sys.argv[0]} [COMPARE_WITH_MASTER | regex file filter]")
+        print_help()
         exit(1)
 
     try:
