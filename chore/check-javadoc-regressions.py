@@ -244,8 +244,8 @@ def command_filtered_checkstyle_errors(regex_str: str) -> None:
                 print(line)
 
         # If the user has a maven problem that prevents checkstyle from running they'd likely
-        # appreciate *some* output. If the amount of lines is too small, they probably screwed up
-        # somewhere. Let's warn them.
+        # appreciate *some* output. If we can't extract a violation count the checkstyle plugin
+        # probably didn't successfully. Let's warn them.
         if extract_violation_count(checkstyle_output) is None:
             print()
             print(warn("Checkstyle output doesn't contain a violation count. Maybe your setup has an error?"))
