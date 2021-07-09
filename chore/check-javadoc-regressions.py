@@ -162,7 +162,7 @@ def print_regression_lines(reference: str, other: str) -> None:
     )
     with_line_numbers = try_readd_line_numbers(new_errors, lines_other)
 
-    print(warn("You likely added the following new errors. "), end=" ")
+    print(warn("You likely added the following new errors."), end=" ")
     print("Line numbers might be incorrect if there are multiple violations of the same type in the file.")
     for error in with_line_numbers:
         print(error.strip())
@@ -221,11 +221,9 @@ Current status
 
 
 def print_status_deteriorated(reference_output: str, other_output: str):
-    print(f"""
-{warn("Javadoc quality has deteriorated!")}
+    print(f"""{warn("Javadoc quality has deteriorated!")}
 Run the chore/check-javadoc-regresssions.py script locally to find errors.
 See {hl('https://github.com/inria/spoon/issues/3923')} for details.
-
 """)
     print_regression_lines(reference_output, other_output)
 
