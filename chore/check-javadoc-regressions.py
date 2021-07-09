@@ -185,10 +185,10 @@ def command_compare_with_branch(target_branch: str) -> None:
         run_command(["git", "checkout", "-"], stderr=PIPE)
         other_output = run_checkstyle(config_path)
 
-        handle_compare_with_branch_result(target_branch, reference_output, other_output)
+        handle_compare_with_branch_output(target_branch, reference_output, other_output)
 
 
-def handle_compare_with_branch_result(target_branch: str, reference_output: str, other_output: str):
+def handle_compare_with_branch_output(target_branch: str, reference_output: str, other_output: str):
     reference_violation_count = extract_violation_count(reference_output)
     other_violation_count = extract_violation_count(other_output)
 
