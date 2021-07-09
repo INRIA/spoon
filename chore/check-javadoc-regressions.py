@@ -168,7 +168,7 @@ def print_regression_lines(reference: str, other: str) -> None:
         print(error.strip())
 
 
-def print_compare_with_branch(target_branch: str) -> None:
+def command_compare_with_branch(target_branch: str) -> None:
     """
     Compares the current branch with a given reference branch and prints a change summary.
     Exits with an error if the current branch has more violations than the passed target branch.
@@ -185,10 +185,10 @@ def print_compare_with_branch(target_branch: str) -> None:
         run_command(["git", "checkout", "-"], stderr=PIPE)
         other_output = run_checkstyle(config_path)
 
-        print_compare_with_branch_result(target_branch, reference_output, other_output)
+        handle_compare_with_branch_result(target_branch, reference_output, other_output)
 
 
-def print_compare_with_branch_result(target_branch: str, reference_output: str, other_output: str):
+def handle_compare_with_branch_result(target_branch: str, reference_output: str, other_output: str):
     reference_violation_count = extract_violation_count(reference_output)
     other_violation_count = extract_violation_count(other_output)
 
@@ -230,7 +230,7 @@ See {hl('https://github.com/inria/spoon/issues/3923')} for details.
     print_regression_lines(reference_output, other_output)
 
 
-def print_filtered_checkstyle_errors(regex_str: str) -> None:
+def command_filtered_checkstyle_errors(regex_str: str) -> None:
     """
     Runs checkstyle in the current working directory and filters the output using the passed regex.
     """
@@ -274,9 +274,9 @@ if __name__ == "__main__":
 
     try:
         if len(sys.argv) == 2 and sys.argv[1] == "COMPARE_WITH_MASTER":
-            print_compare_with_branch("master")
+            command_compare_with_branch("master")
         else:
-            print_filtered_checkstyle_errors(sys.argv[1] if len(sys.argv) > 1 else "")
+            command_filtered_checkstyle_errors(sys.argv[1] if len(sys.argv) > 1 else "")
     except CalledProcessError as e:
         print("Error ececuting native command:", e.cmd)
         print("Error output:")
