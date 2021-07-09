@@ -262,13 +262,55 @@ def fix_colors_windows_cmd():
     kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 
 
+def print_help():
+    print(f"""
+ {hl('USAGE')}
+   {sys.argv[0]} [COMPARE_WITH_MASTER | <regex file filter>] [--help]
+
+ {hl('DESCRIPTION')}
+   This is a small helper script to ensure the Javadoc quality in the project does not
+   deteriorate. It runs during CI and enforces that new changes never increase the amount
+   of checkstyle Javadoc errors.
+   Additionally, it tries to create a helpful output showing you the approximate location
+   of any errors you might introduce so you have some guidance while fixing them.
+
+ {hl('EXAMPLES')}
+   {success('Compare your branch with the master branch to check for regressions.')}
+     This will checkout the master branch, run checkstyle, checkout your branch
+     and compare the results.
+     Note that the checkout will {hl('fail')} if you have incompatible uncommitted changes.
+
+     {warn('python ' + sys.argv[0] + ' COMPARE_WITH_MASTER')}
+
+   {success('List all violations in a set of files in your current working directory.')}
+     Running this script with a regex as its only argument will execute checkstyle in
+     your working directory and filter the results using the regex you provided.
+     This can be useful if you want to find all violations in files you touched or
+     files the CI found errors in.
+
+     {warn('python ' + sys.argv[0])} src/main/java/
+
+   {success('List all violations in your current working directory.')}
+     Running this script without any arguments will echo the full maven checkstyle
+     output back to you.
+     This can be useful if you just want to invoke the maven checkstyle command
+     with an adequate configuration.
+
+     {warn('python ' + sys.argv[0])}
+    """[1:])
+
+
 if __name__ == "__main__":
+    if os.name == "nt":
+        fix_colors_windows_cmd()
+
+    if "--help" in sys.argv:
+        print_help()
+        exit(0)
+
     if len(sys.argv) > 2:
         print(f"Usage: {sys.argv[0]} [COMPARE_WITH_MASTER | regex file filter]")
         exit(1)
-
-    if os.name == "nt":
-        fix_colors_windows_cmd()
 
     try:
         if len(sys.argv) == 2 and sys.argv[1] == "COMPARE_WITH_MASTER":
