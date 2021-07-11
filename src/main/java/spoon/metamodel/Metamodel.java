@@ -105,6 +105,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtNewArray.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtNewClass.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtOperatorAssignment.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtPattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtRHSReceiver.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtReturn.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtStatement.class));

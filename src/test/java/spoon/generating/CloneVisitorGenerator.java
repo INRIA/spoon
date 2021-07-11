@@ -212,7 +212,8 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					"spoon.support.reflect.declaration.CtGenericElementImpl", "spoon.support.reflect.reference.CtGenericElementReferenceImpl", //
 					"spoon.support.reflect.declaration.CtModifiableImpl", "spoon.support.reflect.declaration.CtMultiTypedElementImpl", //
 					"spoon.support.reflect.declaration.CtTypeMemberImpl", "spoon.support.reflect.code.CtRHSReceiverImpl",
-					"spoon.support.reflect.declaration.CtShadowableImpl", "spoon.support.reflect.code.CtBodyHolderImpl", "spoon.support.reflect.declaration.CtModuleDirectiveImpl");
+					"spoon.support.reflect.declaration.CtShadowableImpl", "spoon.support.reflect.code.CtBodyHolderImpl", "spoon.support.reflect.declaration.CtModuleDirectiveImpl",
+                    "spoon.support.reflect.code.CtPatternImpl");
 			private final List<String> excludesFields = Arrays.asList("factory", "elementValues", "target", "rootFragment", "originalSourceCode", "myPartialSourcePosition");
 			private final Set<String> collectionClasses = new HashSet<>(Arrays.asList(
 					List.class.getName(), Collection.class.getName(), Set.class.getName(),
