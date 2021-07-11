@@ -338,7 +338,6 @@ public class SpoonArchitectureEnforcerTest {
 		interfaces.addInputResource("src/main/java/spoon/support/reflect/declaration");
 		interfaces.addInputResource("src/main/java/spoon/support/reflect/code");
 		interfaces.addInputResource("src/main/java/spoon/support/reflect/reference");
-		interfaces.addInputResource("src/main/java/spoon/reflect/visitor/CtScanner.java");
 		interfaces.buildModel();
 
 		CtClass<?> ctScanner = interfaces.getFactory().Class().get(CtInheritanceScanner.class);
@@ -355,7 +354,7 @@ public class SpoonArchitectureEnforcerTest {
 			}
 		});
 
-		assertTrue("The following methods are missing in CtScanner: \n" + StringUtils.join(missingMethods, "\n"), missingMethods.isEmpty());
+		assertTrue("The following methods are missing in " + ctScanner.getSimpleName() + ": \n" + StringUtils.join(missingMethods, "\n"), missingMethods.isEmpty());
 	}
 
 	@Test
