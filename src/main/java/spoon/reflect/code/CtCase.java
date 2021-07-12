@@ -46,13 +46,13 @@ public interface CtCase<S> extends CtStatement, CtStatementList {
 
 	/**
 	 * Gets the case expressions.
-	 * (Multiple case expressions are available as a preview feature since Java 12). If set with `null`, the `default` construct will be used.
+	 * (Multiple case expressions are available as a preview feature since Java 12)
 	 */
 	@PropertyGetter(role = EXPRESSION)
 	List<CtExpression<S>> getCaseExpressions();
 
 	/**
-	 * Sets the case expressions.
+	 * Sets the case expressions. If set with `null`, the `default` construct will be used instead of `case`.
 	 * (Multiple case expressions are available as a preview feature since Java 12)
 	 */
 	@PropertySetter(role = EXPRESSION)
