@@ -16,7 +16,7 @@
  */
 package spoon.test.ctType;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtAssignment;
@@ -48,10 +48,10 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -199,7 +199,7 @@ public class CtTypeTest {
 
 	private void checkIsSubtype(CtTypeReference superType, CtTypeReference subType, Map<String, CtTypeReference<?>> nameToTypeRef) {
 		String msg = getTypeName(subType) + " isSubTypeOf " + getTypeName(superType);
-		assertTrue(msg, subType.isSubtypeOf(superType));
+		assertTrue(subType.isSubtypeOf(superType), msg);
 	}
 
 	private static final Pattern assignment = Pattern.compile("\\s*(\\w+)\\s*=\\s*(\\w+);");
@@ -210,7 +210,7 @@ public class CtTypeTest {
 		CtTypeReference<?> superType = nameToTypeRef.get(m.group(1));
 		CtTypeReference<?> subType = nameToTypeRef.get(m.group(2));
 		String msg = getTypeName(subType) + " is NOT SubTypeOf " + getTypeName(superType);
-		assertFalse(msg, subType.isSubtypeOf(superType));
+		assertFalse(subType.isSubtypeOf(superType), msg);
 	}
 
 	private String getTypeName(CtTypeReference<?> ref) {

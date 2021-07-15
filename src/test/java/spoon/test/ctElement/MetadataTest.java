@@ -16,16 +16,16 @@
  */
 package spoon.test.ctElement;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.test.ctElement.testclasses.Returner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class MetadataTest {
