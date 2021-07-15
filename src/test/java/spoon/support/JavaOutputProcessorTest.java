@@ -15,7 +15,7 @@ class JavaOutputProcessorTest {
 
 
     @Test
-    public void testCreateModuleFileAssertAnnotationFileCreated(@TempDir File tempDir) {
+    void testCreateModuleFileAssertAnnotationFileCreated(@TempDir File tempDir) {
         // contract : createModuleFile creates an annotation file for module and prints it
 
         // arrange
@@ -31,16 +31,15 @@ class JavaOutputProcessorTest {
 
         // act
         javaOutputProcessor.process(module);
+        File expectedFile = tempDir.toPath().resolve("emptyModule/module-info.java").toFile();
 
         // assert
-        assertTrue(new File(launcher.getModelBuilder().getSourceOutputDirectory() +
-                "/emptyModule/module-info.java").exists()
-        );
+        assertTrue(expectedFile.exists());
         assertEquals(1, javaOutputProcessor.printedFiles.size());
     }
 
     @Test
-    public void testCreatePackageFileAssertAnnotationFileCreated(@TempDir File tempDir) {
+    void testCreatePackageFileAssertAnnotationFileCreated(@TempDir File tempDir) {
         // contract : createPackageFile creates a package annotation file for rootPackage
 
         // arrange
@@ -54,11 +53,10 @@ class JavaOutputProcessorTest {
 
         // act
         javaOutputProcessor.process(rootPackage);
+        File expectedFile =  tempDir.toPath().resolve("spoon/support/JavaOutputProcessor/package-info.java").toFile();
 
         // assert
-        assertTrue(new File(launcher.getModelBuilder().getSourceOutputDirectory() +
-                "/spoon/support/JavaOutputProcessor/package-info.java").exists()
-        );
+        assertTrue(expectedFile.exists());
         assertEquals(1, javaOutputProcessor.printedFiles.size());
     }
 }
