@@ -31,9 +31,9 @@ class JavaOutputProcessorTest {
 
         // act
         javaOutputProcessor.process(module);
-        File expectedFile = tempDir.toPath().resolve("emptyModule/module-info.java").toFile();
 
         // assert
+        File expectedFile = tempDir.toPath().resolve("emptyModule/module-info.java").toFile();
         assertTrue(expectedFile.exists());
         assertEquals(1, javaOutputProcessor.printedFiles.size());
     }
@@ -53,9 +53,9 @@ class JavaOutputProcessorTest {
 
         // act
         javaOutputProcessor.process(rootPackage);
-        File expectedFile =  tempDir.toPath().resolve("spoon/support/JavaOutputProcessor/package-info.java").toFile();
 
         // assert
+        File expectedFile =  tempDir.toPath().resolve("spoon/support/JavaOutputProcessor/package-info.java").toFile();
         assertTrue(expectedFile.exists());
         assertEquals(1, javaOutputProcessor.printedFiles.size());
     }
