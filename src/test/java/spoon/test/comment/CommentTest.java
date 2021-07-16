@@ -18,7 +18,7 @@ package spoon.test.comment;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.CtModel;
@@ -95,10 +95,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
 public class CommentTest {
@@ -302,7 +302,7 @@ public class CommentTest {
 		// verify that all comments present in the AST are printed
 		for (CtComment comment : comments) {
 			assertNotNull(comment.getParent());
-			assertTrue(comment.toString() + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
+			assertTrue(strType.contains(comment.toString()), comment.toString() + ":" + comment.getParent() + " is not printed");
 		}
 
 		assertEquals(4, type.getComments().size());
@@ -498,7 +498,7 @@ public class CommentTest {
 		// verify that all comments present in the AST are printed
 		for (CtComment comment : comments) {
 			assertNotNull(comment.getParent());
-			assertTrue(comment.toString() + ":" + comment.getParent() + " is not printed", strType.contains(comment.toString()));
+			assertTrue(strType.contains(comment.toString()), comment.toString() + ":" + comment.getParent() + " is not printed");
 		}
 
 		assertEquals(3, type.getComments().size());
@@ -820,7 +820,7 @@ public class CommentTest {
 		launcher.getModel().getElements(new TypeFilter<>(CtInterface.class)).stream().forEach(x -> {
 
 			assertNotNull(x.getSimpleName() + " has no documentation", x.getDocComment());
-			assertTrue(x.getSimpleName() + " has no documentation", !x.getDocComment().isEmpty());
+			assertTrue(!x.getDocComment().isEmpty(), x.getSimpleName() + " has no documentation");
 
 			// we only consider instantiable interfaces
 			if (launcher.getModel().getElements(new AbstractFilter<CtElement>() {
@@ -885,7 +885,7 @@ public class CommentTest {
 					CtElement el = launcher.getFactory().Code().createCodeSnippetStatement(snippet).compile();
 
 					// the snippet contains this element
-					assertTrue(snippet + " does not contain a " + x.getSimpleName(), !el.getElements(new TypeFilter<>(x.getActualClass())).isEmpty());
+					assertTrue(!el.getElements(new TypeFilter<>(x.getActualClass())).isEmpty(), snippet + " does not contain a " + x.getSimpleName());
 
 					codeElementsDocumentationPage.append(snippet + "\n");
 
@@ -897,7 +897,7 @@ public class CommentTest {
 		);
 
 		try {
-			assertEquals("doc outdated, please commit doc/code_elements.md", IOUtils.toString(new FileReader("doc/code_elements.md")), codeElementsDocumentationPage.toString());
+			assertEquals(IOUtils.toString(new FileReader("doc/code_elements.md")), codeElementsDocumentationPage.toString(), "doc outdated, please commit doc/code_elements.md");
 		} finally {
 			IOUtils.write(codeElementsDocumentationPage.toString(), new FileOutputStream("doc/code_elements.md"));
 		}
@@ -987,7 +987,7 @@ public class CommentTest {
 			assertEquals(1, literal.getComments().size());
 			CtComment comment = literal.getComments().get(0);
 			String expected = literal.getValue();
-			assertEquals(literal.getPosition().toString(), expected, comment.getContent());
+			assertEquals(expected, comment.getContent(), literal.getPosition().toString());
 		}
 	}
 

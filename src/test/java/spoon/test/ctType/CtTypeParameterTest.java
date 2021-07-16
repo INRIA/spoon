@@ -19,7 +19,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.FluentLauncher;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;
@@ -36,11 +36,11 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.test.ctType.testclasses.ErasureModelA;
 import spoon.testing.utils.ModelUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class CtTypeParameterTest {
 
@@ -83,13 +83,13 @@ public class CtTypeParameterTest {
 
 	private void checkTypeParamErasureOfType(CtTypeParameter typeParam, Class<?> clazz) throws NoSuchFieldException, SecurityException {
 		Field field = clazz.getDeclaredField("param" + typeParam.getSimpleName());
-		assertEquals("TypeErasure of type param " + getTypeParamIdentification(typeParam), field.getType().getName(), typeParam.getTypeErasure().getQualifiedName());
+		assertEquals(field.getType().getName(), typeParam.getTypeErasure().getQualifiedName(), "TypeErasure of type param " + getTypeParamIdentification(typeParam));
 	}
 
 	private void checkTypeParamErasureOfExecutable(CtTypeParameter typeParam) throws SecurityException {
 		CtExecutable<?> exec = (CtExecutable<?>) typeParam.getParent();
 		CtParameter<?> param = exec.filterChildren(new NamedElementFilter<>(CtParameter.class, "param" + typeParam.getSimpleName())).first();
-		assertNotNull("Missing param" + typeParam.getSimpleName() + " in " + exec.getSignature(), param);
+		assertNotNull(param, "Missing param" + typeParam.getSimpleName() + " in " + exec.getSignature());
 		int paramIdx = exec.getParameters().indexOf(param);
 		Class declClass = exec.getParent(CtType.class).getActualClass();
 		Executable declExec;
@@ -100,7 +100,7 @@ public class CtTypeParameterTest {
 		}
 		Class<?> paramType = declExec.getParameterTypes()[paramIdx];
 		// contract the type erasure given with Java reflection is the same as the one computed by spoon
-		assertEquals("TypeErasure of executable param " + getTypeParamIdentification(typeParam), paramType.getTypeName(), param.getType().getTypeErasure().toString());
+		assertEquals(paramType.getTypeName(), param.getType().getTypeErasure().toString(), "TypeErasure of executable param " + getTypeParamIdentification(typeParam));
 	}
 
 	private void checkParameterErasureOfExecutable(CtParameter<?> param) {
@@ -117,7 +117,7 @@ public class CtTypeParameterTest {
 		Class<?> paramType = declExec.getParameterTypes()[paramIdx];
 		assertEquals(0, typeErasure.getActualTypeArguments().size());
 		// contract the type erasure of the method parameter given with Java reflection is the same as the one computed by spoon
-		assertEquals("TypeErasure of executable " + exec.getSignature() + " parameter " + param.getSimpleName(), paramType.getTypeName(), typeErasure.getQualifiedName());
+		assertEquals(paramType.getTypeName(), typeErasure.getQualifiedName(), "TypeErasure of executable " + exec.getSignature() + " parameter " + param.getSimpleName());
 	}
 
 	private Executable getMethodByName(Class declClass, String simpleName) {
