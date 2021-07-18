@@ -98,6 +98,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
@@ -773,6 +774,78 @@ public class CommentTest {
 		assertEquals(2, returnSt.getComments().size());
 		assertEquals("method body comment", returnSt.getComments().get(0).getContent());
 		assertEquals("inline comment", returnSt.getComments().get(1).getContent());
+	}
+
+	@Test
+	public void testEqualsWithDifferentClassObjects() {
+		// contract: equals return false when two objects of different classes are compared
+
+		Factory factory = new Launcher().getFactory();
+		CtNamedElement object = factory.Interface().get(CtNamedElement.class);
+		CtCommentImpl ctComment = new CtCommentImpl();
+
+		Boolean expectedBoolean = ctComment.equals(object);
+
+		assertFalse(expectedBoolean);
+	}
+
+	@Test
+	public void testEqualsWithDifferentContent() {
+		// contract: equals return false when two comments with different contents are compared
+
+		Factory factory = new Launcher().getFactory();
+
+		CtComment comment = factory.Core().createComment();
+		String commentContent = "testContent";
+		comment.setContent(commentContent);
+
+		CtCommentImpl ctComment = new CtCommentImpl();
+		String ctCommentContent = "notTestContent";
+		ctComment.setContent(ctCommentContent);
+
+		boolean expectedBoolean = ctComment.equals(comment);
+
+		assertFalse(expectedBoolean);
+	}
+
+	@Test
+	public void testEqualsWithSameContentAndSameType() {
+		// contract: equals return true when comments with same content and type are compared
+
+		Factory factory = new Launcher().getFactory();
+
+		CtComment comment = factory.Core().createComment();
+		String commentContent = "testContent";
+		comment.setCommentType(CtComment.CommentType.INLINE);
+		comment.setContent(commentContent);
+
+		CtCommentImpl ctComment = new CtCommentImpl();
+		ctComment.setCommentType(CtComment.CommentType.INLINE);
+		ctComment.setContent(commentContent);
+
+		boolean expectedBoolean = ctComment.equals(comment);
+
+		assertTrue(expectedBoolean);
+	}
+
+	@Test
+	public void testEqualsWithSameContentAndDifferentType() {
+		// contract: equals return false when comments with same content but different types are compared
+
+		Factory factory = new Launcher().getFactory();
+
+		CtComment comment = factory.Core().createComment();
+		String commentContent = "testContent";
+		comment.setCommentType(CtComment.CommentType.BLOCK);
+		comment.setContent(commentContent);
+
+		CtCommentImpl ctComment = new CtCommentImpl();
+		ctComment.setCommentType(CtComment.CommentType.INLINE);
+		ctComment.setContent(commentContent);
+
+		boolean expectedBoolean = ctComment.equals(comment);
+
+		assertFalse(expectedBoolean);
 	}
 
 	@Test
