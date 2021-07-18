@@ -118,6 +118,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private Boolean noclasspath = null;
 
+	private Boolean filterInvalid = false;
+
 	private transient SpoonProgress spoonProgress = new SpoonProgress() { /*anonymous class with empty methods*/ };
 
 	private CompressionType compressionType = CompressionType.GZIP;
@@ -522,6 +524,16 @@ private transient  ClassLoader inputClassloader;
 			this.noclasspath = true;
 		}
 		return noclasspath;
+	}
+
+	@Override
+	public void setFilterInvalid(boolean option) {
+		filterInvalid = option;
+	}
+
+	@Override
+	public boolean getFilterInvalid() {
+		return filterInvalid;
 	}
 
 	@Override

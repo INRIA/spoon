@@ -8,11 +8,13 @@
 package spoon.support.compiler.jdt;
 
 import java.io.PrintWriter;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.compiler.CompilationProgress;
+import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 import org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
 import org.eclipse.jdt.internal.compiler.IProblemFactory;
@@ -22,14 +24,21 @@ import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.util.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+	private boolean filterInvalid;
+
 	TreeBuilderCompiler(INameEnvironment environment, IErrorHandlingPolicy policy, CompilerOptions options,
-			ICompilerRequestor requestor, IProblemFactory problemFactory, PrintWriter out,
-			CompilationProgress progress) {
+						ICompilerRequestor requestor, IProblemFactory problemFactory, PrintWriter out,
+						boolean filterInvalid, CompilationProgress progress) {
 		super(environment, policy, options, requestor, problemFactory, out, progress);
+		this.filterInvalid = filterInvalid;
 	}
 
 	// This code is directly inspired from Compiler class.
@@ -46,6 +55,22 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 		});
 	}
 
+	private CompilationUnit[] filterInvalid(CompilationUnit[] sourceUnits) {
+		ArrayList<CompilationUnit> sourceUnitList = new ArrayList<>();
+		int maxUnits = sourceUnits.length;
+		for (int i = 0; i < maxUnits; i++) {
+			CompilationResult unitResult = new CompilationResult(sourceUnits[i], i, maxUnits, this.options.maxProblemsPerUnit);
+			CompilationUnitDeclaration parsedUnit = this.parser.parse(sourceUnits[i], unitResult);
+			if (parsedUnit.hasErrors()) {
+				LOGGER.warn("Syntax error detected in: " + sourceUnits[i].toString());
+			} else {
+				sourceUnitList.add(sourceUnits[i]);
+			}
+		}
+		this.initializeParser();
+		return sourceUnitList.toArray(new CompilationUnit[sourceUnitList.size()]);
+	}
+
 	// this method is not meant to be in the public API
 	protected CompilationUnitDeclaration[] buildUnits(CompilationUnit[] sourceUnits) {
 
@@ -57,7 +82,12 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
 		this.sortModuleDeclarationsFirst(sourceUnits);
 		// build and record parsed units
-		beginToCompile(sourceUnits);
+		if (filterInvalid) {
+			// syntax is optionally checked here to prevent crashes inside JDT
+			beginToCompile(filterInvalid(sourceUnits));
+		} else {
+			beginToCompile(sourceUnits);
+		}
 
 		CompilationUnitDeclaration unit;
 		int i = 0;

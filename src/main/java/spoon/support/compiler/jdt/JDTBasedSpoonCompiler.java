@@ -477,6 +477,7 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 	 * @param unitDeclaration the unit declaration.
 	 */
 	protected void traverseUnitDeclaration(JDTTreeBuilder builder, CompilationUnitDeclaration unitDeclaration) {
+		System.out.println(unitDeclaration.getFileName());
 		unitDeclaration.traverse(builder, unitDeclaration.scope);
 	}
 

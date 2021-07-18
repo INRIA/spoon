@@ -339,6 +339,20 @@ public interface Environment {
 	boolean getNoClasspath();
 
 	/**
+	 * Sets the option filter-invalid to remove files with any syntax errors from the compilation batch.
+	 *
+	 * @param filterInvalid whether Spoon should filter invalid files
+	 */
+	void setFilterInvalid(boolean filterInvalid);
+
+	/**
+	 * Returns the value ot the option filter-invalid.
+	 *
+	 * @return true iff Spoon filters invalid files
+	 */
+	boolean getFilterInvalid();
+
+	/**
 	 * Returns the value of the option copy-resources.
 	 *
 	 * @return true iff Spoon should copy resource files from the project when pretty-printing

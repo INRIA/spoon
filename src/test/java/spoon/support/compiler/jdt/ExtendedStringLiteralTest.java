@@ -59,8 +59,7 @@ public class ExtendedStringLiteralTest {
 
 								TreeBuilderCompiler treeBuilderCompiler = new TreeBuilderCompiler(
 										environment, getHandlingPolicy(), compilerOptions,
-										this.jdtCompiler.requestor, getProblemFactory(), this.out,
-										null);
+										this.jdtCompiler.requestor, getProblemFactory(), this.out, false, null);
 								return treeBuilderCompiler.buildUnits(getCompilationUnits());
 							}
 						};
