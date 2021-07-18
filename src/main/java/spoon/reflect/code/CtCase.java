@@ -52,7 +52,7 @@ public interface CtCase<S> extends CtStatement, CtStatementList {
 	List<CtExpression<S>> getCaseExpressions();
 
 	/**
-	 * Sets the case expressions. If set with null, the CtCase will represent a default label.
+	 * Sets the case expressions. If set with null or an empty list, the CtCase will represent a default label.
 	 * (Multiple case expressions are available as a preview feature since Java 12)
 	 */
 	@PropertySetter(role = EXPRESSION)
