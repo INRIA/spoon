@@ -27,13 +27,13 @@ public class CtElementImplTest {
         CtAnnotation annotationToBeRemoved = annotatedClass.getAnnotations().get(0);
 
         // act
-        Boolean expectedBoolean = annotatedClass.removeAnnotation(annotationToBeRemoved);
-        Boolean expectedBoolean2 = annotatedClass.removeAnnotation(annotationToBeRemoved);
+        boolean shouldBeTrue = annotatedClass.removeAnnotation(annotationToBeRemoved);
+        boolean shouldBeFalse = annotatedClass.removeAnnotation(annotationToBeRemoved);
 
         // assert
         assertEquals(0, annotatedClass.getAnnotations().size());
-        assertTrue(expectedBoolean);
-        assertFalse(expectedBoolean2);
+        assertTrue(shouldBeTrue);
+        assertFalse(shouldBeFalse);
     }
 
     @SuppressWarnings("unchecked")
