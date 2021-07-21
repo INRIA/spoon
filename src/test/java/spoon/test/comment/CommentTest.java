@@ -786,7 +786,7 @@ public class CommentTest {
 
 		boolean shouldBeFalse = ctComment.equals(object);
 
-		assertFalse(expectedBoolean);
+		assertFalse(shouldBeFalse);
 	}
 
 	@Test
@@ -794,13 +794,12 @@ public class CommentTest {
 		// contract: equals return false when two comments with different contents are compared
 
 		Factory factory = new Launcher().getFactory();
-
 		CtComment hello = factory.createInlineComment("hello");
 		CtComment bye = factory.createInlineComment("bye");
 
-		boolean expectedBoolean = ctComment.equals(comment);
+		boolean shouldBeFalse = hello.equals(bye);
 
-		assertFalse(expectedBoolean);
+		assertFalse(shouldBeFalse);
 	}
 
 	@Test
@@ -808,16 +807,12 @@ public class CommentTest {
 		// contract: equals return true when comments with same content and type are compared
 
 		Factory factory = new Launcher().getFactory();
+		CtComment hello = factory.createInlineComment("hello");
+		CtComment helloAgain = factory.createInlineComment("hello");
 
-		CtComment comment = factory.createInlineComment("testContent");
+		boolean shouldBeTrue = hello.equals(helloAgain);
 
-		CtCommentImpl ctComment = new CtCommentImpl();
-		ctComment.setCommentType(CtComment.CommentType.INLINE);
-		ctComment.setContent(commentContent);
-
-		boolean expectedBoolean = ctComment.equals(comment);
-
-		assertTrue(expectedBoolean);
+		assertTrue(shouldBeTrue);
 	}
 
 	@Test
@@ -825,16 +820,12 @@ public class CommentTest {
 		// contract: equals return false when comments with same content but different types are compared
 
 		Factory factory = new Launcher().getFactory();
+		CtComment BlockComment = factory.createComment("testContent", CtComment.CommentType.BLOCK);
+		CtComment InLineComment = factory.createInlineComment("testContent");
 
-		CtComment comment = factory.createComment("testContent", CtComment.CommentType.BLOCK);
+		boolean shouldBeFalse = InLineComment.equals(BlockComment);
 
-		CtCommentImpl ctComment = new CtCommentImpl();
-		ctComment.setCommentType(CtComment.CommentType.INLINE);
-		ctComment.setContent(commentContent);
-
-		boolean expectedBoolean = ctComment.equals(comment);
-
-		assertFalse(expectedBoolean);
+		assertFalse(shouldBeFalse);
 	}
 
 	@Test
