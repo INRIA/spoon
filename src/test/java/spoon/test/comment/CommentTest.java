@@ -826,10 +826,7 @@ public class CommentTest {
 
 		Factory factory = new Launcher().getFactory();
 
-		CtComment comment = factory.Core().createComment();
-		String commentContent = "testContent";
-		comment.setCommentType(CtComment.CommentType.BLOCK);
-		comment.setContent(commentContent);
+		CtComment comment = factory.createComment("testContent", CtComment.CommentType.BLOCK);
 
 		CtCommentImpl ctComment = new CtCommentImpl();
 		ctComment.setCommentType(CtComment.CommentType.INLINE);
