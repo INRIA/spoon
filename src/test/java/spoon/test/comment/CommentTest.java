@@ -784,7 +784,7 @@ public class CommentTest {
 		CtNamedElement object = factory.Interface().get(CtNamedElement.class);
 		CtCommentImpl ctComment = new CtCommentImpl();
 
-		Boolean expectedBoolean = ctComment.equals(object);
+		boolean shouldBeFalse = ctComment.equals(object);
 
 		assertFalse(expectedBoolean);
 	}
