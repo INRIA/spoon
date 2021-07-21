@@ -795,13 +795,8 @@ public class CommentTest {
 
 		Factory factory = new Launcher().getFactory();
 
-		CtComment comment = factory.Core().createComment();
-		String commentContent = "testContent";
-		comment.setContent(commentContent);
-
-		CtCommentImpl ctComment = new CtCommentImpl();
-		String ctCommentContent = "notTestContent";
-		ctComment.setContent(ctCommentContent);
+		CtComment hello = factory.createInlineComment("hello");
+		CtComment bye = factory.createInlineComment("bye");
 
 		boolean expectedBoolean = ctComment.equals(comment);
 
