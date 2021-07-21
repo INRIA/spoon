@@ -809,10 +809,7 @@ public class CommentTest {
 
 		Factory factory = new Launcher().getFactory();
 
-		CtComment comment = factory.Core().createComment();
-		String commentContent = "testContent";
-		comment.setCommentType(CtComment.CommentType.INLINE);
-		comment.setContent(commentContent);
+		CtComment comment = factory.createInlineComment("testContent");
 
 		CtCommentImpl ctComment = new CtCommentImpl();
 		ctComment.setCommentType(CtComment.CommentType.INLINE);
