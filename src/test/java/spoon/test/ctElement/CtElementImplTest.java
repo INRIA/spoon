@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CtElementImplTest {
 
     @Test
-    public void testRemoveAnnotation() {
+    void testRemoveAnnotation() {
         // contract: removeAnnotation returns true after removing an annotation of a class containing a single
         // annotation, and returns false when a non existing annotation is tried to be removed
 
