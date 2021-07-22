@@ -777,7 +777,7 @@ public class CommentTest {
 	}
 
 	@Test
-	public void testEqualsWithDifferentClassObjects() {
+	void testEqualsWithDifferentClassObjects() {
 		// contract: equals return false when two objects of different classes are compared
 
 		Factory factory = new Launcher().getFactory();
@@ -790,7 +790,7 @@ public class CommentTest {
 	}
 
 	@Test
-	public void testEqualsWithDifferentContent() {
+	void testEqualsWithDifferentContent() {
 		// contract: equals return false when two comments with different contents are compared
 
 		Factory factory = new Launcher().getFactory();
@@ -803,7 +803,7 @@ public class CommentTest {
 	}
 
 	@Test
-	public void testEqualsWithSameContentAndSameType() {
+	void testEqualsWithSameContentAndSameType() {
 		// contract: equals return true when comments with same content and type are compared
 
 		Factory factory = new Launcher().getFactory();
@@ -816,7 +816,7 @@ public class CommentTest {
 	}
 
 	@Test
-	public void testEqualsWithSameContentAndDifferentType() {
+	void testEqualsWithSameContentAndDifferentType() {
 		// contract: equals return false when comments with same content but different types are compared
 
 		Factory factory = new Launcher().getFactory();
