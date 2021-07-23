@@ -86,6 +86,11 @@ public class CtJavaDocImpl extends CtCommentImpl implements CtJavaDoc {
 	@Override
 	public String getShortDescription() {
 		int indexEndSentence = this.getContent().indexOf('.');
+		while (this.getContent().length() > indexEndSentence + 1
+				&& !Character.isWhitespace(this.getContent().charAt(indexEndSentence + 1))
+				&& indexEndSentence != -1) {
+			indexEndSentence = this.getContent().indexOf('.', indexEndSentence + 1);
+		}
 		if (indexEndSentence == -1) {
 			indexEndSentence = this.getContent().indexOf('\n');
 		}
