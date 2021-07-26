@@ -83,10 +83,9 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 	@Override
 	public <T extends CtStatementList> T insertBegin(CtStatementList statements) {
 		ensureModifiableStatementsList();
-		for (CtStatement statement : statements.getStatements()) {
-			statement.setParent(this);
-			this.addStatement(0, statement);
-		}
+		List<CtStatement> copy = new ArrayList<>(statements.getStatements());
+		statements.setStatements(null);
+		this.statements.addAll(0, copy);
 		if (isImplicit() && this.statements.size() > 1) {
 			setImplicit(false);
 		}
