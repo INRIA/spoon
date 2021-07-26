@@ -52,7 +52,7 @@ public class CtCaseImplTest {
         return spoon.getFactory().Class().get(ClassWithSwitchExample.class);
     }
 
-    public static CtStatement createStatement(CtClass ctClass, String Statement) {
+    public static CtStatement createStatement(CtClass ctClass, String statement) {
         return ctClass.getFactory().Code().createCodeSnippetStatement(Statement);
     }
 }
