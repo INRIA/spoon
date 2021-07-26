@@ -53,6 +53,6 @@ public class CtCaseImplTest {
     }
 
     public static CtStatement createStatement(CtClass ctClass, String statement) {
-        return ctClass.getFactory().Code().createCodeSnippetStatement(Statement);
+        return ctClass.getFactory().Code().createCodeSnippetStatement(Statement).compile();
     }
 }
