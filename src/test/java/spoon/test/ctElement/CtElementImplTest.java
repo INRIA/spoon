@@ -24,7 +24,7 @@ public class CtElementImplTest {
 
         CtClass<Annotated> annotatedClass = factory.Class().get(Annotated.class);
         assertEquals(1, annotatedClass.getAnnotations().size());
-        CtAnnotation annotationToBeRemoved = annotatedClass.getAnnotations().get(0);
+        CtAnnotation<?> annotationToBeRemoved = annotatedClass.getAnnotations().get(0);
 
         // act
         boolean shouldBeTrue = annotatedClass.removeAnnotation(annotationToBeRemoved);
