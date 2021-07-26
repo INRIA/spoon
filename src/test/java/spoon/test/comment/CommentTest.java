@@ -98,6 +98,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
@@ -773,6 +774,58 @@ public class CommentTest {
 		assertEquals(2, returnSt.getComments().size());
 		assertEquals("method body comment", returnSt.getComments().get(0).getContent());
 		assertEquals("inline comment", returnSt.getComments().get(1).getContent());
+	}
+
+	@Test
+	void testEqualsWithDifferentClassObjects() {
+		// contract: equals return false when two objects of different classes are compared
+
+		Factory factory = new Launcher().getFactory();
+		CtNamedElement object = factory.Interface().get(CtNamedElement.class);
+		CtCommentImpl ctComment = new CtCommentImpl();
+
+		boolean shouldBeFalse = ctComment.equals(object);
+
+		assertFalse(shouldBeFalse);
+	}
+
+	@Test
+	void testEqualsWithDifferentContent() {
+		// contract: equals return false when two comments with different contents are compared
+
+		Factory factory = new Launcher().getFactory();
+		CtComment hello = factory.createInlineComment("hello");
+		CtComment bye = factory.createInlineComment("bye");
+
+		boolean shouldBeFalse = hello.equals(bye);
+
+		assertFalse(shouldBeFalse);
+	}
+
+	@Test
+	void testEqualsWithSameContentAndSameType() {
+		// contract: equals return true when comments with same content and type are compared
+
+		Factory factory = new Launcher().getFactory();
+		CtComment hello = factory.createInlineComment("hello");
+		CtComment helloAgain = factory.createInlineComment("hello");
+
+		boolean shouldBeTrue = hello.equals(helloAgain);
+
+		assertTrue(shouldBeTrue);
+	}
+
+	@Test
+	void testEqualsWithSameContentAndDifferentType() {
+		// contract: equals return false when comments with same content but different types are compared
+
+		Factory factory = new Launcher().getFactory();
+		CtComment BlockComment = factory.createComment("testContent", CtComment.CommentType.BLOCK);
+		CtComment InLineComment = factory.createInlineComment("testContent");
+
+		boolean shouldBeFalse = InLineComment.equals(BlockComment);
+
+		assertFalse(shouldBeFalse);
 	}
 
 	@Test
