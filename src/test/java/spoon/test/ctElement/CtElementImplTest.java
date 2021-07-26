@@ -17,12 +17,7 @@ public class CtElementImplTest {
         // annotation, and returns false when a non existing annotation is tried to be removed
 
         // arrange
-        Launcher spoon = new Launcher();
-        spoon.addInputResource(new FileSystemFile("./src/test/java/spoon/test/ctElement/CtElementImplTest.java"));
-        spoon.buildModel();
-        Factory factory = spoon.getFactory();
-
-        CtClass<Annotated> annotatedClass = factory.Class().get(Annotated.class);
+        CtClass<?> annotatedClass = Launcher.parseClass("@SuppressWarnings(\"unchecked\") class Annotated { }");
         assertEquals(1, annotatedClass.getAnnotations().size());
         CtAnnotation<?> annotationToBeRemoved = annotatedClass.getAnnotations().get(0);
 
