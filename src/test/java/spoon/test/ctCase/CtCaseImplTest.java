@@ -21,10 +21,12 @@ public class CtCaseImplTest {
         // exiting statements, and the order of statements in the list remains the same
 
         // arrange
-        CtClass classWithSwitchExample = getClassWithSwitchExample();
-        CtStatement firstStatementToBeInserted = createStatement(classWithSwitchExample, "firstStatement");
-        CtStatement secondStatementToBeInserted = createStatement(classWithSwitchExample, "secondStatement");
-        CtCase testCase = classWithSwitchExample.getElements(new TypeFilter<>(CtCase.class)).get(0);
+        Factory factory = new Launcher().getFactory();
+        CtCase<?> testCase = factory.createCase();
+        testCase.addStatement(factory.createCodeSnippetStatement("int preexisting = 42;").compile());
+
+        CtStatement firstStatementToBeInserted = factory.createCodeSnippetStatement("int first = 1;").compile();
+        CtStatement secondStatementToBeInserted = factory.createCodeSnippetStatement("int second = 2;").compile();
 
         CtStatementList ctStatementList =  new CtStatementListImpl<CtStatement>() {
             {
