@@ -28,12 +28,9 @@ public class CtCaseImplTest {
         CtStatement firstStatementToBeInserted = factory.createCodeSnippetStatement("int first = 1;").compile();
         CtStatement secondStatementToBeInserted = factory.createCodeSnippetStatement("int second = 2;").compile();
 
-        CtStatementList ctStatementList =  new CtStatementListImpl<CtStatement>() {
-            {
-                addStatement(firstStatementToBeInserted);
-                addStatement(secondStatementToBeInserted);
-            }
-        };
+        CtStatementList statementList = factory.createStatementList();
+        statementList.addStatement(firstStatementToBeInserted);
+        statementList.addStatement(secondStatementToBeInserted);
 
         // act
         testCase.insertBegin(ctStatementList);
