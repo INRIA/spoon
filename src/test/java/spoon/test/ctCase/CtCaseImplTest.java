@@ -5,11 +5,7 @@ import spoon.Launcher;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.compiler.FileSystemFile;
-import spoon.support.reflect.code.CtStatementListImpl;
-import spoon.test.ctCase.testclasses.ClassWithSwitchExample;
+import spoon.reflect.factory.Factory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -33,25 +29,10 @@ public class CtCaseImplTest {
         statementList.addStatement(secondStatementToBeInserted);
 
         // act
-        testCase.insertBegin(ctStatementList);
+        testCase.insertBegin(statementList);
 
         // assert
-        int firstStatementIndex = 0;
-        int secondStatementIndex = 1;
-        assertEquals(firstStatementToBeInserted, testCase.getStatement(firstStatementIndex));
-        assertEquals(secondStatementToBeInserted, testCase.getStatement(secondStatementIndex));
-    }
-
-    private static CtClass getClassWithSwitchExample() {
-        Launcher spoon = new Launcher();
-        String pathToClassWithSwitchExample = "./src/test/java/spoon/test/ctCase/testclasses/ClassWithSwitchExample.java";
-        spoon.addInputResource(new FileSystemFile(pathToClassWithSwitchExample));
-        spoon.buildModel();
-
-        return spoon.getFactory().Class().get(ClassWithSwitchExample.class);
-    }
-
-    public static CtStatement createStatement(CtClass ctClass, String statement) {
-        return ctClass.getFactory().Code().createCodeSnippetStatement(Statement).compile();
+        assertEquals(firstStatementToBeInserted, testCase.getStatement(0));
+        assertEquals(secondStatementToBeInserted, testCase.getStatement(1));
     }
 }
