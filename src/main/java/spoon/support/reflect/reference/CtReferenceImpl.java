@@ -31,7 +31,6 @@ import static spoon.reflect.path.CtRole.NAME;
 public abstract class CtReferenceImpl extends CtElementImpl implements CtReference, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static Collection<String> keywords = fillWithKeywords();
 
 	@MetamodelPropertyField(role = NAME)
 	protected String simplename = "";
@@ -110,7 +109,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		}
 	}
 	private boolean isKeyword(String simplename) {
-		return keywords.contains(simplename);
+		return getKeywords().contains(simplename);
 	}
 	private boolean checkAllParts(String[] simplenameParts) {
 		for (String simpleName:simplenameParts) {
@@ -135,13 +134,32 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		);
 	}
 
-	private static Collection<String> fillWithKeywords() {
+	private Collection<String> getKeywords() {
 		//removed types because needed as ref: "int","short", "char", "void", "byte","float", "true","false","boolean","double","long","class", "null"
-		return Stream.of("abstract", "continue", "for", "new", "switch", "assert", "default", "if", "package", "synchronized",  "do", "goto", "private",
-			"this", "break",  "implements", "protected", "throw", "else", "import", "public", "throws", "case", "enum", "instanceof", "return",
-			"transient", "catch", "extends", "try", "final", "interface", "static", "finally",  "strictfp", "volatile",
-			"const",  "native", "super", "while", "_")
+		HashSet<String> baseKeywords = Stream.of("abstract", "continue", "for", "new", "switch", "default", "if", "package", "synchronized",  "do", "goto", "private",
+			"this", "break",  "implements", "protected", "throw", "else", "import", "public", "throws", "case", "instanceof", "return",
+			"transient", "catch", "extends", "try", "final", "interface", "static", "finally", "volatile",
+			"const",  "native", "super", "while")
 			.collect(Collectors.toCollection(HashSet::new));
+
+		// according to https://docs.oracle.com/en/java/javase/15/docs/specs/sealed-classes-jls.html#jls-3.9
+		// and https://en.wikipedia.org/wiki/List_of_Java_keywords (contains history of revisions)
+		// and https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html (history up to java 8)
+		int complianceLevel = getFactory().getEnvironment().getComplianceLevel();
+		if (complianceLevel >= 2) {
+			baseKeywords.add("strictfp");
+		}
+		if (complianceLevel >= 4) {
+			baseKeywords.add("assert");
+		}
+		if (complianceLevel >= 5) {
+			baseKeywords.add("enum");
+		}
+		if (complianceLevel >= 9) {
+			baseKeywords.add("_");
+		}
+
+		return baseKeywords;
 	}
 
 	/**
