@@ -7,7 +7,9 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.factory.Factory;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 
 public class CtCaseImplTest {
 
@@ -34,5 +36,7 @@ public class CtCaseImplTest {
         // assert
         assertEquals(firstStatementToBeInserted, testCase.getStatement(0));
         assertEquals(secondStatementToBeInserted, testCase.getStatement(1));
+        assertThat(firstStatementToBeInserted.getParent(), is(testCase));
+        assertThat(secondStatementToBeInserted.getParent(), is(testCase));
     }
 }
