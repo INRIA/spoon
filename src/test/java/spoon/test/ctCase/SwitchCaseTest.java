@@ -32,7 +32,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class CtCaseTest {
+public class SwitchCaseTest {
 
 	@Test
 	public void insertAfterStatementInSwitchCaseWithoutException() throws Exception {
