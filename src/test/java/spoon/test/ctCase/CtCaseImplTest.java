@@ -21,17 +21,16 @@ public class CtCaseImplTest {
         // exiting statements, and the order of statements in the list remains the same
 
         // arrange
-        CtClass classWithSwitchExample = getClassWithSwitchExample();
-        CtStatement firstStatementToBeInserted = createStatement(classWithSwitchExample, "firstStatement");
-        CtStatement secondStatementToBeInserted = createStatement(classWithSwitchExample, "secondStatement");
-        CtCase testCase = classWithSwitchExample.getElements(new TypeFilter<>(CtCase.class)).get(0);
+        Factory factory = new Launcher().getFactory();
+        CtCase<?> testCase = factory.createCase();
+        testCase.addStatement(factory.createCodeSnippetStatement("int preexisting = 42;").compile());
 
-        CtStatementList ctStatementList =  new CtStatementListImpl<CtStatement>() {
-            {
-                addStatement(firstStatementToBeInserted);
-                addStatement(secondStatementToBeInserted);
-            }
-        };
+        CtStatement firstStatementToBeInserted = factory.createCodeSnippetStatement("int first = 1;").compile();
+        CtStatement secondStatementToBeInserted = factory.createCodeSnippetStatement("int second = 2;").compile();
+
+        CtStatementList statementList = factory.createStatementList();
+        statementList.addStatement(firstStatementToBeInserted);
+        statementList.addStatement(secondStatementToBeInserted);
 
         // act
         testCase.insertBegin(ctStatementList);
@@ -52,7 +51,7 @@ public class CtCaseImplTest {
         return spoon.getFactory().Class().get(ClassWithSwitchExample.class);
     }
 
-    public static CtStatement createStatement(CtClass ctClass, String Statement) {
-        return ctClass.getFactory().Code().createCodeSnippetStatement(Statement);
+    public static CtStatement createStatement(CtClass ctClass, String statement) {
+        return ctClass.getFactory().Code().createCodeSnippetStatement(Statement).compile();
     }
 }
