@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import static spoon.reflect.path.CtRole.NAME;
@@ -31,6 +32,9 @@ import static spoon.reflect.path.CtRole.NAME;
 public abstract class CtReferenceImpl extends CtElementImpl implements CtReference, Serializable {
 
 	private static final long serialVersionUID = 1L;
+	private static final Pattern IS_ARRAY_OR_INSTANCE = Pattern.compile("\\[\\]|@");
+	private static final Pattern IS_INNER_OR_GENERIC = Pattern.compile("\\.|<|>");
+	private static final Pattern IS_GENERIC_OR_INNER_OR_EMPTY = Pattern.compile("<.*>|\\d.*|^.{0}$");
 	private static Collection<String> keywords = fillWithKeywords();
 
 	@MetamodelPropertyField(role = NAME)
@@ -101,9 +105,9 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		 */
 		//JDTTreeBuilderHelper.computeAnonymousName returns "$numbers$Name" so we have to skip them if they start with numbers
 		//allow empty identifier because they are sometimes used.
-		if (!simplename.matches("<.*>|\\d.*|^.{0}$")) {
+		if (!IS_GENERIC_OR_INNER_OR_EMPTY.matcher(simplename).matches()) {
 			//split at "<" and ">" because "Iterator<Cache.Entry<K,Store.ValueHolder<V>>>" submits setSimplename ("Cache.Entry<K")
-			String[] splittedSimplename = simplename.split("\\.|<|>");
+			String[] splittedSimplename = IS_INNER_OR_GENERIC.split(simplename);
 			if (checkAllParts(splittedSimplename)) {
 				throw new SpoonException("Not allowed javaletter or keyword in identifier found. See JLS for correct identifier. Identifier: " + simplename);
 			}
@@ -115,7 +119,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	private boolean checkAllParts(String[] simplenameParts) {
 		for (String simpleName:simplenameParts) {
 			//because arrays use e.g. int[] and @Number is used for instances of an object e.g. foo@1
-			simpleName = simpleName.replaceAll("\\[\\]|@", "");
+			simpleName = IS_ARRAY_OR_INSTANCE.matcher(simpleName).replaceAll("");
 			if (isWildCard(simpleName)) {
 				// because in intersection types a typeReference sometimes has '?' as simplename
 				return false;
