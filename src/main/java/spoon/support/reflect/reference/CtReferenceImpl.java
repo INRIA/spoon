@@ -34,7 +34,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	private static final long serialVersionUID = 1L;
 	private static final Pattern IS_ARRAY_OR_INSTANCE = Pattern.compile("\\[\\]|@");
 	private static final Pattern IS_INNER_OR_GENERIC = Pattern.compile("\\.|<|>");
-	private static final Pattern IS_GENERIC_OR_INNER_OR_EMPTY = Pattern.compile("<.*>|\\d.*|^.{0}$");
+	private static final Pattern IS_INNER_OR_GENERIC_OR_EMPTY = Pattern.compile("\\d.*|<.*>|^.{0}$");
 	private static Collection<String> keywords = fillWithKeywords();
 
 	@MetamodelPropertyField(role = NAME)
@@ -105,7 +105,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		 */
 		//JDTTreeBuilderHelper.computeAnonymousName returns "$numbers$Name" so we have to skip them if they start with numbers
 		//allow empty identifier because they are sometimes used.
-		if (!IS_GENERIC_OR_INNER_OR_EMPTY.matcher(simplename).matches()) {
+		if (!IS_INNER_OR_GENERIC_OR_EMPTY.matcher(simplename).matches()) {
 			//split at "<" and ">" because "Iterator<Cache.Entry<K,Store.ValueHolder<V>>>" submits setSimplename ("Cache.Entry<K")
 			String[] splittedSimplename = IS_INNER_OR_GENERIC.split(simplename);
 			if (checkAllParts(splittedSimplename)) {
