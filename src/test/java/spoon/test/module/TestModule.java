@@ -16,6 +16,7 @@
  */
 package spoon.test.module;
 
+import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -24,6 +25,11 @@ import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.SpoonModelBuilder;
+import spoon.compiler.SpoonFile;
+import spoon.compiler.builder.ComplianceOptions;
+import spoon.compiler.builder.JDTBuilderImpl;
+import spoon.compiler.builder.SourceOptions;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtClass;
@@ -36,14 +42,18 @@ import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtModuleReference;
-import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
+import spoon.support.compiler.jdt.JDTBatchCompiler;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
@@ -282,6 +292,30 @@ public class TestModule {
 		CtModule moduleNewName = launcher.getFactory().Module().getOrCreate("newName");
 
 		assertSame(module, moduleNewName);
+	}
+
+	@Test
+	public void testModuleNames() {
+		// contract: JDTBatchCompiler sets correct names to modules
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.addInputResource("./src/test/resources/spoon/test/module/code-multiple-modules");
+		launcher.buildModel();
+		JDTBasedSpoonCompiler spoonCompiler = (JDTBasedSpoonCompiler) launcher.getModelBuilder();
+
+		JDTBatchCompiler batchCompiler = new JDTBatchCompiler(spoonCompiler);
+		SpoonModelBuilder.InputType.FILES.initializeCompiler(batchCompiler);
+		List<SpoonFile> sourceFiles = Collections.unmodifiableList(spoonCompiler.getSource().getAllJavaFiles());
+		String[] args = new JDTBuilderImpl()
+				.complianceOptions(new ComplianceOptions().compliance(9))
+				.sources(new SourceOptions().sources(sourceFiles))
+				.build();
+		batchCompiler.configure(args);
+
+		CompilationUnit[] cu = batchCompiler.getCompilationUnits();
+		List list = new ArrayList<>(Arrays.asList(new String[]{String.copyValueOf(cu[0].module),String.copyValueOf(cu[1].module)}));
+		assertTrue(list.contains("foo"));
+		assertTrue(list.contains("bar"));
 	}
 
 	@org.junit.jupiter.api.Test
