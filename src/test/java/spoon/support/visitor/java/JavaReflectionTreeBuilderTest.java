@@ -83,6 +83,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -709,4 +711,31 @@ public class JavaReflectionTreeBuilderTest {
 		// should have gotten '1'
 		assertNull(value.getDefaultExpression());
 	}
+
+	@Test
+	public void testScannerInterfaceImplicitModifiers() {
+		// contract: Interface methods should be implicitly public abstract
+		CtInterface<CtLambda> anInterface = new JavaReflectionTreeBuilder(createFactory()).scan(CtLambda.class);
+		assertEquals("spoon.reflect.code.CtLambda", anInterface.getQualifiedName());
+
+		anInterface.getAllExecutables()
+				.stream()
+				.filter(it -> it instanceof CtMethod)
+				.map(it -> (CtMethod<?>) it)
+				.forEach(it -> {
+					assertThat(it.isPublic(), is(true));
+					assertThat(it.isAbstract(), is(true));
+				});
+	}
+
+	@Test
+	public void testScannerEnumImplicitModifiers() {
+		// contract: Nested enums should be implicitly static
+		CtEnum<TestEnumForStaticModifier> anEnum = new JavaReflectionTreeBuilder(createFactory())
+				.scan(TestEnumForStaticModifier.class);
+
+		assertThat(anEnum.isStatic(), is(true));
+	}
+
+	enum TestEnumForStaticModifier {}
 }
