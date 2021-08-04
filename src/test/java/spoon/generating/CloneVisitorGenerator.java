@@ -517,6 +517,9 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 						if (type.getActualTypeArguments().get(0).isSubtypeOf(CTELEMENT_REFERENCE)) {
 							return true;
 						}
+						if (type.getQualifiedName().equals(KeyedModelSet.class.getName())) {
+							return type.getActualTypeArguments().get(1).isSubtypeOf(CTELEMENT_REFERENCE);
+						}
 					}
 				}
 				return false;
