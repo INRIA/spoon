@@ -9,8 +9,11 @@ package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 
 import static spoon.reflect.path.CtRole.NAME;
@@ -34,9 +37,12 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 
 	@Override
 	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
+		String oldName = this.simpleName;
+
 		Factory factory = getFactory();
 		if (factory == null) {
 			this.simpleName = simpleName;
+			updateParentPackage(oldName);
 			return (T) this;
 		}
 		if (factory instanceof FactoryImpl) {
@@ -44,11 +50,22 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simpleName, this.simpleName);
 		this.simpleName = simpleName;
+
+		updateParentPackage(oldName);
 		return (T) this;
 	}
 
 	@Override
 	public CtNamedElement clone() {
 		return (CtNamedElement) super.clone();
+	}
+
+	private void updateParentPackage(String oldName) {
+		if (parent instanceof CtPackageImpl && this instanceof CtType) {
+			((CtPackageImpl) parent).updateName((CtType<?>) this, oldName);
+		}
+		if (parent instanceof CtPackageImpl && this instanceof CtPackage) {
+			((CtPackageImpl) parent).updateName((CtPackage) this, oldName);
+		}
 	}
 }

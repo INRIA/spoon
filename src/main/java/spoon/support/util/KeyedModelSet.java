@@ -121,6 +121,13 @@ public abstract class KeyedModelSet<K, T extends CtElement> implements Serializa
 		return new Itr();
 	}
 
+	public void updateKey(K oldName, K newName) {
+		T type = map.remove(oldName);
+		if (type != null) {
+			map.put(newName, type);
+		}
+	}
+
 	private class Itr implements Iterator<T> {
 		final Iterator<Entry<K, T>> delegate;
 		Entry<K, T> lastReturned = null;
