@@ -38,8 +38,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
+import spoon.support.util.KeyedModelSet;
 import spoon.support.util.ModelList;
-import spoon.support.util.ModelSet;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -282,7 +282,7 @@ public class AstCheckerTest {
 			if (typeRef.isSubtypeOf(f.Type().createReference(ModelList.class))) {
 				return true;
 			}
-			if (typeRef.isSubtypeOf(f.Type().createReference(ModelSet.class))) {
+			if (typeRef.isSubtypeOf(f.Type().createReference(KeyedModelSet.class))) {
 				return true;
 			}
 			return false;

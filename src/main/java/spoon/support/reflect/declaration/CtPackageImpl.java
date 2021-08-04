@@ -89,7 +89,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T addPackage(CtPackage pack) {
-		this.packs.add(pack.getQualifiedName(), pack);
+		this.packs.add(pack.getSimpleName(), pack);
 		return (T) this;
 	}
 

@@ -42,8 +42,8 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.util.KeyedModelSet;
 import spoon.support.util.ModelList;
-import spoon.support.util.ModelSet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,7 +108,7 @@ public class ReplaceScanner extends CtScanner {
 		target.addMethod(clone);
 	}
 
-	private static Set<String> modelCollectionTypes = new HashSet<>(Arrays.asList(ModelList.class.getName(), ModelSet.class.getName()));
+	private static Set<String> modelCollectionTypes = new HashSet<>(Arrays.asList(ModelList.class.getName(), KeyedModelSet.class.getName()));
 	
 	private <T> CtInvocation<?> createInvocation(Factory factory, CtMethod<T> candidate, List<CtExpression<?>> invArgs, CtInvocation getter, Class getterTypeClass) {
 		CtInvocation<?> invocation;
