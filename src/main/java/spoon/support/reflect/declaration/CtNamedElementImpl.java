@@ -13,7 +13,6 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
-import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtReference;
 
 import static spoon.reflect.path.CtRole.NAME;

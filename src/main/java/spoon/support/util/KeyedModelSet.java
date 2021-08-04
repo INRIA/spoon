@@ -80,7 +80,7 @@ public abstract class KeyedModelSet<K, T extends CtElement> implements Serializa
 	public T remove(K key) {
 		T removed = map.remove(key);
 
-		if(removed == null) {
+		if (removed == null) {
 			return null;
 		}
 
