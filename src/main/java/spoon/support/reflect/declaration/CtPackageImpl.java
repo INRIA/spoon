@@ -129,7 +129,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public CtPackage getPackage(String simpleName) {
-		return this.packs.remove(simpleName);
+		return this.packs.get(simpleName);
 	}
 
 	@Override
