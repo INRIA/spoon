@@ -55,7 +55,7 @@ public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> imple
 	}
 
 	@Override
-	public boolean contains(Object o) {
+	public synchronized boolean contains(Object o) {
 		return set.contains(o);
 	}
 
@@ -70,7 +70,7 @@ public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> imple
 	}
 
 	@Override
-	public boolean add(T e) {
+	public synchronized boolean add(T e) {
 		if (e == null) {
 			return false;
 		}
@@ -89,7 +89,7 @@ public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> imple
 	}
 
 	@Override
-	public boolean remove(Object o) {
+	public synchronized boolean remove(Object o) {
 		if (!set.contains(o)) {
 			return false;
 		}
@@ -103,7 +103,7 @@ public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> imple
 	}
 
 	@Override
-	public boolean containsAll(Collection<?> c) {
+	public synchronized boolean containsAll(Collection<?> c) {
 		return set.containsAll(c);
 	}
 
@@ -127,7 +127,7 @@ public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> imple
 	}
 
 	@Override
-	public Iterator<T> iterator() {
+	public synchronized Iterator<T> iterator() {
 		return new Itr();
 	}
 
