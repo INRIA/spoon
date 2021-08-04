@@ -89,6 +89,9 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T addPackage(CtPackage pack) {
+		if (pack == null) {
+			return (T) this;
+		}
 		this.packs.add(pack.getSimpleName(), pack);
 		return (T) this;
 	}
@@ -182,6 +185,9 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public <T extends CtPackage> T addType(CtType<?> type) {
+		if (type == null) {
+			return (T) this;
+		}
 		// ModelSet of types will take care of setting the parent
 		types.add(type.getSimpleName(), type);
 		return (T) this;
