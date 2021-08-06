@@ -18,21 +18,17 @@ public class CtStatementListImplTest {
         // arrange
         Factory factory = new Launcher().getFactory();
 
-        CtStatement initialStatement = factory.Code().createCodeSnippetStatement("initialStatement");
+        CtStatement initialStatement = factory.Code().createCodeSnippetStatement("int preexisting = 42;").compile();
 
-        CtStatement firstStatementToBeInserted = factory.Code().createCodeSnippetStatement("firstStatement");
-        CtStatement secondStatementToBeInserted = factory.Code().createCodeSnippetStatement("secondStatement");
+        CtStatement firstStatementToBeInserted = factory.Code().createCodeSnippetStatement("int first = 1;").compile();
+        CtStatement secondStatementToBeInserted = factory.Code().createCodeSnippetStatement("int second = 2;").compile();
 
-        CtStatementList mainStatementList =  new CtStatementListImpl<CtStatement>() {
-            { addStatement(initialStatement); }
-        };
+        CtStatementList mainStatementList =  new CtStatementListImpl<CtStatement>();
+        mainStatementList.addStatement(initialStatement);
 
-        CtStatementList statementListToBeAddedToTheMainList =  new CtStatementListImpl<CtStatement>() {
-            {
-                addStatement(firstStatementToBeInserted);
-                addStatement(secondStatementToBeInserted);
-            }
-        };
+        CtStatementList statementListToBeAddedToTheMainList =  new CtStatementListImpl<CtStatement>();
+        statementListToBeAddedToTheMainList.addStatement(firstStatementToBeInserted);
+        statementListToBeAddedToTheMainList.addStatement(secondStatementToBeInserted);
 
         // act
         mainStatementList.insertBegin(statementListToBeAddedToTheMainList);
