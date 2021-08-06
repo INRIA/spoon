@@ -6,6 +6,8 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.factory.Factory;
 import spoon.support.reflect.code.CtStatementListImpl;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -38,5 +40,7 @@ public class CtStatementListImplTest {
         CtStatement secondStatementAtTheBeginningOfTheListAfterInsertion = mainStatementList.getStatements().get(1);
         assertEquals(firstStatementToBeInserted, statementAtTheBeginningAfterInsertion);
         assertEquals(secondStatementToBeInserted, secondStatementAtTheBeginningOfTheListAfterInsertion);
+        assertThat(firstStatementToBeInserted.getParent(), is(mainStatementList));
+        assertThat(secondStatementToBeInserted.getParent(), is(mainStatementList));
     }
 }
