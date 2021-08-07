@@ -26,6 +26,7 @@ import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.util.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spoon.support.Level;
 
 
 class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
@@ -34,11 +35,14 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
 	private boolean filterInvalid;
 
+	private Level level;
+
 	TreeBuilderCompiler(INameEnvironment environment, IErrorHandlingPolicy policy, CompilerOptions options,
 						ICompilerRequestor requestor, IProblemFactory problemFactory, PrintWriter out,
-						boolean filterInvalid, CompilationProgress progress) {
+						boolean filterInvalid, Level level, CompilationProgress progress) {
 		super(environment, policy, options, requestor, problemFactory, out, progress);
 		this.filterInvalid = filterInvalid;
+		this.level = level;
 	}
 
 	// This code is directly inspired from Compiler class.
@@ -81,10 +85,15 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 		this.reportProgress(Messages.compilation_beginningToCompile);
 
 		this.sortModuleDeclarationsFirst(sourceUnits);
+
+		CompilationUnit[] filteredSourceUnits = null;
+		if (filterInvalid || level.toInt() > Level.ERROR.toInt()) {
+			// syntax is optionally checked here to prevent crashes inside JDT
+			filteredSourceUnits = filterInvalid(sourceUnits);
+		}
 		// build and record parsed units
 		if (filterInvalid) {
-			// syntax is optionally checked here to prevent crashes inside JDT
-			beginToCompile(filterInvalid(sourceUnits));
+			beginToCompile(filteredSourceUnits);
 		} else {
 			beginToCompile(sourceUnits);
 		}
