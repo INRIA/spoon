@@ -4,24 +4,25 @@ import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.MethodFactory;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.test.factory.testclasses.Bar;
+
+import java.lang.reflect.Method;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 public class MethodFactoryTest {
 
-    private static final String TEST_CLASS_STRING =
-            "class TestClass { " +
-                    "private void foo() { }" +
-            "}";
-
     @Test
     public void testCreateReference() {
         // contract: createReference creates a method reference of the foo method
 
-        CtClass<?> testClass = Launcher.parseClass(TEST_CLASS_STRING);
+        Factory factory = new Launcher().getFactory();
+        CtClass<?> testClass = factory.Class().get(Bar.class);
         CtMethod<?> foo = testClass.getMethodsByName("foo").get(0);
         CtExecutableReference<?> expectedReference = testClass.getMethod("foo").getReference();
         MethodFactory methodFactory = testClass.getFactory().Method();
@@ -29,6 +30,32 @@ public class MethodFactoryTest {
 
         actualCreatedReference = methodFactory.createReference(foo);
 
+        assertThat(actualCreatedReference, is(expectedReference));
+    }
+
+    @Test
+    public void testCreateReferenceWithActualMethod() throws ClassNotFoundException, NoSuchMethodException {
+        // contract: createReference creates a method reference of a actual method foo
+
+        // arrange
+        Factory factory = new Launcher().getFactory();
+        Class<?> testClass = Class.forName("spoon.test.factory.testclasses.Bar");
+        Method testMethod = testClass.getMethod("foo");
+
+        CtExecutableReference<?> expectedReference = factory.createExecutableReference();
+        expectedReference.setSimpleName("foo");
+        CtTypeReference<?> ctTypeReference = factory.Type().createReference(Bar.class);
+        expectedReference.setDeclaringType(ctTypeReference);
+        CtTypeReference<?> typeReference = factory.Type().createReference(testMethod.getReturnType());
+//        expectedReference.setType(typeReference);
+
+        MethodFactory methodFactory = factory.Method();
+        CtExecutableReference<?> actualCreatedReference = null;
+
+        // act
+        actualCreatedReference = methodFactory.createReference(testMethod);
+        
+        // assert
         assertThat(actualCreatedReference, is(expectedReference));
     }
 }
