@@ -99,6 +99,80 @@ public class CtCaseTest {
 		assertThat(secondStatementToBeInserted.getParent(), is(testCase));
 	}
 
+	@Test
+	void testRemoveStatement() {
+		// contract: removeStatement removes a statement form a case having a single statement
+
+		Factory factory = new Launcher().getFactory();
+		CtStatement testStatement = factory.Code().createCodeSnippetStatement("int hello = 1;").compile();
+		CtCase<?> testCase = factory.createCase();
+		testCase.addStatement(testStatement);
+		assertThat(testCase.getStatements().size(), is(1));
+
+		testCase.removeStatement(testStatement);
+
+		assertThat(testCase.getStatements().size(), is(0));
+	}
+
+	@Test
+	void testInsertBeginWithSingleStatement() {
+		// contract: insertBegin adds a statement at the beginning of a case, i.e above an already existing statement
+
+		Factory factory = new Launcher().getFactory();
+		CtCase<?> testCase = factory.createCase();
+		testCase.addStatement(factory.createCodeSnippetStatement("int preExisting = 0;").compile());
+		CtStatement statementToBeInserted = factory.Code().createCodeSnippetStatement("int first = 1;").compile();
+
+		testCase.insertBegin(statementToBeInserted);
+
+		assertThat(testCase.getStatement(0), is(statementToBeInserted));
+		assertThat(statementToBeInserted.getParent(), is(testCase));
+	}
+
+	@Test
+	void testInsertEndWithSingleStatement() {
+		// contract: insertEnd adds a statement at the end of a case, i.e below an already existing statement
+
+		Factory factory = new Launcher().getFactory();
+		CtCase<?> testCase = factory.createCase();
+		testCase.addStatement(factory.createCodeSnippetStatement("int preExisting = 0;").compile());
+		CtStatement statementToBeInserted = factory.Code().createCodeSnippetStatement("int first = 1;").compile();
+
+		testCase.insertEnd(statementToBeInserted);
+
+		int lastStatementIndex = testCase.getStatements().size() - 1;
+		assertThat(testCase.getStatement(lastStatementIndex), is(statementToBeInserted));
+		assertThat(statementToBeInserted.getParent(), is(testCase));
+	}
+
+	@Test
+	void testInsertEndWithListOfStatements() {
+		// contract: insertEnd adds a list of statements at the end of a case, i.e the list is added below an
+		// existing statement, and the order of statements in the list remains the same
+
+		Factory factory = new Launcher().getFactory();
+		CtCase<?> testCase = factory.createCase();
+		testCase.addStatement(factory.createCodeSnippetStatement("int preExisting = 0;").compile());
+
+		CtStatement firstStatementToBeInserted = factory.createCodeSnippetStatement("int first = 1;").compile();
+		CtStatement secondStatementToBeInserted = factory.createCodeSnippetStatement("int second = 2;").compile();
+
+		CtStatementList statementList = factory.Core().createStatementList();
+		statementList.addStatement(firstStatementToBeInserted);
+		statementList.addStatement(secondStatementToBeInserted);
+
+		// act
+		testCase.insertEnd(statementList);
+
+		// assert
+		int lastStatementIndex = testCase.getStatements().size() - 1;
+		int secondLastStatementIndex = lastStatementIndex - 1;
+		assertEquals(firstStatementToBeInserted, testCase.getStatement(secondLastStatementIndex));
+		assertEquals(secondStatementToBeInserted, testCase.getStatement(lastStatementIndex));
+		assertThat(firstStatementToBeInserted.getParent(), is(testCase));
+		assertThat(secondStatementToBeInserted.getParent(), is(testCase));
+	}
+
 	private <T extends CtElement> List<T> elementsOfType(Class<T> type, Factory factory) {
 		return Query.getElements(factory, new TypeFilter<>(type));
 	}
