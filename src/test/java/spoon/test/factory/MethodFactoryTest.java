@@ -8,7 +8,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.MethodFactory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.test.factory.testclasses.Bar;
+import spoon.test.factory.testclasses4.Bar;
 
 import java.lang.reflect.Method;
 
@@ -40,7 +40,7 @@ public class MethodFactoryTest {
         // arrange
         Launcher launcher = new Launcher();
         Factory factory = launcher.getFactory();
-        Class<?> testClass = Class.forName("spoon.test.factory.testclasses.Bar");
+        Class<?> testClass = Class.forName("spoon.test.factory.testclasses4.Bar");
         Method testMethod = testClass.getMethod("foo");
 
         CtExecutableReference<Void> expectedReference = factory.createExecutableReference();

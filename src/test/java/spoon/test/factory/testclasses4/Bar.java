@@ -1,4 +1,4 @@
-package spoon.test.factory.testclasses;
+package spoon.test.factory.testclasses4;
 
 public class Bar {
 
