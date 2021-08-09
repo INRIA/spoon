@@ -38,23 +38,23 @@ public class MethodFactoryTest {
         // contract: createReference creates a method reference of a actual method foo
 
         // arrange
-        Factory factory = new Launcher().getFactory();
+        Launcher launcher = new Launcher();
+        Factory factory = launcher.getFactory();
         Class<?> testClass = Class.forName("spoon.test.factory.testclasses.Bar");
         Method testMethod = testClass.getMethod("foo");
 
-        CtExecutableReference<?> expectedReference = factory.createExecutableReference();
+        CtExecutableReference<Void> expectedReference = factory.createExecutableReference();
         expectedReference.setSimpleName("foo");
         CtTypeReference<?> ctTypeReference = factory.Type().createReference(Bar.class);
         expectedReference.setDeclaringType(ctTypeReference);
-        CtTypeReference<?> typeReference = factory.Type().createReference(testMethod.getReturnType());
-//        expectedReference.setType(typeReference);
+        expectedReference.setType(launcher.getFactory().Type().voidPrimitiveType());
 
         MethodFactory methodFactory = factory.Method();
         CtExecutableReference<?> actualCreatedReference = null;
 
         // act
         actualCreatedReference = methodFactory.createReference(testMethod);
-        
+
         // assert
         assertThat(actualCreatedReference, is(expectedReference));
     }
