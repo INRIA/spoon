@@ -77,7 +77,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 			for (CompilationUnit compilationUnit : this.compilationUnits) {
 				char[] charName = compilationUnit.getFileName();
 				boolean isModuleInfo = CharOperation.endsWith(charName, JDTConstants.MODULE_INFO_FILE_NAME);
-				if (isModuleInfo == (round == 0)) { // 1st round: modules, 2nd round others (to ensure populating pathToModCU well in time)
+				if (isModuleInfo == (round == 0)) { // 1st round: modules, 2nd round others (to ensure populating pathToModName well in time)
 
 					String fileName = new String(charName);
 					if (isModuleInfo) {
@@ -95,8 +95,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 							if (this.module == null) {
 								compilationUnit.module = CharOperation.subarray(modulePath, lastSlash, modulePath.length);
 							} else {
-								//TODO the module name parsed by JDK compiler is in `this.modNames`, consider using that instead?
-								compilationUnit.module = this.module.name();
+								compilationUnit.module = getModuleName(compilationUnit).toCharArray();
 							}
 
 							pathToModName.put(String.valueOf(modulePath), compilationUnit.module);
@@ -114,6 +113,33 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 		}
 
 		return compilationUnits;
+	}
+
+	private String getModuleName(CompilationUnit compilationUnit) {
+		StringBuilder sb = new StringBuilder();
+		int index = 0;
+		while (!sb.toString().equals("module") && index != -1) {
+			sb.setLength(0);
+			index = nextToken(compilationUnit, index, sb);
+		}
+		sb.setLength(0);
+		nextToken(compilationUnit, index, sb);
+		return sb.toString();
+	}
+
+	private int nextToken(CompilationUnit cu, int start, StringBuilder sb) {
+		int index = PositionBuilder.findNextNonWhitespace(cu.contents, cu.contents.length, start);
+		if (index == -1) {
+			return -1;
+		}
+		for (int i = index; i < cu.contents.length; i++) {
+			if (Character.isWhitespace(cu.contents[i]) || cu.contents[i] == '{') {
+				return i + 1;
+			} else {
+				sb.append(cu.contents[i]);
+			}
+		}
+		return -1;
 	}
 
 	public void setCompilationUnits(CompilationUnit[] compilationUnits) {
