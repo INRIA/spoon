@@ -118,7 +118,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private Boolean noclasspath = null;
 
-	private Boolean filterInvalid = false;
+	private Boolean ignoreSyntaxErrors = false;
 
 	private transient SpoonProgress spoonProgress = new SpoonProgress() { /*anonymous class with empty methods*/ };
 
@@ -527,13 +527,13 @@ private transient  ClassLoader inputClassloader;
 	}
 
 	@Override
-	public void setFilterInvalid(boolean option) {
-		filterInvalid = option;
+	public void setIgnoreSyntaxErrors(boolean ignoreSyntaxErrors) {
+		this.ignoreSyntaxErrors = ignoreSyntaxErrors;
 	}
 
 	@Override
-	public boolean getFilterInvalid() {
-		return filterInvalid;
+	public boolean getIgnoreSyntaxErrors() {
+		return ignoreSyntaxErrors;
 	}
 
 	@Override

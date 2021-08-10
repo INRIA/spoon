@@ -377,10 +377,10 @@ public class Launcher implements SpoonAPI {
 			jsap.registerParameter(opt2);
 
 			// remove files with syntax errors from the compilation batch
-			sw1 = new Switch("filter-invalid");
-			sw1.setShortFlag('v');
-			sw1.setLongFlag("filter-invalid");
-			sw1.setHelp("If an input resource has any syntax errors, it will be filtered out from the compilation batch.");
+			sw1 = new Switch("ignore-syntax-errors");
+			sw1.setShortFlag('n');
+			sw1.setLongFlag("ignore-syntax-errors");
+			sw1.setHelp("If an input resource has any syntax errors, it will be removed from the compilation batch.");
 			sw1.setDefault("false");
 			jsap.registerParameter(sw1);
 
@@ -470,7 +470,7 @@ public class Launcher implements SpoonAPI {
 				break;
 		}
 
-		environment.setFilterInvalid(jsapActualArgs.getBoolean("filter-invalid"));
+		environment.setIgnoreSyntaxErrors(jsapActualArgs.getBoolean("ignore-syntax-errors"));
 		environment.setPreserveLineNumbers(jsapActualArgs.getBoolean("lines"));
 		environment.setTabulationSize(jsapActualArgs.getInt("tabsize"));
 		environment.useTabulations(jsapActualArgs.getBoolean("tabs"));

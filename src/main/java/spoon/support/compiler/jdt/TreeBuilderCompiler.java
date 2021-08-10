@@ -33,15 +33,15 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-	private boolean filterInvalid;
+	private boolean ignoreSyntaxErrors;
 
 	private Level level;
 
 	TreeBuilderCompiler(INameEnvironment environment, IErrorHandlingPolicy policy, CompilerOptions options,
 						ICompilerRequestor requestor, IProblemFactory problemFactory, PrintWriter out,
-						boolean filterInvalid, Level level, CompilationProgress progress) {
+						boolean ignoreSyntaxErrors, Level level, CompilationProgress progress) {
 		super(environment, policy, options, requestor, problemFactory, out, progress);
-		this.filterInvalid = filterInvalid;
+		this.ignoreSyntaxErrors = ignoreSyntaxErrors;
 		this.level = level;
 	}
 
@@ -59,22 +59,6 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 		});
 	}
 
-	private CompilationUnit[] filterInvalid(CompilationUnit[] sourceUnits) {
-		ArrayList<CompilationUnit> sourceUnitList = new ArrayList<>();
-		int maxUnits = sourceUnits.length;
-		for (int i = 0; i < maxUnits; i++) {
-			CompilationResult unitResult = new CompilationResult(sourceUnits[i], i, maxUnits, this.options.maxProblemsPerUnit);
-			CompilationUnitDeclaration parsedUnit = this.parser.parse(sourceUnits[i], unitResult);
-			if (parsedUnit.hasErrors()) {
-				LOGGER.warn("Syntax error detected in: " + sourceUnits[i].toString());
-			} else {
-				sourceUnitList.add(sourceUnits[i]);
-			}
-		}
-		this.initializeParser();
-		return sourceUnitList.toArray(new CompilationUnit[sourceUnitList.size()]);
-	}
-
 	// this method is not meant to be in the public API
 	protected CompilationUnitDeclaration[] buildUnits(CompilationUnit[] sourceUnits) {
 
@@ -87,12 +71,12 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 		this.sortModuleDeclarationsFirst(sourceUnits);
 
 		CompilationUnit[] filteredSourceUnits = null;
-		if (filterInvalid || level.toInt() > Level.ERROR.toInt()) {
+		if (ignoreSyntaxErrors || level.toInt() > Level.ERROR.toInt()) {
 			// syntax is optionally checked here to prevent crashes inside JDT
-			filteredSourceUnits = filterInvalid(sourceUnits);
+			filteredSourceUnits = ignoreSyntaxErrors(sourceUnits);
 		}
 		// build and record parsed units
-		if (filterInvalid) {
+		if (ignoreSyntaxErrors) {
 			beginToCompile(filteredSourceUnits);
 		} else {
 			beginToCompile(sourceUnits);
@@ -134,5 +118,21 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 			}
 		}
 		return unitsToReturn.toArray(new CompilationUnitDeclaration[0]);
+	}
+
+	private CompilationUnit[] ignoreSyntaxErrors(CompilationUnit[] sourceUnits) {
+		ArrayList<CompilationUnit> sourceUnitList = new ArrayList<>();
+		int maxUnits = sourceUnits.length;
+		for (int i = 0; i < maxUnits; i++) {
+			CompilationResult unitResult = new CompilationResult(sourceUnits[i], i, maxUnits, this.options.maxProblemsPerUnit);
+			CompilationUnitDeclaration parsedUnit = this.parser.parse(sourceUnits[i], unitResult);
+			if (parsedUnit.hasErrors()) {
+				LOGGER.warn("Syntax error detected in: " + sourceUnits[i].toString());
+			} else {
+				sourceUnitList.add(sourceUnits[i]);
+			}
+		}
+		this.initializeParser();
+		return sourceUnitList.toArray(new CompilationUnit[sourceUnitList.size()]);
 	}
 }

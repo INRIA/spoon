@@ -208,7 +208,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 		IProblemFactory problemFactory = getProblemFactory();
 		TreeBuilderCompiler treeBuilderCompiler = new TreeBuilderCompiler(
 				environment, errorHandlingPolicy, compilerOptions, this.jdtCompiler.requestor, problemFactory,
-				this.out, jdtCompiler.getEnvironment().getFilterInvalid(), jdtCompiler.getEnvironment().getLevel(),
+				this.out, jdtCompiler.getEnvironment().getIgnoreSyntaxErrors(), jdtCompiler.getEnvironment().getLevel(),
 				new CompilationProgress() {
 
 			private String currentElement = null;

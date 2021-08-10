@@ -12,11 +12,11 @@ import static org.junit.Assert.assertTrue;
 public class TreeBuilderCompilerTest {
 
     @Test
-    public void testFilterInvalid() {
+    public void testIgnoreSyntaxErrors() {
         // contract: if a file has any syntax errors, it is filtered out, otherwise, it is compiled
         final TestLogger logger = TestLoggerFactory.getTestLogger(TreeBuilderCompiler.class);
         Launcher launcher = new Launcher();
-        launcher.getEnvironment().setFilterInvalid(true);
+        launcher.getEnvironment().setIgnoreSyntaxErrors(true);
         launcher.addInputResource("./src/test/resources/compilation2/InvalidClass.java");
         launcher.addInputResource("./src/test/resources/compilation/ClassWithStaticFields.java");
         launcher.buildModel();
@@ -28,7 +28,7 @@ public class TreeBuilderCompilerTest {
 
         // contract: if every input resource has a syntax error, spoon does not crash
         launcher = new Launcher();
-        launcher.getEnvironment().setFilterInvalid(true);
+        launcher.getEnvironment().setIgnoreSyntaxErrors(true);
         launcher.addInputResource("./src/test/resources/compilation2/InvalidClass.java");
         launcher.buildModel();
         model = launcher.getModel();
@@ -36,7 +36,7 @@ public class TreeBuilderCompilerTest {
 
         // contract: filter-invalid can be enabled with a command line argument
         launcher = new Launcher();
-        launcher.setArgs(new String[]{"--filter-invalid", "-i", "./src/test/resources/compilation2/InvalidClass.java"});
+        launcher.setArgs(new String[]{"--ignore-syntax-errors", "-i", "./src/test/resources/compilation2/InvalidClass.java"});
         launcher.buildModel();
         model = launcher.getModel();
         assertTrue(model.getAllTypes().isEmpty());
