@@ -8,7 +8,7 @@ jobs:
     name: Build and push LSIF data
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # renovate: tag=v2
       - name: Generate LSIF data
         uses: sourcegraph/lsif-java-action@master
         with:
