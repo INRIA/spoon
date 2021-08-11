@@ -127,7 +127,7 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 			CompilationResult unitResult = new CompilationResult(sourceUnits[i], i, maxUnits, this.options.maxProblemsPerUnit);
 			CompilationUnitDeclaration parsedUnit = this.parser.parse(sourceUnits[i], unitResult);
 			if (parsedUnit.hasErrors()) {
-				LOGGER.warn("Syntax error detected in: " + sourceUnits[i].toString());
+				LOGGER.warn("Syntax error detected in: " + String.valueOf(sourceUnits[i].getFileName()));
 			} else {
 				sourceUnitList.add(sourceUnits[i]);
 			}
