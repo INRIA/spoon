@@ -12,33 +12,47 @@ import static org.junit.Assert.assertTrue;
 public class TreeBuilderCompilerTest {
 
     @Test
-    public void testIgnoreSyntaxErrors() {
+    public void testIgnoreSyntaxErrorsCompilation() {
         // contract: if a file has any syntax errors, it is filtered out, otherwise, it is compiled
-        final TestLogger logger = TestLoggerFactory.getTestLogger(TreeBuilderCompiler.class);
-        Launcher launcher = new Launcher();
-        launcher.getEnvironment().setIgnoreSyntaxErrors(true);
-        launcher.addInputResource("./src/test/resources/compilation2/InvalidClass.java");
+        Launcher launcher = setupLauncher();
         launcher.addInputResource("./src/test/resources/compilation/ClassWithStaticFields.java");
         launcher.buildModel();
         CtModel model = launcher.getModel();
         assertEquals(1,model.getAllTypes().size());
+    }
 
-        // contract: if a file has any syntax errors, the incorrect file name is logged
-        assertTrue(logger.getLoggingEvents().get(0).getMessage().startsWith("Syntax error detected in"));
-
-        // contract: if every input resource has a syntax error, spoon does not crash
-        launcher = new Launcher();
-        launcher.getEnvironment().setIgnoreSyntaxErrors(true);
-        launcher.addInputResource("./src/test/resources/compilation2/InvalidClass.java");
+    @Test
+    public void testIgnoreSyntaxErrorsLogging() {
+        // contract: if a file has any syntax errors, the name of the incorrect file is logged
+        TestLogger logger = TestLoggerFactory.getTestLogger(TreeBuilderCompiler.class);
+        Launcher launcher = setupLauncher();
         launcher.buildModel();
-        model = launcher.getModel();
-        assertTrue(model.getAllTypes().isEmpty());
+        assertTrue(logger.getLoggingEvents().get(0).getMessage().endsWith("InvalidClass.java"));
+    }
 
-        // contract: filter-invalid can be enabled with a command line argument
-        launcher = new Launcher();
+    @Test
+    public void testEveryInputHasSyntaxError() {
+        // contract: if every input resource has a syntax error, spoon does not crash
+        Launcher launcher = setupLauncher();
+        launcher.buildModel();
+        CtModel model = launcher.getModel();
+        assertTrue(model.getAllTypes().isEmpty());
+    }
+
+    @Test
+    public void testIgnoreSyntaxErrorsCommandLine() {
+        // contract: ignore-syntax-errors can be enabled with a command line argument
+        Launcher launcher = new Launcher();
         launcher.setArgs(new String[]{"--ignore-syntax-errors", "-i", "./src/test/resources/compilation2/InvalidClass.java"});
         launcher.buildModel();
-        model = launcher.getModel();
+        CtModel model = launcher.getModel();
         assertTrue(model.getAllTypes().isEmpty());
+    }
+
+    private Launcher setupLauncher() {
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setIgnoreSyntaxErrors(true);
+        launcher.addInputResource("./src/test/resources/compilation2/InvalidClass.java");
+        return launcher;
     }
 }
