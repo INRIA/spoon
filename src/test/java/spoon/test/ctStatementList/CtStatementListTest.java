@@ -109,6 +109,7 @@ public class CtStatementListTest {
         // contract: insertEnd adds a list of statements at the end of a statementList, i.e the list is added below an
         // existing statement, and the order of statements in the list remains the same
 
+        // arrange
         CtStatementList mainStatementList = getStatementListInitializedWithOneStatement();
         CtStatement firstStatementToBeInserted = factory.createCodeSnippetStatement("int first = 1;").compile();
         CtStatement secondStatementToBeInserted = factory.createCodeSnippetStatement("int second = 2;").compile();
