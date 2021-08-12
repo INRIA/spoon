@@ -376,6 +376,14 @@ public class Launcher implements SpoonAPI {
 			opt2.setDefault(CLASSPATH_MODE.NOCLASSPATH.name());
 			jsap.registerParameter(opt2);
 
+			// remove files with syntax errors from the compilation batch
+			sw1 = new Switch("ignore-syntax-errors");
+			sw1.setShortFlag('n');
+			sw1.setLongFlag("ignore-syntax-errors");
+			sw1.setHelp("If an input resource has any syntax errors, it will be removed from the compilation batch.");
+			sw1.setDefault("false");
+			jsap.registerParameter(sw1);
+
 			// show GUI
 			sw1 = new Switch("gui");
 			sw1.setShortFlag('g');
@@ -462,6 +470,7 @@ public class Launcher implements SpoonAPI {
 				break;
 		}
 
+		environment.setIgnoreSyntaxErrors(jsapActualArgs.getBoolean("ignore-syntax-errors"));
 		environment.setPreserveLineNumbers(jsapActualArgs.getBoolean("lines"));
 		environment.setTabulationSize(jsapActualArgs.getInt("tabsize"));
 		environment.useTabulations(jsapActualArgs.getBoolean("tabs"));

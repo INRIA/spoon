@@ -339,6 +339,20 @@ public interface Environment {
 	boolean getNoClasspath();
 
 	/**
+	 * Sets the option ignore-syntax-errors to remove files with any syntax errors from the compilation batch.
+	 *
+	 * @param ignoreSyntaxErrors whether Spoon should ignore files with any syntax errors
+	 */
+	void setIgnoreSyntaxErrors(boolean ignoreSyntaxErrors);
+
+	/**
+	 * Returns the value ot the option ignore-syntax-errors.
+	 *
+	 * @return true iff Spoon ignores files with any syntax errors
+	 */
+	boolean getIgnoreSyntaxErrors();
+
+	/**
 	 * Returns the value of the option copy-resources.
 	 *
 	 * @return true iff Spoon should copy resource files from the project when pretty-printing
