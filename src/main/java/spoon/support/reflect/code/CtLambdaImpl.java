@@ -288,7 +288,9 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 
 	@Override
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
-		type.setImplicit(true);
+		if (type != null) {
+			type.setImplicit(true);
+		}
 		return super.setType(type);
 	}
 }
