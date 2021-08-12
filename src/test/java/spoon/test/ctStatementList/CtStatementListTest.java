@@ -41,6 +41,7 @@ public class CtStatementListTest {
 
         // arrange
         CtStatementList mainStatementList = getStatementListInitializedWithOneStatement();
+        Factory factory = mainStatementList.getFactory();
         CtStatement firstStatementToBeInserted = factory.Code().createCodeSnippetStatement("int first = 1;").compile();
         CtStatement secondStatementToBeInserted = factory.Code().createCodeSnippetStatement("int second = 2;").compile();
 
@@ -67,6 +68,7 @@ public class CtStatementListTest {
         // contract: insertBegin adds a statement at the beginning of the statementList
 
         CtStatementList statementList = getStatementListInitializedWithOneStatement();
+        Factory factory = statementList.getFactory();
         CtStatement statementToBeInserted = factory.Code().createCodeSnippetStatement("int first = 1").compile();
 
         statementList.insertBegin(statementToBeInserted);
@@ -93,6 +95,7 @@ public class CtStatementListTest {
         // contract: insertEnd adds a statement at the end of a StatementList, i.e below an already existing statement
 
         CtStatementList statementList = getStatementListInitializedWithOneStatement();
+        Factory factory = statementList.getFactory();
         CtStatement statementToBeInserted = factory.Code().createCodeSnippetStatement("int first = 1;").compile();
 
         statementList.insertEnd(statementToBeInserted);
@@ -109,6 +112,7 @@ public class CtStatementListTest {
 
         // arrange
         CtStatementList mainStatementList = getStatementListInitializedWithOneStatement();
+        Factory factory = mainStatementList.getFactory();
         CtStatement firstStatementToBeInserted = factory.createCodeSnippetStatement("int first = 1;").compile();
         CtStatement secondStatementToBeInserted = factory.createCodeSnippetStatement("int second = 2;").compile();
 
