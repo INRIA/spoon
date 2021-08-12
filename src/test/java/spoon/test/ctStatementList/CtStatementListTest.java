@@ -28,10 +28,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CtStatementListTest {
-    private static Factory factory;
-
     private static CtStatementList getStatementListInitializedWithOneStatement() {
-        factory = new Launcher().getFactory();
+        Factory factory = new Launcher().getFactory();
         CtStatementList statementList = factory.Core().createStatementList();
         statementList.addStatement(factory.createCodeSnippetStatement("int preExisting = 0;").compile());
         return statementList;
