@@ -1,12 +1,17 @@
 package spoon.reflect.visitor;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
+import spoon.reflect.CtModel;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtCompilationUnit;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class DefaultJavaPrettyPrinterTest {
@@ -59,5 +64,22 @@ public class DefaultJavaPrettyPrinterTest {
             return printer;
         });
         return launcher;
+    }
+
+
+    @Test
+    void testAutoImportPrinterDoesNotImportFunctionalInterfaceTargetedInLambda() {
+        // contract: The auto-import printer should not import functional interfaces that are
+        // targeted in lambdas, but are not explicitly referenced anywhere
+        Launcher launcher = new Launcher();
+        launcher.addInputResource("src/test/resources/target-functional-interface-in-lambda");
+        launcher.buildModel();
+        CtCompilationUnit cu = launcher.getFactory().Type().get("TargetsFunctionalInterface")
+                .getPosition().getCompilationUnit();
+
+        PrettyPrinter autoImportPrettyPrinter = launcher.getEnvironment().createPrettyPrinterAutoImport();
+        String output = autoImportPrettyPrinter.prettyprint(cu);
+
+        assertThat(output, not(containsString("import java.util.function.IntFunction;")));
     }
 }
