@@ -311,8 +311,8 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 	 */
 	private boolean removeAllTypeImportWithPackage(Set<CtImport> imports, String packageName) {
 		boolean found = false;
-		for (Iterator iter = imports.iterator(); iter.hasNext();) {
-			CtImport newImport = (CtImport) iter.next();
+		for (Iterator<CtImport> iter = imports.iterator(); iter.hasNext();) {
+			CtImport newImport = iter.next();
 			if (newImport.getImportKind() == CtImportKind.TYPE) {
 				CtTypeReference<?> typeRef = (CtTypeReference<?>) newImport.getReference();
 				if (typeRef.getPackage() != null && packageName.equals(typeRef.getPackage().getQualifiedName())) {
