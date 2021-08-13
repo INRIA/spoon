@@ -776,7 +776,6 @@ public class TestSniperPrinter {
 	}
 	
 	@Test
-	@Disabled("UnresolvedBug")
 	@GitHubIssue(issueNumber = 4021)
 	void testSniperRespectsSuperWithUnaryOperator() {
 		// Combining CtSuperAccess and CtUnaryOperator leads to SpoonException with Sniper
