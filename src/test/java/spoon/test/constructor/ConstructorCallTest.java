@@ -35,7 +35,7 @@ public class ConstructorCallTest {
         Factory factory = new Launcher().getFactory();
         CtExpression<?> argumentToBeRemoved = factory.createLiteral(true);
         CtExpression<?> additionalArgument = factory.createLiteral(false);
-        CtConstructorCall<?> call = factory.Code().createConstructorCall(
+        CtConstructorCall<?> call = factory.createConstructorCall(
                 factory.createCtTypeReference(Object.class), argumentToBeRemoved, additionalArgument
         );
         assertThat(call.getArguments().size(), is(2));
