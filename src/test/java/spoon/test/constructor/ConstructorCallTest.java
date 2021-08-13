@@ -53,7 +53,7 @@ public class ConstructorCallTest {
         Factory factory = new Launcher().getFactory();
         CtTypeReference<Boolean> typeToBeRemoved = factory.createCtTypeReference(Boolean.class);
         CtTypeReference<Integer> additionalType = factory.createCtTypeReference(Integer.class);
-        CtConstructorCall<?> call = factory.Code().createConstructorCall(factory.createCtTypeReference(Object.class));
+        CtConstructorCall<?> call = factory.createConstructorCall(factory.createCtTypeReference(Object.class));
         call.addActualTypeArgument(typeToBeRemoved);
         call.addActualTypeArgument(additionalType);
         assertThat(call.getActualTypeArguments().size(), is(2));
