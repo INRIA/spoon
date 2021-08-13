@@ -33,8 +33,8 @@ public class ConstructorCallTest {
         // contract: removeArgument removes the passed argument among two arguments in the call
 
         Factory factory = new Launcher().getFactory();
-        CtExpression<?> argumentToBeRemoved = factory.Code().createCodeSnippetExpression("true").compile();
-        CtExpression<?> additionalArgument = factory.Code().createCodeSnippetExpression("false").compile();
+        CtExpression<?> argumentToBeRemoved = factory.createLiteral(true);
+        CtExpression<?> additionalArgument = factory.createLiteral(false);
         CtConstructorCall<?> call = factory.Code().createConstructorCall(
                 factory.createCtTypeReference(Object.class), argumentToBeRemoved, additionalArgument
         );
