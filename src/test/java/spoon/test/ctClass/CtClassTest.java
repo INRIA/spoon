@@ -27,6 +27,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -52,6 +53,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -366,5 +368,25 @@ public class CtClassTest {
 		CtField<?> field = cls.getField("entry");
 		assertThat(field.getType().getQualifiedName(), equalTo("T$Entry"));
 		assertThat(field.getType().isSimplyQualified(), is(false));
+	}
+
+	@Test
+	public void testRemoveAnnotation() {
+		// contract: removeAnnotation returns true after removing an annotation of a class containing a single
+		// annotation, and returns false when a non existing annotation is tried to be removed
+
+		// arrange
+		CtClass<?> annotatedClass = Launcher.parseClass("@SuppressWarnings(\"unchecked\") class Annotated { }");
+		assertEquals(1, annotatedClass.getAnnotations().size());
+		CtAnnotation<?> annotationToBeRemoved = annotatedClass.getAnnotations().get(0);
+
+		// act
+		boolean firstRemovalSuccessful = annotatedClass.removeAnnotation(annotationToBeRemoved);
+		boolean secondRemovalSuccessful = annotatedClass.removeAnnotation(annotationToBeRemoved);
+
+		// assert
+		assertEquals(0, annotatedClass.getAnnotations().size());
+		assertTrue(firstRemovalSuccessful);
+		assertFalse(secondRemovalSuccessful);
 	}
 }

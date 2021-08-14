@@ -80,6 +80,7 @@ import spoon.test.comment.testclasses.OtherJavaDoc;
 import spoon.test.comment.testclasses.TestClassWithComments;
 import spoon.test.comment.testclasses.WildComments;
 import spoon.test.comment.testclasses.WindowsEOL;
+import spoon.test.comment.testclasses.JavaDocWithLink;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -167,6 +168,22 @@ public class CommentTest {
 		CtJavaDoc classJavaDoc = (CtJavaDoc) type.getComments().get(0);
 		assertEquals("A short description without a proper end", classJavaDoc.getShortDescription());
 		assertEquals("A short description without a proper end", classJavaDoc.getLongDescription());
+	}
+
+	@Test
+	public void testJavadocCommentWithLink() {
+		// contract: the CtJavaDoc short and long descriptions are correct when the Javadoc comment contains a qualified name
+		Factory f = getSpoonFactory();
+		CtClass<?> type = (CtClass<?>) f.Type().get(JavaDocWithLink.class);
+		CtJavaDoc classJavaDoc = (CtJavaDoc) type.getComments().get(0);
+		assertEquals("{@link spoon.Launcher Launcher}.", classJavaDoc.getShortDescription());
+
+		classJavaDoc = (CtJavaDoc) type.getField("field1").getComments().get(0);
+		assertEquals("{@link spoon.Launcher Launcher}", classJavaDoc.getShortDescription());
+
+		classJavaDoc = (CtJavaDoc) type.getField("field2").getComments().get(0);
+		assertEquals("{@link spoon.Launcher Launcher}.", classJavaDoc.getShortDescription());
+		assertEquals("Additional text.", classJavaDoc.getLongDescription());
 	}
 
 	@Test

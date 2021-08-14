@@ -23,6 +23,7 @@ import org.eclipse.jdt.internal.compiler.ast.FieldDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.Initializer;
 import org.eclipse.jdt.internal.compiler.ast.Javadoc;
 import org.eclipse.jdt.internal.compiler.ast.MethodDeclaration;
+import org.eclipse.jdt.internal.compiler.ast.SuperReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
@@ -445,6 +446,11 @@ public class PositionBuilder {
 		} else if ((node instanceof AssertStatement)) {
 			AssertStatement assert_ = (AssertStatement) node;
 			sourceEnd = findNextChar(contents, contents.length, sourceEnd, ';');
+		} else if (node instanceof SuperReference) {
+			// when a super reference is followed by a unary operator (e.g. `super.method(-x)`),
+			// JDT for some reason sets the end source position to the unary operator, so we
+			// must adjust for this.
+			sourceEnd = sourceStart + "super".length() - 1;
 		}
 
 		if (e instanceof CtModifiable) {
