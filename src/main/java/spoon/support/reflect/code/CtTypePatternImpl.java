@@ -7,9 +7,12 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtTypePattern;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
@@ -30,7 +33,6 @@ public class CtTypePatternImpl<T> extends CtExpressionImpl<Void> implements CtTy
 			variable.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener()
-				// TODO is this the proper role? New role needed?
 				.onObjectUpdate(this, CtRole.VARIABLE, variable, this.variable);
 		this.variable = variable;
 		return (C) this;
@@ -44,5 +46,13 @@ public class CtTypePatternImpl<T> extends CtExpressionImpl<Void> implements CtTy
 	@Override
 	public CtTypePattern<T> clone() {
 		return CtTypePattern.class.cast(super.clone());
+	}
+
+	@Override
+	public <E extends CtElement> E setParent(E parent) {
+		if (parent != null && !(parent instanceof CtBinaryOperator<?>)) {
+			throw new SpoonException("type pattern can only be used in an instanceof binary operator");
+		}
+		return super.setParent(parent);
 	}
 }

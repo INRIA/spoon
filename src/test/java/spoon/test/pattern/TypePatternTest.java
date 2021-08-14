@@ -8,7 +8,9 @@
 package spoon.test.pattern;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
@@ -17,7 +19,9 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.reflect.code.CtTypePatternImpl;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TypePatternTest {
 
@@ -31,6 +35,7 @@ public class TypePatternTest {
 
 	@Test
 	public void testWithInstanceOf() {
+		// contract: type patterns are parsed correctly into the spoon metamodel
 		String code =
 				"class X {\n" +
 				"	String typePattern(Object obj) {\n" +
@@ -47,5 +52,19 @@ public class TypePatternTest {
 		CtTypePattern<?> pattern = (CtTypePattern<?>) instanceOf.getRightHandOperand();
 		assertEquals("java.lang.String", pattern.getVariable().getType().toString());
 		assertEquals("s", pattern.getVariable().getSimpleName());
+	}
+
+	@Test
+	public void testValidateParent() {
+		// contract: When setting a type pattern's parent, only CtBinaryOperator (and null) should be allowed
+		Launcher launcher = new Launcher();
+		CtTypePattern<?> pattern = launcher.getFactory().Core().createTypePattern();
+
+		// setting to a binary operator must work
+		assertDoesNotThrow((Executable) () -> pattern.setParent(launcher.getFactory().createBinaryOperator()));
+		// setting to null must work
+		assertDoesNotThrow(() -> pattern.setParent(null));
+		// setting something else as parent must fail
+		assertThrows(SpoonException.class, () -> pattern.setParent(launcher.getFactory().createBlock()));
 	}
 }
