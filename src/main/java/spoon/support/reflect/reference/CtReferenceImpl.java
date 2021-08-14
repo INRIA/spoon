@@ -110,7 +110,9 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	 * - the name can contain generics, e.g. List<String>[]
 	 */
 	private void checkIdentifierForJLSCorrectness(String simplename) {
-		if (isSpecialType(simplename)) return;
+		if (isSpecialType(simplename)) {
+			return;
+		}
 		if (!checkAll(simplename)) {
 			throw new SpoonException("Not allowed javaletter or keyword in identifier found. See JLS for correct identifier. Identifier: " + simplename);
 		}
@@ -144,7 +146,9 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 					// we scanned a word of valid java identifiers (see default case) until one
 					// of the special delimiting chars that are allowed in spoon
 					// now we just need to make sure it is not a keyword
-					if (isKeyword(name.substring(start, i))) return false; // keyword -> not allowed
+					if (isKeyword(name.substring(start, i))) {
+						return false; // keyword -> not allowed
+					}
 					start = i + 1; // skip this special char
 					break;
 				case '[':
