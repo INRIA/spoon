@@ -21,6 +21,7 @@ import spoon.support.reflect.declaration.CtElementImpl;
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -34,10 +35,10 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 
 	// See isKeyword for more information on keywords
 	private static final Collection<String> baseKeywords = fillWithBaseKeywords();
-	private static final Collection<String> java2Keywords = Stream.of("strictfp").collect(Collectors.toCollection(HashSet::new));
-	private static final Collection<String> java4Keywords = Stream.of("assert").collect(Collectors.toCollection(HashSet::new));
-	private static final Collection<String> java5Keywords = Stream.of("enum").collect(Collectors.toCollection(HashSet::new));
-	private static final Collection<String> java9Keywords = Stream.of("_").collect(Collectors.toCollection(HashSet::new));
+	private static final Collection<String> java2Keywords = Collections.singleton("strictfp");
+	private static final Collection<String> java4Keywords = Collections.singleton("assert");
+	private static final Collection<String> java5Keywords = Collections.singleton("enum");
+	private static final Collection<String> java9Keywords = Collections.singleton("_");
 
 	@MetamodelPropertyField(role = NAME)
 	protected String simplename = "";
