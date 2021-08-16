@@ -129,13 +129,14 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 			i++;
 		}
 		int start = i; // used to mark the beginning of a part
-		char expectNext = 0; // 0 = do not expect anything
+		final char anything = 0;
+		char expectNext = anything;
 		for (; i < name.length(); i++) {
-			if (expectNext != 0) {
+			if (expectNext != anything) {
 				if (name.charAt(i) != expectNext) {
 					return false;
 				} else if (name.charAt(i) == expectNext) {
-					expectNext = 0; // reset
+					expectNext = anything; // reset
 					continue; // skip it, no further checks required
 				}
 			}
@@ -155,20 +156,15 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 					expectNext = ']'; // next char *must* close
 					break;
 				default: // if we come across an illegal java identifier char here, it's not valid at all
-					if (start == i) { // first char of a part
-						if (!Character.isJavaIdentifierStart(name.charAt(i))) {
-							return false;
-						}
-					} else {
-						if (!Character.isJavaIdentifierPart(name.charAt(i))) {
-							return false;
-						}
+					if (start == i && !Character.isJavaIdentifierStart(name.charAt(i))
+							|| !Character.isJavaIdentifierPart(name.charAt(i))) {
+						return false;
 					}
 					break;
 			}
 		}
 		// make sure the end state is correct too
-		if (expectNext != 0) {
+		if (expectNext != anything) {
 			return false; // expected something that didn't appear anymore
 		}
 		// e.g. a name that only contains valid java identifiers will end up here (start will never be updated)
