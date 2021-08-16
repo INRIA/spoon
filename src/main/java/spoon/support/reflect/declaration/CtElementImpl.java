@@ -506,7 +506,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public Set<String> getMetadataKeys() {
 		if (metadata == null) {
-			return Collections.EMPTY_SET;
+			return Collections.emptySet();
 		}
 		return metadata.keySet();
 	}
