@@ -419,7 +419,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 
 	@Override
 	@UnsettableProperty
-	public <E extends CtElement, P extends CtElement> E setParent(P parent) {
+	public <E extends CtElement> E setParent(E parent) {
 		return (E) this;
 	}
 

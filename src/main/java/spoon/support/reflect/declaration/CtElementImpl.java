@@ -366,7 +366,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <E extends CtElement, P extends CtElement> E setParent(P parent) {
+	public <E extends CtElement> E setParent(E parent) {
 		this.parent = parent;
 		return (E) this;
 	}
