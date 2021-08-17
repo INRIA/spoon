@@ -20,6 +20,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.reflect.CtModelImpl;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtBinaryOperator;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
@@ -35,7 +38,6 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static spoon.test.parent.ContractOnSettersParametrizedTest.createCompatibleObject;
 import static spoon.test.parent.ContractOnSettersParametrizedTest.createReceiverList;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -58,12 +60,8 @@ public class SetParentTest<T extends CtVisitable> {
 		Object o = factory.Core().create((Class<? extends CtElement>) toTest.getActualClass());
 		CtMethod<?> setter = factory.Type().get(CtElement.class).getMethodsByName("setParent").get(0);
 
-		Object argument = createCompatibleObject(setter.getParameters().get(0).getType());
+		CtElement argument = createCompatibleParent(toTest);
 
-		if (!(argument instanceof CtElement)) {
-			// is a primitive type or a list
-			throw new AssertionError("impossible, setParent always takes an element");
-		}
 		// we create a fresh object
 		CtElement receiver = ((CtElement) o).clone();
 
@@ -91,7 +89,7 @@ public class SetParentTest<T extends CtVisitable> {
 		}
 
 		Method actualMethod = setter.getReference().getActualMethod();
-		CtElement argumentClone = ((CtElement) argument).clone();
+		CtElement argumentClone = argument.clone();
 		actualMethod.invoke(receiver, new Object[]{argument});
 
 		// contract: the parent has not been changed by a call to setParent on an elemnt
@@ -100,4 +98,15 @@ public class SetParentTest<T extends CtVisitable> {
 
 	}
 
+	private static CtElement createCompatibleParent(CtType<?> e) {
+	    return CtTypePattern.class.getSimpleName().equals(e.getSimpleName())
+				? createInstanceOfBinaryOperator()
+				: e.getFactory().createAssignment();
+	}
+
+	private static CtBinaryOperator<?> createInstanceOfBinaryOperator() {
+		CtBinaryOperator<?> op = factory.createBinaryOperator();
+		op.setKind(BinaryOperatorKind.INSTANCEOF);
+		return op;
+	}
 }
