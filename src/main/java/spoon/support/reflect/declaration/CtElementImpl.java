@@ -19,7 +19,6 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
@@ -170,9 +169,6 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public List<CtAnnotation<? extends Annotation>> getAnnotations() {
-		if (this instanceof CtShadowable) {
-			CtShadowable shadowable = (CtShadowable) this;
-		}
 		return unmodifiableList(annotations);
 	}
 
@@ -370,7 +366,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	@Override
-	public <E extends CtElement> E setParent(E parent) {
+	public <E extends CtElement> E setParent(CtElement parent) {
 		this.parent = parent;
 		return (E) this;
 	}
@@ -510,7 +506,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public Set<String> getMetadataKeys() {
 		if (metadata == null) {
-			return Collections.EMPTY_SET;
+			return Collections.emptySet();
 		}
 		return metadata.keySet();
 	}

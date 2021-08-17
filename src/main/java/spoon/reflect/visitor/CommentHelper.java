@@ -13,7 +13,6 @@ import spoon.reflect.code.CtJavaDocTag;
 import spoon.support.Internal;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -96,7 +95,6 @@ public class CommentHelper {
 			}
 		}
 		if (comment instanceof CtJavaDoc) {
-			List<CtJavaDocTag> tags = null;
 			Collection<CtJavaDocTag> javaDocTags = ((CtJavaDoc) comment).getTags();
 			if (javaDocTags != null && javaDocTags.isEmpty() == false) {
 				printer.write(transfo.apply("")).writeln();

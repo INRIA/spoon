@@ -21,6 +21,7 @@ import spoon.support.reflect.declaration.CtElementImpl;
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -31,7 +32,13 @@ import static spoon.reflect.path.CtRole.NAME;
 public abstract class CtReferenceImpl extends CtElementImpl implements CtReference, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static Collection<String> keywords = fillWithKeywords();
+
+	// See isKeyword for more information on keywords
+	private static final Collection<String> baseKeywords = fillWithBaseKeywords();
+	private static final Collection<String> java2Keywords = Collections.singleton("strictfp");
+	private static final Collection<String> java4Keywords = Collections.singleton("assert");
+	private static final Collection<String> java5Keywords = Collections.singleton("enum");
+	private static final Collection<String> java9Keywords = Collections.singleton("_");
 
 	@MetamodelPropertyField(role = NAME)
 	protected String simplename = "";
@@ -49,7 +56,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 	@Override
 	public <T extends CtReference> T setSimpleName(String simplename) {
 		Factory factory = getFactory();
-		checkIdentiferForJLSCorrectness(simplename);
+		checkIdentifierForJLSCorrectness(simplename);
 		if (factory == null) {
 			this.simplename = simplename;
 			return (T) this;
@@ -92,63 +99,115 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		}
 		return false;
 	}
-	private void checkIdentiferForJLSCorrectness(String simplename) {
-		/*
-		 * At the level of the Java Virtual Machine, every constructor written in the Java programming language (JLS §8.8)
-		 * appears as an instance initialization method that has the special name <init>.
-		 * This name is supplied by a compiler. Because the name is not a valid identifier,
-		 * it cannot be used directly in a program written in the Java programming language.
-		 */
-		//JDTTreeBuilderHelper.computeAnonymousName returns "$numbers$Name" so we have to skip them if they start with numbers
-		//allow empty identifier because they are sometimes used.
-		if (!simplename.matches("<.*>|\\d.*|^.{0}$")) {
-			//split at "<" and ">" because "Iterator<Cache.Entry<K,Store.ValueHolder<V>>>" submits setSimplename ("Cache.Entry<K")
-			String[] splittedSimplename = simplename.split("\\.|<|>");
-			if (checkAllParts(splittedSimplename)) {
-				throw new SpoonException("Not allowed javaletter or keyword in identifier found. See JLS for correct identifier. Identifier: " + simplename);
-			}
+
+	/*
+	 * This method validates the simplename.
+	 * spoon needs to allow more names that are allowed by the JLS, as
+	 * - array references have a name, e.g. int[], where [] would not be allowed normally
+	 * - ? is used as name for intersection types
+	 * - <init>, <clinit>, <nulltype> are used to represent initializers and the null reference
+	 * - anonymous/local classes start with numbers in spoon
+	 * - simple names of packages are just their names, but they may contain '.'
+	 * - the name can contain generics, e.g. List<String>[]
+	 */
+	private void checkIdentifierForJLSCorrectness(String simplename) {
+		if (isSpecialType(simplename)) {
+			return;
 		}
-	}
-	private boolean isKeyword(String simplename) {
-		return keywords.contains(simplename);
-	}
-	private boolean checkAllParts(String[] simplenameParts) {
-		for (String simpleName:simplenameParts) {
-			//because arrays use e.g. int[] and @Number is used for instances of an object e.g. foo@1
-			simpleName = simpleName.replaceAll("\\[\\]|@", "");
-			if (isWildCard(simpleName)) {
-				// because in intersection types a typeReference sometimes has '?' as simplename
-				return false;
-			}
-			if (isKeyword(simpleName) || checkIdentifierChars(simpleName)) {
-				return true;
-			}
+		if (!checkAll(simplename)) {
+			throw new SpoonException("Not allowed javaletter or keyword in identifier found. See JLS for correct identifier. Identifier: " + simplename);
 		}
-		return false;
-	}
-	private boolean checkIdentifierChars(String simplename) {
-		if (simplename.length() == 0) {
-			return false;
-		}
-		return (!Character.isJavaIdentifierStart(simplename.charAt(0)))
-			|| simplename.chars().anyMatch(letter -> !Character.isJavaIdentifierPart(letter)
-		);
 	}
 
-	private static Collection<String> fillWithKeywords() {
-		//removed types because needed as ref: "int","short", "char", "void", "byte","float", "true","false","boolean","double","long","class", "null"
-		return Stream.of("abstract", "continue", "for", "new", "switch", "assert", "default", "if", "package", "synchronized",  "do", "goto", "private",
-			"this", "break",  "implements", "protected", "throw", "else", "import", "public", "throws", "case", "enum", "instanceof", "return",
-			"transient", "catch", "extends", "try", "final", "interface", "static", "finally",  "strictfp", "volatile",
-			"const",  "native", "super", "while", "_")
-			.collect(Collectors.toCollection(HashSet::new));
+	/*
+	 * returns true if the name is valid.
+	 * this splits up the string into parts that need to be JLS compliant.
+	 */
+	private boolean checkAll(String name) {
+		int i = 0;
+		// leading digits come from anonymous/local classes. Skip them
+		while (i < name.length() && Character.isDigit(name.charAt(i))) {
+			i++;
+		}
+		int start = i; // used to mark the beginning of a part
+		final char anything = 0;
+		char expectNext = anything;
+		for (; i < name.length(); i++) {
+			if (expectNext != anything) {
+				if (name.charAt(i) != expectNext) {
+					return false;
+				} else if (name.charAt(i) == expectNext) {
+					expectNext = anything; // reset
+					continue; // skip it, no further checks required
+				}
+			}
+			switch (name.charAt(i)) {
+				case '.':
+				case '<':
+				case '>':
+					// we scanned a word of valid java identifiers (see default case) until one
+					// of the special delimiting chars that are allowed in spoon
+					// now we just need to make sure it is not a keyword
+					if (isKeyword(name.substring(start, i))) {
+						return false; // keyword -> not allowed
+					}
+					start = i + 1; // skip this special char
+					break;
+				case '[':
+					expectNext = ']'; // next char *must* close
+					break;
+				default: // if we come across an illegal java identifier char here, it's not valid at all
+					if (start == i && !Character.isJavaIdentifierStart(name.charAt(i))
+							|| !Character.isJavaIdentifierPart(name.charAt(i))) {
+						return false;
+					}
+					break;
+			}
+		}
+		// make sure the end state is correct too
+		if (expectNext != anything) {
+			return false; // expected something that didn't appear anymore
+		}
+		// e.g. a name that only contains valid java identifiers will end up here (start will never be updated)
+		// and we still need to make sure it is not a keyword.
+		// as updating start uses i + 1, it might be out of bounds, so avoid SIOOBEs here
+		if (start < name.length()) {
+			return !isKeyword(name.substring(start));
+		}
+		return true;
+	}
+
+	private static boolean isSpecialType(String identifier) {
+		return identifier.isEmpty()
+				|| "?".equals(identifier) // is wildcard, used for intersection types
+				|| (identifier.startsWith("<") && identifier.endsWith(">"));
 	}
 
 	/**
-	 * checks if the input is a wildcard '?'. The method is not null safe.
-	 * @return boolean true is input wildcard, false otherwise
+	 * Keywords list and history selected according to:
+	 * https://docs.oracle.com/en/java/javase/15/docs/specs/sealed-classes-jls.html#jls-3.9
+	 * https://en.wikipedia.org/wiki/List_of_Java_keywords (contains history of revisions)
+	 * and https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html (history up to java 8)
+	 *
+	 * @param simplename
+	 * @return true if simplename is a keyword in the current setting (compliance level), false if not
 	 */
-	private boolean isWildCard(String name) {
-		return name.equals("?");
+	private boolean isKeyword(String simplename) {
+		int complianceLevel = getFactory().getEnvironment().getComplianceLevel();
+		return (baseKeywords.contains(simplename)
+				|| (complianceLevel >= 2 && java2Keywords.contains(simplename))
+				|| (complianceLevel >= 4 && java4Keywords.contains(simplename))
+				|| (complianceLevel >= 5 && java5Keywords.contains(simplename))
+				|| (complianceLevel >= 9 && java9Keywords.contains(simplename)));
+	}
+
+	private static Collection<String> fillWithBaseKeywords() {
+		// removed types because needed as ref: "int","short", "char", "void", "byte","float", "true","false","boolean","double","long","class", "null"
+		// in the method isKeyword, more keywords are added to the checks based on the compliance level
+		return Stream.of("abstract", "continue", "for", "new", "switch", "default", "if", "package", "synchronized",  "do", "goto", "private",
+				"this", "break",  "implements", "protected", "throw", "else", "import", "public", "throws", "case", "instanceof", "return",
+				"transient", "catch", "extends", "try", "final", "interface", "static", "finally", "volatile",
+				"const",  "native", "super", "while")
+				.collect(Collectors.toCollection(HashSet::new));
 	}
 }

@@ -21,6 +21,7 @@ import spoon.support.reflect.declaration.CtElementImpl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.BLOCK_STATEMENTS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.STATEMENT;
@@ -83,7 +84,10 @@ public class CtStatementListImpl<R> extends CtCodeElementImpl implements CtState
 	@Override
 	public <T extends CtStatementList> T insertBegin(CtStatementList statements) {
 		ensureModifiableStatementsList();
-		for (CtStatement statement : statements.getStatements()) {
+		List<CtStatement> list = statements.getStatements();
+		ListIterator listIterator = list.listIterator(list.size());
+		while (listIterator.hasPrevious()) {
+			CtStatement statement = (CtStatement) listIterator.previous();
 			statement.setParent(this);
 			this.addStatement(0, statement);
 		}

@@ -68,11 +68,11 @@ public class CtModifierHandler implements Serializable {
 		if (modifiers == null) {
 			modifiers = Collections.emptySet();
 		}
-			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(element, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
-			this.modifiers.clear();
-			for (ModifierKind modifier : modifiers) {
-				addModifier(modifier);
-			}
+		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(element, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
+		this.modifiers.clear();
+		for (ModifierKind modifier : modifiers) {
+			addModifier(modifier);
+		}
 		return this;
 	}
 

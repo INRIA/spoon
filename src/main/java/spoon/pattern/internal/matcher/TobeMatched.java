@@ -114,7 +114,7 @@ public class TobeMatched {
 			if (nrOfMatches == 0) {
 				return Collections.emptyList();
 			}
-			List<Object> matched = new ArrayList(nrOfMatches);
+			List<Object> matched = new ArrayList<>(nrOfMatches);
 			for (Object target : getTargets()) {
 				if (containsSame(tobeMatchedTargets.getTargets(), target)) {
 					//this origin target is still available in this to be matched targets

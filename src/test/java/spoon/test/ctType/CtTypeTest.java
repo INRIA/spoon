@@ -16,7 +16,7 @@
  */
 package spoon.test.ctType;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtAssignment;
@@ -37,21 +37,17 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.ctType.testclasses.X;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -199,7 +195,7 @@ public class CtTypeTest {
 
 	private void checkIsSubtype(CtTypeReference superType, CtTypeReference subType, Map<String, CtTypeReference<?>> nameToTypeRef) {
 		String msg = getTypeName(subType) + " isSubTypeOf " + getTypeName(superType);
-		assertTrue(msg, subType.isSubtypeOf(superType));
+		assertTrue(subType.isSubtypeOf(superType), msg);
 	}
 
 	private static final Pattern assignment = Pattern.compile("\\s*(\\w+)\\s*=\\s*(\\w+);");
@@ -210,7 +206,7 @@ public class CtTypeTest {
 		CtTypeReference<?> superType = nameToTypeRef.get(m.group(1));
 		CtTypeReference<?> subType = nameToTypeRef.get(m.group(2));
 		String msg = getTypeName(subType) + " is NOT SubTypeOf " + getTypeName(superType);
-		assertFalse(msg, subType.isSubtypeOf(superType));
+		assertFalse(subType.isSubtypeOf(superType), msg);
 	}
 
 	private String getTypeName(CtTypeReference<?> ref) {
@@ -295,5 +291,22 @@ public class CtTypeTest {
 				equalTo(expectedNumExecutablesInJDK8),
 				equalTo(expectedNumExecutablesPostJDK8))
 		);	
+	}
+
+	/**
+	 * This test captures keyword constraint in CtReferenceImpl based on the compliance level, since the keyword
+	 * "enum" was only introduced in Java 5
+	 */
+	@Test
+	public void testEnumPackage() {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/keywordCompliance/enum/Foo.java");
+		launcher.getEnvironment().setComplianceLevel(4);
+		launcher.run();
+
+		Collection<CtType<?>> types = launcher.getModel().getAllTypes();
+		assertThat(types.size(), is(1));
+		assertThat(types.stream().findFirst().get(), notNullValue());
+		assertThat(types.stream().findFirst().get().getQualifiedName(), is("keywordCompliance.enum.Foo"));
 	}
 }

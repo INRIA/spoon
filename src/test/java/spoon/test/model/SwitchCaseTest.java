@@ -8,11 +8,14 @@
 
 package spoon.test.model;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -31,6 +34,7 @@ import spoon.reflect.CtModel;
 import spoon.reflect.code.CaseKind;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -44,6 +48,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.VirtualFile;
+
 @DisplayName("Switchcase Tests")
 public class SwitchCaseTest {
 
@@ -249,4 +254,169 @@ public class SwitchCaseTest {
 		}
 	}
 
+	@Nested
+	class InsertCaseInSwitch {
+		@DisplayName("cases should be inserted at the correct position")
+		@Test
+		public void test_addCaseAt_addsCaseAtSpecifiedPositionInSwitch() {
+			// contract: case should be added at the specified position in `CtSwitch`
+			Factory factory = new Launcher().getFactory();
+
+			CtSwitch<Integer> switchBlock = factory.createSwitch();
+			CtExpression<Integer> switchSelector = factory.createCodeSnippetExpression("x");
+			switchBlock.setSelector(switchSelector);
+
+			CtBreak ctBreak = factory.createBreak();
+
+			CtCase<Integer> first = factory.createCase();
+			CtExpression<Integer> firstExpression = factory.createCodeSnippetExpression("1");
+			first.addCaseExpression(firstExpression);
+			first.setCaseKind(CaseKind.COLON);
+			first.addStatement(ctBreak);
+
+			CtCase<Integer> second = factory.createCase();
+			CtExpression<Integer> secondExpression = factory.createCodeSnippetExpression("2");
+			second.addCaseExpression(secondExpression);
+			second.setCaseKind(CaseKind.COLON);
+			second.addStatement(ctBreak);
+
+			CtCase<Integer> third = factory.createCase();
+			third.setCaseKind(CaseKind.COLON);
+			third.addStatement(ctBreak);
+
+			switchBlock.addCaseAt(0, third);
+			switchBlock.addCaseAt(0,first);
+			switchBlock.addCaseAt(1, second);
+
+			assertEquals(Arrays.asList(first, second, third), switchBlock.getCases());
+		}
+
+		@DisplayName("should throw IndexOutOfBounds exception")
+		@Test
+		public void test_addCaseAt_throwsIndexOutOfBoundsException_whenPositionIsOutOfBounds() {
+			// contract: `addCaseAt` should throw an out of bounds exception when the the specified position is out of
+			// bounds of the case collection
+			Factory factory = new Launcher().getFactory();
+
+			CtSwitch<Integer> switchBlock = factory.createSwitch();
+			CtExpression<Integer> switchSelector = factory.createCodeSnippetExpression("x");
+			switchBlock.setSelector(switchSelector);
+
+			CtCase<Integer> onlyCase = factory.createCase();
+			CtBreak caseStatement = factory.createBreak();
+			onlyCase.setCaseKind(CaseKind.COLON);
+			onlyCase.addStatement(caseStatement);
+
+			assertThrows(IndexOutOfBoundsException.class, () -> switchBlock.addCaseAt(5, onlyCase));
+		}
+	}
+
+	@Nested
+	class InsertCaseInSwitchExpression {
+		@DisplayName("cases should be inserted at the correct position")
+		@Test
+		public void test_addCaseAt_addsCaseAtSpecifiedPositionInSwitchExpression() {
+			// contract: case should be added at the specified position in `CtSwitchExpression`
+			Factory factory = new Launcher().getFactory();
+
+			CtSwitchExpression<Integer, Integer> switchExpression = factory.createSwitchExpression();
+			CtExpression<Integer> switchSelector = factory.createCodeSnippetExpression("x");
+			switchExpression.setSelector(switchSelector);
+
+			CtCase<Integer> first = factory.createCase();
+			CtExpression<Integer> firstExpression = factory.createCodeSnippetExpression("1");
+			CtStatement firstStatement = factory.createCodeSnippetStatement("1");
+			first.addCaseExpression(firstExpression);
+			first.setCaseKind(CaseKind.ARROW);
+			first.addStatement(firstStatement);
+
+			CtCase<Integer> second = factory.createCase();
+			CtExpression<Integer> secondExpression = factory.createCodeSnippetExpression("2");
+			CtStatement secondStatement = factory.createCodeSnippetStatement("2");
+			second.addCaseExpression(secondExpression);
+			second.setCaseKind(CaseKind.ARROW);
+			second.addStatement(secondStatement);
+
+			CtCase<Integer> third = factory.createCase();
+			CtStatement thirdStatement = factory.createCodeSnippetStatement("3");
+			third.setCaseKind(CaseKind.ARROW);
+			third.addStatement(thirdStatement);
+
+			switchExpression.addCaseAt(0, third);
+			switchExpression.addCaseAt(0,first);
+			switchExpression.addCaseAt(1, second);
+
+			assertEquals(Arrays.asList(first, second, third), switchExpression.getCases());
+		}
+
+		@DisplayName("should throw IndexOutOfBounds exception")
+		@Test
+		public void test_addCaseAt_throwsIndexOutOfBoundsException_whenPositionIsOutOfBounds() {
+			// contract: `addCaseAt` should throw an out of bounds exception when the the specified position is out of
+			// bounds of the case collection
+			Factory factory = new Launcher().getFactory();
+
+			CtSwitchExpression<Integer, Integer> switchExpression = factory.createSwitchExpression();
+			CtExpression<Integer> switchSelector = factory.createCodeSnippetExpression("x");
+			switchExpression.setSelector(switchSelector);
+
+			CtCase<Integer> onlyCase = factory.createCase();
+			CtStatement caseStatement = factory.createCodeSnippetStatement("5");
+			onlyCase.setCaseKind(CaseKind.ARROW);
+			onlyCase.addStatement(caseStatement);
+
+			assertThrows(IndexOutOfBoundsException.class, () -> switchExpression.addCaseAt(3, onlyCase));
+		}
+	}
+
+	@Nested
+	class CaseExpressionInSwitchCasesBeforeJava12 {
+		@Test
+		public void test_getCaseExpression_shouldReturnTheFirstCaseExpression() {
+			// contract: `getCaseExpression` should return the first element in the list of case expressions stored in
+			// each instance of `CtCase`
+			Factory factory = new Launcher().getFactory();
+
+			CtCase<Integer> ctCase = factory.createCase();
+			CtExpression<Integer> first = factory.createLiteral(1);
+			CtExpression<Integer> second = factory.createLiteral(2);
+			CtExpression<Integer> third = factory.createLiteral(3);
+
+			ctCase.setCaseExpressions(Arrays.asList(first, second, third));
+
+			assertEquals(first, ctCase.getCaseExpression());
+		}
+
+		@Test
+		public void test_setCaseExpression_removeExistingCaseExpressionsAndInsertTheSpecified() {
+			// contract: `setCaseExpression` should clear the list of case expressions and insert the specified case
+			// expression
+			Factory factory = new Launcher().getFactory();
+
+			CtCase<Integer> ctCase = factory.createCase();
+			CtExpression<Integer> first = factory.createLiteral(1);
+			CtExpression<Integer> second = factory.createLiteral(2);
+			CtExpression<Integer> third = factory.createLiteral(3);
+			CtExpression<Integer> fourth = factory.createLiteral(4);
+			ctCase.setCaseExpressions(Arrays.asList(first, second, third));
+
+			ctCase.setCaseExpression(fourth);
+
+			assertEquals(1, ctCase.getCaseExpressions().size());
+			assertEquals(fourth, ctCase.getCaseExpression());
+		}
+
+		@Test
+		public void test_setCaseExpression_removeAllCaseExpressions() {
+			// contract: `setCaseExpression` should clear the list of case expressions when `null` is passed as
+			// argument
+			String code = "class A { public void f(int i) { switch(i) { case 1,2,3: break; } } }";
+			CtModel model = createModelFromString(code);
+			CtCase<?> ctCase = model.getElements(new TypeFilter<>(CtCase.class)).get(0);
+
+			ctCase.setCaseExpression(null);
+
+			assertThat(ctCase.getCaseExpressions().size(), equalTo(0));
+		}
+	}
 }

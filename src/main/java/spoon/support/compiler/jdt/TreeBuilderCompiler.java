@@ -8,11 +8,13 @@
 package spoon.support.compiler.jdt;
 
 import java.io.PrintWriter;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.compiler.CompilationProgress;
+import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 import org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
 import org.eclipse.jdt.internal.compiler.IProblemFactory;
@@ -22,14 +24,25 @@ import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.util.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import spoon.support.Level;
 
 
 class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+	private boolean ignoreSyntaxErrors;
+
+	private Level level;
+
 	TreeBuilderCompiler(INameEnvironment environment, IErrorHandlingPolicy policy, CompilerOptions options,
-			ICompilerRequestor requestor, IProblemFactory problemFactory, PrintWriter out,
-			CompilationProgress progress) {
+						ICompilerRequestor requestor, IProblemFactory problemFactory, PrintWriter out,
+						boolean ignoreSyntaxErrors, Level level, CompilationProgress progress) {
 		super(environment, policy, options, requestor, problemFactory, out, progress);
+		this.ignoreSyntaxErrors = ignoreSyntaxErrors;
+		this.level = level;
 	}
 
 	// This code is directly inspired from Compiler class.
@@ -56,8 +69,18 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 		this.reportProgress(Messages.compilation_beginningToCompile);
 
 		this.sortModuleDeclarationsFirst(sourceUnits);
+
+		CompilationUnit[] filteredSourceUnits = null;
+		if (ignoreSyntaxErrors || level.toInt() > Level.ERROR.toInt()) {
+			// syntax is optionally checked here to prevent crashes inside JDT
+			filteredSourceUnits = ignoreSyntaxErrors(sourceUnits);
+		}
 		// build and record parsed units
-		beginToCompile(sourceUnits);
+		if (ignoreSyntaxErrors) {
+			beginToCompile(filteredSourceUnits);
+		} else {
+			beginToCompile(sourceUnits);
+		}
 
 		CompilationUnitDeclaration unit;
 		int i = 0;
@@ -95,5 +118,21 @@ class TreeBuilderCompiler extends org.eclipse.jdt.internal.compiler.Compiler {
 			}
 		}
 		return unitsToReturn.toArray(new CompilationUnitDeclaration[0]);
+	}
+
+	private CompilationUnit[] ignoreSyntaxErrors(CompilationUnit[] sourceUnits) {
+		ArrayList<CompilationUnit> sourceUnitList = new ArrayList<>();
+		int maxUnits = sourceUnits.length;
+		for (int i = 0; i < maxUnits; i++) {
+			CompilationResult unitResult = new CompilationResult(sourceUnits[i], i, maxUnits, this.options.maxProblemsPerUnit);
+			CompilationUnitDeclaration parsedUnit = this.parser.parse(sourceUnits[i], unitResult);
+			if (parsedUnit.hasErrors()) {
+				LOGGER.warn("Syntax error detected in: " + String.valueOf(sourceUnits[i].getFileName()));
+			} else {
+				sourceUnitList.add(sourceUnits[i]);
+			}
+		}
+		this.initializeParser();
+		return sourceUnitList.toArray(new CompilationUnit[sourceUnitList.size()]);
 	}
 }

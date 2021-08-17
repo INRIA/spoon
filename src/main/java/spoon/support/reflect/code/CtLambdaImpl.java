@@ -23,6 +23,7 @@ import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
@@ -283,5 +284,13 @@ public class CtLambdaImpl<T> extends CtExpressionImpl<T> implements CtLambda<T> 
 	@Override
 	public CtLambda<T> clone() {
 		return (CtLambda<T>) super.clone();
+	}
+
+	@Override
+	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		if (type != null) {
+			type.setImplicit(true);
+		}
+		return super.setType(type);
 	}
 }
