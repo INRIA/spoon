@@ -53,8 +53,10 @@ public class SniperNoChangeDiffTest {
 	 * Test various syntax by doing an change to every element that should not
 	 * result in any change in source. This forces the sniper printer to recreate
 	 * the output. Aseert that the output is the same as the input.
+	 * Reference: #3811
 	 */
 	@Test
+	@org.junit.jupiter.api.Disabled("UnresolvedBug")
 	public void noChangeDiffTest() throws IOException {
 		File file = INPUT_PATH.resolve("spoon/test/prettyprinter/testclasses/difftest").resolve(fileName).toFile();
 		File outputFile = OUTPUT_PATH.resolve("spoon/test/prettyprinter/testclasses/difftest").resolve(fileName)
