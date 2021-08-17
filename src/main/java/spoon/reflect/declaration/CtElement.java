@@ -268,7 +268,7 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	 * @param <E> this element's type
 	 * @return this element
 	 */
-	<E extends CtElement> E setParent(E parent);
+	<E extends CtElement> E setParent(CtElement parent);
 
 	/**
 	 * Tells if this parent has been initialized.
