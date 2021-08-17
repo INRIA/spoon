@@ -26,7 +26,7 @@ import spoon.reflect.reference.CtTypeReference;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class ConstructorCallTest {
+public class CtConstructorCallTest {
 
     @Test
     void testRemoveArgument() {
