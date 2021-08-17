@@ -49,7 +49,7 @@ public class CtTypePatternImpl<T> extends CtExpressionImpl<Void> implements CtTy
 	}
 
 	@Override
-	public <E extends CtElement> E setParent(E parent) {
+	public <E extends CtElement> E setParent(CtElement parent) {
 		if (parent != null && !(parent instanceof CtBinaryOperator<?>)) {
 			throw new SpoonException("type pattern can only be used in an instanceof binary operator");
 		}
