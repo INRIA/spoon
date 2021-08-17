@@ -425,7 +425,7 @@ public class CtModuleImpl extends CtNamedElementImpl implements CtModule {
 
 	@Override
 	@DerivedProperty
-	public <T extends CtElement> T setParent(T parent) {
+	public <T extends CtElement> T setParent(CtElement parent) {
 		return (T) this;
 	}
 
