@@ -18,6 +18,7 @@ package spoon.reflect.ast;
 
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.support.modelobs.FineModelChangeListener;
@@ -207,22 +208,31 @@ public class AstCheckerTest {
 			if (block.getStatements().isEmpty()) {
 				return false;
 			}
+			// invariant 1: block is non-empty
 			CtInvocation potentialDelegate;
 			if (block.getLastStatement() instanceof CtReturn) {
+				// 1, invariant 2: last statement is a return
 				if (!(((CtReturn) block.getLastStatement()).getReturnedExpression() instanceof CtInvocation)) {
+					// 1, 2, invariant 3: last statement is not a return with an invocation
 					if (block.getStatement(0) instanceof CtInvocation) {
+						// 1, 2, 3, invariant 4: first statement is an invocation
 						potentialDelegate = block.getStatement(0);
 					} else {
+						// 1, 2, 3, ~4
 						return false;
 					}
 				} else {
+					// 1, 2, ~3
 					potentialDelegate = (CtInvocation) ((CtReturn) block.getLastStatement()).getReturnedExpression();
 				}
 			} else if (block.getStatement(0) instanceof CtInvocation && block.getStatements().size() == 1) {
+				// 1, ~2, invariant 7: there's only one statement, and it's an invocation
 				potentialDelegate = block.getStatement(0);
 			} else {
+				// 1, ~2, ~7 ==> either a single statement that is neither return nor invocation, or multiple statements
 				return false;
 			}
+
 			CtExecutable declaration = potentialDelegate.getExecutable().getDeclaration();
 			if (!(declaration instanceof CtMethod)) {
 				return false;
