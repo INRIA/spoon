@@ -1056,7 +1056,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 
 	@Override
-	public <T> void visitCtTypePattern(CtTypePattern<T> pattern) {
+	public void visitCtTypePattern(CtTypePattern pattern) {
 		scanCtPattern(pattern);
 		scanCtExpression(pattern);
 		scanCtTypedElement(pattern);

@@ -49,7 +49,7 @@ public class TypePatternTest {
 		CtBinaryOperator<Boolean> instanceOf = model.getElements(new TypeFilter<CtBinaryOperator<Boolean>>(CtBinaryOperator.class)).get(0);
 		assertEquals(BinaryOperatorKind.INSTANCEOF, instanceOf.getKind());
 		assertEquals(CtTypePatternImpl.class, instanceOf.getRightHandOperand().getClass());
-		CtTypePattern<?> pattern = (CtTypePattern<?>) instanceOf.getRightHandOperand();
+		CtTypePattern pattern = (CtTypePattern) instanceOf.getRightHandOperand();
 		assertEquals("java.lang.String", pattern.getVariable().getType().toString());
 		assertEquals("s", pattern.getVariable().getSimpleName());
 	}
@@ -58,7 +58,7 @@ public class TypePatternTest {
 	public void testValidateParent() {
 		// contract: When setting a type pattern's parent, only CtBinaryOperator (and null) should be allowed
 		Launcher launcher = new Launcher();
-		CtTypePattern<?> pattern = launcher.getFactory().Core().createTypePattern();
+		CtTypePattern pattern = launcher.getFactory().Core().createTypePattern();
 
 		// setting to a binary operator must work
 		assertDoesNotThrow((Executable) () -> pattern.setParent(launcher.getFactory().createBinaryOperator()));

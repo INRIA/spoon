@@ -1044,7 +1044,7 @@ public abstract class CtScanner implements CtVisitor {
 		}
 
 	@Override
-	public <T> void visitCtTypePattern(CtTypePattern<T> pattern) {
+	public void visitCtTypePattern(CtTypePattern pattern) {
 		enter(pattern);
 		scan(CtRole.VARIABLE, pattern.getVariable());
 		scan(CtRole.ANNOTATION, pattern.getAnnotations());

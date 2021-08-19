@@ -16,7 +16,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.visitor.CtVisitor;
 
-public class CtTypePatternImpl<T> extends CtExpressionImpl<Void> implements CtTypePattern<T> {
+public class CtTypePatternImpl extends CtExpressionImpl<Void> implements CtTypePattern {
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = CtRole.VARIABLE)
@@ -28,14 +28,14 @@ public class CtTypePatternImpl<T> extends CtExpressionImpl<Void> implements CtTy
 	}
 
 	@Override
-	public <C extends CtTypePattern<?>> C setVariable(CtLocalVariable<?> variable) {
+	public CtTypePattern setVariable(CtLocalVariable<?> variable) {
 		if (variable != null) {
 			variable.setParent(this);
 		}
 		getFactory().getEnvironment().getModelChangeListener()
 				.onObjectUpdate(this, CtRole.VARIABLE, variable, this.variable);
 		this.variable = variable;
-		return (C) this;
+		return this;
 	}
 
 	@Override
@@ -44,8 +44,8 @@ public class CtTypePatternImpl<T> extends CtExpressionImpl<Void> implements CtTy
 	}
 
 	@Override
-	public CtTypePattern<T> clone() {
-		return CtTypePattern.class.cast(super.clone());
+	public CtTypePattern clone() {
+		return (CtTypePattern) super.clone();
 	}
 
 	@Override

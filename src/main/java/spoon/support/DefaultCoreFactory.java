@@ -1157,8 +1157,8 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	}
 
 	@Override
-	public <T> CtTypePattern<T> createTypePattern() {
-		CtTypePattern<T> pattern = new CtTypePatternImpl<>();
+	public CtTypePattern createTypePattern() {
+		CtTypePattern pattern = new CtTypePatternImpl();
 		pattern.setFactory(getMainFactory());
 		return pattern;
 	}

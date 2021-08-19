@@ -29,10 +29,8 @@ import static spoon.reflect.path.CtRole.VARIABLE;
  *         longerThanTwo = s.length() > 2;
  *     }
  * </pre>
- *
- * @param <T> the type of the variable.
  */
-public interface CtTypePattern<T> extends CtPattern, CtExpression<Void> {
+public interface CtTypePattern extends CtPattern, CtExpression<Void> {
 
 	/**
 	 * Returns the local variable declared by this type pattern.
@@ -46,14 +44,13 @@ public interface CtTypePattern<T> extends CtPattern, CtExpression<Void> {
 	 * Sets the local variable for this type pattern.
 	 *
 	 * @param variable the variable to set for this type pattern.
-	 * @param <C> the type of this pattern.
 	 * @return this pattern.
 	 */
 	@PropertySetter(role = VARIABLE)
-	<C extends CtTypePattern<?>> C setVariable(CtLocalVariable<?> variable);
+	CtTypePattern setVariable(CtLocalVariable<?> variable);
 
 	@Override
-	CtTypePattern<T> clone();
+	CtTypePattern clone();
 
 	@Override
 	@UnsettableProperty

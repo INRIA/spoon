@@ -2146,7 +2146,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 
 	@Override
-	public <T> void visitCtTypePattern(CtTypePattern<T> pattern) {
+	public void visitCtTypePattern(CtTypePattern pattern) {
 		enterCtExpression(pattern);
 		scan(pattern.getVariable());
 		exitCtExpression(pattern);

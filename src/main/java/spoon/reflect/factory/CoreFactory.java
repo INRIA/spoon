@@ -623,8 +623,7 @@ public interface CoreFactory {
 
 	/**
 	 * Creates a Type Pattern
-	 * @param <T> the type stored in this type pattern.
 	 * @return a new Type Pattern instance.
 	 */
-	<T> CtTypePattern<T> createTypePattern();
+	CtTypePattern createTypePattern();
 }

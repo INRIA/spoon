@@ -413,7 +413,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		// check if this is a type pattern, as it needs special treatment
 		// patterns are only allowed for instanceof and on the right hand
 		if (child instanceof CtLocalVariable && operator.getKind() == INSTANCEOF && operator.getLeftHandOperand() != null) {
-			CtTypePattern<?> typePattern = child.getFactory().Core().createTypePattern();
+			CtTypePattern typePattern = child.getFactory().Core().createTypePattern();
 			typePattern.setVariable((CtLocalVariable<?>) child);
 			child = typePattern; // replace the local variable with a pattern (which is a CtExpression)
 		}
@@ -1004,9 +1004,9 @@ public class ParentExiter extends CtInheritanceScanner {
 	}
 
 	@Override
-	public <T> void visitCtTypePattern(CtTypePattern<T> pattern) {
+	public void visitCtTypePattern(CtTypePattern pattern) {
 		if (child instanceof CtLocalVariable) {
-			pattern.setVariable((CtLocalVariable<T>) child);
+			pattern.setVariable((CtLocalVariable<?>) child);
 		}
 		super.visitCtTypePattern(pattern);
 	}
