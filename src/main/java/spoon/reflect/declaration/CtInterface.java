@@ -7,17 +7,22 @@
  */
 package spoon.reflect.declaration;
 
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.UnsettableProperty;
 
 /**
  * This element defines an interface declaration.
  */
-public interface CtInterface<T> extends CtType<T> {
+public interface CtInterface<T> extends CtType<T>, CtStatement {
 	@Override
 	CtInterface<T> clone();
 
 	@Override
 	@UnsettableProperty
 	<C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass);
+
+	@Override
+	@UnsettableProperty
+	String getLabel();
 }

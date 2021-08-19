@@ -48,6 +48,7 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackageExport;
@@ -749,15 +750,13 @@ public class JDTTreeBuilderHelper {
 			}
 		}
 
-		if (type instanceof CtClass) {
-			if (typeDeclaration.superclass != null) {
-				((CtClass) type).setSuperclass(jdtTreeBuilder.references.buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
-			}
-			if (typeDeclaration.binding != null && (typeDeclaration.binding.isAnonymousType() || (typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null))) {
-				type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
-			} else {
-				type.setSimpleName(new String(typeDeclaration.name));
-			}
+		if (type instanceof CtClass && typeDeclaration.superclass != null) {
+			((CtClass) type).setSuperclass(jdtTreeBuilder.references.buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
+		}
+		if ((type instanceof CtClass || type instanceof CtInterface)
+				&& typeDeclaration.binding != null
+				&& (typeDeclaration.binding.isAnonymousType() || typeDeclaration.binding instanceof LocalTypeBinding && typeDeclaration.binding.enclosingMethod() != null)) {
+			type.setSimpleName(computeAnonymousName(typeDeclaration.binding.constantPoolName()));
 		} else {
 			type.setSimpleName(new String(typeDeclaration.name));
 		}

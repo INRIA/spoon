@@ -7,12 +7,17 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.UnsettableProperty;
+import spoon.support.reflect.code.CtStatementImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,6 +57,41 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 	}
 
 	@Override
+	public <R extends CtCodeElement> R partiallyEvaluate() {
+		return null;
+	}
+
+	@Override
+	public <C extends CtStatement> C insertAfter(CtStatement statement) throws ParentNotInitializedException {
+		CtStatementImpl.insertAfter(this, statement);
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtStatement> C insertAfter(CtStatementList statements) throws ParentNotInitializedException {
+		CtStatementImpl.insertAfter(this, statements);
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtStatement> C insertBefore(CtStatement statement) throws ParentNotInitializedException {
+		CtStatementImpl.insertBefore(this, statement);
+		return (C) this;
+	}
+
+	@Override
+	public <C extends CtStatement> C insertBefore(CtStatementList statements) throws ParentNotInitializedException {
+		CtStatementImpl.insertBefore(this, statements);
+		return (C) this;
+	}
+
+	@Override
+	@UnsettableProperty
+	public <C extends CtStatement> C setLabel(String label) {
+		return (C) this;
+	}
+
+	@Override
 	public CtInterface<T> clone() {
 		return (CtInterface<T>) super.clone();
 	}
@@ -61,5 +101,10 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 	public <C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass) {
 		// unsettable property
 		return (C) this;
+	}
+
+	@Override
+	public String getLabel() {
+		return null;
 	}
 }
