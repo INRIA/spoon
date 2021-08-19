@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -204,31 +205,36 @@ public class AstCheckerTest {
 		}
 
 		private boolean isSurcharged(CtMethod<?> candidate) {
+			return !extractPotentialSurchargeDelegateDeclaration(candidate)
+					.filter(this::isToBeProcessed)
+					.isPresent();
+		}
+
+		private Optional<CtMethod<?>> extractPotentialSurchargeDelegateDeclaration(CtMethod<?> candidate) {
+			Optional<CtInvocation<?>> maybePotentialDelegate = extractPotentialSurchargeDelegate(candidate);
+			return maybePotentialDelegate
+					.map(CtInvocation::getExecutable)
+					.map(CtExecutableReference::getDeclaration)
+					.filter(CtMethod.class::isInstance)
+					.map(ref -> (CtMethod<?>) ref);
+		}
+
+		private Optional<CtInvocation<?>> extractPotentialSurchargeDelegate(CtMethod<?> candidate) {
 			CtBlock<?> body = candidate.getBody();
 			if (body.getStatements().isEmpty()) {
-				return false;
+				return Optional.empty();
 			}
 
 			CtStatement firstStatement = body.getStatement(0);
 			CtStatement lastStatement = body.getLastStatement();
-			CtInvocation<?> potentialDelegate;
-
 			if (hasOnlySingleInvocation(body) ||
 					startsWithInvocationAndEndsWithReturnWithoutInvocation(body)) {
-			    potentialDelegate = (CtInvocation<?>) firstStatement;
+				return Optional.of((CtInvocation<?>) firstStatement);
 			} else if (isReturnWithInvocation(lastStatement)) {
-				potentialDelegate = (CtInvocation<?>) ((CtReturn<?>) lastStatement).getReturnedExpression();
+				return Optional.of((CtInvocation<?>) ((CtReturn<?>) lastStatement).getReturnedExpression());
 			} else {
-				return false;
+				return Optional.empty();
 			}
-
-
-			CtExecutable<?> declaration = potentialDelegate.getExecutable().getDeclaration();
-			if (!(declaration instanceof CtMethod)) {
-				return false;
-			}
-			// check if the invocation has a model change listener
-			return !isToBeProcessed((CtMethod<?>) declaration);
 		}
 
 		private boolean startsWithInvocationAndEndsWithReturnWithoutInvocation(CtBlock<?> block) {
