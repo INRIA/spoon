@@ -58,7 +58,7 @@ public class LocalTypesTest {
 				"			public void doNothing() { }\n" +
 				"		}\n"
 		);
-		CtModel model = createModelFromString(code, 3);
+		CtModel model = createModelFromString(code, 5);
 		CtBlock<?> block = getBlock(model);
 
 		assertThat("The local class does not exist in the model", block.getStatements().size(), is(1));
