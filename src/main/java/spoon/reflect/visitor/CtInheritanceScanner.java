@@ -635,8 +635,10 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtInterface(CtInterface<T> e) {
 		scanCtType(e);
+		scanCtStatement(e);
 		scanCtTypeInformation(e);
 		scanCtFormalTypeDeclarer(e);
+		scanCtCodeElement(e);
 		scanCtNamedElement(e);
 		scanCtTypeMember(e);
 		scanCtElement(e);
