@@ -204,41 +204,50 @@ public class AstCheckerTest {
 		}
 
 		private boolean isSurcharged(CtMethod<?> candidate) {
-			CtBlock<?> block = candidate.getBody();
-			if (block.getStatements().isEmpty()) {
-				return false;
-			}
-			// invariant 1: block is non-empty
-			CtInvocation potentialDelegate;
-			if (block.getLastStatement() instanceof CtReturn) {
-				// 1, invariant 2: last statement is a return
-				if (!(((CtReturn) block.getLastStatement()).getReturnedExpression() instanceof CtInvocation)) {
-					// 1, 2, invariant 3: last statement is not a return with an invocation
-					if (block.getStatement(0) instanceof CtInvocation) {
-						// 1, 2, 3, invariant 4: first statement is an invocation
-						potentialDelegate = block.getStatement(0);
-					} else {
-						// 1, 2, 3, ~4
-						return false;
-					}
-				} else {
-					// 1, 2, ~3
-					potentialDelegate = (CtInvocation) ((CtReturn) block.getLastStatement()).getReturnedExpression();
-				}
-			} else if (block.getStatement(0) instanceof CtInvocation && block.getStatements().size() == 1) {
-				// 1, ~2, invariant 7: there's only one statement, and it's an invocation
-				potentialDelegate = block.getStatement(0);
-			} else {
-				// 1, ~2, ~7 ==> either a single statement that is neither return nor invocation, or multiple statements
+			CtBlock<?> body = candidate.getBody();
+			if (body.getStatements().isEmpty()) {
 				return false;
 			}
 
-			CtExecutable declaration = potentialDelegate.getExecutable().getDeclaration();
+			CtStatement firstStatement = body.getStatement(0);
+			CtStatement lastStatement = body.getLastStatement();
+			CtInvocation<?> potentialDelegate;
+
+			if (hasOnlySingleInvocation(body) ||
+					startsWithInvocationAndEndsWithReturnWithoutInvocation(body)) {
+			    potentialDelegate = (CtInvocation<?>) firstStatement;
+			} else if (isReturnWithInvocation(lastStatement)) {
+				potentialDelegate = (CtInvocation<?>) ((CtReturn<?>) lastStatement).getReturnedExpression();
+			} else {
+				return false;
+			}
+
+
+			CtExecutable<?> declaration = potentialDelegate.getExecutable().getDeclaration();
 			if (!(declaration instanceof CtMethod)) {
 				return false;
 			}
 			// check if the invocation has a model change listener
 			return !isToBeProcessed((CtMethod<?>) declaration);
+		}
+
+		private boolean startsWithInvocationAndEndsWithReturnWithoutInvocation(CtBlock<?> block) {
+			return block.getStatement(0) instanceof CtInvocation
+					&& isReturnWithoutInvocation(block.getLastStatement());
+		}
+
+		private boolean hasOnlySingleInvocation(CtBlock<?> block) {
+			return block.getStatements().size() == 1
+					&& block.getLastStatement() instanceof CtInvocation;
+		}
+
+		private boolean isReturnWithoutInvocation(CtStatement statement) {
+			return statement instanceof CtReturn && !isReturnWithInvocation(statement);
+		}
+
+		private boolean isReturnWithInvocation(CtStatement statement) {
+			return statement instanceof CtReturn
+					&& ((CtReturn<?>) statement).getReturnedExpression() instanceof CtInvocation;
 		}
 
 		private boolean isDelegateMethod(CtMethod<?> candidate) {
