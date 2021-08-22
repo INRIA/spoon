@@ -58,7 +58,7 @@ Example:
             .getMethodsByName("sayHello")
             .get(0)
             .accept(v);
-    System.out.println(b.getResult());
+    System.out.println(v.getResult());
 ```
 
 will print:
