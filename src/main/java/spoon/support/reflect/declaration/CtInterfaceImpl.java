@@ -18,6 +18,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.code.CtStatementImpl;
+import spoon.support.reflect.eval.VisitorPartialEvaluator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,7 +59,8 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 
 	@Override
 	public <R extends CtCodeElement> R partiallyEvaluate() {
-		return null;
+		VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
+		return eval.evaluate((R) this);
 	}
 
 	@Override
