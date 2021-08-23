@@ -13,6 +13,13 @@ import spoon.support.UnsettableProperty;
 
 /**
  * This element defines an interface declaration.
+ *
+ * <pre>
+ *     // an interface definition
+ *     interface Foo {
+ *        void bar();
+ *     }
+ * </pre>
  */
 public interface CtInterface<T> extends CtType<T>, CtStatement {
 	@Override
