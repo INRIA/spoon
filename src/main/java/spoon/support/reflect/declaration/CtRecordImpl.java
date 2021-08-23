@@ -20,6 +20,7 @@ import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 
 public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
+  private static final String ABSTRACT_MODIFIER_ERROR = "Abstract modifier is not allowed on record";
   private Set<CtRecordComponent<?>> components = new HashSet<>();
   @Override
 	@DerivedProperty
@@ -89,18 +90,27 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
   public <C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods) {
     super.setMethods(methods);
     for(CtRecordComponent<?> component : components) {
-      if(getMethodsByName(component.getSimpleName()).isEmpty()) {
+      if(!hasMethodWithSameNameAndNoParameter(component)) {
         addMethod(component.toMethod());
       }
     }
     return (C) this ;
   }
 
+  private boolean hasMethodWithSameNameAndNoParameter(CtRecordComponent<?> component) {
+    for (CtMethod<?> method : getMethodsByName(component.getSimpleName())) {
+      if(method.getParameters().isEmpty()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @Override
   public <C extends CtType<T>> C setTypeMembers(List<CtTypeMember> members) {
     super.setTypeMembers(members);
     for (CtRecordComponent<?> component : components) {
-      if (getMethodsByName(component.getSimpleName()).isEmpty()) {
+      if (hasMethodWithSameNameAndNoParameter(component)) {
         addMethod(component.toMethod());
       }
       if (getField(component.getSimpleName()) == null) {
@@ -113,7 +123,7 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
   @Override
   public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
     if(modifier.equals(ModifierKind.ABSTRACT)) {
-      throw new SpoonException("A record is never abstract");
+      throw new SpoonException(ABSTRACT_MODIFIER_ERROR);
     }
     return super.addModifier(modifier);
   }
@@ -121,7 +131,7 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
   @Override
   public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
     if(modifiers.contains(ModifierKind.ABSTRACT)) {
-      throw new SpoonException("A record is never abstract");
+      throw new SpoonException(ABSTRACT_MODIFIER_ERROR);
     }
     return super.setModifiers(modifiers);
   }
@@ -129,11 +139,20 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
   @Override
   public <C extends CtModifiable> C setExtendedModifiers(
       Set<CtExtendedModifier> extendedModifiers) {
-        if(extendedModifiers.stream().anyMatch(v -> v.getKind().equals(ModifierKind.ABSTRACT))) {
-          throw new SpoonException("A record is never abstract");
-        }
+        checkIfAbstractModifier(extendedModifiers);
         return super.setExtendedModifiers(extendedModifiers);
   }
 
+  private boolean isAbstract(CtExtendedModifier v) {
+    return v.getKind().equals(ModifierKind.ABSTRACT);
+  }
+
+  private void checkIfAbstractModifier(Set<CtExtendedModifier> extendedModifiers) {
+    for(CtExtendedModifier extendedModifier : extendedModifiers) {
+      if(isAbstract(extendedModifier)) {
+        throw new SpoonException(ABSTRACT_MODIFIER_ERROR);
+      }
+    }
+  }
 	
 }
