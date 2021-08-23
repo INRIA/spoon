@@ -68,6 +68,7 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -818,6 +819,11 @@ public class PatternBuilder implements CtVisitor {
 
 	@Override
 	public void visitCtYieldStatement(CtYieldStatement ctYieldStatement) {
+		throw new NotImplementedException("Not implemented");
+	}
+
+	@Override
+	public void visitCtTypePattern(CtTypePattern pattern) {
 		throw new NotImplementedException("Not implemented");
 	}
 

@@ -101,6 +101,9 @@ Maven:
 ## Releases
 
 <!-- .* Marker comment. -->
+- August 2021: Spoon 9.1.0 [(changelog)](https://github.com/INRIA/spoon/pull/4104)
+- March 2021: Spoon 9.0.0 [(changelog)](https://github.com/INRIA/spoon/issues/3845)
+- October 2020: Spoon 8.3.0 [(changelog)](https://github.com/INRIA/spoon/pull/3647)
 - July 2020: Spoon 8.2.0 [(changelog)](https://github.com/INRIA/spoon/pull/3501)
 - March 2020: Spoon 8.1.0 [(changelog)](https://github.com/INRIA/spoon/pull/3310)
 - November 2019, Spoon 8.0.0 [(changelog)](https://github.com/INRIA/spoon/releases/tag/spoon-core-8.0.0)

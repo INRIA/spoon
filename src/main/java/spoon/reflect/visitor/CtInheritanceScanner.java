@@ -50,6 +50,7 @@ import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtRHSReceiver;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
@@ -65,6 +66,7 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
@@ -346,6 +348,13 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans a body holder
 	 */
 	public void scanCtBodyHolder(CtBodyHolder ctBodyHolder) {
+	}
+
+	/**
+	 * Scans a pattern
+	 * @param pattern the pattern to scan
+	*/
+	public void scanCtPattern(CtPattern pattern) {
 	}
 
 	@Override
@@ -1047,4 +1056,14 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtVisitable(e);
 	}
 
+
+	@Override
+	public void visitCtTypePattern(CtTypePattern pattern) {
+		scanCtPattern(pattern);
+		scanCtExpression(pattern);
+		scanCtTypedElement(pattern);
+		scanCtCodeElement(pattern);
+		scanCtElement(pattern);
+		scanCtVisitable(pattern);
+	}
 }

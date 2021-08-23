@@ -66,6 +66,7 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -2142,6 +2143,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		scan(statement.getExpression());
 		exitCtStatement(statement);
+	}
+
+	@Override
+	public void visitCtTypePattern(CtTypePattern pattern) {
+		enterCtExpression(pattern);
+		scan(pattern.getVariable());
+		exitCtExpression(pattern);
 	}
 
 	/**

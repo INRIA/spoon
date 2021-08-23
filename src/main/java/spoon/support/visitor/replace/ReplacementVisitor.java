@@ -13,6 +13,20 @@ package spoon.support.visitor.replace;
  */
 public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtTypePatternVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtLocalVariable> {
+		private final spoon.reflect.code.CtTypePattern element;
+
+		CtTypePatternVariableReplaceListener(spoon.reflect.code.CtTypePattern element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(spoon.reflect.code.CtLocalVariable replace) {
+			this.element.setVariable(replace);
+		}
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	class CtYieldStatementExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtYieldStatement element;
 
@@ -2249,5 +2263,14 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(statement.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(statement));
 		replaceElementIfExist(statement.getExpression(), new spoon.support.visitor.replace.ReplacementVisitor.CtYieldStatementExpressionReplaceListener(statement));
 		replaceInListIfExist(statement.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(statement));
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
+	public void visitCtTypePattern(spoon.reflect.code.CtTypePattern pattern) {
+		replaceElementIfExist(pattern.getVariable(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypePatternVariableReplaceListener(pattern));
+		replaceInListIfExist(pattern.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(pattern));
+		replaceElementIfExist(pattern.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(pattern));
+		replaceInListIfExist(pattern.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(pattern));
 	}
 }
