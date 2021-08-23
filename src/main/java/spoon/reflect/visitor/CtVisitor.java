@@ -53,6 +53,7 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -535,4 +536,11 @@ public interface CtVisitor {
 	 * Visits a yield statement.
 	 */
 	void visitCtYieldStatement(CtYieldStatement statement);
+
+	/**
+	 * Visits a pattern.
+	 *
+	 * @param pattern the pattern to visit.
+	 */
+	void visitCtTypePattern(CtTypePattern pattern);
 }

@@ -105,6 +105,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtNewArray.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtNewClass.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtOperatorAssignment.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtPattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtRHSReceiver.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtReturn.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtStatement.class));
@@ -119,6 +120,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtTry.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtTryWithResource.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtTypeAccess.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtTypePattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtUnaryOperator.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtVariableAccess.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtVariableRead.class));

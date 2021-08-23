@@ -55,6 +55,7 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -150,6 +151,7 @@ import spoon.support.reflect.code.CtThrowImpl;
 import spoon.support.reflect.code.CtTryImpl;
 import spoon.support.reflect.code.CtTryWithResourceImpl;
 import spoon.support.reflect.code.CtTypeAccessImpl;
+import spoon.support.reflect.code.CtTypePatternImpl;
 import spoon.support.reflect.code.CtUnaryOperatorImpl;
 import spoon.support.reflect.code.CtVariableReadImpl;
 import spoon.support.reflect.code.CtVariableWriteImpl;
@@ -1091,6 +1093,9 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.code.CtYieldStatement.class)) {
 			return createYieldStatement();
 		}
+		if (klass.equals(spoon.reflect.code.CtTypePattern.class)) {
+			return createTypePattern();
+		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}
 
@@ -1149,5 +1154,12 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		CtYieldStatement e = new CtYieldStatementImpl();
 		e.setFactory(getMainFactory());
 		return e;
+	}
+
+	@Override
+	public CtTypePattern createTypePattern() {
+		CtTypePattern pattern = new CtTypePatternImpl();
+		pattern.setFactory(getMainFactory());
+		return pattern;
 	}
 }

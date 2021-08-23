@@ -6,7 +6,6 @@
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.clone;
-
 /**
  * Used to clone a given element.
  *
@@ -1103,5 +1102,18 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtYieldStatement.setComments(this.cloneHelper.clone(statement.getComments()));
 		this.cloneHelper.tailor(statement, aCtYieldStatement);
 		this.other = aCtYieldStatement;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtTypePattern(spoon.reflect.code.CtTypePattern pattern) {
+		spoon.reflect.code.CtTypePattern aCtTypePattern = pattern.getFactory().Core().createTypePattern();
+		this.builder.copy(pattern, aCtTypePattern);
+		aCtTypePattern.setVariable(this.cloneHelper.clone(pattern.getVariable()));
+		aCtTypePattern.setAnnotations(this.cloneHelper.clone(pattern.getAnnotations()));
+		aCtTypePattern.setType(this.cloneHelper.clone(pattern.getType()));
+		aCtTypePattern.setComments(this.cloneHelper.clone(pattern.getComments()));
+		this.cloneHelper.tailor(pattern, aCtTypePattern);
+		this.other = aCtTypePattern;
 	}
 }

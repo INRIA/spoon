@@ -53,6 +53,7 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -533,6 +534,11 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	@Override
 	public void visitCtYieldStatement(CtYieldStatement statement) {
+
+	}
+
+	@Override
+	public void visitCtTypePattern(CtTypePattern pattern) {
 
 	}
 }
