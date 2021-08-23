@@ -67,7 +67,7 @@ public class LocalTypesTest {
 		assertTrue(statement instanceof CtClass<?>);
 		CtClass<?> clazz = (CtClass<?>) statement;
 
-		checkCommon(clazz, "MyClass");
+		checkCommon(clazz, "1MyClass");
 		assertThat(clazz.getFields().size(), is(1));
 		assertThat(clazz.getMethods().size(), is(1));
 	}
@@ -91,7 +91,7 @@ public class LocalTypesTest {
 		assertTrue(statement instanceof CtEnum<?>);
 		CtEnum<?> enumType = (CtEnum<?>) statement;
 
-		checkCommon(enumType, "MyEnum");
+		checkCommon(enumType, "1MyEnum");
 		assertThat(enumType.getEnumValues().size(), is(2));
 		assertThat(enumType.getMethods().size(), is(1));
 	}
@@ -114,8 +114,7 @@ public class LocalTypesTest {
 		assertTrue(statement instanceof CtInterface<?>);
 		CtInterface<?> interfaceType = (CtInterface<?>) statement;
 
-		checkCommon(interfaceType, "MyInterface");
-		assertThat(interfaceType.prettyprint(), is("MyInterface"));
+		checkCommon(interfaceType, "1MyInterface");
 		assertThat(interfaceType.getFields().size(), is(1));
 		assertThat(interfaceType.getMethods().size(), is(1));
 	}
