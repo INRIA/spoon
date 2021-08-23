@@ -220,31 +220,22 @@ public class AstCheckerTest {
 		}
 
 		private Optional<CtInvocation<?>> extractPotentialSurchargeDelegate(CtMethod<?> candidate) {
-			CtBlock<?> body = candidate.getBody();
+			final CtBlock<?> body = candidate.getBody();
 			if (body.getStatements().isEmpty()) {
 				return Optional.empty();
 			}
 
-			CtStatement firstStatement = body.getStatement(0);
-			CtStatement lastStatement = body.getLastStatement();
-			if (hasOnlySingleInvocation(body) ||
-					startsWithInvocationAndEndsWithReturnWithoutInvocation(body)) {
+			final CtStatement firstStatement = body.getStatement(0);
+			final CtStatement lastStatement = body.getLastStatement();
+			if (firstStatement instanceof CtInvocation &&
+					(body.getStatements().size() == 1 || isReturnWithoutInvocation(lastStatement))) {
 				return Optional.of((CtInvocation<?>) firstStatement);
 			} else if (isReturnWithInvocation(lastStatement)) {
-				return Optional.of((CtInvocation<?>) ((CtReturn<?>) lastStatement).getReturnedExpression());
+				CtReturn<?> lastStatementReturn = (CtReturn<?>) lastStatement;
+				return Optional.of((CtInvocation<?>) lastStatementReturn.getReturnedExpression());
 			} else {
 				return Optional.empty();
 			}
-		}
-
-		private boolean startsWithInvocationAndEndsWithReturnWithoutInvocation(CtBlock<?> block) {
-			return block.getStatement(0) instanceof CtInvocation
-					&& isReturnWithoutInvocation(block.getLastStatement());
-		}
-
-		private boolean hasOnlySingleInvocation(CtBlock<?> block) {
-			return block.getStatements().size() == 1
-					&& block.getLastStatement() instanceof CtInvocation;
 		}
 
 		private boolean isReturnWithoutInvocation(CtStatement statement) {
