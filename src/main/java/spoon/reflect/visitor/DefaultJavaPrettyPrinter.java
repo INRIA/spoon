@@ -97,6 +97,8 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
@@ -2182,5 +2184,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		return simpleName;
 	}
+	@Override
+	public <T> void visitCtRecord(CtRecord<T> recordType) {
+		// TODO: Auto-generated method stub
+		
+	}
+
+	@Override
+	public <T> void visitCtRecordComponent(CtRecordComponent<T> recordComponent) {
+		// TODO: Auto-generated method stub
+			}
 
 }

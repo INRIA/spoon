@@ -94,6 +94,8 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtMultiTypedElement;
 import spoon.reflect.declaration.CtNamedElement;
@@ -1066,4 +1068,16 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(pattern);
 		scanCtVisitable(pattern);
 	}
+	@Override
+	public <T> void visitCtRecord(CtRecord<T> recordType) {
+		visitCtClass(recordType);		
+	}
+
+	@Override
+	public <T> void visitCtRecordComponent(CtRecordComponent<T> recordComponent) {
+		scanCtTypedElement(recordComponent);
+		scanCtNamedElement(recordComponent);		
+	}
+	
+
 }

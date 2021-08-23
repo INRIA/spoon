@@ -76,6 +76,7 @@ import org.eclipse.jdt.internal.compiler.ast.QualifiedSuperReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedThisReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.Receiver;
+import org.eclipse.jdt.internal.compiler.ast.RecordComponent;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
@@ -1786,4 +1787,17 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.enter(factory.Core().createYieldStatement().setImplicit(yieldStatement.isImplicit), yieldStatement);
 		return true;
 	}
+
+	@Override
+	public void endVisit(RecordComponent recordComponent, BlockScope scope) {
+		context.exit(recordComponent);
+	}
+
+	@Override
+	public boolean visit(RecordComponent recordComponent, BlockScope scope) {
+		context.enter(factory.Core().createRecordComponent().setSimpleName(String.valueOf(recordComponent.name)), recordComponent);
+		return super.visit(recordComponent, scope);
+	}
+
+	
 }

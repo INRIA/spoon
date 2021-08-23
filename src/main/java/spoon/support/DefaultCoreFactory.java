@@ -86,6 +86,8 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.declaration.CtUsedService;
@@ -181,6 +183,8 @@ import spoon.support.reflect.declaration.CtPackageExportImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
 import spoon.support.reflect.declaration.CtProvidedServiceImpl;
+import spoon.support.reflect.declaration.CtRecordComponentImpl;
+import spoon.support.reflect.declaration.CtRecordImpl;
 import spoon.support.reflect.declaration.CtTypeParameterImpl;
 import spoon.support.reflect.declaration.CtUsedServiceImpl;
 import spoon.support.reflect.declaration.InvisibleArrayConstructorImpl;
@@ -1161,5 +1165,19 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		CtTypePattern pattern = new CtTypePatternImpl();
 		pattern.setFactory(getMainFactory());
 		return pattern;
+	}
+
+	@Override
+	public <T> CtRecord<T> createRecord() {
+		CtRecord<T> recordType = new CtRecordImpl<>();
+		recordType.setFactory(getMainFactory());
+		return recordType;
+	}
+
+	@Override
+	public <T> CtRecordComponent<T> createRecordComponent() {
+		CtRecordComponent<T> recordComponent = new CtRecordComponentImpl<>();
+		recordComponent.setFactory(getMainFactory());
+		return recordComponent;
 	}
 }

@@ -91,6 +91,8 @@ import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtTypedElement;
@@ -1010,4 +1012,32 @@ public class ParentExiter extends CtInheritanceScanner {
 		}
 		super.visitCtTypePattern(pattern);
 	}
+
+	@Override
+	public <T> void visitCtRecord(CtRecord<T> recordType) {
+		if (child instanceof CtConstructor) {
+			recordType.addConstructor((CtConstructor<T>) child);
+		}
+		if (child instanceof CtAnonymousExecutable) {
+			recordType.addAnonymousExecutable((CtAnonymousExecutable) child);
+		}
+		if (child instanceof CtRecordComponent) {
+			((CtRecord<?>) recordType).addRecordComponent((CtRecordComponent<?>) child);
+		}
+		super.visitCtRecord(recordType);		
+	}
+
+	@Override
+	public <T> void visitCtRecordComponent(CtRecordComponent<T> recordComponent) {
+		if (childJDT instanceof TypeReference && child instanceof CtTypeAccess) {
+			recordComponent.setType(((CtTypeAccess) child).getAccessedType());
+			substituteAnnotation((CtTypedElement) recordComponent);
+			return;
+		}
+		int a = 0;
+		// TODO Auto-generated method stub
+
+}
+
+	
 }

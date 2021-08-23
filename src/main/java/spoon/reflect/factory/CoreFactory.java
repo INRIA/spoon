@@ -81,6 +81,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtParameter;
@@ -626,4 +628,8 @@ public interface CoreFactory {
 	 * @return a new Type Pattern instance.
 	 */
 	CtTypePattern createTypePattern();
+	//TODO:
+	<T> CtRecord<T> createRecord();
+
+	<T> CtRecordComponent<T> createRecordComponent();
 }
