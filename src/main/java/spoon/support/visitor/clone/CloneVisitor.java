@@ -1,9 +1,8 @@
-/*
- * SPDX-License-Identifier: (MIT OR CECILL-C)
- *
- * Copyright (C) 2006-2019 INRIA and contributors
- *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+/* SPDX-License-Identifier: (MIT OR CECILL-C)
+
+Copyright (C) 2006-2019 INRIA and contributors
+
+Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.clone;
 /**
@@ -1115,5 +1114,31 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtTypePattern.setComments(this.cloneHelper.clone(pattern.getComments()));
 		this.cloneHelper.tailor(pattern, aCtTypePattern);
 		this.other = aCtTypePattern;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public <T> void visitCtRecord(spoon.reflect.declaration.CtRecord<T> recordType) {
+		spoon.reflect.declaration.CtRecord<T> aCtRecord = recordType.getFactory().Core().createRecord();
+		this.builder.copy(recordType, aCtRecord);
+		aCtRecord.setAnnotations(this.cloneHelper.clone(recordType.getAnnotations()));
+		aCtRecord.setSuperInterfaces(this.cloneHelper.clone(recordType.getSuperInterfaces()));
+		aCtRecord.setTypeMembers(this.cloneHelper.clone(recordType.getTypeMembers()));
+		aCtRecord.setRecordComponents(this.cloneHelper.clone(recordType.getRecordComponents()));
+		aCtRecord.setComments(this.cloneHelper.clone(recordType.getComments()));
+		this.cloneHelper.tailor(recordType, aCtRecord);
+		this.other = aCtRecord;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public <T> void visitCtRecordComponent(spoon.reflect.declaration.CtRecordComponent<T> recordType) {
+		spoon.reflect.declaration.CtRecordComponent<T> aCtRecordComponent = recordType.getFactory().Core().createRecordComponent();
+		this.builder.copy(recordType, aCtRecordComponent);
+		aCtRecordComponent.setAnnotations(this.cloneHelper.clone(recordType.getAnnotations()));
+		aCtRecordComponent.setType(this.cloneHelper.clone(recordType.getType()));
+		aCtRecordComponent.setComments(this.cloneHelper.clone(recordType.getComments()));
+		this.cloneHelper.tailor(recordType, aCtRecordComponent);
+		this.other = aCtRecordComponent;
 	}
 }

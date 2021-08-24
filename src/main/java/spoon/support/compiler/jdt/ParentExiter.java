@@ -1034,6 +1034,7 @@ public class ParentExiter extends CtInheritanceScanner {
 			substituteAnnotation((CtTypedElement) recordComponent);
 			return;
 		}
+		scanCtElement(recordComponent);
 		int a = 0;
 		// TODO Auto-generated method stub
 

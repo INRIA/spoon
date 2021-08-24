@@ -154,5 +154,12 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
       }
     }
   }
+
+  @Override
+  public CtRecord<T> setRecordComponents(Set<CtRecordComponent<?>> components) {
+    getRecordComponents().forEach(this::removeRecordComponent);
+    components.forEach(this::addRecordComponent);
+    return this;
+  }
 	
 }

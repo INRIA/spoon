@@ -9,4 +9,6 @@ public interface CtRecord<T> extends CtClass<T> {
   <C> CtRecord<T>  removeRecordComponent(CtRecordComponent<C> component);
 
   Set<CtRecordComponent<?>> getRecordComponents();
+
+  CtRecord<T> setRecordComponents(Set<CtRecordComponent<?>> components);
 }

@@ -1,9 +1,18 @@
-/*
- * SPDX-License-Identifier: (MIT OR CECILL-C)
+/**
+ * Copyright (C) 2006-2018 INRIA and contributors
+ * Spoon - http://spoon.gforge.inria.fr/
  *
- * Copyright (C) 2006-2019 INRIA and contributors
+ * This software is governed by the CeCILL-C License under French law and
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
  *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL-C license and that you accept its terms.
  */
 package spoon.support.visitor.replace;
 /**
@@ -23,6 +32,19 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		@java.lang.Override
 		public void set(spoon.reflect.code.CtLocalVariable replace) {
 			this.element.setVariable(replace);
+		}
+	}
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	class CtRecordRecordComponentsReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
+		private final spoon.reflect.declaration.CtRecord element;
+
+		CtRecordRecordComponentsReplaceListener(spoon.reflect.declaration.CtRecord element) {
+			this.element = element;
+		}
+
+		@java.lang.Override
+		public void set(java.util.Set replace) {
+			this.element.setRecordComponents(replace);
 		}
 	}
 
@@ -2272,5 +2294,24 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 		replaceInListIfExist(pattern.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(pattern));
 		replaceElementIfExist(pattern.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(pattern));
 		replaceInListIfExist(pattern.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(pattern));
+	}
+
+	
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
+	public <T> void visitCtRecord(spoon.reflect.declaration.CtRecord<T> recordType) {
+		replaceInListIfExist(recordType.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(recordType));
+		replaceInSetIfExist(recordType.getSuperInterfaces(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeInformationSuperInterfacesReplaceListener(recordType));
+		replaceInListIfExist(recordType.getTypeMembers(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeTypeMembersReplaceListener(recordType));
+		replaceInSetIfExist(recordType.getRecordComponents(), new spoon.support.visitor.replace.ReplacementVisitor.CtRecordRecordComponentsReplaceListener(recordType));
+		replaceInListIfExist(recordType.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(recordType));
+	}
+
+	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
+	@java.lang.Override
+	public <T> void visitCtRecordComponent(spoon.reflect.declaration.CtRecordComponent<T> recordType) {
+		replaceInListIfExist(recordType.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(recordType));
+		replaceElementIfExist(recordType.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(recordType));
+		replaceInListIfExist(recordType.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(recordType));
 	}
 }

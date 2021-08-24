@@ -2186,12 +2186,32 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	}
 	@Override
 	public <T> void visitCtRecord(CtRecord<T> recordType) {
-		// TODO: Auto-generated method stub
+		context.pushCurrentThis(recordType);
+		if (recordType.getSimpleName() != null && !CtType.NAME_UNKNOWN.equals(recordType.getSimpleName()) && !recordType.isAnonymous()) {
+			visitCtType(recordType);
+			if (recordType.isLocalType()) {
+				printer.writeKeyword("record").writeSpace().writeIdentifier(recordType.getSimpleName().replaceAll("^[0-9]*", ""));
+			} else {
+				printer.writeKeyword("record").writeSpace().writeIdentifier(recordType.getSimpleName());
+			}
+			elementPrinterHelper.printList(recordType.getRecordComponents(), null, false, "(", false, false, ",", true, false, ")", this::visitCtRecordComponent);
+			elementPrinterHelper.writeFormalTypeParameters(recordType);
+			elementPrinterHelper.writeImplementsClause(recordType);
+		}
+		printer.writeSpace().writeSeparator("{").incTab();
+		elementPrinterHelper.writeElementList(recordType.getTypeMembers().stream().filter(element -> !element.isImplicit()).collect(Collectors.toList()));
+		getPrinterHelper().adjustEndPosition(recordType);
+		printer.decTab().writeSeparator("}");
+		context.popCurrentThis();
 		
 	}
 
 	@Override
 	public <T> void visitCtRecordComponent(CtRecordComponent<T> recordComponent) {
+		elementPrinterHelper.writeAnnotations(recordComponent);
+		visitCtTypeReference(recordComponent.getType());
+		printer.writeSpace();
+		printer.writeIdentifier(recordComponent.getSimpleName());
 		// TODO: Auto-generated method stub
 			}
 

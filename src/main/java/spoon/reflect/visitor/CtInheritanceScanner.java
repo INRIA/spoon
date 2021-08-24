@@ -1075,8 +1075,9 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	@Override
 	public <T> void visitCtRecordComponent(CtRecordComponent<T> recordComponent) {
+		scanCtElement(recordComponent);	
 		scanCtTypedElement(recordComponent);
-		scanCtNamedElement(recordComponent);		
+		scanCtNamedElement(recordComponent);	
 	}
 	
 
