@@ -634,10 +634,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		context.pushCurrentThis(ctClass);
 		if (ctClass.getSimpleName() != null && !CtType.NAME_UNKNOWN.equals(ctClass.getSimpleName()) && !ctClass.isAnonymous()) {
 			visitCtType(ctClass);
+			printer.writeKeyword("class").writeSpace();
 			if (ctClass.isLocalType()) {
-				printer.writeKeyword("class").writeSpace().writeIdentifier(ctClass.getSimpleName().replaceAll("^[0-9]*", ""));
+				printer.writeIdentifier(stripLeadingDigits(ctClass.getSimpleName()));
 			} else {
-				printer.writeKeyword("class").writeSpace().writeIdentifier(ctClass.getSimpleName());
+				printer.writeIdentifier(ctClass.getSimpleName());
 			}
 
 			elementPrinterHelper.writeFormalTypeParameters(ctClass);
@@ -742,7 +743,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
 		visitCtType(ctEnum);
-		printer.writeKeyword("enum").writeSpace().writeIdentifier(ctEnum.getSimpleName());
+		printer.writeKeyword("enum").writeSpace();
+		if (ctEnum.isLocalType()) {
+			printer.writeIdentifier(stripLeadingDigits(ctEnum.getSimpleName()));
+		} else {
+			printer.writeIdentifier(ctEnum.getSimpleName());
+		}
 		elementPrinterHelper.writeImplementsClause(ctEnum);
 		context.pushCurrentThis(ctEnum);
 		printer.writeSpace().writeSeparator("{").incTab().writeln();
@@ -1290,7 +1296,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T> void visitCtInterface(CtInterface<T> intrface) {
 		visitCtType(intrface);
-		printer.writeKeyword("interface").writeSpace().writeIdentifier(intrface.getSimpleName());
+		printer.writeKeyword("interface").writeSpace();
+		if (intrface.isLocalType()) {
+			printer.writeIdentifier(stripLeadingDigits(intrface.getSimpleName()));
+		} else {
+			printer.writeIdentifier(intrface.getSimpleName());
+		}
 		if (intrface.getFormalCtTypeParameters() != null) {
 			elementPrinterHelper.writeFormalTypeParameters(intrface);
 		}
@@ -2174,6 +2185,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	 */
 	protected void setMinimizeRoundBrackets(boolean minimizeRoundBrackets) {
 		this.minimizeRoundBrackets = minimizeRoundBrackets;
+	}
+
+	protected String stripLeadingDigits(String simpleName) {
+		int i = 0;
+		while (i < simpleName.length()) {
+			if (!Character.isDigit(simpleName.charAt(i))) {
+				return simpleName.substring(i);
+			}
+			i++;
+		}
+		throw new SpoonException("simpleName is not a valid identifier (" + simpleName + ")");
 	}
 
 }
