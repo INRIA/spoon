@@ -58,7 +58,7 @@ public class CtModifierHandler implements Serializable {
 	}
 
 	public Set<ModifierKind> getModifiers() {
-		return modifiers.stream().map(CtExtendedModifier::getKind).collect(linkedHashSetCollector());
+		return modifiers.stream().map(CtExtendedModifier::getKind).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	public boolean hasModifier(ModifierKind modifier) {
