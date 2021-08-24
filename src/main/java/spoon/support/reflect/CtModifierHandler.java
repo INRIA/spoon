@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static spoon.reflect.path.CtRole.MODIFIER;
 
@@ -67,7 +68,7 @@ public class CtModifierHandler implements Serializable {
 
 	public CtModifierHandler setModifiers(Set<ModifierKind> modifiers) {
 		if (modifiers == null) {
-			modifiers = Collections.emptySet();
+			modifiers = new LinkedHashSet<>();
 		}
 		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(element, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 		this.modifiers.clear();
@@ -79,7 +80,7 @@ public class CtModifierHandler implements Serializable {
 
 	public CtModifierHandler addModifier(ModifierKind modifier) {
 		if (this.modifiers == CtElementImpl.<CtExtendedModifier>emptySet()) {
-			this.modifiers = new HashSet<>();
+			this.modifiers = new LinkedHashSet<>();
 		}
 		getFactory().getEnvironment().getModelChangeListener().onSetAdd(element, MODIFIER, this.modifiers, modifier);
 		// we always add explicit modifiers, then we have to remove first implicit one
