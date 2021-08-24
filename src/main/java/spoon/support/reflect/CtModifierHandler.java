@@ -16,8 +16,9 @@ import spoon.support.reflect.declaration.CtElementImpl;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.stream.Collector;
 
 import static spoon.reflect.path.CtRole.MODIFIER;
 
@@ -44,7 +45,7 @@ public class CtModifierHandler implements Serializable {
 		if (extendedModifiers != null && !extendedModifiers.isEmpty()) {
 			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(element, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			if (this.modifiers == CtElementImpl.<CtExtendedModifier>emptySet()) {
-				this.modifiers = new HashSet<>();
+				this.modifiers = new LinkedHashSet<>();
 			} else {
 				this.modifiers.clear();
 			}
@@ -57,7 +58,7 @@ public class CtModifierHandler implements Serializable {
 	}
 
 	public Set<ModifierKind> getModifiers() {
-		return modifiers.stream().map(CtExtendedModifier::getKind).collect(Collectors.toSet());
+		return modifiers.stream().map(CtExtendedModifier::getKind).collect(linkedHashSetCollector());
 	}
 
 	public boolean hasModifier(ModifierKind modifier) {
@@ -199,5 +200,20 @@ public class CtModifierHandler implements Serializable {
 			return false;
 		}
 		return getModifiers().containsAll(other.getModifiers());
+	}
+
+	private <T> Collector<T, LinkedHashSet<T>, LinkedHashSet<T>> linkedHashSetCollector() {
+		return Collector.of(
+				LinkedHashSet::new,
+				LinkedHashSet::add,
+				(left, right) -> {
+					if (left.size() < right.size()) {
+						right.addAll(left);
+						return right;
+					} else {
+						left.addAll(right);
+						return left;
+					}
+				});
 	}
 }
