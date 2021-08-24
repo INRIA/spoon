@@ -201,19 +201,4 @@ public class CtModifierHandler implements Serializable {
 		}
 		return getModifiers().containsAll(other.getModifiers());
 	}
-
-	private <T> Collector<T, LinkedHashSet<T>, LinkedHashSet<T>> linkedHashSetCollector() {
-		return Collector.of(
-				LinkedHashSet::new,
-				LinkedHashSet::add,
-				(left, right) -> {
-					if (left.size() < right.size()) {
-						right.addAll(left);
-						return right;
-					} else {
-						left.addAll(right);
-						return left;
-					}
-				});
-	}
 }
