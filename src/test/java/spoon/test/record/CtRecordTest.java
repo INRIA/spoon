@@ -1,6 +1,7 @@
 package spoon.test.record;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collection;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -62,7 +63,7 @@ public class CtRecordTest {
     String s = records.iterator().next().toString();
     int a = 3;
   }
-  
+
   @Test
   public void testBigExample() {
     String code = "src/test/resources/records/BigExample.java";
@@ -74,6 +75,19 @@ public class CtRecordTest {
     Collection<CtRecord<?>> records = model.getElements(new TypeFilter<>(CtRecord.class));
     assertEquals(2,records.iterator().next().getFields().size());
     assertEquals(2,records.iterator().next().getMethods().size());
+    String s = records.iterator().next().toString();
+    int a = 3;
+  }
+  @Test
+  public void testCompactConstructor() {
+    String code = "src/test/resources/records/CompactConstructor.java";
+    Launcher launcher = new Launcher();
+    launcher.getEnvironment().setComplianceLevel(16);
+    launcher.addInputResource(code);
+    CtModel model = launcher.buildModel();
+    assertEquals(1, model.getAllTypes().size());
+    Collection<CtRecord<?>> records = model.getElements(new TypeFilter<>(CtRecord.class));
+    assertTrue(records.iterator().next().getConstructors().iterator().next().isCompactConstructor());
     String s = records.iterator().next().toString();
     int a = 3;
   }

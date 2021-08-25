@@ -35,4 +35,14 @@ public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtForma
 	@Override
 	@UnsettableProperty
 	<C extends CtNamedElement> C setSimpleName(String simpleName);
+	/**
+	 * Checks if the constructor is a compact constructor. Only records have compact constructors.
+	 */
+	boolean isCompactConstructor();
+	/**
+	 * Marks the constructor as a compact constructor. Only records have compact constructors.
+	 * @param compactConstructor   true if the constructor is a compact constructor, false otherwise
+	 */
+	void setCompactConstructor(boolean compactConstructor);
+
 }

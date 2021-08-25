@@ -127,6 +127,7 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtConstructor(spoon.reflect.declaration.CtConstructor<T> e) {
 		((spoon.reflect.declaration.CtConstructor<T>) (other)).setModifiers(e.getModifiers());
+		((spoon.reflect.declaration.CtConstructor<T>) (other)).setCompactConstructor(e.isCompactConstructor());
 		((spoon.reflect.declaration.CtConstructor<T>) (other)).setShadow(e.isShadow());
 		super.visitCtConstructor(e);
 	}

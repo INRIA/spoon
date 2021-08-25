@@ -707,7 +707,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (constructor.getDeclaringType() != null) {
 			printer.writeIdentifier(stripLeadingDigits(constructor.getDeclaringType().getSimpleName()));
 		}
-		elementPrinterHelper.writeExecutableParameters(constructor);
+		if (!constructor.isCompactConstructor()) {
+			elementPrinterHelper.writeExecutableParameters(constructor);
+		}
 		elementPrinterHelper.writeThrowsClause(constructor);
 		printer.writeSpace();
 		scan(constructor.getBody());
@@ -2205,6 +2207,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		context.popCurrentThis();
 		
 	}
+
 
 	@Override
 	public <T> void visitCtRecordComponent(CtRecordComponent<T> recordComponent) {
