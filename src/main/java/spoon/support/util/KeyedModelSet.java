@@ -31,7 +31,11 @@ import spoon.support.modelobs.FineModelChangeListener;
 public abstract class KeyedModelSet<K extends Comparable<K>, T extends CtElement> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private final Map<K, T> map;
+	// This can not be a "Map" as this class is Serializable and therefore Sorald wants this field
+	// to be serializable as well (Rule 1948).
+	// It doesn't seem smart enough to realize it is final and only assigned to a Serializable Map
+	// in the constructor.
+	private final ConcurrentSkipListMap<K, T> map;
 
 	protected KeyedModelSet() {
 		this.map = new ConcurrentSkipListMap<>();
