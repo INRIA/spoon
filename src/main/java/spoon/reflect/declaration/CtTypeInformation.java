@@ -108,10 +108,6 @@ public interface CtTypeInformation {
 	@DerivedProperty
 	boolean isGenerics();
 
-	// TODO docs
-	@DerivedProperty
-	boolean isSealed();
-
 	/**
 	 * Returns true if it has any type parameter (generic or not).
 	 */

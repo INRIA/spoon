@@ -13,6 +13,7 @@ import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
@@ -23,6 +24,7 @@ import spoon.support.UnsettableProperty;
 import spoon.support.util.SignatureBasedSortedSet;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -62,6 +64,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public <C extends CtEnum<T>> C addEnumValue(CtEnumValue<?> enumValue) {
+		// TODO handle implicit sealed modifier
 		if (enumValue == null) {
 			return (C) this;
 		}
@@ -80,6 +83,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public boolean removeEnumValue(CtEnumValue<?> enumValue) {
+		// TODO handle implicit sealed modifier
 		if (enumValues == CtElementImpl.<CtEnumValue<?>>emptyList()) {
 			return false;
 		}
@@ -141,6 +145,28 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	@Override
 	public CtEnum<T> clone() {
 		return (CtEnum<T>) super.clone();
+	}
+
+	// TODO this *can* be enum values in some cases - how to model that?
+
+	@Override
+	public Set<CtTypeReference<?>> getPermittedTypes() {
+		return super.getPermittedTypes();
+	}
+
+	@Override
+	public CtSealable setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
+		return super.setPermittedTypes(permittedTypes);
+	}
+
+	@Override
+	public CtSealable addPermittedType(CtTypeReference<?> type) {
+		return super.addPermittedType(type);
+	}
+
+	@Override
+	public CtSealable removePermittedType(CtTypeReference<?> type) {
+		return super.removePermittedType(type);
 	}
 
 	@Override

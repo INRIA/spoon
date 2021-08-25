@@ -60,7 +60,16 @@ public enum ModifierKind {
 	/**
 	 * The modifier <tt>strictfp</tt>
 	 */
-	STRICTFP;
+	STRICTFP,
+	/**
+	 * The modifier <tt>non-sealed</tt>
+	 */
+	NON_SEALED,
+	/**
+	 * The modifier <tt>sealed</tt>
+	 */
+	SEALED,
+	;
 
 	private String lowercase = null; // modifier name in lowercase
 
@@ -70,7 +79,8 @@ public enum ModifierKind {
 	@Override
 	public String toString() {
 		if (lowercase == null) {
-			lowercase = name().toLowerCase(java.util.Locale.US);
+			lowercase = name().replace('_', '-') // NON_SEALED => non-sealed
+					.toLowerCase(java.util.Locale.US);
 		}
 		return lowercase;
 	}
