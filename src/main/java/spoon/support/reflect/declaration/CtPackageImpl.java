@@ -7,7 +7,7 @@
  */
 package spoon.support.reflect.declaration;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.cu.position.NoSourcePosition;
@@ -137,7 +137,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public Set<CtPackage> getPackages() {
-		return new HashSet<>(packs.values());
+		return new LinkedHashSet<>(packs.values());
 	}
 
 	@Override
@@ -157,7 +157,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 
 	@Override
 	public Set<CtType<?>> getTypes() {
-		return new HashSet<>(types.values());
+		return new LinkedHashSet<>(types.values());
 	}
 
 	@Override

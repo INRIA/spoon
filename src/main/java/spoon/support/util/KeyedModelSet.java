@@ -17,7 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.support.modelobs.FineModelChangeListener;
@@ -28,13 +28,13 @@ import spoon.support.modelobs.FineModelChangeListener;
  * 1) each inserted {@link CtElement} gets assigned correct parent
  * 2) each change is reported in {@link FineModelChangeListener}
  */
-public abstract class KeyedModelSet<K, T extends CtElement> implements Serializable {
+public abstract class KeyedModelSet<K extends Comparable<K>, T extends CtElement> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private final Map<K, T> map;
 
 	protected KeyedModelSet() {
-		this.map = new ConcurrentHashMap<>();
+		this.map = new ConcurrentSkipListMap<>();
 	}
 
 	protected abstract CtElement getOwner();
