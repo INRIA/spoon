@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -32,7 +31,11 @@ public abstract class KeyedModelSet<K extends Comparable<K> & Serializable, T ex
 		implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private final Map<K, T> map;
+	// This can not be a "Map" as this class is Serializable and therefore Sorald wants this field
+	// to be serializable as well (Rule 1948).
+	// It doesn't seem smart enough to realize it is final and only assigned to a Serializable Map
+	// in the constructor.
+	private final ConcurrentSkipListMap<K, T> map;
 
 	protected KeyedModelSet() {
 		this.map = new ConcurrentSkipListMap<>();
