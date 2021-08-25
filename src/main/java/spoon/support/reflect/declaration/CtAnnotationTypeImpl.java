@@ -11,6 +11,7 @@ import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtTypeReference;
@@ -19,6 +20,7 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -86,6 +88,27 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 	@Override
 	public CtAnnotationType<T> clone() {
 		return (CtAnnotationType<T>) super.clone();
+	}
+
+	// TODO is this all fine?
+	@Override
+	public Set<CtTypeReference<?>> getPermittedTypes() {
+		return Collections.emptySet();
+	}
+
+	@Override
+	public CtSealable setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
+		return this;
+	}
+
+	@Override
+	public CtSealable addPermittedType(CtTypeReference<?> type) {
+		return this;
+	}
+
+	@Override
+	public CtSealable removePermittedType(CtTypeReference<?> type) {
+		return this;
 	}
 
 	@Override

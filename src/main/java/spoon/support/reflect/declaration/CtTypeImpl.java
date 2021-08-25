@@ -23,6 +23,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
@@ -58,6 +59,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -74,6 +76,9 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@MetamodelPropertyField(role = CtRole.INTERFACE)
 	Set<CtTypeReference<?>> interfaces = emptySet();
+
+	@MetamodelPropertyField(role = CtRole.TYPE_REF)
+	Set<CtTypeReference<?>> permittedTypes = emptySet();
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
@@ -1039,5 +1044,31 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		CtCompilationUnit cu = getFactory().createCompilationUnit();
 		cu.addDeclaredType(this);
 		return printer.printCompilationUnit(cu);
+	}
+
+	@Override
+	public Set<CtTypeReference<?>> getPermittedTypes() {
+		// TODO unmodifiable?
+		return permittedTypes;
+	}
+
+	@Override
+	public CtSealable setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
+		this.permittedTypes = new LinkedHashSet<>(permittedTypes); // TODO events, checks
+		return this;
+	}
+
+	@Override
+	public CtSealable addPermittedType(CtTypeReference<?> type) {
+		// TODO ensure modifiable, events etc
+		this.permittedTypes.add(type);
+		return this;
+	}
+
+	@Override
+	public CtSealable removePermittedType(CtTypeReference<?> type) {
+		// TODO events
+		this.permittedTypes.remove(type);
+		return this;
 	}
 }
