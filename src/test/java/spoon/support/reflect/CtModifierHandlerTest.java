@@ -29,7 +29,8 @@ public class CtModifierHandlerTest {
         Set<ModifierKind> outputModifierKinds = handler.getModifiers();
         Set<CtExtendedModifier> outputExtendedModifiers = handler.getExtendedModifiers();
 
-        // We iterate over these collections
+        // We iterate over these collections in step with each other
+        // to ensure we access elements in order.
         Iterator<ModifierKind> inputIterator = inputModifierKinds.iterator();
         Iterator<CtExtendedModifier> inputIteratorExt = inputExtendedModifiers.iterator();
         Iterator<ModifierKind> outputIterator = outputModifierKinds.iterator();
