@@ -3,8 +3,10 @@ package spoon.support.reflect.declaration;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
@@ -14,6 +16,7 @@ import spoon.support.reflect.CtExtendedModifier;
 
 public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRecordComponent<T> {
 
+  private static Set<String> forbiddenNames = createForbiddenNames();
   private CtTypeReference<T> type;
   
   @Override
@@ -59,5 +62,28 @@ public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRe
   public void accept(CtVisitor visitor) {
     visitor.visitCtRecordComponent(this);    
   }
+
+  @Override
+  public <T extends CtNamedElement> T setSimpleName(String simpleName) {
+    checkName(simpleName);
+    return super.setSimpleName(simpleName);
+  }
   
+  private void checkName(String simpleName) {
+    if (forbiddenNames.contains(simpleName)) {
+      throw new SpoonException("The name '" + simpleName + "' is not allowed as record component name.");
+    }
+  }
+  private static Set<String> createForbiddenNames() {
+    Set<String> names = new HashSet<>();
+    names.add("clone");
+    names.add("finalize");
+    names.add("getClass");
+    names.add("hashCode");
+    names.add("notify");
+    names.add("notifyAll");
+    names.add("toString");
+    names.add("wait");
+    return names;
+  }
 }
