@@ -93,4 +93,9 @@ public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRe
 		names.add("wait");
 		return Collections.unmodifiableSet(names);
 	}
+
+	@Override
+	public CtRecordComponent<T> clone() {
+		return (CtRecordComponent<T>) super.clone();
+	}
 }

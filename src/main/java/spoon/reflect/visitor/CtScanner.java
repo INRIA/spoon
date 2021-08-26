@@ -1055,12 +1055,14 @@ public abstract class CtScanner implements CtVisitor {
 		exit(pattern);
 	}
 
+	@Override
 	public <T> void visitCtRecord(CtRecord<T> recordType) {
 		enter(recordType);
 		scan(CtRole.ANNOTATION, recordType.getAnnotations());
 		scan(CtRole.INTERFACE, recordType.getSuperInterfaces());
 		scan(CtRole.TYPE_MEMBER, recordType.getTypeMembers());
-		scan(CtRole.VALUE, recordType.getRecordComponents());
+		scan(CtRole.TYPE_PARAMETER, recordType.getFormalCtTypeParameters());
+		scan(CtRole.RECORD_COMPONENT, recordType.getRecordComponents());
 		scan(CtRole.COMMENT, recordType.getComments());
 		exit(recordType);
 	}

@@ -1078,6 +1078,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(recordComponent);
 		scanCtTypedElement(recordComponent);
 		scanCtNamedElement(recordComponent);
+		scanCtVisitable(recordComponent);
 	}
 
 

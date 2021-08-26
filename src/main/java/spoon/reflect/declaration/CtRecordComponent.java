@@ -20,4 +20,7 @@ public interface CtRecordComponent<T> extends CtTypedElement<T>, CtNamedElement 
 	 * @return  the field
 	 */
 	CtField<?> toField();
+
+	@Override
+	CtRecordComponent<T> clone();
 }

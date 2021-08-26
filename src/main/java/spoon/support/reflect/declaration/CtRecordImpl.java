@@ -238,4 +238,8 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 		return super.setParent(parent);
 	}
 
+	@Override
+	public CtRecord<T> clone() {
+		return (CtRecord<T>) super.clone();
+	}
 }
