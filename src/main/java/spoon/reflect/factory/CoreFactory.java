@@ -628,8 +628,17 @@ public interface CoreFactory {
 	 * @return a new Type Pattern instance.
 	 */
 	CtTypePattern createTypePattern();
-	//TODO:
+
+	/**
+	 * Creates a record.
+	 * @return the created record.
+	 */
 	<T> CtRecord<T> createRecord();
+	/**
+	 * Creates a record component.
+	 * @param <T>  the type of the component.
+	 * @return  the created record component.
+	 */
 
 	<T> CtRecordComponent<T> createRecordComponent();
 }
