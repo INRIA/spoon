@@ -61,6 +61,7 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 		if (component == null) {
 			return this;
 		}
+		component.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, CtRole.RECORD_COMPONENT, components, component);
 		components.add(component);
 		if (!getMethods().contains(component.toMethod())) {
