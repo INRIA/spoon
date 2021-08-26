@@ -544,13 +544,13 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 
 	}
 	public <T> void visitCtRecord(CtRecord<T> recordType) {
-		
+
 	}
 
 	@Override
 	public <T> void visitCtRecordComponent(CtRecordComponent<T> recordComponent) {
-		
+
 	}
 
-	
+
 }

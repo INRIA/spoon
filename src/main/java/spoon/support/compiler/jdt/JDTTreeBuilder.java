@@ -1803,5 +1803,4 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return super.visit(recordComponent, scope);
 	}
 
-	
 }

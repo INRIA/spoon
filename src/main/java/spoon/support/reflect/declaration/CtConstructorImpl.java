@@ -258,7 +258,7 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 
 	@Override
 	public void setCompactConstructor(boolean compactConstructor) {
-		this.compactConstructor = compactConstructor;	
+		this.compactConstructor = compactConstructor;
 	}
 
 	@Override

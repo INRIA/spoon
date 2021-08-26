@@ -734,7 +734,7 @@ public class JDTTreeBuilderHelper {
 			type = jdtTreeBuilder.getFactory().Core().createEnum();
 		} else if ((typeDeclaration.modifiers & ClassFileConstants.AccInterface) != 0) {
 			type = jdtTreeBuilder.getFactory().Core().createInterface();
-		} else if(typeDeclaration.isRecord()) {
+		} else if (typeDeclaration.isRecord()) {
 			type = jdtTreeBuilder.getFactory().Core().createRecord();
 		}	else {
 			type = jdtTreeBuilder.getFactory().Core().createClass();

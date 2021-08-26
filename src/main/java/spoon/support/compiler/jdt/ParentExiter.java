@@ -1024,7 +1024,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (child instanceof CtRecordComponent) {
 			((CtRecord<?>) recordType).addRecordComponent((CtRecordComponent<?>) child);
 		}
-		super.visitCtRecord(recordType);		
+		super.visitCtRecord(recordType);
 	}
 
 	@Override
@@ -1035,10 +1035,5 @@ public class ParentExiter extends CtInheritanceScanner {
 			return;
 		}
 		scanCtElement(recordComponent);
-		int a = 0;
-		// TODO Auto-generated method stub
-
-}
-
-	
+	}
 }

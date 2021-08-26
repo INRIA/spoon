@@ -1062,7 +1062,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.TYPE_MEMBER, recordType.getTypeMembers());
 		scan(CtRole.VALUE, recordType.getRecordComponents());
 		scan(CtRole.COMMENT, recordType.getComments());
-		exit(recordType);		
+		exit(recordType);
 	}
 
 	@Override
@@ -1071,10 +1071,10 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.ANNOTATION, recordType.getAnnotations());
 		scan(CtRole.TYPE, recordType.getType());
 		scan(CtRole.COMMENT, recordType.getComments());
-		exit(recordType);		
+		exit(recordType);
 	}
 
-		
+
 
 }
 

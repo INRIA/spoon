@@ -16,74 +16,74 @@ import spoon.support.reflect.CtExtendedModifier;
 
 public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRecordComponent<T> {
 
-  private static final Set<String> forbiddenNames = createForbiddenNames();
-  private CtTypeReference<T> type;
-  
-  @Override
-  public CtMethod<?> toMethod() {
-    CtMethod<?> method = this.getFactory().createMethod();
-    method.setSimpleName(getSimpleName());
-    method.setType((CtTypeReference) getType());
-    method.setExtendedModifiers(Collections.singleton(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
-    method.setImplicit(true);
-    method.setBody(getFactory().createCodeSnippetStatement("return " + getSimpleName()));
-    return method;
-  }
+	private static final Set<String> forbiddenNames = createForbiddenNames();
+	private CtTypeReference<T> type;
 
-  @Override
-  public CtField<?> toField() {
-    CtField<?> field = this.getFactory().createField();
-    field.setSimpleName(getSimpleName());
-    field.setType((CtTypeReference) getType());
-    Set<CtExtendedModifier> modifiers = new HashSet<>();
-    modifiers.add(new CtExtendedModifier(ModifierKind.PRIVATE, true));
-    modifiers.add(new CtExtendedModifier(ModifierKind.FINAL, true));
-    field.setExtendedModifiers(modifiers);
-    field.setImplicit(true);
-    return field;
-  }
+	@Override
+	public CtMethod<?> toMethod() {
+		CtMethod<?> method = this.getFactory().createMethod();
+		method.setSimpleName(getSimpleName());
+		method.setType((CtTypeReference) getType());
+		method.setExtendedModifiers(Collections.singleton(new CtExtendedModifier(ModifierKind.PUBLIC, true)));
+		method.setImplicit(true);
+		method.setBody(getFactory().createCodeSnippetStatement("return " + getSimpleName()));
+		return method;
+	}
 
-  @Override
-  public boolean isImplicit() {
-    return true;
-  }
+	@Override
+	public CtField<?> toField() {
+		CtField<?> field = this.getFactory().createField();
+		field.setSimpleName(getSimpleName());
+		field.setType((CtTypeReference) getType());
+		Set<CtExtendedModifier> modifiers = new HashSet<>();
+		modifiers.add(new CtExtendedModifier(ModifierKind.PRIVATE, true));
+		modifiers.add(new CtExtendedModifier(ModifierKind.FINAL, true));
+		field.setExtendedModifiers(modifiers);
+		field.setImplicit(true);
+		return field;
+	}
 
-  @Override
-  public CtTypeReference<T> getType() {
-    return type;
-  }
+	@Override
+	public boolean isImplicit() {
+		return true;
+	}
 
-  @Override
-  public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
-    this.type = type; 
+	@Override
+	public CtTypeReference<T> getType() {
+		return type;
+	}
+
+	@Override
+	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		this.type = type;
 		return (C) this;  }
 
-  @Override
-  public void accept(CtVisitor visitor) {
-    visitor.visitCtRecordComponent(this);    
-  }
+	@Override
+	public void accept(CtVisitor visitor) {
+		visitor.visitCtRecordComponent(this);
+	}
 
-  @Override
-  public <T extends CtNamedElement> T setSimpleName(String simpleName) {
-    checkName(simpleName);
-    return super.setSimpleName(simpleName);
-  }
-  
-  private void checkName(String simpleName) {
-    if (forbiddenNames.contains(simpleName)) {
-      throw new SpoonException("The name '" + simpleName + "' is not allowed as record component name.");
-    }
-  }
-  private static Set<String> createForbiddenNames() {
-    Set<String> names = new HashSet<>();
-    names.add("clone");
-    names.add("finalize");
-    names.add("getClass");
-    names.add("hashCode");
-    names.add("notify");
-    names.add("notifyAll");
-    names.add("toString");
-    names.add("wait");
-    return Collections.unmodifiableSet(names);
-  }
+	@Override
+	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
+		checkName(simpleName);
+		return super.setSimpleName(simpleName);
+	}
+
+	private void checkName(String simpleName) {
+		if (forbiddenNames.contains(simpleName)) {
+			throw new SpoonException("The name '" + simpleName + "' is not allowed as record component name.");
+		}
+	}
+	private static Set<String> createForbiddenNames() {
+		Set<String> names = new HashSet<>();
+		names.add("clone");
+		names.add("finalize");
+		names.add("getClass");
+		names.add("hashCode");
+		names.add("notify");
+		names.add("notifyAll");
+		names.add("toString");
+		names.add("wait");
+		return Collections.unmodifiableSet(names);
+	}
 }

@@ -2205,7 +2205,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		getPrinterHelper().adjustEndPosition(recordType);
 		printer.decTab().writeSeparator("}");
 		context.popCurrentThis();
-		
+
 	}
 
 
