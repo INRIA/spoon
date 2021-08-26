@@ -355,6 +355,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.INTERFACE, ctClass.getSuperInterfaces());
 		scan(CtRole.TYPE_PARAMETER, ctClass.getFormalCtTypeParameters());
 		scan(CtRole.TYPE_MEMBER, ctClass.getTypeMembers());
+		scan(CtRole.TYPE_REF, ctClass.getPermittedTypes());
 		scan(CtRole.COMMENT, ctClass.getComments());
 		exit(ctClass);
 	}
@@ -513,6 +514,7 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.INTERFACE, intrface.getSuperInterfaces());
 		scan(CtRole.TYPE_PARAMETER, intrface.getFormalCtTypeParameters());
 		scan(CtRole.TYPE_MEMBER, intrface.getTypeMembers());
+		scan(CtRole.TYPE_REF, intrface.getPermittedTypes());
 		scan(CtRole.COMMENT, intrface.getComments());
 		exit(intrface);
 	}
