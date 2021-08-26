@@ -80,7 +80,7 @@ public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRe
 
 	@Override
 	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
-		
+
 		checkName(simpleName);
 		return super.setSimpleName(simpleName);
 	}
@@ -108,3 +108,4 @@ public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRe
 		return (CtRecordComponent<T>) super.clone();
 	}
 }
+
