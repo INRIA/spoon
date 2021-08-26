@@ -1,5 +1,5 @@
 package records;
 
-public record SingleParameter(int a) {
+public record SingleParameter(int value) {
   
 }

@@ -1,6 +1,6 @@
 package records;
 
-public record ExplicitAccessor(int a,String b) {
+public record ExplicitAccessor(String b) {
 
   public String b() {
     return b;

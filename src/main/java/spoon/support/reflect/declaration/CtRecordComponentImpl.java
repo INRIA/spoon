@@ -16,7 +16,7 @@ import spoon.support.reflect.CtExtendedModifier;
 
 public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRecordComponent<T> {
 
-  private static Set<String> forbiddenNames = createForbiddenNames();
+  private static final Set<String> forbiddenNames = createForbiddenNames();
   private CtTypeReference<T> type;
   
   @Override
@@ -84,6 +84,6 @@ public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRe
     names.add("notifyAll");
     names.add("toString");
     names.add("wait");
-    return names;
+    return Collections.unmodifiableSet(names);
   }
 }
