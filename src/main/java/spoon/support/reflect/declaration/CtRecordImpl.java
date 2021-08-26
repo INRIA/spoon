@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import spoon.SpoonException;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
@@ -30,6 +31,7 @@ import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
@@ -39,6 +41,7 @@ import spoon.support.reflect.CtExtendedModifier;
 public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 	private static final String ABSTRACT_MODIFIER_ERROR =
 			"Abstract modifier is not allowed on record";
+	@MetamodelPropertyField(role = CtRole.RECORD_COMPONENT)
 	private Set<CtRecordComponent<?>> components = new HashSet<>();
 
 	@Override
@@ -55,6 +58,10 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 
 	@Override
 	public <C> CtRecord<T> addRecordComponent(CtRecordComponent<C> component) {
+		if (component == null) {
+			return this;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, CtRole.RECORD_COMPONENT, components, component);
 		components.add(component);
 		if (!getMethods().contains(component.toMethod())) {
 			addMethod(component.toMethod());
@@ -64,6 +71,7 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 
 	@Override
 	public <C> CtRecord<T> removeRecordComponent(CtRecordComponent<C> component) {
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, CtRole.RECORD_COMPONENT, components, component);
 		components.remove(component);
 		if (getField(component.getSimpleName()) != null
 				&& getField(component.getSimpleName()).isImplicit()) {

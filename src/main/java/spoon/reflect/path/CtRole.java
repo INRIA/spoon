@@ -119,7 +119,8 @@ public enum CtRole {
 	TYPE_REF,
 	LITERAL_BASE,
 	CASE_KIND,
-	RECORD_COMPONENT;
+	RECORD_COMPONENT,
+	COMPACT_CONSTRUCTOR;
 
 	private final CtRole superRole;
 	private final List<CtRole> subRoles;

@@ -171,7 +171,8 @@ public class AstCheckerTest {
 					"CtArrayTypeReferenceImpl#setSimpleName",
 					"CtCompilationUnitImpl#addDeclaredType",
 					"CtCompilationUnitImpl#setFile",
-					"CtCompilationUnitImpl#setLineSeparatorPositions"
+					"CtCompilationUnitImpl#setLineSeparatorPositions",
+					"CtRecordImpl#setRecordComponents"
 			);
 		}
 

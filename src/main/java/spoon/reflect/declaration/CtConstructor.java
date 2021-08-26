@@ -7,11 +7,12 @@
  */
 package spoon.reflect.declaration;
 
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.annotations.PropertyGetter;
-import spoon.support.UnsettableProperty;
-
 import static spoon.reflect.path.CtRole.NAME;
+import spoon.reflect.annotations.PropertyGetter;
+import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.support.UnsettableProperty;
 
 /**
  * This element defines a constructor declaration.
@@ -38,11 +39,13 @@ public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtForma
 	/**
 	 * Checks if the constructor is a compact constructor. Only records have compact constructors.
 	 */
+	@PropertyGetter(role = CtRole.COMPACT_CONSTRUCTOR)
 	boolean isCompactConstructor();
 	/**
 	 * Marks the constructor as a compact constructor. Only records have compact constructors.
 	 * @param compactConstructor   true if the constructor is a compact constructor, false otherwise
 	 */
+	@PropertySetter(role = CtRole.COMPACT_CONSTRUCTOR)
 	void setCompactConstructor(boolean compactConstructor);
 
 }

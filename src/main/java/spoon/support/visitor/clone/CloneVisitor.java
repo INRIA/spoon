@@ -1131,6 +1131,7 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		aCtRecord.setAnnotations(this.cloneHelper.clone(recordType.getAnnotations()));
 		aCtRecord.setSuperInterfaces(this.cloneHelper.clone(recordType.getSuperInterfaces()));
 		aCtRecord.setTypeMembers(this.cloneHelper.clone(recordType.getTypeMembers()));
+		aCtRecord.setFormalCtTypeParameters(this.cloneHelper.clone(recordType.getFormalCtTypeParameters()));
 		aCtRecord.setRecordComponents(this.cloneHelper.clone(recordType.getRecordComponents()));
 		aCtRecord.setComments(this.cloneHelper.clone(recordType.getComments()));
 		this.cloneHelper.tailor(recordType, aCtRecord);

@@ -1068,8 +1068,14 @@ public interface Factory {
 	 */
 	CtYieldStatement createYieldStatement(boolean isImplicit);
 
+	/**
+	 * @see CoreFactory#createRecord()
+	 */
 	<T> CtRecord<T> createRecord();
 
+	/**
+	 * @see CoreFactory#createRecordComponent()
+	 */
 	<T> CtRecordComponent<T> createRecordComponent();
 
 }

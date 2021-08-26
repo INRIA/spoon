@@ -11,12 +11,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import spoon.SpoonException;
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.CtExtendedModifier;
@@ -24,6 +26,7 @@ import spoon.support.reflect.CtExtendedModifier;
 public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRecordComponent<T> {
 
 	private static final Set<String> forbiddenNames = createForbiddenNames();
+	@MetamodelPropertyField(role = CtRole.TYPE)
 	private CtTypeReference<T> type;
 
 	@Override
@@ -62,8 +65,13 @@ public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRe
 
 	@Override
 	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+		if (type != null) {
+			type.setParent(this);
+		}
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.TYPE, type, this.type);
 		this.type = type;
-		return (C) this;  }
+		return (C) this;
+	}
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -72,6 +80,7 @@ public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRe
 
 	@Override
 	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
+		
 		checkName(simpleName);
 		return super.setSimpleName(simpleName);
 	}
