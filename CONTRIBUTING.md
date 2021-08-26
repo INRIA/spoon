@@ -41,8 +41,9 @@ Guidelines for all pull-requests:
   * Note that PRs are squashed. Don't worry if the commit history becomes a bit convoluted as you iterate on the PR after receiving feedback.
   * It's OK to force-push to WIP PRs as long as you are not collaborating with anyone.
 * **Your contribution is highly welcome**! If you have anything interesting, then we welcome your PR even if it is not perfect at the beginning. The Spoon community will help you to fix the remaining problems, if any.;-)
-* **JUnit5 in new tests:** Please note that we are [currently migrating the test suite from JUnit4 to JUnit5](https://github.com/INRIA/spoon/issues/3919)
-  * New test classes **must use JUnit5**
+* **JUnit version:** 
+  * [PR to migrate existing tests from JUnit4 to JUnit5 are welcome](https://github.com/INRIA/spoon/issues/3919).
+  * New test classes must use JUnit5.
   * Adding test cases to existing JUnit4 test classes is OK, but try to stick to the very basics (if possible, only use the `@Test` annotation)
   
 Guidelines for bug-fix pull-requests:
