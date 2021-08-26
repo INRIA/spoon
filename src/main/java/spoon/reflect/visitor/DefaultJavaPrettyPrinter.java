@@ -2215,7 +2215,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		visitCtTypeReference(recordComponent.getType());
 		printer.writeSpace();
 		printer.writeIdentifier(recordComponent.getSimpleName());
-		// TODO: Auto-generated method stub
-			}
+
+	}
+
 
 }
