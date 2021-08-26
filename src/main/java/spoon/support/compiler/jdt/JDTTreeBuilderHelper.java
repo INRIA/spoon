@@ -729,6 +729,13 @@ public class JDTTreeBuilderHelper {
 			}
 		}
 
+		if (typeDeclaration.binding.permittedTypes != null) {
+			for (ReferenceBinding permittedType : typeDeclaration.binding.permittedTypes) {
+				CtTypeReference<?> typeReference = jdtTreeBuilder.references.getTypeReference(permittedType);
+				type.addPermittedType(typeReference);
+			}
+		}
+
 		if (type instanceof CtClass && typeDeclaration.superclass != null) {
 			((CtClass) type).setSuperclass(jdtTreeBuilder.references.buildTypeReference(typeDeclaration.superclass, typeDeclaration.scope));
 		}

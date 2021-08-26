@@ -71,7 +71,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = CtRole.TYPE_PARAMETER)
+	@MetamodelPropertyField(role = {CtRole.TYPE_PARAMETER})
 	List<CtTypeParameter> formalCtTypeParameters = emptyList();
 
 	@MetamodelPropertyField(role = CtRole.INTERFACE)
@@ -1061,6 +1061,12 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public CtSealable addPermittedType(CtTypeReference<?> type) {
 		// TODO ensure modifiable, events etc
+		if (type == null) {
+			return this;
+		}
+		if (permittedTypes == CtElementImpl.<CtTypeReference<?>>emptySet()) {
+			permittedTypes = new LinkedHashSet<>();
+		}
 		this.permittedTypes.add(type);
 		return this;
 	}

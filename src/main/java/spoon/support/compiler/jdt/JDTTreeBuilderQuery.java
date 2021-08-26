@@ -18,6 +18,7 @@ import org.eclipse.jdt.internal.compiler.ast.QualifiedNameReference;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 import org.eclipse.jdt.internal.compiler.lookup.AnnotationBinding;
+import org.eclipse.jdt.internal.compiler.lookup.ExtraCompilerModifiers;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ProblemFieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
@@ -363,6 +364,11 @@ class JDTTreeBuilderQuery {
 		}
 		if ((modifier & ClassFileConstants.AccNative) != 0) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.NATIVE, implicit));
+		}
+		if (!isMethod && (modifier & ExtraCompilerModifiers.AccSealed) != 0) {
+			modifiers.add(new CtExtendedModifier(ModifierKind.SEALED, false));
+		} else if (!isMethod && (modifier & ExtraCompilerModifiers.AccNonSealed) != 0) {
+			modifiers.add(new CtExtendedModifier(ModifierKind.NON_SEALED, false));
 		}
 		return modifiers;
 	}

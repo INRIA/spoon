@@ -64,7 +64,6 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public <C extends CtEnum<T>> C addEnumValue(CtEnumValue<?> enumValue) {
-		// TODO handle implicit sealed modifier
 		if (enumValue == null) {
 			return (C) this;
 		}
@@ -75,6 +74,10 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 			enumValue.setParent(this);
 			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, VALUE, this.enumValues, enumValue);
 			enumValues.add(enumValue);
+			if (enumValue.getDefaultExpression() != null) {
+				// TODO set implicit sealed modifier
+				removeModifier(ModifierKind.FINAL); // enum is not final anymore
+			}
 		}
 
 		// enum value already exists.
