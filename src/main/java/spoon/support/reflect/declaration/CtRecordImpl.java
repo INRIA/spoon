@@ -64,7 +64,7 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 		component.setParent(this);
 		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, CtRole.RECORD_COMPONENT, components, component);
 		components.add(component);
-		if (!getMethods().contains(component.toMethod())) {
+		if (!hasMethodWithSameNameAndNoParameter(component)) {
 			addMethod(component.toMethod());
 		}
 		return this;
@@ -171,14 +171,6 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 		return false;
 	}
 
-	private CtMethod<?> getMethodWithSameNameAndNoParameter(CtRecordComponent<?> component) {
-		for (CtMethod<?> method : getMethodsByName(component.getSimpleName())) {
-			if (method.getParameters().isEmpty()) {
-				return method;
-			}
-		}
-		return null;
-	}
 
 	@Override
 	public <C extends CtType<T>> C setTypeMembers(List<CtTypeMember> members) {
