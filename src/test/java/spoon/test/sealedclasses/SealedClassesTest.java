@@ -3,6 +3,15 @@ package spoon.test.sealedclasses;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.CtExtendedModifier;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsCollectionContaining.hasItem;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 
 public class SealedClassesTest {
 
@@ -26,6 +35,12 @@ public class SealedClassesTest {
 
 		launcher.addInputResource("src/test/resources/sealedclasses/EnumWithAnonymousValue.java");
 		CtModel ctModel = launcher.buildModel();
+		CtEnum<?> ctEnum = ctModel.getElements(new TypeFilter<CtEnum<?>>(CtEnum.class)).get(0);
+		// not final
+		assertFalse(ctEnum.isFinal());
+		// but (implicitly) sealed
+		assertThat(ctEnum.getExtendedModifiers(), hasItem(new CtExtendedModifier(ModifierKind.SEALED, true)));
+
 		ctModel.getAllTypes().forEach(System.out::println);
 		int a = 3;
 	}
