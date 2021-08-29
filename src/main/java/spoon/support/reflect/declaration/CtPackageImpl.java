@@ -223,6 +223,11 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	}
 
 	@Override
+	public int getContainedTypeCount() {
+		return types.size();
+	}
+
+	@Override
 	public boolean isUnnamedPackage() {
 		return TOP_LEVEL_PACKAGE_NAME.equals(getSimpleName());
 	}

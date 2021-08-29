@@ -10,6 +10,7 @@ package spoon.reflect.factory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringTokenizer;
@@ -162,7 +163,7 @@ public class PackageFactory extends SubFactory {
 		return factory.getModel().getAllModules().stream()
 				.map(module -> getPackageFromModule(qualifiedName, module))
 				.filter(Objects::nonNull)
-				.findFirst()
+				.max(Comparator.comparingInt(CtPackage::getContainedTypeCount))
 				.orElse(null);
 	}
 
