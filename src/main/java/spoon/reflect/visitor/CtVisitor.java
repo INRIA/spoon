@@ -545,7 +545,15 @@ public interface CtVisitor {
 	 * @param pattern the pattern to visit.
 	 */
 	void visitCtTypePattern(CtTypePattern pattern);
+	/**
+	 * Visits a record.
+	 * @param record the record to visit.
+	 */
 	<T> void visitCtRecord(CtRecord<T> recordType);
+	/**
+	 * Visits a record component.
+	 * @param recordComponent  the record component to visit.
+	 */
 
 	<T> void visitCtRecordComponent(CtRecordComponent<T> recordComponent);
 }
