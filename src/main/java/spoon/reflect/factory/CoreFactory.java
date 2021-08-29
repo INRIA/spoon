@@ -631,6 +631,7 @@ public interface CoreFactory {
 
 	/**
 	 * Creates a record.
+	 * @param <T>  the type of the record.
 	 * @return the created record.
 	 */
 	<T> CtRecord<T> createRecord();

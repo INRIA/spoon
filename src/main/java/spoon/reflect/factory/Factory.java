@@ -1070,11 +1070,15 @@ public interface Factory {
 
 	/**
 	 * @see CoreFactory#createRecord()
+	 * @param <T> the type of the record.
+	 * @return a CtRecord
 	 */
 	<T> CtRecord<T> createRecord();
 
 	/**
 	 * @see CoreFactory#createRecordComponent()
+	 * @param <T> the type of the component
+	 * @return a CtRecordComponent.
 	 */
 	<T> CtRecordComponent<T> createRecordComponent();
 
