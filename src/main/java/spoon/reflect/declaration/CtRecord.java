@@ -13,7 +13,15 @@ import spoon.reflect.annotations.PropertySetter;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.UnsettableProperty;
-
+/**
+ * This element represents a record declaration.
+ *
+ * Example:
+ * <pre>
+ *    record Point(int x, int y) {
+ *    }
+ * </pre>
+ */
 public interface CtRecord<T> extends CtClass<T> {
 
 	@PropertySetter(role = CtRole.RECORD_COMPONENT)
