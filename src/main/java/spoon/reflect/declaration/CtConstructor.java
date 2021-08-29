@@ -38,6 +38,7 @@ public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtForma
 	<C extends CtNamedElement> C setSimpleName(String simpleName);
 	/**
 	 * Checks if the constructor is a compact constructor. Only records have compact constructors.
+	 * @return true if the constructor is a compact constructor.
 	 */
 	@PropertyGetter(role = CtRole.COMPACT_CONSTRUCTOR)
 	boolean isCompactConstructor();
