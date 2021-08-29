@@ -123,7 +123,7 @@ import java.util.Stack;
  *
  * Created by marodrig on 13/10/2015.
  */
-public class ControlFlowBuilder implements CtAbstractVisitor {
+public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	ControlFlowGraph result = new ControlFlowGraph(ControlFlowEdge.class);
 
