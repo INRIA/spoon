@@ -94,6 +94,8 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -826,6 +828,17 @@ public class PatternBuilder implements CtVisitor {
 	public void visitCtTypePattern(CtTypePattern pattern) {
 		throw new NotImplementedException("Not implemented");
 	}
+
+	@Override
+	public <T> void visitCtRecord(CtRecord<T> recordType) {
+		throw new NotImplementedException("Not implemented");
+	}
+
+	@Override
+	public <T> void visitCtRecordComponent(CtRecordComponent<T> recordComponent) {
+		throw new NotImplementedException("Not implemented");
+	}
+
 
 	/**
 	 * Parameter identifiers.

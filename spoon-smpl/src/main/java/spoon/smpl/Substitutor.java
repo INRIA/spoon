@@ -686,4 +686,14 @@ public class Substitutor implements CtVisitor {
 	public void visitCtTypePattern(CtTypePattern pattern) {
 		throw new NotImplementedException("Not implemented");
 	}
+
+	@Override
+	public <T> void visitCtRecord(CtRecord<T> recordType) {
+		throw new NotImplementedException("Not implemented");
+	}
+
+	@Override
+	public <T> void visitCtRecordComponent(CtRecordComponent<T> recordComponent) {
+		throw new NotImplementedException("Not implemented");
+	}
 }
