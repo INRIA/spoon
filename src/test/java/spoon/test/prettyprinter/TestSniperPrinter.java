@@ -7,11 +7,16 @@
  */
 package spoon.test.prettyprinter;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.compiler.Environment;
+import spoon.processing.AbstractProcessor;
 import spoon.refactoring.Refactoring;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
@@ -22,6 +27,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
@@ -55,6 +61,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,6 +69,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -774,15 +782,15 @@ public class TestSniperPrinter {
 
 		testSniper("ForLoop", deleteForUpdate, assertNotStaticFindFirstIsEmpty);
 	}
-	
+
 	@Test
 	@GitHubIssue(issueNumber = 4021)
 	void testSniperRespectsSuperWithUnaryOperator() {
 		// Combining CtSuperAccess and CtUnaryOperator leads to SpoonException with Sniper
-		
+
 		// Noop
 		Consumer<CtType<?>> deleteForUpdate = type -> {};
-		
+
 		BiConsumer<CtType<?>, String> assertContainsSuperWithUnaryOperator = (type, result) ->
 				assertThat(result, containsString("super.a(-x);"));
 
@@ -925,5 +933,49 @@ public class TestSniperPrinter {
 	@Test
 	public void testToStringWithSniperOnElementScan() throws Exception {
 		testToStringWithSniperPrinter("src/test/java/spoon/test/prettyprinter/testclasses/ElementScan.java");
+	}
+
+	/**
+	 * Files to be tested with testNoChangeDiff
+	 */
+	private static Stream<File> noChangeDiffTestFiles() {
+		Path path = Paths.get("src/test/java/spoon/test/prettyprinter/testclasses/difftest");
+		return FileUtils.listFiles(path.toFile(), null, false).stream();
+	}
+
+	/**
+	 * Test various syntax by doing an change to every element that should not
+	 * result in any change in source. This forces the sniper printer to recreate
+	 * the output. Assert that the output is the same as the input.
+	 *
+	 * Reference: #3811
+	 */
+	@ParameterizedTest
+	@MethodSource("noChangeDiffTestFiles")
+	@GitHubIssue(issueNumber = 3811)
+	@Disabled("UnresolvedBug")
+	public void testNoChangeDiff(File file) throws IOException {
+		String fileName = file.getName();
+		Path outputPath = Paths.get("target/test-output");
+		File outputFile = outputPath.resolve("spoon/test/prettyprinter/testclasses/difftest")
+				.resolve(fileName).toFile();
+		final Launcher launcher = new Launcher();
+		final Environment e = launcher.getEnvironment();
+		e.setLevel("INFO");
+		e.setPrettyPrinterCreator(() -> new SniperJavaPrettyPrinter(e));
+
+		launcher.addInputResource(file.toString());
+		launcher.setSourceOutputDirectory(outputPath.toString());
+		launcher.addProcessor(new AbstractProcessor<CtElement>() {
+			public void process(CtElement element) {
+				// Do a no-op change, this will force the sniper printer to update the source
+				SourcePosition pos = element.getPosition();
+				element.setPosition(SourcePosition.NOPOSITION);
+				element.setPosition(pos);
+			}
+		});
+		launcher.run();
+
+		assertTrue(FileUtils.contentEquals(file, outputFile),"File " + outputFile.getAbsolutePath() + " is different");
 	}
 }
