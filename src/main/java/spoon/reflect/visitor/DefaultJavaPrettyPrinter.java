@@ -634,12 +634,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		context.pushCurrentThis(ctClass);
 		if (ctClass.getSimpleName() != null && !CtType.NAME_UNKNOWN.equals(ctClass.getSimpleName()) && !ctClass.isAnonymous()) {
 			visitCtType(ctClass);
-			printer.writeKeyword("class").writeSpace();
-			if (ctClass.isLocalType()) {
-				printer.writeIdentifier(stripLeadingDigits(ctClass.getSimpleName()));
-			} else {
-				printer.writeIdentifier(ctClass.getSimpleName());
-			}
+			printer.writeKeyword("class").writeSpace()
+					.writeIdentifier(stripLeadingDigits(ctClass.getSimpleName()));
 
 			elementPrinterHelper.writeFormalTypeParameters(ctClass);
 			elementPrinterHelper.writeExtendsClause(ctClass);
@@ -707,11 +703,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeSpace();
 		}
 		if (constructor.getDeclaringType() != null) {
-			if (constructor.getDeclaringType().isLocalType()) {
-				printer.writeIdentifier(constructor.getDeclaringType().getSimpleName().replaceAll("^[0-9]*", ""));
-			} else {
-				printer.writeIdentifier(constructor.getDeclaringType().getSimpleName());
-			}
+			printer.writeIdentifier(stripLeadingDigits(constructor.getDeclaringType().getSimpleName()));
 		}
 		elementPrinterHelper.writeExecutableParameters(constructor);
 		elementPrinterHelper.writeThrowsClause(constructor);
@@ -743,12 +735,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
 		visitCtType(ctEnum);
-		printer.writeKeyword("enum").writeSpace();
-		if (ctEnum.isLocalType()) {
-			printer.writeIdentifier(stripLeadingDigits(ctEnum.getSimpleName()));
-		} else {
-			printer.writeIdentifier(ctEnum.getSimpleName());
-		}
+		printer.writeKeyword("enum").writeSpace()
+				.writeIdentifier(stripLeadingDigits(ctEnum.getSimpleName()));
+
 		elementPrinterHelper.writeImplementsClause(ctEnum);
 		context.pushCurrentThis(ctEnum);
 		printer.writeSpace().writeSeparator("{").incTab().writeln();
@@ -1296,12 +1285,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T> void visitCtInterface(CtInterface<T> intrface) {
 		visitCtType(intrface);
-		printer.writeKeyword("interface").writeSpace();
-		if (intrface.isLocalType()) {
-			printer.writeIdentifier(stripLeadingDigits(intrface.getSimpleName()));
-		} else {
-			printer.writeIdentifier(intrface.getSimpleName());
-		}
+		printer.writeKeyword("interface").writeSpace()
+				.writeIdentifier(stripLeadingDigits(intrface.getSimpleName()));
 		if (intrface.getFormalCtTypeParameters() != null) {
 			elementPrinterHelper.writeFormalTypeParameters(intrface);
 		}
@@ -1891,7 +1876,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			//?? are these annotations on correct place ??
 			elementPrinterHelper.writeAnnotations(ref);
 			if (ref.isLocalType()) {
-				printer.writeIdentifier(ref.getSimpleName().replaceAll("^[0-9]*", ""));
+				printer.writeIdentifier(stripLeadingDigits(ref.getSimpleName()));
 			} else {
 				printer.writeIdentifier(ref.getSimpleName());
 			}
