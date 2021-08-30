@@ -552,7 +552,8 @@ public class ElementPrinterHelper {
 		if (type.getPermittedTypes().isEmpty()) {
 			return;
 		}
-		printer.writeSpace().writeKeyword("permits").writeSpace();
+		printer.writeln().incTab().writeKeyword("permits").writeSpace();
 		printList(type.getPermittedTypes(), null, false, null, false, false, ",", true, false, null, prettyPrinter::scan);
+		printer.decTab();
 	}
 }

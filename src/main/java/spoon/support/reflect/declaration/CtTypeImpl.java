@@ -1049,12 +1049,12 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public Set<CtTypeReference<?>> getPermittedTypes() {
 		// TODO unmodifiable?
-		return permittedTypes;
+		return Collections.unmodifiableSet(permittedTypes);
 	}
 
 	@Override
 	public CtSealable setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
-		this.permittedTypes = new LinkedHashSet<>(permittedTypes); // TODO events, checks
+		this.permittedTypes = new HashSet<>(permittedTypes); // TODO events, checks
 		return this;
 	}
 
@@ -1065,7 +1065,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 			return this;
 		}
 		if (permittedTypes == CtElementImpl.<CtTypeReference<?>>emptySet()) {
-			permittedTypes = new LinkedHashSet<>();
+			permittedTypes = new HashSet<>();
 		}
 		this.permittedTypes.add(type);
 		return this;

@@ -8,6 +8,7 @@
 package spoon.support.reflect.declaration;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
@@ -74,7 +75,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 			enumValue.setParent(this);
 			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, VALUE, this.enumValues, enumValue);
 			enumValues.add(enumValue);
-			if (enumValue.getDefaultExpression() != null) {
+			if (enumValue.getDefaultExpression() instanceof CtNewClass<?>) {
 				// TODO set implicit sealed modifier
 				removeModifier(ModifierKind.FINAL); // enum is not final anymore
 			}
