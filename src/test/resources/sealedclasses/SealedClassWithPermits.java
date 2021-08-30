@@ -1,4 +1,3 @@
 public sealed class SealedClassWithPermits
-		permits ExtendingClass,
-		OtherExtendingClass {
+		permits ExtendingClass, OtherExtendingClass {
 }
