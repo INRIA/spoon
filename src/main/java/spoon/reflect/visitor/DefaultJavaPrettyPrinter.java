@@ -2180,7 +2180,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			}
 			i++;
 		}
-		throw new SpoonException("simpleName is not a valid identifier (" + simpleName + ")");
+		return simpleName;
 	}
 
 }
