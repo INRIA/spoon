@@ -10,9 +10,7 @@ package spoon.reflect.factory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.StringTokenizer;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
@@ -160,26 +158,47 @@ public class PackageFactory extends SubFactory {
 			throw new RuntimeException("Invalid package name " + qualifiedName);
 		}
 
-		return factory.getModel().getAllModules().stream()
-				.map(module -> getPackageFromModule(qualifiedName, module))
-				.filter(Objects::nonNull)
-				.max(Comparator.comparingInt(CtPackage::getContainedTypeCount))
-				.orElse(null);
+		CtPackage maxPackage = null;
+		int maxTypeCount = Integer.MIN_VALUE;
+		for (CtModule module : factory.getModel().getAllModules()) {
+			CtPackage aPackage = getPackageFromModule(qualifiedName, module);
+			if (aPackage == null) {
+				continue;
+			}
+			int aPackageCount = aPackage.getContainedTypeCount();
+			if (aPackageCount > maxTypeCount) {
+				maxPackage = aPackage;
+				maxTypeCount = aPackageCount;
+			}
+		}
+
+		return maxPackage;
 	}
 
 	/**
 	 * @param qualifiedName Qualified name of a package.
-	 * @param module A module in which to search for the package.
+	 * @param ctModule A module in which to search for the package.
 	 * @return The package if found in this module, otherwise null.
 	 */
-	private static CtPackage getPackageFromModule(String qualifiedName, CtModule module) {
-		StringTokenizer token = new StringTokenizer(qualifiedName, CtPackage.PACKAGE_SEPARATOR);
-		CtPackage current = module.getRootPackage();
-		while (token.hasMoreElements() && current != null) {
-			current = current.getPackage(token.nextToken());
+	private static CtPackage getPackageFromModule(String qualifiedName, CtModule ctModule) {
+		int index = 0;
+		int nextIndex;
+		CtPackage current = ctModule.getRootPackage();
+
+		if (qualifiedName.isEmpty() || current == null) {
+			return current;
 		}
 
-		return current;
+		while ((nextIndex = qualifiedName.indexOf(CtPackage.PACKAGE_SEPARATOR_CHAR, index)) >= 0) {
+			current = current.getPackage(qualifiedName.substring(index, nextIndex));
+			index = nextIndex + 1;
+
+			if (current == null) {
+				return null;
+			}
+		}
+
+		return current.getPackage(qualifiedName.substring(index));
 	}
 
 	/**
