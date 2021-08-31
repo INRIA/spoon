@@ -728,11 +728,16 @@ public class JDTTreeBuilderHelper {
 				type.addSuperInterface(superInterface);
 			}
 		}
-
-		if (typeDeclaration.binding.permittedTypes != null) {
+		if (typeDeclaration.permittedTypes != null) {
+			for (TypeReference permittedType : typeDeclaration.permittedTypes) {
+				CtTypeReference<?> reference = jdtTreeBuilder.references.buildTypeReference(permittedType, typeDeclaration.scope);
+				type.addPermittedType(reference);
+			}
+		} else if (typeDeclaration.binding.permittedTypes != null) {
 			for (ReferenceBinding permittedType : typeDeclaration.binding.permittedTypes) {
-				CtTypeReference<?> typeReference = jdtTreeBuilder.references.getTypeReference(permittedType);
-				type.addPermittedType(typeReference);
+				CtTypeReference<?> reference = jdtTreeBuilder.references.getTypeReference(permittedType);
+				reference.setImplicit(true);
+				type.addPermittedType(reference);
 			}
 		}
 
