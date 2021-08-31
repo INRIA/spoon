@@ -549,7 +549,7 @@ public class ElementPrinterHelper {
 	}
 
 	public void printPermits(CtType<?> type) {
-		if (type.getPermittedTypes().isEmpty()) {
+		if (type.getPermittedTypes().isEmpty() || type.getPermittedTypes().stream().allMatch(CtElement::isImplicit)) {
 			return;
 		}
 		printer.writeln().incTab().writeKeyword("permits").writeSpace();
