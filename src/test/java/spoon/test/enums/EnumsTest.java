@@ -18,9 +18,12 @@ package spoon.test.enums;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtMethod;
@@ -30,6 +33,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.SpoonTestHelpers;
 import spoon.test.annotation.AnnotationTest;
 import spoon.test.enums.testclasses.Burritos;
 import spoon.test.enums.testclasses.Foo;
@@ -38,6 +42,8 @@ import spoon.test.enums.testclasses.Regular;
 import spoon.test.enums.testclasses.EnumWithMembers;
 import spoon.testing.utils.ModelUtils;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
@@ -204,5 +210,30 @@ public class EnumsTest {
 		assertFalse(lenField.isFinal());
 		assertFalse(lenField.isPublic());
 		assertFalse(lenField.isProtected());
+	}
+
+	@org.junit.jupiter.api.Test
+	void testLocalEnumExists() {
+		// contract: local enums and their members are part of the model
+		String code = SpoonTestHelpers.wrapLocal(
+				"		enum MyEnum {\n" +
+						"			A,\n" +
+						"			B;\n" +
+						"			public void doNothing() { }\n" +
+						"		}\n"
+		);
+		CtModel model = SpoonTestHelpers.createModelFromString(code, 16);
+		CtBlock<?> block = SpoonTestHelpers.getBlock(model);
+
+		assertThat("The local enum does not exist in the model", block.getStatements().size(), is(1));
+
+		CtStatement statement = block.getStatement(0);
+		Assertions.assertTrue(statement instanceof CtEnum<?>);
+		CtEnum<?> enumType = (CtEnum<?>) statement;
+
+		assertThat(enumType.isLocalType(), is(true));
+		assertThat(enumType.getSimpleName(), is("1MyEnum"));
+		assertThat(enumType.getEnumValues().size(), is(2));
+		assertThat(enumType.getMethods().size(), is(1));
 	}
 }

@@ -18,12 +18,17 @@ package spoon.test.interfaces;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
+import spoon.reflect.CtModel;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.test.SpoonTestHelpers;
 import spoon.test.interfaces.testclasses.ExtendsDefaultMethodInterface;
 import spoon.test.interfaces.testclasses.ExtendsStaticMethodInterface;
 import spoon.test.interfaces.testclasses.InterfaceWithDefaultMethods;
@@ -33,6 +38,8 @@ import spoon.test.interfaces.testclasses.RedefinesStaticMethodInterface;
 import java.io.File;
 import java.util.function.Consumer;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
@@ -126,5 +133,29 @@ public class InterfaceTest {
 		final CtMethod<?> getZoneIdMethod = ctInterface.getMethodsByName("getZoneId").get(0);
 		assertFalse("Method in the sub interface mustn't be a static method", getZoneIdMethod.getModifiers().contains(ModifierKind.STATIC));
 		assertSame("Interface of the static method must be the sub interface", RedefinesStaticMethodInterface.class, getZoneIdMethod.getDeclaringType().getActualClass());
+	}
+
+	@org.junit.jupiter.api.Test
+	void testLocalInterfaceExists() {
+		// contract: local interfaces and their members are part of the model
+		String code = SpoonTestHelpers.wrapLocal(
+				"		interface MyInterface {\n" +
+						"			static final int A = 1;\n" +
+						"			void doNothing();\n" +
+						"		}\n"
+		);
+		CtModel model = SpoonTestHelpers.createModelFromString(code, 16);
+		CtBlock<?> block = SpoonTestHelpers.getBlock(model);
+
+		assertThat("The local interface does not exist in the model", block.getStatements().size(), is(1));
+
+		CtStatement statement = block.getStatement(0);
+		Assertions.assertTrue(statement instanceof CtInterface<?>);
+		CtInterface<?> interfaceType = (CtInterface<?>) statement;
+
+		assertThat(interfaceType.isLocalType(), is(true));
+		assertThat(interfaceType.getSimpleName(), is("1MyInterface"));
+		assertThat(interfaceType.getFields().size(), is(1));
+		assertThat(interfaceType.getMethods().size(), is(1));
 	}
 }
