@@ -36,7 +36,7 @@ Options :
         Define tabulation size. (default: 4)
 
   [--level <level>]
-        Level of the ouput messages about what spoon is doing. (default: OFF)
+        Level of the output messages about what spoon is doing. (default: OFF)
 
   [--with-imports]
         Enable imports in generated files.

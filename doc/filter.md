@@ -15,7 +15,7 @@ All elements provide a set of appropriate getters to get the children of an elem
 methods = ctClass.getMethods();
 ```
 
-In addition, there exists a generic getter based on the role played by an element with respect to its parent. See CtRole for a complete list of roles.
+In addition, there exists a generic getter based on the role played by an element with respect to its parent. See `CtRole` ([javadoc](https://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/path/CtRole.html)) for a complete list of roles.
 
 ```java
 methods = ctClass.getValueByRole(CtRole.METHOD);
@@ -88,7 +88,7 @@ assertEquals(1, scanner.visited);
 
 `EarlyTerminatingScanner` is a specialized Class implementing `CtScanner` that stops once `terminate()` has been called.
 
-See also `CtVisitor`.
+See also `CtVisitor` ([javadoc](https://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/visitor/CtVisitor.html)).
 
 ### Iterator
 
@@ -102,7 +102,7 @@ while (iterator.hasNext()) {
 }
 ```
 
-`CtBFSIterator` is similar to CtIterator but in Breadth first order.
+`CtBFSIterator` is similar to `CtIterator` but in Breadth first order.
 
 ### Queries
 
@@ -134,7 +134,7 @@ A boolean return value of the lambda tells whether the elements are selected for
 list3 = rootPackage.filterChildren((CtField field)->field.getModifiers.contains(ModifierKind.PUBLIC)).list();
 ```
 
-**Chaining** If the CtFunction returns an object, this object is given as result to the next step of the query.
+**Chaining** If the `CtFunction` returns an object, this object is given as result to the next step of the query.
 All results of the last query step are results of the query. The results of intermediate steps are not results of the query.:
 
 ```java
@@ -147,7 +147,7 @@ rootPackage
 ;
 ```
 
-Finally, if the CtFunction returns and Iterable or an Array then each item of the collection/array is sent to next query step or result.
+Finally, if the `CtFunction` returns and Iterable or an Array then each item of the collection/array is sent to next query step or result.
 
 **Query reuse**. Method `setInput` allows you to reuse the same query over multiple inputs. 
 In such case it makes sense to create unbound query using `Factory#createQuery()`.
@@ -177,7 +177,7 @@ rootPackage
 Finally there is `CtQuery#first()`, 
 which evaluates the query until first query result is found.
 Then the evaluation is terminated and first result is returned. 
-It is faster then `query.list().get(0)`, because query engine does not collect other results.
+It is faster than `query.list().get(0)`, because query engine does not collect other results.
 
 ```java
 // returns first deprecated element

@@ -2,12 +2,12 @@
 title: Spoon Patterns
 ---
 
-Spoon patterns enables you to find code elements. A Spoon pattern is based on a one or several AST nodes, which represent the code to match, where some parts of the AST are pattern parameters. When a pattern is matched, one can access to the code matched in each pattern parameter.
+Spoon patterns enable you to find code elements. A Spoon pattern is based on a one or several AST nodes, which represent the code to match, where some parts of the AST are pattern parameters. When a pattern is matched, one can access to the code matched in each pattern parameter.
 
 The main classes of Spoon patterns are those in package `spoon.pattern`:
 
 * classes: PatternBuilder, Pattern, Match, PatternBuilderHelper, PatternParameterConfigurator, InlinedStatementConfigurator 
-* eums: ConflictResolutionMode, Quantifier
+* enums: ConflictResolutionMode, Quantifier
 
 See also [examples in project `spoon-examples`](https://github.com/SpoonLabs/spoon-examples/blob/master/src/main/java/fr/inria/gforge/spoon/analysis/PatternTest.java)
 
@@ -38,7 +38,7 @@ Pattern t = PatternBuilder.create(elem)
 ```
 
 
-If you call `configurePatternParameters()`, all variables that are declared outside of the AST node are automatically declared a pattern parameter. 
+If you call `configurePatternParameters()`, all variables that are declared outside the AST node are automatically declared a pattern parameter. 
 ```
 Pattern t = PatternBuilder.create(elem)
     .configurePatternParameters()
@@ -57,7 +57,7 @@ List<Match> matches = pattern.getMatches(ctClass);
 
 ### Match
 
-A `Match` represent a match of a pattern on a code elements. The main methods are `getMatchingElement` and `getMatchingElements`.
+A `Match` represents a match of a pattern on a code element. The main methods are `getMatchingElement` and `getMatchingElements`.
 
 ### PatternBuilderHelper
 
@@ -65,7 +65,7 @@ A `Match` represent a match of a pattern on a code elements. The main methods ar
 
 ### PatternParameterConfigurator
 
-To create pattern paramters, one uses a `PatternParameterConfigurator` as a lambda:
+To create pattern parameters, one uses a `PatternParameterConfigurator` as a lambda:
 
 
 ```java
@@ -105,28 +105,28 @@ or any variable named with the provided simple name are considered as pattern pa
 which references instance of a class with fields. Each such field is considered as pattern parameter.
 * `byFilter(Filter)` - any pattern model element, where `Filter.accept(element)` returns true is a pattern parameter.
 * `byRole(CtRole role, Filter filter)` - the attribute defined by `role` of all 
-pattern model elements, where `Filter.accept(element)` returns true is a pattern parameter. It can be used to define a varible on any CtElement attribute. E.g. method modifiers or throwables, ...
-* `byString(String name)` - all pattern model string attributes whose value is equal to `name` are considered as pattern parameter.This can be used to define full name of the methods and fields, etc.
+pattern model elements, where `Filter.accept(element)` returns true is a pattern parameter. It can be used to define a variable on any CtElement attribute. E.g. method modifiers or throwables, ...
+* `byString(String name)` - all pattern model string attributes whose value is equal to `name` are considered as pattern parameter. This can be used to define full name of the methods and fields, etc.
 * `bySubstring(String stringMarker)` - all pattern model string attributes whose value contains
 whole string or a substring equal to `stringMarker`are pattern parameter. Note: only the `stringMarker` substring of the string value is substituted, other parts of string/element name are kept unchanged.
-* `byNamedElement(String name)` - any CtNamedElement identified by it's simple name is a pattern parameter.
-* `byReferenceName(String name)` - any CtReference identified by it's simple name is a pattern parameter.
+* `byNamedElement(String name)` - any CtNamedElement identified by its simple name is a pattern parameter.
+* `byReferenceName(String name)` - any CtReference identified by its simple name is a pattern parameter.
 
 
 Any parameter of a pattern can be configured like this:
 
-* `setMinOccurence(int)` - defines minimal number of occurences of the value of this parameter during **matching**,
+* `setMinOccurrence(int)` - defines minimal number of occurrences of the value of this parameter during **matching**,
 which is needed by matcher to accept that value. 
-  * `setMinOccurence(0)` - defines optional parameter
-  * `setMinOccurence(1)` - defines mandatory parameter
-  * `setMinOccurence(n)` - defines parameter, whose value must be repeated at least n-times
-* `setMaxOccurence(int)` - defines maximal number of occurences of the value of this parameter during **matching**,
+  * `setMinOccurrence(0)` - defines optional parameter
+  * `setMinOccurrence(1)` - defines mandatory parameter
+  * `setMinOccurrence(n)` - defines parameter, whose value must be repeated at least n-times
+* `setMaxOccurrence(int)` - defines maximal number of occurrences of the value of this parameter during **matching**,
 which is accepted by matcher to accept that value.
-* `setMatchingStrategy(Quantifier)` - defines how to matching engine arehave when two pattern nodes may accept the same value.
+* `setMatchingStrategy(Quantifier)` - defines how the matching engine behaves when two pattern nodes may accept the same value.
   * `Quantifier#GREEDY` - Greedy quantifiers are considered "greedy" because they force the matcher to read in, or eat, the entire input prior to attempting the next match.
 If the next match attempt (the entire input) fails, the matcher backs off the input by one and tries again,
 repeating the process until a match is found or there are no more elements left to back off from.
-  * `Quantifier#RELUCTANT` - The reluctant quantifier takes the opposite approach: It start at the beginning of the input,
+  * `Quantifier#RELUCTANT` - The reluctant quantifier takes the opposite approach: It starts at the beginning of the input,
 then reluctantly eat one character at a time looking for a match.
 The last thing it tries is the entire input.
   * `Quantifier#POSSESSIVE` - The possessive quantifier always eats the entire input string,
@@ -146,7 +146,7 @@ The `setValueType(type)` is called internally too, so match condition assures bo
 
 ### InlinedStatementConfigurator
 
-It is possible to match inlined code, eg:
+It is possible to match inlined code, e.g.:
 
 ```java
 System.out.println(1);
@@ -184,7 +184,7 @@ is understood as inline statement
 
 ### Generator
 
-All patterns can be used for code generation. The idea is that one calls `#generator()` on a pattern object to get a `Generator`. This class contains methods that takes as input a map of string,objects where each string key points to a pattern parameter name and each map value contains the element to be put in place of the pattern parameter.
+All patterns can be used for code generation. The idea is that one calls `#generator()` on a pattern object to get a `Generator`. This class contains methods that takes as input a map of string, objects where each string key points to a pattern parameter name and each map value contains the element to be put in place of the pattern parameter.
 
 
 ```java
@@ -203,7 +203,7 @@ List<CtMethod> aMethods = pattern.generator().generate(params);
 
 The unique feature of Spoon pattern matching is that we are matching on AST trees and not source code text. It means that:
 
-* source code formating is ignored. For example:
+* source code formatting is ignored. For example:
 
 ```java
 void m() {}

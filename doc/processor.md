@@ -67,13 +67,13 @@ This [Factory example](https://github.com/SpoonLabs/spoon-examples/blob/master/s
 
 ### Parallel Processor
 
-Lets assume you want to use multiple cores for your processor. Spoon provides a simple high-level API for this task.
-Using the CatchProcessor from before create a `AbstractParallelProcessor`. 
+Let's assume you want to use multiple cores for your processor. Spoon provides a simple high-level API for this task.
+Using the `CatchProcessor` from before create a `AbstractParallelProcessor`. 
 
 ```java
 			Processor<CtCatch> parallelProcessor = new AbstractParallelProcessor<CtCatch>(
 				Arrays.asList(new CatchProcessor(), new CatchProcessor())) {};
 ```
-Now you have the same processor behavior as before, but 2 parallel running processor.
+Now you have the same processor behavior as before, but 2 parallel running processors.
 You can upscale this pretty high, but keep in mind to not use more parallel processors than available cores for maximum speedup.
 For more information about parallel processor and the API have a look in the [documentation](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/processing/AbstractParallelProcessor.html). 
