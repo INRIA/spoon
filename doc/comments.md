@@ -5,13 +5,13 @@ keywords: comments position
 
 In Spoon there are four different kinds of comments:
 
-* File comments (comment at the begin of the file, generally licence) `CtComment.CommentType.FILE`
+* File comments (comment at the beginning of the file, generally licence) `CtComment.CommentType.FILE`
 * Line comments (from // to end line) `CtComment.CommentType.INLINE`
 * Block comments (from /* to */) `CtComment.CommentType.BLOCK`
 * Javadoc comments (from /** to */) `CtComment.CommentType.JAVADOC`
 
 The comments are represented in Spoon with a `CtComment` class ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtComment.html)). 
-This class exposes an API to get the content `CtComment.getContent()`, the type `CtComment.getCommentType()` and the position `CtComment.getPosition()` of an comment.
+This class exposes an API to get the content `CtComment.getContent()`, the type `CtComment.getCommentType()` and the position `CtComment.getPosition()` of a comment.
 
 We also try to understand to which element they are attached.
 We use some simple heuristics that work well in nominal cases but cannot address all specific cases.

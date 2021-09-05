@@ -150,7 +150,7 @@ Substitution.insertAll(aCtClass, t);
 All meta-model elements can be used as template parameter. 
 There are two ways of defining such a template parameter.
 
-1) Using a subtype of TemplateParameter
+1) Using a subtype of `TemplateParameter`
 
 The following template uses a block as template parameter.
 This template type-checks, and can be used as input by the substitution
@@ -232,7 +232,7 @@ void methodName() {
 }
 ```
 
-To use a parameter with a type String like other primitive types, use CtLiteral<String>.
+To use a parameter with a type String like other primitive types, use `CtLiteral<String>`.
 
 ```java
 // with CtLiteral<String> template parameter, which is used to substitute String literal 
