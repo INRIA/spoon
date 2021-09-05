@@ -136,17 +136,3 @@ jobs:
         run: ./chore/ci-extra.sh
       - name: Run Javadoc quality check
         run: ./chore/check-javadoc-regressions.py COMPARE_WITH_MASTER
-
-  sorald-buildbreaker:
-    runs-on: ubuntu-latest
-    name: Run Sorald Buildbreaker
-    steps:
-      - name: Checkout
-        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # renovate: tag=v2.3.4
-        with:
-          fetch-depth: 0
-      - name: Run Sorald Buildbreaker
-        uses: SpoonLabs/sorald-buildbreaker@35c1a784848bd3182cfcc8a584cff90560fa6371 # dev version
-        with:
-          source: 'src/main/java'
-          ratchet-from: 'origin/master'
