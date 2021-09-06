@@ -177,13 +177,12 @@ public class ElementPrinterHelper {
 	 */
 	public void writeElementList(List<CtTypeMember> elements) {
 		for (CtTypeMember element : elements) {
-			if (element instanceof CtConstructor || element.isImplicit()) {
-				continue;
-			}
-			printer.writeln();
-			prettyPrinter.scan(element);
-			if (!env.isPreserveLineNumbers()) {
+			if (!element.isImplicit()) {
 				printer.writeln();
+				prettyPrinter.scan(element);
+				if (!env.isPreserveLineNumbers()) {
+					printer.writeln();
+				}
 			}
 		}
 	}
