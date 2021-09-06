@@ -589,6 +589,16 @@ public interface Environment {
 	 * @return true if spoon is allowed to create a model of a project that contains multiple copies of the same class
 	 */
 	boolean isIgnoreDuplicateDeclarations();
+	/**
+	 * Whether Spoon currently ignores JLS correctness.
+	 * @return true if spoon ignores JLS correctness, false if spoon throws {@link spoon.JLSViolationException} when it detects JLS violation.
+	 */
+	boolean isIgnoreJLSCorrectness();
+	/**
+	 * Sets whether Spoon should ignore JLS violations.
+	 * @param ignoreJLSCorrectness true if spoon should ignore JLS violations, false if spoon should throw {@link spoon.JLSViolationException} when it detects JLS violation.
+	 */
+	void setIgnoreJLSCorrectness(boolean ignoreJLSCorrectness);
 
 	/**
 	 * Set Spoon to ignore duplicate type declarations in a project.

@@ -9,6 +9,7 @@ package spoon.support.reflect.declaration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spoon.JLSViolationException;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtBlock;
@@ -633,5 +634,15 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 		this.accept(scanner);
 		return directChildren;
+	}
+
+	@Override
+	public void throwJLSViolationException(String reason) {
+		if (this.getFactory() != null && this.getFactory().getEnvironment() != null
+				&& this.getFactory().getEnvironment().isIgnoreJLSCorrectness()) {
+			throw new JLSViolationException(reason);
+		} else {
+			LOGGER.info("An element is not compliant to the JLS. See: {}", reason);
+		}
 	}
 }

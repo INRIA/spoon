@@ -128,6 +128,8 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private Supplier<PrettyPrinter> prettyPrinterCreator;
 
+	private boolean ignoreJLSCorrectness = false;
+
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
@@ -727,5 +729,15 @@ private transient  ClassLoader inputClassloader;
 	@Override
 	public void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations) {
 		this.ignoreDuplicateDeclarations = ignoreDuplicateDeclarations;
+	}
+
+	@Override
+	public boolean isIgnoreJLSCorrectness() {
+		return ignoreJLSCorrectness;
+	}
+
+	@Override
+	public void setIgnoreJLSCorrectness(boolean ignoreJLSCorrectness) {
+		this.ignoreJLSCorrectness = ignoreJLSCorrectness;
 	}
 }
