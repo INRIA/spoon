@@ -2200,12 +2200,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.writeFormalTypeParameters(recordType);
 			elementPrinterHelper.writeImplementsClause(recordType);
 		}
+		visitCtType(recordType);
+		printer.writeKeyword("record").writeSpace().writeIdentifier(stripLeadingDigits(recordType.getSimpleName()));
+		elementPrinterHelper.printList(recordType.getRecordComponents(), null, false, "(", false, false, ",", true, false, ")", this::visitCtRecordComponent);
+		elementPrinterHelper.writeFormalTypeParameters(recordType);
+		elementPrinterHelper.writeImplementsClause(recordType);
+
 		printer.writeSpace().writeSeparator("{").incTab();
 		elementPrinterHelper.writeElementList(recordType.getTypeMembers());
 		getPrinterHelper().adjustEndPosition(recordType);
 		printer.decTab().writeSeparator("}");
 		context.popCurrentThis();
-
 	}
 
 
@@ -2215,6 +2220,17 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		visitCtTypeReference(recordComponent.getType());
 		printer.writeSpace();
 		printer.writeIdentifier(recordComponent.getSimpleName());
+	}
+
+	protected String stripLeadingDigits(String simpleName) {
+		int i = 0;
+		while (i < simpleName.length()) {
+			if (!Character.isDigit(simpleName.charAt(i))) {
+				return simpleName.substring(i);
+			}
+			i++;
+		}
+		return simpleName;
 
 	}
 
