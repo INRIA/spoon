@@ -930,7 +930,10 @@ public class CommentTest {
 				if ("CtEnum".equals(x.getSimpleName())) {
 					return;
 				}
-
+				// compiler fails because it references java.lang.Record which is a jdk16 class. This tests runs on jdks <16
+				if ("CtRecord".equals(x.getSimpleName())) {
+					return;
+				}
 				// too hard to snippetize
 				if ("CtAnnotationFieldAccess".equals(x.getSimpleName())) {
 					return;
