@@ -36,8 +36,11 @@ import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import java.io.File;
 import java.util.Set;
 
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
+import org.junit.jupiter.api.Assertions;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
@@ -45,6 +48,7 @@ import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtClass;
@@ -59,6 +63,7 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.test.SpoonTestHelpers;
 import spoon.test.ctClass.testclasses.AnonymousClass;
 import spoon.test.ctClass.testclasses.Foo;
 import spoon.test.ctClass.testclasses.Pozole;
@@ -388,5 +393,29 @@ public class CtClassTest {
 		assertEquals(0, annotatedClass.getAnnotations().size());
 		assertTrue(firstRemovalSuccessful);
 		assertFalse(secondRemovalSuccessful);
+	}
+
+	@org.junit.jupiter.api.Test
+	void testLocalClassExists() {
+		// contract: local classes and their members are part of the model
+		String code = SpoonTestHelpers.wrapLocal(
+				"		class MyClass {\n" +
+						"			private int field = 2;\n" +
+						"			public void doNothing() { }\n" +
+						"		}\n"
+		);
+		CtModel model = SpoonTestHelpers.createModelFromString(code, 5);
+		CtBlock<?> block = SpoonTestHelpers.getBlock(model);
+
+		MatcherAssert.assertThat("The local class does not exist in the model", block.getStatements().size(), CoreMatchers.is(1));
+
+		CtStatement statement = block.getStatement(0);
+		Assertions.assertTrue(statement instanceof CtClass<?>);
+		CtClass<?> clazz = (CtClass<?>) statement;
+
+		MatcherAssert.assertThat(clazz.isLocalType(), CoreMatchers.is(true));
+		MatcherAssert.assertThat(clazz.getSimpleName(), CoreMatchers.is("1MyClass"));
+		MatcherAssert.assertThat(clazz.getFields().size(), CoreMatchers.is(1));
+		MatcherAssert.assertThat(clazz.getMethods().size(), CoreMatchers.is(1));
 	}
 }

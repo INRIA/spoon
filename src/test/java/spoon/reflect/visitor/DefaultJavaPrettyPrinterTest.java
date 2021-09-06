@@ -82,4 +82,25 @@ public class DefaultJavaPrettyPrinterTest {
 
         assertThat(output, not(containsString("import java.util.function.IntFunction;")));
     }
+
+    @Test
+    void testLocalTypesPrintedWithoutLeadingDigits() {
+        // contract: leading digits should be stripped from simple names when printing
+        Launcher launcher = new Launcher();
+        launcher.getEnvironment().setComplianceLevel(16);
+        launcher.addInputResource("src/test/resources/localtypes");
+        launcher.buildModel();
+
+        CtCompilationUnit cu = launcher.getFactory().Type().get("LocalTypesHolder")
+                .getPosition().getCompilationUnit();
+
+        String output = cu.prettyprint();
+        // local classes will always have a leading space, without leading digits
+        assertThat(output, containsString(" MyClass"));
+        assertThat(output, containsString(" MyEnum"));
+        assertThat(output, containsString(" MyInterface"));
+        // the code does not contain a 1, which would be the prefix of the local types' binary names
+        // in the given code snippet
+        assertThat(output, not(containsString("1")));
+    }
 }

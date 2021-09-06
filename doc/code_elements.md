@@ -524,3 +524,14 @@ int x = switch(i) { // <-- switch expression
     }
 
 ```
+### CtInterface
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtInterface.html)
+
+```java
+
+    // an interface definition
+    interface Foo {
+       void bar();
+    }
+
+```
