@@ -19,6 +19,8 @@ package spoon.test.comment;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.CtModel;
@@ -868,6 +870,7 @@ public class CommentTest {
 	}
 
 	@Test
+	@EnabledForJreRange(min = JRE.JAVA_16)
 	public void testDocumentationContract() throws Exception {
 		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: all metamodel classes must be commented with an example.
@@ -928,10 +931,6 @@ public class CommentTest {
 
 				// a statement in really rare cases
 				if ("CtEnum".equals(x.getSimpleName())) {
-					return;
-				}
-				// compiler fails because it references java.lang.Record which is a jdk16 class. This tests runs on jdks <16
-				if ("CtRecord".equals(x.getSimpleName())) {
 					return;
 				}
 				// too hard to snippetize
