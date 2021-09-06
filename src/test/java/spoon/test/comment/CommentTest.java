@@ -877,7 +877,7 @@ public class CommentTest {
 		launcher.getEnvironment().setCommentEnabled(true);
 
 		launcher.getEnvironment().setComplianceLevel(16);
-		launcher.getEnvironment().setPreviewFeaturesEnabled(true);
+		// launcher.getEnvironment().setPreviewFeaturesEnabled(true);
 		
 		// interfaces.
 		launcher.addInputResource("./src/main/java/spoon/reflect/");
