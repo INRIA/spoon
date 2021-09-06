@@ -2201,7 +2201,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			elementPrinterHelper.writeImplementsClause(recordType);
 		}
 		printer.writeSpace().writeSeparator("{").incTab();
-		elementPrinterHelper.writeElementList(recordType.getTypeMembers().stream().filter(element -> !element.isImplicit()).collect(Collectors.toList()));
+		elementPrinterHelper.writeElementList(recordType.getTypeMembers());
 		getPrinterHelper().adjustEndPosition(recordType);
 		printer.decTab().writeSeparator("}");
 		context.popCurrentThis();

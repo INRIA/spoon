@@ -177,7 +177,7 @@ public class ElementPrinterHelper {
 	 */
 	public void writeElementList(List<CtTypeMember> elements) {
 		for (CtTypeMember element : elements) {
-			if (element instanceof CtConstructor && element.isImplicit()) {
+			if (element instanceof CtConstructor || element.isImplicit()) {
 				continue;
 			}
 			printer.writeln();
