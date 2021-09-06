@@ -6,6 +6,16 @@
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.reflect.declaration;
+/**
+ * This element represents a record component.
+ *
+ * Example:
+ * <pre>
+ *    // x is a record component
+ *    record Point(int x) {
+ *    }
+ * </pre>
+ */
 
 public interface CtRecordComponent<T> extends CtTypedElement<T>, CtNamedElement {
 
