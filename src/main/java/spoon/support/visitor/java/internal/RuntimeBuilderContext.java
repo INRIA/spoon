@@ -14,6 +14,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.path.CtRole;
@@ -43,6 +44,7 @@ public interface RuntimeBuilderContext {
 
 	void addFormalType(CtTypeParameter parameterRef);
 
+	void addRecordComponent(CtRecordComponent<?> ctRecordComponent);
 
 	CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string);
 }

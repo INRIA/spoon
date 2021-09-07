@@ -14,6 +14,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -76,6 +77,12 @@ abstract class AbstractRuntimeBuilderContext implements RuntimeBuilderContext {
 
 	@Override
 	public void addTypeReference(CtRole role, CtTypeReference<?> ctTypeReference) {
+		throw new UnsupportedOperationException();
+	}
+
+
+	@Override
+	public void addRecordComponent(CtRecordComponent<?> ctRecordComponent) {
 		throw new UnsupportedOperationException();
 	}
 

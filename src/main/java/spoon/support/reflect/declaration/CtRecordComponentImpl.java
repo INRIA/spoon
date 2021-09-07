@@ -16,6 +16,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtRecordComponent;
+import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
@@ -28,6 +29,8 @@ public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRe
 	private static final Set<String> forbiddenNames = createForbiddenNames();
 	@MetamodelPropertyField(role = CtRole.TYPE)
 	private CtTypeReference<T> type;
+	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
+	boolean isShadow;
 
 	@Override
 	public CtMethod<?> toMethod() {
@@ -106,6 +109,20 @@ public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRe
 	@Override
 	public CtRecordComponent<T> clone() {
 		return (CtRecordComponent<T>) super.clone();
+	}
+
+
+
+	@Override
+	public boolean isShadow() {
+		return isShadow;
+	}
+
+	@Override
+	public <E extends CtShadowable> E setShadow(boolean isShadow) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.IS_SHADOW, isShadow, this.isShadow);
+		this.isShadow = isShadow;
+		return (E) this;
 	}
 }
 
