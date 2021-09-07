@@ -84,7 +84,7 @@ class MethodHandleUtils {
 	}
 	private static MethodHandle lookupRecordComponentType() {
 		try {
-			return MethodHandles.lookup().findVirtual(Class.class, "getType", MethodType.methodType(Type.class));
+			return MethodHandles.lookup().findVirtual(Class.class, "getGenericType", MethodType.methodType(Type.class));
 		} catch (NoSuchMethodException | IllegalAccessException e) {
 			return null;
 		}
