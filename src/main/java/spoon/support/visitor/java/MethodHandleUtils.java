@@ -15,9 +15,9 @@ class MethodHandleUtils {
 		// no instance
 	}
 
+	private static Class<?> recordComponent = lookupRecordComponentClass();
 	private static MethodHandle isRecord = lookupRecord();
 	private static MethodHandle lookupRecordComponents = lookupRecordComponents();
-	private static Class<?> recordComponent = lookupRecordComponentClass();
 	private static MethodHandle lookupRecordComponentName = lookupRecordComponentName();
 	private static MethodHandle lookupRecordComponentType = lookupRecordComponentType();
 

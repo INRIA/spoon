@@ -598,7 +598,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public void visitRecordComponent(AnnotatedElement recordComponent) {
-		
+
 	}
 
 }
