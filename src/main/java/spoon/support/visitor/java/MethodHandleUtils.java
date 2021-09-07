@@ -70,7 +70,7 @@ class MethodHandleUtils {
 	private static MethodHandle lookupRecord() {
 		try {
 			return MethodHandles.lookup().findVirtual(Class.class, "isRecord", MethodType.methodType(boolean.class));
-		} catch (NoSuchMethodException | IllegalAccessException e) {
+		} catch (Throwable e) {
 			return null;
 		}
 	}
@@ -78,14 +78,14 @@ class MethodHandleUtils {
 		try {
 			MethodType arrayOfRecordComponentType = MethodType.methodType(Array.newInstance(recordComponent, 0).getClass());
 			return MethodHandles.lookup().findVirtual(Class.class, "getRecordComponents", arrayOfRecordComponentType);
-		} catch (NoSuchMethodException | IllegalAccessException e) {
+		} catch (Throwable e) {
 			return null;
 		}
 	}
 	private static MethodHandle lookupRecordComponentType() {
 		try {
 			return MethodHandles.lookup().findVirtual(recordComponent, "getGenericType", MethodType.methodType(Type.class));
-		} catch (NoSuchMethodException | IllegalAccessException e) {
+		} catch (Throwable e) {
 			return null;
 		}
 	}
@@ -93,7 +93,7 @@ class MethodHandleUtils {
 	private static MethodHandle lookupRecordComponentName() {
 		try {
 			return MethodHandles.lookup().findVirtual(recordComponent, "getName", MethodType.methodType(String.class));
-		} catch (NoSuchMethodException | IllegalAccessException e) {
+		} catch (Throwable e) {
 			return null;
 		}
 	}
