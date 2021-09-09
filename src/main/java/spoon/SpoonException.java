@@ -10,6 +10,7 @@ package spoon;
 import java.lang.invoke.MethodHandles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spoon.compiler.Environment;
 import spoon.processing.FactoryAccessor;
 
 /** is a generic runtime exception for Spoon */
@@ -27,13 +28,19 @@ public class SpoonException extends RuntimeException {
 	public SpoonException(String msg, Throwable e) {
 		super(msg, e);
 	}
-
+	/**
+	 * Handles a JLSViolation according to the environment settings. If {@link Environment#getIgnoreSyntaxErrors()} is set to true, the exception is ignored.
+	 * Otherwise, the exception is thrown.
+	 * @param holder  an object with access to factory and environment.
+	 * @param reason  the reason for the exception.
+	 */
 	public static void handleJLSViolation(FactoryAccessor holder, String reason) {
-			if (holder.getFactory() != null && holder.getFactory().getEnvironment() != null
-					&& holder.getFactory().getEnvironment().getIgnoreSyntaxErrors()) {
-				throw new JLSViolation(reason);
-			} else {
-				LOGGER.info("An element is not compliant to the JLS. See: {}", reason);
-			}
+		if (holder != null && holder.getFactory() != null
+				&& holder.getFactory().getEnvironment() != null
+				&& !holder.getFactory().getEnvironment().getIgnoreSyntaxErrors()) {
+			throw new JLSViolation(reason);
+		} else {
+			LOGGER.info("An element is not compliant to the JLS. See: {}", reason);
+		}
 	}
 }
