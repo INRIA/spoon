@@ -422,9 +422,4 @@ public interface CtElement extends FactoryAccessor, CtVisitable, Cloneable, CtQu
 	@Override
 	ElementSourceFragment getOriginalSourceFragment();
 
-	/**
-	 * Throws an {@link spoon.JLSViolation} if enabled, logs otherwise.
-	 * @param reason the reason why this element is not compliant with the JLS.
-	 */
-	void throwJLSViolationException(String reason);
 }
