@@ -128,7 +128,6 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private Supplier<PrettyPrinter> prettyPrinterCreator;
 
-
 	/**
 	 * Creates a new environment with a <code>null</code> default file
 	 * generator.
