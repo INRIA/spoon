@@ -89,5 +89,9 @@ interface JavaReflectionVisitor {
 	/** Visits a {@link java.lang.Class} representing an record, see {@link Class#isRecord()} */
 	<T> void visitRecord(Class<T> clazz);
 
+	/** Visits a record component.
+	 * @param recordComponent a record component
+	*/
+
 	void visitRecordComponent(AnnotatedElement recordComponent);
 }
