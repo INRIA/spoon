@@ -634,5 +634,4 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 		this.accept(scanner);
 		return directChildren;
 	}
-
 }

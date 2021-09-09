@@ -729,5 +729,4 @@ private transient  ClassLoader inputClassloader;
 	public void setIgnoreDuplicateDeclarations(boolean ignoreDuplicateDeclarations) {
 		this.ignoreDuplicateDeclarations = ignoreDuplicateDeclarations;
 	}
-
 }
