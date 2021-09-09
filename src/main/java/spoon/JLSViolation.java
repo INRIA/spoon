@@ -11,13 +11,13 @@ package spoon;
  * <p>
  * An invalid state is a state that is not conform to the JLS. For example, a {@link spoon.reflect.declaration.CtMethod} is in an invalid state if it is abstract and has a body.
  */
-public class JLSViolationException extends SpoonException {
+public class JLSViolation extends SpoonException {
 
 	/**
-	 * Creates a new JLSViolationException with the given message.
+	 * Creates a new JLSViolation with the given message.
 	 * @param msg  the reason of the exception.
 	 */
-	public JLSViolationException(String msg) {
+	public JLSViolation(String msg) {
 		super(msg);
 	}
 
