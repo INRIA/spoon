@@ -24,6 +24,7 @@
         <java.test.version>1.8</java.test.version>
         <runtime.log>target/velocity.log</runtime.log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.outputTimestamp>1</project.build.outputTimestamp>
     </properties>
 
     <dependencies>
@@ -108,6 +109,11 @@
     <build>
         <defaultGoal>clean install</defaultGoal>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
