@@ -7,9 +7,15 @@
  */
 package spoon;
 
+import java.lang.invoke.MethodHandles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import spoon.processing.FactoryAccessor;
+
 /** is a generic runtime exception for Spoon */
 public class SpoonException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
+	protected static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	public SpoonException() {
 	}
 	public SpoonException(String msg) {
@@ -20,5 +26,14 @@ public class SpoonException extends RuntimeException {
 	}
 	public SpoonException(String msg, Throwable e) {
 		super(msg, e);
+	}
+
+	public static void handleJLSViolation(FactoryAccessor holder, String reason) {
+			if (holder.getFactory() != null && holder.getFactory().getEnvironment() != null
+					&& holder.getFactory().getEnvironment().getIgnoreSyntaxErrors()) {
+				throw new JLSViolation(reason);
+			} else {
+				LOGGER.info("An element is not compliant to the JLS. See: {}", reason);
+			}
 	}
 }
