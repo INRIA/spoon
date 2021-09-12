@@ -365,9 +365,11 @@ class JDTTreeBuilderQuery {
 		if ((modifier & ClassFileConstants.AccNative) != 0) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.NATIVE, implicit));
 		}
-		if (!isMethod && !isField && (modifier & ExtraCompilerModifiers.AccSealed) != 0) {
+		// AccSealed == AccPatternVariable == AccOverriding, so checking context is needed
+		// AccNonSealed == AccIsDefaultConstructor == AccBlankFinal, so checking context is needed
+		if ((modifier & ExtraCompilerModifiers.AccSealed) != 0 && target.contains(ModifierTarget.TYPE)) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.SEALED, false));
-		} else if (!isMethod && !isField && (modifier & ExtraCompilerModifiers.AccNonSealed) != 0) {
+		} else if ((modifier & ExtraCompilerModifiers.AccNonSealed) != 0 && target.contains(ModifierTarget.TYPE)) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.NON_SEALED, false));
 		}
 		return modifiers;
