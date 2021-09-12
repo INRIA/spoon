@@ -7,7 +7,7 @@
  */
 package spoon.support.reflect.reference;
 
-import spoon.SpoonException;
+import spoon.JLSViolation;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtElement;
@@ -115,7 +115,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 			return;
 		}
 		if (!checkAll(simplename)) {
-			SpoonException.handleJLSViolation(this, "Not allowed javaletter or keyword in identifier found. See JLS for correct identifier. Identifier: " + simplename);
+			JLSViolation.handleJLSViolation(this, "Not allowed javaletter or keyword in identifier found. See JLS for correct identifier. Identifier: " + simplename);
 		}
 	}
 

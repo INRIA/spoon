@@ -339,16 +339,16 @@ public interface Environment {
 	boolean getNoClasspath();
 
 	/**
-	 * Sets the option ignore-syntax-errors to remove files with any syntax errors from the compilation batch.
+	 * Sets the option ignore-syntax-errors to remove files with any syntax errors or JLS violations from the compilation batch.
 	 *
-	 * @param ignoreSyntaxErrors whether Spoon should ignore files with any syntax errors
+	 * @param ignoreSyntaxErrors whether Spoon should ignore files with any syntax errors or JLS violations
 	 */
 	void setIgnoreSyntaxErrors(boolean ignoreSyntaxErrors);
 
 	/**
 	 * Returns the value ot the option ignore-syntax-errors.
 	 *
-	 * @return true iff Spoon ignores files with any syntax errors
+	 * @return true iff Spoon ignores files with any syntax errors or JLS violations.
 	 */
 	boolean getIgnoreSyntaxErrors();
 

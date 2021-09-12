@@ -6,6 +6,10 @@
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon;
+
+import spoon.compiler.Environment;
+import spoon.processing.FactoryAccessor;
+
 /**
  * This exception is thrown when an operation on a {@link spoon.reflect.declaration.CtElement} transfers it in an invalid state.
  * <p>
@@ -17,8 +21,23 @@ public class JLSViolation extends SpoonException {
 	 * Creates a new JLSViolation with the given message.
 	 * @param msg  the reason of the exception.
 	 */
-	public JLSViolation(String msg) {
+	private JLSViolation(String msg) {
 		super(msg);
 	}
 
+	/**
+	 * Handles a JLSViolation according to the environment settings. If {@link Environment#getIgnoreSyntaxErrors()} is set to true, the exception is ignored.
+	 * Otherwise, the exception is thrown.
+	 * @param holder  an object with access to factory and environment.
+	 * @param reason  the reason for the exception.
+	 */
+	public static void handleJLSViolation(FactoryAccessor holder, String reason) {
+		if (holder != null && holder.getFactory() != null
+				&& holder.getFactory().getEnvironment() != null
+				&& !holder.getFactory().getEnvironment().getIgnoreSyntaxErrors()) {
+			throw new JLSViolation(reason);
+		} else {
+			LOGGER.info("An element is not compliant to the JLS. See: {}", reason);
+		}
+	}
 }
