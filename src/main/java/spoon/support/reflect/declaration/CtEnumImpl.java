@@ -22,11 +22,13 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.util.SignatureBasedSortedSet;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -76,8 +78,11 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, VALUE, this.enumValues, enumValue);
 			enumValues.add(enumValue);
 			if (enumValue.getDefaultExpression() instanceof CtNewClass<?>) {
-				// TODO set implicit sealed modifier
+				// TODO clean up, java >16 (or with preview too) only???
 				removeModifier(ModifierKind.FINAL); // enum is not final anymore
+				HashSet<CtExtendedModifier> modifiers = new HashSet<>(getExtendedModifiers());
+				modifiers.add(new CtExtendedModifier(ModifierKind.SEALED, true));
+				setExtendedModifiers(modifiers);
 			}
 		}
 
