@@ -115,7 +115,7 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 			return;
 		}
 		if (!checkAll(simplename)) {
-			JLSViolation.handleJLSViolation(this, "Not allowed javaletter or keyword in identifier found. See JLS for correct identifier. Identifier: " + simplename);
+			JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, "Not allowed javaletter or keyword in identifier found. See JLS for correct identifier. Identifier: " + simplename);
 		}
 	}
 

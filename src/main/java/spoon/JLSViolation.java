@@ -31,7 +31,7 @@ public class JLSViolation extends SpoonException {
 	 * @param holder  an object with access to factory and environment.
 	 * @param reason  the reason for the exception.
 	 */
-	public static void handleJLSViolation(FactoryAccessor holder, String reason) {
+	public static void throwIfSyntaxErrorsAreNotIgnored(FactoryAccessor holder, String reason) {
 		if (holder != null && holder.getFactory() != null
 				&& holder.getFactory().getEnvironment() != null
 				&& !holder.getFactory().getEnvironment().getIgnoreSyntaxErrors()) {
