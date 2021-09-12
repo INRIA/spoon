@@ -340,6 +340,7 @@ public interface Environment {
 
 	/**
 	 * Sets the option ignore-syntax-errors to remove files with any syntax errors or JLS violations from the compilation batch.
+	 * Also while transformations no checks for JLS correctness are reported as error.
 	 *
 	 * @param ignoreSyntaxErrors whether Spoon should ignore files with any syntax errors or JLS violations
 	 */
@@ -348,7 +349,7 @@ public interface Environment {
 	/**
 	 * Returns the value ot the option ignore-syntax-errors.
 	 *
-	 * @return true iff Spoon ignores files with any syntax errors or JLS violations.
+	 * @return true iff Spoon ignores files with any syntax errors, JLS violations or reports JLS correctness problems as exception.
 	 */
 	boolean getIgnoreSyntaxErrors();
 
