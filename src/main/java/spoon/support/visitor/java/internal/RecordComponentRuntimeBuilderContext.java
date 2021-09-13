@@ -10,6 +10,8 @@ package spoon.support.visitor.java.internal;
 import java.lang.annotation.Annotation;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtRecordComponent;
+import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtTypeReference;
 
 public class RecordComponentRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 
@@ -21,5 +23,10 @@ public class RecordComponentRuntimeBuilderContext extends AbstractRuntimeBuilder
 	@Override
 	public void addAnnotation(CtAnnotation<Annotation> ctAnnotation) {
 		component.addAnnotation(ctAnnotation);
+	}
+
+	@Override
+	public void addTypeReference(CtRole role, CtTypeReference<?> ctTypeReference) {
+		component.setType((CtTypeReference) ctTypeReference);
 	}
 }

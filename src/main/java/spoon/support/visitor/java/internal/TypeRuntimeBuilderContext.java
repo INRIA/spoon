@@ -74,8 +74,10 @@ public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 			case SUPER_TYPE:
 				if (type instanceof CtTypeParameter) {
 					((CtTypeParameter) this.type).setSuperclass(typeReference);
-					return;
+				} else {
+					type.setSuperclass(typeReference);
 				}
+				return;
 		}
 		throw new UnsupportedOperationException();
 	}
