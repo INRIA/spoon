@@ -17,6 +17,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * This defines multiple utility methods for working with method handles. These methods are all calls to future jdk methods and maybe not available on jdk8.
+ * All errors from these virtual calls are transformed to null or false results.
+ */
 class MethodHandleUtils {
 	private MethodHandleUtils() {
 		// no instance
@@ -28,6 +32,11 @@ class MethodHandleUtils {
 	private static MethodHandle lookupRecordComponentName = lookupRecordComponentName();
 	private static MethodHandle lookupRecordComponentType = lookupRecordComponentType();
 
+	/**
+	 * Checks if the given class is a record.
+	 * @param clazz  the class to check
+	 * @return  true if the given class is a record, false otherwise.
+	 */
 	public static boolean isRecord(Class<?> clazz) {
 		try {
 			return (boolean) isRecord.invokeExact(clazz);
@@ -37,7 +46,10 @@ class MethodHandleUtils {
 	}
 
 
-
+	/**
+	 * Returns the class object of record component from the jdk if present.
+	 * @return  the class object of record component from the jdk if present, null otherwise.
+	 */
 	private static Class<?> lookupRecordComponentClass() {
 		try {
 			return Class.forName("java.lang.reflect.RecordComponent");
@@ -46,6 +58,14 @@ class MethodHandleUtils {
 		}
 	}
 
+	/**
+	 * Gets the record components of the given class, if it has any.
+	 * <p>
+	 * This method is a call to the jdk method {@link java.lang.reflect.Record#getRecordComponents()}.
+	 * Because we cant use the jdk method directly, we need to use reflection to get the method.
+	 * @param clazz  the class to get the record components from.
+	 * @return  the record components of the given class, if it has any, empty list otherwise.
+	 */
 	public static List<AnnotatedElement> getRecordComponents(Class<?> clazz) {
 		if (recordComponent == null) {
 			return Collections.emptyList();
@@ -58,6 +78,16 @@ class MethodHandleUtils {
 		}
 		return Arrays.asList(components);
 	}
+	/**
+	 * Gets the name of the given record component. The given class <b>must</b> be a record component.
+	 * <p>
+	 * This method is a call to the jdk method {@link java.lang.reflect.RecordComponent#getName()}.
+	 * Because we cant use the jdk method directly, we need to use reflection to get the method.
+	 * We cant use the record component type directly so we use the upper type annotated element here. Passing any other element will return null.
+	 * 
+	 * @param component  the record component to get the name from.
+	 * @return  the name of the given record component, null otherwise.
+	 */
 	public static String getRecordComponentName(AnnotatedElement component) {
 		try {
 			return (String) lookupRecordComponentName.invoke(component);
@@ -66,6 +96,15 @@ class MethodHandleUtils {
 		}
 	}
 
+	/**
+	 * Gets the type of the given record component. The given class <b>must</b> be a record component.
+	 * <p>
+	 * This method is a call to the jdk method {@link java.lang.reflect.RecordComponent#getGenericType()}.
+	 * Because we cant use the jdk method directly, we need to use reflection to get the method.
+	 * We cant use the record component type directly so we use the upper type annotated element here. Passing any other element will return null.
+	 * @param component
+	 * @return
+	 */
 	public static Type getRecordComponentType(AnnotatedElement component) {
 		try {
 			return (Type) lookupRecordComponentType.invoke(component);
@@ -74,6 +113,7 @@ class MethodHandleUtils {
 		}
 	}
 
+	
 	private static MethodHandle lookupRecord() {
 		try {
 			return MethodHandles.lookup().findVirtual(Class.class, "isRecord", MethodType.methodType(boolean.class));

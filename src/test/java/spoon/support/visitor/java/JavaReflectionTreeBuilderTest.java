@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import com.mysema.query.support.ProjectableQuery;
+import jdk.net.UnixDomainPrincipal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -53,24 +54,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtAnnotationMethod;
-import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtEnum;
-import spoon.reflect.declaration.CtEnumValue;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeMember;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtElementPathBuilder;
@@ -711,10 +695,16 @@ public class JavaReflectionTreeBuilderTest {
 	}
 	@Test
 	@EnabledForJreRange(min = JRE.JAVA_16)
-	public void testShadowRecords() {
+	public void testShadowRecords() throws ClassNotFoundException {
 		// contract: records are shadowable.
 		Factory factory = 	createFactory();
-		CtType<?> type = factory.Type().get("jdk.net.UnixDomainPrincipal");
+		// we need to do this because this a jdk16+ class
+		Class<?> unixDomainPrincipal = Class.forName("jdk.net.UnixDomainPrincipal");
+		CtType<?> type = factory.Type().get(unixDomainPrincipal);
 		assertNotNull(type);
+		CtRecord<?> unixRecord = (CtRecord<?>) type;
+		assertTrue(unixRecord.isShadow());
+		// UserPrincipal user and GroupPrincipal group
+		assertEquals(2,unixRecord.getRecordComponents().size());
 	}
 }
