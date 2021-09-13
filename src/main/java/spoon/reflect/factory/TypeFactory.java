@@ -35,7 +35,6 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
-import spoon.support.util.internal.MapUtils;
 import spoon.support.visitor.ClassTypingContext;
 import spoon.support.visitor.GenericTypeAdapter;
 import spoon.support.visitor.MethodTypingContext;
@@ -53,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -466,10 +466,9 @@ public class TypeFactory extends SubFactory {
 				// If the class name is an integer, the class is an anonymous class, otherwise,
 				// it is a standard class.
 				//TODO reset cache when type is modified
-				return getFromCache(t, className, () -> {
+				return getFromCache(t, className, k -> {
 					//the searching for declaration of anonymous class is expensive
 					//do that only once and store it in cache of CtType
-					Integer.parseInt(className);
 					final List<CtNewClass> anonymousClasses = t.getElements(new TypeFilter<CtNewClass>(CtNewClass.class) {
 						@Override
 						public boolean matches(CtNewClass element) {
@@ -490,13 +489,13 @@ public class TypeFactory extends SubFactory {
 
 	private static final String CACHE_KEY = TypeFactory.class.getName() + "-AnnonymousTypeCache";
 
-	private <T, K> T getFromCache(CtElement element, K key, Supplier<T> valueResolver) {
+	private <T, K> T getFromCache(CtElement element, K key, Function<K, T> valueResolver) {
 		Map<K, T> cache = (Map<K, T>) element.getMetadata(CACHE_KEY);
 		if (cache == null) {
 			cache = new HashMap<>();
 			element.putMetadata(CACHE_KEY, cache);
 		}
-		return MapUtils.getOrCreate(cache, key, valueResolver);
+		return cache.computeIfAbsent(key, valueResolver);
 	}
 
 	private boolean isNumber(String str) {
