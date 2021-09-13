@@ -711,9 +711,10 @@ public class JavaReflectionTreeBuilderTest {
 	}
 	@Test
 	@EnabledForJreRange(min = JRE.JAVA_16)
-	public void test() {
+	public void testShadowRecords() {
+		// contract: records are shadowable.
 		Factory factory = 	createFactory();
 		CtType<?> type = factory.Type().get("jdk.net.UnixDomainPrincipal");
-		int a = 3;
+		assertNotNull(type);
 	}
 }
