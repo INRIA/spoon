@@ -84,7 +84,7 @@ class MethodHandleUtils {
 	 * This method is a call to the jdk method {@link java.lang.reflect.RecordComponent#getName()}.
 	 * Because we cant use the jdk method directly, we need to use reflection to get the method.
 	 * We cant use the record component type directly so we use the upper type annotated element here. Passing any other element will return null.
-	 * 
+	 *
 	 * @param component  the record component to get the name from.
 	 * @return  the name of the given record component, null otherwise.
 	 */
@@ -113,7 +113,7 @@ class MethodHandleUtils {
 		}
 	}
 
-	
+
 	private static MethodHandle lookupRecord() {
 		try {
 			return MethodHandles.lookup().findVirtual(Class.class, "isRecord", MethodType.methodType(boolean.class));
