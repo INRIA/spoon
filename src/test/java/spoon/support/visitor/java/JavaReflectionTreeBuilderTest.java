@@ -41,7 +41,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import com.mysema.query.support.ProjectableQuery;
-import jdk.net.UnixDomainPrincipal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -705,6 +704,6 @@ public class JavaReflectionTreeBuilderTest {
 		CtRecord<?> unixRecord = (CtRecord<?>) type;
 		assertTrue(unixRecord.isShadow());
 		// UserPrincipal user and GroupPrincipal group
-		assertEquals(2,unixRecord.getRecordComponents().size());
+		assertEquals(2, unixRecord.getRecordComponents().size());
 	}
 }
