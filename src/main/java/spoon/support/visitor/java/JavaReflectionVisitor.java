@@ -86,7 +86,7 @@ interface JavaReflectionVisitor {
 	 * @param role {@link CtRole} which this reference plays*/
 	<T> void visitArrayReference(CtRole role, Type typeArray);
 
-	/** Visits a {@link java.lang.Class} representing an record, see {@link Class#isRecord()} */
+	/** Visits a {@link java.lang.Class} representing an record, see {@code Class#isRecord()} */
 	<T> void visitRecord(Class<T> clazz);
 
 	/** Visits a record component.
