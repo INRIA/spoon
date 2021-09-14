@@ -1,10 +1,3 @@
-/*
- * SPDX-License-Identifier: (MIT OR CECILL-C)
- *
- * Copyright (C) 2006-2019 INRIA and contributors
- *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
- */
 /* SPDX-License-Identifier: (MIT OR CECILL-C)
 
 Copyright (C) 2006-2019 INRIA and contributors
@@ -301,5 +294,12 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 		((spoon.reflect.declaration.CtCompilationUnit) (other)).setFile(compilationUnit.getFile());
 		((spoon.reflect.declaration.CtCompilationUnit) (other)).setLineSeparatorPositions(compilationUnit.getLineSeparatorPositions());
 		super.visitCtCompilationUnit(compilationUnit);
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public <T> void visitCtRecordComponent(spoon.reflect.declaration.CtRecordComponent<T> recordComponent) {
+		((spoon.reflect.declaration.CtRecordComponent<T>) (other)).setShadow(recordComponent.isShadow());
+		super.visitCtRecordComponent(recordComponent);
 	}
 }
