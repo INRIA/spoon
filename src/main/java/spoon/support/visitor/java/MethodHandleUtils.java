@@ -61,7 +61,7 @@ class MethodHandleUtils {
 	/**
 	 * Gets the record components of the given class, if it has any.
 	 * <p>
-	 * This method is a call to the jdk method {@see java.lang.reflect.Record#getRecordComponents()}.
+	 * This method is a call to the jdk method {@code java.lang.reflect.Record#getRecordComponents()}.
 	 * Because we cant use the jdk method directly, we need to use reflection to get the method.
 	 * @param clazz  the class to get the record components from.
 	 * @return  the record components of the given class, if it has any, empty list otherwise.
@@ -81,7 +81,7 @@ class MethodHandleUtils {
 	/**
 	 * Gets the name of the given record component. The given class <b>must</b> be a record component.
 	 * <p>
-	 * This method is a call to the jdk method {@see java.lang.reflect.RecordComponent#getName()}.
+	 * This method is a call to the jdk method {@code java.lang.reflect.RecordComponent#getName()}.
 	 * Because we cant use the jdk method directly, we need to use reflection to get the method.
 	 * We cant use the record component type directly so we use the upper type annotated element here. Passing any other element will return null.
 	 *
@@ -99,7 +99,7 @@ class MethodHandleUtils {
 	/**
 	 * Gets the type of the given record component. The given class <b>must</b> be a record component.
 	 * <p>
-	 * This method is a call to the jdk method {@see java.lang.reflect.RecordComponent#getGenericType()}.
+	 * This method is a call to the jdk method {@code java.lang.reflect.RecordComponent#getGenericType()}.
 	 * Because we cant use the jdk method directly, we need to use reflection to get the method.
 	 * We cant use the record component type directly so we use the upper type annotated element here. Passing any other element will return null.
 	 * @param component
