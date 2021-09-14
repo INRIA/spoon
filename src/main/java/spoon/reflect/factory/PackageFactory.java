@@ -165,7 +165,7 @@ public class PackageFactory extends SubFactory {
 			if (aPackage == null) {
 				continue;
 			}
-			int aPackageCount = aPackage.getContainedTypeCount();
+			int aPackageCount = aPackage.getTypes().size();
 			if (aPackageCount > maxTypeCount) {
 				maxPackage = aPackage;
 				maxTypeCount = aPackageCount;

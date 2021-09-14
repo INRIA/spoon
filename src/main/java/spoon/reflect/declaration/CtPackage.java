@@ -146,8 +146,6 @@ public interface CtPackage extends CtNamedElement, CtShadowable {
 	@Override
 	CtPackage clone();
 
-	int getContainedTypeCount();
-
 	/**
 	 * Returns {@code true} if this is an <i>unnamed</i> Java package.
 	 * See JLS §7.4.2. Unnamed Packages.
