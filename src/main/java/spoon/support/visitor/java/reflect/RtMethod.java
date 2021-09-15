@@ -145,33 +145,8 @@ public class RtMethod {
 		return new RtMethod(method.getDeclaringClass(), method, method.getName(), method.getReturnType(),
 				method.getGenericReturnType(), method.getTypeParameters(), method.getParameterTypes(), method.getGenericParameterTypes(), method.getExceptionTypes(),
 				method.getModifiers(), method.getDeclaredAnnotations(), method.getParameterAnnotations(),
-				method.isVarArgs(), //spoon is compatible with Java 7, so compilation fails here
-				//method.isDefault());
-				_java8_isDefault(method));
-	}
-
-	private static Method _method_isDefault;
-	static {
-		try {
-			_method_isDefault = Method.class.getMethod("isDefault");
-		} catch (NoSuchMethodException | SecurityException e) {
-			//spoon is running with java 7 JDK
-			_method_isDefault = null;
-		}
-	}
-
-	private static boolean _java8_isDefault(Method method) {
-		if (_method_isDefault == null) {
-			//spoon is running with java 7 JDK, all methods are not default, because java 7 does not have default methods
-			return false;
-		}
-		try {
-			return (Boolean) _method_isDefault.invoke(method);
-		} catch (IllegalAccessException | IllegalArgumentException e) {
-			throw new SpoonException("Calling of Java8 Method#isDefault() failed", e);
-		} catch (InvocationTargetException e) {
-			throw new SpoonException("Calling of Java8 Method#isDefault() failed", e.getTargetException());
-		}
+				method.isVarArgs(),
+				method.isDefault());
 	}
 
 	public static <T> RtMethod[] methodsOf(Class<T> clazz) {
