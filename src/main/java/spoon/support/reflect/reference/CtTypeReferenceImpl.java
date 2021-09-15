@@ -34,7 +34,6 @@ import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.reflect.declaration.CtElementImpl;
 import spoon.support.util.RtHelper;
-import spoon.support.util.internal.MapUtils;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.reflect.AnnotatedElement;
@@ -165,12 +164,12 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			classByQName.clear();
 			lastClassLoader = classLoader;
 		}
-		return MapUtils.getOrCreate(classByQName, qualifiedName, () -> {
+		return classByQName.computeIfAbsent(qualifiedName, key -> {
 			try {
 				// creating a classloader on the fly is not the most efficient
 				// but it decreases the amount of state to maintain
 				// since getActualClass is only used in rare cases, that's OK.
-				return (Class<T>) classLoader.loadClass(qualifiedName);
+				return classLoader.loadClass(qualifiedName);
 			} catch (Throwable e) {
 				throw new SpoonClassNotFoundException("cannot load class: " + getQualifiedName(), e);
 			}
