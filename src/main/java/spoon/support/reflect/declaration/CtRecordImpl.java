@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import spoon.SpoonException;
+import spoon.JLSViolation;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -112,11 +112,11 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 
 		}
 		if (member instanceof CtMethod && (member.isAbstract() || member.isNative())) {
-			throw new SpoonException(String.format("%s method is native or abstract, both is not allowed",
+			JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, String.format("%s method is native or abstract, both is not allowed",
 					member.getSimpleName()));
 		}
 		if (member instanceof CtAnonymousExecutable) {
-			throw new SpoonException("Anonymous executable is not allowed in a record");
+			JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, "Anonymous executable is not allowed in a record");
 		}
 		return super.addTypeMemberAt(position, member);
 	}
@@ -189,7 +189,7 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 	@Override
 	public <C extends CtModifiable> C addModifier(ModifierKind modifier) {
 		if (modifier.equals(ModifierKind.ABSTRACT)) {
-			throw new SpoonException(ABSTRACT_MODIFIER_ERROR);
+			JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, ABSTRACT_MODIFIER_ERROR);
 		}
 		return super.addModifier(modifier);
 	}
@@ -197,7 +197,7 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 	@Override
 	public <C extends CtModifiable> C setModifiers(Set<ModifierKind> modifiers) {
 		if (modifiers.contains(ModifierKind.ABSTRACT)) {
-			throw new SpoonException(ABSTRACT_MODIFIER_ERROR);
+			JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, ABSTRACT_MODIFIER_ERROR);
 		}
 		return super.setModifiers(modifiers);
 	}
@@ -216,7 +216,7 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 	private void checkIfAbstractModifier(Set<CtExtendedModifier> extendedModifiers) {
 		for (CtExtendedModifier extendedModifier : extendedModifiers) {
 			if (isAbstract(extendedModifier)) {
-				throw new SpoonException(ABSTRACT_MODIFIER_ERROR);
+				JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, ABSTRACT_MODIFIER_ERROR);
 			}
 		}
 	}

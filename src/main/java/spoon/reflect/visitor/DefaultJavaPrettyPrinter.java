@@ -2221,18 +2221,4 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSpace();
 		printer.writeIdentifier(recordComponent.getSimpleName());
 	}
-
-	protected String stripLeadingDigits(String simpleName) {
-		int i = 0;
-		while (i < simpleName.length()) {
-			if (!Character.isDigit(simpleName.charAt(i))) {
-				return simpleName.substring(i);
-			}
-			i++;
-		}
-		return simpleName;
-
-	}
-
-
 }

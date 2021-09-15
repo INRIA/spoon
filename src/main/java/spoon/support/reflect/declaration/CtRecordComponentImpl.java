@@ -10,7 +10,7 @@ package spoon.support.reflect.declaration;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import spoon.SpoonException;
+import spoon.JLSViolation;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
@@ -83,14 +83,13 @@ public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRe
 
 	@Override
 	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
-
 		checkName(simpleName);
 		return super.setSimpleName(simpleName);
 	}
 
 	private void checkName(String simpleName) {
 		if (forbiddenNames.contains(simpleName)) {
-			throw new SpoonException("The name '" + simpleName + "' is not allowed as record component name.");
+			JLSViolation.throwIfSyntaxErrorsAreNotIgnored(this, "The name '" + simpleName + "' is not allowed as record component name.");
 		}
 	}
 	private static Set<String> createForbiddenNames() {
