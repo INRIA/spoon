@@ -251,8 +251,6 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 				}
 
 
-			} catch (JLSViolation e) {
-				// ignore
 			} catch (AssertionError e) {
 				System.err.println("one contract failed for " + setter.toString());
 				throw e;
@@ -265,6 +263,9 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 					throw e;
 				} else if (e.getCause() instanceof RuntimeException) {
 					throw e.getCause();
+				} if(e.getCause() instanceof JLSViolation) {
+						// ignore
+						continue;
 				} else {
 					throw new SpoonException(e.getCause());
 				}
