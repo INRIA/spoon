@@ -537,17 +537,10 @@ int x = switch(i) { // <-- switch expression
 ```
 ### CtRecord
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtRecord.html)
-```java
-// a record definition
-record Foo(int bar) {
 
-}
-```
-### CtRecordComponent
-[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtRecordComponent.html)
 ```java
-// bar is a record component 
-record Foo(int bar) {
 
-}
+   record Point(int x, int y) {
+   }
+
 ```
