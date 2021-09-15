@@ -82,6 +82,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 		// this test puts them at all possible locations
 		CtType<?> toTest = typeToTest.getMetamodelInterface();
 		Factory factory = toTest.getFactory();
+		factory.getEnvironment().setIgnoreSyntaxErrors(true);
 
 		CtElement o = factory.Core().create((Class<? extends CtElement>) toTest.getActualClass());
 		Map<CtRole, MetamodelProperty> roleToProperty = typeToTest.getRoleToProperty();
