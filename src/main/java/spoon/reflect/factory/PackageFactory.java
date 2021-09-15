@@ -172,17 +172,21 @@ public class PackageFactory extends SubFactory {
 		//
 		// To solve this we look for the package with at least one contained type, effectively
 		// filtering out any synthetic packages.
+		CtPackage lastPackage = null;
 		for (CtModule module : factory.getModel().getAllModules()) {
 			CtPackage aPackage = getPackageFromModule(qualifiedName, module);
 			if (aPackage == null) {
 				continue;
 			}
+			lastPackage = aPackage;
 			if (!aPackage.getTypes().isEmpty()) {
 				return aPackage;
 			}
 		}
 
-		return null;
+		// return the last empty package we found. This is an educated guess but can be wrong if the
+		// module actually declaring the package has no types in the package.
+		return lastPackage;
 	}
 
 	/**
