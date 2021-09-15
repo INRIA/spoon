@@ -158,21 +158,31 @@ public class PackageFactory extends SubFactory {
 			throw new RuntimeException("Invalid package name " + qualifiedName);
 		}
 
-		CtPackage maxPackage = null;
-		int maxTypeCount = Integer.MIN_VALUE;
+		// Find package with the most contained types. If a module exports package "foo.bar" and the
+		// other "foo.bar.baz", *both modules* will contain a "foo.bar" package in spoon. As
+		// javac (yes, javac. This is not in the spec but would be a colossal pain for many things if
+		// it were ever allowed) does not allow overlapping packages, one of them will be a synthetic
+		// package spoon creates as a parent for "foo.bar.baz". This package will *never* have any
+		// types in it.
+		// JDT does allow it, but the chances of a real-word program actually having overlap are slim.
+		//
+		// However, if the "foo.bar.baz" module is found first in "getAllModules()", we will find the
+		// synthetic "foo.bar" package in it. As that one contains no types, all queries for types in
+		// it will fail!
+		//
+		// To solve this we look for the package with at least one contained type, effectively
+		// filtering out any synthetic packages.
 		for (CtModule module : factory.getModel().getAllModules()) {
 			CtPackage aPackage = getPackageFromModule(qualifiedName, module);
 			if (aPackage == null) {
 				continue;
 			}
-			int aPackageCount = aPackage.getTypes().size();
-			if (aPackageCount > maxTypeCount) {
-				maxPackage = aPackage;
-				maxTypeCount = aPackageCount;
+			if (!aPackage.getTypes().isEmpty()) {
+				return aPackage;
 			}
 		}
 
-		return maxPackage;
+		return null;
 	}
 
 	/**
