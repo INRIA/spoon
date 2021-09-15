@@ -19,6 +19,7 @@ package spoon.test.parent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import spoon.JLSViolation;
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -250,6 +251,8 @@ public class ContractOnSettersParametrizedTest<T extends CtVisitable> {
 				}
 
 
+			} catch (JLSViolation e) {
+				// ignore
 			} catch (AssertionError e) {
 				System.err.println("one contract failed for " + setter.toString());
 				throw e;
