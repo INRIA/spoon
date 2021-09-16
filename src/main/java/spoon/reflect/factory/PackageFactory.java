@@ -180,8 +180,8 @@ public class PackageFactory extends SubFactory {
 			if (aPackage == null) {
 				continue;
 			}
-			lastPackage = aPackage;
 			if (!aPackage.getTypes().isEmpty()) {
+				lastPackage = aPackage;
 				foundPackageCount++;
 			}
 		}
