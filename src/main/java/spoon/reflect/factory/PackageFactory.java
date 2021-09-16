@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
@@ -172,6 +173,7 @@ public class PackageFactory extends SubFactory {
 		//
 		// To solve this we look for the package with at least one contained type, effectively
 		// filtering out any synthetic packages.
+		int foundPackageCount = 0;
 		CtPackage lastPackage = null;
 		for (CtModule module : factory.getModel().getAllModules()) {
 			CtPackage aPackage = getPackageFromModule(qualifiedName, module);
@@ -180,8 +182,17 @@ public class PackageFactory extends SubFactory {
 			}
 			lastPackage = aPackage;
 			if (!aPackage.getTypes().isEmpty()) {
-				return aPackage;
+				foundPackageCount++;
 			}
+		}
+
+		if (foundPackageCount > 1) {
+			throw new SpoonException(
+					"Ambiguous package name detected. If you believe the code you analyzed is correct, please"
+							+ " file an issue and reference https://github.com/INRIA/spoon/issues/4051. "
+							+ "Error details: Found " + foundPackageCount + " non-empty packages with name "
+							+ "'" + qualifiedName + "'"
+			);
 		}
 
 		// return the last empty package we found. This is an educated guess but can be wrong if the
