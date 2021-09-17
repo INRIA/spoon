@@ -12,7 +12,7 @@ plugins {
 group 'fr.inria.gforge.spoon'
 version '1.0'
 
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
     mavenCentral()
