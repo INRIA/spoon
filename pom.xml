@@ -38,7 +38,6 @@
   </licenses>
 
   <properties>
-    <java.src.version>1.8</java.src.version>
     <sonar.coverage.exclusions>
         **/support/gui/*
     </sonar.coverage.exclusions>

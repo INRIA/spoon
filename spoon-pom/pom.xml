@@ -20,8 +20,8 @@
     <inceptionYear>2007</inceptionYear>
 
     <properties>
-        <java.src.version>1.8</java.src.version>
-        <java.test.version>1.8</java.test.version>
+        <java.src.version>11</java.src.version>
+        <java.test.version>11</java.test.version>
         <runtime.log>target/velocity.log</runtime.log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.outputTimestamp>1</project.build.outputTimestamp>
