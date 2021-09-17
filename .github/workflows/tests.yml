@@ -8,28 +8,26 @@ name: tests
 on:
   pull_request:
     branches:
-      master
+      - master
   push:
     branches:
-      master
+      - master
   schedule:
   - cron: "0 0 * * *"
 
 env:
-  JAVA_DISTRIBUTION: adopt
+  JAVA_DISTRIBUTION: temurin
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        java: [8, 11, 15]
+        java: [11, 16]
         os: [ubuntu-latest, windows-latest]
         exclude:
           - os: windows-latest
-            java: 11
-          - os: windows-latest
-            java: 15
+            java: 16
 
 
     env:
