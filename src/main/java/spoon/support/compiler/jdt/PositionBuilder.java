@@ -377,7 +377,7 @@ public class PositionBuilder {
 				}
 			}
 
-			if (getModifiers(methodDeclaration.modifiers, false, true).isEmpty()) {
+			if (getModifiers(methodDeclaration.modifiers, false, ModifierTarget.METHOD).isEmpty()) {
 				modifiersSourceEnd = modifiersSourceStart - 1;
 			}
 

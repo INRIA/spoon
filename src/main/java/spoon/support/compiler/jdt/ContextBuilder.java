@@ -268,7 +268,7 @@ public class ContextBuilder {
 									EnumSet.noneOf(ModifierKind.class),
 									referenceBuilder.getTypeReference(fieldBinding.type),
 									name);
-							return field.setExtendedModifiers(JDTTreeBuilderQuery.getModifiers(fieldBinding.modifiers, true, false));
+							return field.setExtendedModifiers(JDTTreeBuilderQuery.getModifiers(fieldBinding.modifiers, true, ModifierTarget.FIELD));
 						}
 					}
 					// add super class if any
