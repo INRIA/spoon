@@ -33,7 +33,6 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.reflect.declaration.CtElementImpl;
-import spoon.support.util.RtHelper;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.reflect.AnnotatedElement;
@@ -110,31 +109,38 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+
 	public Class<T> getActualClass() {
 		if (isPrimitive()) {
-			String simpleN = getSimpleName();
-			if ("boolean".equals(simpleN)) {
-				return (Class<T>) boolean.class;
-			} else if ("byte".equals(simpleN)) {
-				return (Class<T>) byte.class;
-			} else if ("double".equals(simpleN)) {
-				return (Class<T>) double.class;
-			} else if ("int".equals(simpleN)) {
-				return (Class<T>) int.class;
-			} else if ("short".equals(simpleN)) {
-				return (Class<T>) short.class;
-			} else if ("char".equals(simpleN)) {
-				return (Class<T>) char.class;
-			} else if ("long".equals(simpleN)) {
-				return (Class<T>) long.class;
-			} else if ("float".equals(simpleN)) {
-				return (Class<T>) float.class;
-			} else if ("void".equals(simpleN)) {
-				return (Class<T>) void.class;
-			}
+			return getPrimitiveType(this);
 		}
 		return findClass();
+	}
+
+	@SuppressWarnings("unchecked")
+	private Class<T> getPrimitiveType(CtTypeReference<?> typeReference) {
+		switch (typeReference.getSimpleName()) {
+			case "boolean":
+				return (Class<T>) boolean.class;
+			case "byte":
+				return (Class<T>) byte.class;
+			case "double":
+				return (Class<T>) double.class;
+			case "int":
+				return (Class<T>) int.class;
+			case "short":
+				return (Class<T>) short.class;
+			case "char":
+				return (Class<T>) char.class;
+			case "long":
+				return (Class<T>) long.class;
+			case "float":
+				return (Class<T>) float.class;
+			case "void":
+				return (Class<T>) void.class;
+			default:
+				throw new SpoonException("Unsupported primitive type: " + getSimpleName());
+		}
 	}
 
 	private static Map<String, Class> classByQName = Collections.synchronizedMap(new HashMap<>());
@@ -147,31 +153,30 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	 */
 	@SuppressWarnings("unchecked")
 	protected Class<T> findClass() {
-		String qualifiedName = getQualifiedName();
 		ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
-
+		CtTypeReference<?> typeReference = this;
 		// an array class should not crash
 		// see https://github.com/INRIA/spoon/pull/2882
-		if (getSimpleName().contains("[]")) {
-			// Class.forName does not work for primitive types and arrays :-(
-			// we have to work-around
-			// original idea from https://bugs.openjdk.java.net/browse/JDK-4031337
-			return (Class<T>) RtHelper.getAllFields((Launcher.parseClass("public class Foo { public " + getQualifiedName() + " field; }").newInstance().getClass()))[0].getType();
+		if (isArray()) {
+			typeReference = getFactory().createReference(this.getQualifiedName().substring(0, this.getQualifiedName().indexOf("[")));
+			if (typeReference.isPrimitive()) {
+				return getPrimitiveType(typeReference);
+			}
 		}
-
 		if (classLoader != lastClassLoader) {
 			//clear cache because class loader changed
 			classByQName.clear();
 			lastClassLoader = classLoader;
 		}
+		String qualifiedName = typeReference.getQualifiedName();
 		return classByQName.computeIfAbsent(qualifiedName, key -> {
 			try {
 				// creating a classloader on the fly is not the most efficient
 				// but it decreases the amount of state to maintain
 				// since getActualClass is only used in rare cases, that's OK.
 				return classLoader.loadClass(qualifiedName);
-			} catch (Throwable e) {
-				throw new SpoonClassNotFoundException("cannot load class: " + getQualifiedName(), e);
+			} catch (ClassNotFoundException e) {
+				throw new SpoonClassNotFoundException("cannot load class: " + qualifiedName, e);
 			}
 		});
 	}
