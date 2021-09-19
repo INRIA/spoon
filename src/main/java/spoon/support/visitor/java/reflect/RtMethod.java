@@ -8,7 +8,6 @@
 package spoon.support.visitor.java.reflect;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -16,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
-import spoon.SpoonException;
 
 public class RtMethod {
 	private final Class<?> clazz;
