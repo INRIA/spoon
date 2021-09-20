@@ -830,12 +830,12 @@ public class PatternBuilder implements CtVisitor {
 	}
 
 	@Override
-	public <T> void visitCtRecord(CtRecord<T> recordType) {
+	public void visitCtRecord(CtRecord recordType) {
 		throw new NotImplementedException("Not implemented");
 	}
 
 	@Override
-	public <T> void visitCtRecordComponent(CtRecordComponent<T> recordComponent) {
+	public void visitCtRecordComponent(CtRecordComponent recordComponent) {
 		throw new NotImplementedException("Not implemented");
 	}
 
