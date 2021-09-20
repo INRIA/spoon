@@ -22,22 +22,22 @@ import spoon.support.UnsettableProperty;
  *    }
  * </pre>
  */
-public interface CtRecord<T> extends CtClass<T> {
+public interface CtRecord extends CtClass<Object> {
 
 	@PropertySetter(role = CtRole.RECORD_COMPONENT)
-	<C> CtRecord<T>  addRecordComponent(CtRecordComponent<C> component);
+	CtRecord  addRecordComponent(CtRecordComponent component);
 	@PropertySetter(role = CtRole.RECORD_COMPONENT)
-	<C> CtRecord<T>  removeRecordComponent(CtRecordComponent<C> component);
+	CtRecord  removeRecordComponent(CtRecordComponent component);
 
 	@PropertyGetter(role = CtRole.RECORD_COMPONENT)
-	Set<CtRecordComponent<?>> getRecordComponents();
+	Set<CtRecordComponent> getRecordComponents();
 	@PropertySetter(role = CtRole.RECORD_COMPONENT)
-	CtRecord<T> setRecordComponents(Set<CtRecordComponent<?>> components);
+	CtRecord setRecordComponents(Set<CtRecordComponent> components);
 
 	@Override
-	CtRecord<T> clone();
+	CtRecord clone();
 
 	@Override
 	@UnsettableProperty
-	<C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass);
+	<C extends CtType<Object>> C setSuperclass(CtTypeReference<?> superClass);
 }

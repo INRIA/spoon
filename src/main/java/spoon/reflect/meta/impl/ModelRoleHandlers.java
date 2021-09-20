@@ -639,7 +639,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtRecord_RECORD_COMPONENT_RoleHandler extends SetHandler<CtRecord, CtRecordComponent<? extends Object>> {
+	static class CtRecord_RECORD_COMPONENT_RoleHandler extends SetHandler<CtRecord, CtRecordComponent> {
 		private CtRecord_RECORD_COMPONENT_RoleHandler() {
 			super(CtRole.RECORD_COMPONENT, CtRecord.class, CtRecordComponent.class);
 		}

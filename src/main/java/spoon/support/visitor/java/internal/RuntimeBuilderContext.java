@@ -44,7 +44,7 @@ public interface RuntimeBuilderContext {
 
 	void addFormalType(CtTypeParameter parameterRef);
 
-	void addRecordComponent(CtRecordComponent<?> ctRecordComponent);
+	void addRecordComponent(CtRecordComponent ctRecordComponent);
 
 	CtTypeParameter getTypeParameter(GenericDeclaration genericDeclaration, String string);
 }

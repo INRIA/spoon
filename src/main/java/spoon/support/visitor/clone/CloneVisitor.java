@@ -1119,8 +1119,8 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	@java.lang.Override
-	public <T> void visitCtRecord(spoon.reflect.declaration.CtRecord<T> recordType) {
-		spoon.reflect.declaration.CtRecord<T> aCtRecord = recordType.getFactory().Core().createRecord();
+	public void visitCtRecord(spoon.reflect.declaration.CtRecord recordType) {
+		spoon.reflect.declaration.CtRecord aCtRecord = recordType.getFactory().Core().createRecord();
 		this.builder.copy(recordType, aCtRecord);
 		aCtRecord.setAnnotations(this.cloneHelper.clone(recordType.getAnnotations()));
 		aCtRecord.setSuperInterfaces(this.cloneHelper.clone(recordType.getSuperInterfaces()));
@@ -1134,8 +1134,8 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	@java.lang.Override
-	public <T> void visitCtRecordComponent(spoon.reflect.declaration.CtRecordComponent<T> recordType) {
-		spoon.reflect.declaration.CtRecordComponent<T> aCtRecordComponent = recordType.getFactory().Core().createRecordComponent();
+	public void visitCtRecordComponent(spoon.reflect.declaration.CtRecordComponent recordType) {
+		spoon.reflect.declaration.CtRecordComponent aCtRecordComponent = recordType.getFactory().Core().createRecordComponent();
 		this.builder.copy(recordType, aCtRecordComponent);
 		aCtRecordComponent.setAnnotations(this.cloneHelper.clone(recordType.getAnnotations()));
 		aCtRecordComponent.setType(this.cloneHelper.clone(recordType.getType()));

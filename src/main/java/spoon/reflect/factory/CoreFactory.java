@@ -631,15 +631,13 @@ public interface CoreFactory {
 
 	/**
 	 * Creates a record.
-	 * @param <T>  the type of the record.
 	 * @return the created record.
 	 */
-	<T> CtRecord<T> createRecord();
+	CtRecord createRecord();
 	/**
 	 * Creates a record component.
-	 * @param <T>  the type of the component.
 	 * @return  the created record component.
 	 */
 
-	<T> CtRecordComponent<T> createRecordComponent();
+	CtRecordComponent createRecordComponent();
 }

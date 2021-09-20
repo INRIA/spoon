@@ -24,11 +24,11 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.CtExtendedModifier;
 
-public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRecordComponent<T> {
+public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecordComponent {
 
 	private static final Set<String> forbiddenNames = createForbiddenNames();
 	@MetamodelPropertyField(role = CtRole.TYPE)
-	private CtTypeReference<T> type;
+	private CtTypeReference<Object> type;
 	@MetamodelPropertyField(role = CtRole.IS_SHADOW)
 	boolean isShadow;
 
@@ -62,12 +62,12 @@ public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRe
 	}
 
 	@Override
-	public CtTypeReference<T> getType() {
+	public CtTypeReference<Object> getType() {
 		return type;
 	}
 
 	@Override
-	public <C extends CtTypedElement> C setType(CtTypeReference<T> type) {
+	public <C extends CtTypedElement> C setType(CtTypeReference<Object> type) {
 		if (type != null) {
 			type.setParent(this);
 		}
@@ -106,8 +106,8 @@ public class CtRecordComponentImpl<T> extends CtNamedElementImpl implements CtRe
 	}
 
 	@Override
-	public CtRecordComponent<T> clone() {
-		return (CtRecordComponent<T>) super.clone();
+	public CtRecordComponent clone() {
+		return (CtRecordComponent) super.clone();
 	}
 
 

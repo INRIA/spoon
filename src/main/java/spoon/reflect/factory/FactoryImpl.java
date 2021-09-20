@@ -1306,12 +1306,12 @@ public class FactoryImpl implements Factory, Serializable {
 	}
 
 	@Override
-	public <T> CtRecord<T> createRecord() {
+	public CtRecord createRecord() {
 		return Core().createRecord();
 	}
 
 	@Override
-	public <T> CtRecordComponent<T> createRecordComponent() {
+	public CtRecordComponent createRecordComponent() {
 		return Core().createRecordComponent();
 	}
 }

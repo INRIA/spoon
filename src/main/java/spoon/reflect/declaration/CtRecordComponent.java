@@ -17,7 +17,7 @@ package spoon.reflect.declaration;
  * </pre>
  */
 
-public interface CtRecordComponent<T> extends CtTypedElement<T>, CtNamedElement, CtShadowable {
+public interface CtRecordComponent extends CtTypedElement<Object>, CtNamedElement, CtShadowable {
 
 	/**
 	 * Converts the component to an implicit method.
@@ -32,5 +32,5 @@ public interface CtRecordComponent<T> extends CtTypedElement<T>, CtNamedElement,
 	CtField<?> toField();
 
 	@Override
-	CtRecordComponent<T> clone();
+	CtRecordComponent clone();
 }

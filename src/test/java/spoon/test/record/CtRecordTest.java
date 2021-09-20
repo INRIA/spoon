@@ -36,7 +36,7 @@ public class CtRecordTest {
 		String code = "src/test/resources/records/SingleParameter.java";
 		CtModel model = createModelFromPath(code);
 		assertEquals(1, model.getAllTypes().size());
-		Collection<CtRecord<?>> records = model.getElements(new TypeFilter<>(CtRecord.class));
+		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
 		assertEquals(1, head(records).getFields().size());
 		assertEquals(1, head(records).getMethods().size());
 
@@ -60,7 +60,7 @@ public class CtRecordTest {
 		String code = "src/test/resources/records/MultiParameter.java";
 		CtModel model = createModelFromPath(code);
 		assertEquals(1, model.getAllTypes().size());
-		Collection<CtRecord<?>> records = model.getElements(new TypeFilter<>(CtRecord.class));
+		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
 		assertEquals(2, head(records).getFields().size());
 		assertEquals(2, head(records).getMethods().size());
 	}
@@ -71,7 +71,7 @@ public class CtRecordTest {
 		String code = "src/test/resources/records/ExplicitAccessor.java";
 		CtModel model = createModelFromPath(code);
 		assertEquals(1, model.getAllTypes().size());
-		Collection<CtRecord<?>> records = model.getElements(new TypeFilter<>(CtRecord.class));
+		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
 		assertFalse(head(head(records).getMethods()).isImplicit());
 		assertEquals(1, head(records).getMethods().size());
 	}
@@ -82,7 +82,7 @@ public class CtRecordTest {
 		String code = "src/test/resources/records/NoClasspathAnnotations.java";
 		CtModel model = createModelFromPath(code);
 		assertEquals(1, model.getAllTypes().size());
-		Collection<CtRecord<?>> records = model.getElements(new TypeFilter<>(CtRecord.class));
+		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
 		assertEquals(2, head(head(records).getRecordComponents()).getAnnotations().size());
 		assertEquals(0, head(head(records).getFields()).getAnnotations().size());
 		assertEquals(0, head(head(records).getMethods()).getAnnotations().size());
@@ -95,7 +95,7 @@ public class CtRecordTest {
 		String code = "src/test/resources/records/CompactConstructor.java";
 		CtModel model = createModelFromPath(code);
 		assertEquals(1, model.getAllTypes().size());
-		Collection<CtRecord<?>> records = model.getElements(new TypeFilter<>(CtRecord.class));
+		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
 		assertTrue(records.iterator().next().getConstructors().iterator().next().isCompactConstructor());
 		String correctConstructor =
 			"Rational {" + lineSeparator()
@@ -111,7 +111,7 @@ public class CtRecordTest {
 		// contract: annotations are inherited from the record component.
 		String code = "src/test/resources/records/DeriveAnnotations.java";
 		CtModel model = createModelFromPath(code);
-		Collection<CtRecord<?>> records = model.getElements(new TypeFilter<>(CtRecord.class));
+		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
 		CtConstructor<?> constructor = head(head(records).getConstructors());
 		assertTrue(head(constructor.getParameters()).hasAnnotation(NotNull.class));
 		assertTrue(head(head(records).getFields()).hasAnnotation(NotNull.class));
@@ -122,7 +122,7 @@ public class CtRecordTest {
 		// contract: annotations are inherited from the record component if applicable.
 		String code = "src/test/resources/records/PartiallyAnnotations.java";
 		CtModel model = createModelFromPath(code);
-		Collection<CtRecord<?>> records = model.getElements(new TypeFilter<>(CtRecord.class));
+		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
 		CtConstructor<?> constructor = head(head(records).getConstructors());
 		assertFalse(head(constructor.getParameters()).hasAnnotation(Override.class));
 		assertFalse(head(head(records).getFields()).hasAnnotation(Override.class));

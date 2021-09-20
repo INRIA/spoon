@@ -2290,7 +2290,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	@java.lang.Override
-	public <T> void visitCtRecord(spoon.reflect.declaration.CtRecord<T> recordType) {
+	public void visitCtRecord(spoon.reflect.declaration.CtRecord recordType) {
 		replaceInListIfExist(recordType.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(recordType));
 		replaceInSetIfExist(recordType.getSuperInterfaces(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeInformationSuperInterfacesReplaceListener(recordType));
 		replaceInListIfExist(recordType.getTypeMembers(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypeTypeMembersReplaceListener(recordType));
@@ -2301,7 +2301,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	@java.lang.Override
-	public <T> void visitCtRecordComponent(spoon.reflect.declaration.CtRecordComponent<T> recordType) {
+	public void visitCtRecordComponent(spoon.reflect.declaration.CtRecordComponent recordType) {
 		replaceInListIfExist(recordType.getAnnotations(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementAnnotationsReplaceListener(recordType));
 		replaceElementIfExist(recordType.getType(), new spoon.support.visitor.replace.ReplacementVisitor.CtTypedElementTypeReplaceListener(recordType));
 		replaceInListIfExist(recordType.getComments(), new spoon.support.visitor.replace.ReplacementVisitor.CtElementCommentsReplaceListener(recordType));

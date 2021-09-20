@@ -579,11 +579,11 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		enter(new TypeRuntimeBuilderContext(clazz, ctRecord) {
 			@Override
 			public void addConstructor(CtConstructor<?> ctConstructor) {
-				ctRecord.addConstructor(ctConstructor);
+				ctRecord.addConstructor((CtConstructor<Object>) ctConstructor);
 			}
 
 			@Override
-			public void addRecordComponent(CtRecordComponent<?> ctRecordComponent) {
+			public void addRecordComponent(CtRecordComponent ctRecordComponent) {
 				ctRecord.addRecordComponent(ctRecordComponent);
 			}
 		});
@@ -595,7 +595,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	@Override
 	public void visitRecordComponent(AnnotatedElement recordComponent) {
-		CtRecordComponent<?> ctRecordComponent = factory.Core().createRecordComponent();
+		CtRecordComponent ctRecordComponent = factory.Core().createRecordComponent();
 		ctRecordComponent.setSimpleName(MethodHandleUtils.getRecordComponentName(recordComponent));
 		enter(new RecordComponentRuntimeBuilderContext(ctRecordComponent));
 		visitTypeReference(CtRole.TYPE, MethodHandleUtils.getRecordComponentType(recordComponent));

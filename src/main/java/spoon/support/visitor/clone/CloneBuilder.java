@@ -300,8 +300,8 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	@java.lang.Override
-	public <T> void visitCtRecordComponent(spoon.reflect.declaration.CtRecordComponent<T> recordComponent) {
-		((spoon.reflect.declaration.CtRecordComponent<T>) (other)).setShadow(recordComponent.isShadow());
+	public void visitCtRecordComponent(spoon.reflect.declaration.CtRecordComponent recordComponent) {
+		((spoon.reflect.declaration.CtRecordComponent) (other)).setShadow(recordComponent.isShadow());
 		super.visitCtRecordComponent(recordComponent);
 	}
 }

@@ -15,7 +15,7 @@ import spoon.reflect.reference.CtTypeReference;
 
 public class RecordComponentRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 
-	private final CtRecordComponent<?> component;
+	private final CtRecordComponent component;
 	public RecordComponentRuntimeBuilderContext(CtRecordComponent element) {
 		super(element);
 		this.component = element;

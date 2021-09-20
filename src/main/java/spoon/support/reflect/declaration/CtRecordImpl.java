@@ -38,11 +38,11 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.CtExtendedModifier;
 
-public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
+public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 	private static final String ABSTRACT_MODIFIER_ERROR =
 			"Abstract modifier is not allowed on record";
 	@MetamodelPropertyField(role = CtRole.RECORD_COMPONENT)
-	private Set<CtRecordComponent<?>> components = new HashSet<>();
+	private Set<CtRecordComponent> components = new HashSet<>();
 
 	@Override
 	@DerivedProperty
@@ -52,12 +52,12 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 
 	@Override
 	@UnsettableProperty
-	public <C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass) {
+	public <C extends CtType<Object>> C setSuperclass(CtTypeReference<?> superClass) {
 		return (C) this;
 	}
 
 	@Override
-	public <C> CtRecord<T> addRecordComponent(CtRecordComponent<C> component) {
+	public CtRecord addRecordComponent(CtRecordComponent component) {
 		if (component == null) {
 			return this;
 		}
@@ -71,7 +71,7 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 	}
 
 	@Override
-	public <C> CtRecord<T> removeRecordComponent(CtRecordComponent<C> component) {
+	public CtRecord removeRecordComponent(CtRecordComponent component) {
 		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, CtRole.RECORD_COMPONENT, components, component);
 		components.remove(component);
 		if (getField(component.getSimpleName()) != null
@@ -85,7 +85,7 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 	}
 
 	@Override
-	public Set<CtRecordComponent<?>> getRecordComponents() {
+	public Set<CtRecordComponent> getRecordComponents() {
 		return Collections.unmodifiableSet(components);
 	}
 
@@ -95,7 +95,7 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 	}
 
 	@Override
-	public <C extends CtType<T>> C addTypeMemberAt(int position, CtTypeMember member) {
+	public <C extends CtType<Object>> C addTypeMemberAt(int position, CtTypeMember member) {
 		// a record can have only implicit instance fields and this is the best point to preserve the invariant
 		// because there are multiple ways to add a field to a record
 		if (member instanceof CtField && !member.isStatic()) {
@@ -123,7 +123,7 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 
 	private List<CtAnnotation<?>> getAnnotationsWithName(String name, ElementType elementType) {
 		List<CtAnnotation<?>> result = new ArrayList<>();
-		for (CtRecordComponent<?> component : components) {
+		for (CtRecordComponent component : components) {
 			if (component.getSimpleName().equals(name)) {
 				for (CtAnnotation<? extends Annotation> annotation : component.getAnnotations()) {
 					CtType<?> annotationType = annotation.getAnnotationType().getTypeDeclaration();
@@ -141,9 +141,9 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 	}
 
 	@Override
-	public <C extends CtType<T>> C setFields(List<CtField<?>> fields) {
+	public <C extends CtType<Object>> C setFields(List<CtField<?>> fields) {
 		super.setFields(fields);
-		for (CtRecordComponent<?> component : components) {
+		for (CtRecordComponent component : components) {
 			if (getField(component.getSimpleName()) == null) {
 				addField(component.toField());
 			}
@@ -152,9 +152,9 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 	}
 
 	@Override
-	public <C extends CtType<T>> C setMethods(Set<CtMethod<?>> methods) {
+	public <C extends CtType<Object>> C setMethods(Set<CtMethod<?>> methods) {
 		super.setMethods(methods);
-		for (CtRecordComponent<?> component : components) {
+		for (CtRecordComponent component : components) {
 			if (!hasMethodWithSameNameAndNoParameter(component)) {
 				addMethod(component.toMethod());
 			}
@@ -162,7 +162,7 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 		return (C) this;
 	}
 
-	private boolean hasMethodWithSameNameAndNoParameter(CtRecordComponent<?> component) {
+	private boolean hasMethodWithSameNameAndNoParameter(CtRecordComponent component) {
 		for (CtMethod<?> method : getMethodsByName(component.getSimpleName())) {
 			if (method.getParameters().isEmpty()) {
 				return true;
@@ -173,9 +173,9 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 
 
 	@Override
-	public <C extends CtType<T>> C setTypeMembers(List<CtTypeMember> members) {
+	public <C extends CtType<Object>> C setTypeMembers(List<CtTypeMember> members) {
 		super.setTypeMembers(members);
-		for (CtRecordComponent<?> component : components) {
+		for (CtRecordComponent component : components) {
 			if (hasMethodWithSameNameAndNoParameter(component)) {
 				addMethod(component.toMethod());
 			}
@@ -222,7 +222,7 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 	}
 
 	@Override
-	public CtRecord<T> setRecordComponents(Set<CtRecordComponent<?>> components) {
+	public CtRecord setRecordComponents(Set<CtRecordComponent> components) {
 		getRecordComponents().forEach(this::removeRecordComponent);
 		components.forEach(this::addRecordComponent);
 		return this;
@@ -240,7 +240,7 @@ public class CtRecordImpl<T> extends CtClassImpl<T> implements CtRecord<T> {
 	}
 
 	@Override
-	public CtRecord<T> clone() {
-		return (CtRecord<T>) super.clone();
+	public CtRecord clone() {
+		return (CtRecord) super.clone();
 	}
 }

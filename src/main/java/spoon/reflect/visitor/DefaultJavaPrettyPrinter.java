@@ -2187,7 +2187,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		return simpleName;
 	}
 	@Override
-	public <T> void visitCtRecord(CtRecord<T> recordType) {
+	public void visitCtRecord(CtRecord recordType) {
 		context.pushCurrentThis(recordType);
 		if (recordType.getSimpleName() != null && !CtType.NAME_UNKNOWN.equals(recordType.getSimpleName()) && !recordType.isAnonymous()) {
 			visitCtType(recordType);
@@ -2215,7 +2215,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 
 	@Override
-	public <T> void visitCtRecordComponent(CtRecordComponent<T> recordComponent) {
+	public void visitCtRecordComponent(CtRecordComponent recordComponent) {
 		elementPrinterHelper.writeAnnotations(recordComponent);
 		visitCtTypeReference(recordComponent.getType());
 		printer.writeSpace();

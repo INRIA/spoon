@@ -1178,8 +1178,8 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	}
 
 	@Override
-	public <T> CtRecord<T> createRecord() {
-		CtRecord<T> recordType = new CtRecordImpl<>();
+	public CtRecord createRecord() {
+		CtRecord recordType = new CtRecordImpl();
 		Set<CtExtendedModifier> modifier = new HashSet<>(recordType.getExtendedModifiers());
 		modifier.add(new CtExtendedModifier(ModifierKind.FINAL, true));
 		recordType.setExtendedModifiers(modifier);
@@ -1188,8 +1188,8 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	}
 
 	@Override
-	public <T> CtRecordComponent<T> createRecordComponent() {
-		CtRecordComponent<T> recordComponent = new CtRecordComponentImpl<>();
+	public CtRecordComponent createRecordComponent() {
+		CtRecordComponent recordComponent = new CtRecordComponentImpl();
 		recordComponent.setFactory(getMainFactory());
 		return recordComponent;
 	}

@@ -1014,21 +1014,21 @@ public class ParentExiter extends CtInheritanceScanner {
 	}
 
 	@Override
-	public <T> void visitCtRecord(CtRecord<T> recordType) {
+	public void visitCtRecord(CtRecord recordType) {
 		if (child instanceof CtConstructor) {
-			recordType.addConstructor((CtConstructor<T>) child);
+			recordType.addConstructor((CtConstructor) child);
 		}
 		if (child instanceof CtAnonymousExecutable) {
 			recordType.addAnonymousExecutable((CtAnonymousExecutable) child);
 		}
 		if (child instanceof CtRecordComponent) {
-			((CtRecord<?>) recordType).addRecordComponent((CtRecordComponent<?>) child);
+			((CtRecord) recordType).addRecordComponent((CtRecordComponent) child);
 		}
 		super.visitCtRecord(recordType);
 	}
 
 	@Override
-	public <T> void visitCtRecordComponent(CtRecordComponent<T> recordComponent) {
+	public void visitCtRecordComponent(CtRecordComponent recordComponent) {
 		if (childJDT instanceof TypeReference && child instanceof CtTypeAccess) {
 			recordComponent.setType(((CtTypeAccess) child).getAccessedType());
 			substituteAnnotation((CtTypedElement) recordComponent);

@@ -1056,7 +1056,7 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	@Override
-	public <T> void visitCtRecord(CtRecord<T> recordType) {
+	public void visitCtRecord(CtRecord recordType) {
 		enter(recordType);
 		scan(CtRole.ANNOTATION, recordType.getAnnotations());
 		scan(CtRole.INTERFACE, recordType.getSuperInterfaces());
@@ -1068,7 +1068,7 @@ public abstract class CtScanner implements CtVisitor {
 	}
 
 	@Override
-	public <T> void visitCtRecordComponent(CtRecordComponent<T> recordType) {
+	public void visitCtRecordComponent(CtRecordComponent recordType) {
 		enter(recordType);
 		scan(CtRole.ANNOTATION, recordType.getAnnotations());
 		scan(CtRole.TYPE, recordType.getType());

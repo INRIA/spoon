@@ -82,7 +82,7 @@ abstract class AbstractRuntimeBuilderContext implements RuntimeBuilderContext {
 
 
 	@Override
-	public void addRecordComponent(CtRecordComponent<?> ctRecordComponent) {
+	public void addRecordComponent(CtRecordComponent ctRecordComponent) {
 		throw new UnsupportedOperationException();
 	}
 

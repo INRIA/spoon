@@ -701,7 +701,7 @@ public class JavaReflectionTreeBuilderTest {
 		Class<?> unixDomainPrincipal = Class.forName("jdk.net.UnixDomainPrincipal");
 		CtType<?> type = factory.Type().get(unixDomainPrincipal);
 		assertNotNull(type);
-		CtRecord<?> unixRecord = (CtRecord<?>) type;
+		CtRecord unixRecord = (CtRecord) type;
 		assertTrue(unixRecord.isShadow());
 		// UserPrincipal user and GroupPrincipal group
 		assertEquals(2, unixRecord.getRecordComponents().size());
