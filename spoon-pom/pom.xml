@@ -20,7 +20,8 @@
     <inceptionYear>2007</inceptionYear>
 
     <properties>
-        <maven.compiler.release>11</maven.compiler.release>
+        <java.src.version>1.8</java.src.version>
+        <java.test.version>1.8</java.test.version>
         <runtime.log>target/velocity.log</runtime.log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.outputTimestamp>1</project.build.outputTimestamp>
