@@ -91,25 +91,42 @@ enum ModifierTarget {
 	 * @param allowedKinds the remaining kind
 	 */
 	ModifierTarget(ModifierKind firstAllowed, ModifierKind... allowedKinds) {
-		this.allowedKinds = EnumSet.of(firstAllowed, allowedKinds);
+		this.allowedKinds = Collections.unmodifiableSet(
+				EnumSet.of(firstAllowed, allowedKinds)
+		);
 	}
 
-	public static final Set<ModifierTarget> NONE = Collections.unmodifiableSet(
-			EnumSet.noneOf(ModifierTarget.class)
-	);
+	/**
+	 * Empty Set, used if no other target is fitting.
+	 */
+	public static final Set<ModifierTarget> NONE = Collections.emptySet();
 
+	/**
+	 * A Set to target all kinds of variables.
+	 */
 	public static final Set<ModifierTarget> VARIABLE = Collections.unmodifiableSet(
 			EnumSet.of(FIELD, LOCAL_VARIABLE)
 	);
 
+	/**
+	 * A set to target all kinds of executables.
+	 */
 	public static final Set<ModifierTarget> EXECUTABLE = Collections.unmodifiableSet(
 			EnumSet.of(METHOD, CONSTRUCTOR)
 	);
 
+	/**
+	 * A set to target all kinds of types.
+	 */
 	public static final Set<ModifierTarget> TYPE = Collections.unmodifiableSet(
 			EnumSet.of(CLASS, INTERFACE)
 	);
 
+	/**
+	 * Returns an unmodifiable set containing only this target.
+	 *
+	 * @return a Set containing only this target.
+	 */
 	public Set<ModifierTarget> asSingleton() {
 		if (singleton == null) {
 			singleton = Collections.singleton(this);
@@ -118,6 +135,11 @@ enum ModifierTarget {
 	}
 
 
+	/**
+	 * Returns a set of {@link ModifierKind}s that are allowed on this target.
+	 *
+	 * @return a set of allowed modifier kinds.
+	 */
 	public Set<ModifierKind> getAllowedKinds() {
 		return allowedKinds;
 	}
