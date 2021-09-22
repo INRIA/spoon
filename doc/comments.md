@@ -77,7 +77,7 @@ public class CtCommentProcessor extends AbstractProcessor<CtComment> {
     @Override
     public boolean isToBeProcessed(CtComment candidate) {
         // only process Javadoc
-        if (candidatate.getCommentType() == CtComment.CommentType.JAVADOC) {
+        if (candidate.getCommentType() == CtComment.CommentType.JAVADOC) {
             return true;
         }
         return false;
