@@ -16,6 +16,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
@@ -60,6 +61,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtType}.
@@ -248,12 +250,35 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	@Override
 	public <N, C extends CtType<T>> C addNestedType(CtType<N> nestedType) {
-		return addTypeMember(nestedType);
+		addTypeMember(nestedType);
+
+		// Nested enums are implicitly static. We need to add the modifier, if it isn't already static.
+		if (nestedType instanceof CtEnum && !nestedType.isStatic()) {
+			Set<CtExtendedModifier> modifiers = new HashSet<>(nestedType.getExtendedModifiers());
+			modifiers.add(new CtExtendedModifier(ModifierKind.STATIC, true));
+			nestedType.setExtendedModifiers(modifiers);
+		}
+
+		return (C) this;
 	}
 
 	@Override
 	public <N> boolean removeNestedType(CtType<N> nestedType) {
-		return removeTypeMember(nestedType);
+		if (!removeTypeMember(nestedType)) {
+			return false;
+		}
+
+		// Nested enums are implicitly static. We might have added an implicit static modifier so we
+		// need to remove it again.
+		if (nestedType instanceof CtEnum) {
+			nestedType.setExtendedModifiers(
+					nestedType.getExtendedModifiers().stream()
+							.filter(mod -> mod.getKind() != ModifierKind.STATIC || !mod.isImplicit())
+							.collect(Collectors.toCollection(HashSet::new))
+			);
+		}
+
+		return true;
 	}
 
 	@Override

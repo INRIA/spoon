@@ -119,22 +119,22 @@ public class EnumsTest {
 		CtType<?> ctClass = ModelUtils.buildClass(NestedEnums.class);
 		{
 			CtEnum<?> ctEnum = ctClass.getNestedType("PrivateENUM");
-			assertEquals(asSet(ModifierKind.PRIVATE), ctEnum.getModifiers());
+			assertEquals(asSet(ModifierKind.PRIVATE, ModifierKind.STATIC), ctEnum.getModifiers());
 			assertEquals(asSet(ModifierKind.PRIVATE, ModifierKind.STATIC, ModifierKind.FINAL), ctEnum.getField("VALUE").getModifiers());
 		}
 		{
 			CtEnum<?> ctEnum = ctClass.getNestedType("PublicENUM");
-			assertEquals(asSet(ModifierKind.PUBLIC), ctEnum.getModifiers());
+			assertEquals(asSet(ModifierKind.PUBLIC, ModifierKind.STATIC), ctEnum.getModifiers());
 			assertEquals(asSet(ModifierKind.PUBLIC, ModifierKind.STATIC, ModifierKind.FINAL), ctEnum.getField("VALUE").getModifiers());
 		}
 		{
 			CtEnum<?> ctEnum = ctClass.getNestedType("ProtectedENUM");
-			assertEquals(asSet(ModifierKind.PROTECTED), ctEnum.getModifiers());
+			assertEquals(asSet(ModifierKind.PROTECTED, ModifierKind.STATIC), ctEnum.getModifiers());
 			assertEquals(asSet(ModifierKind.PROTECTED, ModifierKind.STATIC, ModifierKind.FINAL), ctEnum.getField("VALUE").getModifiers());
 		}
 		{
 			CtEnum<?> ctEnum = ctClass.getNestedType("PackageProtectedENUM");
-			assertEquals(asSet(), ctEnum.getModifiers());
+			assertEquals(asSet(ModifierKind.STATIC), ctEnum.getModifiers());
 			assertEquals(asSet(ModifierKind.STATIC, ModifierKind.FINAL), ctEnum.getField("VALUE").getModifiers());
 		}
 	}
