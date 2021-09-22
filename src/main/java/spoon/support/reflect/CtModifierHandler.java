@@ -41,7 +41,7 @@ public class CtModifierHandler implements Serializable {
 	}
 
 	public CtModifierHandler setExtendedModifiers(Set<CtExtendedModifier> extendedModifiers) {
-		if (extendedModifiers != null && !extendedModifiers.isEmpty()) {
+		if (extendedModifiers != null) {
 			getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(element, MODIFIER, this.modifiers, new HashSet<>(this.modifiers));
 			if (this.modifiers == CtElementImpl.<CtExtendedModifier>emptySet()) {
 				this.modifiers = new HashSet<>();

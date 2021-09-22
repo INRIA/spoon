@@ -1019,7 +1019,7 @@ public class AnnotationTest {
 		final CtType<SuperAnnotation> aTypeAnnotation = buildClass(SuperAnnotation.class);
 		final CtField<?> fieldValue = aTypeAnnotation.getField("value");
 		assertNotNull(fieldValue);
-		assertEquals("public static final java.lang.String value = \"\";", fieldValue.toString());
+		assertEquals("java.lang.String value = \"\";", fieldValue.toString());
 		final CtMethod<Object> methodValue = aTypeAnnotation.getMethod("value");
 		assertTrue(methodValue instanceof CtAnnotationMethod);
 		assertEquals("java.lang.String value() default spoon.test.annotation.testclasses.SuperAnnotation.value;", methodValue.toString());

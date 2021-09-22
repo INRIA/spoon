@@ -425,7 +425,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 */
 			private <T> CtMethod<?> getSetterOf(final CtField<T> ctField) {
 				if (ctField.getType().equals(getFactory().createCtTypeReference(CtModifierHandler.class))) {
-					return ctField.getDeclaringType().getMethodsByName("setModifiers").get(0);
+					return ctField.getDeclaringType().getMethodsByName("setExtendedModifiers").get(0);
 				}
 				// Search by name convention.
 				for (CtMethod<?> ctMethod : ctField.getDeclaringType().getMethods()) {
@@ -471,7 +471,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 */
 			private <T> CtMethod<?> getGetterOf(CtField<T> ctField) {
 				if (ctField.getType().equals(getFactory().createCtTypeReference(CtModifierHandler.class))) {
-					return ctField.getDeclaringType().getMethod("getModifiers");
+					return ctField.getDeclaringType().getMethod("getExtendedModifiers");
 				}
 				// Search by name convention.
 				for (CtMethod<?> ctMethod : ctField.getDeclaringType().getMethods()) {
