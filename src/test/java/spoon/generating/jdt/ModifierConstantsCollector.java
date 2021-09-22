@@ -84,8 +84,8 @@ public class ModifierConstantsCollector {
 
 	public static void print(Map<Integer, List<Field>> map, PrintStream out) {
 		map.forEach((k, v) -> {
-			out.println("| " + k + " |");
-			out.println("| --------- |");
+			out.println("| 0x" + Integer.toHexString(k) + " |");
+			out.println("| -------------------------------- |");
 			v.forEach(f -> {
 				Class<?> decl = f.getDeclaringClass();
 				String name = f.getName();
