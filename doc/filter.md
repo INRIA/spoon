@@ -32,7 +32,7 @@ allDescendants = ctElement.getDirectChildren();
 
 A Filter defines a predicate of the form of a `matches` method that
 returns `true` if an element has to be selected in the filtering operation.
-A Filter is given as parameter to `CtElement#getElement(Filter)` ()or `CtQueryable#filterChildren(Filter)`) which implements a depth-first search algorithm. During AST traversal, the elements satisfying the matching predicate are selected by the filter.
+A Filter is given as parameter to `CtElement#getElement(Filter)` (or `CtQueryable#filterChildren(Filter)`) which implements a depth-first search algorithm. During AST traversal, the elements satisfying the matching predicate are selected by the filter.
 
 Here are code examples about the usage of filters. The first example returns all AST nodes of type `CtAssignment`.
 
