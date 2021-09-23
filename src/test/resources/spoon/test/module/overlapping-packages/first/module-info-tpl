@@ -1,0 +1,3 @@
+module first {
+  exports test.parent.nested;
+}
