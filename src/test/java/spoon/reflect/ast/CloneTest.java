@@ -41,6 +41,7 @@ import spoon.support.visitor.equals.CloneHelper;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -273,49 +274,78 @@ public class CloneTest {
 	@Test
 	public void testCloneKeepsImplicitModifierState() {
 		// contract: When cloning an element the implicit state is kept as well
-		CtClass<?> ctClass = Launcher.parseClass(
-				"class Foo { interface Nested { void bar(); } }"
-		);
-		CtMethod<?> method = ctClass.getNestedType("Nested").getMethod("bar");
+		CtClass<?> test = new Launcher().getFactory().createClass("Test");
+		Set<CtExtendedModifier> modifiers = new HashSet<>();
+		modifiers.add(new CtExtendedModifier(ModifierKind.PUBLIC, true));
+		modifiers.add(new CtExtendedModifier(ModifierKind.ABSTRACT, false));
+		test.setExtendedModifiers(modifiers);
 
-		Set<CtExtendedModifier> expectedModifiers = new HashSet<>();
-		expectedModifiers.add(new CtExtendedModifier(ModifierKind.PUBLIC, true));
-		expectedModifiers.add(new CtExtendedModifier(ModifierKind.ABSTRACT, true));
+		CtClass<?> clonedTest = test.clone();
 
+		// Sanity checks
 		assertEquals(
-				expectedModifiers,
-				method.getExtendedModifiers()
+				"Class has the wrong amount of modifiers",
+				2,
+				test.getExtendedModifiers().size()
 		);
+		assertModifierImplicitness(test.getExtendedModifiers(), ModifierKind.PUBLIC, true);
+		assertModifierImplicitness(test.getExtendedModifiers(), ModifierKind.ABSTRACT, false);
 
+		// Test that the implicit state was kept
 		assertEquals(
-				expectedModifiers,
-				method.clone().getExtendedModifiers()
+				"Clone has wrong amount of modifiers",
+				2,
+				clonedTest.getExtendedModifiers().size()
 		);
+		assertModifierImplicitness(clonedTest.getExtendedModifiers(), ModifierKind.PUBLIC, true);
+		assertModifierImplicitness(clonedTest.getExtendedModifiers(), ModifierKind.ABSTRACT, false);
+	}
+
+	private void assertModifierImplicitness(Set<CtExtendedModifier> modifiers, ModifierKind kind,
+			boolean shouldBeImplicit) {
+		for (CtExtendedModifier modifier : modifiers) {
+			if (modifier.getKind() == kind) {
+				assertEquals(
+						"Unexpected CtExtendedModifier#isImplicit",
+						shouldBeImplicit,
+						modifier.isImplicit()
+				);
+				return;
+			}
+		}
+		fail("Modifier " + kind + " was not found at all in " + modifiers);
 	}
 
 	@Test
 	public void testCloneClonesExtendedModifiers() {
 		// contract: When cloning an element the extended modifiers are cloned as well
-		CtClass<?> ctClass = Launcher.parseClass(
-				"class Foo { interface Nested { void bar(); } }"
+		CtClass<?> test = new Launcher().getFactory().createClass("Test");
+		Set<CtExtendedModifier> modifiers = new HashSet<>();
+		modifiers.add(new CtExtendedModifier(ModifierKind.PUBLIC, true));
+		modifiers.add(new CtExtendedModifier(ModifierKind.ABSTRACT, false));
+		test.setExtendedModifiers(modifiers);
+
+		CtClass<?> clonedTest = test.clone();
+
+		assertModifiersAreDistinctInstances(
+				test.getExtendedModifiers(),
+				clonedTest.getExtendedModifiers()
 		);
-		CtMethod<?> method = ctClass.getNestedType("Nested").getMethod("bar");
+	}
 
-		Set<CtExtendedModifier> expectedModifiers = new HashSet<>();
-		expectedModifiers.add(new CtExtendedModifier(ModifierKind.PUBLIC, true));
-		expectedModifiers.add(new CtExtendedModifier(ModifierKind.ABSTRACT, true));
-
-		assertEquals(
-				expectedModifiers,
-				method.getExtendedModifiers()
+	private void assertModifiersAreDistinctInstances(Set<CtExtendedModifier> real,
+			Set<CtExtendedModifier> cloned) {
+		Set<CtExtendedModifier> referenceBasedModifierSet = Collections.newSetFromMap(
+				new IdentityHashMap<>()
 		);
+		referenceBasedModifierSet.addAll(real);
+		referenceBasedModifierSet.addAll(cloned);
 
-		CtMethod<?> clone = method.clone();
-		method.getExtendedModifiers().iterator().next().setImplicit(false);
-
+		// Verify the modifier instances are actually different so changes in one do not affect the other
 		assertEquals(
-				expectedModifiers,
-				clone.getExtendedModifiers()
+				"The extended modifiers are the same instance as the original",
+				4,
+				referenceBasedModifierSet.size()
 		);
 	}
 }
