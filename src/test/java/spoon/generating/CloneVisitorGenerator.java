@@ -251,11 +251,40 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					if (isSubTypeOfCtElement(ctField.getType())) {
 						continue;
 					}
-					final CtMethod<?> setterOfField = getSetterOf(ctField);
-					final CtInvocation<?> setterInvocation = createSetterInvocation(//
-							element.getParameters().get(0).getType(), setterOfField, //
-							createGetterInvocation(element.getParameters().get(0), getGetterOf(ctField)));
-					final List<CtMethod<?>> methodsToAvoid = getCtMethodThrowUnsupportedOperation(setterOfField);
+					CtMethod<?> setterOfField = getSetterOf(ctField);
+
+					CtMethod<?> getter = getGetterOf(ctField);
+					// The invocation that fetches the value to set in the clone. This can be a simple getter
+					// call or it can modify the result (e.g. to clone it) after retrieving it.
+					CtInvocation<?> fetchValueInvocation = createGetterInvocation(
+							element.getParameters().get(0),
+							getter
+					);
+
+					// CtExtendedModifiers are treated specially throughout this class. When cloning an object
+					// we need to clone the extended modifiers as well. This is not handled by the
+					// CloneVisitor, as CtExtendedModifiers are no CtElement and therefore our CloneBuilder
+					// needs to do that itself.
+					// This rewrites the getter invocation:
+					//   `original.getExtendedModifiers()` to `clone(original.getExtendedModifiers())`
+					// The clone method is defined in the CloneBuilderTemplate.
+					if (getter.getSimpleName().equals("getExtendedModifiers")) {
+						CtExecutableReference<Object> cloneReference = factory.Executable()
+								.createReference(
+										"Set<CtExtendedModifier> #clone(Set<CtExtendedModifier>)"
+								);
+						fetchValueInvocation = factory.Code().createInvocation(
+								null, cloneReference, fetchValueInvocation
+						);
+					}
+
+					CtInvocation<?> setterInvocation = createSetterInvocation(
+							element.getParameters().get(0).getType(),
+							setterOfField,
+							fetchValueInvocation
+					);
+
+					List<CtMethod<?>> methodsToAvoid = getCtMethodThrowUnsupportedOperation(setterOfField);
 					if (!methodsToAvoid.isEmpty()) {
 						clone.getBody().addStatement(createProtectionToException(setterInvocation, methodsToAvoid));
 					} else {
@@ -417,22 +446,10 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 * @param getter <code>getX</code>.
 			 */
 			private CtInvocation<?> createGetterInvocation(CtParameter<?> element, CtMethod<?> getter) {
-				CtInvocation<?> invocation = factory.Code().createInvocation(
+				return factory.Code().createInvocation(
 						factory.Code().createVariableRead(element.getReference(), false),
 						getter.getReference()
 				);
-
-				if (getter.getSimpleName().equals("getExtendedModifiers")) {
-					CtExecutableReference<Object> cloneReference = factory.Executable()
-							.createReference(
-									"Set<CtExtendedModifier> #clone(Set<CtExtendedModifier>)"
-							);
-					invocation = factory.Code().createInvocation(
-							null, cloneReference, invocation
-					);
-				}
-
-				return invocation;
 			}
 
 			/**
