@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
@@ -154,21 +155,31 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	protected Class<T> findClass() {
 		CtTypeReference<?> typeReference = this;
 		if (isArray()) {
-			CtTypeReference<?> arrayTypeReference = getFactory().createReference(this.getQualifiedName().substring(0, this.getQualifiedName().indexOf("[")));
-			if (arrayTypeReference.isPrimitive()) {
-				return getPrimitiveType(arrayTypeReference).map(this::arrayType).orElseThrow(() -> new SpoonException("Cant find primitive type: " + arrayTypeReference));
+			CtTypeReference<?> componentTypeReference = convertToComponentType();
+			if (componentTypeReference.isPrimitive()) {
+				return getPrimitiveType(componentTypeReference).map(this::arrayType).orElseThrow(() -> new SpoonException("Cant find primitive type: " + componentTypeReference));
 			}
-			// not a primitive type but still an array type -> do normal lookup on the component type.
-			typeReference = arrayTypeReference;
+			typeReference = componentTypeReference;
 		}
 		ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
-		if (classLoader != lastClassLoader) {
-			//clear cache because class loader changed
-			classByQName.clear();
-			lastClassLoader = classLoader;
-		}
+		checkCacheIntegrity(classLoader);
 		String qualifiedName = typeReference.getQualifiedName();
-		return classByQName.computeIfAbsent(qualifiedName, key -> {
+		Class<T> clazz =  classByQName.computeIfAbsent(qualifiedName, key -> loadClassWithQName(classLoader, qualifiedName));
+		return isArray() ? arrayType(clazz) : clazz;
+	}
+
+	/**
+	 * Converts the type reference to its component type. If the type is no array, the type reference is returned.
+	 * @return  the component type of the type reference.
+	 */
+	private CtTypeReference<T> convertToComponentType() {
+		if (this.getQualifiedName().indexOf("[") == -1) {
+			return this;
+		}
+		return getFactory().createReference(this.getQualifiedName().substring(0, this.getQualifiedName().indexOf("[")));
+	}
+
+	private Class<?> loadClassWithQName(ClassLoader classLoader, String qualifiedName) {
 			try {
 				// creating a classloader on the fly is not the most efficient
 				// but it decreases the amount of state to maintain
@@ -177,8 +188,21 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			} catch (Throwable e) {
 				throw new SpoonClassNotFoundException("cannot load class: " + qualifiedName, e);
 			}
-		});
 	}
+
+	/**
+	 * Checks if the given classloader is the same as the one used in the last call to {@link #findClass()}.
+	 * If not, the cache is cleared.
+	 * @param classLoader  the classloader to check against the old one.
+	 */
+	private void checkCacheIntegrity(ClassLoader classLoader) {
+		if (classLoader != lastClassLoader) {
+			//clear cache because class loader changed
+			classByQName.clear();
+			lastClassLoader = classLoader;
+		}
+	}
+
 	/**
 	 * Converts the given type to an array type.
 	 * @param clazz  the type to convert.
