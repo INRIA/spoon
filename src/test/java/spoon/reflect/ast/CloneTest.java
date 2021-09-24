@@ -28,6 +28,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
@@ -35,6 +36,7 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.visitor.equals.CloneHelper;
 import spoon.testing.utils.ModelUtils;
 
@@ -42,6 +44,8 @@ import java.io.File;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -264,5 +268,54 @@ public class CloneTest {
 
 		// contract: clone preserves the order
 		assertEquals(c.getFields().get(0), c.clone().getTypeMembers().get(0));
+	}
+
+	@Test
+	public void testCloneKeepsImplicitModifierState() {
+		// contract: When cloning an element the implicit state is kept as well
+		CtClass<?> ctClass = Launcher.parseClass(
+				"class Foo { interface Nested { void bar(); } }"
+		);
+		CtMethod<?> method = ctClass.getNestedType("Nested").getMethod("bar");
+
+		Set<CtExtendedModifier> expectedModifiers = new HashSet<>();
+		expectedModifiers.add(new CtExtendedModifier(ModifierKind.PUBLIC, true));
+		expectedModifiers.add(new CtExtendedModifier(ModifierKind.ABSTRACT, true));
+
+		assertEquals(
+				expectedModifiers,
+				method.getExtendedModifiers()
+		);
+
+		assertEquals(
+				expectedModifiers,
+				method.clone().getExtendedModifiers()
+		);
+	}
+
+	@Test
+	public void testCloneClonesExtendedModifiers() {
+		// contract: When cloning an element the extended modifiers are cloned as well
+		CtClass<?> ctClass = Launcher.parseClass(
+				"class Foo { interface Nested { void bar(); } }"
+		);
+		CtMethod<?> method = ctClass.getNestedType("Nested").getMethod("bar");
+
+		Set<CtExtendedModifier> expectedModifiers = new HashSet<>();
+		expectedModifiers.add(new CtExtendedModifier(ModifierKind.PUBLIC, true));
+		expectedModifiers.add(new CtExtendedModifier(ModifierKind.ABSTRACT, true));
+
+		assertEquals(
+				expectedModifiers,
+				method.getExtendedModifiers()
+		);
+
+		CtMethod<?> clone = method.clone();
+		method.getExtendedModifiers().iterator().next().setImplicit(false);
+
+		assertEquals(
+				expectedModifiers,
+				clone.getExtendedModifiers()
+		);
 	}
 }

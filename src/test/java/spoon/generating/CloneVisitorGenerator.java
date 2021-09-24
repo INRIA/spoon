@@ -417,7 +417,22 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 * @param getter <code>getX</code>.
 			 */
 			private CtInvocation<?> createGetterInvocation(CtParameter<?> element, CtMethod<?> getter) {
-				return factory.Code().createInvocation(factory.Code().createVariableRead(element.getReference(), false), getter.getReference());
+				CtInvocation<?> invocation = factory.Code().createInvocation(
+						factory.Code().createVariableRead(element.getReference(), false),
+						getter.getReference()
+				);
+
+				if (getter.getSimpleName().equals("getExtendedModifiers")) {
+					CtExecutableReference<Object> cloneReference = factory.Executable()
+							.createReference(
+									"Set<CtExtendedModifier> #clone(Set<CtExtendedModifier>)"
+							);
+					invocation = factory.Code().createInvocation(
+							null, cloneReference, invocation
+					);
+				}
+
+				return invocation;
 			}
 
 			/**
