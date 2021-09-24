@@ -47,7 +47,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_SHADOW;
@@ -80,7 +79,37 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public CtTypeReference<?> box() {
-		return getNonPrimitiveType(this).map(v -> getFactory().Type().createReference(v)).orElse(this);
+		if (!isPrimitive()) {
+			return this;
+		}
+		if ("int".equals(getSimpleName())) {
+			return getFactory().Type().createReference(Integer.class);
+		}
+		if ("float".equals(getSimpleName())) {
+			return getFactory().Type().createReference(Float.class);
+		}
+		if ("long".equals(getSimpleName())) {
+			return getFactory().Type().createReference(Long.class);
+		}
+		if ("char".equals(getSimpleName())) {
+			return getFactory().Type().createReference(Character.class);
+		}
+		if ("double".equals(getSimpleName())) {
+			return getFactory().Type().createReference(Double.class);
+		}
+		if ("boolean".equals(getSimpleName())) {
+			return getFactory().Type().createReference(Boolean.class);
+		}
+		if ("short".equals(getSimpleName())) {
+			return getFactory().Type().createReference(Short.class);
+		}
+		if ("byte".equals(getSimpleName())) {
+			return getFactory().Type().createReference(Byte.class);
+		}
+		if ("void".equals(getSimpleName())) {
+			return getFactory().Type().createReference(Void.class);
+		}
+		return this;
 	}
 
 	@Override
@@ -114,33 +143,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 				return Optional.empty();
 		}
 	}
-
-	@SuppressWarnings("unchecked")
-	private Optional<Class<T>> getNonPrimitiveType(CtTypeReference<?> typeReference) {
-		switch (typeReference.getSimpleName()) {
-			case "Boolean":
-				return Optional.of((Class<T>) Boolean.class);
-			case "Byte":
-				return Optional.of((Class<T>) Byte.class);
-			case "Double":
-				return Optional.of((Class<T>) Double.class);
-			case "Integer":
-				return Optional.of((Class<T>) Integer.class);
-			case "Short":
-				return Optional.of((Class<T>) Short.class);
-			case "Character":
-				return Optional.of((Class<T>) Character.class);
-			case "Long":
-				return Optional.of((Class<T>) Long.class);
-			case "Float":
-				return Optional.of((Class<T>) Float.class);
-			case "Void":
-				return Optional.of((Class<T>) Void.class);
-			default:
-				return Optional.empty();
-		}
-	}
-
 
 
 	/**
@@ -319,7 +321,43 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public CtTypeReference<?> unbox() {
-		return getNonPrimitiveType(this).map(v -> getFactory().Type().createReference(v)).orElse(this);
+		if (isPrimitive()) {
+			return this;
+		}
+		Class<T> actualClass;
+		try {
+			actualClass = getActualClass();
+		} catch (SpoonClassNotFoundException e) {
+			return this;
+		}
+		if (actualClass == Integer.class) {
+			return getFactory().Type().createReference(int.class);
+		}
+		if (actualClass == Float.class) {
+			return getFactory().Type().createReference(float.class);
+		}
+		if (actualClass == Long.class) {
+			return getFactory().Type().createReference(long.class);
+		}
+		if (actualClass == Character.class) {
+			return getFactory().Type().createReference(char.class);
+		}
+		if (actualClass == Double.class) {
+			return getFactory().Type().createReference(double.class);
+		}
+		if (actualClass == Boolean.class) {
+			return getFactory().Type().createReference(boolean.class);
+		}
+		if (actualClass == Short.class) {
+			return getFactory().Type().createReference(short.class);
+		}
+		if (actualClass == Byte.class) {
+			return getFactory().Type().createReference(byte.class);
+		}
+		if (actualClass == Void.class) {
+			return getFactory().Type().createReference(void.class);
+		}
+		return this;
 	}
 
 	@Override
