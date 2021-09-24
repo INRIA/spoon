@@ -40,10 +40,11 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,6 +66,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@MetamodelPropertyField(role = PACKAGE_REF)
 	private CtPackageReference pack;
 
+	private static Map<String, Class> classByQName = new ConcurrentHashMap<>();
+	private static ClassLoader lastClassLoader = null;
+
 	public CtTypeReferenceImpl() {
 	}
 
@@ -75,76 +79,45 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public CtTypeReference<?> box() {
-		if (!isPrimitive()) {
-			return this;
-		}
-		if ("int".equals(getSimpleName())) {
-			return getFactory().Type().createReference(Integer.class);
-		}
-		if ("float".equals(getSimpleName())) {
-			return getFactory().Type().createReference(Float.class);
-		}
-		if ("long".equals(getSimpleName())) {
-			return getFactory().Type().createReference(Long.class);
-		}
-		if ("char".equals(getSimpleName())) {
-			return getFactory().Type().createReference(Character.class);
-		}
-		if ("double".equals(getSimpleName())) {
-			return getFactory().Type().createReference(Double.class);
-		}
-		if ("boolean".equals(getSimpleName())) {
-			return getFactory().Type().createReference(Boolean.class);
-		}
-		if ("short".equals(getSimpleName())) {
-			return getFactory().Type().createReference(Short.class);
-		}
-		if ("byte".equals(getSimpleName())) {
-			return getFactory().Type().createReference(Byte.class);
-		}
-		if ("void".equals(getSimpleName())) {
-			return getFactory().Type().createReference(Void.class);
-		}
-		return this;
+		return getPrimitiveType(this).map(v -> getFactory().Type().createReference(v)).orElse(this);
 	}
 
 	@Override
 
 	public Class<T> getActualClass() {
 		if (isPrimitive()) {
-			return getPrimitiveType(this);
+			return getPrimitiveType(this).orElseThrow(() -> new SpoonException("Cant find primitive class " + this.getQualifiedName()));
 		}
 		return findClass();
 	}
 
 	@SuppressWarnings("unchecked")
-	private Class<T> getPrimitiveType(CtTypeReference<?> typeReference) {
+	private Optional<Class<T>> getPrimitiveType(CtTypeReference<?> typeReference) {
 		switch (typeReference.getSimpleName()) {
 			case "boolean":
-				return (Class<T>) boolean.class;
+				return Optional.of((Class<T>) boolean.class);
 			case "byte":
-				return (Class<T>) byte.class;
+				return Optional.of((Class<T>) byte.class);
 			case "double":
-				return (Class<T>) double.class;
+				return Optional.of((Class<T>) double.class);
 			case "int":
-				return (Class<T>) int.class;
+				return Optional.of((Class<T>) int.class);
 			case "short":
-				return (Class<T>) short.class;
+				return Optional.of((Class<T>) short.class);
 			case "char":
-				return (Class<T>) char.class;
+				return Optional.of((Class<T>) char.class);
 			case "long":
-				return (Class<T>) long.class;
+				return Optional.of((Class<T>) long.class);
 			case "float":
-				return (Class<T>) float.class;
+				return Optional.of((Class<T>) float.class);
 			case "void":
-				return (Class<T>) void.class;
+				return Optional.of((Class<T>) void.class);
 			default:
-				throw new SpoonException("Unsupported primitive type: " + getSimpleName());
+				return Optional.empty();
 		}
 	}
 
-	private static Map<String, Class> classByQName = Collections.synchronizedMap(new HashMap<>());
-	private static ClassLoader lastClassLoader = null;
+
 
 	/**
 	 * Finds the class requested in {@link #getActualClass()}.
@@ -153,16 +126,16 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	 */
 	@SuppressWarnings("unchecked")
 	protected Class<T> findClass() {
-		ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
 		CtTypeReference<?> typeReference = this;
-		// an array class should not crash
-		// see https://github.com/INRIA/spoon/pull/2882
 		if (isArray()) {
-			typeReference = getFactory().createReference(this.getQualifiedName().substring(0, this.getQualifiedName().indexOf("[")));
-			if (typeReference.isPrimitive()) {
-				return getPrimitiveType(typeReference);
+			CtTypeReference<?> arrayTypeReference = getFactory().createReference(this.getQualifiedName().substring(0, this.getQualifiedName().indexOf("[")));
+			if (arrayTypeReference.isPrimitive()) {
+				return getPrimitiveType(arrayTypeReference).orElseThrow(() -> new SpoonException("Cant find primitive type: " + arrayTypeReference));
 			}
+			// not a primitive type but still an array type -> do normal lookup on the component type.
+			typeReference = arrayTypeReference;
 		}
+		ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
 		if (classLoader != lastClassLoader) {
 			//clear cache because class loader changed
 			classByQName.clear();
@@ -175,7 +148,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 				// but it decreases the amount of state to maintain
 				// since getActualClass is only used in rare cases, that's OK.
 				return classLoader.loadClass(qualifiedName);
-			} catch (ClassNotFoundException e) {
+			} catch (Throwable e) {
 				throw new SpoonClassNotFoundException("cannot load class: " + qualifiedName, e);
 			}
 		});
@@ -192,7 +165,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public CtType<T> getDeclaration() {
 		return getFactory().Type().get(getQualifiedName());
 	}
@@ -234,8 +206,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public boolean isPrimitive() {
-		return ("boolean".equals(getSimpleName()) || "byte".equals(getSimpleName()) || "double".equals(getSimpleName()) || "int".equals(getSimpleName()) || "short".equals(getSimpleName())
-				|| "char".equals(getSimpleName()) || "long".equals(getSimpleName()) || "float".equals(getSimpleName()) || "void".equals(getSimpleName()));
+		return getPrimitiveType(this).isPresent();
 	}
 
 	@Override
