@@ -156,7 +156,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		if (isArray()) {
 			CtTypeReference<?> arrayTypeReference = getFactory().createReference(this.getQualifiedName().substring(0, this.getQualifiedName().indexOf("[")));
 			if (arrayTypeReference.isPrimitive()) {
-				return getPrimitiveType(arrayTypeReference).orElseThrow(() -> new SpoonException("Cant find primitive type: " + arrayTypeReference));
+				return getPrimitiveType(arrayTypeReference).map(this::arrayType).orElseThrow(() -> new SpoonException("Cant find primitive type: " + arrayTypeReference));
 			}
 			// not a primitive type but still an array type -> do normal lookup on the component type.
 			typeReference = arrayTypeReference;
@@ -179,7 +179,15 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			}
 		});
 	}
-
+	/**
+	 * Converts the given type to an array type.
+	 * @param clazz  the type to convert.
+	 * @return  the array type.
+	 */
+	@SuppressWarnings("unchecked")
+	private <R> Class<R> arrayType(Class<R> clazz) {
+			return (Class<R>) Array.newInstance(clazz, 0).getClass();
+	}
 	@Override
 	public List<CtTypeReference<?>> getActualTypeArguments() {
 		return actualTypeArguments;
