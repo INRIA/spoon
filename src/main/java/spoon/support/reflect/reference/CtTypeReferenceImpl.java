@@ -56,6 +56,8 @@ import static spoon.reflect.path.CtRole.TYPE_ARGUMENT;
 
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
+	private static Map<String, Class> classByQName = new ConcurrentHashMap<>();
+	private static ClassLoader lastClassLoader = null;
 
 	@MetamodelPropertyField(role = TYPE_ARGUMENT)
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
@@ -66,8 +68,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@MetamodelPropertyField(role = PACKAGE_REF)
 	private CtPackageReference pack;
 
-	private static Map<String, Class> classByQName = new ConcurrentHashMap<>();
-	private static ClassLoader lastClassLoader = null;
+
 
 	public CtTypeReferenceImpl() {
 	}
@@ -79,16 +80,13 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public CtTypeReference<?> box() {
-		return getPrimitiveType(this).map(v -> getFactory().Type().createReference(v)).orElse(this);
+		return getNonPrimitiveType(this).map(v -> getFactory().Type().createReference(v)).orElse(this);
 	}
 
 	@Override
 
 	public Class<T> getActualClass() {
-		if (isPrimitive()) {
-			return getPrimitiveType(this).orElseThrow(() -> new SpoonException("Cant find primitive class " + this.getQualifiedName()));
-		}
-		return findClass();
+			return getPrimitiveType(this).orElse(findClass());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -112,6 +110,32 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 				return Optional.of((Class<T>) float.class);
 			case "void":
 				return Optional.of((Class<T>) void.class);
+			default:
+				return Optional.empty();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Optional<Class<T>> getNonPrimitiveType(CtTypeReference<?> typeReference) {
+		switch (typeReference.getSimpleName()) {
+			case "Boolean":
+				return Optional.of((Class<T>) Boolean.class);
+			case "Byte":
+				return Optional.of((Class<T>) Byte.class);
+			case "Double":
+				return Optional.of((Class<T>) Double.class);
+			case "Integer":
+				return Optional.of((Class<T>) Integer.class);
+			case "Short":
+				return Optional.of((Class<T>) Short.class);
+			case "Character":
+				return Optional.of((Class<T>) Character.class);
+			case "Long":
+				return Optional.of((Class<T>) Long.class);
+			case "Float":
+				return Optional.of((Class<T>) Float.class);
+			case "Void":
+				return Optional.of((Class<T>) Void.class);
 			default:
 				return Optional.empty();
 		}
@@ -295,43 +319,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public CtTypeReference<?> unbox() {
-		if (isPrimitive()) {
-			return this;
-		}
-		Class<T> actualClass;
-		try {
-			actualClass = getActualClass();
-		} catch (SpoonClassNotFoundException e) {
-			return this;
-		}
-		if (actualClass == Integer.class) {
-			return getFactory().Type().createReference(int.class);
-		}
-		if (actualClass == Float.class) {
-			return getFactory().Type().createReference(float.class);
-		}
-		if (actualClass == Long.class) {
-			return getFactory().Type().createReference(long.class);
-		}
-		if (actualClass == Character.class) {
-			return getFactory().Type().createReference(char.class);
-		}
-		if (actualClass == Double.class) {
-			return getFactory().Type().createReference(double.class);
-		}
-		if (actualClass == Boolean.class) {
-			return getFactory().Type().createReference(boolean.class);
-		}
-		if (actualClass == Short.class) {
-			return getFactory().Type().createReference(short.class);
-		}
-		if (actualClass == Byte.class) {
-			return getFactory().Type().createReference(byte.class);
-		}
-		if (actualClass == Void.class) {
-			return getFactory().Type().createReference(void.class);
-		}
-		return this;
+		return getNonPrimitiveType(this).map(v -> getFactory().Type().createReference(v)).orElse(this);
 	}
 
 	@Override
