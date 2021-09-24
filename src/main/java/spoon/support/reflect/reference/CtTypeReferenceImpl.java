@@ -115,7 +115,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	@Override
 
 	public Class<T> getActualClass() {
-			return getPrimitiveType(this).orElse(findClass());
+			return getPrimitiveType(this).orElseGet(this::findClass);
 	}
 
 	@SuppressWarnings("unchecked")
