@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
@@ -58,6 +58,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	private static final long serialVersionUID = 1L;
 	private static Map<String, Class> classByQName = new ConcurrentHashMap<>();
 	private static ClassLoader lastClassLoader = null;
+	private final ReentrantLock lock = new ReentrantLock();
 
 	@MetamodelPropertyField(role = TYPE_ARGUMENT)
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
@@ -162,9 +163,11 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			typeReference = componentTypeReference;
 		}
 		ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
+		lock.lock();
 		checkCacheIntegrity(classLoader);
 		String qualifiedName = typeReference.getQualifiedName();
 		Class<T> clazz =  classByQName.computeIfAbsent(qualifiedName, key -> loadClassWithQName(classLoader, qualifiedName));
+		lock.unlock();
 		return isArray() ? arrayType(clazz) : clazz;
 	}
 
@@ -181,9 +184,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	private Class<?> loadClassWithQName(ClassLoader classLoader, String qualifiedName) {
 			try {
-				// creating a classloader on the fly is not the most efficient
-				// but it decreases the amount of state to maintain
-				// since getActualClass is only used in rare cases, that's OK.
 				return classLoader.loadClass(qualifiedName);
 			} catch (Throwable e) {
 				throw new SpoonClassNotFoundException("cannot load class: " + qualifiedName, e);
