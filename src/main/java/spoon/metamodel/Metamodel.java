@@ -419,17 +419,24 @@ public class Metamodel {
 	 * @return existing or creates and initializes new {@link MetamodelConcept} which represents the `type`
 	 */
 	private MetamodelConcept getOrCreateConcept(CtType<?> type) {
-		return nameToConcept.computeIfAbsent(getConceptName(type),
-				name -> initializeConcept(type, new MetamodelConcept(name)));
+		String conceptName = getConceptName(type);
+		// computeIfAbsent is not possible here, as the initializeConcept method
+		// calls this method recursively -> ConcurrentModificationException
+		MetamodelConcept concept = nameToConcept.get(conceptName);
+		if (concept == null) {
+			concept = new MetamodelConcept(conceptName);
+			nameToConcept.put(conceptName, concept);
+			initializeConcept(type, concept);
+		}
+		return concept;
 	}
 
 	/**
 	 * is called once for each {@link MetamodelConcept}, to initialize it.
 	 * @param type a class or inteface of the spoon model element
 	 * @param mmConcept to be initialize {@link MetamodelConcept}
-	 * @return the mmConcept parameter
 	 */
-	private MetamodelConcept initializeConcept(CtType<?> type, MetamodelConcept mmConcept) {
+	private void initializeConcept(CtType<?> type, MetamodelConcept mmConcept) {
 		//it is not initialized yet. Do it now
 		if (type instanceof CtInterface<?>) {
 			CtInterface<?> iface = (CtInterface<?>) type;
@@ -455,7 +462,6 @@ public class Metamodel {
 			//finally initialize value type of this field
 			mmField.setValueType(mmField.detectValueType());
 		});
-		return mmConcept;
 	}
 
 	/**
