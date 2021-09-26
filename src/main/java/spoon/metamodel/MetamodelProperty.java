@@ -8,7 +8,6 @@
 package spoon.metamodel;
 
 import static spoon.metamodel.Metamodel.addUniqueObject;
-import static spoon.metamodel.Metamodel.getOrCreate;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -122,7 +121,7 @@ public class MetamodelProperty {
 		if (createIfNotExist) {
 			MMMethod mmMethod = new MMMethod(this, method);
 			roleMethods.add(mmMethod);
-			getOrCreate(methodsByKind, mmMethod.getKind(), () -> new ArrayList<>()).add(mmMethod);
+			methodsByKind.computeIfAbsent(mmMethod.getKind(), k -> new ArrayList<>()).add(mmMethod);
 			MMMethod conflict = roleMethodsBySignature.put(mmMethod.getSignature(), mmMethod);
 			if (conflict != null) {
 				throw new SpoonException("Conflict on " + getOwner().getName() + "." + name + " method signature: " + mmMethod.getSignature());

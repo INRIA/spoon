@@ -18,8 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -421,18 +419,17 @@ public class Metamodel {
 	 * @return existing or creates and initializes new {@link MetamodelConcept} which represents the `type`
 	 */
 	private MetamodelConcept getOrCreateConcept(CtType<?> type) {
-		String conceptName = getConceptName(type);
-		return getOrCreate(nameToConcept, conceptName,
-				() -> new MetamodelConcept(conceptName),
-				mmConcept -> initializeConcept(type, mmConcept));
+		return nameToConcept.computeIfAbsent(getConceptName(type),
+				name -> initializeConcept(type, new MetamodelConcept(name)));
 	}
 
 	/**
 	 * is called once for each {@link MetamodelConcept}, to initialize it.
 	 * @param type a class or inteface of the spoon model element
 	 * @param mmConcept to be initialize {@link MetamodelConcept}
+	 * @return the mmConcept parameter
 	 */
-	private void initializeConcept(CtType<?> type, MetamodelConcept mmConcept) {
+	private MetamodelConcept initializeConcept(CtType<?> type, MetamodelConcept mmConcept) {
 		//it is not initialized yet. Do it now
 		if (type instanceof CtInterface<?>) {
 			CtInterface<?> iface = (CtInterface<?>) type;
@@ -458,6 +455,7 @@ public class Metamodel {
 			//finally initialize value type of this field
 			mmField.setValueType(mmField.detectValueType());
 		});
+		return mmConcept;
 	}
 
 	/**
@@ -518,23 +516,6 @@ public class Metamodel {
 		}
 	}
 
-	static <K, V> V getOrCreate(Map<K, V> map, K key, Supplier<V> valueCreator) {
-		return getOrCreate(map, key, valueCreator, null);
-	}
-	/**
-	 * @param initializer is called immediately after the value is added to the map
-	 */
-	static <K, V> V getOrCreate(Map<K, V> map, K key, Supplier<V> valueCreator, Consumer<V> initializer) {
-		V value = map.get(key);
-		if (value == null) {
-			value = valueCreator.get();
-			map.put(key, value);
-			if (initializer != null) {
-				initializer.accept(value);
-			}
-		}
-		return value;
-	}
 	static <T> boolean addUniqueObject(Collection<T> col, T o) {
 		if (containsObject(col, o)) {
 			return false;
