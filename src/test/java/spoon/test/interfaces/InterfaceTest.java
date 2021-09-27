@@ -75,9 +75,9 @@ public class InterfaceTest {
 		final CtMethod<?> ctMethod = ctInterface.getMethodsByName("getZonedDateTime").get(0);
 		assertTrue("The method in the interface must to be default", ctMethod.isDefaultMethod());
 
-		// contract: the debug toString also shows the implicit modifiers (here "public")
+		// contract: the toString does not show the implicit modifiers (here "public")
 		final String expected =
-				"public default java.time.ZonedDateTime getZonedDateTime(java.lang.String zoneString) {"
+				"default java.time.ZonedDateTime getZonedDateTime(java.lang.String zoneString) {"
 						+ System.lineSeparator()
 						+ "    return java.time.ZonedDateTime.of(getLocalDateTime(), spoon.test.interfaces.testclasses.InterfaceWithDefaultMethods.getZoneId(zoneString));"
 						+ System.lineSeparator() + "}";

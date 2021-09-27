@@ -28,6 +28,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
@@ -35,13 +36,17 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.visitor.equals.CloneHelper;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -264,5 +269,83 @@ public class CloneTest {
 
 		// contract: clone preserves the order
 		assertEquals(c.getFields().get(0), c.clone().getTypeMembers().get(0));
+	}
+
+	@Test
+	public void testCloneKeepsImplicitModifierState() {
+		// contract: When cloning an element the implicit state is kept as well
+		CtClass<?> test = new Launcher().getFactory().createClass("Test");
+		Set<CtExtendedModifier> modifiers = new HashSet<>();
+		modifiers.add(new CtExtendedModifier(ModifierKind.PUBLIC, true));
+		modifiers.add(new CtExtendedModifier(ModifierKind.ABSTRACT, false));
+		test.setExtendedModifiers(modifiers);
+
+		CtClass<?> clonedTest = test.clone();
+
+		// Sanity checks
+		assertEquals(
+				"Class has the wrong amount of modifiers",
+				2,
+				test.getExtendedModifiers().size()
+		);
+		assertModifierImplicitness(test.getExtendedModifiers(), ModifierKind.PUBLIC, true);
+		assertModifierImplicitness(test.getExtendedModifiers(), ModifierKind.ABSTRACT, false);
+
+		// Test that the implicit state was kept
+		assertEquals(
+				"Clone has wrong amount of modifiers",
+				2,
+				clonedTest.getExtendedModifiers().size()
+		);
+		assertModifierImplicitness(clonedTest.getExtendedModifiers(), ModifierKind.PUBLIC, true);
+		assertModifierImplicitness(clonedTest.getExtendedModifiers(), ModifierKind.ABSTRACT, false);
+	}
+
+	private void assertModifierImplicitness(Set<CtExtendedModifier> modifiers, ModifierKind kind,
+			boolean shouldBeImplicit) {
+		for (CtExtendedModifier modifier : modifiers) {
+			if (modifier.getKind() == kind) {
+				assertEquals(
+						"Unexpected CtExtendedModifier#isImplicit",
+						shouldBeImplicit,
+						modifier.isImplicit()
+				);
+				return;
+			}
+		}
+		fail("Modifier " + kind + " was not found at all in " + modifiers);
+	}
+
+	@Test
+	public void testCloneClonesExtendedModifiers() {
+		// contract: When cloning an element the extended modifiers are cloned as well
+		CtClass<?> test = new Launcher().getFactory().createClass("Test");
+		Set<CtExtendedModifier> modifiers = new HashSet<>();
+		modifiers.add(new CtExtendedModifier(ModifierKind.PUBLIC, true));
+		modifiers.add(new CtExtendedModifier(ModifierKind.ABSTRACT, false));
+		test.setExtendedModifiers(modifiers);
+
+		CtClass<?> clonedTest = test.clone();
+
+		assertModifiersAreDistinctInstances(
+				test.getExtendedModifiers(),
+				clonedTest.getExtendedModifiers()
+		);
+	}
+
+	private void assertModifiersAreDistinctInstances(Set<CtExtendedModifier> real,
+			Set<CtExtendedModifier> cloned) {
+		Set<CtExtendedModifier> referenceBasedModifierSet = Collections.newSetFromMap(
+				new IdentityHashMap<>()
+		);
+		referenceBasedModifierSet.addAll(real);
+		referenceBasedModifierSet.addAll(cloned);
+
+		// Verify the modifier instances are actually different so changes in one do not affect the other
+		assertEquals(
+				"The extended modifiers are the same instance as the original",
+				4,
+				referenceBasedModifierSet.size()
+		);
 	}
 }
