@@ -11,8 +11,8 @@ package spoon.reflect.factory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.StringTokenizer;
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
@@ -159,26 +159,73 @@ public class PackageFactory extends SubFactory {
 			throw new RuntimeException("Invalid package name " + qualifiedName);
 		}
 
-		return factory.getModel().getAllModules().stream()
-				.map(module -> getPackageFromModule(qualifiedName, module))
-				.filter(Objects::nonNull)
-				.findFirst()
-				.orElse(null);
+		// Find package with the most contained types. If a module exports package "foo.bar" and the
+		// other "foo.bar.baz", *both modules* will contain a "foo.bar" package in spoon. As
+		// javac (yes, javac. This is not in the spec but would be a colossal pain for many things if
+		// it were ever allowed) does not allow overlapping packages, one of them will be a synthetic
+		// package spoon creates as a parent for "foo.bar.baz". This package will *never* have any
+		// types in it.
+		// JDT does allow it, but the chances of a real-word program actually having overlap are slim.
+		//
+		// However, if the "foo.bar.baz" module is found first in "getAllModules()", we will find the
+		// synthetic "foo.bar" package in it. As that one contains no types, all queries for types in
+		// it will fail!
+		//
+		// To solve this we look for the package with at least one contained type, effectively
+		// filtering out any synthetic packages.
+		int foundPackageCount = 0;
+		CtPackage packageWithTypes = null;
+		CtPackage lastNonNullPackage = null;
+		for (CtModule module : factory.getModel().getAllModules()) {
+			CtPackage aPackage = getPackageFromModule(qualifiedName, module);
+			if (aPackage == null) {
+				continue;
+			}
+			lastNonNullPackage = aPackage;
+			if (!aPackage.getTypes().isEmpty()) {
+				packageWithTypes = aPackage;
+				foundPackageCount++;
+			}
+		}
+
+		if (foundPackageCount > 1) {
+			throw new SpoonException(
+					"Ambiguous package name detected. If you believe the code you analyzed is correct, please"
+							+ " file an issue and reference https://github.com/INRIA/spoon/issues/4051. "
+							+ "Error details: Found " + foundPackageCount + " non-empty packages with name "
+							+ "'" + qualifiedName + "'"
+			);
+		}
+
+		// Return a non synthetic package but if *no* package had any types we return the last one.
+		// This ensures that you can also retrieve empty packages with this API
+		return packageWithTypes != null ? packageWithTypes : lastNonNullPackage;
 	}
 
 	/**
 	 * @param qualifiedName Qualified name of a package.
-	 * @param module A module in which to search for the package.
+	 * @param ctModule A module in which to search for the package.
 	 * @return The package if found in this module, otherwise null.
 	 */
-	private static CtPackage getPackageFromModule(String qualifiedName, CtModule module) {
-		StringTokenizer token = new StringTokenizer(qualifiedName, CtPackage.PACKAGE_SEPARATOR);
-		CtPackage current = module.getRootPackage();
-		while (token.hasMoreElements() && current != null) {
-			current = current.getPackage(token.nextToken());
+	private static CtPackage getPackageFromModule(String qualifiedName, CtModule ctModule) {
+		int index = 0;
+		int nextIndex;
+		CtPackage current = ctModule.getRootPackage();
+
+		if (qualifiedName.isEmpty() || current == null) {
+			return current;
 		}
 
-		return current;
+		while ((nextIndex = qualifiedName.indexOf(CtPackage.PACKAGE_SEPARATOR_CHAR, index)) >= 0) {
+			current = current.getPackage(qualifiedName.substring(index, nextIndex));
+			index = nextIndex + 1;
+
+			if (current == null) {
+				return null;
+			}
+		}
+
+		return current.getPackage(qualifiedName.substring(index));
 	}
 
 	/**

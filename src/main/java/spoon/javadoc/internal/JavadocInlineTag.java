@@ -51,30 +51,35 @@ public class JavadocInlineTag implements JavadocDescriptionElement, Serializable
 	}
 
 	/**
-		* The type of tag: it could either correspond to a known tag (code, docRoot, etc.) or represent
-		* an unknown tag.
-		*/
+	 * The type of tag: it could either correspond to a known tag (code, docRoot, etc.) or represent
+	 * an unknown tag.
+	 *
+	 * See also:
+	 * <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/javadoc/doc-comment-spec.html">
+	 * Tags in the Javadoc specification
+	 * </a>
+	 */
 	public enum Type {
-		CODE,
-		DOC_ROOT,
-		INHERIT_DOC,
-		LINK,
-		LINKPLAIN,
-		LITERAL,
-		VALUE,
-		UNKNOWN;
+		CODE("code"),
+		DOC_ROOT("docRoot"),
+		INHERIT_DOC("inheritDoc"),
+		LINK("link"),
+		LINKPLAIN("linkplain"),
+		LITERAL("literal"),
+		VALUE("value"),
+		UNKNOWN("unknown");
 
-		Type() {
-			this.keyword = name();
+		private final String keyword;
+
+		Type(String keyword) {
+			this.keyword = keyword;
 		}
 
-		private String keyword;
-
-		static JavadocInlineTag.Type fromName(String tagName) {
-			for (JavadocInlineTag.Type t : JavadocInlineTag.Type.values()) {
-			if (t.keyword.equals(tagName.toUpperCase())) {
-				return t;
-			}
+		static Type fromName(String tagName) {
+			for (Type type : values()) {
+				if (type.keyword.equalsIgnoreCase(tagName)) {
+					return type;
+				}
 			}
 			return UNKNOWN;
 		}
