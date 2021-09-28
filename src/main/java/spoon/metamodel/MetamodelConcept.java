@@ -83,7 +83,7 @@ public class MetamodelConcept {
 
 
 	MetamodelProperty getOrCreateMMField(CtRole role) {
-		return Metamodel.getOrCreate(role2Property, role, () -> new MetamodelProperty(role.getCamelCaseName(), role, this));
+		return role2Property.computeIfAbsent(role, k -> new MetamodelProperty(k.getCamelCaseName(), k, this));
 	}
 
 	/**
