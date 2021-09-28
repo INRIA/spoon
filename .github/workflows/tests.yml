@@ -22,7 +22,6 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
         java: [11, 16]
         os: [ubuntu-latest, windows-latest]
