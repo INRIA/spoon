@@ -117,7 +117,7 @@
       <!-- to reproduce JTD error with nullable annotation -->
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>31.0-jre</version>
+      <version>31.0.1-jre</version>
       <scope>test</scope>
     </dependency>
     <dependency>
