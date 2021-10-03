@@ -129,6 +129,15 @@ public class CtRecordTest {
 		assertTrue(head(head(records).getMethods()).hasAnnotation(Override.class));
 	}
 
+	@Test
+	void printRecordWithInterface() {
+		// a record with an interface should be printed as a class with an interface
+		String code = "src/test/resources/records/Foo.java";
+		CtModel model = createModelFromPath(code);
+		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
+		CtRecord record = head(records);
+		assertTrue(record.toString().contains("implements records.Supplier"));
+	}
 	private CtModel createModelFromPath(String code) {
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setComplianceLevel(16);

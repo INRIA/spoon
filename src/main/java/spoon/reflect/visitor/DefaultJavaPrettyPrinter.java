@@ -2189,17 +2189,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public void visitCtRecord(CtRecord recordType) {
 		context.pushCurrentThis(recordType);
-		if (recordType.getSimpleName() != null && !CtType.NAME_UNKNOWN.equals(recordType.getSimpleName()) && !recordType.isAnonymous()) {
-			visitCtType(recordType);
-			if (recordType.isLocalType()) {
-				printer.writeKeyword("record").writeSpace().writeIdentifier(recordType.getSimpleName().replaceAll("^[0-9]*", ""));
-			} else {
-				printer.writeKeyword("record").writeSpace().writeIdentifier(recordType.getSimpleName());
-			}
-			elementPrinterHelper.printList(recordType.getRecordComponents(), null, false, "(", false, false, ",", true, false, ")", this::visitCtRecordComponent);
-			elementPrinterHelper.writeFormalTypeParameters(recordType);
-			elementPrinterHelper.writeImplementsClause(recordType);
-		}
 		visitCtType(recordType);
 		printer.writeKeyword("record").writeSpace().writeIdentifier(stripLeadingDigits(recordType.getSimpleName()));
 		elementPrinterHelper.printList(recordType.getRecordComponents(), null, false, "(", false, false, ",", true, false, ")", this::visitCtRecordComponent);
