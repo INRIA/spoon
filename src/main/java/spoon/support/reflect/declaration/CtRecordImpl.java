@@ -236,6 +236,7 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 		} else {
 			extendedModifiers.remove(new CtExtendedModifier(ModifierKind.STATIC, true));
 		}
+		setExtendedModifiers(extendedModifiers);
 		return super.setParent(parent);
 	}
 
