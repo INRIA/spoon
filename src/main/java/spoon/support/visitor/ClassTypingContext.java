@@ -298,7 +298,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 * @return true if this method and thatMethod has same signature
 	 */
 	public boolean isSameSignature(CtExecutable<?> thisExecutable, CtMethod<?> thatExecutable) {
-		if (!(thatExecutable instanceof CtConstructor)) {
+		if (thatExecutable instanceof CtConstructor) {
 			//only method or constructor can have same signature
 			return false;
 		}
