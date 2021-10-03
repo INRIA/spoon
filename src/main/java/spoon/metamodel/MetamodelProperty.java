@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -74,7 +75,7 @@ public class MetamodelProperty {
 	private Boolean derived;
 	private Boolean unsettable;
 
-	private Map<MMMethodKind, List<MMMethod>> methodsByKind = new HashMap<>();
+	private Map<MMMethodKind, List<MMMethod>> methodsByKind = new EnumMap<>(MMMethodKind.class);
 	private Map<String, MMMethod> methodsBySignature;
 
 	/**
