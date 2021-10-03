@@ -22,6 +22,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 import spoon.compiler.SpoonResourceHelper;
@@ -167,6 +168,10 @@ public class ZipFolder implements SpoonFolder {
 			ZipEntry entry;
 			while ((entry = zipInput.getNextEntry()) != null) {
 				File f = new File(destDir + File.separator + entry.getName());
+				if (!f.toPath().normalize().startsWith(destDir.toPath())) {
+					// test against zip slips
+						throw new SpoonException("Entry is outside of the target dir: " + entry.getName());
+				}
 				if (entry.isDirectory()) { // if it's a directory, create it
 					f.mkdir();
 					continue;
