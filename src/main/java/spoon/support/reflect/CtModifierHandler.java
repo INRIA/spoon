@@ -82,8 +82,8 @@ public class CtModifierHandler implements Serializable {
 		}
 		getFactory().getEnvironment().getModelChangeListener().onSetAdd(element, MODIFIER, this.modifiers, modifier);
 		// we always add explicit modifiers, then we have to remove first implicit one
-		modifiers.remove(new CtExtendedModifier(modifier, true));
-		modifiers.add(new CtExtendedModifier(modifier));
+		modifiers.remove(CtExtendedModifier.implicit(modifier));
+		modifiers.add(CtExtendedModifier.explicit(modifier));
 		return this;
 	}
 
@@ -93,8 +93,8 @@ public class CtModifierHandler implements Serializable {
 		}
 		getFactory().getEnvironment().getModelChangeListener().onSetDelete(element, MODIFIER, modifiers, modifier);
 		// we want to remove implicit OR explicit modifier
-		modifiers.remove(new CtExtendedModifier(modifier));
-		modifiers.remove(new CtExtendedModifier(modifier, true));
+		modifiers.remove(CtExtendedModifier.implicit(modifier));
+		modifiers.remove(CtExtendedModifier.explicit(modifier));
 		return this;
 	}
 

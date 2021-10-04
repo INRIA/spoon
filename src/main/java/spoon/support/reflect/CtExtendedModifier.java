@@ -25,13 +25,46 @@ public class CtExtendedModifier implements SourcePositionHolder, Serializable {
 	private ModifierKind kind;
 	private SourcePosition position;
 
+	/**
+	 * Creates a new extended modifier of the given kind.
+	 *
+	 * @param kind the kind of this modifier.
+	 * @deprecated use {@link #explicit(ModifierKind)} to create an explicit modifier.
+	 */
+	@Deprecated
 	public CtExtendedModifier(ModifierKind kind) {
 		this.kind = kind;
 	}
 
+	/**
+	 * Creates a new extended modifier of the given kind with the given implicitness.
+	 *
+	 * @param kind the kind of this modifier.
+	 * @param implicit whether this modifier should be implicit.
+	 */
 	public CtExtendedModifier(ModifierKind kind, boolean implicit) {
 		this(kind);
 		this.implicit = implicit;
+	}
+
+	/**
+	 * Creates an extended modifier of the given kind that is explicit.
+	 *
+	 * @param kind the kind of the created modifier.
+	 * @return an explicit extended modifier.
+	 */
+	public static CtExtendedModifier explicit(ModifierKind kind) {
+		return new CtExtendedModifier(kind, false);
+	}
+
+	/**
+	 * Creates an extended modifier of the given kind that is implicit.
+	 *
+	 * @param kind the kind of the created modifier.
+	 * @return an implicit extended modifier.
+	 */
+	public static CtExtendedModifier implicit(ModifierKind kind) {
+		return new CtExtendedModifier(kind, true);
 	}
 
 	public boolean isImplicit() {
