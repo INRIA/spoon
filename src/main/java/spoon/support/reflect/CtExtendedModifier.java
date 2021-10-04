@@ -93,11 +93,4 @@ public class CtExtendedModifier implements SourcePositionHolder, Serializable {
 			return ElementSourceFragment.NO_SOURCE_FRAGMENT;
 		}
 	}
-
-	@Override
-	public String toString() {
-		return "CtExtendedModifier{"
-				+ "implicit=" + implicit
-				+ ", kind=" + kind + '}';
-	}
 }
