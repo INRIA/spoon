@@ -16,15 +16,9 @@
  */
 package spoon.test.enums;
 
-import com.google.common.collect.Streams;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
@@ -55,7 +49,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -124,21 +117,52 @@ public class EnumsTest {
 		// assertThat(burritos.getAllMethods(), hasItem(name));
 	}
 
-	@ParameterizedTest
-	@ArgumentsSource(NestedEnumTypeProvider.class)
-	void testEnumValueModifiers(CtEnum<?> type, CtExtendedModifier visibility) {
+	@Test
+	void testNestedPrivateEnumValues() throws Exception {
 		// contract: enum values have correct modifiers
-		if (visibility != null) {
-			assertThat(type.getField("VALUE").getExtendedModifiers(), contentEquals(
-					// TODO this is wrong, the field should be public
-					new CtExtendedModifier(visibility.getKind(), true),
+		CtType<?> ctClass = ModelUtils.buildClass(NestedEnums.class);
+		{
+			CtEnum<?> ctEnum = ctClass.getNestedType("PrivateENUM");
+			// TODO this is technically not correct, the enum should be implicitly final
+			assertThat(ctEnum.getExtendedModifiers(), contentEquals(
+					new CtExtendedModifier(ModifierKind.PRIVATE))
+			);
+			assertThat(ctEnum.getField("VALUE").getExtendedModifiers(), contentEquals(
+					new CtExtendedModifier(ModifierKind.PUBLIC, true),
 					new CtExtendedModifier(ModifierKind.STATIC, true),
 					new CtExtendedModifier(ModifierKind.FINAL, true)
 			));
-		} else {
-			assertThat(type.getField("VALUE").getExtendedModifiers(), contentEquals(
-					// TODO this is wrong, the field should be public (and then the if else,
-					//  the visibility param and the Streams#zip can be removed)
+		}
+		{
+			CtEnum<?> ctEnum = ctClass.getNestedType("PublicENUM");
+			// TODO this is technically not correct, the enum should be implicitly final
+			assertThat(ctEnum.getExtendedModifiers(), contentEquals(
+					new CtExtendedModifier(ModifierKind.PUBLIC)
+			));
+			assertThat(ctEnum.getField("VALUE").getExtendedModifiers(), contentEquals(
+					new CtExtendedModifier(ModifierKind.PUBLIC, true),
+					new CtExtendedModifier(ModifierKind.STATIC, true),
+					new CtExtendedModifier(ModifierKind.FINAL, true)
+			));
+		}
+		{
+			CtEnum<?> ctEnum = ctClass.getNestedType("ProtectedENUM");
+			// TODO this is technically not correct, the enum should be implicitly final
+			assertThat(ctEnum.getExtendedModifiers(), contentEquals(
+					new CtExtendedModifier(ModifierKind.PROTECTED)
+			));
+			assertThat(ctEnum.getField("VALUE").getExtendedModifiers(), contentEquals(
+					new CtExtendedModifier(ModifierKind.PUBLIC, true),
+					new CtExtendedModifier(ModifierKind.STATIC, true),
+					new CtExtendedModifier(ModifierKind.FINAL, true)
+			));
+		}
+		{
+			CtEnum<?> ctEnum = ctClass.getNestedType("PackageProtectedENUM");
+			// TODO this is technically not correct, the enum should be implicitly final
+			assertThat(ctEnum.getExtendedModifiers(), contentEquals());
+			assertThat(ctEnum.getField("VALUE").getExtendedModifiers(), contentEquals(
+					new CtExtendedModifier(ModifierKind.PUBLIC, true),
 					new CtExtendedModifier(ModifierKind.STATIC, true),
 					new CtExtendedModifier(ModifierKind.FINAL, true)
 			));
@@ -238,27 +262,5 @@ public class EnumsTest {
 		assertThat(enumType.getSimpleName(), is("1MyEnum"));
 		assertThat(enumType.getEnumValues().size(), is(2));
 		assertThat(enumType.getMethods().size(), is(1));
-	}
-
-	static class NestedEnumTypeProvider implements ArgumentsProvider {
-		private final CtType<?> ctClass;
-
-		NestedEnumTypeProvider() throws Exception {
-			this.ctClass = ModelUtils.buildClass(NestedEnums.class);
-		}
-
-		@Override
-		public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-			Stream<CtEnum<?>> types = Stream.of("Private", "PackageProtected", "Protected", "Public")
-					.map(s -> s + "ENUM")
-					.map(ctClass::getNestedType);
-			//noinspection UnstableApiUsage
-			return Streams.zip(types, Stream.of(
-					new CtExtendedModifier(ModifierKind.PRIVATE),
-					null, // package private modifier
-					new CtExtendedModifier(ModifierKind.PROTECTED),
-					new CtExtendedModifier(ModifierKind.PUBLIC)
-					), Arguments::of);
-		}
 	}
 }
