@@ -83,7 +83,6 @@ public class EnumsTest {
 		assertThat(foo.getEnumValues().size(), is(1));
 		CtEnumValue<?> value = foo.getEnumValues().get(0);
 		assertThat(value.getAnnotations().size(), is(1));
-		CtAnnotationType<?> annotation = (CtAnnotationType<?>) foo.getFactory().Annotation().<Deprecated>get(Deprecated.class);
 		assertThat(map(AnnotationTest::getActualClassFromAnnotation, value.getAnnotations()), hasItem(Deprecated.class));
 		assertSame(Deprecated.class, AnnotationTest.getActualClassFromAnnotation(
 				foo.getFields().get(0).getAnnotations().get(0)));
