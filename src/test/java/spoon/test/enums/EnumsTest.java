@@ -112,8 +112,6 @@ public class EnumsTest {
 		name.setType(factory.Type().createReference(String.class));
 		assertTrue(burritos.hasMethod(name));
 		assertTrue(burritos.getAllMethods().contains(name));
-		// this does not work due to the SignatureBasedSortedSet violating the Set contract
-		// assertThat(burritos.getAllMethods(), hasItem(name));
 	}
 
 	@Test
