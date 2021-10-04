@@ -17,96 +17,97 @@
 package spoon.test.enums;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.SpoonTestHelpers;
 import spoon.test.annotation.AnnotationTest;
 import spoon.test.enums.testclasses.Burritos;
-import spoon.test.enums.testclasses.Foo;
+import spoon.test.enums.testclasses.EnumWithMembers;
 import spoon.test.enums.testclasses.NestedEnums;
 import spoon.test.enums.testclasses.Regular;
-import spoon.test.enums.testclasses.EnumWithMembers;
 import spoon.testing.utils.ModelUtils;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.build;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.test.SpoonTestHelpers.containsRegexMatch;
+import static spoon.test.SpoonTestHelpers.contentEquals;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class EnumsTest {
 
 	@Test
-	public void testModelBuildingEnum() throws Exception {
+	void testModelBuildingEnum() throws Exception {
+		// contract: an enum built by spoon equals the real enum in following aspects:
+		// - the simple name
+		// - the amount of enum values
+		// - the order of enum values
+		// - the amount of overall fields
 		CtEnum<Regular> enumeration = build("spoon.test.enums.testclasses", "Regular");
-		assertEquals("Regular", enumeration.getSimpleName());
-		assertEquals(3, Regular.values().length);
-		assertEquals(3, enumeration.getEnumValues().size());
-		assertEquals("A", enumeration.getEnumValues().get(0).getSimpleName());
-		assertEquals(5, enumeration.getFields().size());
+		assertThat(enumeration.getSimpleName(), is("Regular"));
+		assertThat(enumeration.getEnumValues().size(), is(Regular.values().length));
+		assertThat(map(CtEnumValue::getSimpleName, enumeration.getEnumValues()), is(Arrays.asList("A", "B", "C")));
+		assertThat(enumeration.getFields().size(), is(5));
 	}
 
 	@Test
-	public void testAnnotationsOnEnum() {
-		final Launcher launcher = new Launcher();
-		launcher.run(new String[]{
-				"-i", "./src/test/java/spoon/test/enums/testclasses",
-				"-o", "./target/spooned"
-		});
-
-		final CtEnum<?> foo = (CtEnum) launcher.getFactory().Type().get(Foo.class);
-		assertEquals(1, foo.getFields().size());
-		assertEquals(1, foo.getFields().get(0).getAnnotations().size());
+	void testAnnotationsOnEnum() throws Exception {
+		// contract: an annotation on an enum value is represented in the spoon model
+		final CtEnum<?> foo = build("spoon.test.enums.testclasses", "Foo");
+		assertThat(foo.getEnumValues().size(), is(1));
+		CtEnumValue<?> value = foo.getEnumValues().get(0);
+		assertThat(value.getAnnotations().size(), is(1));
+		assertThat(map(AnnotationTest::getActualClassFromAnnotation, value.getAnnotations()), hasItem(Deprecated.class));
 		assertSame(Deprecated.class, AnnotationTest.getActualClassFromAnnotation(
 				foo.getFields().get(0).getAnnotations().get(0)));
-		assertEquals(
-				"public enum Foo {" + DefaultJavaPrettyPrinter.LINE_SEPARATOR + DefaultJavaPrettyPrinter.LINE_SEPARATOR
-						+ "    @java.lang.Deprecated"
-						+ DefaultJavaPrettyPrinter.LINE_SEPARATOR + "    Bar;}",
-				foo.toString());
+		// finding with a regex to avoid printer-specific output
+		assertThat(foo.prettyprint(), containsRegexMatch("@(java\\.lang\\.)?Deprecated\\W+Bar"));
+	}
+
+	private static <I, O> List<O> map(Function<I, O> function, List<I> input) {
+		return input.stream().map(function).collect(Collectors.toList());
 	}
 
 	@Test
-	public void testEnumWithoutField() throws Exception {
+	void testEnumWithoutValue() throws Exception {
+		// contract: an enum without values contains a ; before any other members
 		final Factory factory = build(Burritos.class);
 		final CtType<Burritos> burritos = factory.Type().get(Burritos.class);
-		assertEquals("public enum Burritos {" + DefaultJavaPrettyPrinter.LINE_SEPARATOR //
-				+ "    ;" + DefaultJavaPrettyPrinter.LINE_SEPARATOR + DefaultJavaPrettyPrinter.LINE_SEPARATOR //
-				+ "    public static void m() {" + DefaultJavaPrettyPrinter.LINE_SEPARATOR //
-				+ "    }" + DefaultJavaPrettyPrinter.LINE_SEPARATOR //
-				+ "}", burritos.toString());
+		assertThat(burritos.prettyprint(), containsRegexMatch("Burritos \\{\\W+;"));
 	}
 
 	@Test
-	public void testGetAllMethods() throws Exception {
+	void testGetAllMethods() throws Exception {
 		// contract: getAllMethods also returns the methods of Enum
 		final Factory factory = build(Burritos.class);
 		final CtType<Burritos> burritos = factory.Type().get(Burritos.class);
-		CtMethod name = factory.Core().createMethod();
+		CtMethod<String> name = factory.Core().createMethod();
 		name.setSimpleName("name"); // from Enum
 		name.setType(factory.Type().createReference(String.class));
 		assertTrue(burritos.hasMethod(name));
@@ -114,38 +115,63 @@ public class EnumsTest {
 	}
 
 	@Test
-	public void testNestedPrivateEnumValues() throws Exception {
+	void testNestedPrivateEnumValues() throws Exception {
 		// contract: enum values have correct modifiers
 		CtType<?> ctClass = ModelUtils.buildClass(NestedEnums.class);
 		{
 			CtEnum<?> ctEnum = ctClass.getNestedType("PrivateENUM");
-			assertEquals(asSet(ModifierKind.PRIVATE), ctEnum.getModifiers());
-			assertEquals(asSet(ModifierKind.PRIVATE, ModifierKind.STATIC, ModifierKind.FINAL), ctEnum.getField("VALUE").getModifiers());
+			// TODO this is technically not correct, the enum should be implicitly final
+			assertThat(ctEnum.getExtendedModifiers(), contentEquals(
+					new CtExtendedModifier(ModifierKind.PRIVATE))
+			);
+			assertThat(ctEnum.getField("VALUE").getExtendedModifiers(), contentEquals(
+					// TODO PRIVATE is wrong here, should be PUBLIC
+					new CtExtendedModifier(ModifierKind.PRIVATE, true),
+					new CtExtendedModifier(ModifierKind.STATIC, true),
+					new CtExtendedModifier(ModifierKind.FINAL, true)
+			));
 		}
 		{
 			CtEnum<?> ctEnum = ctClass.getNestedType("PublicENUM");
-			assertEquals(asSet(ModifierKind.PUBLIC), ctEnum.getModifiers());
-			assertEquals(asSet(ModifierKind.PUBLIC, ModifierKind.STATIC, ModifierKind.FINAL), ctEnum.getField("VALUE").getModifiers());
+			// TODO this is technically not correct, the enum should be implicitly final
+			assertThat(ctEnum.getExtendedModifiers(), contentEquals(
+					new CtExtendedModifier(ModifierKind.PUBLIC)
+			));
+			assertThat(ctEnum.getField("VALUE").getExtendedModifiers(), contentEquals(
+					new CtExtendedModifier(ModifierKind.PUBLIC, true),
+					new CtExtendedModifier(ModifierKind.STATIC, true),
+					new CtExtendedModifier(ModifierKind.FINAL, true)
+			));
 		}
 		{
 			CtEnum<?> ctEnum = ctClass.getNestedType("ProtectedENUM");
-			assertEquals(asSet(ModifierKind.PROTECTED), ctEnum.getModifiers());
-			assertEquals(asSet(ModifierKind.PROTECTED, ModifierKind.STATIC, ModifierKind.FINAL), ctEnum.getField("VALUE").getModifiers());
+			// TODO this is technically not correct, the enum should be implicitly final
+			assertThat(ctEnum.getExtendedModifiers(), contentEquals(
+					new CtExtendedModifier(ModifierKind.PROTECTED)
+			));
+			assertThat(ctEnum.getField("VALUE").getExtendedModifiers(), contentEquals(
+					// TODO PROTECTED is wrong here, should be PUBLIC
+					new CtExtendedModifier(ModifierKind.PROTECTED, true),
+					new CtExtendedModifier(ModifierKind.STATIC, true),
+					new CtExtendedModifier(ModifierKind.FINAL, true)
+			));
 		}
 		{
 			CtEnum<?> ctEnum = ctClass.getNestedType("PackageProtectedENUM");
-			assertEquals(asSet(), ctEnum.getModifiers());
-			assertEquals(asSet(ModifierKind.STATIC, ModifierKind.FINAL), ctEnum.getField("VALUE").getModifiers());
+			// TODO this is technically not correct, the enum should be implicitly final
+			assertThat(ctEnum.getExtendedModifiers(), contentEquals());
+			assertThat(ctEnum.getField("VALUE").getExtendedModifiers(), contentEquals(
+					// TODO package-private is wrong here, should be PUBLIC
+					new CtExtendedModifier(ModifierKind.STATIC, true),
+					new CtExtendedModifier(ModifierKind.FINAL, true)
+			));
 		}
 	}
 
-	private <T> Set<T> asSet(T... values) {
-		return new HashSet<>(Arrays.asList(values));
-	}
-
 	@Test
-	public void testPrintEnumValues() throws IOException {
+	void testPrintEnumValues() throws IOException {
 		// contract: enum values constructor calls are correctly interpreted as implicit or not
+		// TODO this test is incomplete, it does not cover anonymous enum constants
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/EnumClass.java");
 		launcher.setSourceOutputDirectory("./target/test-enum");
@@ -172,20 +198,20 @@ public class EnumsTest {
 	}
 
 	@Test
-	public void testEnumValue() {
+	void testEnumValue() {
 		// contract: constructorCall on enum values should be implicit if they're not declared
-
+		// TODO this test is incomplete, it does not cover anonymous enum constants
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/spoon/test/comment/testclasses/EnumClass.java");
 		CtModel model = launcher.buildModel();
 
-		List<CtEnumValue> enumValues = model.getElements(new TypeFilter<>(CtEnumValue.class));
+		List<CtEnumValue<?>> enumValues = model.getElements(new TypeFilter<>(CtEnumValue.class));
 
-		assertEquals(4, enumValues.size());
+		assertThat(enumValues.size(), is(4));
 
 		for (int i = 0; i < 3; i++) {
-			CtEnumValue ctEnumValue = enumValues.get(i);
-			CtExpression defaultExpression = ctEnumValue.getDefaultExpression();
+			CtEnumValue<?> ctEnumValue = enumValues.get(i);
+			CtExpression<?> defaultExpression = ctEnumValue.getDefaultExpression();
 
 			if (i != 2) {
 				assertTrue(defaultExpression.isImplicit());
@@ -196,12 +222,12 @@ public class EnumsTest {
 	}
 
 	@Test
-	public void testEnumMembersModifiers() throws Exception {
+	void testEnumMembersModifiers() throws Exception {
 		// contract: enum members should have correct modifiers
 		final Factory factory = build(EnumWithMembers.class);
 		CtModel model = factory.getModel();
 
-		CtField lenField = model.getElements(new TypeFilter<>(CtField.class)).stream()
+		CtField<?> lenField = model.getElements(new TypeFilter<>(CtField.class)).stream()
 				.filter(p -> "len".equals(p.getSimpleName()))
 				.findFirst().get();
 
@@ -212,7 +238,7 @@ public class EnumsTest {
 		assertFalse(lenField.isProtected());
 	}
 
-	@org.junit.jupiter.api.Test
+	@Test
 	void testLocalEnumExists() {
 		// contract: local enums and their members are part of the model
 		String code = SpoonTestHelpers.wrapLocal(
