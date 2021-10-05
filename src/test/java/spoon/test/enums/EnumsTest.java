@@ -23,6 +23,7 @@ import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
@@ -255,6 +256,19 @@ public class EnumsTest {
 		CtType<?> publicEnum = build("spoon.test.enums.testclasses", "AnonEnum");
 		assertThat(publicEnum.getExtendedModifiers(), contentEquals(
 				new CtExtendedModifier(ModifierKind.PUBLIC, false)
+		));
+	}
+
+	@Test
+	void testEnumValueModifiers() throws Exception {
+		// contract: anonymous enum classes are always final
+		CtEnum<?> publicEnum = build("spoon.test.enums.testclasses", "AnonEnum");
+		// get the '{ }' of 'A { }'
+		CtExpression<?> defaultExpression = publicEnum.getEnumValues().get(0).getDefaultExpression();
+		// it has to be a CtNewClass, otherwise it wouldn't declare an anonymous type
+		assertTrue(defaultExpression instanceof CtNewClass);
+		assertThat(((CtNewClass<?>) defaultExpression).getAnonymousClass().getExtendedModifiers(), contentEquals(
+				new CtExtendedModifier(ModifierKind.FINAL, true)
 		));
 	}
 
