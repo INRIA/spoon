@@ -94,8 +94,6 @@ public class MetamodelProperty {
 	 */
 	private final List<MetamodelProperty> superProperties = new ArrayList<>();
 
-	private List<MMMethodKind> ambiguousMethodKinds = new ArrayList<>();
-
 	MetamodelProperty(String name, CtRole role, MetamodelConcept ownerConcept) {
 		this.name = name;
 		this.role = role;
@@ -300,14 +298,9 @@ public class MetamodelProperty {
 		List<MMMethod> methods = methodsByKind.get(key);
 		if (methods != null && methods.size() > 1) {
 			int idx = getIdxOfBestMatch(methods, key);
-			if (idx >= 0) {
 				if (idx > 0) {
 					//move the matching to the beginning
 					methods.add(0, methods.remove(idx));
-				}
-			} else {
-				//add all methods as ambiguous
-				ambiguousMethodKinds.add(key);
 			}
 		}
 	}

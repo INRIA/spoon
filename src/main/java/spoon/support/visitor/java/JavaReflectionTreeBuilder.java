@@ -310,7 +310,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	public void visitEnumValue(Field field) {
 		final CtEnumValue<Object> ctEnumValue = factory.Core().createEnumValue();
 		ctEnumValue.setSimpleName(field.getName());
-		setModifier(ctEnumValue, field.getDeclaringClass().getModifiers(), field.getDeclaringClass().getDeclaringClass());
+		setModifier(ctEnumValue, field.getModifiers(), field.getDeclaringClass());
 
 		enter(new VariableRuntimeBuilderContext(ctEnumValue));
 		super.visitEnumValue(field);
@@ -497,7 +497,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	private void setModifier(CtModifiable ctModifiable, int modifiers, Class<?> declaringClass) {
 		// an interface is implicitly abstract
 		if (Modifier.isAbstract(modifiers) && !(ctModifiable instanceof CtInterface)) {
-			if (ctModifiable instanceof CtEnum) {
+			if (ctModifiable instanceof CtEnum || ctModifiable instanceof CtEnumValue) {
 				//enum must not be declared abstract (even if it can be made abstract see CtStatementImpl.InsertType)
 				//as stated in java lang spec https://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.9
 			} else if (isInterface(declaringClass)) {
