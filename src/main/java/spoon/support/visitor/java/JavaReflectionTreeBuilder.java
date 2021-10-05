@@ -495,16 +495,8 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 
 	private void setModifier(CtModifiable ctModifiable, int modifiers, Class<?> declaringClass) {
-		// an interface is implicitly abstract
-		if (Modifier.isAbstract(modifiers) && !(ctModifiable instanceof CtInterface)) {
-			if (ctModifiable instanceof CtEnum || ctModifiable instanceof CtEnumValue) {
-				//enum must not be declared abstract (even if it can be made abstract see CtStatementImpl.InsertType)
-				//as stated in java lang spec https://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.9
-			} else if (isInterface(declaringClass)) {
-				//do not set implicit abstract for interface type members
-			} else {
-				ctModifiable.addModifier(ModifierKind.ABSTRACT);
-			}
+		if (Modifier.isAbstract(modifiers)) {
+			ctModifiable.addModifier(ModifierKind.ABSTRACT);
 		}
 		if (Modifier.isFinal(modifiers)) {
 			ctModifiable.addModifier(ModifierKind.FINAL);
@@ -519,18 +511,10 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			ctModifiable.addModifier(ModifierKind.PROTECTED);
 		}
 		if (Modifier.isPublic(modifiers)) {
-			if (isInterface(declaringClass)) {
-				//do not set implicit abstract for interface type members
-			} else {
-				ctModifiable.addModifier(ModifierKind.PUBLIC);
-			}
+			ctModifiable.addModifier(ModifierKind.PUBLIC);
 		}
 		if (Modifier.isStatic(modifiers)) {
-			if (ctModifiable instanceof CtEnum) {
-				//enum is implicitly static, so do not add static explicitly
-			} else {
-				ctModifiable.addModifier(ModifierKind.STATIC);
-			}
+			ctModifiable.addModifier(ModifierKind.STATIC);
 		}
 		if (Modifier.isStrict(modifiers)) {
 			ctModifiable.addModifier(ModifierKind.STRICTFP);
