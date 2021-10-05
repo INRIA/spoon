@@ -536,8 +536,4 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			ctModifiable.addModifier(ModifierKind.VOLATILE);
 		}
 	}
-
-	private boolean isInterface(Class<?> clazz) {
-		return clazz != null && clazz.isInterface();
-	}
 }
