@@ -14,11 +14,9 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.visitor.CtVisitor;
 import spoon.support.UnsettableProperty;
 import spoon.support.reflect.declaration.CtElementImpl;
 
-import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import static spoon.reflect.path.CtRole.NAME;
 
-public abstract class CtReferenceImpl extends CtElementImpl implements CtReference, Serializable {
+public abstract class CtReferenceImpl extends CtElementImpl implements CtReference {
 
 	private static final long serialVersionUID = 1L;
 
@@ -78,8 +76,6 @@ public abstract class CtReferenceImpl extends CtElementImpl implements CtReferen
 		return (E) this;
 	}
 
-	@Override
-	public abstract void accept(CtVisitor visitor);
 
 	@Override
 	public CtReference clone() {
