@@ -29,6 +29,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import static spoon.test.SpoonTestHelpers.contentEquals;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
@@ -417,5 +418,6 @@ public class CtClassTest {
 		MatcherAssert.assertThat(clazz.getSimpleName(), CoreMatchers.is("1MyClass"));
 		MatcherAssert.assertThat(clazz.getFields().size(), CoreMatchers.is(1));
 		MatcherAssert.assertThat(clazz.getMethods().size(), CoreMatchers.is(1));
+		MatcherAssert.assertThat(clazz.getExtendedModifiers(), contentEquals());
 	}
 }

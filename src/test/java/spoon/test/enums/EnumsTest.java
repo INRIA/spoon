@@ -24,7 +24,6 @@ import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
@@ -239,6 +238,27 @@ public class EnumsTest {
 	}
 
 	@Test
+	void testEnumClassPublicFinalEnum() throws Exception {
+		// contract: enum modifiers are applied correctly (JLS 8.9)
+		// package-level enum, isn't static but implicitly final
+		CtType<?> publicFinalEnum = build("spoon.test.enums.testclasses", "Burritos");
+		assertThat(publicFinalEnum.getExtendedModifiers(), contentEquals(
+				new CtExtendedModifier(ModifierKind.PUBLIC, false),
+				new CtExtendedModifier(ModifierKind.FINAL, true)
+		));
+	}
+
+	@Test
+	void testEnumClassModifiersPublicEnum() throws Exception {
+		// contract: enum modifiers are applied correctly (JLS 8.9)
+		// pre Java 17, enums aren't implicitly final if an enum value declares an anonymous type
+		CtType<?> publicEnum = build("spoon.test.enums.testclasses", "AnonEnum");
+		assertThat(publicEnum.getExtendedModifiers(), contentEquals(
+				new CtExtendedModifier(ModifierKind.PUBLIC, false)
+		));
+	}
+
+	@Test
 	void testLocalEnumExists() {
 		// contract: local enums and their members are part of the model
 		String code = SpoonTestHelpers.wrapLocal(
@@ -261,5 +281,9 @@ public class EnumsTest {
 		assertThat(enumType.getSimpleName(), is("1MyEnum"));
 		assertThat(enumType.getEnumValues().size(), is(2));
 		assertThat(enumType.getMethods().size(), is(1));
+		assertThat(enumType.getExtendedModifiers(), contentEquals(
+				new CtExtendedModifier(ModifierKind.STATIC, true),
+				new CtExtendedModifier(ModifierKind.FINAL, true)
+		));
 	}
 }
