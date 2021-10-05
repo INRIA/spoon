@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -141,14 +142,23 @@ public class ZipFolder implements SpoonFolder {
 		return file;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		return toString().equals(obj.toString());
-	}
+
 
 	@Override
 	public int hashCode() {
-		return toString().hashCode();
+		return Objects.hash(file, files);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof ZipFolder)) {
+			return false;
+		}
+		ZipFolder other = (ZipFolder) obj;
+		return Objects.equals(file, other.file) && Objects.equals(files, other.files);
 	}
 
 	@Override
