@@ -1208,15 +1208,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		field.setSimpleName(CharOperation.charToString(fieldDeclaration.name));
 		if (fieldDeclaration.binding != null) {
-			if (fieldDeclaration.binding.declaringClass != null
-				&& fieldDeclaration.binding.declaringClass.isEnum()
-				&& field instanceof CtEnumValue) {
-				//enum values take over visibility from enum type
-				//JDT compiler has a bug that enum values are always public static final, even for private enum
-				field.setExtendedModifiers(getModifiers(fieldDeclaration.binding.declaringClass.modifiers, true, false));
-			} else {
-				field.setExtendedModifiers(getModifiers(fieldDeclaration.binding.modifiers, true, false));
-			}
+			field.setExtendedModifiers(getModifiers(fieldDeclaration.binding.modifiers, true, false));
 		}
 		for (CtExtendedModifier extendedModifier : getModifiers(fieldDeclaration.modifiers, false, false)) {
 			field.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.

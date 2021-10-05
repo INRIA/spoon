@@ -19,12 +19,16 @@ package spoon.test.enums;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
 import spoon.reflect.declaration.CtField;
@@ -49,6 +53,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -114,58 +119,15 @@ public class EnumsTest {
 		assertTrue(burritos.getAllMethods().contains(name));
 	}
 
-	@Test
-	void testNestedPrivateEnumValues() throws Exception {
-		// contract: enum values have correct modifiers
-		CtType<?> ctClass = ModelUtils.buildClass(NestedEnums.class);
-		{
-			CtEnum<?> ctEnum = ctClass.getNestedType("PrivateENUM");
-			// TODO this is technically not correct, the enum should be implicitly final
-			assertThat(ctEnum.getExtendedModifiers(), contentEquals(
-					new CtExtendedModifier(ModifierKind.PRIVATE))
-			);
-			assertThat(ctEnum.getField("VALUE").getExtendedModifiers(), contentEquals(
-					// TODO PRIVATE is wrong here, should be PUBLIC
-					new CtExtendedModifier(ModifierKind.PRIVATE, true),
-					new CtExtendedModifier(ModifierKind.STATIC, true),
-					new CtExtendedModifier(ModifierKind.FINAL, true)
-			));
-		}
-		{
-			CtEnum<?> ctEnum = ctClass.getNestedType("PublicENUM");
-			// TODO this is technically not correct, the enum should be implicitly final
-			assertThat(ctEnum.getExtendedModifiers(), contentEquals(
-					new CtExtendedModifier(ModifierKind.PUBLIC)
-			));
-			assertThat(ctEnum.getField("VALUE").getExtendedModifiers(), contentEquals(
-					new CtExtendedModifier(ModifierKind.PUBLIC, true),
-					new CtExtendedModifier(ModifierKind.STATIC, true),
-					new CtExtendedModifier(ModifierKind.FINAL, true)
-			));
-		}
-		{
-			CtEnum<?> ctEnum = ctClass.getNestedType("ProtectedENUM");
-			// TODO this is technically not correct, the enum should be implicitly final
-			assertThat(ctEnum.getExtendedModifiers(), contentEquals(
-					new CtExtendedModifier(ModifierKind.PROTECTED)
-			));
-			assertThat(ctEnum.getField("VALUE").getExtendedModifiers(), contentEquals(
-					// TODO PROTECTED is wrong here, should be PUBLIC
-					new CtExtendedModifier(ModifierKind.PROTECTED, true),
-					new CtExtendedModifier(ModifierKind.STATIC, true),
-					new CtExtendedModifier(ModifierKind.FINAL, true)
-			));
-		}
-		{
-			CtEnum<?> ctEnum = ctClass.getNestedType("PackageProtectedENUM");
-			// TODO this is technically not correct, the enum should be implicitly final
-			assertThat(ctEnum.getExtendedModifiers(), contentEquals());
-			assertThat(ctEnum.getField("VALUE").getExtendedModifiers(), contentEquals(
-					// TODO package-private is wrong here, should be PUBLIC
-					new CtExtendedModifier(ModifierKind.STATIC, true),
-					new CtExtendedModifier(ModifierKind.FINAL, true)
-			));
-		}
+	@ParameterizedTest
+	@ArgumentsSource(NestedEnumTypeProvider.class)
+	void testNestedPrivateEnumValues(CtEnum<?> type) {
+		// contract: enum values have correct modifiers matching the produced bytecode
+		assertThat(type.getField("VALUE").getExtendedModifiers(), contentEquals(
+				new CtExtendedModifier(ModifierKind.PUBLIC, true),
+				new CtExtendedModifier(ModifierKind.STATIC, true),
+				new CtExtendedModifier(ModifierKind.FINAL, true)
+		));
 	}
 
 	@Test
@@ -261,5 +223,22 @@ public class EnumsTest {
 		assertThat(enumType.getSimpleName(), is("1MyEnum"));
 		assertThat(enumType.getEnumValues().size(), is(2));
 		assertThat(enumType.getMethods().size(), is(1));
+	}
+
+
+	static class NestedEnumTypeProvider implements ArgumentsProvider {
+		private final CtType<?> ctClass;
+
+		NestedEnumTypeProvider() throws Exception {
+			this.ctClass = ModelUtils.buildClass(NestedEnums.class);
+		}
+
+		@Override
+		public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+			return Stream.of("Private", "PackageProtected", "Protected", "Public")
+					.map(s -> s + "ENUM")
+					.map(ctClass::getNestedType)
+					.map(Arguments::of);
+		}
 	}
 }
