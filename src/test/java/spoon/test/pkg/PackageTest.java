@@ -368,8 +368,7 @@ public class PackageTest {
 	@Test
 	public void testAddTypeOverwritingSameName() {
 		// contract: Adding a type with the same name as an existing type to a package overwrites the existing
-		// This might not be ideal but is currently needed. See discussion in
-		// https://github.com/INRIA/spoon/pull/4076.
+		// See discussion in https://github.com/INRIA/spoon/pull/4076 for more information.
 		Factory factory = createFactory();
 		CtClass<?> barClass = factory.Class().create("test.Bar");
 		CtPackage thePackage = factory.Package().get(barClass.getPackage().getQualifiedName());
@@ -391,6 +390,7 @@ public class PackageTest {
 	@Test
 	public void testTypeRename() {
 		// contract: Renaming a type removes the old one and keeps the new one.
+		// See discussion in https://github.com/INRIA/spoon/pull/4076 for more information.
 		Factory factory = createFactory();
 		CtClass<?> barClass = factory.Class().create("test.Bar");
 		CtPackage thePackage = factory.Package().get(barClass.getPackage().getQualifiedName());
@@ -407,6 +407,7 @@ public class PackageTest {
 	@Test
 	public void testPackageRename() {
 		// contract: Renaming a package removes the old one and keeps the new one.
+		// See discussion in https://github.com/INRIA/spoon/pull/4076 for more information.
 		Factory factory = createFactory();
 		CtPackage rootPackage = factory.Package().create(null, "root");
 		CtPackage childPackage = factory.Package().create(rootPackage, "child");
@@ -423,6 +424,7 @@ public class PackageTest {
 	@Test
 	public void testTypeRenameReplaceExisting() {
 		// contract: Renaming a type to an already existing type should replace the existing
+		// See discussion in https://github.com/INRIA/spoon/pull/4076 for more information.
 		Factory factory = createFactory();
 		CtClass<?> survivingClass = factory.Class().create("test.Surviving");
 		CtClass<?> overwrittenClass = factory.Class().create("test.Overwritten");
