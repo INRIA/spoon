@@ -17,6 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
+import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.support.modelobs.FineModelChangeListener;
@@ -74,9 +75,9 @@ public abstract class KeyedModelSet<K extends Comparable<K> & Serializable, T ex
 		linkToParent(owner, e);
 		getModelChangeListener().onSetAdd(owner, getRole(), new HashSet<>(map.values()), e);
 
-		// we make sure that the element is always the last put in the set
-		// for being least suprising for client code
-		map.put(key, e);
+		if (map.put(key, e) != null) {
+			throw new SpoonException("Duplicate entry in model set detected for key '" + key + "': " + e);
+		}
 
 		return true;
 	}
@@ -127,9 +128,14 @@ public abstract class KeyedModelSet<K extends Comparable<K> & Serializable, T ex
 
 	public void updateKey(K oldName, K newName) {
 		T type = map.remove(oldName);
-		if (type != null) {
-			map.put(newName, type);
+		if (type == null) {
+			throw new SpoonException(
+					"Invalid update operation - old name not found. Tried to rename '"
+							+ oldName + "' to '" + newName + "'"
+			);
 		}
+
+		map.put(newName, type);
 	}
 
 	private class Itr implements Iterator<T> {

@@ -61,10 +61,10 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 
 	private void updateParentPackage(String oldName) {
 		if (parent instanceof CtPackageImpl && this instanceof CtType) {
-			((CtPackageImpl) parent).updateName((CtType<?>) this, oldName);
+			((CtPackageImpl) parent).updateTypeName((CtType<?>) this, oldName);
 		}
 		if (parent instanceof CtPackageImpl && this instanceof CtPackage) {
-			((CtPackageImpl) parent).updateName((CtPackage) this, oldName);
+			((CtPackageImpl) parent).updatePackageName((CtPackage) this, oldName);
 		}
 	}
 }

@@ -238,11 +238,11 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		return getPackages().isEmpty() && getTypes().isEmpty();
 	}
 
-	public void updateName(CtType<?> newType, String oldName) {
+	public void updateTypeName(CtType<?> newType, String oldName) {
 		types.updateKey(oldName, newType.getSimpleName());
 	}
 
-	public void updateName(CtPackage newPackage, String oldName) {
+	public void updatePackageName(CtPackage newPackage, String oldName) {
 		packs.updateKey(oldName, newPackage.getSimpleName());
 	}
 }
