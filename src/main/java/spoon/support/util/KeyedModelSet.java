@@ -17,7 +17,6 @@ import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
-import spoon.SpoonException;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 import spoon.support.modelobs.FineModelChangeListener;
@@ -75,7 +74,7 @@ public abstract class KeyedModelSet<K extends Comparable<K> & Serializable, T ex
 		linkToParent(owner, e);
 		getModelChangeListener().onSetAdd(owner, getRole(), new HashSet<>(map.values()), e);
 
-    // We make sure that then last added type is kept (and previous types overwritten) as client
+		// We make sure that then last added type is kept (and previous types overwritten) as client
 		// code expects that
 		map.put(key, e);
 
