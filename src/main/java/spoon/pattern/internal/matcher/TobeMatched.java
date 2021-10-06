@@ -68,14 +68,14 @@ public class TobeMatched {
 	private TobeMatched(ImmutableMap parameters, Collection<?> targets, boolean ordered) {
 		this.parameters = parameters;
 		//make a copy of origin collection, because it might be modified during matching process (by a refactoring algorithm)
-		this.targets = targets == null ? Collections.emptyList() : List.copyOf(targets);
+		this.targets = targets == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(targets));
 		this.ordered = ordered;
 	}
 
 	private TobeMatched(ImmutableMap parameters, Map<String, ?> targets) {
 		this.parameters = parameters;
 		//make a copy of origin collection, because it might be modified during matching process (by a refactoring algorithm)
-		this.targets = targets == null ? Collections.emptyList() : List.copyOf(targets.entrySet());
+		this.targets = targets == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(targets.entrySet()));
 		this.ordered = false;
 	}
 
