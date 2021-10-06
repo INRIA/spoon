@@ -31,7 +31,7 @@ public class CtExtendedModifier implements SourcePositionHolder, Serializable {
 	 * @param kind the kind of this modifier.
 	 * @deprecated use {@link #explicit(ModifierKind)} to create an explicit modifier.
 	 */
-	@Deprecated
+	@Deprecated(since = "9.2.0")
 	public CtExtendedModifier(ModifierKind kind) {
 		this.kind = kind;
 	}
