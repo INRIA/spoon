@@ -13,6 +13,7 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModule;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
@@ -138,6 +139,18 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	@Override
 	public Set<CtPackage> getPackages() {
 		return new LinkedHashSet<>(packs.values());
+	}
+
+	@Override
+	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
+		String oldName = getSimpleName();
+		super.setSimpleName(simpleName);
+
+		if (parent instanceof CtPackageImpl) {
+			((CtPackageImpl) parent).updatePackageName(this, oldName);
+		}
+
+		return (T) this;
 	}
 
 	@Override

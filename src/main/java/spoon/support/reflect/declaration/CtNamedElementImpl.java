@@ -36,12 +36,9 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 
 	@Override
 	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
-		String oldName = this.simpleName;
-
 		Factory factory = getFactory();
 		if (factory == null) {
 			this.simpleName = simpleName;
-			updateParentPackage(oldName);
 			return (T) this;
 		}
 		if (factory instanceof FactoryImpl) {
@@ -50,7 +47,6 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simpleName, this.simpleName);
 		this.simpleName = simpleName;
 
-		updateParentPackage(oldName);
 		return (T) this;
 	}
 
@@ -59,12 +55,4 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 		return (CtNamedElement) super.clone();
 	}
 
-	private void updateParentPackage(String oldName) {
-		if (parent instanceof CtPackageImpl && this instanceof CtType) {
-			((CtPackageImpl) parent).updateTypeName((CtType<?>) this, oldName);
-		}
-		if (parent instanceof CtPackageImpl && this instanceof CtPackage) {
-			((CtPackageImpl) parent).updatePackageName((CtPackage) this, oldName);
-		}
-	}
 }
