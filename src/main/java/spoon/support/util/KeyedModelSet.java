@@ -128,14 +128,9 @@ public abstract class KeyedModelSet<K extends Comparable<K> & Serializable, T ex
 
 	public void updateKey(K oldName, K newName) {
 		T type = map.remove(oldName);
-		if (type == null) {
-			throw new SpoonException(
-					"Invalid update operation - old name not found. Tried to rename '"
-							+ oldName + "' to '" + newName + "'"
-			);
+		if (type != null) {
+			map.put(newName, type);
 		}
-
-		map.put(newName, type);
 	}
 
 	private class Itr implements Iterator<T> {
