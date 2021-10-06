@@ -39,6 +39,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
@@ -64,6 +65,7 @@ import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.test.generics.testclasses3.ComparableComparatorBug;
+import spoon.test.pkg.PackageTest;
 
 import java.io.File;
 import java.io.ObjectInputStream;
@@ -708,5 +710,15 @@ public class JavaReflectionTreeBuilderTest {
 		value = ctType.getField("VALUE");
 		// should have gotten '1'
 		assertNull(value.getDefaultExpression());
+	}
+
+
+	@Test
+	void testShadowPackage() {
+		Factory factory = createFactory();
+		CtType<?> type = new JavaReflectionTreeBuilder(factory).scan(PackageTest.class);
+		CtPackage ctPackage = type.getPackage();
+		assertEquals(1, ctPackage.getAnnotations().size());
+		assertEquals(ctPackage.getAnnotations().get(0).getAnnotationType().getQualifiedName(), "java.lang.Deprecated");
 	}
 }
