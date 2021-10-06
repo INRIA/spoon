@@ -17,6 +17,7 @@
 package spoon.test.pkg;
 
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonModelBuilder;
@@ -30,6 +31,7 @@ import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtPackageReference;
@@ -60,6 +62,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static spoon.testing.Assert.assertThat;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class PackageTest {
 
@@ -358,5 +361,26 @@ public class PackageTest {
 
 		assertEquals("info.guardianproject.onionkit.ui", fieldPkg.getSimpleName());
 		assertEquals("info.guardianproject.onionkit.ui", fieldPkg.getQualifiedName());
+	}
+
+	@Test
+	public void testAddTypeOverwritingSameName() {
+		// contract: Adding a type with the same name as an existing type to a package overwrites the existing
+		Factory factory = createFactory();
+		CtClass<?> barClass = factory.Class().create("test.Bar");
+		CtPackage thePackage = factory.Package().get(barClass.getPackage().getQualifiedName());
+
+		// The class is in there currently
+		Assertions.assertSame(barClass, thePackage.getType("Bar"));
+
+		// Implicitly add an interface with the same name
+		CtInterface<?> barInterface = factory.Interface().create(barClass.getQualifiedName());
+		// The last type wins, so we now find the interface
+		Assertions.assertSame(barInterface, thePackage.getType("Bar"));
+
+		// Re-add the class
+		thePackage.addType(barClass);
+		// The last type wins, so we now find the class again
+		Assertions.assertSame(barClass, thePackage.getType("Bar"));
 	}
 }
