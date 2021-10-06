@@ -673,7 +673,8 @@ private transient  ClassLoader inputClassloader;
 				//solve conflicts, the current imports are relevant too
 				new ImportConflictDetector(),
 				//compute final imports
-				new ImportCleaner().setImportComparator(new DefaultImportComparator()));
+				new ImportCleaner().setImportComparator(new DefaultImportComparator())
+		);
 		printer.setIgnoreImplicit(false);
 		printer.setPreprocessors(preprocessors);
 		return printer;
@@ -700,7 +701,8 @@ private transient  ClassLoader inputClassloader;
 						//solve conflicts, the current imports are relevant too
 						new ImportConflictDetector(),
 						//compute final imports
-						new ImportCleaner().setImportComparator(new DefaultImportComparator()));
+						new ImportCleaner().setImportComparator(new DefaultImportComparator())
+				);
 				printer.setIgnoreImplicit(false);
 				printer.setPreprocessors(preprocessors);
 				return printer;
