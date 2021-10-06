@@ -371,16 +371,16 @@ public class PackageTest {
 		CtPackage thePackage = factory.Package().get(barClass.getPackage().getQualifiedName());
 
 		// The class is in there currently
-		Assertions.assertSame(barClass, thePackage.getType("Bar"));
+		assertSame(barClass, thePackage.getType("Bar"));
 
 		// Implicitly add an interface with the same name
 		CtInterface<?> barInterface = factory.Interface().create(barClass.getQualifiedName());
 		// The last type wins, so we now find the interface
-		Assertions.assertSame(barInterface, thePackage.getType("Bar"));
+		assertSame(barInterface, thePackage.getType("Bar"));
 
 		// Re-add the class
 		thePackage.addType(barClass);
 		// The last type wins, so we now find the class again
-		Assertions.assertSame(barClass, thePackage.getType("Bar"));
+		assertSame(barClass, thePackage.getType("Bar"));
 	}
 }
