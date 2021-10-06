@@ -16,6 +16,7 @@
  */
 package spoon.test.pkg;
 
+import java.util.Set;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import spoon.Launcher;
@@ -57,6 +58,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -366,6 +368,8 @@ public class PackageTest {
 	@Test
 	public void testAddTypeOverwritingSameName() {
 		// contract: Adding a type with the same name as an existing type to a package overwrites the existing
+		// This might not be ideal but is currently needed. See discussion in
+		// https://github.com/INRIA/spoon/pull/4076.
 		Factory factory = createFactory();
 		CtClass<?> barClass = factory.Class().create("test.Bar");
 		CtPackage thePackage = factory.Package().get(barClass.getPackage().getQualifiedName());
@@ -382,5 +386,85 @@ public class PackageTest {
 		thePackage.addType(barClass);
 		// The last type wins, so we now find the class again
 		assertSame(barClass, thePackage.getType("Bar"));
+	}
+
+	@Test
+	public void testTypeRename() {
+		// contract: Renaming a type removes the old one and keeps the new one.
+		Factory factory = createFactory();
+		CtClass<?> barClass = factory.Class().create("test.Bar");
+		CtPackage thePackage = factory.Package().get(barClass.getPackage().getQualifiedName());
+
+		// The class is in there currently
+		assertSame(barClass, thePackage.getType("Bar"));
+
+		barClass.setSimpleName("Foo");
+
+		assertNull(thePackage.getType("Bar"));
+		assertSame(barClass, thePackage.getType("Foo"));
+	}
+
+	@Test
+	public void testPackageRename() {
+		// contract: Renaming a package removes the old one and keeps the new one.
+		Factory factory = createFactory();
+		CtPackage rootPackage = factory.Package().create(null, "root");
+		CtPackage childPackage = factory.Package().create(rootPackage, "child");
+
+		// The class is in there currently
+		assertSame(childPackage, rootPackage.getPackage("child"));
+
+		childPackage.setSimpleName("renamed");
+
+		assertNull(rootPackage.getType("child"));
+		assertSame(childPackage, rootPackage.getPackage("renamed"));
+	}
+
+	@Test
+	public void testTypeRenameReplaceExisting() {
+		// contract: Renaming a type to an already existing type should replace the existing
+		Factory factory = createFactory();
+		CtClass<?> survivingClass = factory.Class().create("test.Surviving");
+		CtClass<?> overwrittenClass = factory.Class().create("test.Overwritten");
+		CtPackage thePackage = survivingClass.getPackage();
+
+		// In the beginning both are there, all is well
+		assertSame(survivingClass, thePackage.getType("Surviving"));
+		assertSame(overwrittenClass, thePackage.getType("Overwritten"));
+
+		// Rename to existing class! This is a conflict
+		survivingClass.setSimpleName(overwrittenClass.getSimpleName());
+
+		// Only the original class that was renamed remains
+		assertNull(thePackage.getType("Surviving"));
+		// This check is necessary as the old implementation kept both classes around but the query
+		// interface only exposed one.
+		assertEquals(Collections.singleton(survivingClass), thePackage.getTypes());
+		// The type can be found under its new name
+		assertSame(survivingClass, thePackage.getType("Overwritten"));
+	}
+
+	@Test
+	public void testPackageRenameReplaceExisting() {
+		// contract: Renaming a package to an already existing type should replace the existing
+		Factory factory = createFactory();
+		CtPackage rootPackage = factory.Package().create(null, "root");
+		CtPackage survivingPackage = factory.Package().create(rootPackage, "Surviving");
+		CtPackage overwrittenPackage = factory.Package().create(rootPackage, "Overwritten");
+
+		// In the beginning both are there, all is well
+		assertSame(survivingPackage, rootPackage.getPackage("Surviving"));
+		assertSame(overwrittenPackage, rootPackage.getPackage("Overwritten"));
+
+		// Rename to existing package! This is a conflict
+		survivingPackage.setSimpleName(overwrittenPackage.getSimpleName());
+
+		// Only the original package that was renamed remains
+		assertNull(rootPackage.getPackage("Surviving"));
+		// This check is necessary as the old implementation kept both packages around but the query
+		// interface only exposed one.
+		assertEquals(Collections.singleton(survivingPackage), rootPackage.getPackages());
+		// The package can be found under its new name
+		assertSame(survivingPackage, rootPackage.getPackage("Overwritten"));
 	}
 }
