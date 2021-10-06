@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
@@ -93,5 +94,26 @@ public class CtPackageAssertTest {
 		type.getPackage().removeType(type);
 		aPackage2.addType(type);
 		assertEquals("another.package.X", type.getQualifiedName());
+	}
+
+	@Test
+	public void testAddTypeOverwritingSameName() {
+		// contract: Adding a type with the same name as an existing type to a package overwrites the existing
+		Factory factory = createFactory();
+		CtClass<?> barClass = factory.Class().create("test.Bar");
+		CtPackage thePackage = factory.Package().get(barClass.getPackage().getQualifiedName());
+
+		// The class is in there currently
+		assertSame(barClass, thePackage.getType("Bar"));
+
+		// Implicitly add an interface with the same name
+		CtInterface<?> barInterface = factory.Interface().create(barClass.getQualifiedName());
+		// The last type wins, so we now find the interface
+		assertSame(barInterface, thePackage.getType("Bar"));
+
+		// Re-add the class
+		thePackage.addType(barClass);
+		// The last type wins, so we now find the class again
+		assertSame(barClass, thePackage.getType("Bar"));
 	}
 }

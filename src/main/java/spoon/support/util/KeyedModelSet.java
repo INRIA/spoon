@@ -75,9 +75,9 @@ public abstract class KeyedModelSet<K extends Comparable<K> & Serializable, T ex
 		linkToParent(owner, e);
 		getModelChangeListener().onSetAdd(owner, getRole(), new HashSet<>(map.values()), e);
 
-		if (map.put(key, e) != null) {
-			throw new SpoonException("Duplicate entry in model set detected for key '" + key + "': " + e);
-		}
+    // We make sure that then last added type is kept (and previous types overwritten) as client
+		// code expects that
+		map.put(key, e);
 
 		return true;
 	}
