@@ -46,7 +46,6 @@ import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -665,7 +664,7 @@ private transient  ClassLoader inputClassloader;
 	@Override
 	public PrettyPrinter createPrettyPrinterAutoImport() {
 		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
-		List<Processor<CtElement>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtElement>>asList(
+		List<Processor<CtElement>> preprocessors = List.of(
 				//try to import as much types as possible
 				new ForceImportProcessor(),
 				//remove unused imports first. Do not add new imports at time when conflicts are not resolved
@@ -674,7 +673,7 @@ private transient  ClassLoader inputClassloader;
 				new ImportConflictDetector(),
 				//compute final imports
 				new ImportCleaner().setImportComparator(new DefaultImportComparator())
-		));
+		);
 		printer.setIgnoreImplicit(false);
 		printer.setPreprocessors(preprocessors);
 		return printer;
@@ -695,14 +694,14 @@ private transient  ClassLoader inputClassloader;
 
 			if (PRETTY_PRINTING_MODE.FULLYQUALIFIED.equals(prettyPrintingMode)) {
 				DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(this);
-				List<Processor<CtElement>> preprocessors = Collections.unmodifiableList(Arrays.<Processor<CtElement>>asList(
+				List<Processor<CtElement>> preprocessors = List.of(
 						//force fully qualified
 						new ForceFullyQualifiedProcessor(),
 						//solve conflicts, the current imports are relevant too
 						new ImportConflictDetector(),
 						//compute final imports
 						new ImportCleaner().setImportComparator(new DefaultImportComparator())
-				));
+				);
 				printer.setIgnoreImplicit(false);
 				printer.setPreprocessors(preprocessors);
 				return printer;
