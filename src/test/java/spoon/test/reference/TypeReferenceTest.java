@@ -16,12 +16,18 @@
  */
 package spoon.test.reference;
 
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldRead;
@@ -39,6 +45,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -51,6 +58,8 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.DefaultCoreFactory;
+import spoon.test.SpoonTestHelpers;
 import spoon.test.reference.testclasses.EnumValue;
 import spoon.test.reference.testclasses.Panini;
 import spoon.test.reference.testclasses.ParamRefs;
@@ -63,6 +72,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -750,5 +764,29 @@ public class TypeReferenceTest {
 
 		assertEquals("Constants", declType.getSimpleName());
 		assertTrue(declType.isImplicit());
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"MyLocalClass", "MyLocalClass2", "Local123", "Valid321Name"})
+	void testIsLocalType(String className) {
+		// contract: isLocalType should return true whether its declaration exists or not
+		String code = SpoonTestHelpers.wrapLocal(
+				"		class " + className + " {\n" +
+						"		}\n"
+		);
+		CtModel model = SpoonTestHelpers.createModelFromString(code, 16);
+		CtBlock<?> block = SpoonTestHelpers.getBlock(model);
+		CtStatement ctStatement = block.getStatements().get(0);
+		assertThat(ctStatement, is(instanceOf(CtClass.class)));
+		// the class has to be a local type
+		CtClass<?> asClass = (CtClass<?>) ctStatement;
+		assertThat(asClass.isLocalType(), is(true));
+		// its reference has to be a local type
+		CtTypeReference<?> reference = asClass.getReference();
+		assertThat(reference.isLocalType(), is(true));
+		// if only the reference exists, it should still be a local type
+		asClass.delete();
+		assertThat(reference.getDeclaration(), nullValue());
+		assertThat(reference.isLocalType(), is(true));
 	}
 }

@@ -521,9 +521,19 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 		// to know which is the local type member wanted by the developer.
 		// Oracle documentation: https://docs.oracle.com/javase/specs/jls/se7/html/jls-6.html#jls-6.7
 		// JDT documentation: http://help.eclipse.org/juno/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/core/dom/ITypeBinding.html#getQualifiedName()
-		final Pattern pattern = Pattern.compile("^([0-9]+)([a-zA-Z]+)$");
-		final Matcher m = pattern.matcher(getSimpleName());
-		return m.find();
+		String name = getSimpleName();
+		if (name.isEmpty() || !Character.isDigit(name.charAt(0))) {
+			return false;
+		}
+		// first char has to be a digit, everything else just needs to be a valid
+		// java identifier part and at least one non-digit. The validity is already covered by
+		// setSimpleName, so we just need to look for that non-digit char
+		for (int i = 1; i < name.length(); i++) {
+			if (!Character.isDigit(name.charAt(i))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
