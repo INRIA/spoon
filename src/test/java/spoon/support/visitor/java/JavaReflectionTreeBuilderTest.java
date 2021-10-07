@@ -715,6 +715,8 @@ public class JavaReflectionTreeBuilderTest {
 
 	@Test
 	void testShadowPackage() {
+		// contract: elements of a package with a corresponding CtElement implementation
+		// are visited and built into the model
 		Factory factory = createFactory();
 		CtType<?> type = new JavaReflectionTreeBuilder(factory).scan(PackageTest.class);
 		CtPackage ctPackage = type.getPackage();
