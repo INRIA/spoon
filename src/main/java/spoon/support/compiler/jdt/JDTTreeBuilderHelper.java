@@ -739,7 +739,13 @@ public class JDTTreeBuilderHelper {
 		}
 
 		// Setting modifiers
-		type.setExtendedModifiers(getModifiers(typeDeclaration.modifiers, false, false));
+		if (typeDeclaration.binding != null) {
+			type.setExtendedModifiers(getModifiers(typeDeclaration.binding.modifiers, true, false));
+		}
+		for (CtExtendedModifier modifier : getModifiers(typeDeclaration.modifiers, false, false)) {
+			type.addModifier(modifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+		}
+
 
 		jdtTreeBuilder.getContextBuilder().enter(type, typeDeclaration);
 
