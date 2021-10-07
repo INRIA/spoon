@@ -22,13 +22,12 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
-import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.util.SignatureBasedSortedSet;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -77,13 +76,6 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 			enumValue.setParent(this);
 			getFactory().getEnvironment().getModelChangeListener().onListAdd(this, VALUE, this.enumValues, enumValue);
 			enumValues.add(enumValue);
-			if (enumValue.getDefaultExpression() instanceof CtNewClass<?>) {
-				// TODO clean up, java >16 (or with preview too) only???
-				removeModifier(ModifierKind.FINAL); // enum is not final anymore
-				HashSet<CtExtendedModifier> modifiers = new HashSet<>(getExtendedModifiers());
-				modifiers.add(new CtExtendedModifier(ModifierKind.SEALED, true));
-				setExtendedModifiers(modifiers);
-			}
 		}
 
 		// enum value already exists.
@@ -92,7 +84,6 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	public boolean removeEnumValue(CtEnumValue<?> enumValue) {
-		// TODO handle implicit sealed modifier
 		if (enumValues == CtElementImpl.<CtEnumValue<?>>emptyList()) {
 			return false;
 		}
@@ -156,26 +147,33 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 		return (CtEnum<T>) super.clone();
 	}
 
-	// TODO this *can* be enum values in some cases - how to model that?
-
 	@Override
 	public Set<CtTypeReference<?>> getPermittedTypes() {
-		return super.getPermittedTypes();
+		LinkedHashSet<CtTypeReference<?>> refs = new LinkedHashSet<>();
+		for (CtEnumValue<?> value : enumValues) {
+			if (value.getDefaultExpression() instanceof CtNewClass) {
+				refs.add(((CtNewClass<?>) value.getDefaultExpression()).getAnonymousClass().getReference());
+			}
+		}
+		return Collections.unmodifiableSet(refs);
 	}
 
 	@Override
+	@UnsettableProperty
 	public CtSealable setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
-		return super.setPermittedTypes(permittedTypes);
+		return this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public CtSealable addPermittedType(CtTypeReference<?> type) {
-		return super.addPermittedType(type);
+		return this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public CtSealable removePermittedType(CtTypeReference<?> type) {
-		return super.removePermittedType(type);
+		return this;
 	}
 
 	@Override
