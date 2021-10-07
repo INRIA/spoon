@@ -368,9 +368,9 @@ class JDTTreeBuilderQuery {
 		// AccSealed == AccPatternVariable == AccOverriding, so checking context is needed
 		// AccNonSealed == AccIsDefaultConstructor == AccBlankFinal, so checking context is needed
 		if ((modifier & ExtraCompilerModifiers.AccSealed) != 0 && target.contains(ModifierTarget.TYPE)) {
-			modifiers.add(new CtExtendedModifier(ModifierKind.SEALED, false));
+			modifiers.add(new CtExtendedModifier(ModifierKind.SEALED, implicit));
 		} else if ((modifier & ExtraCompilerModifiers.AccNonSealed) != 0 && target.contains(ModifierTarget.TYPE)) {
-			modifiers.add(new CtExtendedModifier(ModifierKind.NON_SEALED, false));
+			modifiers.add(new CtExtendedModifier(ModifierKind.NON_SEALED, implicit));
 		}
 		return modifiers;
 	}
