@@ -514,8 +514,9 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public boolean isLocalType() {
-		if (this.getDeclaration() != null) {
-			return (this.getDeclaration().isLocalType());
+		CtType<T> declaration = this.getDeclaration();
+		if (declaration != null) {
+			return declaration.isLocalType();
 		}
 		// A local type doesn't have a fully qualified name but have an identifier
 		// to know which is the local type member wanted by the developer.
