@@ -146,7 +146,7 @@ public class ZipFolder implements SpoonFolder {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(file, files);
+		return file.hashCode();
 	}
 
 	@Override
@@ -158,7 +158,7 @@ public class ZipFolder implements SpoonFolder {
 			return false;
 		}
 		ZipFolder other = (ZipFolder) obj;
-		return Objects.equals(file, other.file) && Objects.equals(files, other.files);
+		return Objects.equals(file, other.file);
 	}
 
 	@Override
