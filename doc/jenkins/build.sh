@@ -12,7 +12,7 @@
 # $ curl http://spoon.gforge.inria.fr/jenkins/build.sh | bash
 
 # Allow to define some options to the maven command, such as debug or memory options
-MAVEN_COMMAND="mvn $MVN_OPTS"
+MAVEN_COMMAND="mvn $MVN_OPTS -Dmaven.javadoc.skip=true"
 
 echo " "
 echo "-------------------------------------------------------"
