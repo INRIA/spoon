@@ -13,6 +13,13 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+/**
+ * Defines the elements that can have modifiers assigned to them.
+ * <p>
+ * Each target as a set of modifiers that are allowed on it. For example,
+ * a local variable can only have the {@code final} modifier, while this modifier
+ * is not allowed on constructors.
+ */
 enum ModifierTarget {
 	/**
 	 * JLS $ 8.3.1
