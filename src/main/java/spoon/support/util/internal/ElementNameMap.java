@@ -112,6 +112,11 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
 		);
 	}
 
+	@Override
+	public boolean containsKey(Object key) {
+		return map.containsKey(key);
+	}
+
 	/**
 	 * Updates the mapping for a single key from {@code oldKey} to {@code newKey} if present.
 	 *

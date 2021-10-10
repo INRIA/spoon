@@ -94,5 +94,4 @@ public class CtPackageAssertTest {
 		aPackage2.addType(type);
 		assertEquals("another.package.X", type.getQualifiedName());
 	}
-
 }
