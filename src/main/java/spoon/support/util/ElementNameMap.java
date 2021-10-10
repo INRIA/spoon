@@ -7,7 +7,7 @@
  */
 package spoon.support.util;
 
-import static spoon.support.util.ModelList.linkToParent;
+import static spoon.support.util.internal.ModelCollectionUtils.linkToParent;
 
 import java.io.Serializable;
 import java.util.AbstractMap;
