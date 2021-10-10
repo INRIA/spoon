@@ -20,7 +20,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.util.KeyedModelSet;
+import spoon.support.util.ElementNameMap;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtPackage}.
@@ -31,7 +31,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = CtRole.SUB_PACKAGE)
-	protected KeyedModelSet<String, CtPackage> packs = new KeyedModelSet<String, CtPackage>() {
+	protected ElementNameMap<CtPackage> packs = new ElementNameMap<CtPackage>() {
 		private static final long serialVersionUID = 1L;
 		@Override
 		protected CtElement getOwner() {
@@ -44,15 +44,15 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		}
 
 		@Override
-		public boolean add(String simpleName, CtPackage pack) {
+		public CtPackage put(String simpleName, CtPackage pack) {
 			if (pack == null) {
-				return false;
+				return null;
 			}
 			// they are the same
 			if (CtPackageImpl.this.getQualifiedName().equals(pack.getQualifiedName())) {
 				addAllTypes(pack, CtPackageImpl.this);
 				addAllPackages(pack, CtPackageImpl.this);
-				return false;
+				return null;
 			}
 
 			// it already exists
@@ -60,15 +60,15 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 			if (ctPackage != null) {
 				addAllTypes(pack, ctPackage);
 				addAllPackages(pack, ctPackage);
-				return false;
+				return null;
 			}
 
-			return super.add(simpleName, pack);
+			return super.put(simpleName, pack);
 		}
 	};
 
 	@MetamodelPropertyField(role = CtRole.CONTAINED_TYPE)
-	private final KeyedModelSet<String, CtType<?>> types = new KeyedModelSet<String, CtType<?>>() {
+	private final ElementNameMap<CtType<?>> types = new ElementNameMap<CtType<?>>() {
 		private static final long serialVersionUID = 1L;
 		@Override
 		protected CtElement getOwner() {
@@ -93,7 +93,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		if (pack == null) {
 			return (T) this;
 		}
-		this.packs.add(pack.getSimpleName(), pack);
+		this.packs.put(pack.getSimpleName(), pack);
 		return (T) this;
 	}
 
@@ -177,7 +177,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	public <T extends CtPackage> T setPackages(Set<CtPackage> packs) {
 		this.packs.clear();
 		for (CtPackage pack : packs) {
-			this.packs.add(pack.getSimpleName(), pack);
+			this.packs.put(pack.getSimpleName(), pack);
 		}
 		return (T) this;
 	}
@@ -186,7 +186,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 	public <T extends CtPackage> T setTypes(Set<CtType<?>> types) {
 		this.types.clear();
 		for (CtType<?> type : types) {
-			this.types.add(type.getSimpleName(), type);
+			this.types.put(type.getSimpleName(), type);
 		}
 		return (T) this;
 	}
@@ -202,7 +202,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 			return (T) this;
 		}
 		// ModelSet of types will take care of setting the parent
-		types.add(type.getSimpleName(), type);
+		types.put(type.getSimpleName(), type);
 		return (T) this;
 	}
 

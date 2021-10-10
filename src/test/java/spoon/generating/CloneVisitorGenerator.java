@@ -53,7 +53,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtModifierHandler;
-import spoon.support.util.KeyedModelSet;
+import spoon.support.util.ElementNameMap;
 import spoon.support.util.ModelList;
 import spoon.support.visitor.clone.CloneBuilder;
 
@@ -217,7 +217,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			private final List<String> excludesFields = Arrays.asList("factory", "elementValues", "target", "rootFragment", "originalSourceCode", "myPartialSourcePosition");
 			private final Set<String> collectionClasses = new HashSet<>(Arrays.asList(
 					List.class.getName(), Collection.class.getName(), Set.class.getName(),
-					ModelList.class.getName(), KeyedModelSet.class.getName()));
+					ModelList.class.getName(), ElementNameMap.class.getName()));
 			private final CtTypeReference<CtElement> CTELEMENT_REFERENCE = factory.Type().createReference(CtElement.class);
 			private final CtClass<?> GETTER_TEMPLATE_MATCHER_CLASS = factory.Class().get(GENERATING_CLONE_PACKAGE + ".GetterTemplateMatcher");
 			private final CtClass<?> SETTER_TEMPLATE_MATCHER_CLASS = factory.Class().get(GENERATING_CLONE_PACKAGE + ".SetterTemplateMatcher");
@@ -517,7 +517,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 						if (type.getActualTypeArguments().get(0).isSubtypeOf(CTELEMENT_REFERENCE)) {
 							return true;
 						}
-						if (type.getQualifiedName().equals(KeyedModelSet.class.getName())) {
+						if (type.getQualifiedName().equals(ElementNameMap.class.getName())) {
 							return type.getActualTypeArguments().get(1).isSubtypeOf(CTELEMENT_REFERENCE);
 						}
 					}

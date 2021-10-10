@@ -91,6 +91,11 @@ public abstract class ActionBasedChangeListenerImpl implements ActionBasedChange
 	}
 
 	@Override
+	public <K, V> void onMapDelete(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement oldValue) {
+		propagateModelChange(new DeleteAction<>(new MapContext<>(currentElement, role, field, key), oldValue));
+	}
+
+	@Override
 	public <K, V> void onMapDeleteAll(CtElement currentElement, CtRole role, Map<K, V> field, Map<K, V> oldValue) {
 		propagateModelChange(new DeleteAllAction(new MapContext<>(currentElement, role, field), oldValue));
 	}

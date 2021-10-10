@@ -46,6 +46,9 @@ public interface FineModelChangeListener {
 	/** a newValue is appended to the map corresponding to the role in the AST node */
 	<K, V> void onMapAdd(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement newValue);
 
+	/** a mapping is removed from the map corresponding to the role in the AST node */
+	<K, V> void onMapDelete(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement oldValue);
+
 	/** a map corresponding to the role in the AST node is emptied */
 	<K, V> void onMapDeleteAll(CtElement currentElement, CtRole role, Map<K, V> field, Map<K, V> oldValue);
 

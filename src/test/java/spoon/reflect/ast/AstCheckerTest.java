@@ -38,7 +38,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
-import spoon.support.util.KeyedModelSet;
+import spoon.support.util.ElementNameMap;
 import spoon.support.util.ModelList;
 
 import java.util.Arrays;
@@ -282,7 +282,7 @@ public class AstCheckerTest {
 			if (typeRef.isSubtypeOf(f.Type().createReference(ModelList.class))) {
 				return true;
 			}
-			if (typeRef.isSubtypeOf(f.Type().createReference(KeyedModelSet.class))) {
+			if (typeRef.isSubtypeOf(f.Type().createReference(ElementNameMap.class))) {
 				return true;
 			}
 			return false;
