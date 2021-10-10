@@ -33,8 +33,6 @@ import spoon.reflect.visitor.CtVisitor;
 import spoon.support.DerivedProperty;
 import spoon.support.SpoonClassNotFoundException;
 import spoon.support.reflect.declaration.CtElementImpl;
-import spoon.support.util.RtHelper;
-import spoon.support.util.internal.MapUtils;
 import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.reflect.AnnotatedElement;
@@ -42,13 +40,14 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_SHADOW;
@@ -57,6 +56,9 @@ import static spoon.reflect.path.CtRole.TYPE_ARGUMENT;
 
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
+	private static Map<String, Class> classByQName = new ConcurrentHashMap<>();
+	private static ClassLoader lastClassLoader = null;
+	private final ReentrantLock lock = new ReentrantLock();
 
 	@MetamodelPropertyField(role = TYPE_ARGUMENT)
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
@@ -66,6 +68,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@MetamodelPropertyField(role = PACKAGE_REF)
 	private CtPackageReference pack;
+
+
 
 	public CtTypeReferenceImpl() {
 	}
@@ -111,35 +115,37 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+
 	public Class<T> getActualClass() {
-		if (isPrimitive()) {
-			String simpleN = getSimpleName();
-			if ("boolean".equals(simpleN)) {
-				return (Class<T>) boolean.class;
-			} else if ("byte".equals(simpleN)) {
-				return (Class<T>) byte.class;
-			} else if ("double".equals(simpleN)) {
-				return (Class<T>) double.class;
-			} else if ("int".equals(simpleN)) {
-				return (Class<T>) int.class;
-			} else if ("short".equals(simpleN)) {
-				return (Class<T>) short.class;
-			} else if ("char".equals(simpleN)) {
-				return (Class<T>) char.class;
-			} else if ("long".equals(simpleN)) {
-				return (Class<T>) long.class;
-			} else if ("float".equals(simpleN)) {
-				return (Class<T>) float.class;
-			} else if ("void".equals(simpleN)) {
-				return (Class<T>) void.class;
-			}
-		}
-		return findClass();
+			return getPrimitiveType(this).orElseGet(this::findClass);
 	}
 
-	private static Map<String, Class> classByQName = Collections.synchronizedMap(new HashMap<>());
-	private static ClassLoader lastClassLoader = null;
+	@SuppressWarnings("unchecked")
+	private Optional<Class<T>> getPrimitiveType(CtTypeReference<?> typeReference) {
+		switch (typeReference.getSimpleName()) {
+			case "boolean":
+				return Optional.of((Class<T>) boolean.class);
+			case "byte":
+				return Optional.of((Class<T>) byte.class);
+			case "double":
+				return Optional.of((Class<T>) double.class);
+			case "int":
+				return Optional.of((Class<T>) int.class);
+			case "short":
+				return Optional.of((Class<T>) short.class);
+			case "char":
+				return Optional.of((Class<T>) char.class);
+			case "long":
+				return Optional.of((Class<T>) long.class);
+			case "float":
+				return Optional.of((Class<T>) float.class);
+			case "void":
+				return Optional.of((Class<T>) void.class);
+			default:
+				return Optional.empty();
+		}
+	}
+
 
 	/**
 	 * Finds the class requested in {@link #getActualClass()}.
@@ -148,35 +154,64 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	 */
 	@SuppressWarnings("unchecked")
 	protected Class<T> findClass() {
-		String qualifiedName = getQualifiedName();
-		ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
-
-		// an array class should not crash
-		// see https://github.com/INRIA/spoon/pull/2882
-		if (getSimpleName().contains("[]")) {
-			// Class.forName does not work for primitive types and arrays :-(
-			// we have to work-around
-			// original idea from https://bugs.openjdk.java.net/browse/JDK-4031337
-			return (Class<T>) RtHelper.getAllFields((Launcher.parseClass("public class Foo { public " + getQualifiedName() + " field; }").newInstance().getClass()))[0].getType();
+		CtTypeReference<?> typeReference = this;
+		if (isArray()) {
+			CtTypeReference<?> componentTypeReference = convertToComponentType();
+			if (componentTypeReference.isPrimitive()) {
+				return getPrimitiveType(componentTypeReference).map(this::arrayType).orElseThrow(() -> new SpoonException("Cant find primitive type: " + componentTypeReference));
+			}
+			typeReference = componentTypeReference;
 		}
+		ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
+		lock.lock();
+		checkCacheIntegrity(classLoader);
+		String qualifiedName = typeReference.getQualifiedName();
+		Class<T> clazz =  classByQName.computeIfAbsent(qualifiedName, key -> loadClassWithQName(classLoader, qualifiedName));
+		lock.unlock();
+		return isArray() ? arrayType(clazz) : clazz;
+	}
 
+	/**
+	 * Converts the type reference to its component type. If the type is no array, the type reference is returned.
+	 * @return  the component type of the type reference.
+	 */
+	private CtTypeReference<T> convertToComponentType() {
+		if (this.getQualifiedName().indexOf("[") == -1) {
+			return this;
+		}
+		return getFactory().createReference(this.getQualifiedName().substring(0, this.getQualifiedName().indexOf("[")));
+	}
+
+	private Class<?> loadClassWithQName(ClassLoader classLoader, String qualifiedName) {
+			try {
+				return classLoader.loadClass(qualifiedName);
+			} catch (Throwable e) {
+				throw new SpoonClassNotFoundException("cannot load class: " + qualifiedName, e);
+			}
+	}
+
+	/**
+	 * Checks if the given classloader is the same as the one used in the last call to {@link #findClass()}.
+	 * If not, the cache is cleared.
+	 * @param classLoader  the classloader to check against the old one.
+	 */
+	private void checkCacheIntegrity(ClassLoader classLoader) {
 		if (classLoader != lastClassLoader) {
 			//clear cache because class loader changed
 			classByQName.clear();
 			lastClassLoader = classLoader;
 		}
-		return MapUtils.getOrCreate(classByQName, qualifiedName, () -> {
-			try {
-				// creating a classloader on the fly is not the most efficient
-				// but it decreases the amount of state to maintain
-				// since getActualClass is only used in rare cases, that's OK.
-				return (Class<T>) classLoader.loadClass(qualifiedName);
-			} catch (Throwable e) {
-				throw new SpoonClassNotFoundException("cannot load class: " + getQualifiedName(), e);
-			}
-		});
 	}
 
+	/**
+	 * Converts the given type to an array type.
+	 * @param clazz  the type to convert.
+	 * @return  the array type.
+	 */
+	@SuppressWarnings("unchecked")
+	private <R> Class<R> arrayType(Class<R> clazz) {
+			return (Class<R>) Array.newInstance(clazz, 0).getClass();
+	}
 	@Override
 	public List<CtTypeReference<?>> getActualTypeArguments() {
 		return actualTypeArguments;
@@ -188,7 +223,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public CtType<T> getDeclaration() {
 		return getFactory().Type().get(getQualifiedName());
 	}
@@ -230,8 +264,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public boolean isPrimitive() {
-		return ("boolean".equals(getSimpleName()) || "byte".equals(getSimpleName()) || "double".equals(getSimpleName()) || "int".equals(getSimpleName()) || "short".equals(getSimpleName())
-				|| "char".equals(getSimpleName()) || "long".equals(getSimpleName()) || "float".equals(getSimpleName()) || "void".equals(getSimpleName()));
+		return getPrimitiveType(this).isPresent();
 	}
 
 	@Override

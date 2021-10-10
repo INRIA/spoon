@@ -7,9 +7,14 @@
  */
 package spoon;
 
+import java.lang.invoke.MethodHandles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /** is a generic runtime exception for Spoon */
 public class SpoonException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
+	protected static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	public SpoonException() {
 	}
 	public SpoonException(String msg) {

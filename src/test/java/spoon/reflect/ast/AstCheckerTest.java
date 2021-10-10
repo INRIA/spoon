@@ -18,6 +18,7 @@ package spoon.reflect.ast;
 
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.support.modelobs.FineModelChangeListener;
@@ -45,6 +46,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -205,32 +207,46 @@ public class AstCheckerTest {
 		}
 
 		private boolean isSurcharged(CtMethod<?> candidate) {
-			CtBlock<?> block = candidate.getBody();
-			if (block.getStatements().isEmpty()) {
-				return false;
+			return !extractPotentialSurchargeDelegateDeclaration(candidate)
+					.filter(this::isToBeProcessed)
+					.isPresent();
+		}
+
+		private Optional<CtMethod<?>> extractPotentialSurchargeDelegateDeclaration(CtMethod<?> candidate) {
+			Optional<CtInvocation<?>> maybePotentialDelegate = extractPotentialSurchargeDelegate(candidate);
+			return maybePotentialDelegate
+					.map(CtInvocation::getExecutable)
+					.map(CtExecutableReference::getDeclaration)
+					.filter(CtMethod.class::isInstance)
+					.map(ref -> (CtMethod<?>) ref);
+		}
+
+		private Optional<CtInvocation<?>> extractPotentialSurchargeDelegate(CtMethod<?> candidate) {
+			final CtBlock<?> body = candidate.getBody();
+			if (body.getStatements().isEmpty()) {
+				return Optional.empty();
 			}
-			CtInvocation potentialDelegate;
-			if (block.getLastStatement() instanceof CtReturn) {
-				if (!(((CtReturn) block.getLastStatement()).getReturnedExpression() instanceof CtInvocation)) {
-					if (block.getStatement(0) instanceof CtInvocation) {
-						potentialDelegate = block.getStatement(0);
-					} else {
-						return false;
-					}
-				} else {
-					potentialDelegate = (CtInvocation) ((CtReturn) block.getLastStatement()).getReturnedExpression();
-				}
-			} else if (block.getStatement(0) instanceof CtInvocation && block.getStatements().size() == 1) {
-				potentialDelegate = block.getStatement(0);
+
+			final CtStatement firstStatement = body.getStatement(0);
+			final CtStatement lastStatement = body.getLastStatement();
+			if (firstStatement instanceof CtInvocation &&
+					(body.getStatements().size() == 1 || isReturnWithoutInvocation(lastStatement))) {
+				return Optional.of((CtInvocation<?>) firstStatement);
+			} else if (isReturnWithInvocation(lastStatement)) {
+				CtReturn<?> lastStatementReturn = (CtReturn<?>) lastStatement;
+				return Optional.of((CtInvocation<?>) lastStatementReturn.getReturnedExpression());
 			} else {
-				return false;
+				return Optional.empty();
 			}
-			CtExecutable declaration = potentialDelegate.getExecutable().getDeclaration();
-			if (!(declaration instanceof CtMethod)) {
-				return false;
-			}
-			// check if the invocation has a model change listener
-			return !isToBeProcessed((CtMethod<?>) declaration);
+		}
+
+		private boolean isReturnWithoutInvocation(CtStatement statement) {
+			return statement instanceof CtReturn && !isReturnWithInvocation(statement);
+		}
+
+		private boolean isReturnWithInvocation(CtStatement statement) {
+			return statement instanceof CtReturn
+					&& ((CtReturn<?>) statement).getReturnedExpression() instanceof CtInvocation;
 		}
 
 		private boolean isDelegateMethod(CtMethod<?> candidate) {

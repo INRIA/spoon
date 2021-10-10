@@ -146,8 +146,32 @@ public class Javadoc implements Serializable {
 		if (index == -1) {
 			return null;
 		}
-		// we are interested only in complete inline tags
-		int closeIndex = text.indexOf("}", index);
+
+		// Find the corresponding end curly brace:
+		//
+		//                 Tag doesn't end here
+		//                            |
+		//                            v
+		//   {@code public class Foo {}}
+		//   ^                         ^
+		//   |                         |
+		// index                 Tag ends here
+
+		int closeIndex = -1;
+		int nesting = 1;
+		for (int i = index + 2; i < text.length(); i++) {
+			char read = text.charAt(i);
+			if (read == '{') {
+				nesting++;
+			} else if (read == '}') {
+				nesting--;
+			}
+			if (nesting == 0) {
+				closeIndex = i;
+				break;
+			}
+		}
+
 		if (closeIndex == -1) {
 			return null;
 		}

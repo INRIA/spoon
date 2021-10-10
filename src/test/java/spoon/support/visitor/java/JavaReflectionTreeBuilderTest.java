@@ -422,7 +422,7 @@ public class JavaReflectionTreeBuilderTest {
 						parentOf = diff.element.getParent();
 						rootOf = type;
 					}
-					differences.add("Diff on path: " + pathBuilder.fromElement(parentOf, rootOf).toString() + "#"
+					differences.add("Diff on path: " + pathBuilder.fromElement(rootOf, parentOf).toString() + "#"
 					+ diff.roles.stream().map(CtRole::getCamelCaseName).collect(Collectors.joining(", ", "[", "]"))
 					+ "\nShadow: " + String.valueOf(diff.other)
 					+ "\nNormal: " + String.valueOf(diff.element) + "\n");

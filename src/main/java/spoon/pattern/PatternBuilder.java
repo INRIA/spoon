@@ -107,7 +107,7 @@ public class PatternBuilder {
 			throw new SpoonException("Cannot create a Pattern from an null model");
 		}
 		this.templateTypeRef = getDeclaringTypeRef(template);
-		this.patternModel = Collections.unmodifiableList(new ArrayList<>(template));
+		this.patternModel = List.copyOf(template);
 		this.valueConvertor = new ValueConvertorImpl();
 		patternNodes = ElementNode.create(this.patternModel, patternElementToSubstRequests);
 		patternQuery = new PatternBuilder.PatternQuery(getFactory().Query(), patternModel);

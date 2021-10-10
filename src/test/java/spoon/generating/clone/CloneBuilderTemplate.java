@@ -7,8 +7,12 @@
  */
 package spoon.generating.clone;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtInheritanceScanner;
+import spoon.support.reflect.CtExtendedModifier;
 
 
 /**
@@ -32,5 +36,17 @@ class CloneBuilderTemplate extends CtInheritanceScanner {
 
 	public void setOther(CtElement other) {
 		this.other = other;
+	}
+
+	private Set<CtExtendedModifier> clone(Set<CtExtendedModifier> modifiers) {
+		Set<CtExtendedModifier> result = new HashSet<>();
+
+		for (CtExtendedModifier modifier : modifiers) {
+			CtExtendedModifier clone = new CtExtendedModifier(modifier.getKind(), modifier.isImplicit());
+			clone.setPosition(modifier.getPosition());
+			result.add(clone);
+		}
+
+		return result;
 	}
 }

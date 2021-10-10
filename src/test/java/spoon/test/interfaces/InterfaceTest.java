@@ -16,6 +16,10 @@
  */
 package spoon.test.interfaces;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -24,10 +28,13 @@ import spoon.SpoonModelBuilder;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.SpoonTestHelpers;
 import spoon.test.interfaces.testclasses.ExtendsDefaultMethodInterface;
 import spoon.test.interfaces.testclasses.ExtendsStaticMethodInterface;
@@ -44,6 +51,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static spoon.test.SpoonTestHelpers.contentEquals;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class InterfaceTest {
 
@@ -70,9 +80,9 @@ public class InterfaceTest {
 		final CtMethod<?> ctMethod = ctInterface.getMethodsByName("getZonedDateTime").get(0);
 		assertTrue("The method in the interface must to be default", ctMethod.isDefaultMethod());
 
-		// contract: the debug toString also shows the implicit modifiers (here "public")
+		// contract: the toString does not show the implicit modifiers (here "public")
 		final String expected =
-				"public default java.time.ZonedDateTime getZonedDateTime(java.lang.String zoneString) {"
+				"default java.time.ZonedDateTime getZonedDateTime(java.lang.String zoneString) {"
 						+ System.lineSeparator()
 						+ "    return java.time.ZonedDateTime.of(getLocalDateTime(), spoon.test.interfaces.testclasses.InterfaceWithDefaultMethods.getZoneId(zoneString));"
 						+ System.lineSeparator() + "}";
@@ -157,5 +167,109 @@ public class InterfaceTest {
 		assertThat(interfaceType.getSimpleName(), is("1MyInterface"));
 		assertThat(interfaceType.getFields().size(), is(1));
 		assertThat(interfaceType.getMethods().size(), is(1));
+		MatcherAssert.assertThat(interfaceType.getExtendedModifiers(), contentEquals(
+				new CtExtendedModifier(ModifierKind.STATIC, true),
+				new CtExtendedModifier(ModifierKind.ABSTRACT, true)
+		));
 	}
+
+	@org.junit.jupiter.api.Test
+	void testPackageLevelInterfaceModifiers() throws Exception {
+		// contract: a simple interface has the correct modifiers applied
+		// see https://docs.oracle.com/javase/specs/jls/se17/html/jls-9.html#jls-9.1.1
+		CtType<?> emptyInterface = build("spoon.test.interfaces.testclasses", "EmptyInterface");
+		assertThat(emptyInterface.getExtendedModifiers(), contentEquals(
+				new CtExtendedModifier(ModifierKind.ABSTRACT, true),
+				new CtExtendedModifier(ModifierKind.PUBLIC, false)
+		));
+	}
+
+	@Test
+	public void testNestedTypesInInterfaceArePublic() {
+		// contract: nested types in interfaces are implicitly public
+		// (https://docs.oracle.com/javase/specs/jls/se16/html/jls-9.html#jls-9.5)
+
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/nestedInInterface");
+		CtModel model = launcher.buildModel();
+
+		Collection<CtType<?>> types = model.getAllTypes()
+				.stream()
+				.flatMap(it -> it.getNestedTypes().stream())
+				.collect(Collectors.toList());
+
+		assertEquals(4, types.size());
+
+		for (CtType<?> type : types) {
+			assertTrue("Nested type " + type.getQualifiedName() + " is not public", type.isPublic());
+			CtExtendedModifier modifier = type.getExtendedModifiers()
+					.stream()
+					.filter(it -> it.getKind() == ModifierKind.PUBLIC)
+					.findFirst()
+					.get();
+			assertTrue(
+					"nested type " + type.getQualifiedName() + " has explicit modifier",
+					modifier.isImplicit()
+			);
+		}
+	}
+
+	@Test
+	public void testNestedTypesInInterfaceAreStatic() {
+		// contract: nested types in interfaces are implicitly static
+		// (https://docs.oracle.com/javase/specs/jls/se16/html/jls-9.html#jls-9.5)
+
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/nestedInInterface");
+		CtModel model = launcher.buildModel();
+
+		Collection<CtType<?>> types = model.getAllTypes()
+				.stream()
+				.flatMap(it -> it.getNestedTypes().stream())
+				.collect(Collectors.toList());
+
+		assertEquals(4, types.size());
+
+		for (CtType<?> type : types) {
+			assertTrue("Nested type " + type.getQualifiedName() + " is not static", type.isStatic());
+			CtExtendedModifier modifier = type.getExtendedModifiers()
+					.stream()
+					.filter(it -> it.getKind() == ModifierKind.STATIC)
+					.findFirst()
+					.get();
+			assertTrue(
+					"nested type " + type.getQualifiedName() + " has explicit modifier",
+					modifier.isImplicit()
+			);
+		}
+	}
+
+	@Test
+	public void testImplicitPublicModifierInNestedInterfaceTypeIsRemoved() {
+		// contract: implicit public modifier for nested types is deleted when they are removed from the interface
+		Factory factory = createFactory();
+		CtInterface<?> ctInterface = factory.Interface().create("foo.Bar");
+		CtClass<?> nestedClass = factory.Class().create("foo.Bar$Inner");
+		ctInterface.addNestedType(nestedClass);
+
+		assertTrue("Class wasn't made public", nestedClass.isPublic());
+		ctInterface.removeNestedType(nestedClass);
+
+		assertFalse("public modifier wasn't removed", nestedClass.isPublic());
+	}
+
+	@Test
+	public void testImplicitStaticModifierInNestedInterfaceTypeIsRemoved() {
+		// contract: implicit static modifier for nested types is deleted when they are removed from the interface
+		Factory factory = createFactory();
+		CtInterface<?> ctInterface = factory.Interface().create("foo.Bar");
+		CtClass<?> nestedClass = factory.Class().create("foo.Bar$Inner");
+		ctInterface.addNestedType(nestedClass);
+
+		assertTrue("Class wasn't made static", nestedClass.isStatic());
+		ctInterface.removeNestedType(nestedClass);
+
+		assertFalse("static modifier wasn't removed", nestedClass.isStatic());
+	}
+
 }

@@ -45,10 +45,6 @@ public class MetamodelConcept {
 	 * List of super concepts of this concept
 	 */
 	private final List<MetamodelConcept> superConcepts = new ArrayList<>();
-	/**
-	 * List of sub concepts of this concept
-	 */
-	private final List<MetamodelConcept> subConcepts = new ArrayList<>();
 
 	/**
 	 * The {@link CtClass} linked to this {@link MetamodelConcept}. Is null in case of class without interface
@@ -83,7 +79,7 @@ public class MetamodelConcept {
 
 
 	MetamodelProperty getOrCreateMMField(CtRole role) {
-		return Metamodel.getOrCreate(role2Property, role, () -> new MetamodelProperty(role.getCamelCaseName(), role, this));
+		return role2Property.computeIfAbsent(role, k -> new MetamodelProperty(k.getCamelCaseName(), k, this));
 	}
 
 	/**
@@ -145,7 +141,6 @@ public class MetamodelConcept {
 			throw new SpoonException("Cannot add supertype to itself");
 		}
 		if (addUniqueObject(superConcepts, superType)) {
-			superType.subConcepts.add(this);
 			superType.role2Property.forEach((role, superMMField) -> {
 				MetamodelProperty mmField = getOrCreateMMField(role);
 				mmField.addSuperField(superMMField);
