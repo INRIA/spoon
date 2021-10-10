@@ -51,5 +51,4 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 	public CtNamedElement clone() {
 		return (CtNamedElement) super.clone();
 	}
-
 }
