@@ -44,7 +44,6 @@ public abstract class CtNamedElementImpl extends CtElementImpl implements CtName
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, NAME, simpleName, this.simpleName);
 		this.simpleName = simpleName;
-
 		return (T) this;
 	}
 
