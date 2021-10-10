@@ -38,7 +38,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
-import spoon.support.util.ElementNameMap;
+import spoon.support.util.internal.ElementNameMap;
 import spoon.support.util.ModelList;
 
 import java.util.Arrays;

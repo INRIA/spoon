@@ -53,7 +53,7 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtModifierHandler;
-import spoon.support.util.ElementNameMap;
+import spoon.support.util.internal.ElementNameMap;
 import spoon.support.util.ModelList;
 import spoon.support.visitor.clone.CloneBuilder;
 

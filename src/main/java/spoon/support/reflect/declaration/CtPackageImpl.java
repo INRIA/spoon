@@ -20,7 +20,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.visitor.CtVisitor;
-import spoon.support.util.ElementNameMap;
+import spoon.support.util.internal.ElementNameMap;
 
 /**
  * The implementation for {@link spoon.reflect.declaration.CtPackage}.

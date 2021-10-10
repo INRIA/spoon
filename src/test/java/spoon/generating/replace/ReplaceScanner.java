@@ -42,7 +42,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.util.ElementNameMap;
+import spoon.support.util.internal.ElementNameMap;
 import spoon.support.util.ModelList;
 
 import java.util.ArrayList;
