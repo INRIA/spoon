@@ -37,117 +37,117 @@ import spoon.support.modelobs.FineModelChangeListener;
  * <br>
  */
 public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<String, T>
-    implements Serializable {
+		implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-  // This can not be a "Map" as this class is Serializable and therefore Sorald wants this field
-  // to be serializable as well (Rule 1948).
-  // It doesn't seem smart enough to realize it is final and only assigned to a Serializable Map
-  // in the constructor.
-  private final ConcurrentSkipListMap<String, T> map;
+	// This can not be a "Map" as this class is Serializable and therefore Sorald wants this field
+	// to be serializable as well (Rule 1948).
+	// It doesn't seem smart enough to realize it is final and only assigned to a Serializable Map
+	// in the constructor.
+	private final ConcurrentSkipListMap<String, T> map;
 
-  protected ElementNameMap() {
-    this.map = new ConcurrentSkipListMap<>();
-  }
+	protected ElementNameMap() {
+		this.map = new ConcurrentSkipListMap<>();
+	}
 
-  protected abstract CtElement getOwner();
+	protected abstract CtElement getOwner();
 
-  protected abstract CtRole getRole();
+	protected abstract CtRole getRole();
 
-  /**
-   * {@inheritDoc }
-   *
-   * @param key {@inheritDoc }
-   * @param e {@inheritDoc }
-   * @return null if the input was changed or an existing element was reused, the previous mapping
-   *     if the element is actually replaced.
-   */
-  @Override
-  public T put(String key, T e) {
-    if (e == null) {
-      return null;
-    }
-    CtElement owner = getOwner();
-    linkToParent(owner, e);
-    getModelChangeListener().onMapAdd(owner, getRole(), map, key, e);
+	/**
+	 * {@inheritDoc }
+	 *
+	 * @param key {@inheritDoc }
+	 * @param e {@inheritDoc }
+	 * @return null if the input was changed or an existing element was reused, the previous mapping
+	 *     if the element is actually replaced.
+	 */
+	@Override
+	public T put(String key, T e) {
+		if (e == null) {
+			return null;
+		}
+		CtElement owner = getOwner();
+		linkToParent(owner, e);
+		getModelChangeListener().onMapAdd(owner, getRole(), map, key, e);
 
-    // We make sure that then last added type is kept (and previous types overwritten) as client
-    // code expects that
-    return map.put(key, e);
-  }
+		// We make sure that then last added type is kept (and previous types overwritten) as client
+		// code expects that
+		return map.put(key, e);
+	}
 
-  @Override
-  public T remove(Object key) {
-    T removed = map.remove(key);
+	@Override
+	public T remove(Object key) {
+		T removed = map.remove(key);
 
-    if (removed == null) {
-      return null;
-    }
+		if (removed == null) {
+			return null;
+		}
 
-    getModelChangeListener().onMapDelete(
-        getOwner(),
-        getRole(),
-        map,
-        (String) key,
-        removed
-    );
+		getModelChangeListener().onMapDelete(
+				getOwner(),
+				getRole(),
+				map,
+				(String) key,
+				removed
+		);
 
-    return removed;
-  }
+		return removed;
+	}
 
-  @Override
-  public void clear() {
-    if (map.isEmpty()) {
-      return;
-    }
-    // Only an approximation as the concurrent map is only weakly consistent
-    Map<String, T> old = new LinkedHashMap<>(map);
-    map.clear();
-    getModelChangeListener().onMapDeleteAll(
-        getOwner(),
-        getRole(),
-        map,
-        old
-    );
-  }
+	@Override
+	public void clear() {
+		if (map.isEmpty()) {
+			return;
+		}
+		// Only an approximation as the concurrent map is only weakly consistent
+		Map<String, T> old = new LinkedHashMap<>(map);
+		map.clear();
+		getModelChangeListener().onMapDeleteAll(
+				getOwner(),
+				getRole(),
+				map,
+				old
+		);
+	}
 
-  /**
-   * Updates the mapping for a single key from {@code oldKey} to {@code newKey} if present.
-   *
-   * @param oldKey the old key
-   * @param newKey the new key
-   */
-  public void updateKey(String oldKey, String newKey) {
-    T type = map.remove(oldKey);
-    if (type != null) {
-      map.put(newKey, type);
-    }
-  }
+	/**
+	 * Updates the mapping for a single key from {@code oldKey} to {@code newKey} if present.
+	 *
+	 * @param oldKey the old key
+	 * @param newKey the new key
+	 */
+	public void updateKey(String oldKey, String newKey) {
+		T type = map.remove(oldKey);
+		if (type != null) {
+			map.put(newKey, type);
+		}
+	}
 
-  @Override
-  public Set<Entry<String, T>> entrySet() {
-    return map.entrySet();
-  }
+	@Override
+	public Set<Entry<String, T>> entrySet() {
+		return map.entrySet();
+	}
 
-  private FineModelChangeListener getModelChangeListener() {
-    return getOwner().getFactory().getEnvironment().getModelChangeListener();
-  }
+	private FineModelChangeListener getModelChangeListener() {
+		return getOwner().getFactory().getEnvironment().getModelChangeListener();
+	}
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ElementNameMap<?> that = (ElementNameMap<?>) o;
-    return Objects.equals(map, that.map);
-  }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		ElementNameMap<?> that = (ElementNameMap<?>) o;
+		return Objects.equals(map, that.map);
+	}
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(map);
-  }
+	@Override
+	public int hashCode() {
+		return Objects.hash(map);
+	}
 }
