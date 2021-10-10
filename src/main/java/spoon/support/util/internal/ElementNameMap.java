@@ -21,9 +21,20 @@ import spoon.reflect.path.CtRole;
 import spoon.support.modelobs.FineModelChangeListener;
 
 /**
- * The implementation of a {@link Map}, which is used by Spoon model objects. It assures: 1) each
- * inserted {@link CtElement} gets assigned correct parent 2) each change is reported in {@link
- * FineModelChangeListener}
+ * This class is for <strong>internal use only</strong>.
+ * <p><br>
+ * An implementation of a {@link Map} currently used by packages to manage contained types and
+ * sub-packages.
+ * <br>>
+ * This map is currently specialized to string keys to simplify the types a bit. Nothing
+ * fundamentally requires Strings, and it might be changed in the future.
+ * <br>
+ * It assures:
+ * <ul>
+ *   <li>each inserted {@link CtElement} gets assigned correct parent</li>
+ *   <li> each change is reported in {@link FineModelChangeListener}</li>
+ * </ul>
+ * <br>
  */
 public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<String, T>
     implements Serializable {
@@ -78,7 +89,7 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
         getOwner(),
         getRole(),
         map,
-				(String) key,
+        (String) key,
         removed
     );
 
@@ -90,10 +101,10 @@ public abstract class ElementNameMap<T extends CtElement> extends AbstractMap<St
     if (map.isEmpty()) {
       return;
     }
-		// Only an approximation as the concurrent map is only weakly consistent
-		Map<String, T> old = new LinkedHashMap<>(map);
-		map.clear();
-		getModelChangeListener().onMapDeleteAll(
+    // Only an approximation as the concurrent map is only weakly consistent
+    Map<String, T> old = new LinkedHashMap<>(map);
+    map.clear();
+    getModelChangeListener().onMapDeleteAll(
         getOwner(),
         getRole(),
         map,
