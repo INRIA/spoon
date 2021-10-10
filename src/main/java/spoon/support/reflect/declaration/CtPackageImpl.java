@@ -201,7 +201,7 @@ public class CtPackageImpl extends CtNamedElementImpl implements CtPackage {
 		if (type == null) {
 			return (T) this;
 		}
-		// ModelSet of types will take care of setting the parent
+		// type map will take care of setting the parent
 		types.put(type.getSimpleName(), type);
 		return (T) this;
 	}

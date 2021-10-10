@@ -287,7 +287,7 @@ public class AstCheckerTest {
 				if (inv.getTarget() instanceof CtFieldRead) {
 					CtFieldRead fielRead = (CtFieldRead) inv.getTarget();
 					if (isModelCollection(fielRead.getType())) {
-						//it is invocation on ModelList, ModelSet or ModelMap
+						//it is invocation on ModelList, ElementNameMap or ModelMap
 						return true;
 					}
 				}

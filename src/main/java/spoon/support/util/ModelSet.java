@@ -29,6 +29,9 @@ import spoon.reflect.path.CtRole;
  * It assures:
  * 1) each inserted {@link CtElement} gets assigned correct parent
  * 2) each change is reported in {@link FineModelChangeListener}
+ *
+ * @deprecated This set is no longer actively used or maintained. It is only kept for backwards
+ * compatibility and might be removed in a future release.
  */
 @Deprecated
 public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> implements Serializable {
