@@ -8,6 +8,8 @@
 package spoon.support.util;
 
 
+import static spoon.support.util.internal.ModelCollectionUtils.linkToParent;
+
 import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -15,7 +17,6 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
-import spoon.SpoonException;
 import spoon.support.modelobs.FineModelChangeListener;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
@@ -78,20 +79,6 @@ public abstract class ModelList<T extends CtElement> extends AbstractList<T> imp
 		list.set(index, element);
 		updateModCount();
 		return oldElement;
-	}
-
-	static void linkToParent(CtElement owner, CtElement element) {
-		if (owner.getFactory().getEnvironment().checksAreSkipped() == false && element.isParentInitialized() && element.getParent() != owner) {
-			//the `e` already has an different parent. Check if it is still linked to that parent
-			if (element.getRoleInParent() != null) {
-				throw new SpoonException("The default behavior has changed, a new check has been added! Don't worry, you can disable this check\n"
-							+ "with one of the following options:\n"
-							+ " - by configuring Spoon with getEnvironment().setSelfChecks(true)\n"							+ " - by removing the node from its previous parent (element.delete())\n"
-							+ " - by cloning the node before adding it here (element.clone())\n"
-							);
-			}
-		}
-		element.setParent(owner);
 	}
 
 	@Override

@@ -412,6 +412,7 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.support.reflect");
 		officialPackages.add("spoon.support.template");
 		officialPackages.add("spoon.support.util");
+		officialPackages.add("spoon.support.util.internal");
 		officialPackages.add("spoon.support.visitor.clone");
 		officialPackages.add("spoon.support.visitor.equals");
 		officialPackages.add("spoon.support.visitor.java.internal");
