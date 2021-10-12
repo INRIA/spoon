@@ -439,7 +439,7 @@ public class AnnotationTest {
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotArray.java");
 		launcher.buildModel();
 		Factory factory = launcher.getFactory();
-		final String res = "java.lang.Class<?>[] value() default {  };";
+		final String res = "public java.lang.Class<?>[] value() default {  };";
 
 		CtType<?> type = factory.Type().get("spoon.test.annotation.testclasses.AnnotArrayInnerClass");
 		CtType<?> annotationInnerClass = type.getNestedType("Annotation");
