@@ -906,10 +906,20 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(AnnotationMethodDeclaration annotationTypeDeclaration, ClassScope classScope) {
+	public boolean visit(AnnotationMethodDeclaration annotationMethodDeclaration, ClassScope classScope) {
 		CtAnnotationMethod<Object> ctAnnotationMethod = factory.Core().createAnnotationMethod();
-		ctAnnotationMethod.setSimpleName(CharOperation.charToString(annotationTypeDeclaration.selector));
-		context.enter(ctAnnotationMethod, annotationTypeDeclaration);
+		ctAnnotationMethod.setSimpleName(CharOperation.charToString(annotationMethodDeclaration.selector));
+
+		if (annotationMethodDeclaration.binding != null) {
+			ctAnnotationMethod.setExtendedModifiers(
+					getModifiers(annotationMethodDeclaration.binding.modifiers, true, true)
+			);
+		}
+
+		for (CtExtendedModifier extendedModifier : getModifiers(annotationMethodDeclaration.modifiers, false, true)) {
+			ctAnnotationMethod.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+		}
+		context.enter(ctAnnotationMethod, annotationMethodDeclaration);
 		return true;
 	}
 
