@@ -1772,12 +1772,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(SingleNameReference singleNameReference, ClassScope scope) {
-		// TODO permits are covered here?
-		return super.visit(singleNameReference, scope);
-	}
-
-	@Override
 	public boolean visit(TypeDeclaration typeDeclaration, CompilationUnitScope scope) {
 		if (typeDeclaration.binding == null && getFactory().getEnvironment().isIgnoreDuplicateDeclarations()) {
 			// skip the type declaration that are already declared
