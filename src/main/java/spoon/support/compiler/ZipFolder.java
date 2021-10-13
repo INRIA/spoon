@@ -18,10 +18,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import spoon.Launcher;
+import spoon.SpoonException;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 import spoon.compiler.SpoonResourceHelper;
@@ -141,14 +143,23 @@ public class ZipFolder implements SpoonFolder {
 		return file;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		return toString().equals(obj.toString());
-	}
+
 
 	@Override
 	public int hashCode() {
-		return toString().hashCode();
+		return file.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof ZipFolder)) {
+			return false;
+		}
+		ZipFolder other = (ZipFolder) obj;
+		return Objects.equals(file, other.file);
 	}
 
 	@Override
@@ -167,6 +178,10 @@ public class ZipFolder implements SpoonFolder {
 			ZipEntry entry;
 			while ((entry = zipInput.getNextEntry()) != null) {
 				File f = new File(destDir + File.separator + entry.getName());
+				if (!f.toPath().normalize().startsWith(destDir.toPath())) {
+					// test against zip slips
+						throw new SpoonException("Entry is outside of the target dir: " + entry.getName());
+				}
 				if (entry.isDirectory()) { // if it's a directory, create it
 					f.mkdir();
 					continue;

@@ -31,12 +31,15 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	@Override
 	public void visitPackage(Package aPackage) {
+		for (Annotation annotation : aPackage.getDeclaredAnnotations()) {
+			visitAnnotation(annotation);
+		}
 	}
 
 	@Override
 	public <T> void visitClass(Class<T> clazz) {
 		if (clazz.getPackage() != null) {
-			clazz.getPackage();
+			visitPackage(clazz.getPackage());
 		}
 		try {
 			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
@@ -121,7 +124,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	public <T> void visitInterface(Class<T> clazz) {
 		assert clazz.isInterface();
 		if (clazz.getPackage() != null) {
-			clazz.getPackage();
+			visitPackage(clazz.getPackage());
 		}
 		try {
 			for (Type anInterface : clazz.getGenericInterfaces()) {
@@ -178,7 +181,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	public <T> void visitEnum(Class<T> clazz) {
 		assert clazz.isEnum();
 		if (clazz.getPackage() != null) {
-			clazz.getPackage();
+			visitPackage(clazz.getPackage());
 		}
 		try {
 			for (Type anInterface : clazz.getGenericInterfaces()) {
@@ -251,7 +254,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	public <T extends Annotation> void visitAnnotationClass(Class<T> clazz) {
 		assert clazz.isAnnotation();
 		if (clazz.getPackage() != null) {
-			clazz.getPackage();
+			visitPackage(clazz.getPackage());
 		}
 		try {
 			for (Annotation annotation : clazz.getDeclaredAnnotations()) {

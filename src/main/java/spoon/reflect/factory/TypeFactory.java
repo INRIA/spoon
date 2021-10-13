@@ -42,12 +42,10 @@ import spoon.support.visitor.java.JavaReflectionTreeBuilder;
 
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,10 +57,10 @@ import java.util.function.Function;
  */
 public class TypeFactory extends SubFactory {
 
-	private static final Set<String> NULL_PACKAGE_CLASSES = Collections.unmodifiableSet(new HashSet<>(
-			Arrays.asList("void", "boolean", "byte", "short", "char", "int", "float", "long", "double",
-					// TODO (leventov) it is questionable to me that nulltype should also be here
-					CtTypeReference.NULL_TYPE_NAME)));
+	private static final Set<String> NULL_PACKAGE_CLASSES = Set.of(
+			"void", "boolean", "byte", "short", "char", "int", "float", "long", "double",
+			// TODO (leventov) it is questionable to me that nulltype should also be here
+			CtTypeReference.NULL_TYPE_NAME);
 
 	public final CtTypeReference<?> NULL_TYPE = createReference(CtTypeReference.NULL_TYPE_NAME);
 	public final CtTypeReference<Void> VOID = createReference(Void.class);
@@ -448,8 +446,7 @@ public class TypeFactory extends SubFactory {
 				return null;
 			}
 			String className = qualifiedName.substring(inertTypeIndex + 1);
-			final CtTypeReference<T> reference = t.getReference();
-			if (reference.isLocalType()) {
+			if (t.isLocalType()) {
 				final List<CtClass<T>> enclosingClasses = t.getElements(new TypeFilter<CtClass<T>>(CtClass.class) {
 					@Override
 					public boolean matches(CtClass<T> element) {

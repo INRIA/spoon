@@ -48,7 +48,7 @@
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.26.0</version>
+      <version>3.27.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.platform</groupId>
@@ -87,7 +87,7 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
-      <version>3.8.2</version>
+      <version>3.8.3</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -104,7 +104,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.12.5</version>
+      <version>2.13.0</version>
     </dependency>
     <dependency>
       <!-- support for compressed serialized ASTs -->

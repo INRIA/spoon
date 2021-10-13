@@ -7,14 +7,13 @@
  */
 package spoon.support.modelobs;
 
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.path.CtRole;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.path.CtRole;
 
 
 /** Can be subclassed by clients who want to be notified on all changes in AST nodes */
@@ -45,6 +44,19 @@ public interface FineModelChangeListener {
 
 	/** a newValue is appended to the map corresponding to the role in the AST node */
 	<K, V> void onMapAdd(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement newValue);
+
+	/**
+	 * A mapping is removed from the map corresponding to the role in the AST node
+	 *
+	 * @param currentElement the element that changed
+	 * @param role the role of the field that changed
+	 * @param field the current value of the field that changed
+	 * @param key the key of the element that was deleted
+	 * @param oldValue the element that was deleted
+	 * @param <K> the key type
+	 * @param <V> the value type
+	 */
+	<K, V> void onMapDelete(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement oldValue);
 
 	/** a map corresponding to the role in the AST node is emptied */
 	<K, V> void onMapDeleteAll(CtElement currentElement, CtRole role, Map<K, V> field, Map<K, V> oldValue);

@@ -53,7 +53,26 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtAnnotation;
+import spoon.reflect.declaration.CtAnnotationMethod;
+import spoon.reflect.declaration.CtAnnotationType;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtEnumValue;
+import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtInterface;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtElementPathBuilder;
@@ -73,6 +92,7 @@ import spoon.support.reflect.declaration.CtFieldImpl;
 import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.test.generics.testclasses3.ComparableComparatorBug;
+import spoon.test.pkg.PackageTest;
 
 public class JavaReflectionTreeBuilderTest {
 
@@ -405,7 +425,7 @@ public class JavaReflectionTreeBuilderTest {
 						parentOf = diff.element.getParent();
 						rootOf = type;
 					}
-					differences.add("Diff on path: " + pathBuilder.fromElement(parentOf, rootOf).toString() + "#"
+					differences.add("Diff on path: " + pathBuilder.fromElement(rootOf, parentOf).toString() + "#"
 					+ diff.roles.stream().map(CtRole::getCamelCaseName).collect(Collectors.joining(", ", "[", "]"))
 					+ "\nShadow: " + String.valueOf(diff.other)
 					+ "\nNormal: " + String.valueOf(diff.element) + "\n");
@@ -692,6 +712,7 @@ public class JavaReflectionTreeBuilderTest {
 		// should have gotten '1'
 		assertNull(value.getDefaultExpression());
 	}
+
 	@Test
 	@EnabledForJreRange(min = JRE.JAVA_16)
 	public void testShadowRecords() throws ClassNotFoundException {
@@ -705,5 +726,17 @@ public class JavaReflectionTreeBuilderTest {
 		assertTrue(unixRecord.isShadow());
 		// UserPrincipal user and GroupPrincipal group
 		assertEquals(2, unixRecord.getRecordComponents().size());
+  }
+
+
+	@Test
+	void testShadowPackage() {
+		// contract: elements of a package with a corresponding CtElement implementation
+		// are visited and built into the model
+		Factory factory = createFactory();
+		CtType<?> type = new JavaReflectionTreeBuilder(factory).scan(PackageTest.class);
+		CtPackage ctPackage = type.getPackage();
+		assertEquals(1, ctPackage.getAnnotations().size());
+		assertEquals(ctPackage.getAnnotations().get(0).getAnnotationType().getQualifiedName(), "java.lang.Deprecated");
 	}
 }

@@ -94,8 +94,8 @@ public class IncrementalLauncher extends Launcher {
 	}
 
 	private static void saveFactory(Factory factory, File file) {
-		try {
-			new SerializationModelStreamer().save(factory, new FileOutputStream(file));
+		try (FileOutputStream fileStream = new FileOutputStream(file)) {
+			new SerializationModelStreamer().save(factory, fileStream);
 		} catch (IOException e) {
 			throw new SpoonException("unable to save factory");
 		}

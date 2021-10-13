@@ -126,10 +126,10 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 		// modifiers if they aren't public static already.
 		Set<CtExtendedModifier> modifiers = new HashSet<>(nestedType.getExtendedModifiers());
 		if (!nestedType.isPublic()) {
-			modifiers.add(new CtExtendedModifier(ModifierKind.PUBLIC, true));
+			modifiers.add(CtExtendedModifier.implicit(ModifierKind.PUBLIC));
 		}
 		if (!nestedType.isStatic()) {
-			modifiers.add(new CtExtendedModifier(ModifierKind.STATIC, true));
+			modifiers.add(CtExtendedModifier.implicit(ModifierKind.STATIC));
 		}
 		nestedType.setExtendedModifiers(modifiers);
 

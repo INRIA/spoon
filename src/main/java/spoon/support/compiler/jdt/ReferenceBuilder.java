@@ -92,6 +92,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -101,6 +102,10 @@ import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchType;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.searchTypeBinding;
 
 public class ReferenceBuilder {
+	private static final Set<CtExtendedModifier> PUBLIC_PROTECTED = Set.of(
+			CtExtendedModifier.explicit(ModifierKind.PUBLIC),
+			CtExtendedModifier.explicit(ModifierKind.PROTECTED)
+	);
 
 	// Allow to detect circular references and to avoid endless recursivity
 	// when resolving parameterizedTypes (e.g. Enum<E extends Enum<E>>)
@@ -261,8 +266,7 @@ public class ReferenceBuilder {
 	 * @return a type reference.
 	 */
 	<T> CtTypeReference<T> getQualifiedTypeReference(char[][] tokens, TypeBinding receiverType, ReferenceBinding enclosingType, JDTTreeBuilder.OnAccessListener listener) {
-		final List<CtExtendedModifier> listPublicProtected = Arrays.asList(new CtExtendedModifier(ModifierKind.PUBLIC), new CtExtendedModifier(ModifierKind.PROTECTED));
-		if (enclosingType != null && Collections.disjoint(listPublicProtected, JDTTreeBuilderQuery.getModifiers(enclosingType.modifiers, false, false))) {
+		if (enclosingType != null && Collections.disjoint(PUBLIC_PROTECTED, JDTTreeBuilderQuery.getModifiers(enclosingType.modifiers, false, false))) {
 			String access = "";
 			int i = 0;
 			final CompilationUnitDeclaration[] units = ((TreeBuilderCompiler) this.jdtTreeBuilder.getContextBuilder().compilationunitdeclaration.scope.environment.typeRequestor).unitsToProcess;

@@ -18,8 +18,11 @@ package spoon.test.interfaces;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
+
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.reflect.CtModel;
@@ -48,6 +51,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static spoon.test.SpoonTestHelpers.contentEquals;
+import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class InterfaceTest {
@@ -155,13 +160,28 @@ public class InterfaceTest {
 		assertThat("The local interface does not exist in the model", block.getStatements().size(), is(1));
 
 		CtStatement statement = block.getStatement(0);
-		assertTrue(statement instanceof CtInterface<?>);
+		Assertions.assertTrue(statement instanceof CtInterface<?>);
 		CtInterface<?> interfaceType = (CtInterface<?>) statement;
 
 		assertThat(interfaceType.isLocalType(), is(true));
 		assertThat(interfaceType.getSimpleName(), is("1MyInterface"));
 		assertThat(interfaceType.getFields().size(), is(1));
 		assertThat(interfaceType.getMethods().size(), is(1));
+		MatcherAssert.assertThat(interfaceType.getExtendedModifiers(), contentEquals(
+				new CtExtendedModifier(ModifierKind.STATIC, true),
+				new CtExtendedModifier(ModifierKind.ABSTRACT, true)
+		));
+	}
+
+	@org.junit.jupiter.api.Test
+	void testPackageLevelInterfaceModifiers() throws Exception {
+		// contract: a simple interface has the correct modifiers applied
+		// see https://docs.oracle.com/javase/specs/jls/se17/html/jls-9.html#jls-9.1.1
+		CtType<?> emptyInterface = build("spoon.test.interfaces.testclasses", "EmptyInterface");
+		assertThat(emptyInterface.getExtendedModifiers(), contentEquals(
+				new CtExtendedModifier(ModifierKind.ABSTRACT, true),
+				new CtExtendedModifier(ModifierKind.PUBLIC, false)
+		));
 	}
 
 	@Test

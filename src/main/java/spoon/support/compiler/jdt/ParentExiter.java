@@ -475,7 +475,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		if (node instanceof CaseStatement) {
 			caseStatement.setCaseKind(((CaseStatement) node).isExpr ? CaseKind.ARROW : CaseKind.COLON);
 		}
-		if (node instanceof CaseStatement && ((CaseStatement) node).constantExpression != null && child instanceof CtExpression
+		if (node instanceof CaseStatement && ((CaseStatement) node).constantExpressions != null && child instanceof CtExpression
 				&& caseStatement.getCaseExpressions().size() < ((CaseStatement) node).constantExpressions.length) {
 			caseStatement.addCaseExpression((CtExpression<E>) child);
 			return;
@@ -496,7 +496,7 @@ public class ParentExiter extends CtInheritanceScanner {
 			// Catch annotations are processed before actual CtCatchVariable is created and because of that they attach to CtCatch.
 			// Since annotations cannot be attached to CtCatch itself, we can simply transfer them to CtCatchVariable.
 			catchBlock.getAnnotations().forEach(a -> { a.setParent(child); child.addAnnotation(a); });
-			catchBlock.setAnnotations(Collections.unmodifiableList(Collections.emptyList()));
+			catchBlock.setAnnotations(List.of());
 			return;
 		}
 		super.visitCtCatch(catchBlock);
