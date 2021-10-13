@@ -551,10 +551,6 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 	}
 
 
-	private boolean isInterface(Class<?> clazz) {
-		return clazz != null && clazz.isInterface();
-	}
-
 	@SuppressWarnings("rawtypes")
 	@Override
 	public <T> void visitRecord(Class<T> clazz) {
