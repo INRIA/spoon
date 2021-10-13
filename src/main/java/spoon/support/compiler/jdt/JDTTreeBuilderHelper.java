@@ -122,7 +122,7 @@ public class JDTTreeBuilderHelper {
 	 */
 	CtCatchVariable<Throwable> createCatchVariable(TypeReference typeReference, Scope scope) {
 		final Argument jdtCatch = (Argument) jdtTreeBuilder.getContextBuilder().stack.peekFirst().node;
-		final Set<CtExtendedModifier> modifiers = getModifiers(jdtCatch.modifiers, false, false);
+		final Set<CtExtendedModifier> modifiers = getModifiers(jdtCatch.modifiers, false, ModifierTarget.LOCAL_VARIABLE);
 
 		CtCatchVariable<Throwable> result = jdtTreeBuilder.getFactory().Core().createCatchVariable();
 		result.<CtCatchVariable>setSimpleName(CharOperation.charToString(jdtCatch.name)).setExtendedModifiers(modifiers);
@@ -688,7 +688,7 @@ public class JDTTreeBuilderHelper {
 		CtParameter<T> p = jdtTreeBuilder.getFactory().Core().createParameter();
 		p.setSimpleName(CharOperation.charToString(argument.name));
 		p.setVarArgs(argument.isVarArgs());
-		p.setExtendedModifiers(getModifiers(argument.modifiers, false, false));
+		p.setExtendedModifiers(getModifiers(argument.modifiers, false, ModifierTarget.PARAMETER));
 		if (argument.binding != null && argument.binding.type != null && argument.type == null) {
 			p.setType(jdtTreeBuilder.getReferencesBuilder().<T>getTypeReference(argument.binding.type));
 			p.getType().setImplicit(argument.type == null);
@@ -740,12 +740,11 @@ public class JDTTreeBuilderHelper {
 
 		// Setting modifiers
 		if (typeDeclaration.binding != null) {
-			type.setExtendedModifiers(getModifiers(typeDeclaration.binding.modifiers, true, false));
+			type.setExtendedModifiers(getModifiers(typeDeclaration.binding.modifiers, true, ModifierTarget.TYPE));
 		}
-		for (CtExtendedModifier modifier : getModifiers(typeDeclaration.modifiers, false, false)) {
+		for (CtExtendedModifier modifier : getModifiers(typeDeclaration.modifiers, false, ModifierTarget.TYPE)) {
 			type.addModifier(modifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
 		}
-
 
 		jdtTreeBuilder.getContextBuilder().enter(type, typeDeclaration);
 
