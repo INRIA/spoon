@@ -92,6 +92,5 @@ interface JavaReflectionVisitor {
 	/** Visits a record component.
 	 * @param recordComponent a record component
 	*/
-
 	void visitRecordComponent(AnnotatedElement recordComponent);
 }
