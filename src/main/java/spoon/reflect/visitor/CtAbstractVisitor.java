@@ -543,6 +543,8 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 	public void visitCtTypePattern(CtTypePattern pattern) {
 
 	}
+
+	@Override
 	public void visitCtRecord(CtRecord recordType) {
 
 	}
