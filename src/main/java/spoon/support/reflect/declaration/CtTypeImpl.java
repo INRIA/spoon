@@ -71,7 +71,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 
 	private static final long serialVersionUID = 1L;
 
-	@MetamodelPropertyField(role = {CtRole.TYPE_PARAMETER})
+	@MetamodelPropertyField(role = CtRole.TYPE_PARAMETER)
 	List<CtTypeParameter> formalCtTypeParameters = emptyList();
 
 	@MetamodelPropertyField(role = CtRole.INTERFACE)
