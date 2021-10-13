@@ -634,10 +634,10 @@ public interface CoreFactory {
 	 * @return the created record.
 	 */
 	CtRecord createRecord();
+	
 	/**
 	 * Creates a record component.
 	 * @return  the created record component.
 	 */
-
 	CtRecordComponent createRecordComponent();
 }
