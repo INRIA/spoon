@@ -726,7 +726,7 @@ public class JavaReflectionTreeBuilderTest {
 		assertTrue(unixRecord.isShadow());
 		// UserPrincipal user and GroupPrincipal group
 		assertEquals(2, unixRecord.getRecordComponents().size());
-  }
+	}
 
 
 	@Test
