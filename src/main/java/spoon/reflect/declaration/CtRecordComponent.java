@@ -16,7 +16,6 @@ package spoon.reflect.declaration;
  *    }
  * </pre>
  */
-
 public interface CtRecordComponent extends CtTypedElement<Object>, CtNamedElement, CtShadowable {
 
 	/**
