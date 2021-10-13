@@ -29,6 +29,7 @@ import spoon.reflect.declaration.CtAnnotatedElementType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.support.reflect.CtExtendedModifier;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -367,9 +368,9 @@ class JDTTreeBuilderQuery {
 		}
 		// AccSealed == AccPatternVariable == AccOverriding, so checking context is needed
 		// AccNonSealed == AccIsDefaultConstructor == AccBlankFinal, so checking context is needed
-		if ((modifier & ExtraCompilerModifiers.AccSealed) != 0 && target.contains(ModifierTarget.TYPE)) {
+		if ((modifier & ExtraCompilerModifiers.AccSealed) != 0 && containsAny(target, ModifierTarget.TYPE)) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.SEALED, implicit));
-		} else if ((modifier & ExtraCompilerModifiers.AccNonSealed) != 0 && target.contains(ModifierTarget.TYPE)) {
+		} else if ((modifier & ExtraCompilerModifiers.AccNonSealed) != 0 && containsAny(target, ModifierTarget.TYPE)) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.NON_SEALED, implicit));
 		}
 		return modifiers;
@@ -385,5 +386,9 @@ class JDTTreeBuilderQuery {
 	 */
 	static Set<CtExtendedModifier> getModifiers(int modifier, boolean implicit, ModifierTarget target) {
 		return getModifiers(modifier, implicit, target.asSingleton());
+	}
+
+	private static <E> boolean containsAny(Set<E> elements, Set<E> anyOf) {
+		return !Collections.disjoint(elements, anyOf);
 	}
 }
