@@ -446,8 +446,7 @@ public class TypeFactory extends SubFactory {
 				return null;
 			}
 			String className = qualifiedName.substring(inertTypeIndex + 1);
-			final CtTypeReference<T> reference = t.getReference();
-			if (reference.isLocalType()) {
+			if (t.isLocalType()) {
 				final List<CtClass<T>> enclosingClasses = t.getElements(new TypeFilter<CtClass<T>>(CtClass.class) {
 					@Override
 					public boolean matches(CtClass<T> element) {

@@ -21,6 +21,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
+import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtShadowable;
 import spoon.reflect.declaration.CtType;
@@ -830,6 +831,18 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		}
 
 		return false;
+	}
+
+	@Override
+	public <T extends CtNamedElement> T setSimpleName(String simpleName) {
+		String oldName = getSimpleName();
+		super.setSimpleName(simpleName);
+
+		if (parent instanceof CtPackageImpl) {
+			((CtPackageImpl) parent).updateTypeName(this, oldName);
+		}
+
+		return (T) this;
 	}
 
 	@Override

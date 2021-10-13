@@ -39,8 +39,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
+import spoon.support.util.internal.ElementNameMap;
 import spoon.support.util.ModelList;
-import spoon.support.util.ModelSet;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -171,6 +171,8 @@ public class AstCheckerTest {
 					"CtModuleImpl#addRequiredModule",
 					"CtModuleImpl#addProvidedService",
 					"CtArrayTypeReferenceImpl#setSimpleName",
+					"CtTypeImpl#setSimpleName",
+					"CtPackageImpl#setSimpleName",
 					"CtCompilationUnitImpl#addDeclaredType",
 					"CtCompilationUnitImpl#setFile",
 					"CtCompilationUnitImpl#setLineSeparatorPositions"
@@ -285,7 +287,7 @@ public class AstCheckerTest {
 				if (inv.getTarget() instanceof CtFieldRead) {
 					CtFieldRead fielRead = (CtFieldRead) inv.getTarget();
 					if (isModelCollection(fielRead.getType())) {
-						//it is invocation on ModelList, ModelSet or ModelMap
+						//it is invocation on ModelList, ElementNameMap or ModelMap
 						return true;
 					}
 				}
@@ -298,7 +300,7 @@ public class AstCheckerTest {
 			if (typeRef.isSubtypeOf(f.Type().createReference(ModelList.class))) {
 				return true;
 			}
-			if (typeRef.isSubtypeOf(f.Type().createReference(ModelSet.class))) {
+			if (typeRef.isSubtypeOf(f.Type().createReference(ElementNameMap.class))) {
 				return true;
 			}
 			return false;

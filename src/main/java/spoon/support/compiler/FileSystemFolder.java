@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -133,17 +134,23 @@ public class FileSystemFolder implements SpoonFolder {
 		return file;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		return toString().equals(obj.toString());
-	}
+
 
 	@Override
 	public int hashCode() {
-		return toString().hashCode();
+		return Objects.hash(file);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof FileSystemFolder)) {
+			return false;
+		}
+		FileSystemFolder other = (FileSystemFolder) obj;
+		return Objects.equals(file, other.file);
 	}
 
 	@Override

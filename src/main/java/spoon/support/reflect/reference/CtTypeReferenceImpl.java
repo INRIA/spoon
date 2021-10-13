@@ -46,8 +46,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_SHADOW;
@@ -514,16 +512,27 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public boolean isLocalType() {
-		if (this.getDeclaration() != null) {
-			return (this.getDeclaration().isLocalType());
+		CtType<T> declaration = this.getDeclaration();
+		if (declaration != null) {
+			return declaration.isLocalType();
 		}
 		// A local type doesn't have a fully qualified name but have an identifier
 		// to know which is the local type member wanted by the developer.
 		// Oracle documentation: https://docs.oracle.com/javase/specs/jls/se7/html/jls-6.html#jls-6.7
 		// JDT documentation: http://help.eclipse.org/juno/topic/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/core/dom/ITypeBinding.html#getQualifiedName()
-		final Pattern pattern = Pattern.compile("^([0-9]+)([a-zA-Z]+)$");
-		final Matcher m = pattern.matcher(getSimpleName());
-		return m.find();
+		String name = getSimpleName();
+		if (name.isEmpty() || !Character.isDigit(name.charAt(0))) {
+			return false;
+		}
+		// first char has to be a digit, everything else just needs to be a valid
+		// java identifier part and at least one non-digit. The validity is already covered by
+		// setSimpleName, so we just need to look for that non-digit char
+		for (int i = 1; i < name.length(); i++) {
+			if (!Character.isDigit(name.charAt(i))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

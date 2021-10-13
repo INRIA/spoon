@@ -7,6 +7,8 @@
  */
 package spoon.support.util;
 
+import static spoon.support.util.internal.ModelCollectionUtils.linkToParent;
+
 import java.io.Serializable;
 import java.util.AbstractSet;
 import java.util.Collection;
@@ -22,14 +24,16 @@ import spoon.support.modelobs.FineModelChangeListener;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.path.CtRole;
 
-import static spoon.support.util.ModelList.linkToParent;
-
 /**
  * The implementation of the {@link Set}, which is used by Spoon model objects.
  * It assures:
  * 1) each inserted {@link CtElement} gets assigned correct parent
  * 2) each change is reported in {@link FineModelChangeListener}
+ *
+ * @deprecated This set is no longer actively used or maintained. It is only kept for backwards
+ * compatibility and might be removed in a future release.
  */
+@Deprecated
 public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
