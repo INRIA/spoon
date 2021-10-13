@@ -93,16 +93,7 @@ public class CtRecordComponentImpl extends CtNamedElementImpl implements CtRecor
 		}
 	}
 	private static Set<String> createForbiddenNames() {
-		Set<String> names = new HashSet<>();
-		names.add("clone");
-		names.add("finalize");
-		names.add("getClass");
-		names.add("hashCode");
-		names.add("notify");
-		names.add("notifyAll");
-		names.add("toString");
-		names.add("wait");
-		return Collections.unmodifiableSet(names);
+		return Set.of("clone", "finalize", "getClass", "notify", "notifyAll", "equals", "hashCode", "toString", "wait");
 	}
 
 	@Override
