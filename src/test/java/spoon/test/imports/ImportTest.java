@@ -17,7 +17,6 @@
 package spoon.test.imports;
 
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -92,6 +91,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.jupiter.api.Assertions.*;
@@ -757,17 +757,17 @@ public class ImportTest {
 		assertThat(
 				"The file should not contain a static import to the inner enum method values",
 				output,
-				CoreMatchers.not(containsString("import static spoon.test.imports.testclasses.StaticImportsFromEnum$DataElement.values;"))
+				not(containsString("import static spoon.test.imports.testclasses.StaticImportsFromEnum$DataElement.values;"))
 		);
 		assertThat(
 				"The file should not contain a static import to the inner enum method values of a distinct interface",
 				output,
-				CoreMatchers.not(containsString("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.values;"))
+				not(containsString("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.values;"))
 		);
 		assertThat(
 				"The file should not contain a static import to the inner enum value",
 				output,
-				CoreMatchers.not(containsString("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.Lip;"))
+				not(containsString("import static spoon.test.imports.testclasses.ItfWithEnum$Bar.Lip;"))
 		);
 		canBeBuilt(outputDir, 7);
 	}
@@ -790,8 +790,8 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		assertThat("The file should not contain the import of enum", output, CoreMatchers.not(containsString("import spoon.reflect.path.CtRole;")));
-		assertThat("The file should contain the static import of enum field", output, CoreMatchers.not(containsString("import spoon.reflect.path.CtRole.NAME;")));
+		assertThat("The file should not contain the import of enum", output, not(containsString("import spoon.reflect.path.CtRole;")));
+		assertThat("The file should contain the static import of enum field", output, not(containsString("import spoon.reflect.path.CtRole.NAME;")));
 		canBeBuilt(outputDir, 7);
 	}
 
@@ -812,7 +812,7 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		assertThat("The file should not contain a static import for NOFOLLOW_LINKS", output, CoreMatchers.not(containsString("import static java.nio.file.LinkOption.NOFOLLOW_LINKS;")));
+		assertThat("The file should not contain a static import for NOFOLLOW_LINKS", output, not(containsString("import static java.nio.file.LinkOption.NOFOLLOW_LINKS;")));
 		canBeBuilt(outputDir, 7);
 	}
 
@@ -857,7 +857,7 @@ public class ImportTest {
 			return ((CtType)e).getQualifiedName();
 		}).list();
 		//contract: includingSelf(false) should return input type too
-		assertThat(result, CoreMatchers.not(hasItem(clientClass.getQualifiedName())));
+		assertThat(result, not(hasItem(clientClass.getQualifiedName())));
 		assertThat(result, hasItem(childClass.getQualifiedName()));
 		assertThat(result, hasItem(superClass.getQualifiedName()));
 		assertThat(result, hasItem(Object.class.getName()));
@@ -938,8 +938,8 @@ public class ImportTest {
 		}).list();
 		assertThat(result, hasItem(clientClass.getQualifiedName()));
 		assertThat(result, hasItem(childClass.getQualifiedName()));
-		assertThat(result, CoreMatchers.not(hasItem(superClass.getQualifiedName())));
-		assertThat(result, CoreMatchers.not(hasItem(Object.class.getName())));
+		assertThat(result, not(hasItem(superClass.getQualifiedName())));
+		assertThat(result, not(hasItem(Object.class.getName())));
 
 		//contract: if listener skips CHIDLREN, then skipped element is returned but all super classes are not returned
 		result = clientClass.map(new SuperInheritanceHierarchyFunction().includingSelf(true).setListener(new CtScannerListener() {
@@ -962,7 +962,7 @@ public class ImportTest {
 		assertThat(result, hasItem(clientClass.getQualifiedName()));
 		assertThat(result, hasItem(childClass.getQualifiedName()));
 		assertThat(result, hasItem(superClass.getQualifiedName()));
-		assertThat(result, CoreMatchers.not(hasItem(Object.class.getName())));
+		assertThat(result, not(hasItem(Object.class.getName())));
 	}
 
 	@Test
@@ -1042,7 +1042,7 @@ public class ImportTest {
 		assertThat(code, containsString("import java.util.ArrayList"));
 
 		// no fully qualified usage
-		assertThat(code, CoreMatchers.not(containsString("new java.util.ArrayList")));
+		assertThat(code, not(containsString("new java.util.ArrayList")));
 
 		// sanity check: the actual code
 		assertThat(code, containsString("ArrayList<String> list = new ArrayList<>()"));
@@ -1127,7 +1127,7 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		assertThat("The file should not contain a static import ", output, CoreMatchers.not(containsString("import static")));
+		assertThat("The file should not contain a static import ", output, not(containsString("import static")));
 		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.addTest(spoon.test.imports.testclasses2.apachetestsuite.enums.EnumTestSuite.suite());"));
 
 		canBeBuilt(outputDir, 3);
@@ -1156,7 +1156,7 @@ public class ImportTest {
 		prettyPrinter.calculate(element.getPosition().getCompilationUnit(), toPrint);
 		String output = prettyPrinter.getResult();
 
-		assertThat("The file should not contain a static import ", output, CoreMatchers.not(containsString("import static spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite;")));
+		assertThat("The file should not contain a static import ", output, not(containsString("import static spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite;")));
 		assertThat("The call to the last EnumTestSuite should be in FQN", output, containsString("suite.addTest(spoon.test.imports.testclasses2.apachetestsuite.enum2.EnumTestSuite.suite());"));
 
 		canBeBuilt(outputDir, 3);
@@ -1780,7 +1780,7 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		{
 			PrettyPrinter printer = type.getFactory().getEnvironment().createPrettyPrinter();
 			printer.calculate(type.getPosition().getCompilationUnit(), Arrays.asList(type));
-			assertThat(printer.getResult(), CoreMatchers.not(containsString("import java.util.List;")));
+			assertThat(printer.getResult(), not(containsString("import java.util.List;")));
 		}
 	}
 
