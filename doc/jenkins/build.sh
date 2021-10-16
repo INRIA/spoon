@@ -87,7 +87,7 @@ echo " "
 
 # Compiles project.
 START_COMPILE_PROJECT=$(($(date +%s%N)/1000000))
-$MAVEN_COMMAND clean install
+$MAVEN_COMMAND clean install -DskipTests
 if [ "$?" -ne 0 ]; then
     echo "Error: Maven compile original project unsuccessful!"
     exit 1
@@ -163,7 +163,9 @@ xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions" --type elem -n execution -v "" pom.bak5.xml > pom.bak6.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions/x:execution" --type elem -n phase -v "generate-sources" pom.bak6.xml > pom.bak7.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions/x:execution" --type elem -n goals -v "" pom.bak7.xml > pom.bak8.xml
-xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions/x:execution/x:goals" --type elem -n goal -v "generate" pom.bak8.xml > pom.bak9.xml
+# we generate the sources separately
+#xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:executions/x:execution/x:goals" --type elem -n goal -v "generate" pom.bak8.xml > pom.bak9.xml
+cat pom.bak8.xml > pom.bak9.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]" --type elem -n configuration -v "" pom.bak9.xml > pom.bak10.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:configuration" --type elem -n processors -v "" pom.bak10.xml > pom.bak11.xml
 xmlstarlet ed -N x="http://maven.apache.org/POM/4.0.0" -s "/x:project/x:build/x:plugins/x:plugin[last()]/x:configuration/x:processors" --type elem -n processor -v "spoon.processing.SpoonTagger" pom.bak11.xml > pom.bak12.xml
@@ -181,13 +183,16 @@ $MAVEN_COMMAND dependency:purge-local-repository -DmanualInclude="fr.inria.gforg
 
 # Compiles project with spoon configuration.
 START_COMPILE_WITH_SPOON=$(($(date +%s%N)/1000000))
-$MAVEN_COMMAND clean install
+$MAVEN_COMMAND clean install -DskipTests
 if [ "$?" -ne 0 ]; then
     echo "Error: Maven compile with spoon unsuccessful!"
     exit 1
 fi
 END_COMPILE_WITH_SPOON=$(($(date +%s%N)/1000000))
 DIFF_WITH_SPOON=$(echo "$END_COMPILE_WITH_SPOON - $START_COMPILE_WITH_SPOON" | bc)
+
+# creating the sources in target/generated-sources
+mvn fr.inria.gforge.spoon::spoon-maven-plugin:generate
 
 # Saves the report at the root of the project.
 for module in ${MODULES_JOB// / }; do
@@ -264,9 +269,13 @@ echo " "
 # Overwrites source folder.
 for module in ${MODULES_JOB// / }; do
 	GENERATED_DIRECTORY=${module}"target/generated-sources/spoon/"
-	if [ -d "$GENERATED_DIRECTORY" ]; then
+	if [ -d "${module}src/main/java" ]; then
 		cp -Rf ${GENERATED_DIRECTORY}* ${module}src/main/java
-	fi
+        else	
+	   if [ -d "${module}src" ]; then
+		cp -Rf ${GENERATED_DIRECTORY}* ${module}src
+	   fi
+        fi
 done
 
 # Compiles project with source spooned.
