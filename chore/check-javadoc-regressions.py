@@ -70,6 +70,9 @@ def write_checkstyle_config(path: Path) -> None:
             <module name="JavadocMethod">
                 <property name="scope" value="public"/>
             </module>
+            <module name="MissingJavadocMethod">
+                <property name="scope" value="public"/>
+            </module>
         </module>
     </module>
     """.strip()
