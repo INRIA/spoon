@@ -205,6 +205,7 @@ for module in ${MODULES_JOB// / }; do
 	GENERATED_DIRECTORY=${module}"target/generated-sources/spoon/"
 	if [ -d "${module}src/main/java" ]; then
 		cp -Rf ${GENERATED_DIRECTORY}* ${module}src/main/java
+		git diff | head -100
 	else	
 		if [ -d "${module}src" ]; then
 			cp -Rf ${GENERATED_DIRECTORY}* ${module}src
