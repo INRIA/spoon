@@ -193,6 +193,12 @@ DIFF_WITH_SPOON=$(echo "$END_COMPILE_WITH_SPOON - $START_COMPILE_WITH_SPOON" | b
 
 # creating the sources in target/generated-sources
 mvn fr.inria.gforge.spoon::spoon-maven-plugin:generate
+for module in ${MODULES_JOB// / }; do
+        if [ ! -f ${module}"target/generated-sources/spoon/spoon/Spoon.java" ]; then 
+            echo "ERROR: no tag class, spoon has failed"
+            exit -1
+        fi
+done
 
 # Overwrites source folder.
 for module in ${MODULES_JOB// / }; do
@@ -225,11 +231,6 @@ echo "Time to compile with spoon of spoon: $DIFF_SPOON_SPOON"
 for module in ${MODULES_JOB// / }; do
 	REPORT_DIRECTORY=${module}"target/surefire-reports"
 	module_name=$(echo ${module} | tr -d '/ ')
-
-        if [ ! -f ${module}"target/generated-sources/spoon/spoon/Spoon.java" ]; then 
-            echo "ERROR: no tag class, spoon has failed"
-            exit -1
-        fi
 
 	if [ -d "$REPORT_DIRECTORY" ]; then
 		NB_TESTS_SPOON=0
