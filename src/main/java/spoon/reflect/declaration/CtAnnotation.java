@@ -235,8 +235,12 @@ public interface CtAnnotation<A extends Annotation> extends CtExpression<A>, CtS
 		return null;
 	}
 
+	/** 
+	 * Returns the class name of the annotation, eg "Deprecated" for @Deprecated.
+	 *
+	 * @return the name of the annotation
+	 */
 	@DerivedProperty
-	/** Returns the class name of the annotation, eg "Deprecated" for @Deprecated. */
 	String getName();
 
 }
