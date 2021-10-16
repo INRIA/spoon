@@ -28,7 +28,7 @@ ARTIFACT_ID=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -t -v "/x:
 VERSION=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -t -v "/x:project/x:version" pom.xml)
 MODULES_JOB=$(cat pom.xml | grep "<modules>")
 if [ -z "$MODULES_JOB" ]; then
-	MODULES_JOB[0]="./"
+	MODULES_JOB="./"
 else
 	MODULES_JOB=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -T -t -m "/x:project/x:modules/x:module" -v "." -o "/" -n pom.xml)
 fi
@@ -204,6 +204,7 @@ done
 for module in ${MODULES_JOB// / }; do
 	GENERATED_DIRECTORY=${module}"target/generated-sources/spoon/"
 	if [ -d "${module}src/main/java" ]; then
+		echo normal maven case
 		cp -Rf ${GENERATED_DIRECTORY}* ${module}src/main/java
 		git diff src | head -100
 	else	
