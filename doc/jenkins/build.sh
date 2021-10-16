@@ -87,7 +87,7 @@ echo " "
 
 # Compiles project.
 START_COMPILE_PROJECT=$(($(date +%s%N)/1000000))
-$MAVEN_COMMAND clean install -DskipTests
+$MAVEN_COMMAND clean install
 if [ "$?" -ne 0 ]; then
     echo "Error: Maven compile original project unsuccessful!"
     exit 1
@@ -183,7 +183,7 @@ $MAVEN_COMMAND dependency:purge-local-repository -DmanualInclude="fr.inria.gforg
 
 # Compiles project with spoon configuration.
 START_COMPILE_WITH_SPOON=$(($(date +%s%N)/1000000))
-$MAVEN_COMMAND clean install -DskipTests
+$MAVEN_COMMAND clean install
 if [ "$?" -ne 0 ]; then
     echo "Error: Maven compile with spoon unsuccessful!"
     exit 1
