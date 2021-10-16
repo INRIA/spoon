@@ -317,18 +317,18 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 				} else if (fragment instanceof CollectionSourceFragment) {
 					//we started scanning of collection of elements
 					SourceFragmentPrinter listContext = getCollectionContext(this.element, (CollectionSourceFragment) fragment, isModified.toBoolean());
-					//push the context of this collection
-					pushContext(listContext);
+					runInContext(listContext,
+							() -> {
+								//and scan first element of that collection again in new context of that collection
+								if (ModificationStatus.NOT_MODIFIED.equals(isModified)) {
+									// we print the original source code
+									mutableTokenWriter.directPrint(fragment.getSourceCode());
+								} else {
+									// we print with the new list context
+									listContext.print(this);
+								}
+							});
 
-
-					//and scan first element of that collection again in new context of that collection
-					if (ModificationStatus.NOT_MODIFIED.equals(isModified)) {
-						// we print the original source code
-						mutableTokenWriter.directPrint(fragment.getSourceCode());
-					} else {
-						// we print with the new list context
-						listContext.print(this);
-					}
 				} else if (fragment instanceof ElementSourceFragment) {
 					ElementSourceFragment sourceFragment = (ElementSourceFragment) fragment;
 					if (isModified == ModificationStatus.NOT_MODIFIED) {

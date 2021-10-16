@@ -8,6 +8,7 @@
 package spoon.test.prettyprinter;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -15,6 +16,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.SpoonModelBuilder;
 import spoon.compiler.Environment;
 import spoon.processing.AbstractProcessor;
 import spoon.refactoring.Refactoring;
@@ -40,6 +42,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
+import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -48,10 +51,7 @@ import spoon.support.modelobs.ChangeCollector;
 import spoon.support.modelobs.SourceFragmentCreator;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.test.GitHubIssue;
-import spoon.test.prettyprinter.testclasses.OneLineMultipleVariableDeclaration;
-import spoon.test.prettyprinter.testclasses.Throw;
-import spoon.test.prettyprinter.testclasses.InvocationReplacement;
-import spoon.test.prettyprinter.testclasses.ToBeChanged;
+import spoon.test.prettyprinter.testclasses.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -83,6 +83,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestSniperPrinter {
+
+	private static final String nl = System.lineSeparator();
 
 	@Test
 	public void testClassRename1(@TempDir File tempDir) throws Exception {
@@ -977,5 +979,37 @@ public class TestSniperPrinter {
 		launcher.run();
 
 		assertTrue(FileUtils.contentEquals(file, outputFile),"File " + outputFile.getAbsolutePath() + " is different");
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 4181)
+	public void testTwoDimensionArrayLiteral() throws IOException {
+		// given
+		final Launcher launcher = new Launcher();
+		final Environment e = launcher.getEnvironment();
+		e.setPrettyPrinterCreator(() -> new SniperJavaPrettyPrinter(e));
+		String pathToInputClass = "spoon/test/prettyprinter/testclasses/ClassWithTwoDimensionalArray.java";
+		final File inputFile = new File("./src/test/java/" + pathToInputClass);
+		launcher.addInputResource(inputFile.getPath());
+		Path outputPath = Paths.get("target/test-output");
+		launcher.setSourceOutputDirectory(outputPath.toString());
+		launcher.addProcessor(new AbstractProcessor<CtArrayTypeReference<?>>() {
+			@Override public void process(CtArrayTypeReference<?> element) {
+				CtTypeReference<?> newType = getFactory().Core().createTypeReference();
+				newType.setSimpleName("abc.xyz.StringJoiner");
+				element.setComponentType(newType);
+			}
+		});
+
+		// when
+		launcher.run();
+
+		// test
+		final String expected = String.join(nl, Arrays.asList(
+				"package spoon.test.prettyprinter.testclasses;" + nl,
+				"public class ClassWithTwoDimensionalArray {",
+				"    private abc.xyz.StringJoiner[] metrics_B = new abc.xyz.StringJoiner[10][10];",
+				"}")) + nl;
+		assertEquals(expected, fileAsString(outputPath.resolve(pathToInputClass).toString(), Charset.defaultCharset()));
 	}
 }
