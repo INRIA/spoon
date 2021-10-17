@@ -472,4 +472,9 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 	public <C extends CtExpression<A>> C setTypeCasts(List<CtTypeReference<?>> casts) {
 		return (C) this;
 	}
+
+	@Override
+	public String getName() {
+		return getAnnotationType().getSimpleName();
+	}
 }

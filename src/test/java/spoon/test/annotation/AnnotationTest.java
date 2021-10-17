@@ -127,6 +127,8 @@ public class AnnotationTest {
 
 		assertEquals("The annotation must have a value", 1, annotation.getValues().size());
 		assertEquals("NAME", ((CtFieldRead) annotation.getValue("role")).getVariable().getSimpleName());
+		// contract: getName is a useful API method to get the annotation name
+		assertEquals("PropertyGetter", annotation.getName());
 	}
 
 	@Test
