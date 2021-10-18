@@ -5,7 +5,7 @@
 
 # Spoon
 
-Spoon is an open-source library to analyze, rewrite, transform, transpile Java source code. It parses source files to build a well-designed AST with powerful analysis and transformation API. It fully supports modern Java versions up to Java 11, 12, 13, 14. Spoon is an official Inria open-source project, and member of the [OW2](https://www.ow2.org/) open-source consortium.
+Spoon is an open-source library to analyze, rewrite, transform, transpile Java source code. It parses source files to build a well-designed AST with powerful analysis and transformation API. It fully supports modern Java versions up to Java 16. Spoon is an official Inria open-source project, and member of the [OW2](https://www.ow2.org/) open-source consortium.
 
 ## Documentation
 
