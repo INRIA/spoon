@@ -1365,5 +1365,36 @@ public class Metamodel {
 				.field(CtRole.TARGET, false, false)
 
 			));
+
+			types.add(new Type("CtRecord", spoon.reflect.declaration.CtRecord.class, spoon.support.reflect.declaration.CtRecordImpl.class, fm -> fm
+				.field(CtRole.NAME, false, false)
+				.field(CtRole.IS_SHADOW, false, false)
+				.field(CtRole.IS_IMPLICIT, false, false)
+				.field(CtRole.LABEL, true, true)
+				.field(CtRole.MODIFIER, false, false)
+				.field(CtRole.EMODIFIER, true, true)
+				.field(CtRole.SUPER_TYPE, true, true)
+				.field(CtRole.NESTED_TYPE, true, false)
+				.field(CtRole.CONSTRUCTOR, true, false)
+				.field(CtRole.METHOD, true, false)
+				.field(CtRole.ANNONYMOUS_EXECUTABLE, true, false)
+				.field(CtRole.FIELD, true, false)
+				.field(CtRole.POSITION, false, false)
+				.field(CtRole.ANNOTATION, false, false)
+				.field(CtRole.INTERFACE, false, false)
+				.field(CtRole.TYPE_MEMBER, false, false)
+				.field(CtRole.TYPE_PARAMETER, false, false)
+				.field(CtRole.RECORD_COMPONENT, false, false)
+				.field(CtRole.COMMENT, false, false)
+			));
+
+			types.add(new Type("CtRecordComponent", spoon.reflect.declaration.CtRecordComponent.class, spoon.support.reflect.declaration.CtRecordComponentImpl.class, fm -> fm
+				.field(CtRole.NAME, false, false)
+				.field(CtRole.IS_IMPLICIT, false, false)
+				.field(CtRole.POSITION, false, false)
+				.field(CtRole.ANNOTATION, false, false)
+				.field(CtRole.TYPE, false, false)
+				.field(CtRole.COMMENT, false, false)
+			));
 	}
 }

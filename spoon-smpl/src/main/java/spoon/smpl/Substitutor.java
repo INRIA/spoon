@@ -97,6 +97,8 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -684,6 +686,16 @@ public class Substitutor implements CtVisitor {
 
 	@Override
 	public void visitCtTypePattern(CtTypePattern pattern) {
+		throw new NotImplementedException("Not implemented");
+	}
+
+	@Override
+	public void visitCtRecord(CtRecord recordType) {
+		throw new NotImplementedException("Not implemented");
+	}
+
+	@Override
+	public void visitCtRecordComponent(CtRecordComponent recordComponent) {
 		throw new NotImplementedException("Not implemented");
 	}
 }

@@ -30,6 +30,7 @@ import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.CastExpression;
 import org.eclipse.jdt.internal.compiler.ast.CharLiteral;
 import org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess;
+import org.eclipse.jdt.internal.compiler.ast.CompactConstructorDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CompoundAssignment;
 import org.eclipse.jdt.internal.compiler.ast.ConditionalExpression;
@@ -76,6 +77,7 @@ import org.eclipse.jdt.internal.compiler.ast.QualifiedSuperReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedThisReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.Receiver;
+import org.eclipse.jdt.internal.compiler.ast.RecordComponent;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
@@ -1113,6 +1115,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 				c.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
 			}
 		}
+		if (constructorDeclaration instanceof CompactConstructorDeclaration) {
+			c.setCompactConstructor(true);
+		}
 		context.enter(c, constructorDeclaration);
 
 		// Create block
@@ -1778,4 +1783,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.enter(factory.Core().createYieldStatement().setImplicit(yieldStatement.isImplicit), yieldStatement);
 		return true;
 	}
+
+	@Override
+	public void endVisit(RecordComponent recordComponent, BlockScope scope) {
+		context.exit(recordComponent);
+	}
+
+	@Override
+	public boolean visit(RecordComponent recordComponent, BlockScope scope) {
+		context.enter(factory.Core().createRecordComponent().setSimpleName(String.valueOf(recordComponent.name)), recordComponent);
+		return super.visit(recordComponent, scope);
+	}
+
 }

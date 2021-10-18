@@ -535,3 +535,12 @@ int x = switch(i) { // <-- switch expression
     }
 
 ```
+### CtRecord
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtRecord.html)
+
+```java
+
+   record Point(int x, int y) {
+   }
+
+```

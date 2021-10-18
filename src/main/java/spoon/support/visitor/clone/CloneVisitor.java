@@ -1116,4 +1116,31 @@ public class CloneVisitor extends spoon.reflect.visitor.CtScanner {
 		this.cloneHelper.tailor(pattern, aCtTypePattern);
 		this.other = aCtTypePattern;
 	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtRecord(spoon.reflect.declaration.CtRecord recordType) {
+		spoon.reflect.declaration.CtRecord aCtRecord = recordType.getFactory().Core().createRecord();
+		this.builder.copy(recordType, aCtRecord);
+		aCtRecord.setAnnotations(this.cloneHelper.clone(recordType.getAnnotations()));
+		aCtRecord.setSuperInterfaces(this.cloneHelper.clone(recordType.getSuperInterfaces()));
+		aCtRecord.setTypeMembers(this.cloneHelper.clone(recordType.getTypeMembers()));
+		aCtRecord.setFormalCtTypeParameters(this.cloneHelper.clone(recordType.getFormalCtTypeParameters()));
+		aCtRecord.setRecordComponents(this.cloneHelper.clone(recordType.getRecordComponents()));
+		aCtRecord.setComments(this.cloneHelper.clone(recordType.getComments()));
+		this.cloneHelper.tailor(recordType, aCtRecord);
+		this.other = aCtRecord;
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtRecordComponent(spoon.reflect.declaration.CtRecordComponent recordType) {
+		spoon.reflect.declaration.CtRecordComponent aCtRecordComponent = recordType.getFactory().Core().createRecordComponent();
+		this.builder.copy(recordType, aCtRecordComponent);
+		aCtRecordComponent.setAnnotations(this.cloneHelper.clone(recordType.getAnnotations()));
+		aCtRecordComponent.setType(this.cloneHelper.clone(recordType.getType()));
+		aCtRecordComponent.setComments(this.cloneHelper.clone(recordType.getComments()));
+		this.cloneHelper.tailor(recordType, aCtRecordComponent);
+		this.other = aCtRecordComponent;
+	}
 }

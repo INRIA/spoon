@@ -41,6 +41,8 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
+	@MetamodelPropertyField(role = CtRole.COMPACT_CONSTRUCTOR)
+	private boolean compactConstructor = false;
 	@Override
 	public void accept(CtVisitor visitor) {
 		visitor.visitCtConstructor(this);
@@ -254,4 +256,16 @@ public class CtConstructorImpl<T> extends CtExecutableImpl<T> implements CtConst
 	public boolean isStrictfp() {
 		return this.modifierHandler.isStrictfp();
 	}
+
+	@Override
+	public void setCompactConstructor(boolean compactConstructor) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, CtRole.COMPACT_CONSTRUCTOR, compactConstructor, this.compactConstructor);
+		this.compactConstructor = compactConstructor;
+	}
+
+	@Override
+	public boolean isCompactConstructor() {
+		return compactConstructor;
+	}
+
 }

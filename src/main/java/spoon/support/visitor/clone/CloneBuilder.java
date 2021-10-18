@@ -6,7 +6,6 @@
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.clone;
-
 /**
  * Used to set all data in the cloned element.
  *
@@ -139,6 +138,7 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	// auto-generated, see spoon.generating.CloneVisitorGenerator
 	public <T> void visitCtConstructor(spoon.reflect.declaration.CtConstructor<T> e) {
 		((spoon.reflect.declaration.CtConstructor<T>) (other)).setExtendedModifiers(clone(e.getExtendedModifiers()));
+		((spoon.reflect.declaration.CtConstructor<T>) (other)).setCompactConstructor(e.isCompactConstructor());
 		((spoon.reflect.declaration.CtConstructor<T>) (other)).setShadow(e.isShadow());
 		super.visitCtConstructor(e);
 	}
@@ -305,5 +305,12 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 		((spoon.reflect.declaration.CtCompilationUnit) (other)).setFile(compilationUnit.getFile());
 		((spoon.reflect.declaration.CtCompilationUnit) (other)).setLineSeparatorPositions(compilationUnit.getLineSeparatorPositions());
 		super.visitCtCompilationUnit(compilationUnit);
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	@java.lang.Override
+	public void visitCtRecordComponent(spoon.reflect.declaration.CtRecordComponent recordComponent) {
+		((spoon.reflect.declaration.CtRecordComponent) (other)).setShadow(recordComponent.isShadow());
+		super.visitCtRecordComponent(recordComponent);
 	}
 }

@@ -97,6 +97,8 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
@@ -705,7 +707,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (constructor.getDeclaringType() != null) {
 			printer.writeIdentifier(stripLeadingDigits(constructor.getDeclaringType().getSimpleName()));
 		}
-		elementPrinterHelper.writeExecutableParameters(constructor);
+		if (!constructor.isCompactConstructor()) {
+			elementPrinterHelper.writeExecutableParameters(constructor);
+		}
 		elementPrinterHelper.writeThrowsClause(constructor);
 		printer.writeSpace();
 		scan(constructor.getBody());
@@ -2182,5 +2186,28 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		return simpleName;
 	}
+	@Override
+	public void visitCtRecord(CtRecord recordType) {
+		context.pushCurrentThis(recordType);
+		visitCtType(recordType);
+		printer.writeKeyword("record").writeSpace().writeIdentifier(stripLeadingDigits(recordType.getSimpleName()));
+		elementPrinterHelper.printList(recordType.getRecordComponents(), null, false, "(", false, false, ",", true, false, ")", this::visitCtRecordComponent);
+		elementPrinterHelper.writeFormalTypeParameters(recordType);
+		elementPrinterHelper.writeImplementsClause(recordType);
 
+		printer.writeSpace().writeSeparator("{").incTab();
+		elementPrinterHelper.writeElementList(recordType.getTypeMembers());
+		getPrinterHelper().adjustEndPosition(recordType);
+		printer.decTab().writeSeparator("}");
+		context.popCurrentThis();
+	}
+
+
+	@Override
+	public void visitCtRecordComponent(CtRecordComponent recordComponent) {
+		elementPrinterHelper.writeAnnotations(recordComponent);
+		visitCtTypeReference(recordComponent.getType());
+		printer.writeSpace();
+		printer.writeIdentifier(recordComponent.getSimpleName());
+	}
 }

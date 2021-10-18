@@ -111,7 +111,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.visitor.CtAbstractVisitor;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -123,7 +123,7 @@ import java.util.Stack;
  *
  * Created by marodrig on 13/10/2015.
  */
-public class ControlFlowBuilder implements CtVisitor {
+public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	ControlFlowGraph result = new ControlFlowGraph(ControlFlowEdge.class);
 

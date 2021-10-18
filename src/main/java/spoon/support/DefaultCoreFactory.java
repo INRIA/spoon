@@ -9,6 +9,9 @@ package spoon.support;
 
 
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Set;
+import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.code.CtAnnotationFieldAccess;
 import spoon.reflect.code.CtArrayRead;
 import spoon.reflect.code.CtArrayWrite;
@@ -86,9 +89,11 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtTypeParameter;
-import spoon.experimental.CtUnresolvedImport;
 import spoon.reflect.declaration.CtUsedService;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.SubFactory;
@@ -101,11 +106,12 @@ import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtModuleReference;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
+import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.code.CtAnnotationFieldAccessImpl;
 import spoon.support.reflect.code.CtArrayReadImpl;
 import spoon.support.reflect.code.CtArrayWriteImpl;
@@ -181,6 +187,8 @@ import spoon.support.reflect.declaration.CtPackageExportImpl;
 import spoon.support.reflect.declaration.CtPackageImpl;
 import spoon.support.reflect.declaration.CtParameterImpl;
 import spoon.support.reflect.declaration.CtProvidedServiceImpl;
+import spoon.support.reflect.declaration.CtRecordComponentImpl;
+import spoon.support.reflect.declaration.CtRecordImpl;
 import spoon.support.reflect.declaration.CtTypeParameterImpl;
 import spoon.support.reflect.declaration.CtUsedServiceImpl;
 import spoon.support.reflect.declaration.InvisibleArrayConstructorImpl;
@@ -193,11 +201,11 @@ import spoon.support.reflect.reference.CtLocalVariableReferenceImpl;
 import spoon.support.reflect.reference.CtModuleReferenceImpl;
 import spoon.support.reflect.reference.CtPackageReferenceImpl;
 import spoon.support.reflect.reference.CtParameterReferenceImpl;
+import spoon.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl;
 import spoon.support.reflect.reference.CtTypeParameterReferenceImpl;
 import spoon.support.reflect.reference.CtTypeReferenceImpl;
 import spoon.support.reflect.reference.CtUnboundVariableReferenceImpl;
 import spoon.support.reflect.reference.CtWildcardReferenceImpl;
-import spoon.support.reflect.reference.CtTypeMemberWildcardImportReferenceImpl;
 import spoon.support.visitor.equals.CloneHelper;
 
 /**
@@ -1096,6 +1104,12 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		if (klass.equals(spoon.reflect.code.CtTypePattern.class)) {
 			return createTypePattern();
 		}
+		if (klass.equals(spoon.reflect.declaration.CtRecord.class)) {
+			return createRecord();
+		}
+		if (klass.equals(spoon.reflect.declaration.CtRecordComponent.class)) {
+			return createRecordComponent();
+		}
 		throw new IllegalArgumentException("not instantiable by CoreFactory(): " + klass);
 	}
 
@@ -1161,5 +1175,22 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 		CtTypePattern pattern = new CtTypePatternImpl();
 		pattern.setFactory(getMainFactory());
 		return pattern;
+	}
+
+	@Override
+	public CtRecord createRecord() {
+		CtRecord recordType = new CtRecordImpl();
+		Set<CtExtendedModifier> modifier = new HashSet<>(recordType.getExtendedModifiers());
+		modifier.add(new CtExtendedModifier(ModifierKind.FINAL, true));
+		recordType.setExtendedModifiers(modifier);
+		recordType.setFactory(getMainFactory());
+		return recordType;
+	}
+
+	@Override
+	public CtRecordComponent createRecordComponent() {
+		CtRecordComponent recordComponent = new CtRecordComponentImpl();
+		recordComponent.setFactory(getMainFactory());
+		return recordComponent;
 	}
 }

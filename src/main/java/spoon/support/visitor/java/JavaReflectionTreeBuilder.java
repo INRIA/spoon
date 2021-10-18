@@ -7,6 +7,20 @@
  */
 package spoon.support.visitor.java;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.Set;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
@@ -22,6 +36,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
@@ -37,27 +53,13 @@ import spoon.support.util.RtHelper;
 import spoon.support.visitor.java.internal.AnnotationRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.ExecutableRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.PackageRuntimeBuilderContext;
+import spoon.support.visitor.java.internal.RecordComponentRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.RuntimeBuilderContext;
 import spoon.support.visitor.java.internal.TypeReferenceRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.TypeRuntimeBuilderContext;
 import spoon.support.visitor.java.internal.VariableRuntimeBuilderContext;
 import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.GenericDeclaration;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.Set;
-
 /**
  * Builds Spoon model from class file using the reflection api. The Spoon model
  * contains only the declaration part (type, field, method, etc.). Everything
@@ -99,13 +101,24 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			if (contexts.isEmpty()) {
 				enter(new PackageRuntimeBuilderContext(ctPackage));
 			}
+			boolean visited = false;
 			if (clazz.isAnnotation()) {
+				visited = true;
 				visitAnnotationClass((Class<Annotation>) clazz);
-			} else if (clazz.isInterface()) {
+			}
+			if (clazz.isInterface() && !visited) {
+				visited = true;
 				visitInterface(clazz);
-			} else if (clazz.isEnum()) {
+			}
+			if (clazz.isEnum() && !visited) {
+				visited = true;
 				visitEnum(clazz);
-			} else {
+			}
+			if (MethodHandleUtils.isRecord(clazz) && !visited) {
+				visited = true;
+				visitRecord(clazz);
+			}
+			if (!visited) {
 				visitClass(clazz);
 			}
 			exit();
@@ -536,4 +549,42 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 			ctModifiable.addModifier(ModifierKind.VOLATILE);
 		}
 	}
+
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public <T> void visitRecord(Class<T> clazz) {
+		CtRecord ctRecord = factory.Core().createRecord();
+		ctRecord.setSimpleName(clazz.getSimpleName());
+		setModifier(ctRecord, clazz.getModifiers(), clazz.getDeclaringClass());
+
+		enter(new TypeRuntimeBuilderContext(clazz, ctRecord) {
+			@Override
+			public void addConstructor(CtConstructor<?> ctConstructor) {
+				ctRecord.addConstructor((CtConstructor<Object>) ctConstructor);
+			}
+
+			@Override
+			public void addRecordComponent(CtRecordComponent ctRecordComponent) {
+				ctRecord.addRecordComponent(ctRecordComponent);
+			}
+		});
+		super.visitRecord(clazz);
+		exit();
+
+		contexts.peek().addType(ctRecord);
+	}
+
+	@Override
+	public void visitRecordComponent(AnnotatedElement recordComponent) {
+		CtRecordComponent ctRecordComponent = factory.Core().createRecordComponent();
+		ctRecordComponent.setSimpleName(MethodHandleUtils.getRecordComponentName(recordComponent));
+		enter(new RecordComponentRuntimeBuilderContext(ctRecordComponent));
+		visitTypeReference(CtRole.TYPE, MethodHandleUtils.getRecordComponentType(recordComponent));
+
+		Arrays.stream(recordComponent.getAnnotations()).forEach(this::visitAnnotation);
+		exit();
+		contexts.peek().addRecordComponent(ctRecordComponent);
+	}
+
 }

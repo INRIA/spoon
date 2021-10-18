@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.annotations.PropertyGetter;
@@ -31,6 +30,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
@@ -185,6 +186,8 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.reference.CtModuleReference.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtUsedService.class));
 		result.add(factory.Type().get(CtModuleDirective.class));
+		result.add(factory.Type().get(CtRecordComponent.class));
+		result.add(factory.Type().get(CtRecord.class));
 		return result;
 	}
 
