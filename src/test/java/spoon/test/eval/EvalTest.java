@@ -187,6 +187,27 @@ public class EvalTest {
 		}
 		
 		{ // binary operator
+			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("((byte)0b00000010)<<2").compile();
+			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
+			CtElement elnew = eval.evaluate(el);
+			assertEquals("8", elnew.toString());
+		}
+		
+		{ // binary operator
+			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("((short)2)<<2").compile();
+			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
+			CtElement elnew = eval.evaluate(el);
+			assertEquals("8", elnew.toString());
+		}
+		
+		{ // binary operator
+			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("2<<2").compile();
+			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
+			CtElement elnew = eval.evaluate(el);
+			assertEquals("8", elnew.toString());
+		}
+		
+		{ // binary operator
 			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("(1L<<53)-1").compile();
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 			CtElement elnew = eval.evaluate(el);
@@ -194,10 +215,31 @@ public class EvalTest {
 		}
 		
 		{ // binary operator
+			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("((byte)0b00001000)>>2").compile();
+			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
+			CtElement elnew = eval.evaluate(el);
+			assertEquals("2", elnew.toString());
+		}
+		
+		{ // binary operator
+			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("((short)8)>>2").compile();
+			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
+			CtElement elnew = eval.evaluate(el);
+			assertEquals("2", elnew.toString());
+		}
+		
+		{ // binary operator
 			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("8>>2").compile();
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 			CtElement elnew = eval.evaluate(el);
 			assertEquals("2", elnew.toString());
+		}
+		
+		{ // binary operator
+			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("(9007199254740991L>>53)+1").compile();
+			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
+			CtElement elnew = eval.evaluate(el);
+			assertEquals("1L", elnew.toString());
 		}
 	}
 

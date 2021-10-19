@@ -197,38 +197,34 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 				break;
 			case SL:
 				if(isIntegralType(leftObject) && isIntegralType(rightObject)) {
+					long rightObjectValue = ((Number) rightObject).longValue();
 					if(leftObject instanceof Byte) {
-						res.setValue(((Number)leftObject).byteValue() << ((Number)rightObject).longValue());
-					}
-					if(leftObject instanceof Short) {
-						res.setValue(((Number)leftObject).shortValue() << ((Number)rightObject).longValue());
-					}
-					if(leftObject instanceof Integer) {
-						res.setValue(((Number)leftObject).intValue() << ((Number)rightObject).longValue());
-					}
-					if(leftObject instanceof Long) {
-						res.setValue(((Number)leftObject).longValue() << ((Number)rightObject).longValue());
+						res.setValue((byte)leftObject << rightObjectValue);
+					} else if(leftObject instanceof Short) {
+						res.setValue((short)leftObject << rightObjectValue);
+					} else if(leftObject instanceof Integer) {
+						res.setValue((int)leftObject << rightObjectValue);
+					} else if(leftObject instanceof Long) {
+						res.setValue((long)leftObject << rightObjectValue);
 					}
 					break;
 				}
 				throw new RuntimeException(operator.getKind() + " is only supported for integral types on both sides");
 			case SR:
 				if(isIntegralType(leftObject) && isIntegralType(rightObject)) {
+					long rightObjectValue = ((Number) rightObject).longValue();
 					if(leftObject instanceof Byte) {
-						res.setValue(((Number)leftObject).byteValue() >> ((Number)rightObject).longValue());
-					}
-					if(leftObject instanceof Short) {
-						res.setValue(((Number)leftObject).shortValue() >> ((Number)rightObject).longValue());
-					}
-					if(leftObject instanceof Integer) {
-						res.setValue(((Number)leftObject).intValue() >> ((Number)rightObject).longValue());
-					}
-					if(leftObject instanceof Long) {
-						res.setValue(((Number)leftObject).longValue() >> ((Number)rightObject).longValue());
+						res.setValue((byte)leftObject >> rightObjectValue);
+					} else if(leftObject instanceof Short) {
+						res.setValue((short)leftObject >> rightObjectValue);
+					} else if(leftObject instanceof Integer) {
+						res.setValue((int)leftObject >> rightObjectValue);
+					} else if(leftObject instanceof Long) {
+						res.setValue((long)leftObject >> rightObjectValue);
 					}
 					break;
 				}
-				throw new RuntimeException(operator.getKind() + " is only supported for integral types on both sides");				
+				throw new RuntimeException(operator.getKind() + " is only supported for integral types on both sides");
 			default:
 				throw new RuntimeException("unsupported operator " + operator.getKind());
 			}
