@@ -7,12 +7,16 @@ import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtCompilationUnit;
+import spoon.reflect.declaration.CtType;
+import spoon.test.SpoonTestHelpers;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -128,5 +132,27 @@ public class DefaultJavaPrettyPrinterTest {
                 .setThenStatement(thenBlock)
                 .setElseStatement(elseBlock);
         assertDoesNotThrow(() -> ctIf.toString());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "int a = (new int[10])[1];",
+            "java.lang.Object b = (new java.lang.Object[6])[4];",
+            "double c = (new double[1][1][1])[0][0][0];",
+            "boolean d = new boolean[]{ true, false }[0];",
+            "float e = (new float[3][])[0][0];", // compiles, but throws a NPE on execution
+            "(new byte[8])[3] = 64;",
+            "(new byte[8][])[3] = new byte[16];",
+    })
+    void testPrintNewArrayWithImmediateAccess(String line) {
+        // contract: immediate access to a new array must be surrounded by parentheses if
+        // no elements are passed directly
+        Launcher launcher = new Launcher();
+        String code = SpoonTestHelpers.wrapLocal(line);
+        CtModel model = SpoonTestHelpers.createModelFromString(code, 8);
+        CtType<?> first = model.getAllTypes().iterator().next();
+        assertThat(first.toString(), containsString(line));
+        CtCodeSnippetStatement statement = launcher.getFactory().createCodeSnippetStatement(line);
+        assertThat(line, is(equalTo(statement.prettyprint())));
     }
 }
