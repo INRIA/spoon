@@ -22,5 +22,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD })
 public @interface MetamodelPropertyField {
+
+	/**
+	 * @return the roles of the elements in this field
+	 */
 	CtRole[] role();
 }

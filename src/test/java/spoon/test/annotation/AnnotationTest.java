@@ -54,12 +54,14 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.QueueProcessingManager;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.annotation.testclasses.AnnotArray;
 import spoon.test.annotation.testclasses.AnnotParamTypeEnum;
 import spoon.test.annotation.testclasses.AnnotParamTypes;
@@ -439,7 +441,7 @@ public class AnnotationTest {
 		launcher.addInputResource("./src/test/java/spoon/test/annotation/testclasses/AnnotArray.java");
 		launcher.buildModel();
 		Factory factory = launcher.getFactory();
-		final String res = "java.lang.Class<?>[] value() default {  };";
+		final String res = "public java.lang.Class<?>[] value() default {  };";
 
 		CtType<?> type = factory.Type().get("spoon.test.annotation.testclasses.AnnotArrayInnerClass");
 		CtType<?> annotationInnerClass = type.getNestedType("Annotation");
@@ -1615,5 +1617,33 @@ public class AnnotationTest {
 		assertEquals(1, ctCatchVariable2.getAnnotations().size());
 		assertEquals("@spoon.test.annotation.testclasses.CustomAnnotation(something = \"annotation string\")", ctCatchVariable2.getAnnotations().get(0).toString());
 
+	}
+
+	@Test
+	public void testAnnotationMethodModifiers() {
+		// contract: Annotation methods should have modifiers.
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/java/spoon/test/annotation/testclasses/AnnotationMethodModifiers.java");
+		CtModel model = launcher.buildModel();
+		CtAnnotationType<?> annotation = (CtAnnotationType<?>) model.getAllTypes().iterator().next();
+
+		CtMethod<?> implicitAbstract = annotation.getMethodsByName("implicitAbstract").get(0);
+		CtMethod<?> explicitAbstract = annotation.getMethodsByName("explicitAbstract").get(0);
+
+		assertEquals(
+				Set.of(
+						CtExtendedModifier.implicit(ModifierKind.ABSTRACT),
+						CtExtendedModifier.implicit(ModifierKind.PUBLIC)
+				),
+				implicitAbstract.getExtendedModifiers()
+		);
+
+		assertEquals(
+				Set.of(
+						CtExtendedModifier.explicit(ModifierKind.ABSTRACT),
+						CtExtendedModifier.implicit(ModifierKind.PUBLIC)
+				),
+				explicitAbstract.getExtendedModifiers()
+		);
 	}
 }
