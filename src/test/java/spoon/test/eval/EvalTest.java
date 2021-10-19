@@ -157,7 +157,7 @@ public class EvalTest {
 	@Test
 	public void testVisitorPartialEvaluator_binary() {
 		Launcher launcher = new Launcher();
-
+		
 		{ // binary operator
 			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("0+1").compile();
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
@@ -184,6 +184,20 @@ public class EvalTest {
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 			CtElement elnew = eval.evaluate(el);
 			assertEquals("false", elnew.toString());
+		}
+		
+		{ // binary operator
+			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("(1L<<53)-1").compile();
+			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
+			CtElement elnew = eval.evaluate(el);
+			assertEquals("9007199254740991L", elnew.toString());
+		}
+		
+		{ // binary operator
+			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("8>>2").compile();
+			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
+			CtElement elnew = eval.evaluate(el);
+			assertEquals("2", elnew.toString());
 		}
 	}
 
