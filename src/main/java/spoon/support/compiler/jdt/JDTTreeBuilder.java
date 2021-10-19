@@ -7,6 +7,7 @@
  */
 package spoon.support.compiler.jdt;
 
+import java.util.Set;
 import org.slf4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
@@ -914,11 +915,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		if (annotationMethodDeclaration.binding != null) {
 			ctAnnotationMethod.setExtendedModifiers(
-					getModifiers(annotationMethodDeclaration.binding.modifiers, true, true)
+					getModifiers(annotationMethodDeclaration.binding.modifiers, true, ModifierTarget.METHOD)
 			);
 		}
 
-		for (CtExtendedModifier extendedModifier : getModifiers(annotationMethodDeclaration.modifiers, false, true)) {
+		Set<CtExtendedModifier> explicitModifiers = getModifiers(
+				annotationMethodDeclaration.modifiers,
+				false,
+				ModifierTarget.METHOD
+		);
+		for (CtExtendedModifier extendedModifier : explicitModifiers) {
 			ctAnnotationMethod.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
 		}
 		context.enter(ctAnnotationMethod, annotationMethodDeclaration);
