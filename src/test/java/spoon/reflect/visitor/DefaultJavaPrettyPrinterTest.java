@@ -16,7 +16,6 @@ import spoon.test.SpoonTestHelpers;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -152,7 +151,5 @@ public class DefaultJavaPrettyPrinterTest {
         CtModel model = SpoonTestHelpers.createModelFromString(code, 8);
         CtType<?> first = model.getAllTypes().iterator().next();
         assertThat(first.toString(), containsString(line));
-        CtCodeSnippetStatement statement = launcher.getFactory().createCodeSnippetStatement(line);
-        assertThat(line, is(equalTo(statement.prettyprint())));
     }
 }
