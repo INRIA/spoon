@@ -168,7 +168,7 @@ jobs:
           linter: qodana-jvm-community
           inspected-dir: ./src/main/java # only main spoon project at first
           save-html-report: true
-          results-dir:  "${{ github.workspace }}/qodana/qodana.sarif.json"
+          results-dir:  "${{ github.workspace }}/qodana/baseline/qodana.sarif.json"
       - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # renovate: tag=v2.3.4
       - name: Qodana - Code Inspection
         uses: JetBrains/qodana-action@v3.2.1
@@ -176,7 +176,7 @@ jobs:
           linter: qodana-jvm-community
           inspected-dir: ./src/main/java # only main spoon project at first
           save-html-report: true
-          baseline-path: "${{ github.workspace }}/qodana/qodana.sarif.json"
+          baseline-path: "${{ github.workspace }}/qodana/baseline/qodana.sarif.json"
           baseline-include-absent: true
           fail-threshold: 1
       - name: print problem number
