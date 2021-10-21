@@ -174,10 +174,6 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           path: ${{ github.workspace }}/qodana
-      - name: Print problems
-        run: cat qodana/report/results/result-allProblems.json | jq
       - name: Fail on problems
-        run: |
-          VIOLATIONS=$(jq ".listProblem | length" qodana/report/results/result-allProblems.json)
-          if [ "$VIOLATIONS" -gt "0" ]; then exit 1; fi
+        run: jq '.runs | .[0].results[] | select (.baselineState == "new")' qodana.sarif.json
         
