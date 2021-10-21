@@ -170,7 +170,9 @@ jobs:
           baseline-path: ".github/qodana/qodana-baseline.sarif.json"
           baseline-include-absent: true
           fail-threshold: 1
-      - name: Fail on problems
-        run: jq '.runs | .[0].results[] | select (.baselineState == "new")' ${{ github.workspace }}/qodana/qodana.sarif.json
       - name: print problem number
         run: jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/qodana/qodana.sarif.json
+      - name: Fail on problems
+        run: |
+          VIOLATIONS=$(jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' qodana.sarif.json)
+          if [ "$VIOLATIONS" -gt "0" ]; then exit 1; fi
