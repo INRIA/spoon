@@ -167,7 +167,7 @@ jobs:
           linter: qodana-jvm-community
           inspected-dir: ./src/main/java # only main spoon project at first
           save-html-report: true
-          baseline: ".github/qodana/qodana-baseline.sarif.json"
+          baseline-path: ".github/qodana/qodana-baseline.sarif.json"
           baseline-include-absent: true
           fail-threshold: 1
       - name: Save Qodana's results to artifacts
