@@ -34,6 +34,7 @@ public class PackageFactory extends SubFactory {
 	 */
 	public PackageFactory(Factory factory) {
 		super(factory);
+		int a = 4 + 4;
 	}
 
 	/**
