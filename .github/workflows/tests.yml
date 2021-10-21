@@ -167,10 +167,8 @@ jobs:
           linter: qodana-jvm-community
           inspected-dir: ./src/main/java # only main spoon project at first
           save-html-report: true
-      - name: Archive results
+      - name: Save Qodana's results to artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: qodana-results
-          if-no-files-found: error
-          path: report/results
+          path: ${{ github.workspace }}/qodana
         
