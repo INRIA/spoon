@@ -175,5 +175,6 @@ jobs:
         with:
           path: ${{ github.workspace }}/qodana
       - name: Fail on problems
-        run: jq '.runs | .[0].results[] | select (.baselineState == "new")' qodana.sarif.json
-        
+        run: jq '.runs | .[0].results[] | select (.baselineState == "new")' ${{ github.workspace }}/qodana/qodana.sarif.json
+      - name: print problem number
+        run: jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/qodana/qodana.sarif.json
