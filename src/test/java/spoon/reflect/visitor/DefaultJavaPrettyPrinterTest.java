@@ -145,7 +145,6 @@ public class DefaultJavaPrettyPrinterTest {
     void testPrintNewArrayWithImmediateAccess(String line) {
         // contract: immediate access to a new array must be surrounded by parentheses if
         // no elements are passed directly
-        Launcher launcher = new Launcher();
         String code = SpoonTestHelpers.wrapLocal(line);
         CtModel model = SpoonTestHelpers.createModelFromString(code, 8);
         CtType<?> first = model.getAllTypes().iterator().next();
