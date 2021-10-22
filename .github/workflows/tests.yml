@@ -145,7 +145,8 @@ jobs:
       - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # renovate: tag=v2.3.4
         with:
           path: pull_request
-      - run: ls -A   
+      - name: delete me
+        run: ls -A   
       - name: Checkout
       - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # renovate: tag=v2.3.4
         with:
@@ -165,7 +166,8 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
-      - run: ls -A
+      - name: delete me
+        run: ls -A   
       - name: Use silent log config
         run: mv chore/logback.xml src/test/resources/
       - name: Qodana - Code Inspection
