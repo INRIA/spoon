@@ -176,6 +176,8 @@ jobs:
           inspected-dir: ./src/main/java # only main spoon project at first
           save-html-report: true
           results-dir:  "${{ github.workspace }}/baseline"
+      - name: delete me
+        run: find . -maxdepth 4 -type d -ls
       - name: Qodana - Code Inspection
         uses: JetBrains/qodana-action@v3.2.1
         with:
@@ -185,7 +187,7 @@ jobs:
           save-html-report: true
           baseline-path: "./baseline/qodana.sarif.json"
           baseline-include-absent: true
-          results-dir:  "${{ github.workspace }}/result_dir/"
+          results-dir:  "$${{ github.workspace }}/baseline"
           fail-threshold: 1
       - name: print problem number
         run: jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/result_dir/qodana/qodana.sarif.json
