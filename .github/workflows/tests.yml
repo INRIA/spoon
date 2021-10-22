@@ -168,8 +168,6 @@ jobs:
           restore-keys: ${{ runner.os }}-maven-
       - name: delete me
         run: ls -A   
-      - name: Use silent log config
-        run: mv chore/logback.xml src/test/resources/
       - name: Qodana - Code Inspection
         uses: JetBrains/qodana-action@v3.2.1
         with:
