@@ -187,7 +187,7 @@ jobs:
           save-html-report: true
           baseline-path: "./baseline/qodana.sarif.json"
           baseline-include-absent: true
-          results-dir:  "$${{ github.workspace }}/baseline"
+          results-dir:  "${{ github.workspace }}/baseline"
           fail-threshold: 1
       - name: print problem number
         run: jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/result_dir/qodana/qodana.sarif.json
