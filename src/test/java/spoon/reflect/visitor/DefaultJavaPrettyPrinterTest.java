@@ -1,10 +1,12 @@
 package spoon.reflect.visitor;
 
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtCompilationUnit;
@@ -13,6 +15,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class DefaultJavaPrettyPrinterTest {
 
@@ -102,5 +105,28 @@ public class DefaultJavaPrettyPrinterTest {
         // the code does not contain a 1, which would be the prefix of the local types' binary names
         // in the given code snippet
         assertThat(output, not(containsString("1")));
+    }
+
+    @Test
+    void testEmptyIfBlocksArePrintedWithoutError() {
+        // contract: empty if blocks don't crash the DJJP
+        Launcher launcher = new Launcher();
+        var ctIf = launcher.getFactory().createIf()
+                .setThenStatement(launcher.getFactory().createBlock())
+                .setElseStatement(launcher.getFactory().createBlock());
+        assertDoesNotThrow(() -> ctIf.toString());
+    }
+    @Test
+    void testEmptyIfBlocksWithCommentsArePrintedWithoutError() {
+        // contract: empty if blocks don't crash the DJJP
+        Launcher launcher = new Launcher();
+        CtBlock<Object> thenBlock = launcher.getFactory().createBlock();
+        CtBlock<Object> elseBlock = launcher.getFactory().createBlock();
+        thenBlock.addComment(launcher.getFactory().createComment().setContent("then"));
+        elseBlock.addComment(launcher.getFactory().createComment().setContent("else"));
+        var ctIf = launcher.getFactory().createIf()
+                .setThenStatement(thenBlock)
+                .setElseStatement(elseBlock);
+        assertDoesNotThrow(() -> ctIf.toString());
     }
 }
