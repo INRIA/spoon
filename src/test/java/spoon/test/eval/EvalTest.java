@@ -19,6 +19,8 @@ package spoon.test.eval;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
+import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
@@ -30,6 +32,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.eval.PartialEvaluator;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.AccessibleVariablesFinder;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.eval.EvalHelper;
@@ -185,56 +188,56 @@ public class EvalTest {
 			CtElement elnew = eval.evaluate(el);
 			assertEquals("false", elnew.toString());
 		}
-		
+
 		{ // binary operator
-			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("((byte)0b00000010)<<2").compile();
+			CtCodeElement el = createBinaryOperatorOnLiterals(launcher.getFactory(), (byte) 2, 2, BinaryOperatorKind.SL);
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 			CtElement elnew = eval.evaluate(el);
 			assertEquals("8", elnew.toString());
 		}
-		
+
 		{ // binary operator
-			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("((short)2)<<2").compile();
+			CtCodeElement el = createBinaryOperatorOnLiterals(launcher.getFactory(), (short) 2, 2, BinaryOperatorKind.SL);
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 			CtElement elnew = eval.evaluate(el);
 			assertEquals("8", elnew.toString());
 		}
-		
+
 		{ // binary operator
 			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("2<<2").compile();
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 			CtElement elnew = eval.evaluate(el);
 			assertEquals("8", elnew.toString());
 		}
-		
+
 		{ // binary operator
 			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("(1L<<53)-1").compile();
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 			CtElement elnew = eval.evaluate(el);
 			assertEquals("9007199254740991L", elnew.toString());
 		}
-		
+
 		{ // binary operator
-			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("((byte)0b00001000)>>2").compile();
+			CtCodeElement el = createBinaryOperatorOnLiterals(launcher.getFactory(), (byte) 8, 2, BinaryOperatorKind.SR);
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 			CtElement elnew = eval.evaluate(el);
 			assertEquals("2", elnew.toString());
 		}
-		
+
 		{ // binary operator
-			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("((short)8)>>2").compile();
+			CtCodeElement el = createBinaryOperatorOnLiterals(launcher.getFactory(), (short) 8, 2, BinaryOperatorKind.SR);
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 			CtElement elnew = eval.evaluate(el);
 			assertEquals("2", elnew.toString());
 		}
-		
+
 		{ // binary operator
 			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("8>>2").compile();
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
 			CtElement elnew = eval.evaluate(el);
 			assertEquals("2", elnew.toString());
 		}
-		
+
 		{ // binary operator
 			CtCodeElement el = launcher.getFactory().Code().createCodeSnippetExpression("(9007199254740991L>>53)+1").compile();
 			VisitorPartialEvaluator eval = new VisitorPartialEvaluator();
@@ -305,5 +308,9 @@ public class EvalTest {
 		assertEquals(File.pathSeparator, EvalHelper.convertElementToRuntimeObject(foo.getField("str1").getDefaultExpression()));
 		assertEquals(File.pathSeparator, EvalHelper.getCorrespondingRuntimeObject(foo.getField("str1").getDefaultExpression()));
 
+	}
+
+	private CtBinaryOperator<?> createBinaryOperatorOnLiterals(Factory factory, Object leftLiteral, Object rightLiteral, BinaryOperatorKind opKind) {
+		return factory.createBinaryOperator(factory.createLiteral(leftLiteral), factory.createLiteral(rightLiteral), opKind);
 	}
 }
