@@ -141,10 +141,16 @@ jobs:
       MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
     name: code-quality qodana
     steps:
+      - name: Checkout
       - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # renovate: tag=v2.3.4
         with:
-            fetch-depth: 0
-      - run: git checkout master
+          path: pull_request
+      - run: ls -A   
+      - name: Checkout
+      - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # renovate: tag=v2.3.4
+        with:
+          path: master
+          ref: master
       - uses: actions/setup-java@8db439b6b47e5e12312bf036760bbaa6893481ac # renovate: tag=v2.3.1
         with:
           java-version: 16
@@ -159,30 +165,31 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
-
+      - run: ls -A
       - name: Use silent log config
         run: mv chore/logback.xml src/test/resources/
       - name: Qodana - Code Inspection
         uses: JetBrains/qodana-action@v3.2.1
         with:
           linter: qodana-jvm-community
+          project-dir: "${{ github.workspace }}/master"
           inspected-dir: ./src/main/java # only main spoon project at first
           save-html-report: true
-          results-dir:  "${{ github.workspace }}/qodana/baseline/"
-      - name: checkout repo
-        run: git checkout -
+          results-dir:  "./baseline/"
       - name: Qodana - Code Inspection
         uses: JetBrains/qodana-action@v3.2.1
         with:
           linter: qodana-jvm-community
+          project-dir: "${{ github.workspace }}/pull_request"
           inspected-dir: ./src/main/java # only main spoon project at first
           save-html-report: true
-          baseline-path: "${{ github.workspace }}/qodana/baseline/qodana.sarif.json"
+          baseline-path: "$./baseline/qodana.sarif.json"
           baseline-include-absent: true
+          results-dir:  "./result_dir/"
           fail-threshold: 1
       - name: print problem number
-        run: jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/qodana/qodana.sarif.json
+        run: jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/result_dir/qodana/qodana.sarif.json
       - name: Fail on problems
         run: |
-          VIOLATIONS=$(jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/qodana/qodana.sarif.json)
+          VIOLATIONS=$(jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/result_dir/qodana/qodana.sarif.json)
           if [ "$VIOLATIONS" -gt "0" ]; then exit 1; fi
