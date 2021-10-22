@@ -143,7 +143,8 @@ jobs:
     steps:
       - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # renovate: tag=v2.3.4
         with:
-            ref: master
+            fetch-depth: 0
+      - run: git checkout master
       - uses: actions/setup-java@8db439b6b47e5e12312bf036760bbaa6893481ac # renovate: tag=v2.3.1
         with:
           java-version: 16
