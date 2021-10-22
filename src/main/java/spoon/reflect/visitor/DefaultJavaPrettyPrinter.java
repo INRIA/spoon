@@ -476,7 +476,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	private <T, E extends CtExpression<?>> void printCtArrayAccess(CtArrayAccess<T, E> arrayAccess) {
 		enterCtExpression(arrayAccess);
-		scan(arrayAccess.getTarget());
+		if (arrayAccess.getTarget() instanceof CtNewArray
+				&& ((CtNewArray<?>) arrayAccess.getTarget()).getElements().isEmpty()) {
+			printer.writeSeparator("(");
+			scan(arrayAccess.getTarget());
+			printer.writeSeparator(")");
+		} else {
+			scan(arrayAccess.getTarget());
+		}
 		printer.writeSeparator("[");
 		scan(arrayAccess.getIndexExpression());
 		printer.writeSeparator("]");
