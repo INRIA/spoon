@@ -176,12 +176,6 @@ jobs:
           inspected-dir: ./src/main/java # only main spoon project at first
           save-html-report: true
           results-dir:  "${{ github.workspace }}/result"
-      - name: delete me
-        run: find . -maxdepth 6 -type d -ls
-      - name: delete me too
-        run: mv "${{ github.workspace }}/result" "${{ github.workspace }}/pull_request/baseline/" 
-      - name: delete me
-        run: find . -maxdepth 6 -type d -ls
       - name: Qodana - Code Inspection
         uses: JetBrains/qodana-action@v3.2.1
         with:
@@ -193,6 +187,10 @@ jobs:
           baseline-include-absent: true
           results-dir:  "${{ github.workspace }}/result_dir"
           fail-threshold: 1
+      - uses: github/codeql-action/upload-sarif@v1
+        with:
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: ${{ github.workspace }}/result_dir/qodana/qodana.sarif.
       - name: delete me
         run: find . -maxdepth 6 -type d -ls
       - name: print problem number
