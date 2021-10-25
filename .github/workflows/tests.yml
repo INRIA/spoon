@@ -175,7 +175,11 @@ jobs:
           project-dir: "${{ github.workspace }}/master"
           inspected-dir: ./src/main/java # only main spoon project at first
           save-html-report: true
-          results-dir:  "${{ github.workspace }}/pull_request/src/main/"
+          results-dir:  "${{ github.workspace }}/result"
+      - name: delete me
+        run: find . -maxdepth 6 -type d -ls
+      - name: delete me too
+        run: mv "${{ github.workspace }}/result" "${{ github.workspace }}/pull_request/baseline/" 
       - name: delete me
         run: find . -maxdepth 6 -type d -ls
       - name: Qodana - Code Inspection
@@ -185,7 +189,7 @@ jobs:
           project-dir: "${{ github.workspace }}/pull_request"
           inspected-dir: ./src/main/java # only main spoon project at first
           save-html-report: true
-          baseline-path: "${{ github.workspace }}/pull_request/src/main/qodana/qodana.sarif.json"
+          baseline-path: "${{ github.workspace }}/pull_request/baseline/"
           baseline-include-absent: true
           results-dir:  "${{ github.workspace }}/result_dir"
           fail-threshold: 1
