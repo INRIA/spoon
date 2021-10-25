@@ -301,6 +301,8 @@
                     <!-- see https://stackoverflow.com/a/57430117 -->
                     <doclint>none</doclint>
                     <detectJavaApiLink>false</detectJavaApiLink>
+                    <!-- ref: https://github.com/INRIA/spoon/pull/4253 -->
+                    <additionalJOption>-notimestamp</additionalJOption>
                 </configuration>
                 <reportSets>
                     <reportSet>
