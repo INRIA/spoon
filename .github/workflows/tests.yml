@@ -175,9 +175,9 @@ jobs:
           project-dir: "${{ github.workspace }}/master"
           inspected-dir: ./src/main/java # only main spoon project at first
           save-html-report: true
-          results-dir:  "${{ github.workspace }}/baseline"
+          results-dir:  "${{ github.workspace }}/pull_request/src/main/"
       - name: delete me
-        run: find . -maxdepth 4 -type d -ls
+        run: find . -maxdepth 6 -type d -ls
       - name: Qodana - Code Inspection
         uses: JetBrains/qodana-action@v3.2.1
         with:
@@ -185,10 +185,12 @@ jobs:
           project-dir: "${{ github.workspace }}/pull_request"
           inspected-dir: ./src/main/java # only main spoon project at first
           save-html-report: true
-          baseline-path: "./baseline/qodana.sarif.json"
+          baseline-path: "${{ github.workspace }}/pull_request/src/main/qodana/qodana.sarif.json"
           baseline-include-absent: true
-          results-dir:  "${{ github.workspace }}/baseline"
+          results-dir:  "${{ github.workspace }}/result_dir"
           fail-threshold: 1
+      - name: delete me
+        run: find . -maxdepth 6 -type d -ls
       - name: print problem number
         run: jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/result_dir/qodana/qodana.sarif.json
       - name: Fail on problems
