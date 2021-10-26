@@ -189,7 +189,7 @@ jobs:
           linter: qodana-jvm-community
           project-dir: "${{ github.workspace }}/pull_request"
           inspected-dir: ./src/main/java # only main spoon project at first
-          baseline-path: "${{ github.workspace }}/result/master/qodana.sarif.json"
+          baseline-path: "result/master/qodana.sarif.json"
           baseline-include-absent: true
           results-dir:  "${{ github.workspace }}/result"
           fail-threshold: 1
