@@ -198,14 +198,10 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 			case SL:
 				if (isIntegralType(leftObject) && isIntegralType(rightObject)) {
 					long rightObjectValue = ((Number) rightObject).longValue();
-					if (leftObject instanceof Byte) {
-						res.setValue((byte) leftObject << rightObjectValue);
-					} else if (leftObject instanceof Short) {
-						res.setValue((short) leftObject << rightObjectValue);
-					} else if (leftObject instanceof Integer) {
-						res.setValue((int) leftObject << rightObjectValue);
-					} else if (leftObject instanceof Long) {
+					if (leftObject instanceof Long) {
 						res.setValue((long) leftObject << rightObjectValue);
+					} else {
+						res.setValue(((Number) leftObject).intValue() << rightObjectValue);
 					}
 					break;
 				}
@@ -213,14 +209,10 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 			case SR:
 				if (isIntegralType(leftObject) && isIntegralType(rightObject)) {
 					long rightObjectValue = ((Number) rightObject).longValue();
-					if (leftObject instanceof Byte) {
-						res.setValue((byte) leftObject >> rightObjectValue);
-					} else if (leftObject instanceof Short) {
-						res.setValue((short) leftObject >> rightObjectValue);
-					} else if (leftObject instanceof Integer) {
-						res.setValue((int) leftObject >> rightObjectValue);
-					} else if (leftObject instanceof Long) {
+					if (leftObject instanceof Long) {
 						res.setValue((long) leftObject >> rightObjectValue);
+					} else {
+						res.setValue(((Number) leftObject).intValue() >> rightObjectValue);
 					}
 					break;
 				}
