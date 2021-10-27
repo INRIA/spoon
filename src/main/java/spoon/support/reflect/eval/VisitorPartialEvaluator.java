@@ -195,6 +195,28 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 					res.setValue(((Number) leftObject).intValue() ^ ((Number) rightObject).intValue());
 				}
 				break;
+			case SL:
+				if (isIntegralType(leftObject) && isIntegralType(rightObject)) {
+					long rightObjectValue = ((Number) rightObject).longValue();
+					if (leftObject instanceof Long) {
+						res.setValue((long) leftObject << rightObjectValue);
+					} else {
+						res.setValue(((Number) leftObject).intValue() << rightObjectValue);
+					}
+					break;
+				}
+				throw new RuntimeException(operator.getKind() + " is only supported for integral types on both sides");
+			case SR:
+				if (isIntegralType(leftObject) && isIntegralType(rightObject)) {
+					long rightObjectValue = ((Number) rightObject).longValue();
+					if (leftObject instanceof Long) {
+						res.setValue((long) leftObject >> rightObjectValue);
+					} else {
+						res.setValue(((Number) leftObject).intValue() >> rightObjectValue);
+					}
+					break;
+				}
+				throw new RuntimeException(operator.getKind() + " is only supported for integral types on both sides");
 			default:
 				throw new RuntimeException("unsupported operator " + operator.getKind());
 			}
@@ -448,6 +470,10 @@ public class VisitorPartialEvaluator extends CtScanner implements PartialEvaluat
 			}
 		}
 		setResult(i);
+	}
+
+	private boolean isIntegralType(Object object) {
+		return object instanceof Byte || object instanceof Short || object instanceof Integer || object instanceof Long;
 	}
 
 	private boolean isLiteralType(Object object) {
