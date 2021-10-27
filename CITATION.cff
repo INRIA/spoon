@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+preferred-citation:
+  title: "Spoon: A Library for Implementing Analyses and Transformations of Java Source Code"
+  doi: "10.1002/spe.2346"
+  year: "2015"
+  type: article
+  journal: "Software: Practice and Experience"
+  authors:
+    - family-names: Pawlak
+      given-names: Renaud
+    - family-names: Monperrus
+      given-names: Martin
+    - family-names: Petitprez
+      given-names: Nicolas
+    - family-names: Noguera
+      given-names: Carlos
+    - family-names: Seinturier
+      given-names: Lionel

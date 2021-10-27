@@ -7,13 +7,13 @@ Spoon provides users with different options to pretty-print the Java code.
 
 ## Fully-qualified Pretty-Printing
 
-Spoon can pretty-print code where all classes and methods  are fully-qualified. This is the default behavior on `toString()` on AST elements.
+Spoon can pretty-print code where all classes and methods are fully-qualified. This is the default behavior on `toString()` on AST elements.
 This is not readable for humans but is useful when name collisions happen. If `launcher.getEnvironment().getToStringMode() == FULLYQUALIFIED`, the files written on disk are also fully qualified. 
 
 
-## Autoimport Pretty-Printing 
+## Autoimport Pretty-Printing
 
-Spoon can pretty-print code where all classes and methods  are imported as long as no conflict exists. 
+Spoon can pretty-print code where all classes and methods are imported as long as no conflict exists.
 
 ```java
 launcher.getEnvironment().setAutoImports(true);

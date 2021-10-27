@@ -21,5 +21,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })
 public @interface PropertyGetter {
+
+	/**
+	 * @return the role of the getter
+	 */
 	CtRole role();
 }

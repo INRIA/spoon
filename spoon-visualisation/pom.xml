@@ -168,7 +168,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>9.0.0</version>
+            <version>9.1.0</version>
             <exclusions>
                     <exclusion>
                         <artifactId>*</artifactId>
@@ -229,7 +229,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.7.2</version>
+            <version>5.8.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>

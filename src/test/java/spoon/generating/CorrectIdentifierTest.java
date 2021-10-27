@@ -85,4 +85,13 @@ public class CorrectIdentifierTest {
 		CtTypeReference localVariableRef = new Launcher().getFactory().createTypeReference();
 		assertDoesNotThrow(() -> localVariableRef.setSimpleName("List<String>[]"));
 	}
+
+	@Test
+	public void wrongIdentiferWithIgnoreFlag() {
+		//contract: in ingoreSyntaxErrors mode setting a wrong identifier should not throw an exception.
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setIgnoreSyntaxErrors(true);
+		CtLocalVariableReference<Object> localVariableRef = launcher.getFactory().createLocalVariableReference();
+		assertDoesNotThrow(() -> localVariableRef.setSimpleName("tacos.EatIt()"));
+	}
 }

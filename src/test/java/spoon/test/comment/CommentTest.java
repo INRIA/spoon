@@ -19,6 +19,8 @@ package spoon.test.comment;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.CtModel;
@@ -868,6 +870,7 @@ public class CommentTest {
 	}
 
 	@Test
+	@EnabledForJreRange(min = JRE.JAVA_16)
 	public void testDocumentationContract() throws Exception {
 		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: all metamodel classes must be commented with an example.
@@ -876,7 +879,7 @@ public class CommentTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.getEnvironment().setCommentEnabled(true);
 
-		launcher.getEnvironment().setComplianceLevel(15);
+		launcher.getEnvironment().setComplianceLevel(16);
 		// launcher.getEnvironment().setPreviewFeaturesEnabled(true);
 		
 		// interfaces.
@@ -930,7 +933,6 @@ public class CommentTest {
 				if ("CtEnum".equals(x.getSimpleName())) {
 					return;
 				}
-
 				// too hard to snippetize
 				if ("CtAnnotationFieldAccess".equals(x.getSimpleName())) {
 					return;

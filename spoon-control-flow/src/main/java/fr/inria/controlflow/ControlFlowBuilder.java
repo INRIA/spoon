@@ -68,6 +68,7 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -110,7 +111,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
-import spoon.reflect.visitor.CtVisitor;
+import spoon.reflect.visitor.CtAbstractVisitor;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -122,7 +123,7 @@ import java.util.Stack;
  *
  * Created by marodrig on 13/10/2015.
  */
-public class ControlFlowBuilder implements CtVisitor {
+public class ControlFlowBuilder extends CtAbstractVisitor {
 
 	ControlFlowGraph result = new ControlFlowGraph(ControlFlowEdge.class);
 
@@ -972,6 +973,11 @@ public class ControlFlowBuilder implements CtVisitor {
 
 	@Override
 	public void visitCtYieldStatement(CtYieldStatement ctYieldStatement) {
+
+	}
+
+	@Override
+	public void visitCtTypePattern(CtTypePattern pattern) {
 
 	}
 }

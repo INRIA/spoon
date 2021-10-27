@@ -376,4 +376,33 @@ public class TestModule {
 			throw e;
 		}
 	}
+
+	@Test
+	public void testModuleOverlappingPackages() {
+		// contract: Non-synthetic package is returned for modules with overlapping packages
+		// Modules might contain "overlapping" (only in spoon! In java the packages are distinct)
+		// packages:
+		//   first
+		//    `- test
+		//     `- parent   <- This is only here because nested is a "sub package". This might be found
+		//   							    first when looking for modules containing "test.parent". In that case
+		//  									we have a problem.
+		//      `- nested  <- This is exported and in first.
+		//       `- Foo    <- This is the actual class in the module
+		//   second
+		//    `- test
+		//     `- parent
+		//      `- Bar
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(9);
+		launcher.addInputResource(MODULE_RESOURCES_PATH + "/overlapping-packages");
+		CtModel ctModel = launcher.buildModel();
+		assertEquals(3, ctModel.getAllModules().size());
+		assertNotNull(
+				"Wrong package picked, the synthetic one comes first in alphabetical order but"
+						+ " doesn't have the classes we want!",
+				launcher.getFactory().Type().get("test.parent.Bar")
+		);
+		assertNotNull("", launcher.getFactory().Type().get("test.parent.nested.Foo"));
+	}
 }

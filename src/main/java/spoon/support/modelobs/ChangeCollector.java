@@ -211,6 +211,11 @@ public class ChangeCollector {
 		}
 
 		@Override
+		public <K, V> void onMapDelete(CtElement currentElement, CtRole role, Map<K, V> field, K key, CtElement oldValue) {
+			onChange(currentElement, role);
+		}
+
+		@Override
 		public <K, V> void onMapDeleteAll(CtElement currentElement, CtRole role, Map<K, V> field, Map<K, V> oldValue) {
 			onChange(currentElement, role);
 		}

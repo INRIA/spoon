@@ -8,28 +8,26 @@ name: tests
 on:
   pull_request:
     branches:
-      master
+      - master
   push:
     branches:
-      master
+      - master
   schedule:
   - cron: "0 0 * * *"
 
 env:
-  JAVA_DISTRIBUTION: adopt
+  JAVA_DISTRIBUTION: temurin
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        java: [8, 11, 15]
+        java: [11, 16]
         os: [ubuntu-latest, windows-latest]
         exclude:
           - os: windows-latest
-            java: 11
-          - os: windows-latest
-            java: 15
+            java: 16
 
 
     env:
@@ -39,8 +37,8 @@ jobs:
     steps:
       - name: Disable Git's autocrlf
         run: git config --global core.autocrlf false
-      - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # v2.3.4
-      - uses: actions/setup-java@8764a52df183aa0ccea74521dfd9d506ffc7a19a # v2.0.0
+      - uses: actions/checkout@1e204e9a9253d643386038d443f96446fa156a97 # renovate: tag=v2.3.5
+      - uses: actions/setup-java@8db439b6b47e5e12312bf036760bbaa6893481ac # renovate: tag=v2.3.1
         with:
           java-version: ${{ matrix.java }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -50,7 +48,7 @@ jobs:
         run: echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
         shell: bash
       - name: Use Maven dependency cache
-        uses: actions/cache@26968a09c0ea4f3e233fdddbafd1166051a095f6 # v2.1.4
+        uses: actions/cache@c64c572235d810460d0d6876e9c705ad5002b353 # renovate: tag=v2.1.6
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
@@ -74,10 +72,10 @@ jobs:
       MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
     name: Test with coverage
     steps:
-      - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # v2.3.4
-      - uses: actions/setup-java@8764a52df183aa0ccea74521dfd9d506ffc7a19a # v2.0.0
+      - uses: actions/checkout@1e204e9a9253d643386038d443f96446fa156a97 # renovate: tag=v2.3.5
+      - uses: actions/setup-java@8db439b6b47e5e12312bf036760bbaa6893481ac # renovate: tag=v2.3.1
         with:
-          java-version: 15
+          java-version: 16
           distribution: ${{ env.JAVA_DISTRIBUTION }}
 
       - name: Get date for cache # see https://github.com/actions/cache README
@@ -85,7 +83,7 @@ jobs:
         run: echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
         shell: bash
       - name: Use Maven dependency cache
-        uses: actions/cache@26968a09c0ea4f3e233fdddbafd1166051a095f6 # v2.1.4
+        uses: actions/cache@c64c572235d810460d0d6876e9c705ad5002b353 # renovate: tag=v2.1.6
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
@@ -108,14 +106,14 @@ jobs:
       MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
     name: Extra checks
     steps:
-      - uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # v2.3.4
+      - uses: actions/checkout@1e204e9a9253d643386038d443f96446fa156a97 # renovate: tag=v2.3.5
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@8764a52df183aa0ccea74521dfd9d506ffc7a19a # v2.0.0
+      - uses: actions/setup-java@8db439b6b47e5e12312bf036760bbaa6893481ac # renovate: tag=v2.3.1
         with:
-          java-version: 15
+          java-version: 16
           distribution: ${{ env.JAVA_DISTRIBUTION }}
-      - uses: actions/setup-python@41b7212b1668f5de9d65e9c82aa777e6bbedb3a8 # v2.1.4
+      - uses: actions/setup-python@dc73133d4da04e56a135ae2246682783cc7c7cb6 # renovate: tag=v2.2.2
         with:
           python-version: 3.6
 
@@ -124,7 +122,7 @@ jobs:
         run: echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
         shell: bash
       - name: Use Maven dependency cache
-        uses: actions/cache@26968a09c0ea4f3e233fdddbafd1166051a095f6 # v2.1.4
+        uses: actions/cache@c64c572235d810460d0d6876e9c705ad5002b353 # renovate: tag=v2.1.6
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
@@ -136,17 +134,3 @@ jobs:
         run: ./chore/ci-extra.sh
       - name: Run Javadoc quality check
         run: ./chore/check-javadoc-regressions.py COMPARE_WITH_MASTER
-
-  sorald-buildbreaker:
-    runs-on: ubuntu-latest
-    name: Run Sorald Buildbreaker
-    steps:
-      - name: Checkout
-        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # v2.3.4
-        with:
-          fetch-depth: 0
-      - name: Run Sorald Buildbreaker
-        uses: SpoonLabs/sorald-buildbreaker@35c1a784848bd3182cfcc8a584cff90560fa6371 # dev version
-        with:
-          source: 'src/main/java'
-          ratchet-from: 'origin/master'

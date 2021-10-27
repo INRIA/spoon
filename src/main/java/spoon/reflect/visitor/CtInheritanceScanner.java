@@ -50,6 +50,7 @@ import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
+import spoon.reflect.code.CtPattern;
 import spoon.reflect.code.CtRHSReceiver;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
@@ -65,6 +66,7 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtVariableRead;
@@ -92,6 +94,8 @@ import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtMultiTypedElement;
 import spoon.reflect.declaration.CtNamedElement;
@@ -346,6 +350,13 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	 * Scans a body holder
 	 */
 	public void scanCtBodyHolder(CtBodyHolder ctBodyHolder) {
+	}
+
+	/**
+	 * Scans a pattern
+	 * @param pattern the pattern to scan
+	*/
+	public void scanCtPattern(CtPattern pattern) {
 	}
 
 	@Override
@@ -635,8 +646,10 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtInterface(CtInterface<T> e) {
 		scanCtType(e);
+		scanCtStatement(e);
 		scanCtTypeInformation(e);
 		scanCtFormalTypeDeclarer(e);
+		scanCtCodeElement(e);
 		scanCtNamedElement(e);
 		scanCtTypeMember(e);
 		scanCtElement(e);
@@ -1044,5 +1057,30 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtElement(e);
 		scanCtVisitable(e);
 	}
+
+
+	@Override
+	public void visitCtTypePattern(CtTypePattern pattern) {
+		scanCtPattern(pattern);
+		scanCtExpression(pattern);
+		scanCtTypedElement(pattern);
+		scanCtCodeElement(pattern);
+		scanCtElement(pattern);
+		scanCtVisitable(pattern);
+	}
+	@Override
+	public void visitCtRecord(CtRecord recordType) {
+		visitCtClass(recordType);
+	}
+
+	@Override
+	public void visitCtRecordComponent(CtRecordComponent recordComponent) {
+		scanCtElement(recordComponent);
+		scanCtTypedElement(recordComponent);
+		scanCtNamedElement(recordComponent);
+		scanCtVisitable(recordComponent);
+		scanCtShadowable(recordComponent);
+	}
+
 
 }

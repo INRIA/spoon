@@ -324,9 +324,11 @@ class JDTTreeBuilderQuery {
 	 * @param modifier
 	 * 		Identifier of the modifier.
 	 * @param implicit True if the modifier is not explicit in the source code (e.g. a missing 'public' in an interface)
-	 * @return Set of enum value of {@link CtExtendedModifier}.
+	 * @param target the target the modifiers belong to. Used to distinguish between flags used multiple times in
+	 *               different contexts.
+	 * @return Set of {@link CtExtendedModifier}s.
 	 */
-	static Set<CtExtendedModifier> getModifiers(int modifier, boolean implicit, boolean isMethod) {
+	static Set<CtExtendedModifier> getModifiers(int modifier, boolean implicit, Set<ModifierTarget> target) {
 		Set<CtExtendedModifier> modifiers = new HashSet<>();
 		if ((modifier & ClassFileConstants.AccPublic) != 0) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.PUBLIC, implicit));
@@ -349,9 +351,8 @@ class JDTTreeBuilderQuery {
 		if ((modifier & ClassFileConstants.AccVolatile) != 0) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.VOLATILE, implicit));
 		}
-		// a method can never be transient, but it can have the flag because of varArgs.
-		// source: https://stackoverflow.com/questions/16233910/can-transient-keywords-mark-a-method
-		if (!isMethod && (modifier & ClassFileConstants.AccTransient) != 0) {
+		// AccVarargs == AccTransient, so checking context is needed
+		if ((modifier & ClassFileConstants.AccTransient) != 0 && target.contains(ModifierTarget.FIELD)) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.TRANSIENT, implicit));
 		}
 		if ((modifier & ClassFileConstants.AccAbstract) != 0) {
@@ -364,5 +365,17 @@ class JDTTreeBuilderQuery {
 			modifiers.add(new CtExtendedModifier(ModifierKind.NATIVE, implicit));
 		}
 		return modifiers;
+	}
+
+	/**
+	 * Shorthand method for {@link #getModifiers(int, boolean, Set)}, making the {@code target} to a set.
+	 *
+	 * @param modifier the modifier bits
+	 * @param implicit whether the modifiers are implicit
+	 * @param target the target the modifiers belong to
+	 * @return Set of {@link CtExtendedModifier}s.
+	 */
+	static Set<CtExtendedModifier> getModifiers(int modifier, boolean implicit, ModifierTarget target) {
+		return getModifiers(modifier, implicit, target.asSingleton());
 	}
 }

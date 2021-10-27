@@ -59,6 +59,7 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -80,6 +81,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
@@ -1041,5 +1044,39 @@ public abstract class CtScanner implements CtVisitor {
 		scan(CtRole.COMMENT, statement.getComments());
 		exit(statement);
 		}
+
+	@Override
+	public void visitCtTypePattern(CtTypePattern pattern) {
+		enter(pattern);
+		scan(CtRole.VARIABLE, pattern.getVariable());
+		scan(CtRole.ANNOTATION, pattern.getAnnotations());
+		scan(CtRole.TYPE, pattern.getType());
+		scan(CtRole.COMMENT, pattern.getComments());
+		exit(pattern);
+	}
+
+	@Override
+	public void visitCtRecord(CtRecord recordType) {
+		enter(recordType);
+		scan(CtRole.ANNOTATION, recordType.getAnnotations());
+		scan(CtRole.INTERFACE, recordType.getSuperInterfaces());
+		scan(CtRole.TYPE_MEMBER, recordType.getTypeMembers());
+		scan(CtRole.TYPE_PARAMETER, recordType.getFormalCtTypeParameters());
+		scan(CtRole.RECORD_COMPONENT, recordType.getRecordComponents());
+		scan(CtRole.COMMENT, recordType.getComments());
+		exit(recordType);
+	}
+
+	@Override
+	public void visitCtRecordComponent(CtRecordComponent recordType) {
+		enter(recordType);
+		scan(CtRole.ANNOTATION, recordType.getAnnotations());
+		scan(CtRole.TYPE, recordType.getType());
+		scan(CtRole.COMMENT, recordType.getComments());
+		exit(recordType);
+	}
+
+
+
 }
 

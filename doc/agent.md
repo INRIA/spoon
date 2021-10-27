@@ -6,11 +6,11 @@ keywords: agent, usage, java, loadtime
 
 # Spoon Agent
 
-Spoon can also be used to transform classes at load time in the JVM. FOr this, `SpoonClassFileTransformer` provide an abstraction of `ClassFileTransformer`
+Spoon can also be used to transform classes at load time in the JVM. For this, `SpoonClassFileTransformer` provide an abstraction of `ClassFileTransformer`
 where the user can define Spoon transformation.
 Bytecode of classes will be decompiled on-the-fly when loaded, and the Spoon AST will be updated in consequence, and the code is recompiled on-the-fly.
 
-The following example shows the definition of a basic JVM agent for inserting a tracing method call a the end of every method called `foo`.
+The following example shows the definition of a basic JVM agent for inserting a tracing method call at the end of every method called `foo`.
 
 Here is the agent:
 ```java

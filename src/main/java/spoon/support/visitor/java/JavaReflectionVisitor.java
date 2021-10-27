@@ -12,6 +12,7 @@ import spoon.support.visitor.java.reflect.RtMethod;
 import spoon.support.visitor.java.reflect.RtParameter;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericDeclaration;
@@ -84,4 +85,12 @@ interface JavaReflectionVisitor {
 	/** Visits a class as an array reference
 	 * @param role {@link CtRole} which this reference plays*/
 	<T> void visitArrayReference(CtRole role, Type typeArray);
+
+	/** Visits a {@link java.lang.Class} representing an record, see {@code Class#isRecord()} */
+	<T> void visitRecord(Class<T> clazz);
+
+	/** Visits a record component.
+	 * @param recordComponent a record component
+	*/
+	void visitRecordComponent(AnnotatedElement recordComponent);
 }

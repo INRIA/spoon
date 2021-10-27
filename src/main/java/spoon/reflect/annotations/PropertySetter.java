@@ -21,5 +21,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })
 public @interface PropertySetter {
+
+	/**
+	 * @return the role of the setter
+	 */
 	CtRole role();
 }

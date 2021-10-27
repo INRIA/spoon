@@ -1,6 +1,6 @@
 package spoon.test.imports;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.CtImport;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
@@ -9,14 +9,13 @@ import spoon.test.imports.testclasses.A;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class CtUnresolvedImportTest {
 
 	@Test
 	public void testEquality() throws Exception {
-
 		final Factory factory = build(A.class);
 		CtImport i1 = factory.createUnresolvedImport("spoon.A", false);
 		CtImport i2 = factory.createUnresolvedImport("spoon.A", false);
@@ -24,7 +23,6 @@ public class CtUnresolvedImportTest {
 		CtImport i4 = factory.createUnresolvedImport("spoon.B", false);
 		CtImport i5 = factory.createUnresolvedImport("spoon.m", true);
 		CtImport i6 = factory.createUnresolvedImport("spoon.m", true);
-
 
 		CtReference ref = factory.createReference("spoon.A");
 		CtImport i7 = factory.createImport(ref);
@@ -45,6 +43,8 @@ public class CtUnresolvedImportTest {
 		assertEquals(i1.hashCode(), i2.hashCode());
 		assertNotEquals(i1, i3);
 
+		// hashCode() and equals() should work as expected for set-element-membership identification based on
+		// the contained reference and isStatic field
 		Set<CtImport> imports = new HashSet<>();
 		assertTrue(imports.add(i1));
 		assertFalse(imports.add(i2));
@@ -55,5 +55,4 @@ public class CtUnresolvedImportTest {
 		assertTrue(imports.add(i7));
 		assertEquals(5, imports.size());
 	}
-
 }

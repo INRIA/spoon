@@ -73,7 +73,7 @@ You can convert any string in a `CtStatement` ([javadoc](http://spoon.gforge.inr
 with `createCodeSnippetStatement(String statement)` or in `CtExpression` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtExpression.html)) 
 with `createCodeSnippetExpression(String expression)`. In our case, we convert `this.dates = dates` 
 in a `CtAssignement` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtAssignment.html)) 
-with an assignment and an assigned elements.
+with an assignment and an assigned element.
 
 With this last example, you have created a statement that you have put in a block. 
 You have created a parameter typed by the same type as the field and 

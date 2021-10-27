@@ -16,17 +16,29 @@
  */
 package spoon.test;
 
+import org.hamcrest.Matcher;
+import spoon.Launcher;
+import spoon.testing.matchers.ContentEqualsMatcher;
+import spoon.testing.matchers.RegexFindMatcher;
 import spoon.metamodel.Metamodel;
+import spoon.reflect.CtModel;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+import spoon.support.compiler.VirtualFile;
 
+import javax.annotation.RegEx;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.junit.Assume.assumeFalse;
 
@@ -150,5 +162,43 @@ public class SpoonTestHelpers {
 	/** Place at the top of a JUnit4 test method to disable it for Windows. */
 	public static void assumeNotWindows() {
 		assumeFalse(System.getProperty("os.name").toLowerCase().contains("windows"));
+	}
+
+	/** Builds a model from code given as string */
+	public static CtModel createModelFromString(String code, int complianceLevel) {
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setComplianceLevel(complianceLevel);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource(new VirtualFile(code));
+		return launcher.buildModel();
+	}
+
+	/** Returns the block of the first non-implicit method */
+	public static CtBlock<?> getBlock(CtModel model) {
+		return model.getElements(new TypeFilter<>(CtBlock.class))
+				.stream()
+				.filter(b -> b.getParent() instanceof CtMethod<?> && !b.getParent().isImplicit())
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("code does not contain explicit method"));
+	}
+
+	/** wraps code into a method in a class */
+	public static String wrapLocal(String localDeclarationSnippet) {
+		return  "class X {\n" +
+				"	public void myMethod() {\n" +
+				localDeclarationSnippet +
+				"	}\n" +
+				"}";
+	}
+
+	/** @see RegexFindMatcher */
+	public static Matcher<String> containsRegexMatch(@RegEx String regex) {
+		return new RegexFindMatcher(Pattern.compile(regex));
+	}
+
+	/** @see ContentEqualsMatcher */
+	@SafeVarargs
+	public static <T extends Collection<E>, E> Matcher<T> contentEquals(E... elements) {
+		return new ContentEqualsMatcher<>(Arrays.asList(elements));
 	}
 }

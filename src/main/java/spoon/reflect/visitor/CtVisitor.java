@@ -53,6 +53,7 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -73,6 +74,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
@@ -535,4 +538,22 @@ public interface CtVisitor {
 	 * Visits a yield statement.
 	 */
 	void visitCtYieldStatement(CtYieldStatement statement);
+
+	/**
+	 * Visits a pattern.
+	 *
+	 * @param pattern the pattern to visit.
+	 */
+	void visitCtTypePattern(CtTypePattern pattern);
+	/**
+	 * Visits a record.
+	 * @param recordType the record to visit.
+	 */
+	void visitCtRecord(CtRecord recordType);
+	/**
+	 * Visits a record component.
+	 * @param recordComponent  the record component to visit.
+	 */
+
+	void visitCtRecordComponent(CtRecordComponent recordComponent);
 }

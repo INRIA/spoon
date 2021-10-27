@@ -18,9 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.annotations.PropertyGetter;
@@ -33,6 +30,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModuleDirective;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
@@ -105,6 +104,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtNewArray.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtNewClass.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtOperatorAssignment.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtPattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtRHSReceiver.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtReturn.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtStatement.class));
@@ -119,6 +119,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.CtTry.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtTryWithResource.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtTypeAccess.class));
+		result.add(factory.Type().get(spoon.reflect.code.CtTypePattern.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtUnaryOperator.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtVariableAccess.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtVariableRead.class));
@@ -185,6 +186,8 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.reference.CtModuleReference.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtUsedService.class));
 		result.add(factory.Type().get(CtModuleDirective.class));
+		result.add(factory.Type().get(CtRecordComponent.class));
+		result.add(factory.Type().get(CtRecord.class));
 		return result;
 	}
 
@@ -420,9 +423,15 @@ public class Metamodel {
 	 */
 	private MetamodelConcept getOrCreateConcept(CtType<?> type) {
 		String conceptName = getConceptName(type);
-		return getOrCreate(nameToConcept, conceptName,
-				() -> new MetamodelConcept(conceptName),
-				mmConcept -> initializeConcept(type, mmConcept));
+		// computeIfAbsent is not possible here, as the initializeConcept method
+		// calls this method recursively -> ConcurrentModificationException
+		MetamodelConcept concept = nameToConcept.get(conceptName);
+		if (concept == null) {
+			concept = new MetamodelConcept(conceptName);
+			nameToConcept.put(conceptName, concept);
+			initializeConcept(type, concept);
+		}
+		return concept;
 	}
 
 	/**
@@ -516,23 +525,6 @@ public class Metamodel {
 		}
 	}
 
-	static <K, V> V getOrCreate(Map<K, V> map, K key, Supplier<V> valueCreator) {
-		return getOrCreate(map, key, valueCreator, null);
-	}
-	/**
-	 * @param initializer is called immediately after the value is added to the map
-	 */
-	static <K, V> V getOrCreate(Map<K, V> map, K key, Supplier<V> valueCreator, Consumer<V> initializer) {
-		V value = map.get(key);
-		if (value == null) {
-			value = valueCreator.get();
-			map.put(key, value);
-			if (initializer != null) {
-				initializer.accept(value);
-			}
-		}
-		return value;
-	}
 	static <T> boolean addUniqueObject(Collection<T> col, T o) {
 		if (containsObject(col, o)) {
 			return false;

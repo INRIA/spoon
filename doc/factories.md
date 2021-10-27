@@ -11,7 +11,7 @@ them in the AST built by Spoon.
 
 To do that, use `Factory` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/factory/Factory.html)). 
 `Factory` is the entry point for all factories of Spoon. Each factory 
-have a goal specific and help you in the creation of a new AST.
+has a goal specific and help you in the creation of a new AST.
 
 - `CoreFactory` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/factory/CoreFactory.html)) 
 allows the creation of any element in the meta model. To set up the objects, there are setters to initialize the object.
@@ -25,18 +25,18 @@ contains utility methods with a link to `CtType` ([javadoc](http://spoon.gforge.
 You can get any type from its fully qualified name or a .class invocation  
 and create all typed references like `CtTypeReference` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/reference/CtTypeReference.html)).
 - `ClassFactory` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/factory/ClassFactory.html)) 
-is a sub class of `TypeFactory` but specialized for `CtClass` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtClass.html)).
+is a subclass of `TypeFactory` but specialized for `CtClass` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtClass.html)).
 - `EnumFactory` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/factory/EnumFactory.html)) 
-is a sub class of `TypeFactory` but specialized for `CtEnum` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtEnum.html)).
+is a subclass of `TypeFactory` but specialized for `CtEnum` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtEnum.html)).
 - `InterfaceFactory` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/factory/InterfaceFactory.html)) 
-is a sub class of `TypeFactory` but specialized for `CtInterface` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtInterface.html)).
+is a subclass of `TypeFactory` but specialized for `CtInterface` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtInterface.html)).
 - `ExecutableFactory` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/factory/ExecutableFactory.html)) 
 contains utility methods with a link to `CtExecutable` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtExecutable.html)). 
 You can create executable objects and their parameters.
 - `ConstructorFactory` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/factory/ConstructorFactory.html)) 
-is a sub class of `ExecutableFactory` but specialized for `CtConstructor` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtConstructor.html)).
+is a subclass of `ExecutableFactory` but specialized for `CtConstructor` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtConstructor.html)).
 - `MethodFactory` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/factory/MethodFactory.html)) 
-is a sub class of `ExecutableFactory` but specialized for `CtMethod` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtMethod.html)).
+is a subclass of `ExecutableFactory` but specialized for `CtMethod` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtMethod.html)).
 - `FieldFactory` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/factory/FieldFactory.html)) 
 contains utility methods to create a valid field or a field reference.
 - `AnnotationFactory` ([javadoc](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/factory/AnnotationFactory.html)) 
@@ -58,7 +58,7 @@ Example:
             .getMethodsByName("sayHello")
             .get(0)
             .accept(v);
-    System.out.println(b.getResult());
+    System.out.println(v.getResult());
 ```
 
 will print:

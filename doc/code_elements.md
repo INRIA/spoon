@@ -426,6 +426,19 @@ int x = switch(i) { // <-- switch expression
     Class x = Number.class
 
 ```
+### CtTypePattern
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtTypePattern.html)
+
+```java
+
+    Object obj = null;
+    boolean longerThanTwo = false;
+    // String s is the type pattern, declaring a local variable
+    if (obj instanceof String s) {
+        longerThanTwo = s.length() > 2;
+    }
+
+```
 ### CtUnaryOperator
 [(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/code/CtUnaryOperator.html)
 
@@ -509,5 +522,25 @@ int x = switch(i) { // <-- switch expression
     class Foo {
        int x;
     }
+
+```
+### CtInterface
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtInterface.html)
+
+```java
+
+    // an interface definition
+    interface Foo {
+       void bar();
+    }
+
+```
+### CtRecord
+[(javadoc)](http://spoon.gforge.inria.fr/mvnsites/spoon-core/apidocs/spoon/reflect/declaration/CtRecord.html)
+
+```java
+
+   record Point(int x, int y) {
+   }
 
 ```

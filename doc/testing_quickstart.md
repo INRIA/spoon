@@ -5,7 +5,7 @@ keywords: testing, quickstart
 ---
 
 
-Spoon module testing is a Java library that provides a fluent api for writing assertions. 
+Spoon module testing is a Java library that provides a fluent API for writing assertions. 
 Its main goal is to propose an easy way to test Java source code transformation.
 
 This module is directly integrated in the spoon project and can be used as soon as the
@@ -67,4 +67,4 @@ final CtType<Foo> type = spoon.getFactory().Type().get(Foo.class);
 assertThat(type.getField("i")).withProcessor(new MyProcessor()).isEqualTo("public int j;");
 ```
 
-Note that, method `withProcessor` takes as parameter either with a processor  instance, a processor class name, a class object.
+Note that, method `withProcessor` takes as parameter either a processor instance, a processor class name, or a class object.

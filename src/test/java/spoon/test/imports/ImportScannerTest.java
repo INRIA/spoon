@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2018 INRIA and contributors
+ * Copyright (C) 2006-2021 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
  *
  * This software is governed by the CeCILL-C License under French law and
@@ -16,7 +16,7 @@
  */
 package spoon.test.imports;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
@@ -48,9 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -178,7 +176,7 @@ public class ImportScannerTest {
 				}
 			}
 
-			assertEquals("Import scanner missed " + countMissingImports + " imports",0, countMissingImports);
+			assertEquals(0, countMissingImports, "Import scanner missed " + countMissingImports + " imports");
 
 			/*
 			Set<CtType> unusedKeys = new HashSet<>(unusedImports.keySet());
@@ -286,9 +284,7 @@ public class ImportScannerTest {
 
 		ImportScanner importScanner = new ImportScannerImpl();
 		importScanner.computeImports(classes.get(0));
-		// as ArithmeticException come from java.lang it is not imported anymore
-		//assertTrue( importScanner.isImported( factory.Type().createReference( ArithmeticException.class ) ));
-		assertTrue( importScanner.isImported( factory.Type().createReference( AccessControlException.class ) ));
+		assertTrue(importScanner.isImported(factory.Type().createReference(AccessControlException.class)));
 	}
 
 	@Test

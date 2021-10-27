@@ -7,12 +7,8 @@
  */
 package spoon.support.visitor.java;
 
-import spoon.SpoonException;
-import spoon.reflect.path.CtRole;
-import spoon.support.visitor.java.reflect.RtMethod;
-import spoon.support.visitor.java.reflect.RtParameter;
-
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
@@ -25,16 +21,25 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.List;
+import spoon.SpoonException;
+import spoon.reflect.path.CtRole;
+import spoon.support.visitor.java.reflect.RtMethod;
+import spoon.support.visitor.java.reflect.RtParameter;
 
 class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
+	private static Class<?> recordClass = getRecordClass();
+
 	@Override
 	public void visitPackage(Package aPackage) {
+		for (Annotation annotation : aPackage.getDeclaredAnnotations()) {
+			visitAnnotation(annotation);
+		}
 	}
 
 	@Override
 	public <T> void visitClass(Class<T> clazz) {
 		if (clazz.getPackage() != null) {
-			clazz.getPackage();
+			visitPackage(clazz.getPackage());
 		}
 		try {
 			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
@@ -119,7 +124,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	public <T> void visitInterface(Class<T> clazz) {
 		assert clazz.isInterface();
 		if (clazz.getPackage() != null) {
-			clazz.getPackage();
+			visitPackage(clazz.getPackage());
 		}
 		try {
 			for (Type anInterface : clazz.getGenericInterfaces()) {
@@ -176,7 +181,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	public <T> void visitEnum(Class<T> clazz) {
 		assert clazz.isEnum();
 		if (clazz.getPackage() != null) {
-			clazz.getPackage();
+			visitPackage(clazz.getPackage());
 		}
 		try {
 			for (Type anInterface : clazz.getGenericInterfaces()) {
@@ -249,7 +254,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 	public <T extends Annotation> void visitAnnotationClass(Class<T> clazz) {
 		assert clazz.isAnnotation();
 		if (clazz.getPackage() != null) {
-			clazz.getPackage();
+			visitPackage(clazz.getPackage());
 		}
 		try {
 			for (Annotation annotation : clazz.getDeclaredAnnotations()) {
@@ -504,4 +509,98 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		}
 		return rtMethods;
 	}
+
+	@Override
+	public <T> void visitRecord(Class<T> clazz) {
+		if (recordClass == null) {
+			// the record class is missing we cant create any shadow element for it.
+			return;
+		}
+		try {
+			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
+					visitTypeParameter(generic);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
+		}
+		try {
+			if (clazz.getGenericSuperclass() != null && clazz.getGenericSuperclass() != Object.class) {
+				visitTypeReference(CtRole.SUPER_TYPE, clazz.getGenericSuperclass());
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
+		}
+		try {
+			for (Type anInterface : clazz.getGenericInterfaces()) {
+				visitTypeReference(CtRole.INTERFACE, anInterface);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
+		}
+		try {
+			for (Annotation annotation : clazz.getDeclaredAnnotations()) {
+				visitAnnotation(annotation);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
+		}
+		try {
+			for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+				if (constructor.isSynthetic()) {
+					continue;
+				}
+				visitConstructor(constructor);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
+		}
+		try {
+			for (RtMethod method : getDeclaredMethods(clazz)) {
+				if (method.getMethod().isSynthetic()) {
+					continue;
+				}
+				visitMethod(method);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
+		}
+		try {
+			for (Field field : clazz.getDeclaredFields()) {
+				if (field.isSynthetic()) {
+					continue;
+				}
+				visitField(field);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
+		}
+		try {
+			for (Class<?> aClass : clazz.getDeclaredClasses()) {
+				visitType(aClass);
+			}
+		} catch (NoClassDefFoundError ignore) {
+			// partial classpath
+		}
+		for (AnnotatedElement element : MethodHandleUtils.getRecordComponents(clazz)) {
+			visitRecordComponent(element);
+		}
+
+
+
+	}
+
+
+	private static Class<?> getRecordClass() {
+		try {
+			return Class.forName("java.lang.Record");
+		} catch (Exception e) {
+				return null;
+		}
+	}
+
+	@Override
+	public void visitRecordComponent(AnnotatedElement recordComponent) {
+
+	}
+
 }

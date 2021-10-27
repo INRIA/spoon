@@ -7,6 +7,7 @@
  */
 package spoon.support.compiler.jdt;
 
+import java.util.Set;
 import org.slf4j.Logger;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ASTVisitor;
@@ -30,6 +31,7 @@ import org.eclipse.jdt.internal.compiler.ast.CaseStatement;
 import org.eclipse.jdt.internal.compiler.ast.CastExpression;
 import org.eclipse.jdt.internal.compiler.ast.CharLiteral;
 import org.eclipse.jdt.internal.compiler.ast.ClassLiteralAccess;
+import org.eclipse.jdt.internal.compiler.ast.CompactConstructorDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.CompoundAssignment;
 import org.eclipse.jdt.internal.compiler.ast.ConditionalExpression;
@@ -76,6 +78,7 @@ import org.eclipse.jdt.internal.compiler.ast.QualifiedSuperReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedThisReference;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedTypeReference;
 import org.eclipse.jdt.internal.compiler.ast.Receiver;
+import org.eclipse.jdt.internal.compiler.ast.RecordComponent;
 import org.eclipse.jdt.internal.compiler.ast.ReferenceExpression;
 import org.eclipse.jdt.internal.compiler.ast.ReturnStatement;
 import org.eclipse.jdt.internal.compiler.ast.SingleMemberAnnotation;
@@ -906,10 +909,25 @@ public class JDTTreeBuilder extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(AnnotationMethodDeclaration annotationTypeDeclaration, ClassScope classScope) {
+	public boolean visit(AnnotationMethodDeclaration annotationMethodDeclaration, ClassScope classScope) {
 		CtAnnotationMethod<Object> ctAnnotationMethod = factory.Core().createAnnotationMethod();
-		ctAnnotationMethod.setSimpleName(CharOperation.charToString(annotationTypeDeclaration.selector));
-		context.enter(ctAnnotationMethod, annotationTypeDeclaration);
+		ctAnnotationMethod.setSimpleName(CharOperation.charToString(annotationMethodDeclaration.selector));
+
+		if (annotationMethodDeclaration.binding != null) {
+			ctAnnotationMethod.setExtendedModifiers(
+					getModifiers(annotationMethodDeclaration.binding.modifiers, true, ModifierTarget.METHOD)
+			);
+		}
+
+		Set<CtExtendedModifier> explicitModifiers = getModifiers(
+				annotationMethodDeclaration.modifiers,
+				false,
+				ModifierTarget.METHOD
+		);
+		for (CtExtendedModifier extendedModifier : explicitModifiers) {
+			ctAnnotationMethod.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
+		}
+		context.enter(ctAnnotationMethod, annotationMethodDeclaration);
 		return true;
 	}
 
@@ -1071,10 +1089,10 @@ public class JDTTreeBuilder extends ASTVisitor {
 		m.setSimpleName(CharOperation.charToString(methodDeclaration.selector));
 
 		if (methodDeclaration.binding != null) {
-			m.setExtendedModifiers(getModifiers(methodDeclaration.binding.modifiers, true, true));
+			m.setExtendedModifiers(getModifiers(methodDeclaration.binding.modifiers, true, ModifierTarget.METHOD));
 		}
 
-		for (CtExtendedModifier extendedModifier : getModifiers(methodDeclaration.modifiers, false, true)) {
+		for (CtExtendedModifier extendedModifier : getModifiers(methodDeclaration.modifiers, false, ModifierTarget.METHOD)) {
 			m.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
 		}
 		m.setDefaultMethod(methodDeclaration.isDefaultMethod());
@@ -1105,13 +1123,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 			c.setImplicit(scope.referenceContext.sourceStart() == constructorDeclaration.sourceStart());
 		}
 		if (constructorDeclaration.binding != null) {
-			c.setExtendedModifiers(getModifiers(constructorDeclaration.binding.modifiers, true, true));
+			c.setExtendedModifiers(getModifiers(constructorDeclaration.binding.modifiers, true, ModifierTarget.CONSTRUCTOR));
 		}
 		// avoid to add explicit modifier to implicit constructor
 		if (!c.isImplicit()) {
-			for (CtExtendedModifier extendedModifier : getModifiers(constructorDeclaration.modifiers, false, true)) {
+			for (CtExtendedModifier extendedModifier : getModifiers(constructorDeclaration.modifiers, false, ModifierTarget.CONSTRUCTOR)) {
 				c.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
 			}
+		}
+		if (constructorDeclaration instanceof CompactConstructorDeclaration) {
+			c.setCompactConstructor(true);
 		}
 		context.enter(c, constructorDeclaration);
 
@@ -1208,17 +1229,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		field.setSimpleName(CharOperation.charToString(fieldDeclaration.name));
 		if (fieldDeclaration.binding != null) {
-			if (fieldDeclaration.binding.declaringClass != null
-				&& fieldDeclaration.binding.declaringClass.isEnum()
-				&& field instanceof CtEnumValue) {
-				//enum values take over visibility from enum type
-				//JDT compiler has a bug that enum values are always public static final, even for private enum
-				field.setExtendedModifiers(getModifiers(fieldDeclaration.binding.declaringClass.modifiers, true, false));
-			} else {
-				field.setExtendedModifiers(getModifiers(fieldDeclaration.binding.modifiers, true, false));
-			}
+			field.setExtendedModifiers(getModifiers(fieldDeclaration.binding.modifiers, true, ModifierTarget.FIELD));
 		}
-		for (CtExtendedModifier extendedModifier : getModifiers(fieldDeclaration.modifiers, false, false)) {
+		for (CtExtendedModifier extendedModifier : getModifiers(fieldDeclaration.modifiers, false, ModifierTarget.FIELD)) {
 			field.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
 		}
 
@@ -1310,9 +1323,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		v.setSimpleName(CharOperation.charToString(localDeclaration.name));
 		if (localDeclaration.binding != null) {
-			v.setExtendedModifiers(getModifiers(localDeclaration.binding.modifiers, true, false));
+			v.setExtendedModifiers(getModifiers(localDeclaration.binding.modifiers, true, ModifierTarget.LOCAL_VARIABLE));
 		}
-		for (CtExtendedModifier extendedModifier : getModifiers(localDeclaration.modifiers, false, false)) {
+		for (CtExtendedModifier extendedModifier : getModifiers(localDeclaration.modifiers, false, ModifierTarget.LOCAL_VARIABLE)) {
 			v.addModifier(extendedModifier.getKind()); // avoid to keep implicit AND explicit modifier of the same kind.
 		}
 
@@ -1786,4 +1799,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 		context.enter(factory.Core().createYieldStatement().setImplicit(yieldStatement.isImplicit), yieldStatement);
 		return true;
 	}
+
+	@Override
+	public void endVisit(RecordComponent recordComponent, BlockScope scope) {
+		context.exit(recordComponent);
+	}
+
+	@Override
+	public boolean visit(RecordComponent recordComponent, BlockScope scope) {
+		context.enter(factory.Core().createRecordComponent().setSimpleName(String.valueOf(recordComponent.name)), recordComponent);
+		return super.visit(recordComponent, scope);
+	}
+
 }

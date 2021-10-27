@@ -208,7 +208,7 @@ public interface CtCompilationUnit extends CtElement {
 
 	@Override
 	@UnsettableProperty
-	<E extends CtElement> E setParent(E parent);
+	<E extends CtElement> E setParent(CtElement parent);
 
 	@Override
 	@UnsettableProperty

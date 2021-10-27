@@ -298,7 +298,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 	 * @return true if this method and thatMethod has same signature
 	 */
 	public boolean isSameSignature(CtExecutable<?> thisExecutable, CtMethod<?> thatExecutable) {
-		if ((thatExecutable instanceof CtMethod || thatExecutable instanceof CtConstructor) == false) {
+		if (thatExecutable instanceof CtConstructor) {
 			//only method or constructor can have same signature
 			return false;
 		}
@@ -710,7 +710,7 @@ public class ClassTypingContext extends AbstractTypingContext {
 					if (actualTA instanceof CtWildcardReference) {
 						CtWildcardReference wildcardReference = (CtWildcardReference) actualTA;
 						if (wildcardReference.isDefaultBoundingType()) {
-							thatType.setActualTypeArguments(Collections.EMPTY_LIST);
+							thatType.setActualTypeArguments(Collections.emptyList());
 						}
 					}
 				}

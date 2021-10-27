@@ -10,27 +10,29 @@ package spoon.support.compiler;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Objects;
 
 import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonFolder;
 
 public class ZipFile implements SpoonFile {
 
-	byte[] buffer;
+	byte[] content;
 
 	String name;
 
 	ZipFolder parent;
 
-	public ZipFile(ZipFolder parent, String name, byte[] buffer) {
-		this.buffer = buffer;
+	public ZipFile(ZipFolder parent, String name, byte[] content) {
+		this.content = content;
 		this.name = name;
 		this.parent = parent;
 	}
 
 	@Override
 	public InputStream getContent() {
-		return new ByteArrayInputStream(buffer);
+		return new ByteArrayInputStream(content);
 	}
 
 	@Override
@@ -84,13 +86,27 @@ public class ZipFile implements SpoonFile {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		return toString().equals(obj.toString());
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(content);
+		result = prime * result + Objects.hash(name, parent);
+		return result;
 	}
 
 	@Override
-	public int hashCode() {
-		return toString().hashCode();
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof ZipFile)) {
+			return false;
+		}
+		ZipFile other = (ZipFile) obj;
+		return Arrays.equals(content, other.content) && Objects.equals(name, other.name)
+				&& Objects.equals(parent, other.parent);
 	}
+
+
 
 }

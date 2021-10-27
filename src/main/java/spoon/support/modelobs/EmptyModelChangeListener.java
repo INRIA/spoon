@@ -73,6 +73,11 @@ public class EmptyModelChangeListener implements FineModelChangeListener {
 	}
 
 	@Override
+	public <K, V> void onMapDelete(CtElement currentElement, CtRole role, Map<K, V> field, K key,
+			CtElement oldValue) {
+	}
+
+	@Override
 	public <K, V> void onMapDeleteAll(CtElement currentElement, CtRole role,
 			Map<K, V> field, Map<K, V> oldValue) {
 	}

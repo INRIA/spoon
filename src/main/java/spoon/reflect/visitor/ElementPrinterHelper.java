@@ -18,7 +18,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtCompilationUnit;
-import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
@@ -177,13 +176,12 @@ public class ElementPrinterHelper {
 	 */
 	public void writeElementList(List<CtTypeMember> elements) {
 		for (CtTypeMember element : elements) {
-			if (element instanceof CtConstructor && element.isImplicit()) {
-				continue;
-			}
-			printer.writeln();
-			prettyPrinter.scan(element);
-			if (!env.isPreserveLineNumbers()) {
+			if (!element.isImplicit()) {
 				printer.writeln();
+				prettyPrinter.scan(element);
+				if (!env.isPreserveLineNumbers()) {
+					printer.writeln();
+				}
 			}
 		}
 	}

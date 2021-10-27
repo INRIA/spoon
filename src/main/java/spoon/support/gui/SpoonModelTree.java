@@ -137,9 +137,8 @@ public class SpoonModelTree extends JFrame implements KeyListener,
 					boolean cont = chooser.showSaveDialog(SpoonModelTree.this) == JFileChooser.APPROVE_OPTION;
 					if (cont) {
 						SerializationModelStreamer ser = new SerializationModelStreamer();
-						try {
-							ser.save(factory, new FileOutputStream(chooser
-									.getSelectedFile()));
+						try (FileOutputStream out = new FileOutputStream(chooser.getSelectedFile())) {
+							ser.save(factory, out);
 						} catch (IOException e1) {
 							Launcher.LOGGER.error(e1.getMessage(), e1);
 						}

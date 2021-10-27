@@ -53,6 +53,7 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -73,6 +74,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
@@ -97,7 +100,7 @@ import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 
 import java.lang.annotation.Annotation;
 
-/** Provides an empty implementation of CtVIsitor.
+/** Provides an empty implementation of CtVisitor.
  *  See {@link CtScanner} for a much more powerful implementation of CtVisitor.
  */
 public abstract class CtAbstractVisitor implements CtVisitor {
@@ -535,4 +538,21 @@ public abstract class CtAbstractVisitor implements CtVisitor {
 	public void visitCtYieldStatement(CtYieldStatement statement) {
 
 	}
+
+	@Override
+	public void visitCtTypePattern(CtTypePattern pattern) {
+
+	}
+
+	@Override
+	public void visitCtRecord(CtRecord recordType) {
+
+	}
+
+	@Override
+	public void visitCtRecordComponent(CtRecordComponent recordComponent) {
+
+	}
+
+
 }

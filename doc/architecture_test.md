@@ -7,7 +7,7 @@ In software, an architectural rule (aka architectural constraint) specifies a de
 Architectural rules can be written as AST analysis, which makes Spoon very appropriate to express and check them.
 Since architectural rules must be automatically checked as often as possible, it's good to have them part of continuous integration.
 
-To write an architectural rule in Spoon that is checked in CI, the idea is to write a standard Junit test case that loads the application code, express the rule and check it. Doing this only requires to depend on Spoon at testing time, ie `<scope>test</scope>` in Maven.
+To write an architectural rule in Spoon that is checked in CI, the idea is to write a standard Junit test case that loads the application code, express the rule and check it. Doing this only requires to depend on Spoon at testing time, i.e., `<scope>test</scope>` in Maven.
 
 ### Example rule: never use the TreeSet constructor
 

@@ -68,6 +68,7 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
+import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
@@ -93,6 +94,8 @@ import spoon.reflect.declaration.CtPackageDeclaration;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.reference.CtArrayTypeReference;
@@ -820,6 +823,22 @@ public class PatternBuilder implements CtVisitor {
 	public void visitCtYieldStatement(CtYieldStatement ctYieldStatement) {
 		throw new NotImplementedException("Not implemented");
 	}
+
+	@Override
+	public void visitCtTypePattern(CtTypePattern pattern) {
+		throw new NotImplementedException("Not implemented");
+	}
+
+	@Override
+	public void visitCtRecord(CtRecord recordType) {
+		throw new NotImplementedException("Not implemented");
+	}
+
+	@Override
+	public void visitCtRecordComponent(CtRecordComponent recordComponent) {
+		throw new NotImplementedException("Not implemented");
+	}
+
 
 	/**
 	 * Parameter identifiers.

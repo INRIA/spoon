@@ -836,6 +836,11 @@ public class PositionTest {
 		String classContent = getClassContent(type);
 		
 		CtExtendedModifier modifier = type.getExtendedModifiers().iterator().next();
+		// a type might have implicit modifiers, and those should not have a valid position
+		if (modifier.isImplicit()) {
+			assertFalse(modifier.getPosition().isValidPosition());
+			return;
+		}
 		SourcePosition commentPos = type.getComments().get(0).getPosition();
 		//modifier is not positioned in comment, but after comment
 		assertTrue(commentPos.getSourceEnd() < modifier.getPosition().getSourceStart());

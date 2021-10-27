@@ -85,6 +85,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackageExport;
 import spoon.reflect.declaration.CtProvidedService;
+import spoon.reflect.declaration.CtRecord;
+import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageDeclaration;
@@ -1065,5 +1067,17 @@ public interface Factory {
 	 *  @see CoreFactory#createYieldStatement()
 	 */
 	CtYieldStatement createYieldStatement(boolean isImplicit);
+
+	/**
+	 * @see CoreFactory#createRecord()
+	 * @return a CtRecord
+	 */
+	CtRecord createRecord();
+
+	/**
+	 * @see CoreFactory#createRecordComponent()
+	 * @return a CtRecordComponent.
+	 */
+	CtRecordComponent createRecordComponent();
 
 }

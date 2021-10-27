@@ -49,7 +49,7 @@ public class VirtualFolder implements SpoonFolder {
 
 	@Override
 	public List<SpoonFile> getFiles() {
-		return Collections.unmodifiableList(new ArrayList<>(files));
+		return List.copyOf(files);
 	}
 
 	@Override

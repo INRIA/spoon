@@ -53,8 +53,8 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.OverridingMethodFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtModifierHandler;
+import spoon.support.util.internal.ElementNameMap;
 import spoon.support.util.ModelList;
-import spoon.support.util.ModelSet;
 import spoon.support.visitor.clone.CloneBuilder;
 
 import java.util.ArrayList;
@@ -212,11 +212,12 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					"spoon.support.reflect.declaration.CtGenericElementImpl", "spoon.support.reflect.reference.CtGenericElementReferenceImpl", //
 					"spoon.support.reflect.declaration.CtModifiableImpl", "spoon.support.reflect.declaration.CtMultiTypedElementImpl", //
 					"spoon.support.reflect.declaration.CtTypeMemberImpl", "spoon.support.reflect.code.CtRHSReceiverImpl",
-					"spoon.support.reflect.declaration.CtShadowableImpl", "spoon.support.reflect.code.CtBodyHolderImpl", "spoon.support.reflect.declaration.CtModuleDirectiveImpl");
+					"spoon.support.reflect.declaration.CtShadowableImpl", "spoon.support.reflect.code.CtBodyHolderImpl", "spoon.support.reflect.declaration.CtModuleDirectiveImpl",
+					"spoon.support.reflect.code.CtPatternImpl");
 			private final List<String> excludesFields = Arrays.asList("factory", "elementValues", "target", "rootFragment", "originalSourceCode", "myPartialSourcePosition");
 			private final Set<String> collectionClasses = new HashSet<>(Arrays.asList(
 					List.class.getName(), Collection.class.getName(), Set.class.getName(),
-					ModelList.class.getName(), ModelSet.class.getName()));
+					ModelList.class.getName(), ElementNameMap.class.getName()));
 			private final CtTypeReference<CtElement> CTELEMENT_REFERENCE = factory.Type().createReference(CtElement.class);
 			private final CtClass<?> GETTER_TEMPLATE_MATCHER_CLASS = factory.Class().get(GENERATING_CLONE_PACKAGE + ".GetterTemplateMatcher");
 			private final CtClass<?> SETTER_TEMPLATE_MATCHER_CLASS = factory.Class().get(GENERATING_CLONE_PACKAGE + ".SetterTemplateMatcher");
@@ -250,11 +251,15 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					if (isSubTypeOfCtElement(ctField.getType())) {
 						continue;
 					}
-					final CtMethod<?> setterOfField = getSetterOf(ctField);
-					final CtInvocation<?> setterInvocation = createSetterInvocation(//
-							element.getParameters().get(0).getType(), setterOfField, //
-							createGetterInvocation(element.getParameters().get(0), getGetterOf(ctField)));
-					final List<CtMethod<?>> methodsToAvoid = getCtMethodThrowUnsupportedOperation(setterOfField);
+
+					CtParameter<?> receiver = element.getParameters().get(0);
+					CtMethod<?> setter = getSetterOf(ctField);
+					CtMethod<?> getter = getGetterOf(ctField);
+					CtInvocation<?> setterInvocation = createSetterInvocationWithGetterReturnValueAsArgument(
+							receiver, getter, setter
+					);
+
+					List<CtMethod<?>> methodsToAvoid = getCtMethodThrowUnsupportedOperation(setter);
 					if (!methodsToAvoid.isEmpty()) {
 						clone.getBody().addStatement(createProtectionToException(setterInvocation, methodsToAvoid));
 					} else {
@@ -272,6 +277,69 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 
 					targetBuilder.addMethod(clone);
 				}
+			}
+
+			/**
+			 * Creates an invocation that sets a value on the clone by calling the passed
+			 * getter, cloning the argument if is "getExtendedModifiers" and then calling the
+			 * passed setter.
+			 * <p>
+			 *   The generated method call will look something like the following:
+			 *   <br>
+			 *   {@code ((spoon.reflect.code.CtCodeSnippetExpression<T>) (other)).setValue(e.getValue())}
+			 *   <br>
+			 *   where "setValue" is the getter, "e" is the receiver and "getValue" is the getter.
+			 * </p>
+			 * <br>
+			 * <p>
+			 *   If the getter's name is "getExtendedModifiers", a {@code clone} call will be inserted:
+			 *   <br>
+			 *   {@code ((spoon.reflect.declaration.CtType<T>) (other)).setExtendedModifiers(clone(type.getExtendedModifiers()))}
+			 *   <br>
+			 *   This ensures the CtExtendedModifiers are actually cloned as they are <em>mutable</em>.
+			 * </p>
+			 *
+			 * @param receiver the receiver to call the getter on
+			 * @param getter the getter to fetch values with
+			 * @param setter the setter to set values with
+			 * @return an invocation that sets the value
+			 */
+			private CtInvocation<?> createSetterInvocationWithGetterReturnValueAsArgument(
+					CtParameter<?> receiver, CtMethod<?> getter, CtMethod<?> setter) {
+				CtInvocation<?> fetchValueInvocation = createFetchValueInvocation(receiver, getter);
+
+				CtExpression<?> setterInvocationTarget = otherRead.clone().addTypeCast(receiver.getType());
+
+				return factory.Code().createInvocation(
+						setterInvocationTarget,
+						setter.getReference(),
+						fetchValueInvocation
+				);
+			}
+
+			private CtInvocation<?> createFetchValueInvocation(CtParameter<?> receiver, CtMethod<?> getter) {
+				CtInvocation<?> getterInvocation = createGetterInvocation(receiver, getter);
+
+				if (getter.getSimpleName().equals("getExtendedModifiers")) {
+					// CtExtendedModifiers are treated specially throughout this class. When cloning an object
+					// we need to clone the extended modifiers as well. This is not handled by the
+					// CloneVisitor, as CtExtendedModifiers are no CtElement and therefore our CloneBuilder
+					// needs to do that itself.
+					// This rewrites the getter invocation:
+					//   `original.getExtendedModifiers()` to `clone(original.getExtendedModifiers())`
+					// The clone method is defined in the CloneBuilderTemplate.
+					return wrapExtendedModifiersGetterInvocationInClone(getterInvocation);
+				}
+
+				return getterInvocation;
+			}
+
+			private CtInvocation<?> wrapExtendedModifiersGetterInvocationInClone(CtInvocation<?> getterInvocation) {
+				CtExecutableReference<Object> cloneReference = factory.Executable()
+						.createReference(
+								"Set<CtExtendedModifier> #clone(Set<CtExtendedModifier>)"
+						);
+				return factory.Code().createInvocation(null, cloneReference, getterInvocation);
 			}
 
 			/**
@@ -397,26 +465,16 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			}
 
 			/**
-			 * Creates <code>((CtElement) other).setX(element.getX())</code>
-			 * or <code>((CtElement) other).setX(new Collection(element.getX()))</code>
-			 * if the field is a collection.
-			 *
-			 * @param type <code>CtElement</code>
-			 * @param setter <code>setX</code>.
-			 * @param getter <code>getX</code>.
-			 */
-			private CtInvocation<?> createSetterInvocation(CtTypeReference<?> type, CtMethod<?> setter, CtInvocation<?> getter) {
-				return factory.Code().createInvocation(otherRead.clone().addTypeCast(type), setter.getReference(), getter);
-			}
-
-			/**
 			 * Creates <code>element.getX()</code>.
 			 *
 			 * @param element <code>element</code>.
 			 * @param getter <code>getX</code>.
 			 */
 			private CtInvocation<?> createGetterInvocation(CtParameter<?> element, CtMethod<?> getter) {
-				return factory.Code().createInvocation(factory.Code().createVariableRead(element.getReference(), false), getter.getReference());
+				return factory.Code().createInvocation(
+						factory.Code().createVariableRead(element.getReference(), false),
+						getter.getReference()
+				);
 			}
 
 			/**
@@ -424,7 +482,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 */
 			private <T> CtMethod<?> getSetterOf(final CtField<T> ctField) {
 				if (ctField.getType().equals(getFactory().createCtTypeReference(CtModifierHandler.class))) {
-					return ctField.getDeclaringType().getMethodsByName("setModifiers").get(0);
+					return ctField.getDeclaringType().getMethodsByName("setExtendedModifiers").get(0);
 				}
 				// Search by name convention.
 				for (CtMethod<?> ctMethod : ctField.getDeclaringType().getMethods()) {
@@ -470,7 +528,7 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 			 */
 			private <T> CtMethod<?> getGetterOf(CtField<T> ctField) {
 				if (ctField.getType().equals(getFactory().createCtTypeReference(CtModifierHandler.class))) {
-					return ctField.getDeclaringType().getMethod("getModifiers");
+					return ctField.getDeclaringType().getMethod("getExtendedModifiers");
 				}
 				// Search by name convention.
 				for (CtMethod<?> ctMethod : ctField.getDeclaringType().getMethods()) {
@@ -515,6 +573,9 @@ public class CloneVisitorGenerator extends AbstractManualProcessor {
 					if (collectionClasses.contains(type.getQualifiedName())) {
 						if (type.getActualTypeArguments().get(0).isSubtypeOf(CTELEMENT_REFERENCE)) {
 							return true;
+						}
+						if (type.getQualifiedName().equals(ElementNameMap.class.getName())) {
+							return type.getActualTypeArguments().get(1).isSubtypeOf(CTELEMENT_REFERENCE);
 						}
 					}
 				}

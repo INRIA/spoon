@@ -415,7 +415,7 @@ public class ContractVerifier {
 	public void checkParentConsistency(CtElement element) {
 		final Set<CtElement> inconsistentParents = new HashSet<>();
 		new CtScanner() {
-			private Deque<CtElement> previous = new ArrayDeque();
+			private Deque<CtElement> previous = new ArrayDeque<>();
 
 			@Override
 			protected void enter(CtElement e) {
