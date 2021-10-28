@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -48,18 +49,7 @@ public class ZipFolder implements SpoonFolder {
 
 	@Override
 	public List<SpoonFile> getAllJavaFiles() {
-		List<SpoonFile> files = new ArrayList<>();
-
-		for (SpoonFile f : getFiles()) {
-			if (f.isJava()) {
-				files.add(f);
-			}
-		}
-
-		// no subfolder, skipping
-		// for (CtFolder fol : getSubFolder())
-		// files.addAll(fol.getAllJavaFile());
-		return files;
+		return getFiles().stream().filter(SpoonFile::isJava).collect(Collectors.toList());
 	}
 
 	@Override
