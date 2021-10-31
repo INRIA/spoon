@@ -34,8 +34,6 @@ public class PackageFactory extends SubFactory {
 	 */
 	public PackageFactory(Factory factory) {
 		super(factory);
-		String[] a = new String[0];
-		String s = a.toString();
 	}
 
 	/**
