@@ -145,8 +145,6 @@ jobs:
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # renovate: tag=v2.3.4
         with:
           path: pull_request
-      - name: delete me
-        run: ls -A
       - name: Checkout
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # renovate: tag=v2.3.4
         with:
@@ -166,8 +164,6 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
-      - name: delete me
-        run: ls -A
       - name: "Create folder"
         run: "mkdir -p ${{ github.workspace }}/result/master"
       - name: Qodana - Code Inspection
@@ -177,12 +173,6 @@ jobs:
           project-dir: "${{ github.workspace }}/master"
           inspected-dir: ./src/main/java # only main spoon project at first
           results-dir:  "${{ github.workspace }}/result/master"
-      - name: "Print world"
-        run: "ls -lah ."
-      - name: "Print world too"
-        run: "ls -lah result"
-      - name: "Print world too"
-        run: "ls -lah result/master"
       - name: Qodana - Code Inspection
         uses: JetBrains/qodana-action@v3.2.1
         with:
@@ -193,8 +183,6 @@ jobs:
           baseline-include-absent: true
           results-dir:  "${{ github.workspace }}/result"
           fail-threshold: 1
-      - name: delete me
-        run: find . -maxdepth 6 -type d -ls
       - name: print problem number
         run: jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/result/qodana.sarif.json
       - name: Fail on problems
