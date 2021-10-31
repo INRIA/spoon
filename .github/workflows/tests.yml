@@ -154,16 +154,6 @@ jobs:
         with:
           java-version: 16
           distribution: ${{ env.JAVA_DISTRIBUTION }}
-      - name: Get date for cache # see https://github.com/actions/cache README
-        id: get-date
-        run: echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
-        shell: bash
-      - name: Use Maven dependency cache
-        uses: actions/cache@c64c572235d810460d0d6876e9c705ad5002b353 # renovate: tag=v2.1.6
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-maven-
       - name: "Create folder"
         run: "mkdir -p ${{ github.workspace }}/result/master"
       - name: Qodana - Code Inspection
