@@ -24,7 +24,5 @@ include:
   - name: UnnecessaryLocalVariable
   - name: UnnecessaryUnboxing
   - name: UNUSED_IMPORT
-  - name: UseOfClone
 exclude:
-  - name: JavaAnnotator # Counter - Hours wasted: 4
-  - name: OptionalUsedAsFieldOrParameterType
+  - name: UseOfClone
