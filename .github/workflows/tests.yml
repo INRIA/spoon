@@ -150,6 +150,8 @@ jobs:
         with:
           path: master
           ref: master
+      - name: copy config file
+        run: cp pull_request/qodana.yml master/qodana.yml
       - uses: actions/setup-java@8db439b6b47e5e12312bf036760bbaa6893481ac # renovate: tag=v2.3.1
         with:
           java-version: 16
