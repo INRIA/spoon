@@ -175,25 +175,8 @@ jobs:
           baseline-include-absent: true
           results-dir:  "${{ github.workspace }}/result"
           fail-threshold: 1
-      - name: Format comment
-        run: cat ${{ github.workspace }}/result/qodana.sarif.json | python chore/commenter.py
-        id: commenter
-      - name: Find Comment # only works on PRs, not on pushes (merges)
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: peter-evans/find-comment@v1
-        id: fc
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: "Qodana"
-      - name: Create or Update Comment
-        if: ${{ github.event_name == 'pull_request' && (steps.fc.outputs.comment-id || steps.commenter.outputs.has-problems) }}
-        uses: peter-evans/create-or-update-comment@v1.4.5
-        with:
-          edit-mode: replace
-          comment-id: ${{ steps.fc.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body: ${{ steps.commenter.outputs.body }
+      - name: Print problems
+        run: jq '.runs | .[0].results | map(select (.baselineState == "new"))' ${{ github.workspace }}/result/qodana.sarif.json
       - name: print problem number
         run: jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/result/qodana.sarif.json
       - name: Fail on problems
