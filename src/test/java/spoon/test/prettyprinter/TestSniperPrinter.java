@@ -811,16 +811,16 @@ public class TestSniperPrinter {
 		launcher.buildModel();
 		Factory f = launcher.getFactory();
 
-		final CtClass<?> ctClass = f.Class().get(testClass);
+		final CtType<?> ctType = f.Type().get(testClass);
 
 		//change the model
-		transformation.accept(ctClass);
+		transformation.accept(ctType);
 
 		//print the changed model
 		launcher.prettyprint();
 
 		//check the printed file
-		resultChecker.accept(ctClass, getContentOfPrettyPrintedClassFromDisk(ctClass));
+		resultChecker.accept(ctType, getContentOfPrettyPrintedClassFromDisk(ctType));
 	}
 
 	private static Launcher createLauncherWithSniperPrinter() {
