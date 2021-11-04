@@ -27,6 +27,6 @@ Output:
 /*Output code or stacktrace if unexpected Exception is raised*/
 ```
 
-Note that a pull request containing a test demonstrating the bug is even more welcome than an issue!
+Note that you can also open a pull request reproducing the issue and reference that, instead of writing additional information here.
 
 **JDK and Spoon version used**
