@@ -29,4 +29,4 @@ Output:
 
 Note that a pull request containing a test demonstrating the bug is even more welcome than an issue!
 
-**Spoon version used**
+**JDK and Spoon version used**
