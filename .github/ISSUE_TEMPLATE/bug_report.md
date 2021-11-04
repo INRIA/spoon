@@ -29,4 +29,8 @@ Output:
 
 Note that you can also open a pull request reproducing the issue and reference that, instead of writing additional information here.
 
-**JDK and Spoon version used**
+**Operating system, JDK and Spoon version used**
+
+* OS:
+* JDK:
+* Spoon version:
