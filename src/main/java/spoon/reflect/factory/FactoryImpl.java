@@ -1307,8 +1307,6 @@ public class FactoryImpl implements Factory, Serializable {
 
 	@Override
 	public CtRecord createRecord() {
-		String[] a = null;
-		a.toString();
 		return Core().createRecord();
 	}
 
