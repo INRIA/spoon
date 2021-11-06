@@ -525,7 +525,7 @@ public class SpoonPom implements SpoonResource {
 		try {
 			String[] cmd;
 			if (System.getProperty("os.name").contains("Windows")) {
-				cmd = new String[]{"mvn.cmd", "-version"};
+				cmd = new String[]{"cmd", "/c", "\"mvn -version\""};
 			} else if (System.getProperty("os.name").contains("Mac")) {
 				cmd = new String[]{"sh", "-c", "mvn -version"};
 			} else {
