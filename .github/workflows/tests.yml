@@ -178,7 +178,8 @@ jobs:
       - name: Print problems
         run: jq '.runs | .[0].results | map(select (.baselineState == "new"))' ${{ github.workspace }}/result/qodana.sarif.json
       - name: print problem number
-        run: "jq '.runs | .[0].results | map(select (.baselineState == \"new\")) | length ${{ github.workspace }}/result/qodana.sarif.json"
+        run: >
+          jq '.runs | .[0].results | map(select (.baselineState == "new") | {text: .message.text, location: .locations | map(.physicalLocation.contextRegion.snippet.text) })' ${{ github.workspace }}/result/qodana.sarif.json
       - name: Fail on problems
         run: |
           VIOLATIONS=$(jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/result/qodana.sarif.json)
