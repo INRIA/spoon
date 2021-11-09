@@ -179,6 +179,6 @@ jobs:
         run: jq '.runs | .[0].results | map(select (.baselineState == "new"))' ${{ github.workspace }}/result/qodana.sarif.json
       - name: print problems(short)
         run: |
-          jq '.runs | .[0].results | map(select (.baselineState == "new") | {text: .message.text, file: .locations.physicalLocation.artifactLocation.uri, location: .locations | map(.physicalLocation.contextRegion.snippet.text) })' ${{ github.workspace }}/result/qodana.sarif.json
+          jq '.runs | .[0].results | map(select (.baselineState == "new") | {text: .message.text, file: .locations | map(.physicalLocation.artifactLocation.uri), location: .locations | map(.physicalLocation.contextRegion.snippet.text) })' ${{ github.workspace }}/result/qodana.sarif.json
           VIOLATIONS=$(jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/result/qodana.sarif.json)
           if [ "$VIOLATIONS" -gt "0" ]; then exit 1; fi
