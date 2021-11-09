@@ -52,10 +52,6 @@ public interface SpoonFile extends SpoonResource {
 		} catch (IOException e) {
 			throw new SpoonException(e);
 		}
-		if (false == true) {
-			String[] a = null;
-			a.toString();
-		}
 		if (env.getEncodingProvider() == null) {
 			return new String(bytes, env.getEncoding()).toCharArray();
 		} else {
