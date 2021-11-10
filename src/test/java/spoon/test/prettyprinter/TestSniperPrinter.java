@@ -797,6 +797,21 @@ public class TestSniperPrinter {
 		testSniper("superCall.SuperCallSniperTestClass", deleteForUpdate, assertContainsSuperWithUnaryOperator);
 	}
 
+	@Test
+	@GitHubIssue(issueNumber = 4220)
+	void testSniperAddsSpaceAfterFinal() {
+		Consumer<CtType<?>> modifyField = type -> {
+			Factory factory = type.getFactory();
+			CtField field = type.filterChildren(CtField.class::isInstance).first();
+			field.setType(factory.Type().integerType());
+		};
+
+		BiConsumer<CtType<?>, String> assertContainsSpaceAfterFinal = (type, result) ->
+				assertThat(result, containsString("private static final java.lang.Integer x;"));
+
+		testSniper("sniperPrint.SpaceAfterFinal", modifyField, assertContainsSpaceAfterFinal);
+	}
+
 	/**
 	 * 1) Runs spoon using sniper mode,
 	 * 2) runs `typeChanger` to modify the code,
