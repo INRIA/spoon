@@ -147,7 +147,7 @@ public class CtRecordTest {
 	}
 
 	@Test
-	void printGenericRecord() {
+	void testGenericTypeParametersArePrintedBeforeTheFunctionParameters() {
 		// a record with generic type arguments should be printed correctly 
 		String code = "src/test/resources/records/GenericRecord.java";
 		CtModel model = createModelFromPath(code);
