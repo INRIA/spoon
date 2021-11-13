@@ -148,7 +148,7 @@ public class CtRecordTest {
 
 	@Test
 	void testGenericTypeParametersArePrintedBeforeTheFunctionParameters() {
-		// a record with generic type arguments should be printed correctly 
+		// contract: a record with generic type arguments should be printed correctly 
 		String code = "src/test/resources/records/GenericRecord.java";
 		CtModel model = createModelFromPath(code);
 		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
