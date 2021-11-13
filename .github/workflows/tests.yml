@@ -159,14 +159,14 @@ jobs:
       - name: "Create folder"
         run: "mkdir -p ${{ github.workspace }}/result/master"
       - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@v3.2.1
+        uses: JetBrains/qodana-action@cd7dc31b49427ce740ebf6255319b267801d08cf # renovate: tag=v3.2.1
         with:
           linter: qodana-jvm-community
           project-dir: "${{ github.workspace }}/master"
           inspected-dir: ./src/main/java # only main spoon project at first
           results-dir:  "${{ github.workspace }}/result/master"
       - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@v3.2.1
+        uses: JetBrains/qodana-action@cd7dc31b49427ce740ebf6255319b267801d08cf # renovate: tag=v3.2.1
         with:
           linter: qodana-jvm-community
           project-dir: "${{ github.workspace }}/pull_request"
