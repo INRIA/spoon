@@ -146,6 +146,16 @@ public class CtRecordTest {
 		return model;
 	}
 
+	@Test
+	void testGenericTypeParametersArePrintedBeforeTheFunctionParameters() {
+		// contract: a record with generic type arguments should be printed correctly 
+		String code = "src/test/resources/records/GenericRecord.java";
+		CtModel model = createModelFromPath(code);
+		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
+		CtRecord record = head(records);
+		assertEquals("public record GenericRecord<T>(T a, T b) {}", record.toString());
+	}
+
 	private <T> T head(Collection<T> collection) {
 		return collection.iterator().next();
 	}

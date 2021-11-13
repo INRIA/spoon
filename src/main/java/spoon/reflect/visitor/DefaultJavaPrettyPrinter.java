@@ -2197,8 +2197,8 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		context.pushCurrentThis(recordType);
 		visitCtType(recordType);
 		printer.writeKeyword("record").writeSpace().writeIdentifier(stripLeadingDigits(recordType.getSimpleName()));
-		elementPrinterHelper.printList(recordType.getRecordComponents(), null, false, "(", false, false, ",", true, false, ")", this::visitCtRecordComponent);
 		elementPrinterHelper.writeFormalTypeParameters(recordType);
+		elementPrinterHelper.printList(recordType.getRecordComponents(), null, false, "(", false, false, ",", true, false, ")", this::visitCtRecordComponent);
 		elementPrinterHelper.writeImplementsClause(recordType);
 
 		printer.writeSpace().writeSeparator("{").incTab();
