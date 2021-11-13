@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
@@ -313,7 +314,7 @@ public class TestModule {
 		batchCompiler.configure(args);
 
 		CompilationUnit[] cu = batchCompiler.getCompilationUnits();
-		List list = new ArrayList<>(Arrays.asList(new String[]{String.copyValueOf(cu[0].module),String.copyValueOf(cu[1].module)}));
+		List<String> list = Arrays.stream(cu).map(CompilationUnit::getModuleName).map(String::copyValueOf).collect(Collectors.toList());
 		assertTrue(list.contains("foo"));
 		assertTrue(list.contains("bar"));
 	}
