@@ -17,6 +17,8 @@
 package spoon.test.module;
 
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -54,12 +56,16 @@ import java.util.List;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -314,9 +320,8 @@ public class TestModule {
 		batchCompiler.configure(args);
 
 		CompilationUnit[] cu = batchCompiler.getCompilationUnits();
-		List<String> list = Arrays.stream(cu).map(CompilationUnit::getModuleName).map(String::copyValueOf).collect(Collectors.toList());
-		assertTrue(list.contains("foo"));
-		assertTrue(list.contains("bar"));
+		Set<String> list = Arrays.stream(cu).map(CompilationUnit::getModuleName).map(String::copyValueOf).collect(Collectors.toSet());
+		MatcherAssert.assertThat(list, is(Set.of("foo", "bar")));
 	}
 
 	@org.junit.jupiter.api.Test
