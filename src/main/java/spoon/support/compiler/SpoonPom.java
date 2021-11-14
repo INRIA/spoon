@@ -525,6 +525,9 @@ public class SpoonPom implements SpoonResource {
 		try {
 			String[] cmd;
 			if (System.getProperty("os.name").contains("Windows")) {
+				// We launch a subshell in case of Windows because the subprocess below is unable to look up the PATH
+				// on Windows.
+				// See https://github.com/SpoonLabs/sorald/runs/4193699004?check_suite_focus=true#step:8:11.
 				cmd = new String[]{"cmd", "/c", "\"mvn -version\""};
 			} else if (System.getProperty("os.name").contains("Mac")) {
 				cmd = new String[]{"sh", "-c", "mvn -version"};
