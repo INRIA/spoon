@@ -17,8 +17,6 @@
 package spoon.test.module;
 
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -37,9 +35,9 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleDirective;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageExport;
-import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
@@ -52,20 +50,18 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Collections;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -321,7 +317,7 @@ public class TestModule {
 
 		CompilationUnit[] cu = batchCompiler.getCompilationUnits();
 		Set<String> list = Arrays.stream(cu).map(CompilationUnit::getModuleName).map(String::copyValueOf).collect(Collectors.toSet());
-		MatcherAssert.assertThat(list, is(Set.of("foo", "bar")));
+		assertThat(list, is(Set.of("foo", "bar")));
 	}
 
 	@org.junit.jupiter.api.Test
