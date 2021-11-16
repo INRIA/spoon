@@ -11,15 +11,13 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtExtendedModifier;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.fail;
+import static spoon.test.SpoonTestHelpers.contentEquals;
 
-
+// TODO compliance level 17 and no preview features
 public class SealedClassesTest {
 
 	@Test
@@ -72,7 +70,13 @@ public class SealedClassesTest {
 		// not final
 		assertThat(ctEnum.isFinal(), is(false));
 		// but (implicitly) sealed
-		assertThat(ctEnum.getExtendedModifiers(), hasItem(new CtExtendedModifier(ModifierKind.SEALED, true)));
+		assertThat(ctEnum.getExtendedModifiers(), contentEquals(
+				new CtExtendedModifier(ModifierKind.PUBLIC, false),
+				new CtExtendedModifier(ModifierKind.SEALED, true)
+		));
+
+		assertThat(ctEnum.getPermittedTypes(),
+				contentEquals(ctEnum.getEnumValue("VALUE").getDefaultExpression().getType()));
 	}
 
 	@Test
