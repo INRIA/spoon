@@ -205,6 +205,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 			return (E) this;
 		}
 		this.annotations.clear();
+		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.ANNOTATION, this.annotations, new ArrayList<>(this.annotations));
 		for (CtAnnotation<? extends Annotation> annot : annotations) {
 			addAnnotation(annot);
 		}
