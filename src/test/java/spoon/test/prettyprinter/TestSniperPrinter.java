@@ -798,6 +798,22 @@ public class TestSniperPrinter {
 	}
 
 	@Test
+	@GitHubIssue(issueNumber = 3911)
+	@Disabled("UnresolvedBug")
+	void testRoundBracketPrintingInComplexArithmeticExpression() {
+		Consumer<CtType<?>> noOpModifyFieldAssignment = type ->
+				type.getField("value")
+						.getAssignment()
+						.descendantIterator()
+						.forEachRemaining(TestSniperPrinter::markElementForSniperPrinting);
+
+		BiConsumer<CtType<?>, String> assertPrintsRoundBracketsCorrectly = (type, result) ->
+				assertThat(result, containsString("((double) (3 / 2)) / 2"));
+
+		testSniper("ArithmeticExpression", noOpModifyFieldAssignment, assertPrintsRoundBracketsCorrectly);
+	}
+
+	@Test
 	@GitHubIssue(issueNumber = 4218)
 	void testSniperDoesNotPrintTheDeletedAnnotation() {
 		Consumer<CtType<?>> deleteAnnotation = type -> {
@@ -979,16 +995,23 @@ public class TestSniperPrinter {
 
 		launcher.addInputResource(file.toString());
 		launcher.setSourceOutputDirectory(outputPath.toString());
-		launcher.addProcessor(new AbstractProcessor<CtElement>() {
+		launcher.addProcessor(new AbstractProcessor<>() {
 			public void process(CtElement element) {
-				// Do a no-op change, this will force the sniper printer to update the source
-				SourcePosition pos = element.getPosition();
-				element.setPosition(SourcePosition.NOPOSITION);
-				element.setPosition(pos);
+				markElementForSniperPrinting(element);
 			}
 		});
 		launcher.run();
 
 		assertTrue(FileUtils.contentEquals(file, outputFile),"File " + outputFile.getAbsolutePath() + " is different");
+	}
+
+	/**
+	 * Modify an element such that the sniper printer detects it as modified, without changing its final content. This
+	 * forces it to be sniper-printed "as-is".
+	 */
+	private static void markElementForSniperPrinting(CtElement element) {
+		SourcePosition pos = element.getPosition();
+		element.setPosition(SourcePosition.NOPOSITION);
+		element.setPosition(pos);
 	}
 }
