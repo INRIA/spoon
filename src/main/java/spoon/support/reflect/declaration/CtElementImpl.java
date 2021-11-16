@@ -200,6 +200,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	@Override
 	public <E extends CtElement> E setAnnotations(List<CtAnnotation<? extends Annotation>> annotations) {
 		if (annotations == null || annotations.isEmpty()) {
+			getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, CtRole.ANNOTATION, this.annotations, new ArrayList<>(this.annotations));
 			this.annotations = emptyList();
 			return (E) this;
 		}

@@ -28,6 +28,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
@@ -73,6 +74,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -809,6 +811,19 @@ public class TestSniperPrinter {
 				assertThat(result, containsString("((double) (3 / 2)) / 2"));
 
 		testSniper("ArithmeticExpression", noOpModifyFieldAssignment, assertPrintsRoundBracketsCorrectly);
+	}
+
+	@Test
+	@GitHubIssue(issueNumber = 4218)
+	void testSniperDoesNotPrintTheDeletedAnnotation() {
+		Consumer<CtType<?>> deleteAnnotation = type -> {
+			type.getAnnotations().forEach(CtAnnotation::delete);
+		};
+
+		BiConsumer<CtType<?>, String> assertDoesNotContainAnnotation = (type, result) ->
+				assertThat(result, not(containsString("@abc.def.xyz")));
+
+		testSniper("sniperPrinter.DeleteAnnotation", deleteAnnotation, assertDoesNotContainAnnotation);
 	}
 
 	@Test
