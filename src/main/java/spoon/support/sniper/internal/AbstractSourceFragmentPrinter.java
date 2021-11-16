@@ -278,7 +278,7 @@ abstract class AbstractSourceFragmentPrinter implements SourceFragmentPrinter {
 		CtRole role = event.getRole();
 		if (role != null) {
 			if ((event.getElement() instanceof CtModifiable && event.getElement().getPosition().isValidPosition())
-					|| role == CtRole.MODIFIER) {
+					|| role == CtRole.MODIFIER || role == CtRole.TYPE) {
 				// using only roles for handling modifiers and preexisting modifiables correctly
 				return findIndexOfNextChildTokenOfRole(childFragmentIdx + 1, role);
 			}
