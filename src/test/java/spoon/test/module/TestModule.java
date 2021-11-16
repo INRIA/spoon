@@ -35,9 +35,9 @@ import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtModuleDirective;
+import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtPackageExport;
-import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtUsedService;
@@ -50,12 +50,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Collections;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
@@ -313,9 +316,8 @@ public class TestModule {
 		batchCompiler.configure(args);
 
 		CompilationUnit[] cu = batchCompiler.getCompilationUnits();
-		List list = new ArrayList<>(Arrays.asList(new String[]{String.copyValueOf(cu[0].module),String.copyValueOf(cu[1].module)}));
-		assertTrue(list.contains("foo"));
-		assertTrue(list.contains("bar"));
+		Set<String> list = Arrays.stream(cu).map(CompilationUnit::getModuleName).map(String::copyValueOf).collect(Collectors.toSet());
+		assertThat(list, is(Set.of("foo", "bar")));
 	}
 
 	@org.junit.jupiter.api.Test
