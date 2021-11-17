@@ -303,6 +303,7 @@
                     <detectJavaApiLink>false</detectJavaApiLink>
                     <!-- ref: https://github.com/INRIA/spoon/pull/4253 -->
                     <additionalJOption>-notimestamp</additionalJOption>
+                    <additionalJOption>--no-module-directories</additionalJOption>
                 </configuration>
                 <reportSets>
                     <reportSet>
