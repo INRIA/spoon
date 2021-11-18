@@ -147,7 +147,7 @@ public class ReferenceBuilder {
 		CtTypeReference<T> accessedType = buildTypeReference((TypeReference) type, scope);
 		final TypeBinding receiverType = type != null ? type.resolvedType : null;
 		if (receiverType != null) {
-			final CtTypeReference<T> ref = getQualifiedTypeReference(type.tokens, receiverType, receiverType.enclosingType(), new JDTTreeBuilder.OnAccessListener() {
+			final CtTypeReference<T> ref = getQualifiedTypeReference(type.tokens, type, receiverType, receiverType.enclosingType(), new JDTTreeBuilder.OnAccessListener() {
 				@Override
 				public boolean onAccess(char[][] tokens, int index) {
 					return true;
@@ -260,12 +260,13 @@ public class ReferenceBuilder {
 	 * Builds a type reference from a qualified name when a type specified in the name isn't available.
 	 *
 	 * @param tokens        Qualified name.
+	 * @param receiverNode  AST node of last type in the qualified name.
 	 * @param receiverType  Last type in the qualified name.
 	 * @param enclosingType Enclosing type of the type name.
 	 * @param listener      Listener to know if we must build the type reference.
 	 * @return a type reference.
 	 */
-	<T> CtTypeReference<T> getQualifiedTypeReference(char[][] tokens, TypeBinding receiverType, ReferenceBinding enclosingType, JDTTreeBuilder.OnAccessListener listener) {
+	<T> CtTypeReference<T> getQualifiedTypeReference(char[][] tokens, ASTNode receiverNode, TypeBinding receiverType, ReferenceBinding enclosingType, JDTTreeBuilder.OnAccessListener listener) {
 		if (enclosingType != null && Collections.disjoint(PUBLIC_PROTECTED, JDTTreeBuilderQuery.getModifiers(enclosingType.modifiers, false, ModifierTarget.NONE))) {
 			String access = "";
 			int i = 0;
@@ -283,13 +284,18 @@ public class ReferenceBuilder {
 			final TypeBinding accessBinding = searchTypeBinding(access, units);
 			if (accessBinding != null && listener.onAccess(tokens, i)) {
 				final TypeBinding superClassBinding = searchTypeBinding(accessBinding.superclass(), CharOperation.charToString(tokens[i + 1]));
+				CtTypeReference<T> typeReference;
 				if (superClassBinding != null) {
-					return this.getTypeReference(superClassBinding.clone(accessBinding));
+					typeReference = this.getTypeReference(superClassBinding.clone(accessBinding));
 				} else {
-					return this.getTypeReference(receiverType);
+					typeReference = this.getTypeReference(receiverType);
 				}
+				typeReference.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPositionCtElement(typeReference, receiverNode));
+				return typeReference;
 			} else {
-				return this.getTypeReference(receiverType);
+				CtTypeReference<T> typeReference = this.getTypeReference(receiverType);
+				typeReference.setPosition(this.jdtTreeBuilder.getPositionBuilder().buildPositionCtElement(typeReference, receiverNode));
+				return typeReference;
 			}
 		}
 		return null;
