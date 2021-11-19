@@ -166,6 +166,7 @@ jobs:
           inspected-dir: ./src/main/java # only main spoon project at first
           results-dir:  "${{ github.workspace }}/result/master"
       - name: Qodana - Code Inspection
+        continue-on-error: true
         uses: JetBrains/qodana-action@cd7dc31b49427ce740ebf6255319b267801d08cf # renovate: tag=v3.2.1
         with:
           linter: qodana-jvm-community
