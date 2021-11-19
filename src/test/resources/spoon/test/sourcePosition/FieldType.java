@@ -1,5 +1,5 @@
-package spoon.test.fieldaccesses.testclasses;
+package sourcePosition;
 
-public class SourcePosition {
+public class FieldType {
     private SourcePartitionValidator.MatchingStrategy pleaseAttachSourcePositionToMyType;
 }

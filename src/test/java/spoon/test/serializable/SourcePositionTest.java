@@ -81,8 +81,8 @@ public class SourcePositionTest {
 	public void test_sourcePositionOfTypeInFieldExists() {
 		// contract: the type reference of type of the field should have a source position
 		final Launcher launcher = new Launcher();
-		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/SourcePosition.java");
-		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/SourcePartitionValidator.java");
+		launcher.addInputResource("src/test/resources/spoon/test/sourcePosition/FieldType.java");
+		launcher.addInputResource("src/test/resources/spoon/test/sourcePosition/SourcePartitionValidator.java");
 		CtModel model = launcher.buildModel();
 
 		CtField field = (CtField) model.getElements(

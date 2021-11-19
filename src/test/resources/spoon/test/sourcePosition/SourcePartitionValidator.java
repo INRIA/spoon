@@ -1,4 +1,4 @@
-package spoon.test.fieldaccesses.testclasses;
+package sourcePosition;
 
 class SourcePartitionValidator {
     public enum MatchingStrategy { }
