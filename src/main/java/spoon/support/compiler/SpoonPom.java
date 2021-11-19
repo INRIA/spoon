@@ -532,7 +532,7 @@ public class SpoonPom implements SpoonResource {
 				return file.getAbsolutePath();
 			}
 		}
-		return null;
+		throw new SpoonException("Maven executable does not exist on PATH.");
 	}
 
 	/**
@@ -547,9 +547,6 @@ public class SpoonPom implements SpoonResource {
 	public String[] buildClassPath(String mvnHome, MavenLauncher.SOURCE_TYPE sourceType, Logger LOGGER, boolean forceRefresh) {
 		if (mvnHome == null) {
 			mvnHome = guessMavenHome();
-			if (mvnHome == null) {
-				throw new SpoonException("M2_HOME must be initialized to use this MavenLauncher constructor.");
-			}
 		}
 		generateClassPathFile(new File(mvnHome), sourceType, LOGGER, forceRefresh);
 
