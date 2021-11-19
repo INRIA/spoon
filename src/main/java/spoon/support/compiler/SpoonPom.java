@@ -472,6 +472,7 @@ public class SpoonPom implements SpoonResource {
 
 			Invoker invoker = new DefaultInvoker();
 			invoker.setMavenHome(mvnHome);
+			invoker.setMavenExecutable(mvnHome);
 			invoker.setWorkingDirectory(directory);
 			invoker.setErrorHandler(s -> LOGGER.debug(s));
 			invoker.setOutputHandler(s -> LOGGER.debug(s));
