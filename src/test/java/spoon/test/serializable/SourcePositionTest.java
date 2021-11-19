@@ -17,9 +17,6 @@
 package spoon.test.serializable;
 
 import static org.junit.Assert.assertTrue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.not;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -32,7 +29,6 @@ import org.junit.Test;
 
 import spoon.Launcher;
 import spoon.reflect.CtModel;
-import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -85,9 +81,9 @@ public class SourcePositionTest {
 		launcher.addInputResource("src/test/resources/spoon/test/sourcePosition/SourcePartitionValidator.java");
 		CtModel model = launcher.buildModel();
 
-		CtField field = (CtField) model.getElements(
+		CtField<?> field = (CtField<?>) model.getElements(
 				element -> element instanceof CtField &&
-						((CtField) element).getSimpleName().equals("pleaseAttachSourcePositionToMyType")).stream().findFirst().get();
-		assertThat(field.getType().getPosition(), not(instanceOf(NoSourcePosition.class)));
+						((CtField<?>) element).getSimpleName().equals("pleaseAttachSourcePositionToMyType")).stream().findFirst().get();
+		assertTrue("Source position unknown for type of field", field.getType().getPosition().isValidPosition());
 	}
 }
