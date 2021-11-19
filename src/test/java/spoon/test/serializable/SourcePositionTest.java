@@ -16,6 +16,7 @@
  */
 package spoon.test.serializable;
 
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -25,9 +26,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import spoon.Launcher;
+import spoon.reflect.CtModel;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
@@ -70,5 +74,18 @@ public class SourcePositionTest {
 		CtField<?> elem1 = type.getField("a");
 		CtField<?> elem2 = typeFromFile.getField("a");
 		assertTrue(elem1.getPosition().getFile().equals(elem2.getPosition().getFile()));
+	}
+
+	@Test
+	public void test_sourcePositionOfNestedTypeInFieldExists() {
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/SourcePosition.java");
+		launcher.addInputResource("./src/test/java/spoon/test/fieldaccesses/testclasses/SourcePartitionValidator.java");
+		CtModel model = launcher.buildModel();
+
+		CtField field = (CtField) model.getElements(
+				element -> element instanceof CtField &&
+						((CtField) element).getSimpleName().equals("pleaseAttachSourcePositionToMe")).stream().findFirst().get();
+		assertThat(field.getType().getPosition(), CoreMatchers.not(CoreMatchers.instanceOf(NoSourcePosition.class)));
 	}
 }
