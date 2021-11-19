@@ -176,8 +176,10 @@ jobs:
           results-dir:  "${{ github.workspace }}/result"
           fail-threshold: 1
       - name: Print problems(full)
+        if: always()
         run: jq '.runs | .[0].results | map(select (.baselineState == "new"))' ${{ github.workspace }}/result/qodana.sarif.json
       - name: Print problems(short)
+        if: always()
         run: |
           jq -r '.runs
           | .[0].results
