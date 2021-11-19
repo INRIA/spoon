@@ -48,7 +48,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SpoonPom implements SpoonResource {
-	static String mavenVersionParsing = "Maven home: ";
 	static String spoonClasspathTmpFileName = "spoon.classpath.tmp";
 	static String spoonClasspathTmpFileNameApp = "spoon.classpath-app.tmp";
 	static String spoonClasspathTmpFileNameTest = "spoon.classpath-test.tmp";
@@ -517,39 +516,23 @@ public class SpoonPom implements SpoonResource {
 	}
 
 	/**
-	 * Try to guess Maven home when none is provided.
-	 * @return the path toward maven install on the local machine.
+	 * Lookup absolute path to maven executable.
+	 * @return the path toward maven executable on machine.
 	 */
 	public static String guessMavenHome() {
-		String mvnHome = null;
-		try {
-			String[] cmd;
-			if (System.getProperty("os.name").contains("Windows")) {
-				cmd = new String[]{"mvn.cmd", "-version"};
-			} else if (System.getProperty("os.name").contains("Mac")) {
-				cmd = new String[]{"sh", "-c", "mvn -version"};
-			} else {
-				cmd = new String[]{"mvn", "-version"};
-			}
-			Process p = Runtime.getRuntime().exec(cmd);
-			try (BufferedReader output = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
-				String line;
-
-				while ((line = output.readLine()) != null) {
-					if (line.contains(mavenVersionParsing)) {
-						return line.replace(mavenVersionParsing, "");
-					}
-				}
-			}
-
-			p.waitFor();
-		} catch (IOException e) {
-			throw new SpoonException("Maven home detection has failed.");
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new SpoonException("Maven home detection was interrupted.");
+		String executableName;
+		if (System.getProperty("os.name").contains("Windows")) {
+			executableName = "mvn.cmd";
+		} else {
+			executableName = "mvn";
 		}
-		return mvnHome;
+		for (String dirname : System.getenv("PATH").split(File.pathSeparator)) {
+			File file = new File(dirname, executableName);
+			if (file.isFile() && file.canExecute()) {
+				return file.getAbsolutePath();
+			}
+		}
+		return null;
 	}
 
 	/**
