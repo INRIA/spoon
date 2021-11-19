@@ -16,8 +16,10 @@
  */
 package spoon.test.serializable;
 
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.not;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,7 +28,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import spoon.Launcher;
@@ -87,6 +88,6 @@ public class SourcePositionTest {
 		CtField field = (CtField) model.getElements(
 				element -> element instanceof CtField &&
 						((CtField) element).getSimpleName().equals("pleaseAttachSourcePositionToMyType")).stream().findFirst().get();
-		assertThat(field.getType().getPosition(), CoreMatchers.not(CoreMatchers.instanceOf(NoSourcePosition.class)));
+		assertThat(field.getType().getPosition(), not(instanceOf(NoSourcePosition.class)));
 	}
 }
