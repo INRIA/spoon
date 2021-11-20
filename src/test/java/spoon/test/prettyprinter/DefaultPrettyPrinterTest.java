@@ -62,6 +62,7 @@ import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.compiler.SpoonPom;
+import spoon.support.compiler.VirtualFile;
 import spoon.test.imports.ImportTest;
 import spoon.test.prettyprinter.testclasses.AClass;
 import spoon.test.prettyprinter.testclasses.ClassUsingStaticMethod;
@@ -86,6 +87,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -473,6 +475,28 @@ public class DefaultPrettyPrinterTest {
 				"    }\n" +
 				"}";
 		assertEquals(expected, result);
+	}
+
+	@Test
+	public void testPrettyPrintWithVirtualFileInput() {
+		// contract: prettyPrint() should not throw an exception when used with input from VirtualFile
+		String code = "package foo;\nclass Bar {}\n";
+
+		boolean done;
+		try {
+			Launcher launcher = new Launcher();
+			launcher.addInputResource(new VirtualFile(code));
+			launcher.getEnvironment().setNoClasspath(true);
+			launcher.getEnvironment().setAutoImports(true);
+			launcher.getEnvironment().setPreserveLineNumbers(true);
+	
+			launcher.prettyprint();
+			done = true;
+		} catch (Exception e) {
+			done = false;
+		}
+		
+		assertTrue(done);
 	}
 
 	/**
