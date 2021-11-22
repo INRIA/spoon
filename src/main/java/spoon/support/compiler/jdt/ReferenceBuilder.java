@@ -283,13 +283,11 @@ public class ReferenceBuilder {
 			final TypeBinding accessBinding = searchTypeBinding(access, units);
 			if (accessBinding != null && listener.onAccess(tokens, i)) {
 				final TypeBinding superClassBinding = searchTypeBinding(accessBinding.superclass(), CharOperation.charToString(tokens[i + 1]));
-				CtTypeReference<T> typeReference;
 				if (superClassBinding != null) {
-					typeReference = this.getTypeReference(superClassBinding.clone(accessBinding));
+					return this.getTypeReference(superClassBinding.clone(accessBinding));
 				} else {
-					typeReference = this.getTypeReference(receiverType);
+					return this.getTypeReference(receiverType);
 				}
-				return typeReference;
 			} else {
 				return this.getTypeReference(receiverType);
 			}
