@@ -445,7 +445,7 @@ public class JDTTreeBuilderHelper {
 		final TypeBinding receiverType = qualifiedNameReference.actualReceiverType;
 		if (receiverType != null) {
 			final CtTypeReference<Object> qualifiedRef = jdtTreeBuilder.getReferencesBuilder().getQualifiedTypeReference(
-					qualifiedNameReference.tokens, qualifiedNameReference, receiverType, qualifiedNameReference.fieldBinding().declaringClass.enclosingType(), new JDTTreeBuilder.OnAccessListener() {
+					qualifiedNameReference.tokens, receiverType, qualifiedNameReference.fieldBinding().declaringClass.enclosingType(), new JDTTreeBuilder.OnAccessListener() {
 						@Override
 						public boolean onAccess(char[][] tokens, int index) {
 							return !CharOperation.equals(tokens[index + 1], tokens[tokens.length - 1]);
