@@ -209,7 +209,7 @@ public class MavenLauncherTest {
 
 	@Test
 	public void testGuessMavenHome() {
-		// contract: it should correctly fetch path to maven executable
+		// contract: it should correctly fetch path to maven home
 		String pathToMavenHome = SpoonPom.guessMavenHome();
 		File mavenHome = new File(pathToMavenHome);
 		assertTrue(mavenHome.exists());
