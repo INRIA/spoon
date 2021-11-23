@@ -168,6 +168,7 @@ jobs:
       - name: Qodana - Code Inspection
         continue-on-error: true
         uses: JetBrains/qodana-action@cd7dc31b49427ce740ebf6255319b267801d08cf # renovate: tag=v3.2.1
+        continue-on-error: true
         with:
           linter: qodana-jvm-community
           project-dir: "${{ github.workspace }}/pull_request"
