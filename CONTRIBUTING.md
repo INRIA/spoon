@@ -20,6 +20,7 @@ Current integrators:
 - Simon Larsen [@slarse](https://github.com/slarse/)
 - Nicolas Harrand [@nharrand](https://github.com/nharrand/)
 - Martin Monperrus [@monperrus](https://github.com/monperrus/)
+- Martin Witt [@MartinWitt](https://github.com/MartinWitt)
 
 Guidelines for pull requests
 ----------------------------
