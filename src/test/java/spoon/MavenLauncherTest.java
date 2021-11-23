@@ -208,11 +208,11 @@ public class MavenLauncherTest {
 	}
 
 	@Test
-	public void testGuessMavenHome() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	public void testGuessMavenHome() {
 		// contract: it should correctly fetch path to maven executable
-		String pathToMavenExecutable = SpoonPom.guessMavenHome();
-		File mvnExecutable = new File(pathToMavenExecutable);
-		assertTrue(mvnExecutable.exists());
-		assertTrue(mvnExecutable.canExecute());
+		String pathToMavenHome = SpoonPom.guessMavenHome();
+		File mavenHome = new File(pathToMavenHome);
+		assertTrue(mavenHome.exists());
+		assertTrue(mavenHome.isDirectory());
 	}
 }

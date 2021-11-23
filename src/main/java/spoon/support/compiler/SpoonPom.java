@@ -29,11 +29,7 @@ import spoon.compiler.SpoonFolder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -47,6 +43,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SpoonPom implements SpoonResource {
+	static String mavenVersionParsing = "Maven home: ";
 	static String spoonClasspathTmpFileName = "spoon.classpath.tmp";
 	static String spoonClasspathTmpFileNameApp = "spoon.classpath-app.tmp";
 	static String spoonClasspathTmpFileNameTest = "spoon.classpath-test.tmp";
@@ -471,7 +468,6 @@ public class SpoonPom implements SpoonResource {
 
 			Invoker invoker = new DefaultInvoker();
 			invoker.setMavenHome(mvnHome);
-			invoker.setMavenExecutable(mvnHome);
 			invoker.setWorkingDirectory(directory);
 			invoker.setErrorHandler(s -> LOGGER.debug(s));
 			invoker.setOutputHandler(s -> LOGGER.debug(s));
@@ -516,10 +512,35 @@ public class SpoonPom implements SpoonResource {
 	}
 
 	/**
-	 * Lookup absolute path to maven executable.
-	 * @return the path toward maven executable on machine.
+	 * Try to guess Maven home when none is provided.
+	 * @return the path toward maven install on the local machine.
+	 * @throws SpoonException if path to maven executable is wrong, process is interrupted, or maven home could not be
+	 * found.
 	 */
 	public static String guessMavenHome() {
+		try {
+			String[] cmd = new String[]{getPathToMavenExecutable(), "-version"};
+			Process p = Runtime.getRuntime().exec(cmd);
+			try (BufferedReader output = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+				String line;
+
+				while ((line = output.readLine()) != null) {
+					if (line.contains(mavenVersionParsing)) {
+						return line.replace(mavenVersionParsing, "");
+					}
+				}
+			}
+			p.waitFor();
+		} catch (IOException e) {
+			throw new SpoonException("Maven home detection has failed.");
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new SpoonException("Maven home detection was interrupted.");
+		}
+		throw new SpoonException("Couldn't find path to maven home.");
+	}
+
+	private static String getPathToMavenExecutable() {
 		String executableName;
 		if (System.getProperty("os.name").contains("Windows")) {
 			executableName = "mvn.cmd";
@@ -532,7 +553,7 @@ public class SpoonPom implements SpoonResource {
 				return file.getAbsolutePath();
 			}
 		}
-		return null;
+		throw new SpoonException("Maven executable does not exist on PATH.");
 	}
 
 	/**
@@ -547,9 +568,6 @@ public class SpoonPom implements SpoonResource {
 	public String[] buildClassPath(String mvnHome, MavenLauncher.SOURCE_TYPE sourceType, Logger LOGGER, boolean forceRefresh) {
 		if (mvnHome == null) {
 			mvnHome = guessMavenHome();
-			if (mvnHome == null) {
-				throw new SpoonException("M2_HOME must be initialized to use this MavenLauncher constructor.");
-			}
 		}
 		generateClassPathFile(new File(mvnHome), sourceType, LOGGER, forceRefresh);
 
