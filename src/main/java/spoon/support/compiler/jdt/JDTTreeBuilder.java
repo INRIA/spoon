@@ -1525,7 +1525,11 @@ public class JDTTreeBuilder extends ASTVisitor {
 			context.enter(helper.createCatchVariable(qualifiedTypeReference, scope), qualifiedTypeReference);
 			return true;
 		}
-		context.enter(factory.Code().createTypeAccessWithoutCloningReference(references.buildTypeReference(qualifiedTypeReference, scope)), qualifiedTypeReference);
+		CtTypeReference<?> typeReference = references.buildTypeReference(qualifiedTypeReference, scope);
+		if (typeReference != null) {
+			typeReference.setPosition(position.buildPositionCtElement(typeReference, qualifiedTypeReference));
+		}
+		context.enter(factory.Code().createTypeAccessWithoutCloningReference(typeReference), qualifiedTypeReference);
 		return true;
 	}
 

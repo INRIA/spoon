@@ -415,12 +415,6 @@ public class PositionBuilder {
 			//build position with appropriate context
 			return buildPositionCtElement(e, (Argument) pair.node);
 		} else if (node instanceof TypeReference) {
-			TypeReference typeReference = (TypeReference) node;
-			if (typeReference.resolvedType.getTypeAnnotations() != null) {
-				for (int a = 0; a < typeReference.resolvedType.getTypeAnnotations().length; a++) {
-					sourceStart = findPrevAnnotations(contents, 0, sourceStart);
-				}
-			}
 			sourceEnd = getSourceEndOfTypeReference(contents, (TypeReference) node, sourceEnd);
 		} else if (node instanceof AllocationExpression) {
 			AllocationExpression allocationExpression = (AllocationExpression) node;
