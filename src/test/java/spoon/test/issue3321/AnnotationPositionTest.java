@@ -16,6 +16,8 @@ import static org.junit.Assert.assertTrue;
 
 public class AnnotationPositionTest {
 
+	@Ignore("Unresolved Bug")
+	@GitHubIssue(issueNumber = 3358)
 	@Test
 	public void testUsageOfTypeAnnotationOnParameterInMethod() {
 		final Launcher launcher = new Launcher();
