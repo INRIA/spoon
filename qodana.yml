@@ -26,3 +26,4 @@ include:
   - name: UNUSED_IMPORT
 exclude:
   - name: UseOfClone
+  
