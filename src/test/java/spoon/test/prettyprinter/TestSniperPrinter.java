@@ -841,6 +841,17 @@ public class TestSniperPrinter {
 		testSniper("sniperPrint.SpaceAfterFinal", modifyField, assertContainsSpaceAfterFinal);
 	}
 
+	@Test
+	void testSniperShouldNotAddSemicolonAfterEnumIfItIsNotPresent() {
+		Consumer<CtType<?>> noOpModifyFieldAssignment = type ->
+				type.descendantIterator().forEachRemaining(TestSniperPrinter::markElementForSniperPrinting);
+
+		BiConsumer<CtType<?>, String> assertPrintsRoundBracketsCorrectly = (type, result) ->
+				assertThat(result, not(containsString("SATURDAY;")));
+
+		testSniper("sniperPrinter.Days", noOpModifyFieldAssignment, assertPrintsRoundBracketsCorrectly);
+	}
+
 	/**
 	 * 1) Runs spoon using sniper mode,
 	 * 2) runs `typeChanger` to modify the code,
