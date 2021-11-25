@@ -27,6 +27,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
@@ -69,6 +70,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -839,6 +841,22 @@ public class TestSniperPrinter {
 				assertThat(result, containsString("private static final java.lang.Integer x;"));
 
 		testSniper("sniperPrint.SpaceAfterFinal", modifyField, assertContainsSpaceAfterFinal);
+	}
+
+	@Test
+	void testResourcePrintingInTryWithResourceStatement() {
+		// contract: sniper should print the second resource exactly once
+		Function<CtType<?>, CtTryWithResource> getTryWithResource = type ->
+				type.getMethodsByName("resourcePrinting").get(0).getBody().getStatement(0);
+
+		Consumer<CtType<?>> noOpModifyTryWithResource = type ->
+				TestSniperPrinter.markElementForSniperPrinting(getTryWithResource.apply(type));
+
+		BiConsumer<CtType<?>, String> assertPrintsResourcesCorrectly = (type, result) ->
+				assertThat(result, containsString(" try (ZipFile zf = new ZipFile(zipFileName);\n" +
+						"             BufferedWriter writer = newBufferedWriter(outputFilePath, charset))"));
+
+		testSniper("sniperPrinter.TryWithResource", noOpModifyTryWithResource, assertPrintsResourcesCorrectly);
 	}
 
 	/**
