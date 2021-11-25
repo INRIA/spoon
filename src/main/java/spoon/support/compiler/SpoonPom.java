@@ -519,18 +519,12 @@ public class SpoonPom implements SpoonResource {
 	/**
 	 * Try to guess Maven home when none is provided.
 	 * @return the path toward maven install on the local machine.
+	 * @throws SpoonException if path to maven executable is wrong, process is interrupted, or maven home could not be
+	 * found.
 	 */
 	public static String guessMavenHome() {
-		String mvnHome = null;
 		try {
-			String[] cmd;
-			if (System.getProperty("os.name").contains("Windows")) {
-				cmd = new String[]{"mvn.cmd", "-version"};
-			} else if (System.getProperty("os.name").contains("Mac")) {
-				cmd = new String[]{"sh", "-c", "mvn -version"};
-			} else {
-				cmd = new String[]{"mvn", "-version"};
-			}
+			String[] cmd = new String[]{getPathToMavenExecutable(), "-version"};
 			Process p = Runtime.getRuntime().exec(cmd);
 			try (BufferedReader output = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
 				String line;
@@ -541,7 +535,6 @@ public class SpoonPom implements SpoonResource {
 					}
 				}
 			}
-
 			p.waitFor();
 		} catch (IOException e) {
 			throw new SpoonException("Maven home detection has failed.");
@@ -549,7 +542,23 @@ public class SpoonPom implements SpoonResource {
 			Thread.currentThread().interrupt();
 			throw new SpoonException("Maven home detection was interrupted.");
 		}
-		return mvnHome;
+		throw new SpoonException("Couldn't find path to maven home.");
+	}
+
+	private static String getPathToMavenExecutable() {
+		String executableName;
+		if (System.getProperty("os.name").contains("Windows")) {
+			executableName = "mvn.cmd";
+		} else {
+			executableName = "mvn";
+		}
+		for (String dirname : System.getenv("PATH").split(File.pathSeparator)) {
+			File file = new File(dirname, executableName);
+			if (file.isFile() && file.canExecute()) {
+				return file.getAbsolutePath();
+			}
+		}
+		throw new SpoonException("Maven executable does not exist on PATH.");
 	}
 
 	/**
@@ -564,9 +573,6 @@ public class SpoonPom implements SpoonResource {
 	public String[] buildClassPath(String mvnHome, MavenLauncher.SOURCE_TYPE sourceType, Logger LOGGER, boolean forceRefresh) {
 		if (mvnHome == null) {
 			mvnHome = guessMavenHome();
-			if (mvnHome == null) {
-				throw new SpoonException("M2_HOME must be initialized to use this MavenLauncher constructor.");
-			}
 		}
 		generateClassPathFile(new File(mvnHome), sourceType, LOGGER, forceRefresh);
 
