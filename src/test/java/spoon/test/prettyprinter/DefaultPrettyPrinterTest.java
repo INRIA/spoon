@@ -472,20 +472,6 @@ public class DefaultPrettyPrinterTest {
 		assertEquals(expected, result);
 	}
 
-	@Test
-	public void testPrettyPrintWithVirtualFileInput() {
-		// contract: prettyPrint() should not throw an exception when used with input from VirtualFile
-		String code = "package foo;\nclass Bar {}\n";
-
-		Launcher launcher = new Launcher();
-		launcher.addInputResource(new VirtualFile(code));
-		launcher.getEnvironment().setNoClasspath(true);
-		launcher.getEnvironment().setAutoImports(true);
-		launcher.getEnvironment().setPreserveLineNumbers(true);
-
-		assertDoesNotThrow(() -> launcher.prettyprint());
-	}
-
 	/**
 	 * This test parses Spoon sources (src/main/java) and pretty prints them in a temporary directory
 	 * to check the compliance of the pretty printer to the set of checkstyle rules used by the Spoon repo.
