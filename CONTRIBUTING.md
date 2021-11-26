@@ -17,7 +17,7 @@ How to become integrator? The integrators are the developers who have made signi
 
 Current integrators:
 
-- Simon Larsen [@slarse](https://github.com/slarse/)
+- Simon Larsén [@slarse](https://github.com/slarse/)
 - Nicolas Harrand [@nharrand](https://github.com/nharrand/)
 - Martin Monperrus [@monperrus](https://github.com/monperrus/)
 - Martin Wittlinger [@MartinWitt](https://github.com/MartinWitt)
