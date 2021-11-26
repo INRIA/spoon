@@ -8,5 +8,7 @@ public class TryWithResource {
     public void resourcePrinting() {
         try (ZipFile zf = new ZipFile(zipFileName);
              BufferedWriter writer = newBufferedWriter(outputFilePath, charset)) { }
+        try (ZipFile zf = new ZipFile(zipFileName);
+             BufferedWriter writer = newBufferedWriter(outputFilePath, charset);) { }
     }
 }
