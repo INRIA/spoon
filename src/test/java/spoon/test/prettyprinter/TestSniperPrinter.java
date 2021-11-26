@@ -845,33 +845,34 @@ public class TestSniperPrinter {
 
 	@Nested
 	class ResourcePrintingInTryWithResourceStatement{
-		private CtTryWithResource getTryWithResource(CtType<?> type, int statementIdx) {
-			return type.getMethodsByName("resourcePrinting").get(0).getBody().getStatement(statementIdx);
+		private CtTryWithResource getTryWithResource(CtType<?> type) {
+			return type.getMethodsByName("resourcePrinting").get(0).getBody().getStatement(0);
 		}
 
 		@Test
 		void test_printSecondResourceExactlyOnce() {
 			// contract: sniper should print the second resource exactly once
 			Consumer<CtType<?>> noOpModifyTryWithResource = type ->
-					TestSniperPrinter.markElementForSniperPrinting(getTryWithResource(type, 0));
+					TestSniperPrinter.markElementForSniperPrinting(getTryWithResource(type));
 
 			BiConsumer<CtType<?>, String> assertPrintsResourcesCorrectly = (type, result) ->
 					assertThat(result, containsString(" try (ZipFile zf = new ZipFile(zipFileName);\n" +
 							"             BufferedWriter writer = newBufferedWriter(outputFilePath, charset))"));
 
-			testSniper("sniperPrinter.TryWithResource", noOpModifyTryWithResource, assertPrintsResourcesCorrectly);
+			testSniper("sniperPrinter.tryWithResource.PrintOnce", noOpModifyTryWithResource, assertPrintsResourcesCorrectly);
 		}
 
 		@Test
 		void test_retainSemiColonAfterTheLastResource() {
+			// contract: sniper should retain the semi-colon after second resource
 			Consumer<CtType<?>> noOpModifyTryWithResource = type ->
-					TestSniperPrinter.markElementForSniperPrinting(getTryWithResource(type, 1));
+					TestSniperPrinter.markElementForSniperPrinting(getTryWithResource(type));
 
 			BiConsumer<CtType<?>, String> assertPrintsResourcesCorrectly = (type, result) ->
 					assertThat(result, containsString(" try (ZipFile zf = new ZipFile(zipFileName);\n" +
 							"             BufferedWriter writer = newBufferedWriter(outputFilePath, charset);)"));
 
-			testSniper("sniperPrinter.TryWithResource", noOpModifyTryWithResource, assertPrintsResourcesCorrectly);
+			testSniper("sniperPrinter.tryWithResource.RetainSemiColon", noOpModifyTryWithResource, assertPrintsResourcesCorrectly);
 		}
 	}
 
