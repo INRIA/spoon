@@ -18,10 +18,8 @@ package spoon.test.prettyprinter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
-import org.apache.maven.model.Profile;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
@@ -35,13 +33,10 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;
-import spoon.MavenLauncher;
-import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.pattern.Match;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConstructorCall;
@@ -87,7 +82,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 import static spoon.testing.utils.ModelUtils.build;
 
@@ -482,21 +477,13 @@ public class DefaultPrettyPrinterTest {
 		// contract: prettyPrint() should not throw an exception when used with input from VirtualFile
 		String code = "package foo;\nclass Bar {}\n";
 
-		boolean done;
-		try {
-			Launcher launcher = new Launcher();
-			launcher.addInputResource(new VirtualFile(code));
-			launcher.getEnvironment().setNoClasspath(true);
-			launcher.getEnvironment().setAutoImports(true);
-			launcher.getEnvironment().setPreserveLineNumbers(true);
-	
-			launcher.prettyprint();
-			done = true;
-		} catch (Exception e) {
-			done = false;
-		}
-		
-		assertTrue(done);
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile(code));
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().setPreserveLineNumbers(true);
+
+		assertDoesNotThrow(() -> launcher.prettyprint());
 	}
 
 	/**
