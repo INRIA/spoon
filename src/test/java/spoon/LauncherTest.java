@@ -22,6 +22,7 @@ import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
+import spoon.support.compiler.VirtualFile;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -33,6 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class LauncherTest {
 
@@ -118,5 +120,23 @@ public class LauncherTest {
 		assertNotNull(model);
 
 		assertEquals(2, model.getAllTypes().size());
+	}
+	
+	@Test
+	public void testPrettyPrintWithVirtualFileInput() throws Exception {
+		// contract: prettyPrint() should not throw an exception when used with input from VirtualFile
+		String code = "package foo;\nclass Bar {}\n";
+
+		Launcher launcher = new Launcher();
+		launcher.addInputResource(new VirtualFile(code));
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().setPreserveLineNumbers(true);
+
+		File tmpDir = Files.createTempDirectory("spoonTestPrettyPrintWithVirtualFileInput").toFile();
+		tmpDir.deleteOnExit();
+		launcher.setSourceOutputDirectory(tmpDir);
+		
+		assertDoesNotThrow(() -> launcher.prettyprint());
 	}
 }

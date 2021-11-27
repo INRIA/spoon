@@ -48,6 +48,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -807,16 +808,18 @@ public class Launcher implements SpoonAPI {
 			}
 		}
 
+		final Path outputPath = getEnvironment().getDefaultFileGenerator().getOutputDirectory().toPath();
 		if (!getEnvironment().getOutputType().equals(OutputType.NO_OUTPUT) && getEnvironment().isCopyResources()) {
 			for (File dirInputSource : modelBuilder.getInputSources()) {
 				if (dirInputSource.isDirectory()) {
+					final Path dirInputSourceAsPath = dirInputSource.toPath();
 					final Collection<?> resources = FileUtils.listFiles(dirInputSource, RESOURCES_FILE_FILTER, ALL_DIR_FILTER);
 					for (Object resource : resources) {
-						final String resourceParentPath = ((File) resource).getParent();
-						final String packageDir = resourceParentPath.substring(dirInputSource.getPath().length());
-						final String targetDirectory = getEnvironment().getDefaultFileGenerator().getOutputDirectory() + packageDir;
+						final Path resourcePath = ((File) resource).toPath();
+						final Path relativePath = dirInputSourceAsPath.relativize(resourcePath);
+						final Path targetPath = outputPath.resolve(relativePath).getParent();
 						try {
-							FileUtils.copyFileToDirectory((File) resource, new File(targetDirectory));
+							FileUtils.copyFileToDirectory((File) resource, targetPath.toFile());
 						} catch (IOException e) {
 							throw new SpoonException(e);
 						}
