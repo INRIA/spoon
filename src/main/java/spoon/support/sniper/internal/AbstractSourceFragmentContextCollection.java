@@ -8,7 +8,7 @@
 package spoon.support.sniper.internal;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtCompilationUnit;
@@ -53,10 +53,8 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 				return false;
 			} else if (tpe.getType() == TokenType.IDENTIFIER) {
 				return findIndexOfNextChildTokenByType(TokenType.IDENTIFIER) >= 0;
-			} else if (tpe.getToken().equals(";")) {
-				if (checkIfPartOfRole(CtRole.TRY_RESOURCE)) {
-					return true;
-				}
+			} else if (tpe.getToken().equals(";") && doesChildFragmentHasRoleInParent(CtRole.TRY_RESOURCE)) {
+				return true;
 			}
 			return findIndexOfNextChildTokenByValue(tpe.getToken()) >= 0;
 		}
@@ -73,13 +71,13 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 		throw new SpoonException("Unexpected PrintEvent: " + event.getClass());
 	}
 
-	private boolean checkIfPartOfRole(CtRole role) {
-		List<SourceFragment> elementSourceFragments = childFragments.stream()
+	private boolean doesChildFragmentHasRoleInParent(CtRole roleInParent) {
+		Optional<SourceFragment> optionSourceFragment = childFragments.stream()
 				.filter(fragment -> fragment instanceof ElementSourceFragment)
-				.collect(Collectors.toList());
-		for (SourceFragment sourceFragment: elementSourceFragments) {
-			ElementSourceFragment elementSourceFragment = ((ElementSourceFragment) sourceFragment);
-			return elementSourceFragment.getRoleInParent() == role;
+				.findFirst();
+		if (optionSourceFragment.isPresent()) {
+			ElementSourceFragment elementSourceFragment = (ElementSourceFragment) optionSourceFragment.get();
+			return  elementSourceFragment.getRoleInParent() == roleInParent;
 		}
 		return false;
 	}
