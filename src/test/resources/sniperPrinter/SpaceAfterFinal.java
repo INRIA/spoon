@@ -1,4 +1,4 @@
-package sniperPrint;
+package sniperPrinter;
 
 public class SpaceAfterFinal {
 

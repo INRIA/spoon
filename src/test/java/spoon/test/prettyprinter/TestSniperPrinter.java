@@ -838,7 +838,7 @@ public class TestSniperPrinter {
 		BiConsumer<CtType<?>, String> assertContainsSpaceAfterFinal = (type, result) ->
 				assertThat(result, containsString("private static final java.lang.Integer x;"));
 
-		testSniper("sniperPrint.SpaceAfterFinal", modifyField, assertContainsSpaceAfterFinal);
+		testSniper("sniperPrinter.SpaceAfterFinal", modifyField, assertContainsSpaceAfterFinal);
 	}
 
 	/**
