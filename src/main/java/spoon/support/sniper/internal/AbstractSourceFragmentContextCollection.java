@@ -53,7 +53,7 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 				return false;
 			} else if (tpe.getType() == TokenType.IDENTIFIER) {
 				return findIndexOfNextChildTokenByType(TokenType.IDENTIFIER) >= 0;
-			} else if (tpe.getToken().equals(";") && doesChildFragmentHasRoleInParent(CtRole.TRY_RESOURCE)) {
+			} else if (tpe.getToken().equals(";") && childFragmentHasSpecifiedRoleInParent(CtRole.TRY_RESOURCE)) {
 				return true;
 			}
 			return findIndexOfNextChildTokenByValue(tpe.getToken()) >= 0;
@@ -71,7 +71,7 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 		throw new SpoonException("Unexpected PrintEvent: " + event.getClass());
 	}
 
-	private boolean doesChildFragmentHasRoleInParent(CtRole roleInParent) {
+	private boolean childFragmentHasSpecifiedRoleInParent(CtRole roleInParent) {
 		Optional<SourceFragment> optionSourceFragment = childFragments.stream()
 				.filter(fragment -> fragment instanceof ElementSourceFragment)
 				.findFirst();
