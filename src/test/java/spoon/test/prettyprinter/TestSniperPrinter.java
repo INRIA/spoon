@@ -841,6 +841,19 @@ public class TestSniperPrinter {
 		testSniper("sniperPrinter.SpaceAfterFinal", modifyField, assertContainsSpaceAfterFinal);
 	}
 
+	@Test
+	void testAbstractShouldBePrintedOnceAndWithProperSpacing() {
+		Consumer<CtType<?>> noOpModifyStaticClass = type -> {
+			CtType<?> staticClass = type.filterChildren(CtType.class::isInstance).first();
+			staticClass.descendantIterator().forEachRemaining(TestSniperPrinter::markElementForSniperPrinting);
+		};
+
+		BiConsumer<CtType<?>, String> assertDoesNotContainDiff = (type, result) ->
+					assertThat(result, not(containsString("abstractstatic abstract class AbstractFoo")));
+
+		testSniper("sniperPrinter.PrintAbstractOnceWithProperSpacing", noOpModifyStaticClass, assertDoesNotContainDiff);
+	}
+
 	/**
 	 * 1) Runs spoon using sniper mode,
 	 * 2) runs `typeChanger` to modify the code,
