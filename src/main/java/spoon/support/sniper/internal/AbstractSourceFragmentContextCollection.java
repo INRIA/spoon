@@ -55,6 +55,7 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 			}
 			// We check for ; printed using printList in DJPP#visitCtTryWithResource because if we do not, the context
 			// gets popped from the stack and printer messes up printing of the latter elements.
+			// See: https://github.com/INRIA/spoon/pull/4309.
 			else if (tpe.getToken().equals(";") && anyChildFragmentHasRole(CtRole.TRY_RESOURCE)) {
 				return true;
 			}
