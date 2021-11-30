@@ -8,7 +8,6 @@
 package spoon.support.sniper.internal;
 
 import java.util.List;
-import java.util.Optional;
 
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtCompilationUnit;
@@ -53,7 +52,10 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 				return false;
 			} else if (tpe.getType() == TokenType.IDENTIFIER) {
 				return findIndexOfNextChildTokenByType(TokenType.IDENTIFIER) >= 0;
-			} else if (tpe.getToken().equals(";") && childFragmentHasSpecifiedRoleInParent(CtRole.TRY_RESOURCE)) {
+			}
+			// We check for ; printed using printList in DJPP#visitCtTryWithResource because if we do not, the context
+			// gets popped from the stack and printer messes up printing of the latter elements.
+			else if (tpe.getToken().equals(";") && anyChildFragmentHasRole(CtRole.TRY_RESOURCE)) {
 				return true;
 			}
 			return findIndexOfNextChildTokenByValue(tpe.getToken()) >= 0;
@@ -71,15 +73,14 @@ abstract class AbstractSourceFragmentContextCollection extends AbstractSourceFra
 		throw new SpoonException("Unexpected PrintEvent: " + event.getClass());
 	}
 
-	private boolean childFragmentHasSpecifiedRoleInParent(CtRole roleInParent) {
-		Optional<SourceFragment> optionSourceFragment = childFragments.stream()
-				.filter(fragment -> fragment instanceof ElementSourceFragment)
-				.findFirst();
-		if (optionSourceFragment.isPresent()) {
-			ElementSourceFragment elementSourceFragment = (ElementSourceFragment) optionSourceFragment.get();
-			return  elementSourceFragment.getRoleInParent() == roleInParent;
-		}
-		return false;
+	private boolean anyChildFragmentHasRole(CtRole role) {
+		return childFragments.stream()
+				.filter(ElementSourceFragment.class::isInstance)
+				.map(ElementSourceFragment.class::cast)
+				.map(ElementSourceFragment::getRoleInParent)
+				.map(role::equals)
+				.findAny()
+				.orElse(false);
 	}
 
 	@Override
