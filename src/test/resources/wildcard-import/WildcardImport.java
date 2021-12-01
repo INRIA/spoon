@@ -1,5 +1,5 @@
 import java.util.*;
 
-public class WildCardImport {
+public class WildcardImport {
     private static List<Integer> x = new ArrayList<>();
 }
