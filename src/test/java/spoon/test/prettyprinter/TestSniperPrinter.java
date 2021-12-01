@@ -9,6 +9,7 @@ package spoon.test.prettyprinter;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,6 +28,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
+import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
@@ -839,6 +841,39 @@ public class TestSniperPrinter {
 				assertThat(result, containsString("private static final java.lang.Integer x;"));
 
 		testSniper("sniperPrinter.SpaceAfterFinal", modifyField, assertContainsSpaceAfterFinal);
+	}
+
+	@Nested
+	class ResourcePrintingInTryWithResourceStatement{
+		private CtTryWithResource getTryWithResource(CtType<?> type) {
+			return type.getMethodsByName("resourcePrinting").get(0).getBody().getStatement(0);
+		}
+
+		@Test
+		void test_printSecondResourceExactlyOnce() {
+			// contract: sniper should print the second resource exactly once
+			Consumer<CtType<?>> noOpModifyTryWithResource = type ->
+					TestSniperPrinter.markElementForSniperPrinting(getTryWithResource(type));
+
+			BiConsumer<CtType<?>, String> assertPrintsResourcesCorrectly = (type, result) ->
+					assertThat(result, containsString(" try (ZipFile zf = new ZipFile(zipFileName);\n" +
+							"             BufferedWriter writer = newBufferedWriter(outputFilePath, charset))"));
+
+			testSniper("sniperPrinter.tryWithResource.PrintOnce", noOpModifyTryWithResource, assertPrintsResourcesCorrectly);
+		}
+
+		@Test
+		void test_retainSemiColonAfterTheLastResource() {
+			// contract: sniper should retain the semi-colon after second resource
+			Consumer<CtType<?>> noOpModifyTryWithResource = type ->
+					TestSniperPrinter.markElementForSniperPrinting(getTryWithResource(type));
+
+			BiConsumer<CtType<?>, String> assertPrintsResourcesCorrectly = (type, result) ->
+					assertThat(result, containsString(" try (ZipFile zf = new ZipFile(zipFileName);\n" +
+							"             BufferedWriter writer = newBufferedWriter(outputFilePath, charset);)"));
+
+			testSniper("sniperPrinter.tryWithResource.RetainSemiColon", noOpModifyTryWithResource, assertPrintsResourcesCorrectly);
+		}
 	}
 
 	/**
