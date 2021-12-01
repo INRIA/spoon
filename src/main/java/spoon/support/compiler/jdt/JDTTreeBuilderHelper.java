@@ -562,34 +562,6 @@ public class JDTTreeBuilderHelper {
 		}
 	}
 
-//
-//	private boolean isFullyQualified(QualifiedNameReference qualifiedNameReference) {
-//		char[][] tokens = qualifiedNameReference.tokens;
-//		PackageBinding packageBinding = qualifiedNameReference.actualReceiverType.getPackage();
-//		char[][] packageNames = null;
-//		if (packageBinding != null) {
-//			packageNames = packageBinding.compoundName;
-//		}
-//		int idx = 0;
-//		if (packageNames != null) {
-//			while (idx < packageNames.length) {
-//				if (idx >= tokens.length) {
-//					return false;
-//				}
-//				if (!Arrays.equals(tokens[idx], packageNames[idx])) {
-//					return false;
-//				}
-//				idx++;
-//			}
-//		}
-//		if (idx >= tokens.length) {
-//			return false;
-//		}
-//		if (!Arrays.equals(tokens[idx], qualifiedNameReference.actualReceiverType.sourceName())) {
-//			return false;
-//		}
-//		return true;
-//	}
 
 	/**
 	 * Creates a type access from its qualified name.

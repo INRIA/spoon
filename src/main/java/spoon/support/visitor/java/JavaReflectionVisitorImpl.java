@@ -489,12 +489,6 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		if (clazz.getEnclosingClass() != null) {
 			visitTypeReference(CtRole.DECLARING_TYPE, clazz.getEnclosingClass());
 		}
-// TODO in case of interfaces this was used!! But not in case of class?
-//		if (clazz.isInterface()) {
-//			for (TypeVariable<Class<T>> generic : clazz.getTypeParameters()) {
-//				visitTypeParameter(generic);
-//			}
-//		}
 	}
 
 	private <T> List<RtMethod> getDeclaredMethods(Class<T> clazz) {

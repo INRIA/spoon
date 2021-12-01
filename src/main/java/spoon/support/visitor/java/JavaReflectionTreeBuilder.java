@@ -337,11 +337,7 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 		final CtParameter ctParameter = factory.Core().createParameter();
 		ctParameter.setSimpleName(parameter.getName());
 		ctParameter.setVarArgs(parameter.isVarArgs());
-		//it is not possible to detect whether parameter is final in runtime
-//		if (parameter.isFinal()) {
-//			ctParameter.addModifier(ModifierKind.FINAL);
-//		}
-
+		// it is not possible to detect whether parameter is final in runtime
 		enter(new VariableRuntimeBuilderContext(ctParameter));
 		super.visitParameter(parameter);
 		exit();
