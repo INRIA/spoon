@@ -43,7 +43,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -206,9 +205,9 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 		}
 
 		private boolean isPackageImportedViaWildcardAndUnresolved(CtPackageReference packageReference) {
-			List<CtImport> importsInCompilationUnit = compilationUnit.getImports();
-			return importsInCompilationUnit.stream().anyMatch(
-					ctImport -> ctImport.toString().contains(packageReference.toString()) && ctImport.getImportKind() == CtImportKind.UNRESOLVED);
+			return compilationUnit.getImports().stream().anyMatch(
+					ctImport -> ctImport.toString().contains(packageReference.toString())
+							&& ctImport.getImportKind() == CtImportKind.UNRESOLVED);
 		}
 
 		void onCompilationUnitProcessed(CtCompilationUnit compilationUnit) {
