@@ -534,16 +534,6 @@ public class ElementSourceFragment implements SourceFragment {
 					}
 					i++;
 				}
-				//add suffix space
-				/*
-				if (i < flatChildren.size()) {
-					SourceFragment nextChild = flatChildren.get(i);
-					if (isSpaceFragment(nextChild)) {
-						childrenInSameCollection.add(nextChild);
-						i++;
-					}
-				}
-				*/
 				result.add(new CollectionSourceFragment(childrenInSameCollection));
 			} else {
 				throw new SpoonException("Unexpected SourceFragment of type " + child.getClass());
