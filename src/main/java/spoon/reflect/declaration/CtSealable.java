@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Set;
 
 // TODO docs
+// TODO return type?
 
 public interface CtSealable {
 
