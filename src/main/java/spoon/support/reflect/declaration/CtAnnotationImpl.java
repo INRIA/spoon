@@ -339,9 +339,7 @@ public class CtAnnotationImpl<A extends Annotation> extends CtExpressionImpl<A> 
 
 	public Map<String, Object> getElementValues() {
 		Map<String, Object> res = new TreeMap<>();
-		for (Entry<String, CtExpression> elementValue : elementValues.entrySet()) {
-			res.put(elementValue.getKey(), elementValue.getValue());
-		}
+		res.putAll(elementValues);
 		return res;
 	}
 
