@@ -184,9 +184,6 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				//java.lang is always imported implicitly. Ignore it
 				return;
 			}
-			if (isPackageImportedViaWildcardAndUnresolved(packageRef)) {
-				return;
-			}
 			if (Objects.equals(packageQName, packageRef.getQualifiedName()) && !isStaticExecutableRef(ref)) {
 				//it is reference to a type of the same package. Do not add it
 				return;
@@ -202,12 +199,6 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			if (!computedImports.containsKey(importRefID)) {
 				computedImports.put(importRefID, getFactory().Type().createImport(ref));
 			}
-		}
-
-		private boolean isPackageImportedViaWildcardAndUnresolved(CtPackageReference packageReference) {
-			return compilationUnit.getImports().stream().anyMatch(
-					ctImport -> ctImport.toString().contains(packageReference.toString())
-							&& ctImport.getImportKind() == CtImportKind.UNRESOLVED);
 		}
 
 		void onCompilationUnitProcessed(CtCompilationUnit compilationUnit) {
