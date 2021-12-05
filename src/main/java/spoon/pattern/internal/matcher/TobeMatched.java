@@ -91,7 +91,7 @@ public class TobeMatched {
 	/**
 	 * Converts the given collection of objects into a unmodifiable list without null values.
 	 * @param <T>  the type of the objects in the collection.
-	 * @param collection the collection of objects to be converted. 
+	 * @param collection the collection of objects to be converted.
 	 * @return  the converted unmodifiable list without null values.
 	 */
 	private <T> List<T>  copyToListWithoutNullValues(Collection<T> collection) {
