@@ -105,12 +105,9 @@ public class CtQueryImpl implements CtQuery {
 	@Override
 	public <R> List<R> list(final Class<R> itemClass) {
 		final List<R> list = new ArrayList<>();
-		forEach(new CtConsumer<R>() {
-			@Override
-			public void accept(R out) {
-				if (out != null && itemClass.isAssignableFrom(out.getClass())) {
-					list.add(out);
-				}
+		forEach((R out) -> {
+			if (out != null && itemClass.isAssignableFrom(out.getClass())) {
+				list.add(out);
 			}
 		});
 		return list;
@@ -125,13 +122,10 @@ public class CtQueryImpl implements CtQuery {
 	@Override
 	public <R> R first(final Class<R> itemClass) {
 		final Object[] result = new Object[1];
-		outputStep.setNext(new CtConsumer<R>() {
-			@Override
-			public void accept(R out) {
-				if (out != null && itemClass.isAssignableFrom(out.getClass())) {
-					result[0] = out;
-					terminate();
-				}
+		outputStep.setNext(out -> {
+			if (out != null && itemClass.isAssignableFrom(out.getClass())) {
+				result[0] = out;
+				terminate();
 			}
 		});
 		for (Object input : inputs) {
@@ -169,12 +163,7 @@ public class CtQueryImpl implements CtQuery {
 
 	@Override
 	public <R extends CtElement> CtQueryImpl select(final Filter<R> filter) {
-		CtFunction fnc = new CtFunction<R, Boolean>() {
-			@Override
-			public Boolean apply(R input) {
-				return filter.matches(input);
-			}
-		};
+		CtFunction<R,Boolean> fnc = filter::matches;
 		FunctionWrapper fw = new FunctionWrapper(fnc);
 		//set the expected type by real filter and not by helper wrapper above
 		fw.onCallbackSet(fnc.getClass().getName(), "apply", filter.getClass(), "matches", 1, 0);
@@ -569,7 +558,7 @@ public class CtQueryImpl implements CtQuery {
 	private static int getIndexOfCallerInStackOfLambda() {
 		CtConsumer<CtType<?>> f = (CtType<?> t) -> { };
 		CtConsumer<Object> unchecked = (CtConsumer) f;
-		Object obj = new Integer(1);
+		Object obj = Integer.valueOf(1);
 		try {
 			unchecked.accept(obj);
 			throw new SpoonException("The lambda expression with input type CtType must throw ClassCastException when input type is Integer. Basic CtQuery contract is violated by JVM!");
