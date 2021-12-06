@@ -13,6 +13,7 @@ import spoon.javadoc.internal.JavadocDescriptionElement;
 import spoon.javadoc.internal.JavadocInlineTag;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
@@ -84,6 +85,10 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				context.addImport(((CtFieldAccess) targetedExpression).getVariable().getDeclaringType());
 			}
 			return;
+		}
+
+		if (targetedExpression instanceof CtFieldRead) {
+			context.addImport(((CtFieldRead<?>) targetedExpression).getVariable());
 		}
 
 		if (target.isImplicit()) {
@@ -171,6 +176,10 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				// we would like to add an import, but we don't know to where
 				return;
 			}
+			if (ref instanceof CtFieldReference<?>
+					&& !isReferenceToFieldPresentInImports((CtFieldReference<?>) ref)) {
+				return;
+			}
 			CtTypeReference<?> topLevelTypeRef = typeRef.getTopLevelType();
 			if (typeRefQNames.contains(topLevelTypeRef.getQualifiedName())) {
 				//it is reference to a type of this CompilationUnit. Do not add it
@@ -184,7 +193,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				//java.lang is always imported implicitly. Ignore it
 				return;
 			}
-			if (Objects.equals(packageQName, packageRef.getQualifiedName()) && !isStaticExecutableRef(ref)) {
+			if (ref instanceof CtTypeReference && Objects.equals(packageQName, packageRef.getQualifiedName()) && !isStaticExecutableRef(ref)) {
 				//it is reference to a type of the same package. Do not add it
 				return;
 			}
@@ -199,6 +208,12 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			if (!computedImports.containsKey(importRefID)) {
 				computedImports.put(importRefID, getFactory().Type().createImport(ref));
 			}
+		}
+
+		private boolean isReferenceToFieldPresentInImports(CtFieldReference ref) {
+			return compilationUnit.getImports()
+					.stream()
+					.anyMatch(ctImport -> ctImport.getReference() != null && ctImport.getReference().equals(ref));
 		}
 
 		void onCompilationUnitProcessed(CtCompilationUnit compilationUnit) {
