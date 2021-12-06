@@ -20,8 +20,10 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -59,9 +61,8 @@ class JDTImportBuilder {
 					int lastDot = importName.lastIndexOf('.');
 					String packageName = importName.substring(0, lastDot);
 
-					// only get package from the model by traversing from rootPackage the model
-					// it does not use reflection to achieve that
-					CtPackage ctPackage = this.factory.Package().get(packageName);
+					// load package by looking up in the class loader or in the model being built
+					CtPackage ctPackage = loadPackage(packageName);
 
 					if (ctPackage != null) {
 						this.imports.add(createImportWithPosition(ctPackage.getReference(), importRef));
@@ -136,6 +137,23 @@ class JDTImportBuilder {
 		int commentStart = PositionBuilder.findNextNonWhitespace(false, content, declStart, PositionBuilder.findPrevNonWhitespace(content, 0, declStart - 1) + 1);
 		imprt.setPosition(factory.Core().createCompoundSourcePosition(spoonUnit, importRef.sourceStart(), importRef.sourceEnd(), commentStart, importRef.declarationEnd, spoonUnit.getLineSeparatorPositions()));
 		return imprt;
+	}
+
+	private CtPackage loadPackage(String packageName) {
+		// get all packages known for the current class loader and the ones which are accessible from it
+		Package[] allPackagesInAllClassLoaders = Package.getPackages();
+
+		Optional<Package> requiredPackage = Arrays.stream(allPackagesInAllClassLoaders)
+				.filter(pkg -> pkg.getName().equals(packageName))
+				.findAny();
+		if (requiredPackage.isPresent()) {
+			CtPackage ctPackage = factory.createPackage();
+			ctPackage.setSimpleName(requiredPackage.get().getName());
+			return ctPackage;
+		}
+
+		// get package by traversing the model
+		return factory.Package().get(packageName);
 	}
 
 	private CtType getOrLoadClass(String className) {

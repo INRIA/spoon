@@ -1,6 +1,6 @@
 package spoon.reflect.visitor;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtCompilationUnit;
@@ -16,13 +16,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ImportCleanerTest {
 
 	@Test
-	public void testDoesNotDuplicateUnresolvedImports() {
+	void testDoesNotImportClassesIfAlreadyImportedViaWildCard() {
+		// contract: The import cleaner should not import classes if they are encompassed in wildcard import.
+		testImportCleanerDoesNotAlterImports("src/test/resources/importCleaner/WildCardImport.java", "WildCardImport");
+	}
+
+	@Test
+	void testDoesNotDuplicateUnresolvedImports() {
 	    // contract: The import cleaner should not duplicate unresolved imports
 		testImportCleanerDoesNotAlterImports("./src/test/resources/unresolved/UnresolvedImport.java", "UnresolvedImport");
 	}
 
 	@Test
-	public void testDoesNotImportInheritedStaticMethod() {
+	void testDoesNotImportInheritedStaticMethod() {
 		// contract: The import cleaner should not import static attributes that are inherited
 		testImportCleanerDoesNotAlterImports("./src/test/resources/inherit-static-method", "Derived");
 	}
