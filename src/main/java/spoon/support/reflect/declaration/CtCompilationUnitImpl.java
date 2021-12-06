@@ -13,7 +13,6 @@ import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -160,7 +159,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 
 	@Override
 	public List<CtType<?>> getDeclaredTypes() {
-		return Collections.unmodifiableList(declaredTypeReferences.stream().map(ref -> ref.getTypeDeclaration()).collect(Collectors.toList()));
+		return declaredTypeReferences.stream().map(CtTypeReference::getTypeDeclaration).collect(Collectors.toUnmodifiableList());
 	}
 
 	@Override
