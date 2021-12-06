@@ -31,6 +31,11 @@ import java.util.regex.Pattern;
 public class CtQueryImpl implements CtQuery {
 
 	/**
+	 *
+	 */
+	private static final String APPLY_METHOD_NAME = "apply";
+	private static final String ACCEPT_METHOD_NAME = "_accept";
+	/**
 	 * All the constant inputs of this query.
 	 */
 	private List<Object> inputs;
@@ -163,10 +168,15 @@ public class CtQueryImpl implements CtQuery {
 
 	@Override
 	public <R extends CtElement> CtQueryImpl select(final Filter<R> filter) {
-		CtFunction<R, Boolean> fnc = filter::matches;
+		CtFunction fnc = new CtFunction<R, Boolean>() {
+			@Override
+			public Boolean apply(R input) {
+				return filter.matches(input);
+			}
+		};
 		FunctionWrapper fw = new FunctionWrapper(fnc);
 		//set the expected type by real filter and not by helper wrapper above
-		fw.onCallbackSet(fnc.getClass().getName(), "apply", filter.getClass(), "matches", 1, 0);
+		fw.onCallbackSet(fnc.getClass().getName(), APPLY_METHOD_NAME, filter.getClass(), "matches", 1, 0);
 		addStep(fw);
 		stepFailurePolicy(QueryFailurePolicy.IGNORE);
 		return this;
@@ -290,7 +300,7 @@ public class CtQueryImpl implements CtQuery {
 			if (input == null || isTerminated()) {
 				return;
 			}
-			if (isAcceptableType(input) == false) {
+			if (!isAcceptableType(input)) {
 				return;
 			}
 			Object result;
@@ -349,7 +359,7 @@ public class CtQueryImpl implements CtQuery {
 				//do not check type if it has to fail on cce
 				return true;
 			}
-			if (expectedClass != null && expectedClass.isAssignableFrom(input.getClass()) == false) {
+			if (expectedClass != null && !expectedClass.isAssignableFrom(input.getClass())) {
 				if (isLogging()) {
 					log(this, input.getClass().getName() + " cannot be cast to " + expectedClass.getName(), input);
 				}
@@ -393,7 +403,7 @@ public class CtQueryImpl implements CtQuery {
 				//expected class is known so it was checked before the call, so the CCE must be thrown by something else. Report it directly as it is. It is bug in client's code
 				throw e;
 			}
-			if (indexOfCallerInStack < 0) {
+			if (INDEX_OF_CALLER_IN_STACK < 0) {
 				//this is an exotic JVM, where we cannot detect type of parameter of Lambda expression
 				//Silently ignore this CCE, which was may be expected or may be problem in client's code.
 				return;
@@ -416,7 +426,7 @@ public class CtQueryImpl implements CtQuery {
 				 */
 				return;
 			}
-			StackTraceElement stackEle = stackEles[indexOfCallerInStack];
+			StackTraceElement stackEle = stackEles[INDEX_OF_CALLER_IN_STACK];
 			if (stackEle.getMethodName().equals(cceStacktraceMethodName) && stackEle.getClassName().equals(cceStacktraceClass)) {
 				/*
 				 * the CCE exception was thrown in the expected method - OK, it can be ignored
@@ -457,7 +467,7 @@ public class CtQueryImpl implements CtQuery {
 			reset();
 			nextStep = (CtConsumer) out;
 			handleListenerSetQuery(nextStep);
-			onCallbackSet(this.getClass().getName(), "_accept", nextStep.getClass(), "accept", 1, 0);
+			onCallbackSet(this.getClass().getName(), ACCEPT_METHOD_NAME, nextStep.getClass(), "accept", 1, 0);
 		}
 	}
 
@@ -475,7 +485,7 @@ public class CtQueryImpl implements CtQuery {
 		LazyFunctionWrapper(CtConsumableFunction<?> fnc) {
 			this.fnc = (CtConsumableFunction<Object>) fnc;
 			handleListenerSetQuery(this.fnc);
-			onCallbackSet(this.getClass().getName(), "_accept", fnc.getClass(), "apply", 2, 0);
+			onCallbackSet(this.getClass().getName(), ACCEPT_METHOD_NAME, fnc.getClass(), APPLY_METHOD_NAME, 2, 0);
 		}
 
 		@Override
@@ -495,7 +505,7 @@ public class CtQueryImpl implements CtQuery {
 		FunctionWrapper(CtFunction<?, ?> code) {
 			fnc = (CtFunction<Object, Object>) code;
 			handleListenerSetQuery(fnc);
-			onCallbackSet(this.getClass().getName(), "_accept", fnc.getClass(), "apply", 1, 0);
+			onCallbackSet(this.getClass().getName(), ACCEPT_METHOD_NAME, fnc.getClass(), APPLY_METHOD_NAME, 1, 0);
 		}
 
 		@Override
@@ -507,7 +517,7 @@ public class CtQueryImpl implements CtQuery {
 		protected void handleResult(Object result, Object input) {
 			if (result instanceof Boolean) {
 				//the code is a predicate. send the input to output if result is true
-				if ((Boolean) result) {
+				if (Boolean.TRUE.equals(result)) {
 					nextStep.accept(input);
 				} else {
 					log(this, "Skipped element, because CtFunction#accept(input) returned false", input);
@@ -546,7 +556,7 @@ public class CtQueryImpl implements CtQuery {
 	//In some implementation of jdk11 the message for ClassCastException is slightly different
 	private static final Pattern cceMessagePattern2 = Pattern.compile("class (\\S+) cannot be cast to class (\\S+)(.*)");
 
-	private static final int indexOfCallerInStack = getIndexOfCallerInStackOfLambda();
+	private static final int INDEX_OF_CALLER_IN_STACK = getIndexOfCallerInStackOfLambda();
 	/**
 	 * JVM implementations reports exception in call of lambda in different way.
 	 * A) the to be called lambda expression whose input parameters are invalid is on top of stack trace
@@ -568,7 +578,7 @@ public class CtQueryImpl implements CtQuery {
 				if ("getIndexOfCallerInStackOfLambda".equals(stack[i].getMethodName())) {
 					//check whether we can detect type of lambda input parameter from CCE
 					Class<?> detectedClass = detectTargetClassFromCCE(e, obj);
-					if (detectedClass == null || CtType.class.equals(detectedClass) == false) {
+					if (detectedClass == null || !CtType.class.equals(detectedClass)) {
 						//we cannot detect type of lambda input parameter from ClassCastException on this JVM implementation
 						//mark it by negative index, so the query engine will fall back to eating of all CCEs and slow implementation
 						return -1;
