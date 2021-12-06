@@ -144,9 +144,7 @@ public class PrinterHelper {
 				if (env != null) {
 					indentationSize = env.getTabulationSize();
 				}
-				for (int j = 0; j < indentationSize; j++) {
-					sbf.append(' ');
-				}
+				sbf.append(Character.toString(' ').repeat(indentationSize));
 			}
 		}
 	}
