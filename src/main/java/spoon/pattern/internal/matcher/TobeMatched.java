@@ -7,14 +7,15 @@
  */
 package spoon.pattern.internal.matcher;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
-
 import spoon.SpoonException;
 import spoon.reflect.meta.ContainerKind;
 import spoon.support.util.ImmutableMap;
@@ -68,14 +69,14 @@ public class TobeMatched {
 	private TobeMatched(ImmutableMap parameters, Collection<?> targets, boolean ordered) {
 		this.parameters = parameters;
 		//make a copy of origin collection, because it might be modified during matching process (by a refactoring algorithm)
-		this.targets = targets == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(targets));
+		this.targets = targets == null ? Collections.emptyList() : copyToListWithoutNullValues(targets);
 		this.ordered = ordered;
 	}
 
 	private TobeMatched(ImmutableMap parameters, Map<String, ?> targets) {
 		this.parameters = parameters;
 		//make a copy of origin collection, because it might be modified during matching process (by a refactoring algorithm)
-		this.targets = targets == null ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(targets.entrySet()));
+		this.targets = targets == null ? Collections.emptyList() : copyToListWithoutNullValues(targets.entrySet());
 		this.ordered = false;
 	}
 
@@ -86,6 +87,15 @@ public class TobeMatched {
 			this.targets.remove(tobeRemovedIndex);
 		}
 		this.ordered = ordered;
+	}
+	/**
+	 * Converts the given collection of objects into a unmodifiable list without null values.
+	 * @param <T>  the type of the objects in the collection.
+	 * @param collection the collection of objects to be converted.
+	 * @return  the converted unmodifiable list without null values.
+	 */
+	private <T> List<T>  copyToListWithoutNullValues(Collection<T> collection) {
+		return collection.stream().filter(Objects::nonNull).collect(toUnmodifiableList());
 	}
 
 	/**
