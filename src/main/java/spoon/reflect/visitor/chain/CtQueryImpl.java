@@ -163,7 +163,7 @@ public class CtQueryImpl implements CtQuery {
 
 	@Override
 	public <R extends CtElement> CtQueryImpl select(final Filter<R> filter) {
-		CtFunction<R,Boolean> fnc = filter::matches;
+		CtFunction<R, Boolean> fnc = filter::matches;
 		FunctionWrapper fw = new FunctionWrapper(fnc);
 		//set the expected type by real filter and not by helper wrapper above
 		fw.onCallbackSet(fnc.getClass().getName(), "apply", filter.getClass(), "matches", 1, 0);
