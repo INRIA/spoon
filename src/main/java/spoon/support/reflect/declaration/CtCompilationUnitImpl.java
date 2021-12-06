@@ -14,9 +14,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
-
 import spoon.SpoonException;
+import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
@@ -40,7 +41,6 @@ import spoon.support.UnsettableProperty;
 import spoon.support.reflect.cu.position.PartialSourcePositionImpl;
 import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.util.ModelList;
-import spoon.reflect.ModelElementContainerDefaultCapacities;
 
 /**
  * Implements a compilation unit. In Java, a compilation unit can contain only one
@@ -159,7 +159,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 
 	@Override
 	public List<CtType<?>> getDeclaredTypes() {
-		return declaredTypeReferences.stream().map(CtTypeReference::getTypeDeclaration).collect(Collectors.toUnmodifiableList());
+		return declaredTypeReferences.stream().map(CtTypeReference::getTypeDeclaration).filter(Objects::nonNull).collect(Collectors.toUnmodifiableList());
 	}
 
 	@Override
