@@ -568,7 +568,7 @@ public class CtQueryImpl implements CtQuery {
 	private static int getIndexOfCallerInStackOfLambda() {
 		CtConsumer<CtType<?>> f = (CtType<?> t) -> { };
 		CtConsumer<Object> unchecked = (CtConsumer) f;
-		Object obj = Integer.valueOf(1);
+		Object obj = new Object();
 		try {
 			unchecked.accept(obj);
 			throw new SpoonException("The lambda expression with input type CtType must throw ClassCastException when input type is Integer. Basic CtQuery contract is violated by JVM!");
