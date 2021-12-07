@@ -84,10 +84,7 @@ public abstract class ModelSet<T extends CtElement> extends AbstractSet<T> imple
 
 		// we make sure that the element is always the last put in the set
 		// for being least suprising for client code
-		if (set.contains(e)) {
-			set.remove(e);
-		}
-
+		set.remove(e);
 		set.add(e);
 		return true;
 	}
