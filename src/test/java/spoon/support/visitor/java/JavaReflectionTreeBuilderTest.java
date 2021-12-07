@@ -1,21 +1,25 @@
 /**
  * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
- *
+ * <p>
  * This software is governed by the CeCILL-C License under French law and
  * abiding by the rules of distribution of free software. You can use, modify
  * and/or redistribute the software under the terms of the CeCILL-C license as
  * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *
+ * <p>
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 package spoon.support.visitor.java;
 
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -60,6 +64,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
@@ -75,7 +80,6 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtElementPathBuilder;
@@ -88,6 +92,7 @@ import spoon.reflect.visitor.Root;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.FileSystemFile;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
+import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.code.CtAssignmentImpl;
 import spoon.support.reflect.code.CtConditionalImpl;
 import spoon.support.reflect.declaration.CtEnumValueImpl;
@@ -253,6 +258,7 @@ public class JavaReflectionTreeBuilderTest {
 		CtElement element;
 		CtElement other;
 		Set<CtRole> roles = new HashSet<>();
+
 		Diff(CtElement element, CtElement other) {
 			this.element = element;
 			this.other = other;
@@ -324,9 +330,11 @@ public class JavaReflectionTreeBuilderTest {
 			super(new ShadowEqualsChecker());
 			this.ignoredRoles = ignoredRoles;
 		}
+
 		List<Diff> getDiffs() {
 			return ((ShadowEqualsChecker) checker).differences;
 		}
+
 		@Override
 		protected boolean fail(CtRole role, Object element, Object other) {
 			if (role == null) {
@@ -346,13 +354,14 @@ public class JavaReflectionTreeBuilderTest {
 			CtElement parentOfOther = stack.peek();
 			try {
 				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther).toString() + "#" + role.getCamelCaseName()
-				+ "\nShadow: " + String.valueOf(other)
-				+ "\nNormal: " + String.valueOf(element) + "\n");
+						+ "\nShadow: " + String.valueOf(other)
+						+ "\nNormal: " + String.valueOf(element) + "\n");
 			} catch (CtPathException e) {
 				throw new SpoonException(e);
 			}
 			return false;
 		}
+
 		@Override
 		public void biScan(CtRole role, CtElement element, CtElement other) {
 			if (element instanceof CtParameter) {
@@ -381,6 +390,7 @@ public class JavaReflectionTreeBuilderTest {
 			}
 			super.biScan(role, element, other);
 		}
+
 		@Override
 		protected void biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
 			if (role == CtRole.TYPE_MEMBER) {
@@ -416,6 +426,7 @@ public class JavaReflectionTreeBuilderTest {
 			}
 			super.biScan(role, elements, others);
 		}
+
 		public List<String> checkDiffs(CtType<?> type, CtType<?> shadowType) {
 			differences = new ArrayList<>();
 			rootOfOther = shadowType;
@@ -432,9 +443,9 @@ public class JavaReflectionTreeBuilderTest {
 						rootOf = type;
 					}
 					differences.add("Diff on path: " + pathBuilder.fromElement(rootOf, parentOf).toString() + "#"
-					+ diff.roles.stream().map(CtRole::getCamelCaseName).collect(Collectors.joining(", ", "[", "]"))
-					+ "\nShadow: " + String.valueOf(diff.other)
-					+ "\nNormal: " + String.valueOf(diff.element) + "\n");
+							+ diff.roles.stream().map(CtRole::getCamelCaseName).collect(Collectors.joining(", ", "[", "]"))
+							+ "\nShadow: " + String.valueOf(diff.other)
+							+ "\nNormal: " + String.valueOf(diff.element) + "\n");
 				} catch (CtPathException e) {
 					throw new SpoonException(e);
 				}
@@ -625,11 +636,11 @@ public class JavaReflectionTreeBuilderTest {
 		CtType caller = factory.Type().get("Caller");
 		CtParameter annotatedParameter = ((CtParameter)
 				((CtConstructor)
-					((CtLocalVariable)
-						((CtConstructor)
-								caller.getTypeMembers().get(0)
-						).getBody().getStatement(2)
-					).getType().getTypeDeclaration().getTypeMembers().get(0)
+						((CtLocalVariable)
+								((CtConstructor)
+										caller.getTypeMembers().get(0)
+								).getBody().getStatement(2)
+						).getType().getTypeDeclaration().getTypeMembers().get(0)
 				).getParameters().get(0));
 
 		//contract: the annotation is correctly read
@@ -724,7 +735,7 @@ public class JavaReflectionTreeBuilderTest {
 	@EnabledForJreRange(min = JRE.JAVA_16)
 	public void testShadowRecords() throws ClassNotFoundException {
 		// contract: records are shadowable.
-		Factory factory = 	createFactory();
+		Factory factory = createFactory();
 		// we need to do this because this a jdk16+ class
 		Class<?> unixDomainPrincipal = Class.forName("jdk.net.UnixDomainPrincipal");
 		CtType<?> type = factory.Type().get(unixDomainPrincipal);
@@ -735,6 +746,39 @@ public class JavaReflectionTreeBuilderTest {
 		assertEquals(2, unixRecord.getRecordComponents().size());
 	}
 
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_17)
+	void testShadowSealedTypes() throws ClassNotFoundException {
+		// contract: sealed/non-sealed types are in the shadow model
+		Factory factory = createFactory();
+		// load a few ConstantDesc types
+		Class<?> constantDesc = Class.forName("java.lang.constant.ConstantDesc"); // since Java 12, sealed since Java 17
+		Class<?> dynamicConstantDesc = Class.forName("java.lang.constant.DynamicConstantDesc"); // since Java 12
+		Class<?> enumDesc = Class.forName("java.lang.Enum$EnumDesc"); // since Java 12
+		CtType<?> ctConstantDesc = factory.Type().get(constantDesc);
+		CtType<?> ctDynamicConstantDesc = factory.Type().get(dynamicConstantDesc);
+		CtType<?> ctEnumDesc = factory.Type().get(enumDesc);
+		CtType<?> ctString = factory.Type().get(String.class);
+
+		// make sure they are loaded correctly
+		assertNotNull(ctConstantDesc);
+		assertNotNull(ctDynamicConstantDesc);
+		assertNotNull(ctEnumDesc);
+		assertNotNull(ctString);
+
+		// ConstDesc is sealed
+		assertThat(ctConstantDesc.getExtendedModifiers(), hasItem(CtExtendedModifier.explicit(ModifierKind.SEALED)));
+		// DynamicConstDesc and String are permitted types
+		assertThat(ctConstantDesc.getPermittedTypes(), hasItems(ctDynamicConstantDesc.getReference(), ctString.getReference()));
+		// EnumDesc extends DynamicConstantDesc, so it should not be added to the permitted types of ConstantDesc
+		assertThat(ctConstantDesc.getPermittedTypes(), not(hasItem(ctEnumDesc.getReference())));
+		// DynamicConstDesc is non-sealed
+		assertThat(ctDynamicConstantDesc.getExtendedModifiers(), hasItem(CtExtendedModifier.explicit(ModifierKind.NON_SEALED)));
+		// EnumDesc extends DynamicConstDesc which is non-sealed, so it is not non-sealed itself
+		assertThat(ctEnumDesc.getModifiers(), not(hasItem(ModifierKind.NON_SEALED)));
+		// String is final and not sealed, so neither sealed nor non-sealed should be applied
+		assertThat(ctString.getModifiers(), not(hasItems(ModifierKind.SEALED, ModifierKind.NON_SEALED)));
+	}
 
 	@Test
 	void testShadowPackage() {
