@@ -30,9 +30,6 @@ import java.util.regex.Pattern;
  */
 public class CtQueryImpl implements CtQuery {
 
-	/**
-	 *
-	 */
 	private static final String APPLY_METHOD_NAME = "apply";
 	private static final String ACCEPT_METHOD_NAME = "_accept";
 	/**
