@@ -496,7 +496,6 @@ public class ElementSourceFragment implements SourceFragment {
 			if (child instanceof TokenSourceFragment) {
 				result.add(child);
 				i++;
-				continue;
 			} else if (child instanceof ElementSourceFragment) {
 				ElementSourceFragment esf = (ElementSourceFragment) child;
 				ContainerKind kind = esf.getContainerKindInParent();
