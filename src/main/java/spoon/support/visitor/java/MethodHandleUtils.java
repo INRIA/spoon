@@ -32,6 +32,8 @@ class MethodHandleUtils {
 	private static MethodHandle lookupRecordComponentName = lookupRecordComponentName();
 	private static MethodHandle lookupRecordComponentType = lookupRecordComponentType();
 
+	private static MethodHandle lookupPermittedSubclasses = lookupPermittedSubclasses();
+
 	/**
 	 * Checks if the given class is a record.
 	 * @param clazz  the class to check
@@ -113,6 +115,14 @@ class MethodHandleUtils {
 		}
 	}
 
+	public static Class<?>[] getPermittedSubclasses(Class<?> clazz) {
+		try {
+			return (Class<?>[]) lookupPermittedSubclasses.invoke(clazz);
+		} catch (Throwable e) {
+			return null;
+		}
+	}
+
 
 	private static MethodHandle lookupRecord() {
 		try {
@@ -140,6 +150,14 @@ class MethodHandleUtils {
 	private static MethodHandle lookupRecordComponentName() {
 		try {
 			return MethodHandles.lookup().findVirtual(recordComponent, "getName", MethodType.methodType(String.class));
+		} catch (Throwable e) {
+			return null;
+		}
+	}
+
+	private static MethodHandle lookupPermittedSubclasses() {
+		try {
+			return MethodHandles.lookup().findVirtual(Class.class, "getPermittedSubclasses", MethodType.methodType(Class[].class));
 		} catch (Throwable e) {
 			return null;
 		}

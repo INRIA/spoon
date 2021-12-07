@@ -13,6 +13,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -67,16 +68,32 @@ public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 
 	@Override
 	public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
+		CtType<?> declaringType = typeReference.getTypeDeclaration();
+		boolean finalOrSealed = type.isFinal() || type.hasModifier(ModifierKind.SEALED);
 		switch (role) {
 			case INTERFACE:
+				if (declaringType != null && declaringType.isShadow()) {
+					if (!finalOrSealed && declaringType.hasModifier(ModifierKind.SEALED)) {
+						type.addModifier(ModifierKind.NON_SEALED);
+					}
+				}
 				type.addSuperInterface(typeReference);
 				return;
 			case SUPER_TYPE:
+				if (declaringType != null && declaringType.isShadow()) {
+					if (!finalOrSealed && declaringType.hasModifier(ModifierKind.SEALED)) {
+						type.addModifier(ModifierKind.NON_SEALED);
+					}
+				}
 				if (type instanceof CtTypeParameter) {
 					((CtTypeParameter) this.type).setSuperclass(typeReference);
 				} else {
 					type.setSuperclass(typeReference);
 				}
+				return;
+			case TYPE_REF:
+				type.addModifier(ModifierKind.SEALED);
+				type.addPermittedType(typeReference);
 				return;
 		}
 		throw new UnsupportedOperationException();

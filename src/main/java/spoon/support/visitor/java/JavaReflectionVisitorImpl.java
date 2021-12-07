@@ -106,6 +106,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
+		scanPermittedTypes(clazz);
 	}
 
 	protected final <T> void visitType(Class<T> aClass) {
@@ -175,6 +176,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
+		scanPermittedTypes(clazz);
 	}
 
 	@Override
@@ -248,6 +250,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		} catch (NoClassDefFoundError ignore) {
 			// partial classpath
 		}
+		scanPermittedTypes(clazz);
 	}
 
 	@Override
@@ -597,4 +600,17 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 
 	}
 
+	private void scanPermittedTypes(Class<?> clazz) {
+		Class<?>[] permittedSubclasses = MethodHandleUtils.getPermittedSubclasses(clazz);
+		if (permittedSubclasses == null) {
+			return;
+		}
+		for (Class<?> subclass : permittedSubclasses) {
+			try {
+				visitTypeReference(CtRole.TYPE_REF, subclass);
+			} catch (NoClassDefFoundError ignore) {
+				// partial classpath
+			}
+		}
+	}
 }
