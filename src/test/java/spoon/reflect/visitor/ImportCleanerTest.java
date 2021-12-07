@@ -16,6 +16,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ImportCleanerTest {
 
 	@Test
+	void testDoesNotRemoveImportForStaticFieldOfStaticClass() {
+		// contract: The import cleaner should not remove import of the static field
+		testImportCleanerDoesNotAlterImports("src/test/resources/fieldImport", "fieldImport.StaticFieldImport");
+	}
+
+	@Test
 	void testDoesNotImportClassesIfAlreadyImportedViaWildCard() {
 		// contract: The import cleaner should not import classes if they are encompassed in wildcard import.
 		testImportCleanerDoesNotAlterImports("src/test/resources/importCleaner/WildCardImport.java", "WildCardImport");
