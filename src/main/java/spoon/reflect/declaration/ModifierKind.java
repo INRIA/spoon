@@ -68,8 +68,7 @@ public enum ModifierKind {
 	/**
 	 * The modifier <tt>sealed</tt>
 	 */
-	SEALED,
-	;
+	SEALED;
 
 	private String lowercase = null; // modifier name in lowercase
 
