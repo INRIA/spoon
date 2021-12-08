@@ -14,6 +14,7 @@ import spoon.support.UnsettableProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -31,7 +32,7 @@ import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
  * </pre>
  * @author Renaud Pawlak
  */
-public interface CtClass<T> extends CtType<T>, CtStatement {
+public interface CtClass<T> extends CtType<T>, CtStatement, CtSealable {
 	/**
 	 * Returns the anonymous blocks of this class.
 	 * Derived from {@link #getTypeMembers()}
@@ -129,4 +130,14 @@ public interface CtClass<T> extends CtType<T>, CtStatement {
 	@Override
 	@UnsettableProperty
 	<C extends CtStatement> C setLabel(String label);
+
+
+	@Override
+	CtClass<T> setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes);
+
+	@Override
+	CtClass<T> addPermittedType(CtTypeReference<?> type);
+
+	@Override
+	CtClass<T> removePermittedType(CtTypeReference<?> type);
 }

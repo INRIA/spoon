@@ -3,8 +3,10 @@ package spoon.test.sealedclasses;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
@@ -26,7 +28,7 @@ public class SealedClassesTest {
 
 		launcher.addInputResource("src/test/resources/sealedclasses/SealedClassWithNestedSubclasses.java");
 		CtModel ctModel = launcher.buildModel();
-		CtType<?> outer = ctModel.getAllTypes().iterator().next();
+		CtSealable outer = (CtSealable) ctModel.getAllTypes().iterator().next();
 
 		for (CtTypeReference<?> permitted : outer.getPermittedTypes()) {
 			assertThat(permitted.isImplicit(), is(true));
@@ -40,10 +42,10 @@ public class SealedClassesTest {
 
 		launcher.addInputResource("src/test/resources/sealedclasses/SealedClassWithNestedSubclasses.java");
 		CtModel ctModel = launcher.buildModel();
-		CtType<?> outer = ctModel.getAllTypes().iterator().next();
+		CtClass<?> outer = (CtClass<?>) ctModel.getAllTypes().iterator().next();
 		assertThat(outer.getExtendedModifiers(), hasItems(new CtExtendedModifier(ModifierKind.SEALED, false)));
 
-		CtType<?> nestedFinal = outer.getNestedType("NestedFinal");
+		CtClass<?> nestedFinal = outer.getNestedType("NestedFinal");
 		assertThat(nestedFinal.getExtendedModifiers(), hasItem(new CtExtendedModifier(ModifierKind.FINAL, false)));
 		assertThat(outer.getPermittedTypes(), hasItem(nestedFinal.getReference()));
 
@@ -83,7 +85,7 @@ public class SealedClassesTest {
 		launcher.addInputResource("src/test/resources/sealedclasses/OtherExtendingClass.java");
 		CtModel ctModel = launcher.buildModel();
 		CtPackage ctPackage = ctModel.getAllPackages().iterator().next();
-		CtType<?> sealedClassWithPermits = ctPackage.getType("SealedClassWithPermits");
+		CtClass<?> sealedClassWithPermits = ctPackage.getType("SealedClassWithPermits");
 		CtType<?> extendingClass = ctPackage.getType("ExtendingClass");
 		CtType<?> otherExtendingClass = ctPackage.getType("OtherExtendingClass");
 

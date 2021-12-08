@@ -76,9 +76,6 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@MetamodelPropertyField(role = CtRole.INTERFACE)
 	Set<CtTypeReference<?>> interfaces = emptySet();
 
-	@MetamodelPropertyField(role = CtRole.PERMITTED_TYPE)
-	Set<CtTypeReference<?>> permittedTypes = emptySet();
-
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
 	private CtModifierHandler modifierHandler = new CtModifierHandler(this);
 
@@ -1043,37 +1040,5 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 		CtCompilationUnit cu = getFactory().createCompilationUnit();
 		cu.addDeclaredType(this);
 		return printer.printCompilationUnit(cu);
-	}
-
-	@Override
-	public Set<CtTypeReference<?>> getPermittedTypes() {
-		// TODO unmodifiable?
-		return Collections.unmodifiableSet(permittedTypes);
-	}
-
-	@Override
-	public CtSealable setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
-		this.permittedTypes = new HashSet<>(permittedTypes); // TODO events, checks
-		return this;
-	}
-
-	@Override
-	public CtSealable addPermittedType(CtTypeReference<?> type) {
-		// TODO ensure modifiable, events etc
-		if (type == null) {
-			return this;
-		}
-		if (permittedTypes == CtElementImpl.<CtTypeReference<?>>emptySet()) {
-			permittedTypes = new HashSet<>();
-		}
-		this.permittedTypes.add(type);
-		return this;
-	}
-
-	@Override
-	public CtSealable removePermittedType(CtTypeReference<?> type) {
-		// TODO events
-		this.permittedTypes.remove(type);
-		return this;
 	}
 }

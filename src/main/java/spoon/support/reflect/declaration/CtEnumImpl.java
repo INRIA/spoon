@@ -148,6 +148,7 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 	}
 
 	@Override
+	@DerivedProperty
 	public Set<CtTypeReference<?>> getPermittedTypes() {
 		LinkedHashSet<CtTypeReference<?>> refs = new LinkedHashSet<>();
 		for (CtEnumValue<?> value : enumValues) {
@@ -160,19 +161,19 @@ public class CtEnumImpl<T extends Enum<?>> extends CtClassImpl<T> implements CtE
 
 	@Override
 	@UnsettableProperty
-	public CtSealable setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
+	public CtEnum<T> setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
 		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public CtSealable addPermittedType(CtTypeReference<?> type) {
+	public CtEnum<T> addPermittedType(CtTypeReference<?> type) {
 		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public CtSealable removePermittedType(CtTypeReference<?> type) {
+	public CtEnum<T> removePermittedType(CtTypeReference<?> type) {
 		return this;
 	}
 

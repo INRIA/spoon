@@ -250,19 +250,19 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 
 	@Override
 	@UnsettableProperty
-	public CtSealable setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
+	public CtRecord setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
 		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public CtSealable addPermittedType(CtTypeReference<?> type) {
+	public CtRecord addPermittedType(CtTypeReference<?> type) {
 		return this;
 	}
 
 	@Override
 	@UnsettableProperty
-	public CtSealable removePermittedType(CtTypeReference<?> type) {
+	public CtRecord removePermittedType(CtTypeReference<?> type) {
 		return this;
 	}
 

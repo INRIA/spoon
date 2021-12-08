@@ -23,6 +23,7 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
@@ -548,12 +549,12 @@ public class ElementPrinterHelper {
 		}
 	}
 
-	public void printPermits(CtType<?> type) {
-		if (type.getPermittedTypes().isEmpty() || type.getPermittedTypes().stream().allMatch(CtElement::isImplicit)) {
+	public void printPermits(CtSealable sealable) {
+		if (sealable.getPermittedTypes().isEmpty() || sealable.getPermittedTypes().stream().allMatch(CtElement::isImplicit)) {
 			return;
 		}
 		printer.writeln().incTab().writeKeyword("permits").writeSpace();
-		printList(type.getPermittedTypes(), null, false, null, false, false, ",", true, false, null, prettyPrinter::scan);
+		printList(sealable.getPermittedTypes(), null, false, null, false, false, ",", true, false, null, prettyPrinter::scan);
 		printer.decTab();
 	}
 }
