@@ -160,7 +160,6 @@ public class PrintingContext {
 
 		public <T extends Writable> T isNextForVariable(boolean add) {
 			modifyState(PrintingOptions.NEXT_FOR_VARIABLE, add);
-
 			return (T) this;
 		}
 
