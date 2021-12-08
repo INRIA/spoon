@@ -207,7 +207,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		biScan(spoon.reflect.path.CtRole.INTERFACE, ctClass.getSuperInterfaces(), other.getSuperInterfaces());
 		biScan(spoon.reflect.path.CtRole.TYPE_PARAMETER, ctClass.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
 		biScan(spoon.reflect.path.CtRole.TYPE_MEMBER, ctClass.getTypeMembers(), other.getTypeMembers());
-		biScan(spoon.reflect.path.CtRole.TYPE_REF, ctClass.getPermittedTypes(), other.getPermittedTypes());
+		biScan(spoon.reflect.path.CtRole.PERMITTED_TYPE, ctClass.getPermittedTypes(), other.getPermittedTypes());
 		biScan(spoon.reflect.path.CtRole.COMMENT, ctClass.getComments(), other.getComments());
 		exit(ctClass);
 	}
@@ -398,7 +398,7 @@ public class CtBiScannerDefault extends spoon.reflect.visitor.CtAbstractBiScanne
 		biScan(spoon.reflect.path.CtRole.INTERFACE, intrface.getSuperInterfaces(), other.getSuperInterfaces());
 		biScan(spoon.reflect.path.CtRole.TYPE_PARAMETER, intrface.getFormalCtTypeParameters(), other.getFormalCtTypeParameters());
 		biScan(spoon.reflect.path.CtRole.TYPE_MEMBER, intrface.getTypeMembers(), other.getTypeMembers());
-		biScan(spoon.reflect.path.CtRole.TYPE_REF, intrface.getPermittedTypes(), other.getPermittedTypes());
+		biScan(spoon.reflect.path.CtRole.PERMITTED_TYPE, intrface.getPermittedTypes(), other.getPermittedTypes());
 		biScan(spoon.reflect.path.CtRole.COMMENT, intrface.getComments(), other.getComments());
 		exit(intrface);
 	}
