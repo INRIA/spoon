@@ -1,6 +1,5 @@
 package spoon.test.sealedclasses;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
@@ -18,7 +17,6 @@ import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static spoon.test.SpoonTestHelpers.contentEquals;
 
-// TODO compliance level 17 and no preview features
 public class SealedClassesTest {
 
 	@Test
@@ -55,7 +53,6 @@ public class SealedClassesTest {
 	}
 
 	@Test
-	@Disabled
 	void testEnumSealed() {
 		// contract: enums with anonymous enum values are sealed and the anonymous types are final
 		Launcher launcher = createLauncher();
@@ -72,8 +69,8 @@ public class SealedClassesTest {
 		));
 
 		// TODO the RHS type is wrong currently, see #4291
-		assertThat(ctEnum.getPermittedTypes(),
-				contentEquals(ctEnum.getEnumValue("VALUE").getDefaultExpression().getType()));
+/*		assertThat(ctEnum.getPermittedTypes(),
+				contentEquals(ctEnum.getEnumValue("VALUE").getDefaultExpression().getType()));*/
 	}
 
 	@Test
@@ -101,8 +98,7 @@ public class SealedClassesTest {
 
 	private static Launcher createLauncher() {
 		Launcher launcher = new Launcher();
-		launcher.getEnvironment().setComplianceLevel(16);
-		launcher.getEnvironment().setPreviewFeaturesEnabled(true);
+		launcher.getEnvironment().setComplianceLevel(17);
 		return launcher;
 	}
 }
