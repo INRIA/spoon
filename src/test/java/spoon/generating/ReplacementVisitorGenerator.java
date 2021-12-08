@@ -49,13 +49,13 @@ public class ReplacementVisitorGenerator extends AbstractProcessor<CtType<?>> {
 		target.delete();
 		target.addModifier(ModifierKind.PUBLIC);
 		aPackage.addType(target);
-		final List<CtTypeReference> references = target.getElements(new TypeFilter<CtTypeReference>(CtTypeReference.class) {
+		final List<CtTypeReference<?>> references = target.getElements(new TypeFilter<CtTypeReference<?>>(CtTypeReference.class) {
 			@Override
-			public boolean matches(CtTypeReference reference) {
+			public boolean matches(CtTypeReference<?> reference) {
 				return GENERATING_REPLACE_VISITOR.equals(reference.getQualifiedName());
 			}
 		});
-		for (CtTypeReference reference : references) {
+		for (CtTypeReference<?> reference : references) {
 			reference.setPackage(aPackage.getReference());
 		}
 		return target;
