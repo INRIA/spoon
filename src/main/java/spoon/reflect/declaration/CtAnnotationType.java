@@ -12,6 +12,7 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -50,4 +51,27 @@ public interface CtAnnotationType<T extends Annotation> extends CtType<T> {
 	@UnsettableProperty
 	<C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass);
 
+	@Override
+	@UnsettableProperty
+	default Set<CtTypeReference<?>> getPermittedTypes() {
+		return Set.of();
+	}
+
+	@Override
+	@UnsettableProperty
+	default CtAnnotationType<T> setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
+		return this;
+	}
+
+	@Override
+	@UnsettableProperty
+	default CtAnnotationType<T> addPermittedType(CtTypeReference<?> type) {
+		return this;
+	}
+
+	@Override
+	@UnsettableProperty
+	default CtAnnotationType<T> removePermittedType(CtTypeReference<?> type) {
+		return this;
+	}
 }
