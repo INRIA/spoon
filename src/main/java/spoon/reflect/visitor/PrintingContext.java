@@ -154,67 +154,51 @@ public class PrintingContext {
 		 * @param add true to the set option, false for removing. {@link PrintingContext#isFirstForVariable()}
 		 */
 		public <T extends Writable> T isFirstForVariable(boolean add) {
-			if (add) {
-				states.add(PrintingOptions.FIRST_FOR_VARIABLE);
-			} else {
-				states.remove(PrintingOptions.FIRST_FOR_VARIABLE);
-			}
+			modifyState(PrintingOptions.FIRST_FOR_VARIABLE, add);
 			return (T) this;
 		}
 
 		public <T extends Writable> T isNextForVariable(boolean add) {
-			if (add) {
-				states.add(PrintingOptions.NEXT_FOR_VARIABLE);
-			} else {
-				states.remove(PrintingOptions.NEXT_FOR_VARIABLE);
-			}
+			modifyState(PrintingOptions.NEXT_FOR_VARIABLE, add);
+
 			return (T) this;
 		}
 
 		public <T extends Writable> T ignoreGenerics(boolean add) {
-			if (add) {
-				states.add(PrintingOptions.IGNORE_GENERICS);
-			} else {
-				states.remove(PrintingOptions.IGNORE_GENERICS);
-			}
+			modifyState(PrintingOptions.IGNORE_GENERICS, add);
 			return (T) this;
 		}
 		public <T extends Writable> T skipArray(boolean add) {
-			if (add) {
-				states.add(PrintingOptions.SKIP_ARRAY);
-			} else {
-				states.remove(PrintingOptions.SKIP_ARRAY);
-			}
+			modifyState(PrintingOptions.SKIP_ARRAY, add);
 			return (T) this;
 		}
 
 		public <T extends Writable> T ignoreStaticAccess(boolean add) {
-			if (add) {
-				states.add(PrintingOptions.IGNORE_STATIC_ACCESS);
-			} else {
-				states.remove(PrintingOptions.IGNORE_STATIC_ACCESS);
-			}
+			modifyState(PrintingOptions.IGNORE_STATIC_ACCESS, add);
 			return (T) this;
 		}
 
 		public <T extends Writable> T ignoreEnclosingClass(boolean add) {
-			if (add) {
-				states.add(PrintingOptions.IGNORE_ENCLOSING_CLASS);
-			} else {
-				states.remove(PrintingOptions.IGNORE_ENCLOSING_CLASS);
-			}
+			modifyState(PrintingOptions.IGNORE_ENCLOSING_CLASS, add);
 			return (T) this;
 		}
 
 		public <T extends Writable> T forceWildcardGenerics(boolean add) {
-			if (add) {
-				states.add(PrintingOptions.FORCE_WILDCARD_GENERICS);
-			} else {
-				states.remove(PrintingOptions.FORCE_WILDCARD_GENERICS);
-			}
+			modifyState(PrintingOptions.FORCE_WILDCARD_GENERICS, add);
 			return (T) this;
 		}
-
+		/**
+		 * Modifies the current printing state. 
+		 * @param option the option to modify.
+		 * @param add true to add the option, false to remove it.
+		 */
+		private void modifyState(PrintingOptions option, boolean add) {
+			if (add) {
+				states.add(option);
+			} else {
+				states.remove(option);
+			}
+		}
 		/**
 		 * There are statements (e.g. invocation), which may play role of expression too.
 		 * They have to be suffixed by semicolon depending on the printing context.
