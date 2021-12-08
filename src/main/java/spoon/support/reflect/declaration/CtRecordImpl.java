@@ -12,6 +12,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -29,6 +30,7 @@ import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
+import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.ModifierKind;
@@ -239,6 +241,29 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 		}
 		setExtendedModifiers(extendedModifiers);
 		return super.setParent(parent);
+	}
+
+	@Override
+	public Set<CtTypeReference<?>> getPermittedTypes() {
+		return Set.of();
+	}
+
+	@Override
+	@UnsettableProperty
+	public CtSealable setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
+		return this;
+	}
+
+	@Override
+	@UnsettableProperty
+	public CtSealable addPermittedType(CtTypeReference<?> type) {
+		return this;
+	}
+
+	@Override
+	@UnsettableProperty
+	public CtSealable removePermittedType(CtTypeReference<?> type) {
+		return this;
 	}
 
 	@Override

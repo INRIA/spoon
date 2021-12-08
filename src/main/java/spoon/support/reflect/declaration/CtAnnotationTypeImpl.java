@@ -93,20 +93,23 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 	// TODO is this all fine?
 	@Override
 	public Set<CtTypeReference<?>> getPermittedTypes() {
-		return Collections.emptySet();
+		return Set.of();
 	}
 
 	@Override
+	@UnsettableProperty
 	public CtSealable setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
 		return this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public CtSealable addPermittedType(CtTypeReference<?> type) {
 		return this;
 	}
 
 	@Override
+	@UnsettableProperty
 	public CtSealable removePermittedType(CtTypeReference<?> type) {
 		return this;
 	}
