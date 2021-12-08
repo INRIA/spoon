@@ -187,7 +187,7 @@ public class PrintingContext {
 			return (T) this;
 		}
 		/**
-		 * Modifies the current printing state. 
+		 * Modifies the current printing state.
 		 * @param option the option to modify.
 		 * @param add true to add the option, false to remove it.
 		 */
