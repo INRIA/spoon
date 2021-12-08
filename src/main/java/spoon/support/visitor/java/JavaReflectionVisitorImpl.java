@@ -607,7 +607,7 @@ class JavaReflectionVisitorImpl implements JavaReflectionVisitor {
 		}
 		for (Class<?> subclass : permittedSubclasses) {
 			try {
-				visitTypeReference(CtRole.TYPE_REF, subclass);
+				visitTypeReference(CtRole.PERMITTED_TYPE, subclass);
 			} catch (NoClassDefFoundError ignore) {
 				// partial classpath
 			}
