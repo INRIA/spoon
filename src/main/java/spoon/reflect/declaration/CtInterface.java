@@ -11,6 +11,8 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.UnsettableProperty;
 
+import java.util.Collection;
+
 /**
  * This element defines an interface declaration.
  *
@@ -32,4 +34,13 @@ public interface CtInterface<T> extends CtType<T>, CtStatement, CtSealable {
 	@Override
 	@UnsettableProperty
 	String getLabel();
+
+	@Override
+	CtInterface<T> setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes);
+
+	@Override
+	CtInterface<T> addPermittedType(CtTypeReference<?> type);
+
+	@Override
+	CtInterface<T> removePermittedType(CtTypeReference<?> type);
 }

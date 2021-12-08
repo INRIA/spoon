@@ -75,8 +75,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.function.Consumer;
+import java.util.StringJoiner;
 
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.getModifiers;
 import static spoon.support.compiler.jdt.JDTTreeBuilderQuery.isLhsAssignment;
@@ -732,7 +732,7 @@ public class JDTTreeBuilderHelper {
 		}
 		Consumer<CtTypeReference<?>> addPermittedType;
 		if (type instanceof CtSealable) {
-			addPermittedType = ((CtSealable) type)::addPermittedType;
+			addPermittedType = ref -> ((CtSealable) type).addPermittedType(ref);
 		} else {
 			addPermittedType = ref -> {
 				throw new SpoonException("Tried to add permitted type to " + type);

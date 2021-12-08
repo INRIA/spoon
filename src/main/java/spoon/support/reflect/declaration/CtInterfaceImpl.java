@@ -126,35 +126,26 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 
 	@Override
 	public CtInterface<T> setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
-		Collection<CtTypeReference<?>> types = permittedTypes != null ? permittedTypes : CtElementImpl.emptySet();
-		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, CtRole.PERMITTED_TYPE, this.permittedTypes, new HashSet<>(this.permittedTypes));
-		this.permittedTypes.clear();
-		for (CtTypeReference<?> type : types) {
-			addPermittedType(type);
-		}
+		this.permittedTypes = new HashSet<>(permittedTypes); // TODO events, checks
 		return this;
 	}
 
 	@Override
 	public CtInterface<T> addPermittedType(CtTypeReference<?> type) {
+		// TODO ensure modifiable, events etc
 		if (type == null) {
 			return this;
 		}
-		if (this.permittedTypes == CtElementImpl.<CtTypeReference<?>>emptySet()) {
-			this.permittedTypes = new HashSet<>();
+		if (permittedTypes == CtElementImpl.<CtTypeReference<?>>emptySet()) {
+			permittedTypes = new HashSet<>();
 		}
-		type.setParent(this);
-		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, CtRole.PERMITTED_TYPE, this.permittedTypes, type);
 		this.permittedTypes.add(type);
 		return this;
 	}
 
 	@Override
 	public CtInterface<T> removePermittedType(CtTypeReference<?> type) {
-		if (this.permittedTypes == CtElementImpl.<CtTypeReference<?>>emptySet()) {
-			return this;
-		}
-		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, CtRole.PERMITTED_TYPE, this.permittedTypes, type);
+		// TODO events
 		this.permittedTypes.remove(type);
 		return this;
 	}

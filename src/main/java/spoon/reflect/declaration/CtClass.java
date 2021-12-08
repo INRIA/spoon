@@ -14,6 +14,7 @@ import spoon.support.UnsettableProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -129,4 +130,14 @@ public interface CtClass<T> extends CtType<T>, CtStatement, CtSealable {
 	@Override
 	@UnsettableProperty
 	<C extends CtStatement> C setLabel(String label);
+
+
+	@Override
+	CtClass<T> setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes);
+
+	@Override
+	CtClass<T> addPermittedType(CtTypeReference<?> type);
+
+	@Override
+	CtClass<T> removePermittedType(CtTypeReference<?> type);
 }
