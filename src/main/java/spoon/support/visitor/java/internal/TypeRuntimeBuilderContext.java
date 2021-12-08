@@ -93,7 +93,7 @@ public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 					type.setSuperclass(typeReference);
 				}
 				return;
-			case TYPE_REF:
+			case PERMITTED_TYPE:
 				type.addModifier(ModifierKind.SEALED);
 				type.addPermittedType(typeReference);
 				return;

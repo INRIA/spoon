@@ -13,15 +13,15 @@ import java.util.Set;
 
 public interface CtSealable {
 
-	@PropertyGetter(role = CtRole.TYPE_REF)
+	@PropertyGetter(role = CtRole.PERMITTED_TYPE)
 	Set<CtTypeReference<?>> getPermittedTypes();
 
-	@PropertySetter(role = CtRole.TYPE_REF)
+	@PropertySetter(role = CtRole.PERMITTED_TYPE)
 	CtSealable setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes);
 
-	@PropertySetter(role = CtRole.TYPE_REF)
+	@PropertySetter(role = CtRole.PERMITTED_TYPE)
 	CtSealable addPermittedType(CtTypeReference<?> type);
 
-	@PropertySetter(role = CtRole.TYPE_REF)
+	@PropertySetter(role = CtRole.PERMITTED_TYPE)
 	CtSealable removePermittedType(CtTypeReference<?> type);
 }

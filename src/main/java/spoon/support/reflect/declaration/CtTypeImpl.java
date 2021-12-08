@@ -76,7 +76,7 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@MetamodelPropertyField(role = CtRole.INTERFACE)
 	Set<CtTypeReference<?>> interfaces = emptySet();
 
-	@MetamodelPropertyField(role = CtRole.TYPE_REF)
+	@MetamodelPropertyField(role = CtRole.PERMITTED_TYPE)
 	Set<CtTypeReference<?>> permittedTypes = emptySet();
 
 	@MetamodelPropertyField(role = CtRole.MODIFIER)
