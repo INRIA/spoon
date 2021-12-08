@@ -68,7 +68,9 @@ public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 
 	@Override
 	public void addTypeReference(CtRole role, CtTypeReference<?> typeReference) {
-		CtType<?> declaringType = typeReference.getTypeDeclaration();
+		// if the type reference is known, we can use it. But we don't want to recursively build models for
+		// type references, so CtTypeReference#getTypeDeclaration() does not work
+		CtType<?> declaringType = typeReference.getFactory().Type().get(typeReference.getQualifiedName());
 		boolean finalOrSealed = type.isFinal() || type.hasModifier(ModifierKind.SEALED);
 		switch (role) {
 			case INTERFACE:
