@@ -11,6 +11,7 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
+import spoon.reflect.declaration.CtSealable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
@@ -94,8 +95,10 @@ public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 				}
 				return;
 			case PERMITTED_TYPE:
-				type.addModifier(ModifierKind.SEALED);
-				type.addPermittedType(typeReference);
+				if (type instanceof CtSealable) {
+					type.addModifier(ModifierKind.SEALED);
+					((CtSealable) type).addPermittedType(typeReference);
+				}
 				return;
 		}
 		throw new UnsupportedOperationException();

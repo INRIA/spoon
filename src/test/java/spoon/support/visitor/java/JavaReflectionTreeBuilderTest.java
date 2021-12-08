@@ -752,7 +752,7 @@ public class JavaReflectionTreeBuilderTest {
 		Class<?> constantDesc = Class.forName("java.lang.constant.ConstantDesc"); // since Java 12, sealed since Java 17
 		Class<?> dynamicConstantDesc = Class.forName("java.lang.constant.DynamicConstantDesc"); // since Java 12
 		Class<?> enumDesc = Class.forName("java.lang.Enum$EnumDesc"); // since Java 12
-		CtType<?> ctConstantDesc = factory.Type().get(constantDesc);
+		CtInterface<?> ctConstantDesc = (CtInterface<?>) factory.Type().get(constantDesc);
 		CtType<?> ctDynamicConstantDesc = factory.Type().get(dynamicConstantDesc);
 		CtType<?> ctEnumDesc = factory.Type().get(enumDesc);
 		CtType<?> ctString = factory.Type().get(String.class);

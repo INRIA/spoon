@@ -90,29 +90,6 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 		return (CtAnnotationType<T>) super.clone();
 	}
 
-	// TODO is this all fine?
-	@Override
-	public Set<CtTypeReference<?>> getPermittedTypes() {
-		return Set.of();
-	}
-
-	@Override
-	@UnsettableProperty
-	public CtSealable setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
-		return this;
-	}
-
-	@Override
-	@UnsettableProperty
-	public CtSealable addPermittedType(CtTypeReference<?> type) {
-		return this;
-	}
-
-	@Override
-	@UnsettableProperty
-	public CtSealable removePermittedType(CtTypeReference<?> type) {
-		return this;
-	}
 
 	@Override
 	public Set<CtAnnotationMethod<?>> getAnnotationMethods() {
