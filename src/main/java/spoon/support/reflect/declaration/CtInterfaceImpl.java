@@ -126,7 +126,14 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 
 	@Override
 	public CtInterface<T> setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
+		if (permittedTypes == null) {
+			this.permittedTypes = CtElementImpl.emptySet();
+			return this;
+		}
 		this.permittedTypes = new HashSet<>(permittedTypes); // TODO events, checks
+		for (CtTypeReference<?> type : this.permittedTypes) {
+			type.setParent(this);
+		}
 		return this;
 	}
 
@@ -139,6 +146,7 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 		if (permittedTypes == CtElementImpl.<CtTypeReference<?>>emptySet()) {
 			permittedTypes = new HashSet<>();
 		}
+		type.setParent(this);
 		this.permittedTypes.add(type);
 		return this;
 	}
