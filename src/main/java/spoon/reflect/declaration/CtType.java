@@ -29,7 +29,7 @@ import static spoon.reflect.path.CtRole.TYPE_MEMBER;
  *
  * The type parameter T refers to the actual class that this type represents.
  */
-public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMember, CtFormalTypeDeclarer, CtShadowable {
+public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMember, CtFormalTypeDeclarer, CtShadowable, CtSealable {
 	/**
 	 * The string separator in a Java innertype qualified name.
 	 */

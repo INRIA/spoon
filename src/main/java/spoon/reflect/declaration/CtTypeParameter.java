@@ -12,6 +12,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -78,4 +79,28 @@ public interface CtTypeParameter extends CtType<Object> {
 	@Override
 	@UnsettableProperty
 	<T extends CtModifiable> T setModifiers(Set<ModifierKind> modifiers);
+
+	@Override
+	@UnsettableProperty
+	default Set<CtTypeReference<?>> getPermittedTypes() {
+		return Set.of();
+	}
+
+	@Override
+	@UnsettableProperty
+	default CtTypeParameter setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
+		return this;
+	}
+
+	@Override
+	@UnsettableProperty
+	default CtTypeParameter addPermittedType(CtTypeReference<?> type) {
+		return this;
+	}
+
+	@Override
+	@UnsettableProperty
+	default CtTypeParameter removePermittedType(CtTypeReference<?> type) {
+		return this;
+	}
 }

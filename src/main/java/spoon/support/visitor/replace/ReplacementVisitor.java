@@ -1003,9 +1003,9 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
 	static class CtSealablePermittedTypesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
-		private final spoon.reflect.declaration.CtClass element;
+		private final spoon.reflect.declaration.CtSealable element;
 
-		CtSealablePermittedTypesReplaceListener(spoon.reflect.declaration.CtClass element) {
+		CtSealablePermittedTypesReplaceListener(spoon.reflect.declaration.CtSealable element) {
 			this.element = element;
 		}
 

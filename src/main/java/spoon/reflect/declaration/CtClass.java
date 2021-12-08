@@ -32,7 +32,7 @@ import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
  * </pre>
  * @author Renaud Pawlak
  */
-public interface CtClass<T> extends CtType<T>, CtStatement, CtSealable {
+public interface CtClass<T> extends CtType<T>, CtStatement {
 	/**
 	 * Returns the anonymous blocks of this class.
 	 * Derived from {@link #getTypeMembers()}
@@ -130,14 +130,4 @@ public interface CtClass<T> extends CtType<T>, CtStatement, CtSealable {
 	@Override
 	@UnsettableProperty
 	<C extends CtStatement> C setLabel(String label);
-
-
-	@Override
-	CtClass<T> setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes);
-
-	@Override
-	CtClass<T> addPermittedType(CtTypeReference<?> type);
-
-	@Override
-	CtClass<T> removePermittedType(CtTypeReference<?> type);
 }
