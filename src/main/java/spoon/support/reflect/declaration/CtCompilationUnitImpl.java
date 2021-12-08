@@ -122,7 +122,7 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 			if (getDeclaredTypes().isEmpty()) {
 				if (getDeclaredModuleReference() != null) {
 					return UNIT_TYPE.MODULE_DECLARATION;
-				} else if (getDeclaredPackage() != null && getDeclaredTypeReferences().size() == 1) {
+				} else if (getDeclaredPackage() != null && !getDeclaredTypeReferences().isEmpty()) {
 					return UNIT_TYPE.TYPE_DECLARATION;
 				} else if (packageDeclaration != null) {
 					return UNIT_TYPE.PACKAGE_DECLARATION;
