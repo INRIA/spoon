@@ -733,7 +733,7 @@ public class JDTTreeBuilderHelper {
 				CtTypeReference<?> reference = jdtTreeBuilder.references.buildTypeReference(permittedType, typeDeclaration.scope);
 				type.addPermittedType(reference);
 			}
-		} else if (typeDeclaration.binding.permittedTypes != null) {
+		} else if (typeDeclaration.binding != null && typeDeclaration.binding.permittedTypes != null) {
 			for (ReferenceBinding permittedType : typeDeclaration.binding.permittedTypes) {
 				CtTypeReference<?> reference = jdtTreeBuilder.references.getTypeReference(permittedType);
 				reference.setImplicit(true);
