@@ -217,6 +217,6 @@ public class PrintingContext {
 	 * This enums defines the printing options. The options are used to control the printing of the code.
 	 */
 	private enum PrintingOptions {
-		NEXT_FOR_VARIABLE, IGNORE_GENERICS, SKIP_ARRAY, IGNORE_STATIC_ACCESS, IGNORE_ENCLOSING_CLASS, FORCE_WILDCARD_GENERICS, FIRST_FOR_VARIABLE;
+		NEXT_FOR_VARIABLE, IGNORE_GENERICS, SKIP_ARRAY, IGNORE_STATIC_ACCESS, IGNORE_ENCLOSING_CLASS, FORCE_WILDCARD_GENERICS, FIRST_FOR_VARIABLE
 	}
 }
