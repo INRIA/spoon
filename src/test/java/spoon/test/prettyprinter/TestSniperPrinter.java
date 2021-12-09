@@ -876,6 +876,45 @@ public class TestSniperPrinter {
 		}
 	}
 
+	@Nested
+	class SquareBracketPrintingInArrayInitialisation {
+		private Consumer<CtType<?>> markFieldForSniperPrinting() {
+			return type -> {
+				CtField<?> field = type.getField("array");
+				TestSniperPrinter.markElementForSniperPrinting(field);
+			};
+		}
+
+		private BiConsumer<CtType<?>, String> assertPrintsBracketForArrayInitialisation(String arrayDeclaration) {
+			return (type, result) ->
+					assertThat(result, containsString(arrayDeclaration));
+		}
+
+		@Test
+		void test_bracketShouldBePrintedWhenArrayIsNull() {
+			testSniper(
+					"sniperPrinter.arrayInitialisation.ToNull",
+					markFieldForSniperPrinting(),
+					assertPrintsBracketForArrayInitialisation("int array[];"));
+		}
+
+		@Test
+		void test_bracketShouldBePrintedWhenArrayIsInitialisedToIntegers() {
+			testSniper(
+					"sniperPrinter.arrayInitialisation.FiveIntegers",
+					markFieldForSniperPrinting(),
+					assertPrintsBracketForArrayInitialisation("int array[] = {1, 2, 3, 4, 5};"));
+		}
+
+		@Test
+		void test_bracketShouldBePrintedWhenArrayIsInitialisedToNullElements() {
+			testSniper(
+					"sniperPrinter.arrayInitialisation.ToNullElements",
+					markFieldForSniperPrinting(),
+					assertPrintsBracketForArrayInitialisation("String array[] = new String[42];"));
+		}
+	}
+
 	/**
 	 * 1) Runs spoon using sniper mode,
 	 * 2) runs `typeChanger` to modify the code,
