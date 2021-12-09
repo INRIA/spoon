@@ -9,6 +9,7 @@ package spoon.reflect.reference;
 
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
+import spoon.reflect.code.ArrayDeclarationKind;
 import spoon.reflect.path.CtRole;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
@@ -48,6 +49,18 @@ public interface CtArrayTypeReference<T> extends CtTypeReference<T> {
 	 */
 	@DerivedProperty
 	int getDimensionCount();
+
+	/**
+	 * Gets the kind of array declaration.
+	 */
+	@PropertyGetter(role = CtRole.ARRAY_DECLARATION_KIND)
+	ArrayDeclarationKind getDeclarationKind();
+
+	/**
+	 * Sets the kind of array declaration.
+	 */
+	@PropertySetter(role = CtRole.ARRAY_DECLARATION_KIND)
+	<C extends CtArrayTypeReference<T>> C setDeclarationKind(ArrayDeclarationKind arrayDeclarationKind);
 
 	/**
 	 * Returns the simple name of the array type core component type (with no

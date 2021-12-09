@@ -8,6 +8,7 @@
 package spoon.support.reflect.reference;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.code.ArrayDeclarationKind;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -16,6 +17,7 @@ import spoon.support.SpoonClassNotFoundException;
 
 import java.lang.reflect.Array;
 
+import static spoon.reflect.path.CtRole.ARRAY_DECLARATION_KIND;
 import static spoon.reflect.path.CtRole.TYPE;
 
 public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implements CtArrayTypeReference<T> {
@@ -23,6 +25,9 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implemen
 
 	@MetamodelPropertyField(role = TYPE)
 	CtTypeReference<?> componentType;
+
+	@MetamodelPropertyField(role = ARRAY_DECLARATION_KIND)
+	ArrayDeclarationKind declarationKind;
 
 	public CtArrayTypeReferenceImpl() {
 	}
@@ -58,6 +63,19 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implemen
 		}
 		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(this, TYPE, componentType, this.componentType);
 		this.componentType = componentType;
+		return (C) this;
+	}
+
+	@Override
+	public ArrayDeclarationKind getDeclarationKind() {
+		return this.declarationKind;
+	}
+
+	@Override
+	public <C extends CtArrayTypeReference<T>> C setDeclarationKind(ArrayDeclarationKind declarationKind) {
+		getFactory().getEnvironment().getModelChangeListener().onObjectUpdate(
+				this, ARRAY_DECLARATION_KIND, declarationKind, this.declarationKind);
+		this.declarationKind = declarationKind;
 		return (C) this;
 	}
 

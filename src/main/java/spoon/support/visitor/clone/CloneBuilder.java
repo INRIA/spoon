@@ -1,9 +1,8 @@
-/*
- * SPDX-License-Identifier: (MIT OR CECILL-C)
- *
- * Copyright (C) 2006-2019 INRIA and contributors
- *
- * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
+/* SPDX-License-Identifier: (MIT OR CECILL-C)
+
+Copyright (C) 2006-2019 INRIA and contributors
+
+Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.support.visitor.clone;
 /**
@@ -115,6 +114,12 @@ public class CloneBuilder extends spoon.reflect.visitor.CtInheritanceScanner {
 	public void visitCtAnonymousExecutable(spoon.reflect.declaration.CtAnonymousExecutable e) {
 		((spoon.reflect.declaration.CtAnonymousExecutable) (other)).setExtendedModifiers(clone(e.getExtendedModifiers()));
 		super.visitCtAnonymousExecutable(e);
+	}
+
+	// auto-generated, see spoon.generating.CloneVisitorGenerator
+	public <T> void visitCtArrayTypeReference(spoon.reflect.reference.CtArrayTypeReference<T> e) {
+		((spoon.reflect.reference.CtArrayTypeReference<T>) (other)).setDeclarationKind(e.getDeclarationKind());
+		super.visitCtArrayTypeReference(e);
 	}
 
 	// auto-generated, see spoon.generating.CloneVisitorGenerator

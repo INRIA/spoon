@@ -128,6 +128,7 @@ public class Metamodel {
 		result.add(factory.Type().get(spoon.reflect.code.UnaryOperatorKind.class));
 		result.add(factory.Type().get(spoon.reflect.code.LiteralBase.class));
 		result.add(factory.Type().get(spoon.reflect.code.CaseKind.class));
+		result.add(factory.Type().get(spoon.reflect.code.ArrayDeclarationKind.class));
 		result.add(factory.Type().get(spoon.reflect.code.CtYieldStatement.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtAnnotatedElementType.class));
 		result.add(factory.Type().get(spoon.reflect.declaration.CtAnnotation.class));
