@@ -180,5 +180,16 @@ public class DefaultJavaPrettyPrinterTest {
         exeExpression.getExecutable().addActualTypeArgument(factory.Type().integerType());
         // more than one parameter type should be separated (with .* to allow imports)
         assertThat(exeExpression.toString(), containsRegexMatch("<(.*)Integer, (.*)Integer>"));
+
+        // remove type arguments again, we want to try something else
+        exeExpression.getExecutable().setActualTypeArguments(null);
+        // we want to have a bit more complex type and construct a fake Comparable<Integer, Comhyperbola<Integer>>
+        CtTypeReference<?> complexTypeReference = factory.Type().integerType().getSuperInterfaces().stream()
+                .filter(t -> t.getSimpleName().equals("Comparable"))
+                .findAny()
+                .orElseThrow();
+        complexTypeReference.addActualTypeArgument(complexTypeReference.clone().setSimpleName("Comhyperbola"));
+        exeExpression.getExecutable().addActualTypeArgument(complexTypeReference);
+        assertThat(exeExpression.toString(), containsRegexMatch("<(.*)Comparable<(.*)Integer, (.*)Comhyperbola<(.*)Integer>>>"));
     }
 }
