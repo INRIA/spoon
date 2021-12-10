@@ -125,6 +125,7 @@ import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtContinue;
+import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLambda;
@@ -132,7 +133,6 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
@@ -1642,7 +1642,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 		} else if (context.stack.peekFirst().element instanceof CtCatch) {
 			context.enter(helper.createCatchVariable(singleTypeReference, scope), singleTypeReference);
 			return true;
-		} else if (context.stack.getFirst().element instanceof CtTargetedExpression) {
+		} else if (context.stack.getFirst().element instanceof CtExecutableReferenceExpression) {
 			context.enter(references.getTypeParameterReference(singleTypeReference.resolvedType, singleTypeReference), singleTypeReference);
 			return true;
 		}
