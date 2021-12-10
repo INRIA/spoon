@@ -465,6 +465,7 @@ public class SpoonPom implements SpoonResource {
 			}
 			properties.setProperty("mdep.outputFile", getSpoonClasspathTmpFileName(sourceType));
 			request.setProperties(properties);
+			request.setReactorFailureBehavior(InvocationRequest.ReactorFailureBehavior.FailNever);
 
 			if (LOGGER != null) {
 				request.getOutputHandler(s -> LOGGER.debug(s));
