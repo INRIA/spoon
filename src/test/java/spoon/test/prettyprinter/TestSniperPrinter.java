@@ -913,6 +913,14 @@ public class TestSniperPrinter {
 					markFieldForSniperPrinting(),
 					assertPrintsBracketForArrayInitialisation("String array[] = new String[42];"));
 		}
+
+		@Test
+		void test_bracketsShouldBePrintedForMultiDimensionalArray() {
+			testSniper(
+					"sniperPrinter.arrayInitialisation.MultiDimension",
+					markFieldForSniperPrinting(),
+					assertPrintsBracketForArrayInitialisation("String array[][][] = new String[1][2][3];"));
+		}
 	}
 
 	/**
