@@ -50,28 +50,4 @@ public interface CtAnnotationType<T extends Annotation> extends CtType<T> {
 	@Override
 	@UnsettableProperty
 	<C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass);
-
-	@Override
-	@UnsettableProperty
-	default Set<CtTypeReference<?>> getPermittedTypes() {
-		return Set.of();
-	}
-
-	@Override
-	@UnsettableProperty
-	default CtAnnotationType<T> setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
-		return this;
-	}
-
-	@Override
-	@UnsettableProperty
-	default CtAnnotationType<T> addPermittedType(CtTypeReference<?> type) {
-		return this;
-	}
-
-	@Override
-	@UnsettableProperty
-	default CtAnnotationType<T> removePermittedType(CtTypeReference<?> type) {
-		return this;
-	}
 }
