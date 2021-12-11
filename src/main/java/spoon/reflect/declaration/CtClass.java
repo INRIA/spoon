@@ -32,7 +32,7 @@ import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
  * </pre>
  * @author Renaud Pawlak
  */
-public interface CtClass<T> extends CtType<T>, CtStatement {
+public interface CtClass<T> extends CtType<T>, CtStatement, CtSealable {
 	/**
 	 * Returns the anonymous blocks of this class.
 	 * Derived from {@link #getTypeMembers()}

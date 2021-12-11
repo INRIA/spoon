@@ -23,7 +23,7 @@ import java.util.Collection;
  *     }
  * </pre>
  */
-public interface CtInterface<T> extends CtType<T>, CtStatement {
+public interface CtInterface<T> extends CtType<T>, CtStatement, CtSealable {
 	@Override
 	CtInterface<T> clone();
 
