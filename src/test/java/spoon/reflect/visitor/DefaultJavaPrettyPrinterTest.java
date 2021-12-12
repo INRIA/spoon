@@ -7,17 +7,23 @@ import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.test.SpoonTestHelpers;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static spoon.test.SpoonTestHelpers.containsRegexMatch;
 
 public class DefaultJavaPrettyPrinterTest {
 
@@ -149,5 +155,41 @@ public class DefaultJavaPrettyPrinterTest {
         CtModel model = SpoonTestHelpers.createModelFromString(code, 8);
         CtType<?> first = model.getAllTypes().iterator().next();
         assertThat(first.toString(), containsString(line));
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    void testPrintMethodReferenceTypeParameters() {
+        // contract: type parameters of method references are printed
+        Launcher launcher = new Launcher();
+        Factory factory = launcher.getFactory();
+        CtTypeReference<?> typeReference = factory.Type().createReference("Arrays");
+        CtExecutableReferenceExpression exeExpression = factory.createExecutableReferenceExpression();
+        exeExpression.setExecutable(factory.createExecutableReference());
+        exeExpression.getExecutable().setSimpleName("binarySearch");
+        exeExpression.setTarget(factory.createTypeAccess(typeReference));
+        // if no type parameters are given, no < and no > should be printed
+        assertThat(exeExpression.toString(), not(anyOf(containsString("<"), containsString(">"))));
+
+        exeExpression.getExecutable().addActualTypeArgument(factory.Type().integerType());
+        // with type parameters, the < and > should be printed
+        assertThat(exeExpression.toString(), allOf(containsString("<"), containsString(">")));
+        // the type parameter should appear
+        assertThat(exeExpression.toString(), containsString("Integer"));
+
+        exeExpression.getExecutable().addActualTypeArgument(factory.Type().integerType());
+        // more than one parameter type should be separated (with .* to allow imports)
+        assertThat(exeExpression.toString(), containsRegexMatch("<(.*)Integer, (.*)Integer>"));
+
+        // remove type arguments again, we want to try something else
+        exeExpression.getExecutable().setActualTypeArguments(null);
+        // we want to have a bit more complex type and construct a fake Comparable<Integer, Comhyperbola<Integer>>
+        CtTypeReference<?> complexTypeReference = factory.Type().integerType().getSuperInterfaces().stream()
+                .filter(t -> t.getSimpleName().equals("Comparable"))
+                .findAny()
+                .orElseThrow();
+        complexTypeReference.addActualTypeArgument(complexTypeReference.clone().setSimpleName("Comhyperbola"));
+        exeExpression.getExecutable().addActualTypeArgument(complexTypeReference);
+        assertThat(exeExpression.toString(), containsRegexMatch("<(.*)Comparable<(.*)Integer, (.*)Comhyperbola<(.*)Integer>>>"));
     }
 }

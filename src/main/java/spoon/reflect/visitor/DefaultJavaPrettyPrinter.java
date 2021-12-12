@@ -1615,6 +1615,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			scan(expression.getTarget());
 		}
 		printer.writeSeparator("::");
+		if (!expression.getExecutable().getActualTypeArguments().isEmpty()) {
+			elementPrinterHelper.printList(expression.getExecutable().getActualTypeArguments(), null, false, "<", false, false, ", ", false, false, ">", this::scan);
+		}
 		if (expression.getExecutable().isConstructor()) {
 			printer.writeKeyword("new");
 		} else {

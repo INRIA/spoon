@@ -851,6 +851,8 @@ public class ParentExiter extends CtInheritanceScanner {
 	public <T, E extends CtExpression<?>> void visitCtExecutableReferenceExpression(CtExecutableReferenceExpression<T, E> expression) {
 		if (child instanceof CtExpression) {
 			expression.setTarget((E) child);
+		} else if (child instanceof CtTypeParameterReference) {
+			expression.getExecutable().addActualTypeArgument((CtTypeReference<?>) child);
 		}
 		super.visitCtExecutableReferenceExpression(expression);
 	}

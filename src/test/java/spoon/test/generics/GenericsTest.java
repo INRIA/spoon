@@ -25,6 +25,7 @@ import spoon.reflect.CtModel;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
@@ -90,6 +91,9 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -1560,5 +1564,18 @@ public class GenericsTest {
 		CtTypeParameter formalType = ((CtMethod) m1.getExecutable().getDeclaration()).getFormalCtTypeParameters().get(0);
 		assertEquals(formalType, ((CtTypeReference) m1.getActualTypeArguments().get(0)).getTypeParameterDeclaration());
 		assertNull(m1.getType().getTypeParameterDeclaration());
+	}
+
+	@org.junit.jupiter.api.Test
+	void testGenericMethodReference() {
+		// contract: method references keep their generic parameters
+		CtClass<?> parsed = Launcher.parseClass("class X {\n" +
+				"	BiFunction<Integer[], Integer, Integer> field = Arrays::<Integer>binarySearch;\n" +
+				"}");
+		CtField<?> field = parsed.getField("field");
+		assertThat(field.getDefaultExpression(), instanceOf(CtExecutableReferenceExpression.class));
+		CtExecutableReferenceExpression<?, ?> expression = (CtExecutableReferenceExpression<?, ?>) field.getDefaultExpression();
+		assertThat(expression.getExecutable().getActualTypeArguments().size(), equalTo(1));
+		assertThat(expression.getExecutable().getActualTypeArguments().get(0).toString(), equalTo("java.lang.Integer"));
 	}
 }
