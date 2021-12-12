@@ -17,6 +17,7 @@
 package spoon.test.template;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.SpoonResourceHelper;
@@ -59,6 +60,7 @@ import spoon.test.template.testclasses.inheritance.SuperClass;
 import spoon.test.template.testclasses.inheritance.SuperTemplate;
 import spoon.test.template.testclasses.logger.Logger;
 import spoon.test.template.testclasses.logger.LoggerTemplateProcessor;
+import spoon.testing.utils.LineSeperatorExtension;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -83,16 +85,15 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 import static spoon.testing.utils.ModelUtils.getOptimizedString;
 
 public class TemplateTest {
 
-	private String newLine = System.getProperty("line.separator");
+	private String newLine = "\n";
 
 	@Test
+	@ExtendWith(LineSeperatorExtension.class)
 	public void testTemplateInheritance() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		Launcher spoon = new Launcher();
 		Factory factory = spoon.getFactory();
 		spoon.getEnvironment().setCommentEnabled(true);

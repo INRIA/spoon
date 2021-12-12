@@ -17,6 +17,7 @@
 package spoon.test.template;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.pattern.ConflictResolutionMode;
 import spoon.pattern.Match;
@@ -66,6 +67,7 @@ import spoon.test.template.testclasses.match.MatchWithParameterType;
 import spoon.test.template.testclasses.replace.DPPSample1;
 import spoon.test.template.testclasses.replace.OldPattern;
 import spoon.test.template.testclasses.types.AClassWithMethodsAndRefs;
+import spoon.testing.utils.LineSeperatorExtension;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -88,7 +90,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
 
 // main test of Spoon's patterns
@@ -1158,8 +1159,8 @@ public class PatternTest {
 	}
 
 	@Test
+	@ExtendWith(LineSeperatorExtension.class)
 	public void testPatternToString() {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: Pattern can be printed to String and each parameter is defined there
 		String nl = System.getProperty("line.separator");
 		Factory f = ModelUtils.build(

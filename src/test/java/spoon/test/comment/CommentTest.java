@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.CtModel;
@@ -82,6 +83,7 @@ import spoon.test.comment.testclasses.OtherJavaDoc;
 import spoon.test.comment.testclasses.TestClassWithComments;
 import spoon.test.comment.testclasses.WildComments;
 import spoon.test.comment.testclasses.WindowsEOL;
+import spoon.testing.utils.LineSeperatorExtension;
 import spoon.test.comment.testclasses.JavaDocWithLink;
 
 import java.io.File;
@@ -103,7 +105,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
-import static spoon.test.SpoonTestHelpers.assumeNotWindows;
+
 
 public class CommentTest {
 
@@ -871,8 +873,8 @@ public class CommentTest {
 
 	@Test
 	@EnabledForJreRange(min = JRE.JAVA_16)
+	@ExtendWith(LineSeperatorExtension.class)
 	public void testDocumentationContract() throws Exception {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: all metamodel classes must be commented with an example.
 		
 		final Launcher launcher = new Launcher();
