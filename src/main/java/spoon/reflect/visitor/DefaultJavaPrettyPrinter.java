@@ -784,12 +784,25 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeSpace();
 		printer.writeIdentifier(f.getSimpleName());
 
+		if (f.getType() instanceof CtArrayTypeReference<?>) {
+			printBracketsIfRequired((CtArrayTypeReference<?>) f.getType());
+		}
+
 		if (f.getDefaultExpression() != null) {
 			printer.writeSpace().writeOperator("=").writeSpace();
 			scan(f.getDefaultExpression());
 		}
 		printer.writeSeparator(";");
 		elementPrinterHelper.writeComment(f, CommentOffset.AFTER);
+	}
+
+	private void printBracketsIfRequired(CtArrayTypeReference<?> arrayTypeReference) {
+		if (!arrayTypeReference.getOriginalSourceFragment().getSourceCode().contains("[]")) {
+			int dimensions = arrayTypeReference.getDimensionCount();
+			for (int i=0; i<dimensions; ++i) {
+				printer.writeSeparator("[").writeSeparator("]");
+			}
+		}
 	}
 
 	@Override
