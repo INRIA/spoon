@@ -176,13 +176,19 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				// we would like to add an import, but we don't know to where
 				return;
 			}
-			if (ref instanceof CtFieldReference<?>
-					&& !isReferenceToFieldPresentInImports((CtFieldReference<?>) ref)) {
+			if (ref instanceof CtFieldReference<?> && !isReferencePresentInImports(ref)) {
 				return;
 			}
 			CtTypeReference<?> topLevelTypeRef = typeRef.getTopLevelType();
 			if (typeRefQNames.contains(topLevelTypeRef.getQualifiedName())) {
 				//it is reference to a type of this CompilationUnit. Do not add it
+				return;
+			}
+			if (ref instanceof CtTypeReference<?>
+					&& !isReferencePresentInImports(topLevelTypeRef)
+					&& topLevelTypeRef != ref) {
+				// check if a top level type has been imported
+				// if it does, we don't need to add a separate import for its subtype
 				return;
 			}
 			CtPackageReference packageRef = topLevelTypeRef.getPackage();
@@ -210,7 +216,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			}
 		}
 
-		private boolean isReferenceToFieldPresentInImports(CtFieldReference ref) {
+		private boolean isReferencePresentInImports(CtReference ref) {
 			return compilationUnit.getImports()
 					.stream()
 					.anyMatch(ctImport -> ctImport.getReference() != null && ctImport.getReference().equals(ref));
