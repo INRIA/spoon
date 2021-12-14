@@ -188,7 +188,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 					&& !isReferencePresentInImports(topLevelTypeRef)
 					&& topLevelTypeRef != ref) {
 				// check if a top level type has been imported
-				// if it does, we don't need to add a separate import for its subtype
+				// if it has been, we don't need to add a separate import for its subtype
 				return;
 			}
 			CtPackageReference packageRef = topLevelTypeRef.getPackage();
