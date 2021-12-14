@@ -783,13 +783,23 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		scan(f.getType());
 		printer.writeSpace();
 		printer.writeIdentifier(f.getSimpleName());
-
+		if (f.getType() instanceof CtArrayTypeReference<?>) {
+			printBracketsIfRequired(( CtArrayTypeReference<?>) f.getType());
+		}
 		if (f.getDefaultExpression() != null) {
 			printer.writeSpace().writeOperator("=").writeSpace();
 			scan(f.getDefaultExpression());
 		}
 		printer.writeSeparator(";");
 		elementPrinterHelper.writeComment(f, CommentOffset.AFTER);
+	}
+
+	private void printBracketsIfRequired(CtArrayTypeReference<?> arrayTypeReference) {
+		if (arrayTypeReference.getMetadata("DECLARATION_STYLE").equals("IDENTIFIER")) {
+			for (int i=0; i<arrayTypeReference.getDimensionCount(); ++i) {
+				printer.writeSeparator("[").writeSeparator("]");
+			}
+		}
 	}
 
 	@Override
@@ -1390,6 +1400,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeSpace();
 		}
 		printer.writeIdentifier(localVariable.getSimpleName());
+		if (localVariable.getType() instanceof CtArrayTypeReference<?>) {
+			printBracketsIfRequired(( CtArrayTypeReference<?>) localVariable.getType());
+		}
 		if (localVariable.getDefaultExpression() != null) {
 			printer.writeSpace().writeOperator("=").writeSpace();
 			scan(localVariable.getDefaultExpression());

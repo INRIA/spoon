@@ -1005,6 +1005,16 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return true;
 	}
 
+	private String getDeclarationStyle(ASTNode arrayReferenceNode) {
+		int sourceStart = arrayReferenceNode.sourceStart();
+		int sourceEnd = arrayReferenceNode.sourceEnd();
+
+		if (arrayReferenceNode.toString().length() > sourceEnd - sourceStart + 1) {
+			return "IDENTIFIER";
+		}
+		return "TYPE";
+	}
+
 	@Override
 	public boolean visit(ArrayQualifiedTypeReference arrayQualifiedTypeReference, ClassScope scope) {
 		return visit(arrayQualifiedTypeReference, (BlockScope) null);
@@ -1451,6 +1461,9 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		CtTypeReference typeReference = references.buildTypeReference(parameterizedTypeReference, null);
 		CtTypeAccess typeAccess = factory.Code().createTypeAccessWithoutCloningReference(typeReference);
+		if (typeAccess instanceof CtArrayTypeReference<?>) {
+			typeAccess.putMetadata("DECLARATION_STYLE", getDeclarationStyle(parameterizedTypeReference));
+		}
 		context.enter(typeAccess, parameterizedTypeReference);
 		return true;
 	}
