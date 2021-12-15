@@ -16,6 +16,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ImportCleanerTest {
 
 	@Test
+	void testDoesNotRemoveImportOfSubType() {
+		// contract: The import cleaner should not remove import of subtype if it is used by its simply qualified name
+		testImportCleanerDoesNotAlterImports("src/test/resources/importCleaner/DoNotRemoveSubType.java", "importCleaner.DoNotRemoveSubType");
+	}
+
+	@Test
+	void testDoesNotImportTypeWhoseParentTypeIsAlreadyImported() {
+		// contract: The import cleaner should not import the subtype if its parent has already been imported
+		testImportCleanerDoesNotAlterImports("src/test/resources/importCleaner/TypeImportButUseSubType.java", "importCleaner.TypeImportButUseSubType");
+	}
+
+	@Test
 	void testDoesNotRemoveImportForStaticFieldOfStaticClass() {
 		// contract: The import cleaner should not remove import of the static field
 		testImportCleanerDoesNotAlterImports("src/test/resources/fieldImport", "fieldImport.StaticFieldImport");
