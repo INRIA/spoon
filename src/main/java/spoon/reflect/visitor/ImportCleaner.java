@@ -37,6 +37,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.Experimental;
 import spoon.support.util.ModelList;
 import spoon.support.visitor.ClassTypingContext;
+import spoon.support.visitor.equals.EqualsVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -186,9 +187,11 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 			}
 			if (ref instanceof CtTypeReference<?>
 					&& !isReferencePresentInImports(topLevelTypeRef)
-					&& topLevelTypeRef != ref) {
+					&& topLevelTypeRef != ref
+					&& !isReferencePresentInImports(ref)) {
 				// check if a top level type has been imported
 				// if it has been, we don't need to add a separate import for its subtype
+				// last condition ensures that if only the subtype has been imported, we do not remove it
 				return;
 			}
 			CtPackageReference packageRef = topLevelTypeRef.getPackage();
@@ -219,7 +222,23 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 		private boolean isReferencePresentInImports(CtReference ref) {
 			return compilationUnit.getImports()
 					.stream()
-					.anyMatch(ctImport -> ctImport.getReference() != null && ctImport.getReference().equals(ref));
+					.anyMatch(ctImport -> ctImport.getReference() != null
+							&& isEqualAfterSkippingRole(ctImport.getReference(), ref, CtRole.TYPE_ARGUMENT));
+		}
+
+		/**
+		 * Checks if element and other are equal if comparison for `role` value is skipped
+		 */
+		private boolean isEqualAfterSkippingRole(CtElement element, CtElement other, CtRole role) {
+			EqualsVisitor equalsVisitor = new EqualsVisitor();
+			boolean isEqual = equalsVisitor.checkEquals(element, other);
+			if (isEqual) {
+				return true;
+			}
+			if (role == equalsVisitor.getNotEqualRole()) {
+				return true;
+			}
+			return false;
 		}
 
 		void onCompilationUnitProcessed(CtCompilationUnit compilationUnit) {
