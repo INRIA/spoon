@@ -16,6 +16,7 @@
  */
 package spoon.support.visitor.java;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -93,6 +94,9 @@ import spoon.support.visitor.equals.EqualsChecker;
 import spoon.support.visitor.equals.EqualsVisitor;
 import spoon.test.generics.testclasses3.ComparableComparatorBug;
 import spoon.test.pkg.PackageTest;
+import spoon.test.pkg.cyclic.Outside;
+import spoon.test.pkg.cyclic.direct.Cyclic;
+import spoon.test.pkg.cyclic.indirect.Indirect;
 
 public class JavaReflectionTreeBuilderTest {
 
@@ -738,5 +742,18 @@ public class JavaReflectionTreeBuilderTest {
 		CtPackage ctPackage = type.getPackage();
 		assertEquals(1, ctPackage.getAnnotations().size());
 		assertEquals(ctPackage.getAnnotations().get(0).getAnnotationType().getQualifiedName(), "java.lang.Deprecated");
+	}
+
+	@Test
+	void testCyclicAnnotationScanning() {
+		// contract: scanning annotations does not cause StackOverflowError
+		// due to recursive package -> annotation -> package -> annotation scanning
+		Factory factory = createFactory();
+		// a simple cycle: package a -> annotation a.A -> package a
+		assertDoesNotThrow(() -> new JavaReflectionTreeBuilder(factory).scan(Cyclic.class));
+		// an indirect cycle: package a -> annotation b.B -> package b -> annotation a.A -> package a
+		assertDoesNotThrow(() -> new JavaReflectionTreeBuilder(factory).scan(Indirect.class));
+		// an independent starting point, causing Cyclic and Indirect to be visited too
+		assertDoesNotThrow(() -> new JavaReflectionTreeBuilder(factory).scan(Outside.class));
 	}
 }

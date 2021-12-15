@@ -21,6 +21,10 @@ public class PackageRuntimeBuilderContext extends AbstractRuntimeBuilderContext 
 		this.ctPackage = ctPackage;
 	}
 
+	public CtPackage getPackage() {
+		return ctPackage;
+	}
+
 	@Override
 	public void addType(CtType<?> aType) {
 		ctPackage.addType(aType);
