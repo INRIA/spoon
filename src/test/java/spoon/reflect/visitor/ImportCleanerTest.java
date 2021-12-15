@@ -16,6 +16,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ImportCleanerTest {
 
 	@Test
+	void testDoesNotRemoveImportOfSubType() {
+		testImportCleanerDoesNotAlterImports("src/test/resources/importCleaner/DoNotRemoveSubType.java", "importCleaner.DoNotRemoveSubType");
+	}
+
+	@Test
 	void testDoesNotImportTypeWhoseParentTypeIsAlreadyImported() {
 		testImportCleanerDoesNotAlterImports("src/test/resources/importCleaner/TypeImportButUseSubType.java", "importCleaner.TypeImportButUseSubType");
 	}
