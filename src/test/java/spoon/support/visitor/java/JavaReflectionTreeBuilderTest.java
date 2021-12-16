@@ -28,6 +28,8 @@ import java.io.ObjectInputStream;
 import java.lang.annotation.Retention;
 import java.net.CookieManager;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -603,10 +605,11 @@ public class JavaReflectionTreeBuilderTest {
 	@Test
 	public void testInnerClassWithConstructorParameterAnnotated() {
 		Launcher launcher = new Launcher();
-		launcher.addInputResource(JavaReflectionTreeBuilderTest.class
+		launcher.addInputResource(URLDecoder.decode(JavaReflectionTreeBuilderTest.class
 				.getClassLoader()
 				.getResource("annotated-parameter-on-nested-class-constructor/Caller.java")
-				.getPath());
+				.getPath(), 
+				StandardCharsets.UTF_8));
 		launcher.getEnvironment().setSourceClasspath(
 				new String[]{
 						"src/test/resources"
