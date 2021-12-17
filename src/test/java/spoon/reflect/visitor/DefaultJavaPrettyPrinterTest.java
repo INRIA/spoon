@@ -2,7 +2,11 @@ package spoon.reflect.visitor;
 
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
@@ -10,11 +14,16 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExecutableReferenceExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.test.SpoonTestHelpers;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.anyOf;
@@ -191,5 +200,49 @@ public class DefaultJavaPrettyPrinterTest {
         complexTypeReference.addActualTypeArgument(complexTypeReference.clone().setSimpleName("Comhyperbola"));
         exeExpression.getExecutable().addActualTypeArgument(complexTypeReference);
         assertThat(exeExpression.toString(), containsRegexMatch("<(.*)Comparable<(.*)Integer, (.*)Comhyperbola<(.*)Integer>>>"));
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(SealedTypesProvider.class)
+    void testPrintSealedTypes(CtType<?> sealedType, List<String> explicitPermitted) {
+        // contract: sealed types are printed correctly
+        String printed = sealedType.toString();
+        // the sealed keyword is always required
+        assertThat(printed, containsString("sealed"));
+        if (explicitPermitted.isEmpty()) {
+            // the permits keyword should only exist if explicit permitted types are printed
+            assertThat(printed, not(containsString("permits")));
+        } else {
+            assertThat(printed, containsString("permits"));
+            for (String permitted : explicitPermitted) {
+                assertThat(printed, containsRegexMatch("\\s" + permitted));
+            }
+        }
+    }
+
+    @Test
+    void testPrintNonSealedTypes() {
+        // contract: the non-sealed modifier is printed
+        Launcher launcher = new Launcher();
+        CtClass<?> ctClass = launcher.getFactory().Class().create("MyClass");
+        ctClass.addModifier(ModifierKind.NON_SEALED);
+        assertThat(ctClass.toString(), containsString("non-sealed "));
+    }
+
+    static class SealedTypesProvider implements ArgumentsProvider {
+
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+            Launcher launcher = new Launcher();
+            launcher.getEnvironment().setComplianceLevel(17);
+            launcher.addInputResource("src/test/resources/sealedclasses");
+            launcher.buildModel();
+            Factory factory = launcher.getFactory();
+            return Stream.of(
+                Arguments.of(factory.Type().get("SealedClassWithPermits"), List.of("ExtendingClass", "OtherExtendingClass")),
+                Arguments.of(factory.Type().get("SealedInterfaceWithPermits"), List.of("ExtendingClass", "OtherExtendingClass"))
+                // TODO find out why import analyzer makes permitted types explicit Arguments.of(factory.Type().get("SealedClassWithNestedSubclasses"), List.of()) // implicit
+            );
+        }
     }
 }

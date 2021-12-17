@@ -1,2 +1,2 @@
-public final class OtherExtendingClass extends SealedClassWithPermits {
+public final class OtherExtendingClass extends SealedClassWithPermits implements SealedInterfaceWithPermits {
 }

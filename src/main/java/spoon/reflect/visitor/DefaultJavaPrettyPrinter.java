@@ -1307,6 +1307,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				"extends", false, null, false, true, ",", true, false, null,
 				ref -> scan(ref));
 		}
+		elementPrinterHelper.printPermits(intrface);
 		context.pushCurrentThis(intrface);
 		printer.writeSpace().writeSeparator("{").incTab();
 		// Content
