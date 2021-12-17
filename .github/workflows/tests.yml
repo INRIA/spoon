@@ -139,6 +139,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
+      QODANA_LINTER: jetbrains/qodana-jvm-community:latest
     name: code-quality qodana
     steps:
       - name: Checkout
@@ -161,7 +162,7 @@ jobs:
       - name: Qodana - Code Inspection
         uses: JetBrains/qodana-action@f1c286a991696626e79b750fd8701477fee6fcd2 # renovate: tag=v4.1.0
         with:
-          linter: qodana-jvm-community
+          linter: ${{ env.QODANA_LINTER }}
           project-dir: "${{ github.workspace }}/master"
           inspected-dir: ./src/main/java # only main spoon project at first
           results-dir:  "${{ github.workspace }}/result/master"
@@ -169,7 +170,7 @@ jobs:
         uses: JetBrains/qodana-action@f1c286a991696626e79b750fd8701477fee6fcd2 # renovate: tag=v4.1.0
         continue-on-error: true
         with:
-          linter: qodana-jvm-community
+          linter: ${{ env.QODANA_LINTER }}
           project-dir: "${{ github.workspace }}/pull_request"
           inspected-dir: ./src/main/java # only main spoon project at first
           baseline-path: "/data/results/master/qodana.sarif.json"
