@@ -1,16 +1,16 @@
 /**
  * Copyright (C) 2006-2018 INRIA and contributors
  * Spoon - http://spoon.gforge.inria.fr/
- * <p>
+ *
  * This software is governed by the CeCILL-C License under French law and
  * abiding by the rules of distribution of free software. You can use, modify
  * and/or redistribute the software under the terms of the CeCILL-C license as
  * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
- * <p>
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- * <p>
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -64,7 +64,6 @@ import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtAnnotationMethod;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtEnumValue;
@@ -80,6 +79,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.path.CtElementPathBuilder;
@@ -258,7 +258,6 @@ public class JavaReflectionTreeBuilderTest {
 		CtElement element;
 		CtElement other;
 		Set<CtRole> roles = new HashSet<>();
-
 		Diff(CtElement element, CtElement other) {
 			this.element = element;
 			this.other = other;
@@ -330,11 +329,9 @@ public class JavaReflectionTreeBuilderTest {
 			super(new ShadowEqualsChecker());
 			this.ignoredRoles = ignoredRoles;
 		}
-
 		List<Diff> getDiffs() {
 			return ((ShadowEqualsChecker) checker).differences;
 		}
-
 		@Override
 		protected boolean fail(CtRole role, Object element, Object other) {
 			if (role == null) {
@@ -361,7 +358,6 @@ public class JavaReflectionTreeBuilderTest {
 			}
 			return false;
 		}
-
 		@Override
 		public void biScan(CtRole role, CtElement element, CtElement other) {
 			if (element instanceof CtParameter) {
@@ -390,7 +386,6 @@ public class JavaReflectionTreeBuilderTest {
 			}
 			super.biScan(role, element, other);
 		}
-
 		@Override
 		protected void biScan(CtRole role, Collection<? extends CtElement> elements, Collection<? extends CtElement> others) {
 			if (role == CtRole.TYPE_MEMBER) {
@@ -426,7 +421,6 @@ public class JavaReflectionTreeBuilderTest {
 			}
 			super.biScan(role, elements, others);
 		}
-
 		public List<String> checkDiffs(CtType<?> type, CtType<?> shadowType) {
 			differences = new ArrayList<>();
 			rootOfOther = shadowType;
@@ -735,7 +729,7 @@ public class JavaReflectionTreeBuilderTest {
 	@EnabledForJreRange(min = JRE.JAVA_16)
 	public void testShadowRecords() throws ClassNotFoundException {
 		// contract: records are shadowable.
-		Factory factory = createFactory();
+		Factory factory = 	createFactory();
 		// we need to do this because this a jdk16+ class
 		Class<?> unixDomainPrincipal = Class.forName("jdk.net.UnixDomainPrincipal");
 		CtType<?> type = factory.Type().get(unixDomainPrincipal);
@@ -744,6 +738,18 @@ public class JavaReflectionTreeBuilderTest {
 		assertTrue(unixRecord.isShadow());
 		// UserPrincipal user and GroupPrincipal group
 		assertEquals(2, unixRecord.getRecordComponents().size());
+	}
+
+
+	@Test
+	void testShadowPackage() {
+		// contract: elements of a package with a corresponding CtElement implementation
+		// are visited and built into the model
+		Factory factory = createFactory();
+		CtType<?> type = new JavaReflectionTreeBuilder(factory).scan(PackageTest.class);
+		CtPackage ctPackage = type.getPackage();
+		assertEquals(1, ctPackage.getAnnotations().size());
+		assertEquals(ctPackage.getAnnotations().get(0).getAnnotationType().getQualifiedName(), "java.lang.Deprecated");
 	}
 
 	@Test

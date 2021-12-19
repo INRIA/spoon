@@ -50,4 +50,5 @@ public interface CtAnnotationType<T extends Annotation> extends CtType<T> {
 	@Override
 	@UnsettableProperty
 	<C extends CtType<T>> C setSuperclass(CtTypeReference<?> superClass);
+
 }
