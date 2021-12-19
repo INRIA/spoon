@@ -130,6 +130,7 @@ public class CtInterfaceImpl<T> extends CtTypeImpl<T> implements CtInterface<T> 
 			permittedTypes = CtElementImpl.emptySet();
 		}
 		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, CtRole.PERMITTED_TYPE, this.permittedTypes, new HashSet<>(this.permittedTypes));
+		this.permittedTypes.clear();
 		for (CtTypeReference<?> type : permittedTypes) {
 			addPermittedType(type);
 		}
