@@ -17,8 +17,7 @@
 package spoon.test.statementComment;
 
 import java.util.Iterator;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.reflect.code.CtAssignment;
@@ -41,15 +40,12 @@ import spoon.reflect.factory.Factory;
 import spoon.support.reflect.code.CtCatchImpl;
 import spoon.testing.utils.LineSeperatorExtension;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.Assert.assertEquals;
 
 public class StatementCommentTest {
-	String EOL;
-	
-	public StatementCommentTest() {
-		EOL = System.getProperty("line.separator");
-	}
-	
+	String EOL = "\n";
+		
 	private Factory getSpoonFactory() {
 		final Launcher launcher = new Launcher();
 		launcher.run(new String[]{
@@ -112,6 +108,7 @@ public class StatementCommentTest {
 	}
 	
 	@Test
+	@ExtendWith(LineSeperatorExtension.class)
 	public void testMethodBodyEmptyStatement(){
 		// contract: test that a CtBlock representing empty method body doesn't change anything
 		Launcher launcher = setUpTest();
@@ -145,7 +142,6 @@ public class StatementCommentTest {
 				"}", m1.getBody().prettyprint());
 	}
 	
-	@Test(expected = UnsupportedOperationException.class)
 	public void testCaseStatement(){
 		// contract: test an isolated case statement commented out leads to UnsupportedOperationException
 		Launcher launcher = setUpTest();
@@ -154,15 +150,14 @@ public class StatementCommentTest {
 		assertTrue(m5.getBody().getStatement(2) instanceof CtSwitch);
 		CtSwitch<?> switchStmt = (CtSwitch<?>) m5.getBody().getStatement(2);
 		CtCase<?> caseStmt = (CtCase<?>) switchStmt.getCases().get(1);
-		caseStmt.comment();
+		assertThrows(UnsupportedOperationException.class, () -> caseStmt.comment());
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
 	public void testClassStatement(){
 		// contract: test an entire class cannot be commented out
 		Launcher launcher = setUpTest();
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("spoon.test.statementComment.testclasses.AllStmtExtensions");
-		allstmt.comment();
+		assertThrows(UnsupportedOperationException.class, () -> allstmt.comment());
 	}
 
 	@Test
@@ -284,7 +279,7 @@ public class StatementCommentTest {
 				"}", tryAsComment.getContent());
 	}
 	
-	@Test(expected = UnsupportedOperationException.class)
+
 	public void testCatchStatementFail(){
 		// contract: test commenting of isolated catch leads to UnsupportedOperationException exception
 		Launcher launcher = setUpTest();
@@ -293,9 +288,11 @@ public class StatementCommentTest {
 		assertTrue(m3.getBody().getStatement(0) instanceof CtTry);
 		CtTry tryStmt = (CtTry) m3.getBody().getStatement(0);
 		Iterator<CtCatch> it = tryStmt.getCatchers().iterator();
-		while(it.hasNext()) {
+		assertThrows(UnsupportedOperationException.class, () -> {
+			while(it.hasNext()) {
 			((CtCatchImpl) it.next()).comment();
 		}
+	});
 	}
 	
 	@Test
