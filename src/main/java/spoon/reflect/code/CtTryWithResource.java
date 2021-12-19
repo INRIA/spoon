@@ -32,26 +32,26 @@ public interface CtTryWithResource extends CtTry {
 	 * from Java 7 with the <i>try-with-resource</i> statement.
 	 */
 	@PropertyGetter(role = TRY_RESOURCE)
-	List<CtLocalVariable<?>> getResources();
+	List<CtCodeElement> getResources();
 
 	/**
 	 * Sets the auto-closeable resources of this <code>try</code>. Available
 	 * from Java 7 with the <i>try-with-resource</i> statement.
 	 */
 	@PropertySetter(role = TRY_RESOURCE)
-	<T extends CtTryWithResource> T setResources(List<CtLocalVariable<?>> resources);
+	<T extends CtTryWithResource> T setResources(List<? extends CtCodeElement> resources);
 
 	/**
 	 * Adds a resource.
 	 */
 	@PropertySetter(role = TRY_RESOURCE)
-	<T extends CtTryWithResource> T addResource(CtLocalVariable<?> resource);
+	<T extends CtTryWithResource> T addResource(CtCodeElement resource);
 
 	/**
 	 * Removes a resource.
 	 */
 	@PropertySetter(role = TRY_RESOURCE)
-	boolean removeResource(CtLocalVariable<?> resource);
+	boolean removeResource(CtCodeElement resource);
 
 	@Override
 	CtTryWithResource clone();

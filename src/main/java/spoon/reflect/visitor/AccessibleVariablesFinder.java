@@ -8,6 +8,7 @@
 package spoon.reflect.visitor;
 
 import spoon.reflect.code.CtCatch;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtLocalVariable;
@@ -99,7 +100,11 @@ public class AccessibleVariablesFinder {
 
 			@Override
 			public void visitCtTryWithResource(CtTryWithResource e) {
-				variables.addAll(e.getResources());
+			    for(CtCodeElement resource: e.getResources()){
+                    if (resource instanceof CtLocalVariable){
+                        variables.add((CtLocalVariable<?>) resource);
+                    }
+                }
 				super.visitCtTryWithResource(e);
 			}
 

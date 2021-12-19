@@ -20,6 +20,7 @@ import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtDo;
@@ -355,9 +356,9 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtTryWithResource_TRY_RESOURCE_RoleHandler extends ListHandler<CtTryWithResource, CtLocalVariable<? extends Object>> {
+	static class CtTryWithResource_TRY_RESOURCE_RoleHandler extends ListHandler<CtTryWithResource, CtCodeElement> {
 		private CtTryWithResource_TRY_RESOURCE_RoleHandler() {
-			super(CtRole.TRY_RESOURCE, CtTryWithResource.class, CtLocalVariable.class);
+			super(CtRole.TRY_RESOURCE, CtTryWithResource.class, CtCodeElement.class);
 		}
 
 		@SuppressWarnings("unchecked")

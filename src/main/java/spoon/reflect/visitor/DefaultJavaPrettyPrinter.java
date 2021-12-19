@@ -28,6 +28,7 @@ import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtComment;
@@ -129,6 +130,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -1780,9 +1782,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		enterCtStatement(tryWithResource);
 		printer.writeKeyword("try").writeSpace();
 		if (tryWithResource.getResources() != null && !tryWithResource.getResources().isEmpty()) {
-			elementPrinterHelper.printList(tryWithResource.getResources(),
+			elementPrinterHelper.<CtCodeElement>printList(tryWithResource.getResources(),
 				null, false, "(", false, false, ";", false, false, ")",
-				r -> scan(r));
+					(Consumer<CtCodeElement>)  r -> scan(r));
 		}
 		printer.writeSpace();
 		scan(tryWithResource.getBody());
