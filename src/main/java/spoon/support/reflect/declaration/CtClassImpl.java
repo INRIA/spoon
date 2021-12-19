@@ -299,7 +299,6 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 
 	@Override
 	public Set<CtTypeReference<?>> getPermittedTypes() {
-		// TODO unmodifiable?
 		return Collections.unmodifiableSet(permittedTypes);
 	}
 
