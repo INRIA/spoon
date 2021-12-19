@@ -1,4 +1,4 @@
-public sealed interface SealedClassWithNestedSubclasses {
+public sealed interface SealedInterfaceWithNestedSubclasses {
 
 	final class NestedFinal extends SealedInterfaceWithNestedSubclasses {
 
