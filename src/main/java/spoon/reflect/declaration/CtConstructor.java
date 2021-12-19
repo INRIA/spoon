@@ -17,7 +17,7 @@ import spoon.support.UnsettableProperty;
 /**
  * This element defines a constructor declaration.
  */
-public interface CtConstructor<T> extends CtExecutable<T>, CtTypeMember, CtFormalTypeDeclarer, CtShadowable {
+public interface CtConstructor<T> extends CtExecutable<T>, CtFormalTypeDeclarer, CtShadowable {
 
 	/**
 	 * Always returns "&lt;init&gt;".

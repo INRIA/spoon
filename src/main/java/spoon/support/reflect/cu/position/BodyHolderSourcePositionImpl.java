@@ -10,14 +10,12 @@ package spoon.support.reflect.cu.position;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 
-import java.io.Serializable;
-
 /**
  * This class represents the position of a Java program element in a source
  * file.
  */
 public class BodyHolderSourcePositionImpl extends DeclarationSourcePositionImpl
-		implements BodyHolderSourcePosition, Serializable {
+		implements BodyHolderSourcePosition {
 
 	private static final long serialVersionUID = 1L;
 	private int bodyStart;

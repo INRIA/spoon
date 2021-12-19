@@ -19,7 +19,7 @@ import static spoon.reflect.path.CtRole.IS_DEFAULT;
 /**
  * This element defines a method declaration.
  */
-public interface CtMethod<T> extends CtExecutable<T>, CtTypeMember, CtFormalTypeDeclarer, CtShadowable {
+public interface CtMethod<T> extends CtExecutable<T>, CtFormalTypeDeclarer, CtShadowable {
 	/**
 	 * @param superMethod to be checked method
 	 * @return true if this method overrides `superMethod`.<br>
