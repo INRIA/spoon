@@ -269,7 +269,7 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 
 	private class NewInstanceClassloader extends URLClassLoader {
 		NewInstanceClassloader(File binaryOutputDirectory) throws MalformedURLException {
-			super(new URL[] { binaryOutputDirectory.toURI().toURL()});
+			super(new URL[]{binaryOutputDirectory.toURI().toURL()});
 		}
 
 		@Override
@@ -282,7 +282,9 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 		}
 	}
 
-	/** adding the constructors and static executables */
+	/**
+	 * adding the constructors and static executables
+	 */
 	@Override
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
 		Set<CtExecutableReference<?>> l = (Set<CtExecutableReference<?>>) super.getAllExecutables();
@@ -304,33 +306,35 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 	@Override
 	public CtClass<T> setPermittedTypes(Collection<CtTypeReference<?>> permittedTypes) {
 		if (permittedTypes == null) {
-			this.permittedTypes = CtElementImpl.emptySet();
-			return this;
+			permittedTypes = CtElementImpl.emptySet();
 		}
-		this.permittedTypes = new HashSet<>(permittedTypes); // TODO events, checks
-		for (CtTypeReference<?> type : this.permittedTypes) {
-			type.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onSetDeleteAll(this, CtRole.PERMITTED_TYPE, this.permittedTypes, new HashSet<>(this.permittedTypes));
+		for (CtTypeReference<?> type : permittedTypes) {
+			addPermittedType(type);
 		}
 		return this;
 	}
 
 	@Override
 	public CtClass<T> addPermittedType(CtTypeReference<?> type) {
-		// TODO ensure modifiable, events etc
 		if (type == null) {
 			return this;
 		}
-		if (permittedTypes == CtElementImpl.<CtTypeReference<?>>emptySet()) {
-			permittedTypes = new HashSet<>();
+		if (this.permittedTypes == CtElementImpl.<CtTypeReference<?>>emptySet()) {
+			this.permittedTypes = new HashSet<>();
 		}
 		type.setParent(this);
+		getFactory().getEnvironment().getModelChangeListener().onSetAdd(this, CtRole.PERMITTED_TYPE, this.permittedTypes, type);
 		this.permittedTypes.add(type);
 		return this;
 	}
 
 	@Override
 	public CtClass<T> removePermittedType(CtTypeReference<?> type) {
-		// TODO events
+		if (this.permittedTypes == CtElementImpl.<CtTypeReference<?>>emptySet()) {
+			return this;
+		}
+		getFactory().getEnvironment().getModelChangeListener().onSetDelete(this, CtRole.PERMITTED_TYPE, this.permittedTypes, type);
 		this.permittedTypes.remove(type);
 		return this;
 	}
