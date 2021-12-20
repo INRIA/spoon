@@ -13,7 +13,7 @@ package spoon.support.visitor.replace;
  */
 public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtRecordRecordComponentsReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
+	static class CtRecordRecordComponentsReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
 		private final spoon.reflect.declaration.CtRecord element;
 
 		CtRecordRecordComponentsReplaceListener(spoon.reflect.declaration.CtRecord element) {
@@ -27,7 +27,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypePatternVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtLocalVariable> {
+	static class CtTypePatternVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtLocalVariable> {
 		private final spoon.reflect.code.CtTypePattern element;
 
 		CtTypePatternVariableReplaceListener(spoon.reflect.code.CtTypePattern element) {
@@ -41,7 +41,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtYieldStatementExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtYieldStatementExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtYieldStatement element;
 
 		CtYieldStatementExpressionReplaceListener(spoon.reflect.code.CtYieldStatement element) {
@@ -55,7 +55,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypeMemberWildcardImportReferenceTypeReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+	static class CtTypeMemberWildcardImportReferenceTypeReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
 		private final spoon.reflect.reference.CtTypeMemberWildcardImportReference element;
 
 		CtTypeMemberWildcardImportReferenceTypeReferenceReplaceListener(spoon.reflect.reference.CtTypeMemberWildcardImportReference element) {
@@ -69,7 +69,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtPackageDeclarationReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
+	static class CtPackageDeclarationReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
 		private final spoon.reflect.declaration.CtPackageDeclaration element;
 
 		CtPackageDeclarationReferenceReplaceListener(spoon.reflect.declaration.CtPackageDeclaration element) {
@@ -83,7 +83,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCompilationUnitDeclaredTypeReferencesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtCompilationUnitDeclaredTypeReferencesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.declaration.CtCompilationUnit element;
 
 		CtCompilationUnitDeclaredTypeReferencesReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
@@ -97,7 +97,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCompilationUnitDeclaredModuleReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtModuleReference> {
+	static class CtCompilationUnitDeclaredModuleReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtModuleReference> {
 		private final spoon.reflect.declaration.CtCompilationUnit element;
 
 		CtCompilationUnitDeclaredModuleReferenceReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
@@ -111,7 +111,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCompilationUnitImportsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.Collection> {
+	static class CtCompilationUnitImportsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.Collection> {
 		private final spoon.reflect.declaration.CtCompilationUnit element;
 
 		CtCompilationUnitImportsReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
@@ -125,7 +125,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCompilationUnitPackageDeclarationReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.declaration.CtPackageDeclaration> {
+	static class CtCompilationUnitPackageDeclarationReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.declaration.CtPackageDeclaration> {
 		private final spoon.reflect.declaration.CtCompilationUnit element;
 
 		CtCompilationUnitPackageDeclarationReplaceListener(spoon.reflect.declaration.CtCompilationUnit element) {
@@ -139,7 +139,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtUsedServiceServiceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+	static class CtUsedServiceServiceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
 		private final spoon.reflect.declaration.CtUsedService element;
 
 		CtUsedServiceServiceTypeReplaceListener(spoon.reflect.declaration.CtUsedService element) {
@@ -153,7 +153,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtProvidedServiceImplementationTypesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtProvidedServiceImplementationTypesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.declaration.CtProvidedService element;
 
 		CtProvidedServiceImplementationTypesReplaceListener(spoon.reflect.declaration.CtProvidedService element) {
@@ -167,7 +167,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtProvidedServiceServiceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+	static class CtProvidedServiceServiceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
 		private final spoon.reflect.declaration.CtProvidedService element;
 
 		CtProvidedServiceServiceTypeReplaceListener(spoon.reflect.declaration.CtProvidedService element) {
@@ -181,7 +181,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtModuleRequirementModuleReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtModuleReference> {
+	static class CtModuleRequirementModuleReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtModuleReference> {
 		private final spoon.reflect.declaration.CtModuleRequirement element;
 
 		CtModuleRequirementModuleReferenceReplaceListener(spoon.reflect.declaration.CtModuleRequirement element) {
@@ -195,7 +195,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtPackageExportTargetExportReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtPackageExportTargetExportReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.declaration.CtPackageExport element;
 
 		CtPackageExportTargetExportReplaceListener(spoon.reflect.declaration.CtPackageExport element) {
@@ -209,7 +209,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtPackageExportPackageReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
+	static class CtPackageExportPackageReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
 		private final spoon.reflect.declaration.CtPackageExport element;
 
 		CtPackageExportPackageReferenceReplaceListener(spoon.reflect.declaration.CtPackageExport element) {
@@ -223,7 +223,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtModuleRootPackageReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.declaration.CtPackage> {
+	static class CtModuleRootPackageReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.declaration.CtPackage> {
 		private final spoon.reflect.declaration.CtModule element;
 
 		CtModuleRootPackageReplaceListener(spoon.reflect.declaration.CtModule element) {
@@ -237,7 +237,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtModuleModuleDirectivesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtModuleModuleDirectivesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.declaration.CtModule element;
 
 		CtModuleModuleDirectivesReplaceListener(spoon.reflect.declaration.CtModule element) {
@@ -251,7 +251,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtImportReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtReference> {
+	static class CtImportReferenceReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtReference> {
 		private final spoon.reflect.declaration.CtImport element;
 
 		CtImportReferenceReplaceListener(spoon.reflect.declaration.CtImport element) {
@@ -265,7 +265,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtJavaDocTagsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtJavaDocTagsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.code.CtJavaDoc element;
 
 		CtJavaDocTagsReplaceListener(spoon.reflect.code.CtJavaDoc element) {
@@ -279,7 +279,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtFieldAccessVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtFieldReference> {
+	static class CtFieldAccessVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtFieldReference> {
 		private final spoon.reflect.code.CtVariableAccess element;
 
 		CtFieldAccessVariableReplaceListener(spoon.reflect.code.CtVariableAccess element) {
@@ -293,7 +293,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtWhileLoopingExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtWhileLoopingExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtWhile element;
 
 		CtWhileLoopingExpressionReplaceListener(spoon.reflect.code.CtWhile element) {
@@ -307,7 +307,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtVariableAccessVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtVariableReference> {
+	static class CtVariableAccessVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtVariableReference> {
 		private final spoon.reflect.code.CtVariableAccess element;
 
 		CtVariableAccessVariableReplaceListener(spoon.reflect.code.CtVariableAccess element) {
@@ -321,7 +321,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtUnaryOperatorOperandReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtUnaryOperatorOperandReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtUnaryOperator element;
 
 		CtUnaryOperatorOperandReplaceListener(spoon.reflect.code.CtUnaryOperator element) {
@@ -335,7 +335,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypeAccessAccessedTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+	static class CtTypeAccessAccessedTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
 		private final spoon.reflect.code.CtTypeAccess element;
 
 		CtTypeAccessAccessedTypeReplaceListener(spoon.reflect.code.CtTypeAccess element) {
@@ -349,7 +349,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtIntersectionTypeReferenceBoundsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtIntersectionTypeReferenceBoundsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.reference.CtIntersectionTypeReference element;
 
 		CtIntersectionTypeReferenceBoundsReplaceListener(spoon.reflect.reference.CtIntersectionTypeReference element) {
@@ -363,7 +363,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtWildcardReferenceBoundingTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+	static class CtWildcardReferenceBoundingTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
 		private final spoon.reflect.reference.CtWildcardReference element;
 
 		CtWildcardReferenceBoundingTypeReplaceListener(spoon.reflect.reference.CtWildcardReference element) {
@@ -377,7 +377,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTryWithResourceResourcesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtTryWithResourceResourcesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.code.CtTryWithResource element;
 
 		CtTryWithResourceResourcesReplaceListener(spoon.reflect.code.CtTryWithResource element) {
@@ -391,7 +391,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTryFinalizerReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
+	static class CtTryFinalizerReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
 		private final spoon.reflect.code.CtTry element;
 
 		CtTryFinalizerReplaceListener(spoon.reflect.code.CtTry element) {
@@ -405,7 +405,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTryCatchersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtTryCatchersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.code.CtTry element;
 
 		CtTryCatchersReplaceListener(spoon.reflect.code.CtTry element) {
@@ -419,7 +419,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTryBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
+	static class CtTryBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
 		private final spoon.reflect.code.CtBodyHolder element;
 
 		CtTryBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
@@ -433,7 +433,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtThrowThrownExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtThrowThrownExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtThrow element;
 
 		CtThrowThrownExpressionReplaceListener(spoon.reflect.code.CtThrow element) {
@@ -447,7 +447,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtSynchronizedBlockReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
+	static class CtSynchronizedBlockReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
 		private final spoon.reflect.code.CtSynchronized element;
 
 		CtSynchronizedBlockReplaceListener(spoon.reflect.code.CtSynchronized element) {
@@ -461,7 +461,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtSynchronizedExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtSynchronizedExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtSynchronized element;
 
 		CtSynchronizedExpressionReplaceListener(spoon.reflect.code.CtSynchronized element) {
@@ -475,7 +475,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAbstractSwitchCasesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtAbstractSwitchCasesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.code.CtAbstractSwitch element;
 
 		CtAbstractSwitchCasesReplaceListener(spoon.reflect.code.CtAbstractSwitch element) {
@@ -489,7 +489,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAbstractSwitchSelectorReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtAbstractSwitchSelectorReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtAbstractSwitch element;
 
 		CtAbstractSwitchSelectorReplaceListener(spoon.reflect.code.CtAbstractSwitch element) {
@@ -503,7 +503,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtReturnReturnedExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtReturnReturnedExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtReturn element;
 
 		CtReturnReturnedExpressionReplaceListener(spoon.reflect.code.CtReturn element) {
@@ -517,7 +517,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtPackageTypesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
+	static class CtPackageTypesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
 		private final spoon.reflect.declaration.CtPackage element;
 
 		CtPackageTypesReplaceListener(spoon.reflect.declaration.CtPackage element) {
@@ -531,7 +531,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtPackagePackagesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
+	static class CtPackagePackagesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
 		private final spoon.reflect.declaration.CtPackage element;
 
 		CtPackagePackagesReplaceListener(spoon.reflect.declaration.CtPackage element) {
@@ -545,7 +545,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExecutableReferenceExpressionExecutableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtExecutableReference> {
+	static class CtExecutableReferenceExpressionExecutableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtExecutableReference> {
 		private final spoon.reflect.code.CtExecutableReferenceExpression element;
 
 		CtExecutableReferenceExpressionExecutableReplaceListener(spoon.reflect.code.CtExecutableReferenceExpression element) {
@@ -559,7 +559,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtLambdaExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtLambdaExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtLambda element;
 
 		CtLambdaExpressionReplaceListener(spoon.reflect.code.CtLambda element) {
@@ -573,7 +573,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtNewClassAnonymousClassReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.declaration.CtClass> {
+	static class CtNewClassAnonymousClassReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.declaration.CtClass> {
 		private final spoon.reflect.code.CtNewClass element;
 
 		CtNewClassAnonymousClassReplaceListener(spoon.reflect.code.CtNewClass element) {
@@ -587,7 +587,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtNewArrayDimensionExpressionsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtNewArrayDimensionExpressionsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.code.CtNewArray element;
 
 		CtNewArrayDimensionExpressionsReplaceListener(spoon.reflect.code.CtNewArray element) {
@@ -601,7 +601,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtNewArrayElementsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtNewArrayElementsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.code.CtNewArray element;
 
 		CtNewArrayElementsReplaceListener(spoon.reflect.code.CtNewArray element) {
@@ -615,7 +615,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAnnotationMethodDefaultExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtAnnotationMethodDefaultExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.declaration.CtAnnotationMethod element;
 
 		CtAnnotationMethodDefaultExpressionReplaceListener(spoon.reflect.declaration.CtAnnotationMethod element) {
@@ -629,7 +629,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtMultiTypedElementMultiTypesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtMultiTypedElementMultiTypesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.declaration.CtMultiTypedElement element;
 
 		CtMultiTypedElementMultiTypesReplaceListener(spoon.reflect.declaration.CtMultiTypedElement element) {
@@ -643,7 +643,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAbstractInvocationArgumentsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtAbstractInvocationArgumentsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.code.CtAbstractInvocation element;
 
 		CtAbstractInvocationArgumentsReplaceListener(spoon.reflect.code.CtAbstractInvocation element) {
@@ -657,7 +657,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAbstractInvocationExecutableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtExecutableReference> {
+	static class CtAbstractInvocationExecutableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtExecutableReference> {
 		private final spoon.reflect.code.CtAbstractInvocation element;
 
 		CtAbstractInvocationExecutableReplaceListener(spoon.reflect.code.CtAbstractInvocation element) {
@@ -671,7 +671,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtIfElseStatementReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtStatement> {
+	static class CtIfElseStatementReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtStatement> {
 		private final spoon.reflect.code.CtIf element;
 
 		CtIfElseStatementReplaceListener(spoon.reflect.code.CtIf element) {
@@ -685,7 +685,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtIfThenStatementReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtStatement> {
+	static class CtIfThenStatementReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtStatement> {
 		private final spoon.reflect.code.CtIf element;
 
 		CtIfThenStatementReplaceListener(spoon.reflect.code.CtIf element) {
@@ -699,7 +699,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtIfConditionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtIfConditionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtIf element;
 
 		CtIfConditionReplaceListener(spoon.reflect.code.CtIf element) {
@@ -713,7 +713,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtForEachExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtForEachExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtForEach element;
 
 		CtForEachExpressionReplaceListener(spoon.reflect.code.CtForEach element) {
@@ -727,7 +727,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtForEachVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtLocalVariable> {
+	static class CtForEachVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtLocalVariable> {
 		private final spoon.reflect.code.CtForEach element;
 
 		CtForEachVariableReplaceListener(spoon.reflect.code.CtForEach element) {
@@ -741,7 +741,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtForForUpdateReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtForForUpdateReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.code.CtFor element;
 
 		CtForForUpdateReplaceListener(spoon.reflect.code.CtFor element) {
@@ -755,7 +755,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtForExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtForExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtFor element;
 
 		CtForExpressionReplaceListener(spoon.reflect.code.CtFor element) {
@@ -769,7 +769,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtForForInitReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtForForInitReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.code.CtFor element;
 
 		CtForForInitReplaceListener(spoon.reflect.code.CtFor element) {
@@ -783,7 +783,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtVariableReferenceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+	static class CtVariableReferenceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
 		private final spoon.reflect.reference.CtVariableReference element;
 
 		CtVariableReferenceTypeReplaceListener(spoon.reflect.reference.CtVariableReference element) {
@@ -797,7 +797,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtFieldReferenceDeclaringTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+	static class CtFieldReferenceDeclaringTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
 		private final spoon.reflect.reference.CtFieldReference element;
 
 		CtFieldReferenceDeclaringTypeReplaceListener(spoon.reflect.reference.CtFieldReference element) {
@@ -811,7 +811,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAnnotationFieldAccessVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtFieldReference> {
+	static class CtAnnotationFieldAccessVariableReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtFieldReference> {
 		private final spoon.reflect.code.CtVariableAccess element;
 
 		CtAnnotationFieldAccessVariableReplaceListener(spoon.reflect.code.CtVariableAccess element) {
@@ -825,7 +825,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtVariableDefaultExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtVariableDefaultExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.declaration.CtVariable element;
 
 		CtVariableDefaultExpressionReplaceListener(spoon.reflect.declaration.CtVariable element) {
@@ -839,7 +839,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExecutableReferenceParametersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtExecutableReferenceParametersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.reference.CtExecutableReference element;
 
 		CtExecutableReferenceParametersReplaceListener(spoon.reflect.reference.CtExecutableReference element) {
@@ -853,7 +853,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExecutableReferenceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+	static class CtExecutableReferenceTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
 		private final spoon.reflect.reference.CtExecutableReference element;
 
 		CtExecutableReferenceTypeReplaceListener(spoon.reflect.reference.CtExecutableReference element) {
@@ -867,7 +867,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExecutableReferenceDeclaringTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+	static class CtExecutableReferenceDeclaringTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
 		private final spoon.reflect.reference.CtExecutableReference element;
 
 		CtExecutableReferenceDeclaringTypeReplaceListener(spoon.reflect.reference.CtExecutableReference element) {
@@ -881,7 +881,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtEnumEnumValuesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtEnumEnumValuesReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.declaration.CtEnum element;
 
 		CtEnumEnumValuesReplaceListener(spoon.reflect.declaration.CtEnum element) {
@@ -895,7 +895,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtLoopBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtStatement> {
+	static class CtLoopBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtStatement> {
 		private final spoon.reflect.code.CtBodyHolder element;
 
 		CtLoopBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
@@ -909,7 +909,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtDoLoopingExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtDoLoopingExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtDo element;
 
 		CtDoLoopingExpressionReplaceListener(spoon.reflect.code.CtDo element) {
@@ -923,7 +923,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExecutableThrownTypesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
+	static class CtExecutableThrownTypesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
 		private final spoon.reflect.declaration.CtExecutable element;
 
 		CtExecutableThrownTypesReplaceListener(spoon.reflect.declaration.CtExecutable element) {
@@ -937,7 +937,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExecutableParametersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtExecutableParametersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.declaration.CtExecutable element;
 
 		CtExecutableParametersReplaceListener(spoon.reflect.declaration.CtExecutable element) {
@@ -951,7 +951,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtConditionalElseExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtConditionalElseExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtConditional element;
 
 		CtConditionalElseExpressionReplaceListener(spoon.reflect.code.CtConditional element) {
@@ -965,7 +965,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtConditionalThenExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtConditionalThenExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtConditional element;
 
 		CtConditionalThenExpressionReplaceListener(spoon.reflect.code.CtConditional element) {
@@ -979,7 +979,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtConditionalConditionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtConditionalConditionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtConditional element;
 
 		CtConditionalConditionReplaceListener(spoon.reflect.code.CtConditional element) {
@@ -993,7 +993,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.declaration.CtFormalTypeDeclarer element;
 
 		CtFormalTypeDeclarerFormalCtTypeParametersReplaceListener(spoon.reflect.declaration.CtFormalTypeDeclarer element) {
@@ -1007,7 +1007,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypeInformationSuperInterfacesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
+	static class CtTypeInformationSuperInterfacesReplaceListener implements spoon.support.visitor.replace.ReplaceSetListener<java.util.Set> {
 		private final spoon.reflect.declaration.CtType element;
 
 		CtTypeInformationSuperInterfacesReplaceListener(spoon.reflect.declaration.CtType element) {
@@ -1021,7 +1021,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypeInformationSuperclassReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+	static class CtTypeInformationSuperclassReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
 		private final spoon.reflect.declaration.CtType element;
 
 		CtTypeInformationSuperclassReplaceListener(spoon.reflect.declaration.CtType element) {
@@ -1035,7 +1035,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCatchBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
+	static class CtCatchBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
 		private final spoon.reflect.code.CtBodyHolder element;
 
 		CtCatchBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
@@ -1049,7 +1049,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCatchParameterReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtCatchVariable> {
+	static class CtCatchParameterReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtCatchVariable> {
 		private final spoon.reflect.code.CtCatch element;
 
 		CtCatchParameterReplaceListener(spoon.reflect.code.CtCatch element) {
@@ -1063,7 +1063,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtCaseCaseExpressionsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtCaseCaseExpressionsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.code.CtCase element;
 
 		CtCaseCaseExpressionsReplaceListener(spoon.reflect.code.CtCase element) {
@@ -1077,7 +1077,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtStatementListStatementsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtStatementListStatementsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.code.CtStatementList element;
 
 		CtStatementListStatementsReplaceListener(spoon.reflect.code.CtStatementList element) {
@@ -1091,7 +1091,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtBinaryOperatorRightHandOperandReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtBinaryOperatorRightHandOperandReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtBinaryOperator element;
 
 		CtBinaryOperatorRightHandOperandReplaceListener(spoon.reflect.code.CtBinaryOperator element) {
@@ -1105,7 +1105,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtBinaryOperatorLeftHandOperandReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtBinaryOperatorLeftHandOperandReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtBinaryOperator element;
 
 		CtBinaryOperatorLeftHandOperandReplaceListener(spoon.reflect.code.CtBinaryOperator element) {
@@ -1119,7 +1119,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtRHSReceiverAssignmentReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtRHSReceiverAssignmentReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtRHSReceiver element;
 
 		CtRHSReceiverAssignmentReplaceListener(spoon.reflect.code.CtRHSReceiver element) {
@@ -1133,7 +1133,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAssignmentAssignedReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtAssignmentAssignedReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtAssignment element;
 
 		CtAssignmentAssignedReplaceListener(spoon.reflect.code.CtAssignment element) {
@@ -1147,7 +1147,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAssertExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtAssertExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtAssert element;
 
 		CtAssertExpressionReplaceListener(spoon.reflect.code.CtAssert element) {
@@ -1161,7 +1161,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAssertAssertExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtAssertAssertExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtAssert element;
 
 		CtAssertAssertExpressionReplaceListener(spoon.reflect.code.CtAssert element) {
@@ -1175,7 +1175,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtActualTypeContainerActualTypeArgumentsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtActualTypeContainerActualTypeArgumentsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.reference.CtActualTypeContainer element;
 
 		CtActualTypeContainerActualTypeArgumentsReplaceListener(spoon.reflect.reference.CtActualTypeContainer element) {
@@ -1189,7 +1189,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtArrayTypeReferenceComponentTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+	static class CtArrayTypeReferenceComponentTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
 		private final spoon.reflect.reference.CtArrayTypeReference element;
 
 		CtArrayTypeReferenceComponentTypeReplaceListener(spoon.reflect.reference.CtArrayTypeReference element) {
@@ -1203,7 +1203,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypeReferenceDeclaringTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+	static class CtTypeReferenceDeclaringTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
 		private final spoon.reflect.reference.CtTypeReference element;
 
 		CtTypeReferenceDeclaringTypeReplaceListener(spoon.reflect.reference.CtTypeReference element) {
@@ -1217,7 +1217,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypeReferencePackageReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
+	static class CtTypeReferencePackageReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtPackageReference> {
 		private final spoon.reflect.reference.CtTypeReference element;
 
 		CtTypeReferencePackageReplaceListener(spoon.reflect.reference.CtTypeReference element) {
@@ -1231,7 +1231,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtArrayAccessIndexExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtArrayAccessIndexExpressionReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtArrayAccess element;
 
 		CtArrayAccessIndexExpressionReplaceListener(spoon.reflect.code.CtArrayAccess element) {
@@ -1245,7 +1245,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTargetedExpressionTargetReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
+	static class CtTargetedExpressionTargetReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtExpression> {
 		private final spoon.reflect.code.CtTargetedExpression element;
 
 		CtTargetedExpressionTargetReplaceListener(spoon.reflect.code.CtTargetedExpression element) {
@@ -1259,7 +1259,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExpressionTypeCastsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtExpressionTypeCastsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.code.CtExpression element;
 
 		CtExpressionTypeCastsReplaceListener(spoon.reflect.code.CtExpression element) {
@@ -1273,7 +1273,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtExecutableBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
+	static class CtExecutableBodyReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.code.CtBlock> {
 		private final spoon.reflect.code.CtBodyHolder element;
 
 		CtExecutableBodyReplaceListener(spoon.reflect.code.CtBodyHolder element) {
@@ -1287,7 +1287,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypeTypeMembersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtTypeTypeMembersReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.declaration.CtType element;
 
 		CtTypeTypeMembersReplaceListener(spoon.reflect.declaration.CtType element) {
@@ -1301,7 +1301,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAnnotationValuesReplaceListener implements spoon.support.visitor.replace.ReplaceMapListener<java.util.Map> {
+	static class CtAnnotationValuesReplaceListener implements spoon.support.visitor.replace.ReplaceMapListener<java.util.Map> {
 		private final spoon.reflect.declaration.CtAnnotation element;
 
 		CtAnnotationValuesReplaceListener(spoon.reflect.declaration.CtAnnotation element) {
@@ -1315,7 +1315,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtElementAnnotationsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtElementAnnotationsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.declaration.CtElement element;
 
 		CtElementAnnotationsReplaceListener(spoon.reflect.declaration.CtElement element) {
@@ -1329,7 +1329,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtAnnotationAnnotationTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+	static class CtAnnotationAnnotationTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
 		private final spoon.reflect.declaration.CtAnnotation element;
 
 		CtAnnotationAnnotationTypeReplaceListener(spoon.reflect.declaration.CtAnnotation element) {
@@ -1343,7 +1343,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtElementCommentsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
+	static class CtElementCommentsReplaceListener implements spoon.support.visitor.replace.ReplaceListListener<java.util.List> {
 		private final spoon.reflect.declaration.CtElement element;
 
 		CtElementCommentsReplaceListener(spoon.reflect.declaration.CtElement element) {
@@ -1357,7 +1357,7 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	// auto-generated, see spoon.generating.ReplacementVisitorGenerator
-	class CtTypedElementTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
+	static class CtTypedElementTypeReplaceListener implements spoon.support.visitor.replace.ReplaceListener<spoon.reflect.reference.CtTypeReference> {
 		private final spoon.reflect.declaration.CtTypedElement element;
 
 		CtTypedElementTypeReplaceListener(spoon.reflect.declaration.CtTypedElement element) {
@@ -1371,19 +1371,11 @@ public class ReplacementVisitor extends spoon.reflect.visitor.CtScanner {
 	}
 
 	public static void replace(spoon.reflect.declaration.CtElement original, spoon.reflect.declaration.CtElement replace) {
-		try {
-			new spoon.support.visitor.replace.ReplacementVisitor(original, replace == null ? spoon.support.visitor.replace.ReplacementVisitor.EMPTY : new spoon.reflect.declaration.CtElement[]{ replace }).scan(original.getParent());
-		} catch (spoon.support.visitor.replace.InvalidReplaceException e) {
-			throw e;
-		}
+		new spoon.support.visitor.replace.ReplacementVisitor(original, replace == null ? spoon.support.visitor.replace.ReplacementVisitor.EMPTY : new spoon.reflect.declaration.CtElement[]{ replace }).scan(original.getParent());
 	}
 
 	public static <E extends spoon.reflect.declaration.CtElement> void replace(spoon.reflect.declaration.CtElement original, java.util.Collection<E> replaces) {
-		try {
-			new spoon.support.visitor.replace.ReplacementVisitor(original, replaces.toArray(new spoon.reflect.declaration.CtElement[replaces.size()])).scan(original.getParent());
-		} catch (spoon.support.visitor.replace.InvalidReplaceException e) {
-			throw e;
-		}
+		new spoon.support.visitor.replace.ReplacementVisitor(original, replaces.toArray(new spoon.reflect.declaration.CtElement[replaces.size()])).scan(original.getParent());
 	}
 
 	private spoon.reflect.declaration.CtElement original;

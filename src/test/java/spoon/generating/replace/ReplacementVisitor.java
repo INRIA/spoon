@@ -39,18 +39,10 @@ import java.util.Set;
  */
 class ReplacementVisitor extends CtScanner {
 	public static void replace(CtElement original, CtElement replace) {
-		try {
-			new ReplacementVisitor(original, replace == null ? EMPTY : new CtElement[]{replace}).scan(original.getParent());
-		} catch (InvalidReplaceException e) {
-			throw e;
-		}
+		new ReplacementVisitor(original, replace == null ? EMPTY : new CtElement[]{replace}).scan(original.getParent());
 	}
 	public static <E extends CtElement> void replace(CtElement original, Collection<E> replaces) {
-		try {
 			new ReplacementVisitor(original, replaces.toArray(new CtElement[replaces.size()])).scan(original.getParent());
-		} catch (InvalidReplaceException e) {
-			throw e;
-		}
 	}
 
 	private CtElement original;
