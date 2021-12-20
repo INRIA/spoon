@@ -86,7 +86,10 @@ public class CtRecordTest {
 					    "    return second;\n" +
 					    "}"
 				),
-				head(records).getMethods().stream().map(String::valueOf).collect(Collectors.toList())
+				head(records).getMethods().stream()
+						.map(String::valueOf)
+						.map(s -> s.replaceAll("\\R", "\n")) // fix newlines on windows
+						.collect(Collectors.toList())
 		);
 	}
 
