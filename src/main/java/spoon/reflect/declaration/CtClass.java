@@ -14,7 +14,6 @@ import spoon.support.UnsettableProperty;
 import spoon.reflect.annotations.PropertyGetter;
 import spoon.reflect.annotations.PropertySetter;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 

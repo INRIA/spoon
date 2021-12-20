@@ -11,8 +11,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.UnsettableProperty;
 
-import java.util.Collection;
-
 /**
  * This element defines an interface declaration.
  *
