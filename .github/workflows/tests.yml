@@ -139,7 +139,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
-      QODANA_LINTER: jetbrains/qodana-jvm-community:latest
+      QODANA_LINTER: jetbrains/qodana-jvm-community:2021.2
     name: code-quality qodana
     steps:
       - name: Checkout
