@@ -21,6 +21,15 @@ public class PackageRuntimeBuilderContext extends AbstractRuntimeBuilderContext 
 		this.ctPackage = ctPackage;
 	}
 
+	/**
+	 * Returns the package belonging to this context.
+	 *
+	 * @return the package of this context
+	 */
+	public CtPackage getPackage() {
+		return ctPackage;
+	}
+
 	@Override
 	public void addType(CtType<?> aType) {
 		ctPackage.addType(aType);

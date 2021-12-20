@@ -20,6 +20,7 @@ import java.lang.reflect.WildcardType;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.Set;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtAnnotation;
@@ -132,13 +133,37 @@ public class JavaReflectionTreeBuilder extends JavaReflectionVisitorImpl {
 
 	@Override
 	public void visitPackage(Package aPackage) {
-		final CtPackage ctPackage = factory.Package().getOrCreate(aPackage.getName());
-
-		enter(new PackageRuntimeBuilderContext(ctPackage));
-		super.visitPackage(aPackage);
-		exit();
+		CtPackage ctPackage = factory.Package().get(aPackage.getName());
+		// this is a dangerous section:
+		// we DON'T want to visit packages recursively if there are cyclic annotations
+		// => we only call the super method if:
+		//    - the package is not known by the factory (it wasn't visited before)
+		//    - the package is not in the current context stack
+		if (ctPackage == null || shouldVisitPackage(ctPackage)) {
+			ctPackage = factory.Package().getOrCreate(aPackage.getName());
+			enter(new PackageRuntimeBuilderContext(ctPackage));
+			super.visitPackage(aPackage);
+			exit();
+		}
 
 		contexts.peek().addPackage(ctPackage);
+	}
+
+	// Returns whether the given package is already in the context stack
+	private boolean shouldVisitPackage(CtPackage ctPackage) {
+		Iterator<RuntimeBuilderContext> iterator = contexts.iterator();
+		while (iterator.hasNext()) {
+			RuntimeBuilderContext next = iterator.next();
+			// we don't want to visit the context inserted first, as it's always
+			// a PackageRuntimeBuilderContext (see scan(...)) but it does not visit
+			// the package. So yes, the hasNext check is intended here
+			if (iterator.hasNext() && next instanceof PackageRuntimeBuilderContext) {
+				if (((PackageRuntimeBuilderContext) next).getPackage() == ctPackage) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	@Override
