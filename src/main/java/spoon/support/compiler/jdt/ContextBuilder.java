@@ -66,11 +66,11 @@ public class ContextBuilder {
 
 	CompilationUnit compilationUnitSpoon;
 
-	boolean isBuildLambda = false;
+	boolean isBuildLambda;
 
-	boolean isBuildTypeCast = false;
+	boolean isBuildTypeCast;
 
-	boolean ignoreComputeImports = false;
+	boolean ignoreComputeImports;
 
 	/**
 	 * Stack of all parents elements
@@ -209,7 +209,7 @@ public class ContextBuilder {
 	private static String getNormalQualifiedName(ReferenceBinding referenceBinding) {
 		String pkg = new String(referenceBinding.getPackage().readableName()).replaceAll("\\.", "\\" + CtPackage.PACKAGE_SEPARATOR);
 		String name = new String(referenceBinding.qualifiedSourceName()).replaceAll("\\.", "\\" + CtType.INNERTTYPE_SEPARATOR);
-		return pkg.equals("") ? name : pkg + "." + name;
+		return pkg.isEmpty() ? name : pkg + "." + name;
 	}
 
 	@SuppressWarnings("unchecked")
