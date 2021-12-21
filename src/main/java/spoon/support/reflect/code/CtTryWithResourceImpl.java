@@ -8,7 +8,7 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
@@ -23,7 +23,7 @@ public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResourc
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = TRY_RESOURCE)
-	List<CtCodeElement> resources = emptyList();
+	List<CtResource<?>> resources = emptyList();
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -31,30 +31,30 @@ public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResourc
 	}
 
 	@Override
-	public List<CtCodeElement> getResources() {
+	public List<CtResource<?>> getResources() {
 		return resources;
 	}
 
 	@Override
-	public <T extends CtTryWithResource> T setResources(List<? extends CtCodeElement> resources) {
+	public <T extends CtTryWithResource> T setResources(List<? extends CtResource<?>> resources) {
 		if (resources == null || resources.isEmpty()) {
 			this.resources = CtElementImpl.emptyList();
 			return (T) this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TRY_RESOURCE, this.resources, new ArrayList<>(this.resources));
 		this.resources.clear();
-		for (CtCodeElement l : resources) {
+		for (CtResource<?> l : resources) {
 			addResource(l);
 		}
 		return (T) this;
 	}
 
 	@Override
-	public <T extends CtTryWithResource> T addResource(CtCodeElement resource) {
+	public <T extends CtTryWithResource> T addResource(CtResource<?> resource) {
 		if (resource == null) {
 			return (T) this;
 		}
-		if (resources == CtElementImpl.<CtCodeElement>emptyList()) {
+		if (resources == CtElementImpl.<CtResource<?>>emptyList()) {
 			resources = new ArrayList<>(RESOURCES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		resource.setParent(this);
@@ -64,8 +64,8 @@ public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResourc
 	}
 
 	@Override
-	public boolean removeResource(CtCodeElement resource) {
-		if (resources == CtElementImpl.<CtCodeElement>emptyList()) {
+	public boolean removeResource(CtResource<?> resource) {
+		if (resources == CtElementImpl.<CtResource<?>>emptyList()) {
 			return false;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TRY_RESOURCE, resources, resources.indexOf(resource), resource);

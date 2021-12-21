@@ -20,7 +20,6 @@ import spoon.reflect.code.CtBodyHolder;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtDo;
@@ -39,6 +38,7 @@ import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtRHSReceiver;
+import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -356,9 +356,9 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtTryWithResource_TRY_RESOURCE_RoleHandler extends ListHandler<CtTryWithResource, CtCodeElement> {
+	static class CtTryWithResource_TRY_RESOURCE_RoleHandler extends ListHandler<CtTryWithResource, CtResource<?>> {
 		private CtTryWithResource_TRY_RESOURCE_RoleHandler() {
-			super(CtRole.TRY_RESOURCE, CtTryWithResource.class, CtCodeElement.class);
+			super(CtRole.TRY_RESOURCE, CtTryWithResource.class, CtResource.class);
 		}
 
 		@SuppressWarnings("unchecked")
