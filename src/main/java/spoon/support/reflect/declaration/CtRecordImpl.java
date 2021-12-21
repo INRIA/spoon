@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import spoon.JLSViolation;
@@ -42,7 +43,7 @@ public class CtRecordImpl extends CtClassImpl<Object> implements CtRecord {
 	private static final String ABSTRACT_MODIFIER_ERROR =
 			"Abstract modifier is not allowed on record";
 	@MetamodelPropertyField(role = CtRole.RECORD_COMPONENT)
-	private Set<CtRecordComponent> components = new HashSet<>();
+	private Set<CtRecordComponent> components = new LinkedHashSet<>();
 
 	@Override
 	@DerivedProperty

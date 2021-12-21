@@ -1,5 +1,5 @@
 package records;
 
-public record MultiParameter(int a, int b) {
+public record MultiParameter(int first, float second) {
   
 }

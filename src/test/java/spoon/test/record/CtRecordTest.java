@@ -4,7 +4,9 @@ import static java.lang.System.lineSeparator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -61,8 +63,34 @@ public class CtRecordTest {
 		CtModel model = createModelFromPath(code);
 		assertEquals(1, model.getAllTypes().size());
 		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
-		assertEquals(2, head(records).getFields().size());
-		assertEquals(2, head(records).getMethods().size());
+
+		assertEquals(1, records.size());
+		assertEquals("public record MultiParameter(int first, float second) {}", head(records).toString());
+		
+		// test fields
+		assertEquals(
+				Arrays.asList(
+						"private final int first;", 
+						"private final float second;"
+				), 
+				head(records).getFields().stream().map(String::valueOf).collect(Collectors.toList())
+		);
+		
+		// test methods
+		assertEquals(
+				Arrays.asList(
+						"int first() {\n" +
+					    "    return first;\n" +
+					    "}", 
+						"float second() {\n" +
+					    "    return second;\n" +
+					    "}"
+				),
+				head(records).getMethods().stream()
+						.map(String::valueOf)
+						.map(s -> s.replaceAll("\\R", "\n")) // fix newlines on windows
+						.collect(Collectors.toList())
+		);
 	}
 
 	@Test
