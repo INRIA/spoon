@@ -14,5 +14,5 @@ import spoon.reflect.declaration.CtTypedElement;
  * @param <T>
  *     The type of the resource.
  */
-public interface CtResource <T> extends CtTypedElement<T>, CtCodeElement {
+public interface CtResource<T> extends CtTypedElement<T>, CtCodeElement {
 }
