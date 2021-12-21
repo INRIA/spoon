@@ -1782,7 +1782,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (tryWithResource.getResources() != null && !tryWithResource.getResources().isEmpty()) {
 			elementPrinterHelper.printList(tryWithResource.getResources(),
 				null, false, "(", false, false, ";", false, false, ")",
-					r -> scan(r));
+				r -> scan(r));
 		}
 		printer.writeSpace();
 		scan(tryWithResource.getBody());

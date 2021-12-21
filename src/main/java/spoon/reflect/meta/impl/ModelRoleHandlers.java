@@ -356,7 +356,7 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtTryWithResource_TRY_RESOURCE_RoleHandler extends ListHandler<CtTryWithResource, CtResource<?>> {
+	static class CtTryWithResource_TRY_RESOURCE_RoleHandler extends ListHandler<CtTryWithResource, CtResource<? extends Object>> {
 		private CtTryWithResource_TRY_RESOURCE_RoleHandler() {
 			super(CtRole.TRY_RESOURCE, CtTryWithResource.class, CtResource.class);
 		}
