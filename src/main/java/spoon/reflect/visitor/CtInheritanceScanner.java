@@ -287,6 +287,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	/**
 	 * Scans an abstract resource in try-with-resource statement.
+	 * @param resource The resource
 	 */
 	public void scanCtResource(CtResource<?> resource) {
 
