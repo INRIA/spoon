@@ -120,6 +120,7 @@ import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.PrintingContext.Writable;
 import spoon.reflect.visitor.printer.CommentOffset;
+import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.support.util.ModelList;
 
 import java.lang.annotation.Annotation;
@@ -781,20 +782,28 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.visitCtNamedElement(f, sourceCompilationUnit);
 		elementPrinterHelper.writeModifiers(f);
 		if (f.getType() instanceof CtArrayTypeReference<?>) {
-			try(Writable unused = context.modify().skipArray(shouldSquareBracketBeSkipped((CtArrayTypeReference<?>) f.getType(), "TYPE"))) {
+			try(Writable unused = context.modify()
+					.skipArray(shouldSquareBracketBeSkipped(
+							(CtArrayTypeReference<?>) f.getType(),
+							CtArrayTypeReferenceImpl.DeclarationKind.TYPE))) {
 				scan(f.getType());
 			}
 		} else {
 			scan(f.getType());
 		}
+
 		printer.writeSpace();
 		printer.writeIdentifier(f.getSimpleName());
 
 		if (f.getType() instanceof CtArrayTypeReference<?>) {
-			try(Writable unused = context.modify().skipArray(shouldSquareBracketBeSkipped((CtArrayTypeReference<?>) f.getType(), "IDENTIFIER"))) {
-				printBracketsIfRequired((CtArrayTypeReference<?>) f.getType());
+			try(Writable unused = context.modify()
+					.skipArray(shouldSquareBracketBeSkipped(
+							(CtArrayTypeReference<?>) f.getType(),
+							CtArrayTypeReferenceImpl.DeclarationKind.IDENTIFIER))) {
+				printSquareBrackets((CtArrayTypeReference<?>) f.getType());
 			}
 		}
+
 		if (f.getDefaultExpression() != null) {
 			printer.writeSpace().writeOperator("=").writeSpace();
 			scan(f.getDefaultExpression());
@@ -803,11 +812,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.writeComment(f, CommentOffset.AFTER);
 	}
 
-	private boolean shouldSquareBracketBeSkipped(CtArrayTypeReference<?> arrayTypeReference,String declarationStyle) {
-		return !arrayTypeReference.getMetadata("DECLARATION_STYLE").equals(declarationStyle);
+	private boolean shouldSquareBracketBeSkipped(
+			CtArrayTypeReference<?> arrayTypeReference,
+			CtArrayTypeReferenceImpl.DeclarationKind declarationStyle) {
+		return ((CtArrayTypeReferenceImpl<?>) arrayTypeReference).getDeclarationKind() != declarationStyle;
 	}
 
-	private void printBracketsIfRequired(CtArrayTypeReference<?> arrayTypeReference) {
+	private void printSquareBrackets(CtArrayTypeReference<?> arrayTypeReference) {
 		if (!context.skipArray()) {
 			for (int i=0; i<arrayTypeReference.getDimensionCount(); ++i) {
 				printer.writeSeparator("[").writeSeparator("]");
@@ -1409,7 +1420,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				getPrinterTokenWriter().writeKeyword("var");
 			} else {
 				if (localVariable.getType() instanceof CtArrayTypeReference<?>) {
-					try(Writable unused = context.modify().skipArray(shouldSquareBracketBeSkipped((CtArrayTypeReference<?>) localVariable.getType(), "TYPE"))) {
+					try(Writable unused = context.modify()
+							.skipArray(
+									shouldSquareBracketBeSkipped(
+											(CtArrayTypeReference<?>) localVariable.getType(),
+											CtArrayTypeReferenceImpl.DeclarationKind.TYPE))) {
 						scan(localVariable.getType());
 					}
 				} else {
@@ -1420,8 +1435,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		printer.writeIdentifier(localVariable.getSimpleName());
 		if (localVariable.getType() instanceof CtArrayTypeReference<?>) {
-			try(Writable unused = context.modify().skipArray(shouldSquareBracketBeSkipped((CtArrayTypeReference<?>) localVariable.getType(), "IDENTIFIER"))) {
-				printBracketsIfRequired((CtArrayTypeReference<?>) localVariable.getType());
+			try(Writable unused = context.modify()
+					.skipArray(
+							shouldSquareBracketBeSkipped(
+									(CtArrayTypeReference<?>) localVariable.getType(),
+									CtArrayTypeReferenceImpl.DeclarationKind.IDENTIFIER))) {
+				printSquareBrackets((CtArrayTypeReference<?>) localVariable.getType());
 			}
 		}
 		if (localVariable.getDefaultExpression() != null) {

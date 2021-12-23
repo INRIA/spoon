@@ -126,4 +126,31 @@ public class CtArrayTypeReferenceImpl<T> extends CtTypeReferenceImpl<T> implemen
 		}
 		return this;
 	}
+
+	public enum DeclarationKind {
+		/**
+		 * Brackets are after type.
+		 * int[] array;
+		 */
+		TYPE,
+
+		/**
+		 * Brackets are after identifier.
+		 * int array[];
+		 */
+		IDENTIFIER,
+
+		// We do not consider declarations where square brackets are after type _and_ identifier.
+		// For example, int[] array[]. See https://github.com/INRIA/spoon/issues/4315#issuecomment-991894796.
+	}
+
+	public <C extends CtArrayTypeReference<T>> C setDeclarationKind(DeclarationKind declarationKind) {
+		this.putMetadata(DeclarationKind.class.getSimpleName(), declarationKind);
+		return (C) this;
+	}
+
+	public DeclarationKind getDeclarationKind() {
+		DeclarationKind kind = (DeclarationKind) this.getMetadata(DeclarationKind.class.getSimpleName());
+		return kind;
+	}
 }

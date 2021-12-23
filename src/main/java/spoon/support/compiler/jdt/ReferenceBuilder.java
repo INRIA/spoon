@@ -226,9 +226,6 @@ public class ReferenceBuilder {
 			this.jdtTreeBuilder.getContextBuilder().exit(type);
 			currentReference = currentReference.getDeclaringType();
 		}
-		if (typeReference instanceof CtArrayTypeReference<?> && (type instanceof ArrayTypeReference || type instanceof ArrayQualifiedTypeReference)) {
-			typeReference.putMetadata("DECLARATION_STYLE", getDeclarationStyle(type));
-		}
 		//detect whether something is implicit
 		if (type instanceof SingleTypeReference) {
 			typeReference.setSimplyQualified(true);
@@ -236,16 +233,6 @@ public class ReferenceBuilder {
 			jdtTreeBuilder.getHelper().handleImplicit((QualifiedTypeReference) type, typeReference);
 		}
 		return typeReference;
-	}
-
-	private String getDeclarationStyle(ASTNode arrayReferenceNode) {
-		int sourceStart = arrayReferenceNode.sourceStart();
-		int sourceEnd = arrayReferenceNode.sourceEnd();
-
-		if (arrayReferenceNode.toString().length() > sourceEnd - sourceStart + 1) {
-			return "IDENTIFIER";
-		}
-		return "TYPE";
 	}
 
 	private CtTypeReference<?> getTypeReferenceOfArrayComponent(CtTypeReference<?> currentReference) {
