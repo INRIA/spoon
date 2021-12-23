@@ -98,7 +98,7 @@ public class CtRecordTest {
 		Collection<CtRecord> records = model.getElements(new TypeFilter<>(CtRecord.class));
 		assertTrue(records.iterator().next().getConstructors().iterator().next().isCompactConstructor());
 		String correctConstructor =
-			"Rational {" + lineSeparator()
+			"public CompactConstructor {" + lineSeparator()
 		+	"    int gcd = records.Rational.gcd(num, denom);" + lineSeparator()
 		+	"    num /= gcd;" + lineSeparator()
 		+	"    denom /= gcd;" + lineSeparator()
