@@ -1707,6 +1707,7 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 
 			/*
 			Set<CtType> unusedKeys = new HashSet<>(unusedImports.keySet());
+
 			for (CtType type : unusedKeys) {
 				System.err.println(type.getQualifiedName());
 				if (unusedImports.containsKey(type)) {
