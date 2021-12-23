@@ -78,7 +78,7 @@ public class CommentHelper {
 	static void printCommentContent(PrinterHelper printer, CtComment comment, Function<String, String> transfo) {
 		CtComment.CommentType commentType = comment.getCommentType();
 		String content = comment.getContent();
-		
+
 		String[] lines = content.lines().toArray(String[]::new);
 		for (String com : lines) {
 			if (commentType == CtComment.CommentType.BLOCK) {
