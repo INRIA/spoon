@@ -979,6 +979,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			CtTypeReference<?> arrayType = ((CtArrayTypeReference) typeAccess.getAccessedType()).getArrayType();
 			arrayType.setAnnotations(this.references.buildTypeReference(arrayTypeReference, scope).getAnnotations());
 			arrayType.setSimplyQualified(true);
+			typeAccess.getAccessedType().putMetadata("DECLARATION_STYLE", getDeclarationStyle(arrayTypeReference));
 		}
 		context.enter(typeAccess, arrayTypeReference);
 		return true;
@@ -1000,6 +1001,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		if (arrayType != null) {
 			arrayType.getArrayType().setAnnotations(this.references.buildTypeReference(arrayQualifiedTypeReference, scope).getAnnotations());
+			arrayType.putMetadata("DECLARATION_STYLE", getDeclarationStyle(arrayQualifiedTypeReference));
 		}
 
 		return true;
@@ -1461,9 +1463,6 @@ public class JDTTreeBuilder extends ASTVisitor {
 		}
 		CtTypeReference typeReference = references.buildTypeReference(parameterizedTypeReference, null);
 		CtTypeAccess typeAccess = factory.Code().createTypeAccessWithoutCloningReference(typeReference);
-		if (typeAccess instanceof CtArrayTypeReference<?>) {
-			typeAccess.putMetadata("DECLARATION_STYLE", getDeclarationStyle(parameterizedTypeReference));
-		}
 		context.enter(typeAccess, parameterizedTypeReference);
 		return true;
 	}

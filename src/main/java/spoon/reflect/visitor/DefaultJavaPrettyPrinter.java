@@ -780,11 +780,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.writeComment(f, CommentOffset.BEFORE);
 		elementPrinterHelper.visitCtNamedElement(f, sourceCompilationUnit);
 		elementPrinterHelper.writeModifiers(f);
-		scan(f.getType());
+		if (f.getType() instanceof CtArrayTypeReference<?>) {
+			try(Writable unused = context.modify().skipArray(shouldSquareBracketBeSkipped((CtArrayTypeReference<?>) f.getType(), "TYPE"))) {
+				scan(f.getType());
+			}
+		} else {
+			scan(f.getType());
+		}
 		printer.writeSpace();
 		printer.writeIdentifier(f.getSimpleName());
+
 		if (f.getType() instanceof CtArrayTypeReference<?>) {
-			printBracketsIfRequired(( CtArrayTypeReference<?>) f.getType());
+			try(Writable unused = context.modify().skipArray(shouldSquareBracketBeSkipped((CtArrayTypeReference<?>) f.getType(), "IDENTIFIER"))) {
+				printBracketsIfRequired((CtArrayTypeReference<?>) f.getType());
+			}
 		}
 		if (f.getDefaultExpression() != null) {
 			printer.writeSpace().writeOperator("=").writeSpace();
@@ -794,8 +803,12 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.writeComment(f, CommentOffset.AFTER);
 	}
 
+	private boolean shouldSquareBracketBeSkipped(CtArrayTypeReference<?> arrayTypeReference,String declarationStyle) {
+		return !arrayTypeReference.getMetadata("DECLARATION_STYLE").equals(declarationStyle);
+	}
+
 	private void printBracketsIfRequired(CtArrayTypeReference<?> arrayTypeReference) {
-		if (arrayTypeReference.getMetadata("DECLARATION_STYLE").equals("IDENTIFIER")) {
+		if (!context.skipArray()) {
 			for (int i=0; i<arrayTypeReference.getDimensionCount(); ++i) {
 				printer.writeSeparator("[").writeSeparator("]");
 			}
@@ -1395,13 +1408,21 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			if (localVariable.isInferred() && this.env.getComplianceLevel() >= 10) {
 				getPrinterTokenWriter().writeKeyword("var");
 			} else {
-				scan(localVariable.getType());
+				if (localVariable.getType() instanceof CtArrayTypeReference<?>) {
+					try(Writable unused = context.modify().skipArray(shouldSquareBracketBeSkipped((CtArrayTypeReference<?>) localVariable.getType(), "TYPE"))) {
+						scan(localVariable.getType());
+					}
+				} else {
+					scan(localVariable.getType());
+				}
 			}
 			printer.writeSpace();
 		}
 		printer.writeIdentifier(localVariable.getSimpleName());
 		if (localVariable.getType() instanceof CtArrayTypeReference<?>) {
-			printBracketsIfRequired(( CtArrayTypeReference<?>) localVariable.getType());
+			try(Writable unused = context.modify().skipArray(shouldSquareBracketBeSkipped((CtArrayTypeReference<?>) localVariable.getType(), "IDENTIFIER"))) {
+				printBracketsIfRequired((CtArrayTypeReference<?>) localVariable.getType());
+			}
 		}
 		if (localVariable.getDefaultExpression() != null) {
 			printer.writeSpace().writeOperator("=").writeSpace();
