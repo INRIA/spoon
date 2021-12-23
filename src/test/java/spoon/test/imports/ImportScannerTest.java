@@ -57,6 +57,7 @@ public class ImportScannerTest {
 	@Test
 	public void testImportOnSpoon() throws IOException {
 		assumeNotWindows(); // FIXME Make test case pass on Windows
+
 		File targetDir = new File("./target/import-test");
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/main/java/spoon/");
