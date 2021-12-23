@@ -782,7 +782,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.visitCtNamedElement(f, sourceCompilationUnit);
 		elementPrinterHelper.writeModifiers(f);
 		if (f.getType() instanceof CtArrayTypeReference<?>) {
-			try(Writable unused = context.modify()
+			try (Writable unused = context.modify()
 					.skipArray(shouldSquareBracketBeSkipped(
 							(CtArrayTypeReference<?>) f.getType(),
 							CtArrayTypeReferenceImpl.DeclarationKind.TYPE))) {
@@ -796,7 +796,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		printer.writeIdentifier(f.getSimpleName());
 
 		if (f.getType() instanceof CtArrayTypeReference<?>) {
-			try(Writable unused = context.modify()
+			try (Writable unused = context.modify()
 					.skipArray(shouldSquareBracketBeSkipped(
 							(CtArrayTypeReference<?>) f.getType(),
 							CtArrayTypeReferenceImpl.DeclarationKind.IDENTIFIER))) {
@@ -820,7 +820,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	private void printSquareBrackets(CtArrayTypeReference<?> arrayTypeReference) {
 		if (!context.skipArray()) {
-			for (int i=0; i<arrayTypeReference.getDimensionCount(); ++i) {
+			for (int i = 0; i < arrayTypeReference.getDimensionCount(); ++i) {
 				printer.writeSeparator("[").writeSeparator("]");
 			}
 		}
@@ -1420,7 +1420,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				getPrinterTokenWriter().writeKeyword("var");
 			} else {
 				if (localVariable.getType() instanceof CtArrayTypeReference<?>) {
-					try(Writable unused = context.modify()
+					try (Writable unused = context.modify()
 							.skipArray(
 									shouldSquareBracketBeSkipped(
 											(CtArrayTypeReference<?>) localVariable.getType(),
@@ -1435,7 +1435,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 		printer.writeIdentifier(localVariable.getSimpleName());
 		if (localVariable.getType() instanceof CtArrayTypeReference<?>) {
-			try(Writable unused = context.modify()
+			try (Writable unused = context.modify()
 					.skipArray(
 							shouldSquareBracketBeSkipped(
 									(CtArrayTypeReference<?>) localVariable.getType(),
