@@ -603,4 +603,26 @@ public class PrinterTest {
 
 		assertTrue(FileUtils.readFileToString(new File("spooned/HelloWorld.java"), "UTF-8").contains("  class"));
 	}
+
+	
+	@Test
+	public void testTypeLostPrintingStringClassReference() {
+		// contract: when a class reference is printed, the type is not lost
+		CtType<?> type = Launcher.parseClass("class A { void m() { Stream.empy().map(v-> String.class).close(); } }");
+		assertTrue("Result does not contain 'String.class', String.class should be printed instead of .class only", type.toString().contains("String.class"));
+	}
+
+	@Test
+	public void testTypeLostPrintingListClassReference() {
+		// contract: when a class reference is printed, the type is not lost
+		CtType<?> type = Launcher.parseClass("class A { void m() { Stream.empy().map(v-> List.class).close(); } }");
+		assertTrue("Result does not contain 'List.class', String.class should be printed instead of .class only", type.toString().contains("List.class"));
+	}
+
+	@Test
+	public void testTypeLostPrintingFQListClassReference() {
+		// contract: when a class reference is printed, the type is not lost
+		CtType<?> type = Launcher.parseClass("class A { void m() { Stream.empy().map(v-> java.util.List.class).close(); } }");
+		assertTrue("Result does not contain 'List.class', List.class should be printed instead of .class only", type.toString().contains("List.class"));
+	}
 }

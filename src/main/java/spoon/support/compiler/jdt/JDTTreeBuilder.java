@@ -1074,7 +1074,12 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 	@Override
 	public boolean visit(ClassLiteralAccess classLiteral, BlockScope scope) {
-		context.enter(factory.Code().createClassAccess(references.getTypeReference(classLiteral.targetType)), classLiteral);
+		if(classLiteral.targetType == null) {
+			// fix for issue #4350. 
+			context.enter(factory.Code().createClassAccess(references.getTypeReference(classLiteral.type)), classLiteral);
+		} else {
+			context.enter(factory.Code().createClassAccess(references.getTypeReference(classLiteral.targetType)), classLiteral);
+		}
 		return false;
 	}
 
