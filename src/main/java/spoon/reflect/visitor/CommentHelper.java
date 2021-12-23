@@ -14,7 +14,6 @@ import spoon.support.Internal;
 
 import java.util.Collection;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 
 /**
  * Computes source code representation of the Comment literal
@@ -22,10 +21,6 @@ import java.util.regex.Pattern;
 @Internal
 public class CommentHelper {
 
-	/**
-	 * RegExp which matches all possible line separators
-	 */
-	private static final Pattern LINE_SEPARATORS_RE = Pattern.compile("\\n\\r|\\n|\\r");
 
 	private CommentHelper() {
 	}
@@ -83,7 +78,8 @@ public class CommentHelper {
 	static void printCommentContent(PrinterHelper printer, CtComment comment, Function<String, String> transfo) {
 		CtComment.CommentType commentType = comment.getCommentType();
 		String content = comment.getContent();
-		String[] lines = LINE_SEPARATORS_RE.split(content);
+		
+		String[] lines = content.lines().toArray(String[]::new);
 		for (String com : lines) {
 			if (commentType == CtComment.CommentType.BLOCK) {
 				printer.write(com);
@@ -113,7 +109,7 @@ public class CommentHelper {
 			printer.write(docTag.getParam()).writeln();
 		}
 
-		String[] tagLines = LINE_SEPARATORS_RE.split(docTag.getContent());
+		String[] tagLines = docTag.getContent().lines().toArray(String[]::new);
 		for (int i = 0; i < tagLines.length; i++) {
 			String com = tagLines[i];
 			if (docTag.getType().hasParam()) {
