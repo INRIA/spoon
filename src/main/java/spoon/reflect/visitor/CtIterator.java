@@ -11,7 +11,9 @@ import spoon.reflect.declaration.CtElement;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * A class to be able to iterate over the children elements in the tree of a given node, in depth-first order.
@@ -20,16 +22,16 @@ public class CtIterator extends CtScanner implements Iterator<CtElement> {
 	/**
 	 * A deque containing the elements the iterator has seen but not expanded
 	 */
-	private ArrayDeque<CtElement> deque = new ArrayDeque<CtElement>() {
+	private Deque<CtElement> deque = new ArrayDeque<CtElement>() {
 		/**
 		 * add a collection of elements with addFirst instead of default add() which defaults to addLast()
 		 * @param c Collection of CtElements
 		 * @return true if this deque has changed, in accordance with original method
 		 */
 		@Override
-		public boolean addAll(Collection c) {
-			for (Object aC : c) {
-				this.addFirst((CtElement) aC);
+		public boolean addAll(Collection<? extends CtElement> c) {
+			for (CtElement aC : c) {
+				this.addFirst(aC);
 			}
 			return !c.isEmpty();
 		}
@@ -38,7 +40,7 @@ public class CtIterator extends CtScanner implements Iterator<CtElement> {
 	/**
 	 * A deque to be used when scanning an element so that @deque preserves the elements in dfs without complete expansion
 	 */
-	private ArrayDeque<CtElement> current_children = new ArrayDeque<>();
+	private ArrayDeque<CtElement> currentChildren = new ArrayDeque<>();
 
 	/**
 	 * CtIterator constructor, prepares the iterator from the @root node
@@ -59,7 +61,7 @@ public class CtIterator extends CtScanner implements Iterator<CtElement> {
 	@Override
 	public void scan(CtElement element) {
 		if (element != null) {
-			current_children.addFirst(element);
+			currentChildren.addFirst(element);
 		}
 	}
 
@@ -76,12 +78,12 @@ public class CtIterator extends CtScanner implements Iterator<CtElement> {
 	@Override
 	public CtElement next() {
 		if (!hasNext()) {
-			throw new java.util.NoSuchElementException();
+			throw new NoSuchElementException();
 		}
 		CtElement next = deque.pollFirst(); // get the element to expand from the deque
-		current_children.clear(); // clear for this scan
+		currentChildren.clear(); // clear for this scan
 		next.accept(this); // call @scan for each direct child of the node
-		deque.addAll(current_children); // overridden method to add all to first
+		deque.addAll(currentChildren); // overridden method to add all to first
 		return next;
 	}
 }
