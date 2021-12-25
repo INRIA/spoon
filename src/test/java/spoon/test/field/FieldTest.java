@@ -19,7 +19,6 @@ package spoon.test.field;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -27,8 +26,8 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
@@ -45,6 +44,7 @@ import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.test.field.testclasses.A;
 import spoon.test.field.testclasses.AddFieldAtTop;
 import spoon.test.field.testclasses.BaseClass;
+import spoon.testing.utils.LineSeperatorExtension;
 
 public class FieldTest {
 
@@ -191,8 +191,8 @@ public class FieldTest {
 	}
 
 	@Test
+	@ExtendWith(LineSeperatorExtension.class)
 	public void bugAfterRefactoringImports() {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		Launcher launcher = new Launcher();
 		Factory factory = launcher.getFactory();
 		final CtClass<?> klass = factory.createClass("foo.A");

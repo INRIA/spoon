@@ -32,8 +32,9 @@ import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.MavenLauncher;
 import spoon.SpoonException;
@@ -65,6 +66,7 @@ import spoon.support.compiler.SpoonPom;
 import spoon.test.imports.ImportTest;
 import spoon.test.prettyprinter.testclasses.AClass;
 import spoon.test.prettyprinter.testclasses.ClassUsingStaticMethod;
+import spoon.testing.utils.LineSeperatorExtension;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
@@ -86,7 +88,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class DefaultPrettyPrinterTest {
@@ -454,8 +455,8 @@ public class DefaultPrettyPrinterTest {
 	}
 
 	@Test
+	@ExtendWith(LineSeperatorExtension.class)
 	public void testElseIf() {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: else if statements should be printed without break else and if
 		Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/resources/noclasspath/A6.java");
@@ -482,7 +483,7 @@ public class DefaultPrettyPrinterTest {
 	 * used as unit test.
 	 * Note that this test can be reused to check the compliance of any pretty printer with any set of styling rules.
 	*/
-	@Ignore // ignored as long as 1) it is too long 2) we don't implement a SpoonCompliantPrettyPrinter
+	@Disabled // disabled as long as 1) it is too long 2) we don't implement a SpoonCompliantPrettyPrinter
 	@Test
 	public void testCheckstyleCompliance() throws IOException, XmlPullParserException {
 		File tmpDir = new File("./target/tmp-checkstyle");
