@@ -37,6 +37,7 @@ import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.security.AccessControlException;
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class ImportScannerTest {
 			outputProcessor.createJavaFile(ctType);
 			assertEquals(1, outputProcessor.getCreatedFiles().size());
 
-			List<String> content = Files.readAllLines(outputProcessor.getCreatedFiles().get(0).toPath());
+			List<String> content = Files.readAllLines(outputProcessor.getCreatedFiles().get(0).toPath(), Charset.defaultCharset());
 
 			for (String computedImport : content) {
 				if (computedImport.startsWith("import")) {
