@@ -49,15 +49,12 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class ImportScannerTest {
 
 	@Test
 	public void testImportOnSpoon() throws IOException {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
-
 		File targetDir = new File("./target/import-test");
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/main/java/spoon/");
