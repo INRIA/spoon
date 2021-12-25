@@ -26,8 +26,10 @@ import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -36,8 +38,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.Before;
-import org.junit.After;
 
 import spoon.IncrementalLauncher;
 import spoon.reflect.CtModel;
@@ -64,12 +64,17 @@ public class IncrementalLauncherTest {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		// We dont have a teardown method because on windows cleaning dirs in use is not allowed.
-		// The OS will clean them up for us.
 		workingDir = Files.createTempDirectory("workingDir").toFile();
 		cacheDir = Files.createTempDirectory(workingDir.toPath(), "cache").toFile();
 	}
-
+	@AfterEach
+	public void tearDown() throws Exception {
+		// FileUtils.deleteDirectory(workingDir) or other util methods fail to delete the directory on Windows
+    Files.walk(workingDir.toPath())
+      .sorted(Comparator.reverseOrder())
+      .map(Path::toFile)
+      .forEach(File::delete);
+	}
 	private CtType<?> getTypeByName(Collection<CtType<?>> types, String name) {
 		return types.stream().filter(t -> t.getSimpleName().equals(name)).findFirst().get();
 	}
