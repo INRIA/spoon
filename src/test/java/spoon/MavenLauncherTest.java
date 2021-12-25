@@ -29,8 +29,7 @@ import spoon.support.compiler.SpoonPom;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +39,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
 public class MavenLauncherTest {
 
@@ -139,11 +137,10 @@ public class MavenLauncherTest {
 
 	@Test
 	public void testSystemDependency() {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		//contract: scope dependencies are added to classpath
 		MavenLauncher launcher = new MavenLauncher("./src/test/resources/maven-launcher/system-dependency", MavenLauncher.SOURCE_TYPE.ALL_SOURCE);
 		assertEquals(1, launcher.getEnvironment().getSourceClasspath().length);
-		assertTrue(launcher.getEnvironment().getSourceClasspath()[0].endsWith("lib/bridge-method-annotation-1.13.jar"));
+		assertTrue(Path.of(launcher.getEnvironment().getSourceClasspath()[0]).endsWith(Path.of("lib/bridge-method-annotation-1.13.jar")));
 	}
 
 	@Test
