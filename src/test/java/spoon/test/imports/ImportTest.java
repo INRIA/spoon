@@ -79,6 +79,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1618,7 +1619,7 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 			outputProcessor.createJavaFile(ctType);
 			assertEquals(1, outputProcessor.getCreatedFiles().size());
 
-			List<String> content = Files.readAllLines(outputProcessor.getCreatedFiles().get(0).toPath());
+			List<String> content = Files.readAllLines(outputProcessor.getCreatedFiles().get(0).toPath(), Charset.defaultCharset());
 
 			for (String computedImport : content) {
 				if (computedImport.startsWith("import")) {
