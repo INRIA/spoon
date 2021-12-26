@@ -7,13 +7,13 @@
  */
 package spoon.reflect.visitor;
 
+import java.util.Collection;
+import java.util.function.Function;
+import java.util.stream.Stream;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.support.Internal;
-
-import java.util.Collection;
-import java.util.function.Function;
 
 /**
  * Computes source code representation of the Comment literal
@@ -82,7 +82,7 @@ public class CommentHelper {
 		content.lines().forEach(line -> {
 			if (commentType == CtComment.CommentType.BLOCK) {
 				printer.write(line);
-				if (content.lines().count() > 1) {
+				if (hasMoreThanOneElement(content.lines())) {
 					printer.write(CtComment.LINE_SEPARATOR);
 				}
 			} else {
@@ -98,6 +98,15 @@ public class CommentHelper {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Checks if the given stream has more than one element.
+	 * @param stream  the stream to check
+	 * @return  true if the stream has more than one element, false otherwise.
+	 */
+	private static boolean hasMoreThanOneElement(Stream<?> stream) {
+		return stream.skip(1).findAny().isPresent();
 	}
 
 	static void printJavaDocTag(PrinterHelper printer, CtJavaDocTag docTag, Function<String, String> transfo) {
