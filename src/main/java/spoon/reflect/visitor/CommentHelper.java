@@ -79,17 +79,16 @@ public class CommentHelper {
 		CtComment.CommentType commentType = comment.getCommentType();
 		String content = comment.getContent();
 
-		String[] lines = content.lines().toArray(String[]::new);
-		for (String com : lines) {
+		content.lines().forEach(line -> {
 			if (commentType == CtComment.CommentType.BLOCK) {
-				printer.write(com);
-				if (lines.length > 1) {
+				printer.write(line);
+				if (content.lines().count() > 1) {
 					printer.write(CtComment.LINE_SEPARATOR);
 				}
 			} else {
-				printer.write(transfo.apply(com)).writeln(); // removing spaces at the end of the space
+				printer.write(transfo.apply(line)).writeln(); // removing spaces at the end of the space
 			}
-		}
+		});
 		if (comment instanceof CtJavaDoc) {
 			Collection<CtJavaDocTag> javaDocTags = ((CtJavaDoc) comment).getTags();
 			if (javaDocTags != null && javaDocTags.isEmpty() == false) {
@@ -109,13 +108,11 @@ public class CommentHelper {
 			printer.write(docTag.getParam()).writeln();
 		}
 
-		String[] tagLines = docTag.getContent().lines().toArray(String[]::new);
-		for (int i = 0; i < tagLines.length; i++) {
-			String com = tagLines[i];
+		docTag.getContent().lines().forEach(com -> {
 			if (docTag.getType().hasParam()) {
 				printer.write(transfo.apply("\t\t"));
 			}
 			printer.write(com.trim()).writeln();
-		}
+		});
 	}
 }
