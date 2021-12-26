@@ -70,10 +70,10 @@ public class IncrementalLauncherTest {
 	@AfterEach
 	public void tearDown() throws Exception {
 		// FileUtils.deleteDirectory(workingDir) or other util methods fail to delete the directory on Windows
-    Files.walk(workingDir.toPath())
-      .sorted(Comparator.reverseOrder())
-      .map(Path::toFile)
-      .forEach(File::delete);
+		Files.walk(workingDir.toPath())
+				.sorted(Comparator.reverseOrder())
+				.map(Path::toFile)
+				.forEach(File::delete);
 	}
 	private CtType<?> getTypeByName(Collection<CtType<?>> types, String name) {
 		return types.stream().filter(t -> t.getSimpleName().equals(name)).findFirst().get();
