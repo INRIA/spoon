@@ -37,6 +37,7 @@ import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.security.AccessControlException;
 import java.util.ArrayList;
@@ -49,15 +50,12 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class ImportScannerTest {
 
 	@Test
 	public void testImportOnSpoon() throws IOException {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
-
 		File targetDir = new File("./target/import-test");
 		Launcher spoon = new Launcher();
 		spoon.addInputResource("./src/main/java/spoon/");
@@ -94,7 +92,7 @@ public class ImportScannerTest {
 			outputProcessor.createJavaFile(ctType);
 			assertEquals(1, outputProcessor.getCreatedFiles().size());
 
-			List<String> content = Files.readAllLines(outputProcessor.getCreatedFiles().get(0).toPath());
+			List<String> content = Files.readAllLines(outputProcessor.getCreatedFiles().get(0).toPath(), Charset.defaultCharset());
 
 			for (String computedImport : content) {
 				if (computedImport.startsWith("import")) {

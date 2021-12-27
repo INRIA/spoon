@@ -25,16 +25,19 @@ import static spoon.test.SpoonTestHelpers.assumeNotWindows;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import spoon.IncrementalLauncher;
 import spoon.reflect.CtModel;
@@ -49,28 +52,47 @@ public class IncrementalLauncherTest {
 	final File RESOURCES_DIR = new File("./src/test/resources/incremental");
 	final File ORIGINAL_FILES_DIR = new File(RESOURCES_DIR, "original-files");
 	final File CHANGED_FILES_DIR = new File(RESOURCES_DIR, "changed-files");
-	final File WORKING_DIR = new File(RESOURCES_DIR, "temp");
-	final File CACHE_DIR = new File(WORKING_DIR, "cache");
+	/**
+	 * The directory for output files of testcases. Each testcase gets a new one created.
+	 */
+	File workingDir;
+	/**
+	 * The directory where the incremental launcher will cache the generated files.
+	 * Each testcase gets a new one created.
+	 */
+	File cacheDir; 
 
+	@BeforeEach
+	public void setUp() throws Exception {
+		workingDir = Files.createTempDirectory("workingDir").toFile();
+		cacheDir = Files.createTempDirectory(workingDir.toPath(), "cache").toFile();
+	}
+	@AfterEach
+	public void tearDown() throws Exception {
+		// FileUtils.deleteDirectory(workingDir) or other util methods fail to delete the directory on Windows
+		Files.walk(workingDir.toPath())
+				.sorted(Comparator.reverseOrder())
+				.map(Path::toFile)
+				.forEach(File::delete);
+	}
 	private CtType<?> getTypeByName(Collection<CtType<?>> types, String name) {
 		return types.stream().filter(t -> t.getSimpleName().equals(name)).findFirst().get();
 	}
 
 	@Test
 	public void testCache() throws IOException {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// Build model from A.java, B.java, C.java, D.java, and then load the same model from cache several times.
-		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, WORKING_DIR);
+		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, workingDir);
 
-		Set<File> inputResources = Collections.singleton(WORKING_DIR);
+		Set<File> inputResources = Collections.singleton(workingDir);
 		Set<String> sourceClasspath = Collections.emptySet();
 
-		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, cacheDir);
 		assertTrue(launcher1.changesPresent());
 		CtModel originalModel = launcher1.buildModel();
 		launcher1.saveCache();
 
-		IncrementalLauncher launcher2 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+		IncrementalLauncher launcher2 = new IncrementalLauncher(inputResources, sourceClasspath, cacheDir);
 
 		assertFalse(launcher2.changesPresent());
 		CtModel cachedModel = launcher2.buildModel();
@@ -78,7 +100,7 @@ public class IncrementalLauncherTest {
 
 		assertTrue(originalModel.getAllTypes().equals(cachedModel.getAllTypes()));
 
-		IncrementalLauncher launcher3 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+		IncrementalLauncher launcher3 = new IncrementalLauncher(inputResources, sourceClasspath, cacheDir);
 		assertFalse(launcher3.changesPresent());
 		CtModel cachedCachedModel = launcher3.buildModel();
 		launcher3.saveCache();
@@ -94,23 +116,22 @@ public class IncrementalLauncherTest {
 
 	@Test
 	public void testIncremental1() throws IOException, InterruptedException {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// Build model from A.java, B.java, C.java, D.java, then change D.java => load A, B, C from cache and build D.
-		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, WORKING_DIR);
+		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, workingDir);
 
-		Set<File> inputResources = Collections.singleton(WORKING_DIR);
+		Set<File> inputResources = Collections.singleton(workingDir);
 		Set<String> sourceClasspath = Collections.emptySet();
 
-		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, cacheDir);
 		assertTrue(launcher1.changesPresent());
 		CtModel originalModel = launcher1.buildModel();
 		launcher1.saveCache();
 
 		TimeUnit.MILLISECONDS.sleep(1000);
-		FileUtils.copyFile(new File(CHANGED_FILES_DIR, "D.java"), new File(WORKING_DIR, "D.java"), true);
-		FileUtils.touch(new File(WORKING_DIR, "D.java"));
+		FileUtils.copyFile(new File(CHANGED_FILES_DIR, "D.java"), new File(workingDir, "D.java"), true);
+		FileUtils.touch(new File(workingDir, "D.java"));
 
-		IncrementalLauncher launcher2 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+		IncrementalLauncher launcher2 = new IncrementalLauncher(inputResources, sourceClasspath, cacheDir);
 		assertTrue(launcher2.changesPresent());
 		CtModel newModel = launcher2.buildModel();
 		launcher2.saveCache();
@@ -141,26 +162,25 @@ public class IncrementalLauncherTest {
 
 	@Test
 	public void testIncremental2() throws IOException {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// Build model from A.java, B.java, C.java, then remove C.java and add D.java
-		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, WORKING_DIR);
+		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, workingDir);
 
 		Set<File> inputResources = new HashSet<>();
-		inputResources.add(new File(WORKING_DIR, "A.java"));
-		inputResources.add(new File(WORKING_DIR, "B.java"));
-		inputResources.add(new File(WORKING_DIR, "C.java"));
+		inputResources.add(new File(workingDir, "A.java"));
+		inputResources.add(new File(workingDir, "B.java"));
+		inputResources.add(new File(workingDir, "C.java"));
 		Set<String> sourceClasspath = Collections.emptySet();
 
-		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, cacheDir);
 		assertTrue(launcher1.changesPresent());
 		CtModel originalModel = launcher1.buildModel();
 		launcher1.saveCache();
 		assertTrue(originalModel.getAllTypes().size() == 3);
 
 		inputResources.removeIf(f -> "C.java".equals(f.getName()));
-		inputResources.add(new File(WORKING_DIR, "D.java"));
+		inputResources.add(new File(workingDir, "D.java"));
 
-		IncrementalLauncher launcher2 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+		IncrementalLauncher launcher2 = new IncrementalLauncher(inputResources, sourceClasspath, cacheDir);
 		assertTrue(launcher2.changesPresent());
 		CtModel newModel = launcher2.buildModel();
 		launcher2.saveCache();
@@ -182,18 +202,17 @@ public class IncrementalLauncherTest {
 
 	@Test
 	public void testIncremental3() throws IOException, InterruptedException {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// Build model from A.java, B.java, C.java, then change type of field val in C.
 		// B refers to C, so we should check reference resolution in B as well.
-		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, WORKING_DIR);
+		FileUtils.copyDirectory(ORIGINAL_FILES_DIR, workingDir);
 
 		Set<File> inputResources = new HashSet<>();
-		inputResources.add(new File(WORKING_DIR, "A.java"));
-		inputResources.add(new File(WORKING_DIR, "B.java"));
-		inputResources.add(new File(WORKING_DIR, "C.java"));
+		inputResources.add(new File(workingDir, "A.java"));
+		inputResources.add(new File(workingDir, "B.java"));
+		inputResources.add(new File(workingDir, "C.java"));
 		Set<String> sourceClasspath = Collections.emptySet();
 
-		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, cacheDir);
 		assertTrue(launcher1.changesPresent());
 		CtModel originalModel = launcher1.buildModel();
 		launcher1.saveCache();
@@ -210,10 +229,10 @@ public class IncrementalLauncherTest {
 		assertTrue("int".equals(lhs1.getType().getSimpleName()));
 
 		TimeUnit.MILLISECONDS.sleep(1000);
-		FileUtils.copyFile(new File(CHANGED_FILES_DIR, "C.java"), new File(WORKING_DIR, "C.java"), true);
-		FileUtils.touch(new File(WORKING_DIR, "C.java"));
+		FileUtils.copyFile(new File(CHANGED_FILES_DIR, "C.java"), new File(workingDir, "C.java"), true);
+		FileUtils.touch(new File(workingDir, "C.java"));
 
-		IncrementalLauncher launcher2 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+		IncrementalLauncher launcher2 = new IncrementalLauncher(inputResources, sourceClasspath, cacheDir);
 		assertTrue(launcher2.changesPresent());
 		CtModel newModel = launcher2.buildModel();
 		launcher2.saveCache();
@@ -232,25 +251,18 @@ public class IncrementalLauncherTest {
 
 	@Test
 	public void testSaveCacheIssue3404() {
-		assumeNotWindows(); // FIXME Make test case pass on Windows
 		// contract: IncrementalLauncher does not crash with classnotfound in noclasspath
 		// see isse 3404
 		Set<File> inputResources = new HashSet<>();
 		inputResources.add(new File("./src/test/resources/incremental/saveCacheIssue3404/A.java"));
 		Set<String> sourceClasspath = Collections.EMPTY_SET;
 		
-		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, CACHE_DIR);
+		IncrementalLauncher launcher1 = new IncrementalLauncher(inputResources, sourceClasspath, cacheDir);
 		launcher1.getEnvironment().setShouldCompile(false);
 		// in noclasspath we are
 		assertEquals(true, launcher1.getEnvironment().getNoClasspath());
 		assertTrue(launcher1.changesPresent());
 		launcher1.saveCache();
-	}
-
-	@Before
-	@After
-	public void cleanup() throws IOException {
-		FileUtils.deleteDirectory(WORKING_DIR);
 	}
 }
 
