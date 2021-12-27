@@ -7,14 +7,13 @@
  */
 package spoon.reflect.visitor;
 
+import java.util.Collection;
+import java.util.function.Function;
+import java.util.stream.Stream;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.support.Internal;
-
-import java.util.Collection;
-import java.util.function.Function;
-import java.util.regex.Pattern;
 
 /**
  * Computes source code representation of the Comment literal
@@ -22,10 +21,6 @@ import java.util.regex.Pattern;
 @Internal
 public class CommentHelper {
 
-	/**
-	 * RegExp which matches all possible line separators
-	 */
-	private static final Pattern LINE_SEPARATORS_RE = Pattern.compile("\\n\\r|\\n|\\r");
 
 	private CommentHelper() {
 	}
@@ -83,17 +78,17 @@ public class CommentHelper {
 	static void printCommentContent(PrinterHelper printer, CtComment comment, Function<String, String> transfo) {
 		CtComment.CommentType commentType = comment.getCommentType();
 		String content = comment.getContent();
-		String[] lines = LINE_SEPARATORS_RE.split(content);
-		for (String com : lines) {
+
+		content.lines().forEach(line -> {
 			if (commentType == CtComment.CommentType.BLOCK) {
-				printer.write(com);
-				if (lines.length > 1) {
+				printer.write(line);
+				if (hasMoreThanOneElement(content.lines())) {
 					printer.write(CtComment.LINE_SEPARATOR);
 				}
 			} else {
-				printer.write(transfo.apply(com)).writeln(); // removing spaces at the end of the space
+				printer.write(transfo.apply(line)).writeln(); // removing spaces at the end of the space
 			}
-		}
+		});
 		if (comment instanceof CtJavaDoc) {
 			Collection<CtJavaDocTag> javaDocTags = ((CtJavaDoc) comment).getTags();
 			if (javaDocTags != null && javaDocTags.isEmpty() == false) {
@@ -105,6 +100,15 @@ public class CommentHelper {
 		}
 	}
 
+	/**
+	 * Checks if the given stream has more than one element.
+	 * @param stream  the stream to check
+	 * @return  true if the stream has more than one element, false otherwise.
+	 */
+	private static boolean hasMoreThanOneElement(Stream<?> stream) {
+		return stream.skip(1).findAny().isPresent();
+	}
+
 	static void printJavaDocTag(PrinterHelper printer, CtJavaDocTag docTag, Function<String, String> transfo) {
 		printer.write(transfo.apply(CtJavaDocTag.JAVADOC_TAG_PREFIX));
 		printer.write(CtJavaDocTag.TagType.UNKNOWN.getName().equalsIgnoreCase(docTag.getType().name()) ? docTag.getRealName() : docTag.getType().getName().toLowerCase());
@@ -113,13 +117,11 @@ public class CommentHelper {
 			printer.write(docTag.getParam()).writeln();
 		}
 
-		String[] tagLines = LINE_SEPARATORS_RE.split(docTag.getContent());
-		for (int i = 0; i < tagLines.length; i++) {
-			String com = tagLines[i];
+		docTag.getContent().lines().forEach(com -> {
 			if (docTag.getType().hasParam()) {
 				printer.write(transfo.apply("\t\t"));
 			}
 			printer.write(com.trim()).writeln();
-		}
+		});
 	}
 }
