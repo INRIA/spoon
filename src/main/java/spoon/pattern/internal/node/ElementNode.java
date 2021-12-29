@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtExecutableReference;
+import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.support.util.ImmutableMap;
 
 import java.util.ArrayList;
@@ -264,6 +265,9 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		@SuppressWarnings("rawtypes")
 		CtElement clone = generator.getFactory().Core().create((Class) elementType.getMetamodelInterface().getActualClass());
 		generateSingleNodeAttributes(generator, clone, parameters);
+		if (this.templateElement instanceof CtArrayTypeReferenceImpl) {
+			((CtArrayTypeReferenceImpl<?>) clone).setDeclarationKind(((CtArrayTypeReferenceImpl<?>) this.templateElement).getDeclarationKind());
+		}
 		generator.applyGeneratedBy(clone, generator.getGeneratedByComment(templateElement));
 		result.addResult((U) clone);
 	}
