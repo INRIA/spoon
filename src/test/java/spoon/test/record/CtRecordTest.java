@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
@@ -136,7 +137,7 @@ public class CtRecordTest {
 		assertEquals(correctConstructor, head(head(records).getConstructors()).toString());
 	}
 
-	@Test @Ignore
+	@Test @Disabled
 	void testCompactConstructor2() {
 		// contract: compact constructor is printed correctly for a compilable Java file (issue 4377).
 		String code = "src/test/resources/records/CompactConstructor2.java";
