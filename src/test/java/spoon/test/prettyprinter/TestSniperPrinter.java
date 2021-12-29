@@ -877,6 +877,7 @@ public class TestSniperPrinter {
 	}
 
 	@Nested
+	@GitHubIssue(issueNumber = 4315)
 	class SquareBracketPrintingInArrayInitialisation {
 		private Consumer<CtType<?>> markFieldForSniperPrinting() {
 			return type -> {
@@ -920,6 +921,19 @@ public class TestSniperPrinter {
 					"sniperPrinter.arrayInitialisation.MultiDimension",
 					markFieldForSniperPrinting(),
 					assertPrintsBracketForArrayInitialisation("String array[][][] = new String[1][2][3];"));
+		}
+
+		@Test
+		void test_bracketsShouldBePrintedForArrayInitialisedInLocalVariable() {
+			Consumer<CtType<?>> noOpModifyLocalVariable = type -> {
+				CtMethod<?> method = type.getMethod("doNothing");
+				TestSniperPrinter.markElementForSniperPrinting(method.getBody().getStatement(0));
+			};
+
+			testSniper(
+					"sniperPrinter.arrayInitialisation.AsLocalVariable",
+					noOpModifyLocalVariable,
+					assertPrintsBracketForArrayInitialisation("int array[] = new int[]{ };"));
 		}
 	}
 
