@@ -879,6 +879,8 @@ public class TestSniperPrinter {
 	@Nested
 	@GitHubIssue(issueNumber = 4315)
 	class SquareBracketPrintingInArrayInitialisation {
+		// contract: square brackets should be printed *only* after the identifier of the field or local variable
+
 		private Consumer<CtType<?>> markFieldForSniperPrinting() {
 			return type -> {
 				CtField<?> field = type.getField("array");
