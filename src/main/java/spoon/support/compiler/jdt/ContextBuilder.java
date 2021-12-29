@@ -7,18 +7,11 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.Expression;
-import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
-import org.eclipse.jdt.internal.compiler.ast.TypeReference;
+import org.eclipse.jdt.internal.compiler.ast.*;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import spoon.compiler.Environment;
-import spoon.reflect.code.CtCatchVariable;
-import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.*;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
@@ -115,6 +108,9 @@ public class ContextBuilder {
 			// For some element, we throw an UnsupportedOperationException when we call setType().
 		}
 
+		if (e instanceof CtAssignment) {
+			e.setImplicit((node.bits&ASTNode.IsImplicit) != 0);
+		}
 	}
 
 	void exit(ASTNode node) {

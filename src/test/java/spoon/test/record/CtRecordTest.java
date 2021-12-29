@@ -137,7 +137,7 @@ public class CtRecordTest {
 		assertEquals(correctConstructor, head(head(records).getConstructors()).toString());
 	}
 
-	@Test @Disabled
+	@Test
 	void testCompactConstructor2() {
 		// contract: compact constructor is printed correctly for a compilable Java file (issue 4377).
 		String code = "src/test/resources/records/CompactConstructor2.java";
