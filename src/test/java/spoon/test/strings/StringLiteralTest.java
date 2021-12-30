@@ -16,12 +16,12 @@
  */
 package spoon.test.strings;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.factory.Factory;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class StringLiteralTest {
@@ -71,6 +71,7 @@ public class StringLiteralTest {
 		assertEquals("char c5 = '	';", c5.toString());
 
 		// spoon cannot handle unicode and unicode in the same literal
+
 		// assertEquals("java.lang.String f6 = \"€\\u20ac\";", f6.toString());
 	}
 
