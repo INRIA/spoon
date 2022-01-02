@@ -16,13 +16,13 @@
  */
 package spoon.reflect.declaration;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.visitor.CtScanner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * @author Marcel Steinbeck
