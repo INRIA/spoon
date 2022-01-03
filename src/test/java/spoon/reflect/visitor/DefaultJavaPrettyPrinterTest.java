@@ -240,8 +240,9 @@ public class DefaultJavaPrettyPrinterTest {
             Factory factory = launcher.getFactory();
             return Stream.of(
                 Arguments.of(factory.Type().get("SealedClassWithPermits"), List.of("ExtendingClass", "OtherExtendingClass")),
-                Arguments.of(factory.Type().get("SealedInterfaceWithPermits"), List.of("ExtendingClass", "OtherExtendingClass"))
-                // TODO find out why import analyzer makes permitted types explicit Arguments.of(factory.Type().get("SealedClassWithNestedSubclasses"), List.of()) // implicit
+                Arguments.of(factory.Type().get("SealedInterfaceWithPermits"), List.of("ExtendingClass", "OtherExtendingClass")),
+                Arguments.of(factory.Type().get("SealedClassWithNestedSubclasses"), List.of()), // implicit
+                Arguments.of(factory.Type().get("SealedInterfaceWithNestedSubclasses"), List.of()) // implicit
             );
         }
     }
