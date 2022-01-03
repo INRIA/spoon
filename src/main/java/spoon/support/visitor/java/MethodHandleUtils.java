@@ -21,6 +21,7 @@ import java.util.List;
  * This defines multiple utility methods for working with method handles. These methods are all calls to future jdk methods and maybe not available on jdk8.
  * All errors from these virtual calls are transformed to null or false results.
  */
+@SuppressWarnings({"JavaLangInvokeHandleSignature", "ReturnOfNull"})
 class MethodHandleUtils {
 	private MethodHandleUtils() {
 		// no instance

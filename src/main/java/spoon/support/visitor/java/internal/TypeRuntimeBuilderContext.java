@@ -100,8 +100,9 @@ public class TypeRuntimeBuilderContext extends AbstractRuntimeBuilderContext {
 					((CtSealable) type).addPermittedType(typeReference);
 				}
 				return;
+			default:
+				throw new UnsupportedOperationException();
 		}
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
