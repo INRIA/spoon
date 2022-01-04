@@ -12,7 +12,6 @@ import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
