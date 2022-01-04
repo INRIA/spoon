@@ -15,7 +15,6 @@ import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
 import spoon.compiler.Environment;
-import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtCatchVariable;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
@@ -114,10 +113,6 @@ public class ContextBuilder {
 			}
 		} catch (UnsupportedOperationException ignore) {
 			// For some element, we throw an UnsupportedOperationException when we call setType().
-		}
-
-		if (e instanceof CtAssignment) {
-			e.setImplicit((node.bits & ASTNode.IsImplicit) != 0);
 		}
 	}
 
