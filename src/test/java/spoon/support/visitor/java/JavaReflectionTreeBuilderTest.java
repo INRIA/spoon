@@ -349,8 +349,8 @@ public class JavaReflectionTreeBuilderTest {
 			CtElement parentOfOther = stack.peek();
 			try {
 				differences.add("Difference on path: " + pathBuilder.fromElement(parentOfOther, rootOfOther).toString() + "#" + role.getCamelCaseName()
-						+ "\nShadow: " + String.valueOf(other)
-						+ "\nNormal: " + String.valueOf(element) + "\n");
+				+ "\nShadow: " + String.valueOf(other)
+				+ "\nNormal: " + String.valueOf(element) + "\n");
 			} catch (CtPathException e) {
 				throw new SpoonException(e);
 			}
@@ -435,9 +435,9 @@ public class JavaReflectionTreeBuilderTest {
 						rootOf = type;
 					}
 					differences.add("Diff on path: " + pathBuilder.fromElement(rootOf, parentOf).toString() + "#"
-							+ diff.roles.stream().map(CtRole::getCamelCaseName).collect(Collectors.joining(", ", "[", "]"))
-							+ "\nShadow: " + String.valueOf(diff.other)
-							+ "\nNormal: " + String.valueOf(diff.element) + "\n");
+					+ diff.roles.stream().map(CtRole::getCamelCaseName).collect(Collectors.joining(", ", "[", "]"))
+					+ "\nShadow: " + String.valueOf(diff.other)
+					+ "\nNormal: " + String.valueOf(diff.element) + "\n");
 				} catch (CtPathException e) {
 					throw new SpoonException(e);
 				}
@@ -627,11 +627,11 @@ public class JavaReflectionTreeBuilderTest {
 		CtType caller = factory.Type().get("Caller");
 		CtParameter annotatedParameter = ((CtParameter)
 				((CtConstructor)
-						((CtLocalVariable)
-								((CtConstructor)
-										caller.getTypeMembers().get(0)
-								).getBody().getStatement(2)
-						).getType().getTypeDeclaration().getTypeMembers().get(0)
+					((CtLocalVariable)
+						((CtConstructor)
+								caller.getTypeMembers().get(0)
+						).getBody().getStatement(2)
+					).getType().getTypeDeclaration().getTypeMembers().get(0)
 				).getParameters().get(0));
 
 		//contract: the annotation is correctly read

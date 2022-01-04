@@ -269,7 +269,7 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 
 	private class NewInstanceClassloader extends URLClassLoader {
 		NewInstanceClassloader(File binaryOutputDirectory) throws MalformedURLException {
-			super(new URL[]{binaryOutputDirectory.toURI().toURL()});
+			super(new URL[] { binaryOutputDirectory.toURI().toURL()});
 		}
 
 		@Override
@@ -282,9 +282,7 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 		}
 	}
 
-	/**
-	 * adding the constructors and static executables
-	 */
+	/** adding the constructors and static executables */
 	@Override
 	public Collection<CtExecutableReference<?>> getAllExecutables() {
 		Set<CtExecutableReference<?>> l = (Set<CtExecutableReference<?>>) super.getAllExecutables();

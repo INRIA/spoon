@@ -15,9 +15,6 @@ import spoon.reflect.reference.CtTypeReference;
 import java.util.Collection;
 import java.util.Set;
 
-// TODO docs
-// TODO return type?
-
 /**
  * This interface represents any type that can be sealed.
  * See JLS 8.1.1.2
