@@ -88,7 +88,6 @@ public class CtAnnotationTypeImpl<T extends Annotation> extends CtTypeImpl<T> im
 		return (CtAnnotationType<T>) super.clone();
 	}
 
-
 	@Override
 	public Set<CtAnnotationMethod<?>> getAnnotationMethods() {
 		Set<CtAnnotationMethod<?>> annotationsMethods = new HashSet<>();
