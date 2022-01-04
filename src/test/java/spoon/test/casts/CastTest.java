@@ -16,7 +16,7 @@
  */
 package spoon.test.casts;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtVariableRead;
@@ -31,7 +31,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.casts.testclasses.Castings;
 import spoon.testing.utils.ModelUtils;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
