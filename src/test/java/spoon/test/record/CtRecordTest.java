@@ -9,8 +9,6 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
-import org.junit.Ignore;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
