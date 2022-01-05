@@ -16,7 +16,11 @@
  */
 package spoon.test.arrays;
 
-import org.junit.Test;
+
+import java.lang.reflect.Array;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
@@ -30,14 +34,11 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.arrays.testclasses.VaragParam;
 import spoon.testing.utils.ModelUtils;
 
-import java.lang.reflect.Array;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class ArraysTest {
