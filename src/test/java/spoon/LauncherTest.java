@@ -25,8 +25,12 @@ import spoon.support.JavaOutputProcessor;
 import spoon.support.compiler.VirtualFile;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,5 +142,22 @@ public class LauncherTest {
 		launcher.setSourceOutputDirectory(tmpDir);
 		
 		assertDoesNotThrow(() -> launcher.prettyprint());
+	}
+
+	@Test
+	public void testClasspathURLWithSpaces() throws MalformedURLException {
+		// contract: launcher can handle spaces in classpath URL
+		Launcher launcher = new Launcher();
+		URL[] classpath = {
+				Paths.get("./src/test/resources/path with spaces/lib/bar.jar").toAbsolutePath().toUri().toURL()
+		};
+		launcher.getEnvironment().setNoClasspath(false);
+		launcher.getEnvironment().setShouldCompile(true);
+		ClassLoader classLoader = new URLClassLoader(classpath);
+		launcher.getEnvironment().setInputClassLoader(classLoader);
+		launcher.addInputResource(Paths.get("./src/test/resources/path with spaces/Foo.java").toAbsolutePath().toString());
+		CtModel model = launcher.buildModel();
+
+		assertTrue("CtTxpe 'Foo' not present in model", model.getAllTypes().stream().anyMatch(ct -> ct.getQualifiedName().equals("Foo")));
 	}
 }
