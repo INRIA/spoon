@@ -16,18 +16,19 @@
  */
 package spoon.test.api;
 
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.compiler.SpoonFolder;
 import spoon.support.compiler.FileSystemFolder;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FileSystemFolderTest {
 
