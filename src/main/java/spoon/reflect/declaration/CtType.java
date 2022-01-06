@@ -343,6 +343,7 @@ public interface CtType<T> extends CtNamedElement, CtTypeInformation, CtTypeMemb
 	 */
 	@PropertySetter(role = TYPE_MEMBER)
 	<C extends CtType<T>> C setTypeMembers(List<CtTypeMember> members);
+
 	@Override
 	CtType<T> clone();
 
