@@ -405,7 +405,7 @@ public class TryCatchTest {
 		CtModel model = launcher.buildModel();
 		CtLocalVariableReference<?> varRef = model.filterChildren(CtLocalVariableReference.class::isInstance).first();
 
-		assertThat(varRef.getType().getSimpleName(), equalTo("GenericType"));
+		assertThat(varRef.getType().getQualifiedName(), equalTo("NonClosableGenericInTryWithResources.GenericType"));
 
 		// We don't extract the type arguments
 		assertThat(varRef.getType().getActualTypeArguments().size(), equalTo(0));

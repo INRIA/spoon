@@ -601,7 +601,7 @@ public class ImportTest {
 		//toString prints fully qualified names
 		assertEquals("private class WrappedListIterator extends spoon.test.imports.testclasses2.AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}",mmwli.toString());
 		//pretty printer prints optimized names
-		assertEquals("private class WrappedListIterator extends WrappedCollection.WrappedIterator {}",printByPrinter(mmwli));
+		assertEquals("private class WrappedListIterator extends AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator {}",printByPrinter(mmwli));
 		assertTrue(mm.toString().contains("AbstractMapBasedMultimap<K, V>.WrappedCollection.WrappedIterator"));
 
 		CtClass<?> mmwliother = launcher.getFactory().Class().get("spoon.test.imports.testclasses2.AbstractMapBasedMultimap$OtherWrappedList$WrappedListIterator");

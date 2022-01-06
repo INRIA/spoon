@@ -802,4 +802,35 @@ public class TypeReferenceTest {
 		assertThat(reference.getDeclaration(), nullValue());
 		assertThat(reference.isLocalType(), is(false));
 	}
+
+	@Test
+	public void testTypeReferenceToChildClass() {
+		// contract: a reference to a child class should retain the parent class name
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/reference-to-child-class/ReferenceToChildClass.java");
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+
+		CtClass cls = launcher.getModel().getElements(new TypeFilter<>(CtClass.class)).get(0);
+		CtTypeReference<?> interfaceTypeRef = cls.getSuperInterfaces().stream().findFirst().get();
+
+		assertEquals("Foo<ReferenceToChildClass.Bar<?>>", interfaceTypeRef.toString());
+	}
+
+	@Test
+	public void testProblemTypeReferenceToChildClass() {
+		// contract: a reference to a child class in a not compilable file should retain the parent class name
+		final Launcher launcher = new Launcher();
+		launcher.addInputResource("./src/test/resources/reference-to-child-class/ProblemReferenceToChildClass.java");
+		launcher.getEnvironment().setAutoImports(true);
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.buildModel();
+
+		CtClass cls = launcher.getModel().getElements(new TypeFilter<>(CtClass.class)).get(0);
+		CtTypeReference<?> interfaceTypeRef = cls.getSuperInterfaces().stream().findFirst().get();
+
+		assertEquals("Foo<ProblemReferenceToChildClass.Bar<?>>", interfaceTypeRef.toString());
+	}
+
 }

@@ -1056,13 +1056,25 @@ public class ReferenceBuilder {
 					"Ignoring type parameters for problem binding: " + binding);
 		}
 
-		String simpleName = readableName.substring(Math.max(0, readableName.lastIndexOf('.') + 1));
 		CtTypeReference<?> ref = this.jdtTreeBuilder.getFactory().Core().createTypeReference();
-		ref.setSimpleName(simpleName);
+		ref.setSimpleName(stripPackageName(readableName));
 		final CtReference declaring = this.getDeclaringReferenceFromImports(binding.sourceName());
 		setPackageOrDeclaringType(ref, declaring);
 
 		return ref;
+	}
+
+	private static String stripPackageName(String fullyQualifiedName) {
+		// strip package name, assuming package names start with a lowercase letter
+		int s = 0;
+		while (Character.isLowerCase(fullyQualifiedName.charAt(s))) {
+			int idx = fullyQualifiedName.indexOf('.', s);
+			if (idx < 0) {
+				break;
+			}
+			s = idx + 1;
+		}
+		return fullyQualifiedName.substring(s);
 	}
 
 	private CtTypeReference<?> getTypeReferenceFromIntersectionTypeBinding(IntersectionTypeBinding18 binding) {
