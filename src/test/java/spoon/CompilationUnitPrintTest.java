@@ -1,6 +1,9 @@
 package spoon;
 
-import org.junit.Test;
+
+import java.io.File;
+
+import org.junit.jupiter.api.Test;
 import spoon.compiler.Environment;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
@@ -8,9 +11,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 
-import java.io.File;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CompilationUnitPrintTest {
 
