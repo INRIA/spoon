@@ -43,7 +43,9 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -418,7 +420,7 @@ private transient  ClassLoader inputClassloader;
 				if (onlyFileURLs) {
 					List<String> classpath = new ArrayList<>();
 					for (URL url : urls) {
-						classpath.add(url.getPath());
+						classpath.add(URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8));
 					}
 					setSourceClasspath(classpath.toArray(new String[0]));
 				} else {
