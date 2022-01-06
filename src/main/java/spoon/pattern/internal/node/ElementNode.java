@@ -264,6 +264,7 @@ public class ElementNode extends AbstractPrimitiveMatcher {
 		@SuppressWarnings("rawtypes")
 		CtElement clone = generator.getFactory().Core().create((Class) elementType.getMetamodelInterface().getActualClass());
 		generateSingleNodeAttributes(generator, clone, parameters);
+		clone.setAllMetadata(templateElement.getAllMetadata());
 		generator.applyGeneratedBy(clone, generator.getGeneratedByComment(templateElement));
 		result.addResult((U) clone);
 	}
