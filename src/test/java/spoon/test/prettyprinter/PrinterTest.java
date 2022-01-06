@@ -626,7 +626,7 @@ public class PrinterTest {
 			"        Stream.empty().map(( v) -> List.class).close();\n" +
 			"    }\n" +
 			"}";
-		CtType<?> type = Launcher.parseClass("class A { void m() { Stream.empty().map(v-> java.util.List.class).close(); } }");
+		CtType<?> type = Launcher.parseClass("class A { void m() { Stream.empty().map(v-> List.class).close(); } }");
 		assertEquals(expected, normalizeLineEnds(type.toString()));
 	}
 
