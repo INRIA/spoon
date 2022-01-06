@@ -50,6 +50,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 public class PrinterTest {
 
@@ -602,5 +603,46 @@ public class PrinterTest {
 		// the pretty-printed code is in folder ./spooned (default value that can be set with setOutputDirectory)
 
 		assertTrue(FileUtils.readFileToString(new File("spooned/HelloWorld.java"), "UTF-8").contains("  class"));
+	}
+
+	
+	@Test
+	public void testTypeLostPrintingStringClassReference() {
+		// contract: when a class reference is printed, the type is not lost
+		String expected = "class A {\n" +
+			"    void m() {\n" +
+			"        Stream.empty().map(( v) -> String.class).close();\n" +
+			"    }\n" +
+			"}";
+		CtType<?> type = Launcher.parseClass("class A { void m() { Stream.empty().map(v-> String.class).close(); } }");
+		assertEquals(expected, normalizeLineEnds(type.toString()));
+	}
+
+	@Test
+	public void testTypeLostPrintingListClassReference() {
+		// contract: when a class reference is printed, the type is not lost
+		String expected = "class A {\n" +
+			"    void m() {\n" +
+			"        Stream.empty().map(( v) -> List.class).close();\n" +
+			"    }\n" +
+			"}";
+		CtType<?> type = Launcher.parseClass("class A { void m() { Stream.empty().map(v-> List.class).close(); } }");
+		assertEquals(expected, normalizeLineEnds(type.toString()));
+	}
+
+	@Test
+	public void testTypeLostPrintingFQListClassReference() {
+		// contract: when a class reference is printed, the type is not lost
+		String expected = "class A {\n" +
+			"    void m() {\n" +
+			"        Stream.empty().map(( v) -> List.class).close();\n" +
+			"    }\n" +
+			"}";
+		CtType<?> type = Launcher.parseClass("class A { void m() { Stream.empty().map(v-> java.util.List.class).close(); } }");
+		assertEquals(expected, normalizeLineEnds(type.toString()));
+	}
+
+	private static String normalizeLineEnds(String s) {
+		return s.lines().collect(Collectors.joining("\n"));
 	}
 }
