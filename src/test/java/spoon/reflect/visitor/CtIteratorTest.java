@@ -16,14 +16,15 @@
  */
 package spoon.reflect.visitor;
 
-import org.junit.Test;
-import spoon.Launcher;
-import spoon.reflect.declaration.CtElement;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+import spoon.Launcher;
+import spoon.reflect.declaration.CtElement;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CtIteratorTest {
 
