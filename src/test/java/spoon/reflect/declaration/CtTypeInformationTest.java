@@ -16,9 +16,17 @@
  */
 package spoon.reflect.declaration;
 
+
+import java.lang.reflect.Field;
+import java.util.AbstractCollection;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.RandomAccess;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.testclasses.ExtendsArrayList;
 import spoon.reflect.declaration.testclasses.Subclass;
@@ -28,25 +36,18 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.visitor.ClassTypingContext;
 
-import java.lang.reflect.Field;
-import java.util.AbstractCollection;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.RandomAccess;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class CtTypeInformationTest {
 	private Factory factory;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		factory = build(ExtendsArrayList.class, Subclass.class, Subinterface.class, TestInterface.class);
 	}
@@ -154,7 +155,7 @@ public class CtTypeInformationTest {
 		int nbMethodsObject = launcher.getFactory().Type().get(Object.class).getAllMethods().size();
 
 		final CtType<?> extendsObject = launcher.getFactory().Type().get("test.ExtendsObject");
-		assertEquals("It should contain only 'oneMethod' and 'toString' but also contains: " + StringUtils.join(extendsObject.getMethods(), "\n"), 2, extendsObject.getMethods().size());
+		assertEquals(2, extendsObject.getMethods().size(), "It should contain only 'oneMethod' and 'toString' but also contains: " + StringUtils.join(extendsObject.getMethods(), "\n"));
 		assertEquals(nbMethodsObject + 1, extendsObject.getAllMethods().size());
 	}
 
