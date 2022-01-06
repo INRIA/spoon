@@ -289,8 +289,7 @@ public class CloneTest {
 		assertModifierImplicitness(test.getExtendedModifiers(), ModifierKind.ABSTRACT, false);
 
 		// Test that the implicit state was kept
-		assertEquals(2, clonedTest.getExtendedModifiers().size(), "Clone has wrong amount of modifiers"
-		);
+		assertEquals(2, clonedTest.getExtendedModifiers().size(), "Clone has wrong amount of modifiers");
 		assertModifierImplicitness(clonedTest.getExtendedModifiers(), ModifierKind.PUBLIC, true);
 		assertModifierImplicitness(clonedTest.getExtendedModifiers(), ModifierKind.ABSTRACT, false);
 	}
@@ -299,8 +298,7 @@ public class CloneTest {
 			boolean shouldBeImplicit) {
 		for (CtExtendedModifier modifier : modifiers) {
 			if (modifier.getKind() == kind) {
-				assertEquals(shouldBeImplicit, modifier.isImplicit(), "Unexpected CtExtendedModifier#isImplicit"
-				);
+				assertEquals(shouldBeImplicit, modifier.isImplicit(), "Unexpected CtExtendedModifier#isImplicit");
 				return;
 			}
 		}
@@ -333,7 +331,6 @@ public class CloneTest {
 		referenceBasedModifierSet.addAll(cloned);
 
 		// Verify the modifier instances are actually different so changes in one do not affect the other
-		assertEquals(4, referenceBasedModifierSet.size(), "The extended modifiers are the same instance as the original"
-		);
+		assertEquals(4, referenceBasedModifierSet.size(), "The extended modifiers are the same instance as the original");
 	}
 }
