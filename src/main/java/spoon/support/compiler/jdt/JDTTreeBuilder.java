@@ -162,6 +162,7 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.reference.CtUnboundVariableReference;
 import spoon.support.compiler.jdt.ContextBuilder.CastInfo;
 import spoon.support.reflect.CtExtendedModifier;
+import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 
 import java.lang.invoke.MethodHandles;
 
@@ -979,6 +980,7 @@ public class JDTTreeBuilder extends ASTVisitor {
 			CtTypeReference<?> arrayType = ((CtArrayTypeReference) typeAccess.getAccessedType()).getArrayType();
 			arrayType.setAnnotations(this.references.buildTypeReference(arrayTypeReference, scope).getAnnotations());
 			arrayType.setSimplyQualified(true);
+			((CtArrayTypeReferenceImpl) typeAccess.getAccessedType()).setDeclarationKind(getDeclarationStyle(arrayTypeReference));
 		}
 		context.enter(typeAccess, arrayTypeReference);
 		return true;
@@ -1000,9 +1002,20 @@ public class JDTTreeBuilder extends ASTVisitor {
 
 		if (arrayType != null) {
 			arrayType.getArrayType().setAnnotations(this.references.buildTypeReference(arrayQualifiedTypeReference, scope).getAnnotations());
+			((CtArrayTypeReferenceImpl<?>) arrayType).setDeclarationKind(getDeclarationStyle(arrayQualifiedTypeReference));
 		}
 
 		return true;
+	}
+
+	private CtArrayTypeReferenceImpl.DeclarationKind getDeclarationStyle(ASTNode arrayReferenceNode) {
+		int sourceStart = arrayReferenceNode.sourceStart();
+		int sourceEnd = arrayReferenceNode.sourceEnd();
+
+		if (arrayReferenceNode.toString().length() > sourceEnd - sourceStart + 1) {
+			return CtArrayTypeReferenceImpl.DeclarationKind.IDENTIFIER;
+		}
+		return CtArrayTypeReferenceImpl.DeclarationKind.TYPE;
 	}
 
 	@Override

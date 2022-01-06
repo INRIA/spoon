@@ -876,6 +876,69 @@ public class TestSniperPrinter {
 		}
 	}
 
+	@Nested
+	@GitHubIssue(issueNumber = 4315)
+	class SquareBracketPrintingInArrayInitialisation {
+		// contract: square brackets should be printed *only* after the identifier of the field or local variable
+
+		private Consumer<CtType<?>> markFieldForSniperPrinting() {
+			return type -> {
+				CtField<?> field = type.getField("array");
+				TestSniperPrinter.markElementForSniperPrinting(field);
+			};
+		}
+
+		private BiConsumer<CtType<?>, String> assertPrintsBracketForArrayInitialisation(String arrayDeclaration) {
+			return (type, result) ->
+					assertThat(result, containsString(arrayDeclaration));
+		}
+
+		@Test
+		void test_bracketShouldBePrintedWhenArrayIsNull() {
+			testSniper(
+					"sniperPrinter.arrayInitialisation.ToNull",
+					markFieldForSniperPrinting(),
+					assertPrintsBracketForArrayInitialisation("int array[];"));
+		}
+
+		@Test
+		void test_bracketShouldBePrintedWhenArrayIsInitialisedToIntegers() {
+			testSniper(
+					"sniperPrinter.arrayInitialisation.FiveIntegers",
+					markFieldForSniperPrinting(),
+					assertPrintsBracketForArrayInitialisation("int array[] = {1, 2, 3, 4, 5};"));
+		}
+
+		@Test
+		void test_bracketShouldBePrintedWhenArrayIsInitialisedToNullElements() {
+			testSniper(
+					"sniperPrinter.arrayInitialisation.ToNullElements",
+					markFieldForSniperPrinting(),
+					assertPrintsBracketForArrayInitialisation("String array[] = new String[42];"));
+		}
+
+		@Test
+		void test_bracketsShouldBePrintedForMultiDimensionalArray() {
+			testSniper(
+					"sniperPrinter.arrayInitialisation.MultiDimension",
+					markFieldForSniperPrinting(),
+					assertPrintsBracketForArrayInitialisation("String array[][][] = new String[1][2][3];"));
+		}
+
+		@Test
+		void test_bracketsShouldBePrintedForArrayInitialisedInLocalVariable() {
+			Consumer<CtType<?>> noOpModifyLocalVariable = type -> {
+				CtMethod<?> method = type.getMethod("doNothing");
+				TestSniperPrinter.markElementForSniperPrinting(method.getBody().getStatement(0));
+			};
+
+			testSniper(
+					"sniperPrinter.arrayInitialisation.AsLocalVariable",
+					noOpModifyLocalVariable,
+					assertPrintsBracketForArrayInitialisation("int array[] = new int[]{ };"));
+		}
+	}
+
 	/**
 	 * 1) Runs spoon using sniper mode,
 	 * 2) runs `typeChanger` to modify the code,
