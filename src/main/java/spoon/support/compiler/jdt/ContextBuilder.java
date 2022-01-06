@@ -114,7 +114,6 @@ public class ContextBuilder {
 		} catch (UnsupportedOperationException ignore) {
 			// For some element, we throw an UnsupportedOperationException when we call setType().
 		}
-
 	}
 
 	void exit(ASTNode node) {

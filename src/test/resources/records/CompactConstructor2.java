@@ -1,14 +1,14 @@
 package records;
 
-public record Rational(int num, int denom) { 
+public record CompactConstructor2(int num, int denom) { 
   private static int gcd(int a, int b) { 
     if (b == 0) return Math.abs(a); 
     else return gcd(b, a % b); 
   } 
   
-  public Rational { 
+  public CompactConstructor2 { 
     int gcd = gcd(num, denom); 
     num /= gcd; 
-    denom /= gcd; 
+    denom /= gcd;
   } 
 }
