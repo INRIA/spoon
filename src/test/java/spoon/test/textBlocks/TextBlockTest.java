@@ -1,14 +1,14 @@
 package spoon.test.textBlocks;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTextBlock;
@@ -121,19 +121,32 @@ public class TextBlockTest{
 		);
 	}
 
-	@Test
+	@Test @Disabled
 	public void testTextBlockEscapes(){
 		//contract: Test Text Block usage introduced in Java 15
 		Launcher launcher = setUpTest();
+		launcher.getEnvironment().setAutoImports(true);
+		
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("textBlock.TextBlockTestClass");
-		CtMethod<?> m1 =  allstmt.getMethod("m5");
+		CtMethod<?> m5 =  allstmt.getMethod("m5");
 
-		CtStatement stmt1 = m1.getBody().getStatement(0);
-		assertTrue(stmt1.getValueByRole(CtRole.ASSIGNMENT) instanceof CtTextBlock);
-		CtTextBlock l1 = (CtTextBlock) stmt1.getValueByRole(CtRole.ASSIGNMENT);
-		assertEquals("no-break space: \\00a0\n" +
-				"newline:        \\n\n" +
-				"tab:            \\t ('\t')\n",
+		String m5Text = m5.toString();
+		assertEquals("void m5() {\n" +
+						"    String escape = \"\"\"\n" +
+						"    no-break space: \\\\00a0\n" +
+						"    newline:        \\\\n\n" +
+						"    tab:            \\\\t ('\\t')\n" +
+						"    \"\"\";\n" +
+						"}",
+				m5Text);
+
+		CtStatement stmt5 = m5.getBody().getStatement(0);
+		assertTrue(stmt5.getValueByRole(CtRole.ASSIGNMENT) instanceof CtTextBlock);
+
+		CtTextBlock l1 = (CtTextBlock) stmt5.getValueByRole(CtRole.ASSIGNMENT);
+		assertEquals("no-break space: \\\\00a0\n" +
+				"newline:        \\\\n\n" +
+				"tab:            \\\\t ('\t')\n",
 				l1.getValue());
 	}
 
