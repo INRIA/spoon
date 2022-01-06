@@ -44,7 +44,7 @@ public class TextBlockTest{
 		CtStatement stmt1 = m1.getBody().getStatement(0);
 		assertTrue(stmt1.getValueByRole(CtRole.ASSIGNMENT) instanceof CtTextBlock);
 		CtTextBlock l1 = (CtTextBlock) stmt1.getValueByRole(CtRole.ASSIGNMENT);
-		assertEquals(l1.getValue(), "<html>\n    <body>\n        <p>Hello, कसौटी 🥲</p>\n    </body>\n</html>\n");
+		assertEquals("<html>\n    <body>\n        <p>Hello, कसौटी 🥲</p>\n    </body>\n</html>\n", l1.getValue());
 	}
 
 	@Test
@@ -57,9 +57,10 @@ public class TextBlockTest{
 		CtStatement stmt2 = m2.getBody().getStatement(0);
 		assertTrue(stmt2.getValueByRole(CtRole.ASSIGNMENT) instanceof CtTextBlock);
 		CtTextBlock l2 = (CtTextBlock) stmt2.getValueByRole(CtRole.ASSIGNMENT);
-		assertEquals(l2.getValue(), "SELECT \"EMP_ID\", \"LAST_NAME\" FROM \"EMPLOYEE_TB\"\n"
+		assertEquals("SELECT \"EMP_ID\", \"LAST_NAME\" FROM \"EMPLOYEE_TB\"\n"
 				+ "WHERE \"CITY\" = 'INDIANAPOLIS'\n"
-				+ "ORDER BY \"EMP_ID\", \"LAST_NAME\";\n");
+				+ "ORDER BY \"EMP_ID\", \"LAST_NAME\";\n",
+				l2.getValue());
 	}
 
 	@Test
@@ -74,12 +75,13 @@ public class TextBlockTest{
 		CtInvocation inv = (CtInvocation) stmt5.getDirectChildren().get(1);
 		assertTrue(inv.getArguments().get(0) instanceof CtTextBlock);
 		CtTextBlock l3 = (CtTextBlock) inv.getArguments().get(0);
-		assertEquals(l3.getValue(), "function hello() {\n"
+		assertEquals("function hello() {\n"
 				+ "    print('\"Hello, world\"');\n"
 				+ "}\n"
 				+ "\n"
 				+ "hello();\n"
-				+ "");
+				+ "",
+				l3.getValue());
 	}
 
 	@Test
@@ -92,7 +94,7 @@ public class TextBlockTest{
 		CtStatement stmt1 = m4.getBody().getStatement(0);
 		assertTrue(stmt1.getValueByRole(CtRole.ASSIGNMENT) instanceof CtTextBlock);
 		CtTextBlock l1 = (CtTextBlock) stmt1.getValueByRole(CtRole.ASSIGNMENT);
-		assertEquals(l1.getValue(), "");
+		assertEquals("", l1.getValue());
 	}
 
 	@Test
@@ -118,4 +120,21 @@ public class TextBlockTest{
 				c.toString()
 		);
 	}
+
+	@Test
+	public void testTextBlockEscapes(){
+		//contract: Test Text Block usage introduced in Java 15
+		Launcher launcher = setUpTest();
+		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("textBlock.TextBlockTestClass");
+		CtMethod<?> m1 =  allstmt.getMethod("m5");
+
+		CtStatement stmt1 = m1.getBody().getStatement(0);
+		assertTrue(stmt1.getValueByRole(CtRole.ASSIGNMENT) instanceof CtTextBlock);
+		CtTextBlock l1 = (CtTextBlock) stmt1.getValueByRole(CtRole.ASSIGNMENT);
+		assertEquals("no-break space: \\00a0\n" +
+				"newline:        \\n\n" +
+				"tab:            \\t ('\t')\n",
+				l1.getValue());
+	}
+
 }

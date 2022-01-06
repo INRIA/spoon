@@ -40,4 +40,12 @@ public class TextBlockTestClass{
 		String empty = """
 		""";
 	}
+
+	void m5() {
+		String escape = """
+        no-break space: \\00a0
+        newline:        \\n
+        tab:            \\t ('\t')
+        """;
+	}
 }
