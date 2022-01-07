@@ -16,7 +16,7 @@
  */
 package spoon.reflect.visitor;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.visitor.processors.CheckVisitorTestProcessor;
 
