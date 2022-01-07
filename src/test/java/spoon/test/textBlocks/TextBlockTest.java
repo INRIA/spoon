@@ -3,7 +3,6 @@ package spoon.test.textBlocks;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
@@ -121,33 +120,35 @@ public class TextBlockTest{
 		);
 	}
 
-	@Test @Disabled
+	@Test
 	public void testTextBlockEscapes(){
-		//contract: Test Text Block usage introduced in Java 15
+		//contract: text-blocks should retain escape sequences in code
 		Launcher launcher = setUpTest();
 		launcher.getEnvironment().setAutoImports(true);
 		
 		CtClass<?> allstmt = (CtClass<?>) launcher.getFactory().Type().get("textBlock.TextBlockTestClass");
 		CtMethod<?> m5 =  allstmt.getMethod("m5");
 
+		CtStatement stmt5 = m5.getBody().getStatement(0);
+		assertTrue(stmt5.getValueByRole(CtRole.ASSIGNMENT) instanceof CtTextBlock);
+
+		// test text block value
+		CtTextBlock l1 = (CtTextBlock) stmt5.getValueByRole(CtRole.ASSIGNMENT);
+		assertEquals("no-break space: \\00a0\n" +
+						"newline:        \\n\n" +
+						"tab:            \\t ('\t')\n",
+				l1.getValue());
+
+		// escape sequences should be retained in code
 		String m5Text = m5.toString();
 		assertEquals("void m5() {\n" +
 						"    String escape = \"\"\"\n" +
 						"    no-break space: \\\\00a0\n" +
 						"    newline:        \\\\n\n" +
-						"    tab:            \\\\t ('\\t')\n" +
+						"    tab:            \\\\t ('\t')\n" +
 						"    \"\"\";\n" +
 						"}",
 				m5Text);
-
-		CtStatement stmt5 = m5.getBody().getStatement(0);
-		assertTrue(stmt5.getValueByRole(CtRole.ASSIGNMENT) instanceof CtTextBlock);
-
-		CtTextBlock l1 = (CtTextBlock) stmt5.getValueByRole(CtRole.ASSIGNMENT);
-		assertEquals("no-break space: \\\\00a0\n" +
-				"newline:        \\\\n\n" +
-				"tab:            \\\\t ('\t')\n",
-				l1.getValue());
 	}
 
 }

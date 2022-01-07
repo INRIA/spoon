@@ -58,12 +58,11 @@ abstract class LiteralHelper {
 
 	/**
 	 * @param literal CtTextBlock to be converted
-	 * @param numTabs
 	 * @return source code representation of the literal
 	 */
 	public static String getTextBlockToken(CtTextBlock literal) {
 		String token = "\"\"\"\n"
-				+ literal.getValue()
+				+ literal.getValue().replaceAll("\\\\", "\\\\\\\\")
 				+ "\"\"\"";
 		return token;
 	}
