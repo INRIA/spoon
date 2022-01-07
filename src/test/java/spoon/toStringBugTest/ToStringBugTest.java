@@ -1,14 +1,14 @@
 package spoon.toStringBugTest;
 
 
-import org.junit.Test;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtType;
 
-import java.util.List;
-
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ToStringBugTest {
     
