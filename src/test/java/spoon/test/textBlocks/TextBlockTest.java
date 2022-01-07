@@ -121,6 +121,7 @@ public class TextBlockTest{
 	}
 
 	@Test
+	@ExtendWith(LineSeperatorExtension.class)
 	public void testTextBlockEscapes(){
 		//contract: text-blocks should retain escape sequences in code
 		Launcher launcher = setUpTest();
