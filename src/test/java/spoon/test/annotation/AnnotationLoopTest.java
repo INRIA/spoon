@@ -16,7 +16,7 @@
  */
 package spoon.test.annotation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.declaration.CtType;
@@ -24,8 +24,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.annotation.testclasses.Pozole;
 import spoon.testing.utils.ModelUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class AnnotationLoopTest {
 
