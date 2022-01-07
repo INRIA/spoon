@@ -16,7 +16,17 @@
  */
 package spoon.reflect.ast;
 
-import org.junit.Test;
+
+import java.io.File;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.processing.AbstractProcessor;
 import spoon.refactoring.Refactoring;
@@ -40,22 +50,13 @@ import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.visitor.equals.CloneHelper;
 import spoon.testing.utils.ModelUtils;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.utils.Check.assertCtElementEquals;
 
 public class CloneTest {
@@ -82,8 +83,8 @@ public class CloneTest {
 					return;
 				}
 				final CtMethod<Object> clone = ctClass.getMethod("clone");
-				assertNotNull(ctClass.getQualifiedName() + " hasn't clone method.", clone);
-				assertTrue(ctClass.getQualifiedName() + " hasn't Override annotation on clone method.", clone.getAnnotations().stream().map(ctAnnotation -> ctAnnotation.getActualAnnotation().annotationType()).collect(Collectors.toList()).contains(Override.class));
+				assertNotNull(clone, ctClass.getQualifiedName() + " hasn't clone method.");
+				assertTrue(clone.getAnnotations().stream().map( ctAnnotation -> ctAnnotation.getActualAnnotation().annotationType()).collect(Collectors.toList()).contains(Override.class), ctClass.getQualifiedName() + " hasn't Override annotation on clone method.");
 			}
 
 			@Override
@@ -93,10 +94,9 @@ public class CloneTest {
 				}
 				final CtMethod<Object> clone = intrface.getMethod("clone");
 				if (hasConcreteImpl(intrface)) {
-					assertNotNull(intrface.getQualifiedName() + " hasn't clone method.", clone);
+					assertNotNull(clone, intrface.getQualifiedName() + " hasn't clone method.");
 					if (!isRootDeclaration(intrface)) {
-						assertTrue(intrface.getQualifiedName() + " hasn't Override annotation on clone method.",
-								clone.getAnnotations().stream().map(ctAnnotation -> ctAnnotation.getActualAnnotation().annotationType()).collect(Collectors.toList()).contains(Override.class));
+						assertTrue(clone.getAnnotations().stream().map( ctAnnotation -> ctAnnotation.getActualAnnotation().annotationType()).collect(Collectors.toList()).contains(Override.class), intrface.getQualifiedName() + " hasn't Override annotation on clone method.");
 					}
 				}
 			}
@@ -173,7 +173,7 @@ public class CloneTest {
 		cloneSource.filterChildren(null).forEach(sourceElement -> {
 			//contract: there exists cloned target for each visitable element
 			CtElement targetElement = cl.sourceToTarget.remove(sourceElement);
-			assertNotNull("Missing target for sourceElement\n" + sourceElement, targetElement);
+			assertNotNull(targetElement, "Missing target for sourceElement\n" + sourceElement);
 			assertCtElementEquals((CtElement) sourceElement, targetElement);
 		});
 		//contract: each visitable elements was cloned exactly once. No more no less.
@@ -283,20 +283,13 @@ public class CloneTest {
 		CtClass<?> clonedTest = test.clone();
 
 		// Sanity checks
-		assertEquals(
-				"Class has the wrong amount of modifiers",
-				2,
-				test.getExtendedModifiers().size()
+		assertEquals(2, test.getExtendedModifiers().size(), "Class has the wrong amount of modifiers"
 		);
 		assertModifierImplicitness(test.getExtendedModifiers(), ModifierKind.PUBLIC, true);
 		assertModifierImplicitness(test.getExtendedModifiers(), ModifierKind.ABSTRACT, false);
 
 		// Test that the implicit state was kept
-		assertEquals(
-				"Clone has wrong amount of modifiers",
-				2,
-				clonedTest.getExtendedModifiers().size()
-		);
+		assertEquals(2, clonedTest.getExtendedModifiers().size(), "Clone has wrong amount of modifiers");
 		assertModifierImplicitness(clonedTest.getExtendedModifiers(), ModifierKind.PUBLIC, true);
 		assertModifierImplicitness(clonedTest.getExtendedModifiers(), ModifierKind.ABSTRACT, false);
 	}
@@ -305,11 +298,7 @@ public class CloneTest {
 			boolean shouldBeImplicit) {
 		for (CtExtendedModifier modifier : modifiers) {
 			if (modifier.getKind() == kind) {
-				assertEquals(
-						"Unexpected CtExtendedModifier#isImplicit",
-						shouldBeImplicit,
-						modifier.isImplicit()
-				);
+				assertEquals(shouldBeImplicit, modifier.isImplicit(), "Unexpected CtExtendedModifier#isImplicit");
 				return;
 			}
 		}
@@ -342,10 +331,6 @@ public class CloneTest {
 		referenceBasedModifierSet.addAll(cloned);
 
 		// Verify the modifier instances are actually different so changes in one do not affect the other
-		assertEquals(
-				"The extended modifiers are the same instance as the original",
-				4,
-				referenceBasedModifierSet.size()
-		);
+		assertEquals(4, referenceBasedModifierSet.size(), "The extended modifiers are the same instance as the original");
 	}
 }
