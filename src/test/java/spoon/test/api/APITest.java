@@ -16,9 +16,24 @@
  */
 package spoon.test.api;
 
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonAPI;
@@ -55,26 +70,13 @@ import spoon.template.TemplateParameter;
 import spoon.test.api.processors.AwesomeProcessor;
 import spoon.test.api.testclasses.Bar;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class APITest {
 
@@ -129,10 +131,9 @@ public class APITest {
 		// the virtual folder removes the duplicate before passing to JDT
 		try {
 			String duplicateEntry = "src/test/resources/spoon/test/api/Foo.java";
-
 			// check on the JDK API
 			// this is later use by FileSystemFile
-			assertTrue(new File(duplicateEntry).getCanonicalFile().equals(new File("./" + duplicateEntry).getCanonicalFile()));
+			assertEquals(new File(duplicateEntry).getCanonicalFile(), new File("./" + duplicateEntry).getCanonicalFile());
 
 			Launcher.main(new String[] {
 					"-i",
@@ -173,14 +174,13 @@ public class APITest {
 		}
 	}
 
-	@Test(expected = Exception.class)
+	@Test
 	public void testNotValidInput() {
-		String invalidEntry = "does/not/exists//Foo.java";
-		Launcher.main(new String[] { "-i",
-				invalidEntry,
-				"-o",
-				"target/spooned/apitest" });
-	}
+		assertThrows(Exception.class, () -> {
+			String invalidEntry = "does/not/exists//Foo.java";
+			Launcher.main(new String[]{ "-i", invalidEntry, "-o", "target/spooned/apitest" });
+		});
+	} 
 
 	@Test
 	public void testAddProcessorMethodInSpoonAPI() {
@@ -424,16 +424,16 @@ public class APITest {
 		CtIf templateRoot = matcherCtClass.getMethod("matcher").getBody().getStatement(0);
 
 		final List<CtMethod<?>> setters = Query.getElements(launcher.getFactory(), new SetterMethodWithoutCollectionsFilter(launcher.getFactory()));
-		assertTrue("Number of setters found null", !setters.isEmpty());
+		assertTrue(!setters.isEmpty(), "Number of setters found null");
 
 		for (CtStatement statement : setters.stream().map((Function<CtMethod<?>, CtStatement>) ctMethod -> ctMethod.getBody().getStatement(0)).collect(Collectors.toList())) {
 
 			// First statement should be a condition to protect the setter of the parent.
-			assertTrue("Check the method " + statement.getParent(CtMethod.class).getSignature() + " in the declaring class " + statement.getParent(CtType.class).getQualifiedName(), statement instanceof CtIf);
+			assertTrue(statement instanceof CtIf, "Check the method " + statement.getParent(CtMethod.class).getSignature() + " in the declaring class " + statement.getParent(CtType.class).getQualifiedName());
 			CtIf ifCondition = (CtIf) statement;
 			TemplateMatcher matcher = new TemplateMatcher(templateRoot);
 
-			assertEquals("Check the number of if in method " + statement.getParent(CtMethod.class).getSignature() + " in the declaring class " + statement.getParent(CtType.class).getQualifiedName(), 1, matcher.find(ifCondition).size());
+			assertEquals(1, matcher.find(ifCondition).size(), "Check the number of if in method " + statement.getParent(CtMethod.class).getSignature() + " in the declaring class " + statement.getParent(CtType.class).getQualifiedName());
 		}
 	}
 
@@ -566,9 +566,9 @@ public class APITest {
 		Set<String> units = launcher.getFactory().CompilationUnit().getMap().keySet();
 		assertEquals(3, units.size());
 
-		assertTrue("Module file not contained (" + moduleFile.getCanonicalPath() + "). \nContent: " + StringUtils.join(units, "\n"), units.contains(moduleFile.getCanonicalPath()));
-		assertTrue("Package file not contained (" + packageFile.getCanonicalPath() + "). \nContent: " + StringUtils.join(units, "\n"), units.contains(packageFile.getCanonicalPath()));
-		assertTrue("Class file not contained (" + classFile.getCanonicalPath() + "). \nContent: " + StringUtils.join(units, "\n"), units.contains(classFile.getCanonicalPath()));
+		assertTrue(units.contains(moduleFile.getCanonicalPath()), "Module file not contained (" + moduleFile.getCanonicalPath() + "). \nContent: " + StringUtils.join(units, "\n"));
+		assertTrue(units.contains(packageFile.getCanonicalPath()), "Package file not contained (" + packageFile.getCanonicalPath() + "). \nContent: " + StringUtils.join(units, "\n"));
+		assertTrue(units.contains(classFile.getCanonicalPath()), "Class file not contained (" + classFile.getCanonicalPath() + "). \nContent: " + StringUtils.join(units, "\n"));
 	}
 
 	@Test
@@ -584,7 +584,7 @@ public class APITest {
 		launcher.run();
 		File outputDir = new File(destPath);
 		System.out.println(destPath);
-		assertFalse("Output dir should not exist: " + outputDir.getAbsolutePath(), outputDir.exists());
+		assertFalse(outputDir.exists(), "Output dir should not exist: " + outputDir.getAbsolutePath());
 	}
 
 	@Test
