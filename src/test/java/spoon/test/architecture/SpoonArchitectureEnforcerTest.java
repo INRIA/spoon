@@ -276,46 +276,26 @@ public class SpoonArchitectureEnforcerTest {
 		}).size());
 
 		// contract: all public methods of those classes are properly tested in a JUnit test
-
-		// List<String> l = new ArrayList<>();
-
-		// l.add("spoon.pattern.PatternBuilder");
-
-		// l.add("spoon.pattern.Pattern");
-
-		// List<String> errorsMethods = new ArrayList<>();
-
-		// for (String klass : l) {
-
-		// CtType<?> ctType = spoon.getFactory().Type().get(Class.forName(klass));
-
-		// for (CtMethod m : ctType.getMethods()) {
-
-		// if (!m.hasModifier(ModifierKind.PUBLIC)) continue;
-
-		// 
-
-		// if (spoon.getModel().getElements(new Filter<CtExecutableReference>() {
-
-		// @Override
-
-		// public boolean matches(CtExecutableReference element) {
-
-		// return element.getExecutableDeclaration() == m;
-
-		// }
-
-		// }).size() == 0) {
-
-		// errorsMethods.add(klass+"#"+m.getSimpleName());
-
-		// }
-
-		// }
-
-		// }
-
-		// assertTrue("untested public methods: "+errorsMethods.toString(), errorsMethods.size()==0);
+//		List<String> l = new ArrayList<>();
+//		l.add("spoon.pattern.PatternBuilder");
+//		l.add("spoon.pattern.Pattern");
+//		List<String> errorsMethods = new ArrayList<>();
+//		for (String klass : l) {
+//			CtType<?> ctType = spoon.getFactory().Type().get(Class.forName(klass));
+//			for (CtMethod m : ctType.getMethods()) {
+//				if (!m.hasModifier(ModifierKind.PUBLIC)) continue;
+//
+//				if (spoon.getModel().getElements(new Filter<CtExecutableReference>() {
+//					@Override
+//					public boolean matches(CtExecutableReference element) {
+//						return element.getExecutableDeclaration() == m;
+//					}
+//				}).size() == 0) {
+//					errorsMethods.add(klass+"#"+m.getSimpleName());
+//				}
+//			}
+//		}
+//		assertTrue("untested public methods: "+errorsMethods.toString(), errorsMethods.size()==0);
 	}
 
 	@Test
