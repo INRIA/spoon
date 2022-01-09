@@ -16,13 +16,6 @@
  */
 package spoon;
 
-import org.junit.Test;
-
-import spoon.compiler.Environment;
-import spoon.reflect.CtModel;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.support.JavaOutputProcessor;
-import spoon.support.compiler.VirtualFile;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -34,11 +27,18 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+import spoon.compiler.Environment;
+import spoon.reflect.CtModel;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.support.JavaOutputProcessor;
+import spoon.support.compiler.VirtualFile;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LauncherTest {
 
@@ -158,6 +158,6 @@ public class LauncherTest {
 		launcher.addInputResource(Paths.get("./src/test/resources/path with spaces/Foo.java").toAbsolutePath().toString());
 		CtModel model = launcher.buildModel();
 
-		assertTrue("CtTxpe 'Foo' not present in model", model.getAllTypes().stream().anyMatch(ct -> ct.getQualifiedName().equals("Foo")));
+		assertTrue(model.getAllTypes().stream().anyMatch(ct -> ct.getQualifiedName().equals("Foo")), "CtTxpe 'Foo' not present in model");
 	}
 }
