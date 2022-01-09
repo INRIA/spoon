@@ -261,7 +261,11 @@ public class SpoonArchitectureEnforcerTest {
 				return super.matches(element) && element.getAnnotation(Test.class) != null;
 			}
 		})) {
-			assertTrue(meth.getParent(CtClass.class).getSimpleName().startsWith("Test") || meth.getParent(CtClass.class).getSimpleName().endsWith("Test"), "naming contract violated for " + meth.getParent(CtClass.class).getSimpleName());
+			CtType<Object> topLevelType = meth.getParent(CtClass.class).getTopLevelType();
+			assertTrue(
+					topLevelType.getSimpleName().startsWith("Test")
+							|| topLevelType.getSimpleName().endsWith("Test"),
+					"naming contract violated for " + meth.getParent(CtClass.class).getSimpleName());
 		}
 
 		// contract: the Spoon test suite does not depend on Junit 3 classes and methods
