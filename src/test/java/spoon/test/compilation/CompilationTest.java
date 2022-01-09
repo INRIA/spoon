@@ -92,8 +92,10 @@ public class CompilationTest {
 		SpoonModelBuilder compiler = launcher.createCompiler();
 		boolean compile = compiler.compile(SpoonModelBuilder.InputType.CTTYPES);
 		final String nl = System.getProperty("line.separator");
-		assertTrue(compile, nl + "the compilation should succeed: " + nl + ((JDTBasedSpoonCompiler) (compiler)).getProblems().stream().filter(IProblem::isError).map(CategorizedProblem::toString).collect(Collectors.joining(nl))
-		);
+		assertTrue(compile,
+				nl + "the compilation should succeed: " + nl
+						+ ((JDTBasedSpoonCompiler) (compiler)).getProblems().stream().filter(IProblem::isError)
+								.map(CategorizedProblem::toString).collect(Collectors.joining(nl)));
 	}
 
 	@Test
