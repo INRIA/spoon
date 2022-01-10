@@ -1735,10 +1735,20 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			scan(parameter.getType());
 		}
 		// after an implicit type, there is no space because we dont print anything
-		if ((parameter.getType() != null && !parameter.getType().isImplicit()) || ignoreImplicit) {
+		if (isParameterWithImplicitType(parameter) || isNotFirstParameter(parameter)
+				|| ignoreImplicit) {
 			printer.writeSpace();
 		}
 		printer.writeIdentifier(parameter.getSimpleName());
+	}
+
+	private <T> boolean isParameterWithImplicitType(CtParameter<T> parameter) {
+		return parameter.getType() != null && !parameter.getType().isImplicit();
+	}
+
+	private <T> boolean isNotFirstParameter(CtParameter<T> parameter) {
+		return parameter.getParent() != null
+				&& parameter.getParent().getParameters().indexOf(parameter) != 0;
 	}
 
 	@Override
