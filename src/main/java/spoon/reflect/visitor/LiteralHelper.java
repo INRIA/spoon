@@ -62,7 +62,7 @@ abstract class LiteralHelper {
 	 */
 	public static String getTextBlockToken(CtTextBlock literal) {
 		String token = "\"\"\"\n"
-				+ literal.getValue().replaceAll("\\\\", "\\\\\\\\")
+				+ literal.getValue().replace("\\", "\\\\")
 				+ "\"\"\"";
 		return token;
 	}
