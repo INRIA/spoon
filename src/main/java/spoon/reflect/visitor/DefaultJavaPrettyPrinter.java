@@ -1642,10 +1642,15 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	@Override
 	public <T> void visitCtLambda(CtLambda<T> lambda) {
 		enterCtExpression(lambda);
+		// single parameter lambdas with implicit type can be printed without parantheses
+		if (isSingleParameterWithoutExplicitType(lambda) && !ignoreImplicit) {
+			elementPrinterHelper.printList(lambda.getParameters(), null, false, "", false, false, ",",
+					false, false, "", this::scan);
+		} else {
+			elementPrinterHelper.printList(lambda.getParameters(), null, false, "(", false, false, ",",
+					false, false, ")", this::scan);
+		}
 
-		elementPrinterHelper.printList(lambda.getParameters(),
-			null, false, "(", false, false, ",", false, false, ")",
-			parameter -> scan(parameter));
 		printer.writeSpace();
 		printer.writeSeparator("->");
 		printer.writeSpace();
@@ -1656,6 +1661,11 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			scan(lambda.getExpression());
 		}
 		exitCtExpression(lambda);
+	}
+
+	private <T> boolean isSingleParameterWithoutExplicitType(CtLambda<T> lambda) {
+		return lambda.getParameters().size() == 1 && (lambda.getParameters().get(0).getType() == null
+				|| lambda.getParameters().get(0).getType().isImplicit());
 	}
 
 	@Override
@@ -1724,7 +1734,10 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			scan(parameter.getType());
 		}
-		printer.writeSpace();
+		// after an implicit type, there is no space because we dont print anything
+		if ((parameter.getType() != null && !parameter.getType().isImplicit()) || ignoreImplicit) {
+			printer.writeSpace();
+		}
 		printer.writeIdentifier(parameter.getSimpleName());
 	}
 

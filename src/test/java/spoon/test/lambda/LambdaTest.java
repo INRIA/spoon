@@ -581,4 +581,19 @@ public class LambdaTest {
 		assertThrows(IndexOutOfBoundsException.class,
 				() -> lamda.addParameterAt(2, paramater));
 	}
+
+	@Test
+	public void singleParameterLambdaWithoutParentheses() {
+		// contract: single parameter lambdas without parentheses should be well printed
+		Factory factory = new Launcher().getFactory();
+		CtLambda<?> lambda = factory.createLambda();
+		CtParameter<String> parameter = factory.createParameter();
+		parameter.setSimpleName("x");
+		CtTypeReference<String> stringType = factory.Type().stringType();
+		stringType.setImplicit(true);
+		parameter.setType(stringType);
+		lambda.addParameter(parameter);
+		lambda.setExpression(factory.createCodeSnippetExpression("x"));
+		assertThat(lambda.toString(), equalTo("x -> x"));
+	}
 }
