@@ -181,7 +181,7 @@ public class LambdaTest {
 		assertHasExpressionBody(lambda);
 
 		assertIsWellPrinted(
-				"((Predicate<Person>) (( p) -> p.age > 10))",
+				"((Predicate<Person>) (p -> p.age > 10))",
 				lambda);
 	}
 
@@ -200,7 +200,7 @@ public class LambdaTest {
 		assertHasExpressionBody(lambda);
 
 		assertIsWellPrinted(
-				"((CheckPersons) (( p1, p2) -> (p1.age - p2.age) > 0))",
+				"((CheckPersons) ((p1, p2) -> (p1.age - p2.age) > 0))",
 				lambda);
 	}
 
@@ -265,7 +265,7 @@ public class LambdaTest {
 		assertStatementBody(lambda);
 
 		assertIsWellPrinted(
-				"((Predicate<Person>) (( p) -> {"
+				"((Predicate<Person>) (p -> {"
 						+ System.lineSeparator()
 						+ "    p.doSomething();" + System.lineSeparator()
 						+ "    return p.age > 10;" + System.lineSeparator()
@@ -291,7 +291,7 @@ public class LambdaTest {
 			}
 		}).get(0);
 		final String expected =
-				"if (((Predicate<Person>) (( p) -> p.age > 18)).test(new Person(10))) {"
+				"if (((Predicate<Person>) (p -> p.age > 18)).test(new Person(10))) {"
 						+ System.lineSeparator()
 						+ "    System.err.println(\"Enjoy, you have more than 18.\");" + System
 						.lineSeparator()
@@ -459,7 +459,7 @@ public class LambdaTest {
 		assertParameterIsNamedBy("elt", parameter);
 		assertTrue(typeReference.getBounds().size() == 2);
 		assertHasExpressionBody(lambda);
-		assertIsWellPrinted("( elt) -> elt.test()", lambda);
+		assertIsWellPrinted("elt -> elt.test()", lambda);
 	}
 
 	@Test
