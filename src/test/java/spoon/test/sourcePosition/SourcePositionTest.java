@@ -16,8 +16,10 @@
  */
 package spoon.test.sourcePosition;
 
-import org.junit.Test;
 
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtInvocation;
@@ -41,11 +43,9 @@ import spoon.support.reflect.declaration.CtClassImpl;
 import spoon.test.sourcePosition.testclasses.Brambora;
 import spoon.testing.utils.ModelUtils;
 
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class SourcePositionTest {

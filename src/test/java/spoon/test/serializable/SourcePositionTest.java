@@ -16,7 +16,6 @@
  */
 package spoon.test.serializable;
 
-import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -25,7 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import spoon.Launcher;
 import spoon.reflect.CtModel;
@@ -33,6 +32,8 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.support.SerializationModelStreamer;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SourcePositionTest {
 
@@ -84,6 +85,6 @@ public class SourcePositionTest {
 		CtField<?> field = (CtField<?>) model.getElements(
 				element -> element instanceof CtField &&
 						((CtField<?>) element).getSimpleName().equals("pleaseAttachSourcePositionToMyType")).stream().findFirst().get();
-		assertTrue("Source position unknown for type of field", field.getType().getPosition().isValidPosition());
+		assertTrue(field.getType().getPosition().isValidPosition(), "Source position unknown for type of field");
 	}
 }
