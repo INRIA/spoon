@@ -16,8 +16,17 @@
  */
 package spoon.test.trycatch;
 
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.reflect.CtModel;
@@ -38,23 +47,16 @@ import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.trycatch.testclasses.Foo;
 import spoon.test.trycatch.testclasses.Main;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -334,7 +336,7 @@ public class TryCatchTest {
 
 		List<CtCatch> catchers = model.getElements(e -> true);
 
-		assertEquals("There should only be one catch statement, check the resource", 1, catchers.size());
+		assertEquals(1, catchers.size(), "There should only be one catch statement, check the resource");
 		CtTypeReference<?> caughtType = catchers.get(0).getParameter().getType();
 
 		assertEquals("CustomException", caughtType.getSimpleName());
@@ -367,8 +369,8 @@ public class TryCatchTest {
 		CtCatch targetCatch = catches.get(0);
 		List<CtTypeReference<?>> paramTypes = targetCatch.getParameter().getMultiTypes();
 		assertThat(paramTypes.size(), equalTo(2));
-		assertTrue("first type reference is fully qualified", paramTypes.get(0).isSimplyQualified());
-		assertTrue("second type reference is fully qualified", paramTypes.get(1).isSimplyQualified());
+		assertTrue(paramTypes.get(0).isSimplyQualified(), "first type reference is fully qualified");
+		assertTrue(paramTypes.get(1).isSimplyQualified(), "second type reference is fully qualified");
 	}
 
 	@Test
@@ -384,8 +386,8 @@ public class TryCatchTest {
 		CtCatch targetCatch = catches.get(0);
 		List<CtTypeReference<?>> paramTypes = targetCatch.getParameter().getMultiTypes();
 		assertThat(paramTypes.size(), equalTo(2));
-		assertTrue("first type reference should be unqualified", paramTypes.get(0).isSimplyQualified());
-		assertFalse("second type reference should be qualified", paramTypes.get(1).isSimplyQualified());
+		assertTrue(paramTypes.get(0).isSimplyQualified(), "first type reference should be unqualified");
+		assertFalse(paramTypes.get(1).isSimplyQualified(), "second type reference should be qualified");
 	}
 
 	@Test
