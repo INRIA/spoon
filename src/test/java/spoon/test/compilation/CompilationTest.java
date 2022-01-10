@@ -16,13 +16,6 @@
  */
 package spoon.test.compilation;
 
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -34,10 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import spoon.Launcher;
 import spoon.SpoonException;
@@ -68,6 +62,14 @@ import spoon.test.compilation.testclasses.IBar;
 import spoon.test.compilation.testclasses.Ifoo;
 import spoon.testing.utils.ModelUtils;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 public class CompilationTest {
 
 	@Test
@@ -90,15 +92,10 @@ public class CompilationTest {
 		SpoonModelBuilder compiler = launcher.createCompiler();
 		boolean compile = compiler.compile(SpoonModelBuilder.InputType.CTTYPES);
 		final String nl = System.getProperty("line.separator");
-		assertTrue(
-				nl + "the compilation should succeed: " + nl +
-						((JDTBasedSpoonCompiler) compiler).getProblems()
-								.stream()
-								.filter(IProblem::isError)
-								.map(CategorizedProblem::toString)
-								.collect(Collectors.joining(nl)),
-				compile
-		);
+		assertTrue(compile,
+				nl + "the compilation should succeed: " + nl
+						+ ((JDTBasedSpoonCompiler) (compiler)).getProblems().stream().filter(IProblem::isError)
+								.map(CategorizedProblem::toString).collect(Collectors.joining(nl)));
 	}
 
 	@Test
@@ -385,7 +382,7 @@ public class CompilationTest {
 
 		CtTypeReference<?> mIFoo = launcher.getFactory().Type().createReference("spoontest.IFoo");
 		CtTypeReference<?> mFoo = launcher.getFactory().Type().createReference("spoontest.Foo");
-		assertTrue("Foo subtype of IFoo", mFoo.isSubtypeOf(mIFoo));
+		assertTrue(mFoo.isSubtypeOf(mIFoo), "Foo subtype of IFoo");
 
 		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
 
@@ -412,7 +409,7 @@ public class CompilationTest {
 		mIFoo = launcher.getFactory().Type().createReference("spoontest.IFoo");
 		mFoo = launcher.getFactory().Type().createReference("spoontest.Foo");
 		//if it fails then it is because each class is loaded by different class loader
-		assertTrue("Foo subtype of IFoo", mFoo.isSubtypeOf(mIFoo));
+		assertTrue(mFoo.isSubtypeOf(mIFoo), "Foo subtype of IFoo");
 
 		// not in the spoon classpath before setting it
 		Class<?> ifoo = launcher.getEnvironment().getInputClassLoader().loadClass("spoontest.IFoo");
