@@ -16,23 +16,23 @@
  */
 package spoon.test.change;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.junit.Test;
-
-import spoon.support.modelobs.ChangeCollector;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.path.CtRole;
+import spoon.support.modelobs.ChangeCollector;
 import spoon.test.change.testclasses.SubjectOfChange;
 import spoon.testing.utils.ModelUtils;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class ChangeCollectorTest {
 
