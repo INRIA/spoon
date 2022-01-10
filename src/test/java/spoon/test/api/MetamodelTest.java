@@ -16,7 +16,21 @@
  */
 package spoon.test.api;
 
-import org.junit.Test;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.SpoonException;
@@ -58,29 +72,17 @@ import spoon.support.StandardEnvironment;
 import spoon.support.visitor.ClassTypingContext;
 import spoon.template.Parameter;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.test.architecture.SpoonArchitectureEnforcerTest.assertSetEquals;
 
 public class MetamodelTest {
@@ -128,7 +130,7 @@ public class MetamodelTest {
 		if (expectedTypesByName.isEmpty() == false) {
 			problems.add("These Metamodel.Type instances are missing:" + expectedTypesByName.keySet());
 		}
-		assertTrue("You might need to update api/Metamodel.java: " + String.join("\n", problems), problems.isEmpty());
+		assertTrue(problems.isEmpty(), "You might need to update api/Metamodel.java: " + String.join("\n", problems));
 	}
 	
 	@Test
@@ -251,8 +253,8 @@ public class MetamodelTest {
 				}
 			}
 
-			assertTrue(roles + " must have a getter in " + parent.getQualifiedName(), getterFound);
-			assertTrue(roles + " must have a setter in " + parent.getQualifiedName(), setterFound);
+			assertTrue(getterFound, roles + " must have a getter in " + parent.getQualifiedName());
+			assertTrue(setterFound, roles + " must have a setter in " + parent.getQualifiedName());
 		}
 	}
 
@@ -272,7 +274,7 @@ public class MetamodelTest {
 			assertNotNull(expectedConcept);
 			assertConceptsEqual(expectedConcept, runtimeConcept);
 		}
-		assertEquals(expectedConceptsByName.keySet().toString(), 0, expectedConceptsByName.size());
+		assertEquals(0, expectedConceptsByName.size(), expectedConceptsByName.keySet().toString());
 	}
 
 	private void assertConceptsEqual(MetamodelConcept expectedConcept, MetamodelConcept runtimeConcept) {
@@ -351,8 +353,8 @@ public class MetamodelTest {
 					}
 				}
 				//contract: type of field value is never implicit
-				assertFalse("Value type of Field " + mmField.toString() + " is implicit", mmField.getTypeOfField().isImplicit());
-				assertFalse("Item value type of Field " + mmField.toString() + " is implicit", mmField.getTypeofItems().isImplicit());
+				assertFalse(mmField.getTypeOfField().isImplicit(), "Value type of Field " + mmField.toString() + " is implicit");
+				assertFalse(mmField.getTypeofItems().isImplicit(), "Item value type of Field " + mmField.toString() + " is implicit");
 
 				mmField.getMethods(MMMethodKind.OTHER).forEach(
 						mmethod -> mmethod.getDeclaredMethods().forEach(
@@ -364,11 +366,10 @@ public class MetamodelTest {
 		});
 
 		unhandledRoles.forEach(it -> problems.add("Unused CtRole." + it.name()));
-		/*
-		 * This assertion prints all the methods which are not covered by current implementation of SpoonMetaModel.
-		 * It is not a bug. It is useful to see how much is SpoonMetaModel covering real Spoon model.
+		/* This assertion prints all the methods which are not covered by current implementation of SpoonMetaModel.
+		It is not a bug. It is useful to see how much is SpoonMetaModel covering real Spoon model.
 		 */
-//		assertTrue(String.join("\n", problems), problems.isEmpty());
+		// assertTrue(String.join("\n", problems), problems.isEmpty());
 	}
 
 	@Test
@@ -390,11 +391,11 @@ public class MetamodelTest {
 		for (CtRole role : CtRole.values()) {
 			RoleHandler rh = RoleHandlerHelper.getOptionalRoleHandler(ifaceClass, role);
 			if (rh != null) {
-				assertTrue("RoleHandler for role " + role + " is missing for " + ifaceClass, roleHandlersOfIFace.remove(rh));
-				assertTrue("RoleHandler " + rh + " is not accessible by RoleHandlerHelper#forEachRoleHandler()", allRoleHandlers.contains(rh));
+				assertTrue(roleHandlersOfIFace.remove(rh), "RoleHandler for role " + role + " is missing for " + ifaceClass);
+				assertTrue(allRoleHandlers.contains(rh), "RoleHandler " + rh + " is not accessible by RoleHandlerHelper#forEachRoleHandler()");
 			}
 		}
-		assertTrue("There are unexpected RoleHandlers " + roleHandlersOfIFace + " for " + ifaceClass, roleHandlersOfIFace.isEmpty());
+		assertTrue(roleHandlersOfIFace.isEmpty(), "There are unexpected RoleHandlers " + roleHandlersOfIFace + " for " + ifaceClass);
 	}
 
 	@Test
