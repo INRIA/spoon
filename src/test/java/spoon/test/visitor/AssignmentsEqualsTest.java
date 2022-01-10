@@ -11,7 +11,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class AssignmentsEqualsTest {
 
@@ -23,7 +22,7 @@ public class AssignmentsEqualsTest {
 
 		Factory factory = launcher.getFactory();
 		List<CtAssignment> assignments = Query.getElements(factory, new TypeFilter<>(CtAssignment.class));
-		assertSame(assignments.size(), 10);
+		assertEquals(assignments.size(), 10);
 		assertNotEquals(assignments.get(0), assignments.get(1));
 		assertNotEquals(assignments.get(2), assignments.get(3));
 		assertNotEquals(assignments.get(4), assignments.get(5));
