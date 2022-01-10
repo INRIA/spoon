@@ -884,7 +884,7 @@ public class TestSniperPrinter {
 		private Consumer<CtType<?>> markFieldForSniperPrinting() {
 			return type -> {
 				CtField<?> field = type.getField("array");
-				TestSniperPrinter.markElementForSniperPrinting(field);
+				TestSniperPrinter.markElementForSniperPrinting(field.getType());
 			};
 		}
 
@@ -936,6 +936,15 @@ public class TestSniperPrinter {
 					"sniperPrinter.arrayInitialisation.AsLocalVariable",
 					noOpModifyLocalVariable,
 					assertPrintsBracketForArrayInitialisation("int array[] = new int[]{ };"));
+		}
+
+		@GitHubIssue(issueNumber = 4421)
+		@Test
+		void test_bracketsShouldBePrintedForGenericTypeOfArray() {
+			testSniper(
+					"sniperPrinter.arrayInitialisation.GenericTypeArray",
+					markFieldForSniperPrinting(),
+					assertPrintsBracketForArrayInitialisation("Class<?> array[];"));
 		}
 	}
 
