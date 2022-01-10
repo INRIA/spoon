@@ -16,10 +16,7 @@
  */
 package spoon.test.staticFieldAccess2;
 
-import static spoon.testing.utils.ModelUtils.canBeBuilt;
-
-import static org.junit.Assert.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
@@ -27,6 +24,10 @@ import spoon.test.staticFieldAccess2.testclasses.AmbiguousImplicitFieldReference
 import spoon.test.staticFieldAccess2.testclasses.ChildOfGenericsWithAmbiguousStaticField;
 import spoon.test.staticFieldAccess2.testclasses.ImplicitFieldReference;
 import spoon.test.staticFieldAccess2.testclasses.ImplicitStaticFieldReference;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class ImplicitStaticFieldReferenceTest
 {
