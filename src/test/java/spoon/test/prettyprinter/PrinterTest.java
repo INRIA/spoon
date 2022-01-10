@@ -611,7 +611,7 @@ public class PrinterTest {
 		// contract: when a class reference is printed, the type is not lost
 		String expected = "class A {\n" +
 			"    void m() {\n" +
-			"        Stream.empty().map(( v) -> String.class).close();\n" +
+			"        Stream.empty().map(v -> String.class).close();\n" +
 			"    }\n" +
 			"}";
 		CtType<?> type = Launcher.parseClass("class A { void m() { Stream.empty().map(v-> String.class).close(); } }");
@@ -623,7 +623,7 @@ public class PrinterTest {
 		// contract: when a class reference is printed, the type is not lost
 		String expected = "class A {\n" +
 			"    void m() {\n" +
-			"        Stream.empty().map(( v) -> List.class).close();\n" +
+			"        Stream.empty().map(v -> List.class).close();\n" +
 			"    }\n" +
 			"}";
 		CtType<?> type = Launcher.parseClass("class A { void m() { Stream.empty().map(v-> List.class).close(); } }");
@@ -635,7 +635,7 @@ public class PrinterTest {
 		// contract: when a class reference is printed, the type is not lost
 		String expected = "class A {\n" +
 			"    void m() {\n" +
-			"        Stream.empty().map(( v) -> List.class).close();\n" +
+				"        Stream.empty().map(v -> List.class).close();\n" +
 			"    }\n" +
 			"}";
 		CtType<?> type = Launcher.parseClass("class A { void m() { Stream.empty().map(v-> java.util.List.class).close(); } }");
