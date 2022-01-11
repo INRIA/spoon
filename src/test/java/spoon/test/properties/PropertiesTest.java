@@ -16,16 +16,17 @@
  */
 package spoon.test.properties;
 
-import org.junit.Test;
+
+import java.io.File;
+import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.factory.Factory;
 
-import java.io.File;
-import java.util.Arrays;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PropertiesTest {
 
