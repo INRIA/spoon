@@ -7,7 +7,12 @@
  */
 package spoon.test.reference;
 
-import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.reflect.code.CtInvocation;
@@ -27,17 +32,13 @@ import spoon.test.reference.testclasses.Kuu;
 import spoon.test.reference.testclasses.Stream;
 import spoon.test.reference.testclasses.SuperFoo;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ExecutableReferenceTest {
 	@Test
