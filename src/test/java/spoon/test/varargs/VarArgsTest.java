@@ -16,7 +16,7 @@
  */
 package spoon.test.varargs;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -24,9 +24,9 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.test.trycatch.testclasses.Main;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class VarArgsTest {
