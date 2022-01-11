@@ -16,8 +16,12 @@
  */
 package spoon.test.reference;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.SpoonResourceHelper;
@@ -34,12 +38,9 @@ import spoon.reflect.visitor.filter.AbstractReferenceFilter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Created by gerard on 21/11/2014.
@@ -49,7 +50,7 @@ public class ExecutableReferenceGenericTest {
 	private Factory factory;
 	public static final String NAME_MY_CLASS_1 = "MyClass";
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		Launcher spoon = new Launcher();
 		factory = spoon.createFactory();
