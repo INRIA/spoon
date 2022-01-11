@@ -16,7 +16,11 @@
  */
 package spoon.test.reference;
 
-import org.junit.Test;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtArrayWrite;
 import spoon.reflect.code.CtInvocation;
@@ -39,14 +43,11 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.reference.testclasses.Pozole;
 import spoon.test.reference.testclasses.Tortillas;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
@@ -64,11 +65,11 @@ public class VariableAccessTest {
 			}
 		}).get(0);
 
-		assertNotNull("Parameter can't be null", ref.getDeclaration());
-		assertNotNull("Declaring method reference can't be null", ref.getDeclaringExecutable());
-		assertNotNull("Declaring type of the method can't be null", ref.getDeclaringExecutable().getDeclaringType());
-		assertNotNull("Declaration of declaring type of the method can't be null", ref.getDeclaringExecutable().getDeclaringType().getDeclaration());
-		assertNotNull("Declaration of root class can't be null", ref.getDeclaringExecutable().getDeclaringType().getDeclaringType().getDeclaration());
+		assertNotNull(ref.getDeclaration(), "Parameter can't be null");
+		assertNotNull(ref.getDeclaringExecutable(), "Declaring method reference can't be null");
+		assertNotNull(ref.getDeclaringExecutable().getDeclaringType(), "Declaring type of the method can't be null");
+		assertNotNull(ref.getDeclaringExecutable().getDeclaringType().getDeclaration(), "Declaration of declaring type of the method can't be null");
+		assertNotNull(ref.getDeclaringExecutable().getDeclaringType().getDeclaringType().getDeclaration(), "Declaration of root class can't be null");
 	}
 
 	@Test
