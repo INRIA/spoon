@@ -97,7 +97,7 @@ public class ProcessingTest {
 		assertEquals(myBeforeStatementAsString, constructor.getBody().getStatement(5).toString(), "insert has not been done at the right position");
 		assertEquals(myBeforeStatementAsString, constructor.getBody().getStatement(7).toString(), "insert has not been done at the right position");
 
-		assertNotEquals(constructor.getBody().getStatement(6), constructor.getBody().getStatement(8), "switch should not be the same");
+		assertNotEquals((CtElement) constructor.getBody().getStatement(6), (CtElement)constructor.getBody().getStatement(8), "switch should not be the same");
 		assertNotEquals(constructor.getBody().getStatement(6).toString(), constructor.getBody().getStatement(8).toString(), "switch should not be the same");
 
 	}
@@ -130,7 +130,7 @@ public class ProcessingTest {
 		assertEquals(myBeforeStatementAsString, constructor.getBody().getStatement(5).toString(), "insert has not been done at the right position");
 		assertEquals(myBeforeStatementAsString, constructor.getBody().getStatement(7).toString(), "insert has not been done at the right position");
 
-		assertNotEquals(constructor.getBody().getStatement(6), constructor.getBody().getStatement(8), "switch should not be the same");
+		assertNotEquals((CtElement) constructor.getBody().getStatement(6), (CtElement) constructor.getBody().getStatement(8), "switch should not be the same");
 		assertNotEquals(constructor.getBody().getStatement(6).toString(), constructor.getBody().getStatement(8).toString(), "switch should not be the same");
 
 	}
