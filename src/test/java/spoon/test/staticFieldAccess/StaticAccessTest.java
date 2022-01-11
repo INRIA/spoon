@@ -16,8 +16,12 @@
  */
 package spoon.test.staticFieldAccess;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import java.io.File;
+import java.util.Arrays;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonModelBuilder;
@@ -27,10 +31,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.test.staticFieldAccess.processors.InsertBlockProcessor;
 
-import java.io.File;
-import java.util.Arrays;
-
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class StaticAccessTest {
@@ -39,7 +40,7 @@ public class StaticAccessTest {
     Factory factory;
     SpoonModelBuilder compiler;
 
-    @Before
+    @BeforeEach
     public void setUp()  throws Exception {
           spoon = new Launcher();
           factory = spoon.createFactory();
