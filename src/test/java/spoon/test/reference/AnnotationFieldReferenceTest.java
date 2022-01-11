@@ -16,7 +16,7 @@
  */
 package spoon.test.reference;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
@@ -26,8 +26,8 @@ import spoon.test.reference.testclasses.Mole;
 import spoon.test.reference.testclasses.Parameter;
 import spoon.testing.utils.ModelUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class AnnotationFieldReferenceTest {
 	@Test
