@@ -16,17 +16,10 @@
  */
 package spoon.test.targeted;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.buildClass;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import spoon.Launcher;
 import spoon.reflect.CtModel;
@@ -61,6 +54,14 @@ import spoon.test.targeted.testclasses.InternalSuperCall;
 import spoon.test.targeted.testclasses.Pozole;
 import spoon.test.targeted.testclasses.SuperClass;
 import spoon.test.targeted.testclasses.Tapas;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
 
 
 public class TargetedExpressionTest {
@@ -107,8 +108,8 @@ public class TargetedExpressionTest {
 		final List<CtFieldAccess<?>> elements = constructor.getElements(new TypeFilter<>(CtFieldAccess.class));
 		assertEquals(2, elements.size());
 
-		assertSame("Target is CtThisAccessImpl if there is a 'this' explicit.", CtThisAccessImpl.class, elements.get(0).getTarget().getClass());
-		assertNotNull("Target isn't null if there is a 'this' explicit.", elements.get(1).getTarget());
+		assertSame(CtThisAccessImpl.class, elements.get(0).getTarget().getClass(), "Target is CtThisAccessImpl if there is a 'this' explicit.");
+		assertNotNull(elements.get(1).getTarget(), "Target isn't null if there is a 'this' explicit.");
 		assertTrue(elements.get(1).getTarget().isImplicit());
 	}
 
@@ -493,7 +494,7 @@ public class TargetedExpressionTest {
 		CtModel model = launcher.buildModel();
 		List<CtTypeAccess<?>> typeAccesses = model.getElements(e -> e.getAccessedType().getSimpleName().equals("SomeClass"));
 
-		assertEquals("There should only be one reference to SomeClass, check the resource!", 1, typeAccesses.size());
+		assertEquals(1, typeAccesses.size(), "There should only be one reference to SomeClass, check the resource!");
 
 		CtPackageReference pkg = typeAccesses.get(0).getAccessedType().getPackage();
 
