@@ -16,21 +16,13 @@
  */
 package spoon.test.secondaryclasses;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.buildClass;
 
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtNewClass;
@@ -50,6 +42,15 @@ import spoon.test.secondaryclasses.testclasses.AnonymousClass.I;
 import spoon.test.secondaryclasses.testclasses.ClassWithInternalPublicClassOrInterf;
 import spoon.test.secondaryclasses.testclasses.Pozole;
 import spoon.test.secondaryclasses.testclasses.PrivateInnerClasses;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static spoon.testing.utils.ModelUtils.build;
+import static spoon.testing.utils.ModelUtils.buildClass;
 
 public class ClassesTest {
 
