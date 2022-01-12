@@ -16,7 +16,12 @@
  */
 package spoon.test.reference;
 
-import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
@@ -25,12 +30,8 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.CtScanner;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Predicate;
-
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class CloneReferenceTest {
 
@@ -61,7 +62,7 @@ public class CloneReferenceTest {
             CtVariable var1 = findVariable(b, name);
             CtVariableReference refVar1 = findReference(b, name);
             CtVariable var2 = refVar1.getDeclaration();
-            assertSame("Var1 and var2 are not the same element", var1, var2);
+            assertSame(var1, var2, "Var1 and var2 are not the same element");
         }
     }
 
