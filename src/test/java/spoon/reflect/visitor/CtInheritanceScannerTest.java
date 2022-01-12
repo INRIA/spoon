@@ -16,9 +16,8 @@
  */
 package spoon.reflect.visitor;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import org.mockito.Mockito;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
@@ -26,13 +25,12 @@ import spoon.reflect.factory.Factory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -46,36 +44,28 @@ import static spoon.testing.utils.ModelUtils.createFactory;
  *
  * Created by nicolas on 25/02/2015.
  */
-@RunWith(Parameterized.class)
 public class CtInheritanceScannerTest<T extends CtVisitable> {
 
-	private static Factory factory = createFactory();
 
-	@Parameterized.Parameters(name = "{0}")
-	public static Collection<Object[]> data() throws Exception {
-		List<Object[]> values = new ArrayList<>();
+	@TestFactory
+	public List<DynamicTest> createTestcases() throws Exception {
+		Factory factory = createFactory();
+		List<DynamicTest> methods = new ArrayList<>();
 		for (Method method : CoreFactory.class.getDeclaredMethods()) {
 			if (method.getName().startsWith("create")
 					&& method.getParameterCount() == 0
 					&& method.getReturnType().getSimpleName().startsWith("Ct")) {
-				values.add(new Object[] { method.getReturnType(), method.invoke(factory.Core()) });
+				methods.add(DynamicTest.dynamicTest(method.getName(),
+						(() -> testCtInheritanceScanner(method.getReturnType(),
+								(T) method.invoke(factory.Core())))));
 			}
 		}
-		return values;
+		return methods;
 	}
 
-	@Parameterized.Parameter(0)
-	public Class<T> toTest;
-
-	@Parameterized.Parameter(1)
-	public T instance;
 
 	/**
 	 * Create the list of method we have to call for a class
-	 *
-	 * @param entry
-	 * @return
-	 * @throws Exception
 	 */
 	private List<Method> getMethodToInvoke(Class<?> entry) {
 		Queue<Class<?>> tocheck = new LinkedList<>();
@@ -127,11 +117,7 @@ public class CtInheritanceScannerTest<T extends CtVisitable> {
 		return toInvoke;
 	}
 
-	/**
-	 * A return element is a flow break and a statement
-	 */
-	@Test
-	public void testCtInheritanceScanner() throws Throwable {
+	public void testCtInheritanceScanner(Class<?> toTest, T instance) throws Throwable {
 		CtInheritanceScanner mocked = mock(CtInheritanceScanner.class);
 		List<Method> toInvoke = getMethodToInvoke(toTest);
 		// we invoke super for all method we attempt to call
