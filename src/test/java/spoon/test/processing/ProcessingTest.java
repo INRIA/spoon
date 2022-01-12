@@ -16,9 +16,20 @@
  */
 package spoon.test.processing;
 
+
 import com.google.common.io.Files;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.processing.AbstractManualProcessor;
@@ -37,31 +48,23 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.Level;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
-import spoon.test.processing.processors.RenameProcessor;
 import spoon.test.processing.processors.CtClassProcessor;
 import spoon.test.processing.processors.CtInterfaceProcessor;
 import spoon.test.processing.processors.CtTypeProcessor;
+import spoon.test.processing.processors.RenameProcessor;
 import spoon.testing.utils.ProcessorUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class ProcessingTest {
@@ -73,21 +76,15 @@ public class ProcessingTest {
 			int i = meth.getBody().getStatements().size();
 			meth.getBody().insertBegin(type.getFactory().Code()
 					.createCodeSnippetStatement("int i = 0;"));
-			assertEquals("insert failed for method " + meth.getSimpleName(),
-					i + 1, meth.getBody().getStatements().size());
-			assertEquals("insert failed for method " + meth.getSimpleName(),
-					"int i = 0;", meth.getBody().getStatement(0).toString());
+			assertEquals(i + 1, meth.getBody().getStatements().size(), "insert failed for method " + meth.getSimpleName());
+			assertEquals("int i = 0;", meth.getBody().getStatement(0).toString(), "insert failed for method " + meth.getSimpleName());
 		}
 		for (CtConstructor<?> constructor : type.getConstructors()) {
 			int i = constructor.getBody().getStatements().size();
 			constructor.getBody().insertBegin(type.getFactory().Code()
 					.createCodeSnippetStatement("int i = 0;"));
-			assertEquals("insert failed for constructor " + constructor.getSimpleName(),
-					i + 1,
-					constructor.getBody().getStatements().size());
-			assertEquals("insert failed for constructor " + constructor.getSimpleName(),
-					"int i = 0;",
-					constructor.getBody().getStatement(1).toString());
+			assertEquals(i + 1, constructor.getBody().getStatements().size(), "insert failed for constructor " + constructor.getSimpleName());
+			assertEquals("int i = 0;", constructor.getBody().getStatement(1).toString(), "insert failed for constructor " + constructor.getSimpleName());
 		}
 
 		CtConstructor<?> constructor = type.getConstructor(type.getFactory().Type().INTEGER_PRIMITIVE);
@@ -96,12 +93,12 @@ public class ProcessingTest {
 			ctSwitch.insertBefore(type.getFactory().Code()
 					.createCodeSnippetStatement(myBeforeStatementAsString));
 		}
-		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(3).toString());
-		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(5).toString());
-		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(7).toString());
+		assertEquals(myBeforeStatementAsString, constructor.getBody().getStatement(3).toString(), "insert has not been done at the right position");
+		assertEquals(myBeforeStatementAsString, constructor.getBody().getStatement(5).toString(), "insert has not been done at the right position");
+		assertEquals(myBeforeStatementAsString, constructor.getBody().getStatement(7).toString(), "insert has not been done at the right position");
 
-		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6), constructor.getBody().getStatement(8));
-		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6).toString(), constructor.getBody().getStatement(8).toString());
+		assertNotEquals((CtElement) constructor.getBody().getStatement(6), (CtElement)constructor.getBody().getStatement(8), "switch should not be the same");
+		assertNotEquals(constructor.getBody().getStatement(6).toString(), constructor.getBody().getStatement(8).toString(), "switch should not be the same");
 
 	}
 
@@ -112,21 +109,15 @@ public class ProcessingTest {
 			int i = meth.getBody().getStatements().size();
 			meth.getBody().insertEnd(type.getFactory().Code()
 					.createCodeSnippetStatement("int i = 0"));
-			assertEquals("insert failed for method " + meth.getSimpleName(),
-					i + 1, meth.getBody().getStatements().size());
-			assertEquals("insert failed for method " + meth.getSimpleName(),
-					"int i = 0", meth.getBody().getStatement(meth.getBody().getStatements().size() - 1).toString());
+			assertEquals(i + 1, meth.getBody().getStatements().size(), "insert failed for method " + meth.getSimpleName());
+			assertEquals("int i = 0", meth.getBody().getStatement(meth.getBody().getStatements().size() - 1).toString(), "insert failed for method " + meth.getSimpleName());
 		}
 		for (CtConstructor<?> constructor : type.getConstructors()) {
 			int i = constructor.getBody().getStatements().size();
 			constructor.getBody().insertEnd(type.getFactory().Code()
 					.createCodeSnippetStatement("int i = 0"));
-			assertEquals("insert failed for constructor " + constructor.getSimpleName(),
-					i + 1,
-					constructor.getBody().getStatements().size());
-			assertEquals("insert failed for constructor",
-					"int i = 0",
-					constructor.getBody().getStatement(constructor.getBody().getStatements().size() - 1).toString());
+			assertEquals(i + 1, constructor.getBody().getStatements().size(), "insert failed for constructor " + constructor.getSimpleName());
+			assertEquals("int i = 0", constructor.getBody().getStatement(constructor.getBody().getStatements().size() - 1).toString(), "insert failed for constructor");
 		}
 
 		CtConstructor<?> constructor = type.getConstructor(type.getFactory().Type().INTEGER_PRIMITIVE);
@@ -135,12 +126,12 @@ public class ProcessingTest {
 			ctSwitch.insertAfter(type.getFactory().Code()
 					.createCodeSnippetStatement(myBeforeStatementAsString));
 		}
-		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(3).toString());
-		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(5).toString());
-		assertEquals("insert has not been done at the right position", myBeforeStatementAsString, constructor.getBody().getStatement(7).toString());
+		assertEquals(myBeforeStatementAsString, constructor.getBody().getStatement(3).toString(), "insert has not been done at the right position");
+		assertEquals(myBeforeStatementAsString, constructor.getBody().getStatement(5).toString(), "insert has not been done at the right position");
+		assertEquals(myBeforeStatementAsString, constructor.getBody().getStatement(7).toString(), "insert has not been done at the right position");
 
-		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6), constructor.getBody().getStatement(8));
-		assertNotEquals("switch should not be the same", constructor.getBody().getStatement(6).toString(), constructor.getBody().getStatement(8).toString());
+		assertNotEquals((CtElement) constructor.getBody().getStatement(6), (CtElement) constructor.getBody().getStatement(8), "switch should not be the same");
+		assertNotEquals(constructor.getBody().getStatement(6).toString(), constructor.getBody().getStatement(8).toString(), "switch should not be the same");
 
 	}
 
@@ -359,7 +350,7 @@ public class ProcessingTest {
 		assertFalse(classProcessor.elements.isEmpty());
 
 		for (CtType type : classProcessor.elements) {
-			assertTrue("Type "+type.getSimpleName()+" is not a class", type instanceof CtClass);
+			assertTrue(type instanceof CtClass, "Type " + type.getSimpleName() + " is not a class");
 		}
 	}
 
@@ -384,13 +375,13 @@ public class ProcessingTest {
 		assertFalse(classProcessor.elements.isEmpty());
 
 		for (CtType type : classProcessor.elements) {
-			assertTrue("Type "+type.getSimpleName()+" is not a class", type instanceof CtClass);
+			assertTrue(type instanceof CtClass, "Type " + type.getSimpleName() + " is not a class");
 		}
 
 		assertFalse(classProcessor.elements.isEmpty());
 
 		for (CtType type : interfaceProcessor.elements) {
-			assertTrue("Type "+type.getSimpleName()+" is not an interface", type instanceof CtInterface);
+			assertTrue(type instanceof CtInterface, "Type " + type.getSimpleName() + " is not an interface");
 		}
 
 		assertFalse(typeProcessor.elements.isEmpty());
