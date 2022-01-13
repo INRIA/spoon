@@ -84,10 +84,10 @@ public class TestCtBlock {
 
 		assertEquals(5, block.getStatements().size());
 
-		assertEquals(originalBlock.getStatement(0), block.getStatement(0));
+		assertEquals((CtStatement) originalBlock.getStatement(0), block.getStatement(0));
 
 		for (int i = 1; i < 4; i++) {
-			assertEquals(originalBlock.getStatement(i), block.getStatement(i + 1));
+			assertEquals((CtStatement) originalBlock.getStatement(i), block.getStatement(i + 1));
 		}
 	}
 
