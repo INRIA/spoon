@@ -16,21 +16,22 @@
  */
 package spoon.test.compilationunit;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import spoon.Launcher;
-import spoon.SpoonModelBuilder;
-import spoon.reflect.cu.CompilationUnit;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Rule;
+import org.junit.jupiter.api.Test;
+import org.junit.rules.TemporaryFolder;
+import spoon.Launcher;
+import spoon.SpoonModelBuilder;
+import spoon.reflect.cu.CompilationUnit;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests {@link CompilationUnit#getBinaryFiles()}.
