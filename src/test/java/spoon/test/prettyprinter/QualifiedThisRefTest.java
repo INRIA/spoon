@@ -16,8 +16,13 @@
  */
 package spoon.test.prettyprinter;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtExpression;
@@ -38,20 +43,16 @@ import spoon.support.reflect.code.CtFieldAccessImpl;
 import spoon.test.delete.testclasses.Adobada;
 import spoon.test.prettyprinter.testclasses.QualifiedThisRef;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class QualifiedThisRefTest {
 
 	Factory factory;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		Launcher spoon = new Launcher();
 		factory = spoon.createFactory();
