@@ -1,16 +1,16 @@
 package spoon.test.prettyprinter;
 
-import static org.junit.Assert.assertThat;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.CoreMatchers;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.processing.AbstractProcessor;
@@ -18,12 +18,14 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLoop;
 import spoon.support.sniper.SniperJavaPrettyPrinter;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 public class LoopSniperJavaPrettyPrinterTest {
 
 	private static final Path INPUT_PATH = Paths.get("src/test/java/");
 	private static final Path OUTPUT_PATH = Paths.get("target/test-output");
 
-	@BeforeClass
+	@BeforeAll
 	public static void setup() throws IOException {
 		FileUtils.deleteDirectory(OUTPUT_PATH.toFile());
 	}
@@ -43,8 +45,9 @@ public class LoopSniperJavaPrettyPrinterTest {
 		runSniperJavaPrettyPrinter("spoon/test/prettyprinter/testclasses/loop/WhileNoBraces.java");
 	}
 
-	@Ignore
+	
 	@Test
+	@Disabled
 	public void whileWithBraces() throws IOException {
 		runSniperJavaPrettyPrinter("spoon/test/prettyprinter/testclasses/loop/WhileWithBraces.java");
 	}
