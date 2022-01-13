@@ -16,7 +16,10 @@
  */
 package spoon.test.ctBlock;
 
-import org.junit.Test;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
@@ -28,11 +31,9 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.test.ctBlock.testclasses.Toto;
 
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by urli on 15/03/2017.
