@@ -16,17 +16,13 @@
  */
 package spoon.test.position;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
@@ -46,17 +42,22 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.support.sniper.internal.SourceFragment;
-import spoon.support.sniper.internal.CollectionSourceFragment;
-import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
+import spoon.support.sniper.internal.CollectionSourceFragment;
+import spoon.support.sniper.internal.ElementSourceFragment;
+import spoon.support.sniper.internal.SourceFragment;
 import spoon.test.position.testclasses.AnnonymousClassNewIface;
 import spoon.test.position.testclasses.FooField;
 import spoon.test.position.testclasses.FooSourceFragments;
 import spoon.test.position.testclasses.NewArrayList;
 import spoon.test.prettyprinter.testclasses.OneLineMultipleVariableDeclaration;
 import spoon.testing.utils.ModelUtils;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestSourceFragment {
 
