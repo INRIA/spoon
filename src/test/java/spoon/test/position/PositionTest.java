@@ -16,13 +16,18 @@
  */
 package spoon.test.position;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
 import org.apache.commons.io.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtAssignment;
@@ -72,6 +77,7 @@ import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.comment.testclasses.BlockComment;
 import spoon.test.comment.testclasses.Comment1;
 import spoon.test.position.testclasses.AnnonymousClassNewIface;
+import spoon.test.position.testclasses.AnnotationWithAngleBracket;
 import spoon.test.position.testclasses.ArrayArgParameter;
 import spoon.test.position.testclasses.CatchPosition;
 import spoon.test.position.testclasses.CompilationUnitComments;
@@ -91,25 +97,24 @@ import spoon.test.position.testclasses.FooLabel;
 import spoon.test.position.testclasses.FooLambda;
 import spoon.test.position.testclasses.FooMethod;
 import spoon.test.position.testclasses.FooStatement;
-import spoon.test.position.testclasses.AnnotationWithAngleBracket;
 import spoon.test.position.testclasses.FooSwitch;
 import spoon.test.position.testclasses.Kokos;
+import spoon.test.position.testclasses.MoreLambda;
 import spoon.test.position.testclasses.NoMethodModifiers;
 import spoon.test.position.testclasses.PositionParameterTypeWithReference;
 import spoon.test.position.testclasses.PositionTry;
 import spoon.test.position.testclasses.SomeEnum;
 import spoon.test.position.testclasses.TypeParameter;
-import spoon.test.position.testclasses.MoreLambda;
 import spoon.test.query_function.testclasses.VariableReferencesModelTest;
 import spoon.testing.utils.ModelUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 
@@ -427,7 +432,8 @@ public class PositionTest {
 		assertEquals("protected static", contentAtPosition(classContent, position3.getModifierSourceStart(), position3.getModifierSourceEnd()));
 	}
 
-	@Test(timeout=10000)
+	@Test
+	@Timeout(unit = TimeUnit.MILLISECONDS, value = 10000L)
 	public void testPositionTerminates() {
 		assertDoesNotThrow(() -> {
 			final Factory build = build(AnnotationWithAngleBracket.class);
@@ -1420,8 +1426,7 @@ public class PositionTest {
 			.filter(elt -> elt.getPosition().isValidPosition())
 			.collect(Collectors.toList());
 
-		assertTrue("Some Spoon elements have an invalid line position",
-			listOfBadPositionElements.stream().allMatch(elt -> elt.getPosition().getLine() == 1));
+		assertTrue(listOfBadPositionElements.stream().allMatch(elt -> elt.getPosition().getLine() == 1), "Some Spoon elements have an invalid line position");
 	}
 
 	@Test
