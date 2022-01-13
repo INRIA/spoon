@@ -16,7 +16,14 @@
  */
 package spoon.test.reference;
 
-import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
@@ -61,23 +68,18 @@ import spoon.test.reference.testclasses.ParamRefs;
 import spoon.test.reference.testclasses.SuperAccess;
 import spoon.testing.utils.ModelUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 import static spoon.testing.utils.ModelUtils.createFactory;
@@ -351,10 +353,10 @@ public class TypeReferenceTest {
 				containsJoinerReference = true;
 			}
 		}
-		assertTrue("Reference to Demo is missing", containsDemoReference);
-		assertTrue("Reference to void is missing", containsVoidReference);
-		assertTrue("Reference to String is missing", containsStringReference);
-		assertTrue("Reference to Joiner is missing", containsJoinerReference);
+		assertTrue(containsDemoReference, "Reference to Demo is missing");
+		assertTrue(containsVoidReference, "Reference to void is missing");
+		assertTrue(containsStringReference, "Reference to String is missing");
+		assertTrue(containsJoinerReference, "Reference to Joiner is missing");
 	}
 
 	@Test
@@ -729,7 +731,7 @@ public class TypeReferenceTest {
 			loopIterations++;
 		}
 
-		assertTrue("Test loop did not execute", loopIterations > 0);
+		assertTrue(loopIterations > 0, "Test loop did not execute");
 	}
 
 	private static CtTypeReference<?> getDeepestComponentType(CtArrayTypeReference<?> arrayTypeRef) {
@@ -751,7 +753,7 @@ public class TypeReferenceTest {
 		CtModel model = launcher.buildModel();
 		List<CtTypeReference<?>> typeReferences = model.getElements(e -> e.getSimpleName().equals("SOMETHING"));
 
-		assertEquals("There should only be one reference to SOMETHING, check the resource!", 1, typeReferences.size());
+		assertEquals(1, typeReferences.size(), "There should only be one reference to SOMETHING, check the resource!");
 
 		CtTypeReference<?> typeRef = typeReferences.get(0);
 		CtTypeReference<?> declType = typeRef.getDeclaringType();
