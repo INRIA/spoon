@@ -117,7 +117,7 @@ public class VariableReferencesTest {
 		}).list();
 		assertFalse(context.unique.isEmpty());
 		assertEquals(context.maxKey, context.unique.size(), "Only these keys were found: " + context.unique.keySet());
-		assertEquals(((int) (getLiteralValue(((CtVariable) (modelClass.filterChildren(new NamedElementFilter<>(CtVariable.class, "maxValue")).first()))))), context.maxKey, "AllLocalVars#maxValue must be equal to maximum value number ");
+		assertEquals((int) getLiteralValue((CtVariable<?>) modelClass.filterChildren(new NamedElementFilter<>(CtVariable.class, "maxValue")).first()), context.maxKey, "AllLocalVars#maxValue must be equal to maximum value number ");
 	}
 
 	@Test
@@ -229,7 +229,7 @@ public class VariableReferencesTest {
 			if(isTestFieldName(varRef.getSimpleName())) {
 				CtLocalVariable<?> var = varRef.getDeclaration();
 				assertNotNull(var, "The declaration of variable " + varRef.getSimpleName() + " in " + getParentMethodName(varRef) + " on line " + var.getPosition().getLine() + " with value " + getVariableReferenceValue(varRef) + " was not found");
-				assertEquals(getVariableReferenceValue(varRef), ((int) (getLiteralValue(var))), "CtLocalVariableReference#getDeclaration returned wrong declaration in " + getParentMethodName(varRef));
+				assertEquals(getVariableReferenceValue(varRef), (int) getLiteralValue(var), "CtLocalVariableReference#getDeclaration returned wrong declaration in " + getParentMethodName(varRef));
 			}
 			return false;
 		}).list();
