@@ -948,6 +948,34 @@ public class TestSniperPrinter {
 		}
 	}
 
+	@GitHubIssue(issueNumber = 3386)
+	@Nested
+	class JointDeclarationPrinting {
+		private BiConsumer<CtType<?>, String> assertPrintsJointDeclaration(String jointDeclaration) {
+			return (type, result) ->
+					assertThat(result, containsString(jointDeclaration));
+		}
+
+		@Test
+		void test_localVariablePrinting() {
+			testSniper(
+					"sniperPrinter.jointDeclaration.LocalVariable",
+					(type) -> type.getMethod("doNothing").getBody().getStatements().forEach(TestSniperPrinter::markElementForSniperPrinting),
+					assertPrintsJointDeclaration("int l1,l2,l3,l4 = 2;")
+
+			);
+		}
+
+		@Test
+		void test_fieldPrinting() {
+			testSniper(
+					"sniperPrinter.jointDeclaration.Field",
+					(type) -> type.getTypeMembers().forEach(TestSniperPrinter::markElementForSniperPrinting),
+					assertPrintsJointDeclaration("String f1,f2,f3 = \"42\",f4;")
+			);
+		}
+	}
+
 	/**
 	 * 1) Runs spoon using sniper mode,
 	 * 2) runs `typeChanger` to modify the code,
