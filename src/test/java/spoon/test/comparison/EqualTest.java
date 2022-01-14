@@ -16,7 +16,7 @@
  */
 package spoon.test.comparison;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.reflect.code.CtComment;
@@ -32,11 +32,11 @@ import spoon.reflect.path.CtRole;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.visitor.equals.EqualsVisitor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class EqualTest {
 
