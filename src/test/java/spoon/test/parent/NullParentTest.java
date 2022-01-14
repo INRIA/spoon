@@ -16,8 +16,8 @@
  */
 package spoon.test.parent;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtAssert;
@@ -33,13 +33,13 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NullParentTest {
 
 	Factory factory;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		Launcher spoon = new Launcher();
 		factory = spoon.createFactory();
