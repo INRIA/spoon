@@ -177,6 +177,7 @@ jobs:
           baseline-include-absent: true
           results-dir:  "${{ github.workspace }}/result"
           fail-threshold: 1
+          upload-result: false
       - name: Print problems(full)
         run: jq '.runs | .[0].results | map(select (.baselineState == "new"))' ${{ github.workspace }}/result/qodana.sarif.json
       - name: Print problems(short)
