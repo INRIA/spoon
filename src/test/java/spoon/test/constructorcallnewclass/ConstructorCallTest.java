@@ -16,8 +16,15 @@
  */
 package spoon.test.constructorcallnewclass;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
@@ -33,23 +40,18 @@ import spoon.support.comparator.DeepRepresentationComparator;
 import spoon.test.constructorcallnewclass.testclasses.Foo;
 import spoon.test.constructorcallnewclass.testclasses.Panini;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ConstructorCallTest {
 	private List<CtConstructorCall<?>> constructorCalls;
 	private List<CtConstructorCall<?>> constructorCallsPanini;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource("./src/test/java/" + Foo.class.getCanonicalName().replace(".", "/") + ".java");
@@ -119,18 +121,18 @@ public class ConstructorCallTest {
 
 	private void assertHasParameters(int sizeExpected, CtConstructorCall<?> constructorCall) {
 		if (sizeExpected == 0) {
-			assertEquals("Constructor call without parameter", sizeExpected, constructorCall.getArguments().size());
+			assertEquals(sizeExpected, constructorCall.getArguments().size(), "Constructor call without parameter");
 		} else {
-			assertEquals("Constructor call with parameters", sizeExpected, constructorCall.getArguments().size());
+			assertEquals(sizeExpected, constructorCall.getArguments().size(), "Constructor call with parameters");
 		}
 	}
 
 	private void assertIsConstructor(CtConstructorCall<?> constructorCall) {
-		assertTrue("Method must be a constructor", constructorCall.getExecutable().isConstructor());
+		assertTrue(constructorCall.getExecutable().isConstructor(), "Method must be a constructor");
 	}
 
 	private void assertConstructorCallWithType(Class<?> typeExpected, CtConstructorCall<?> constructorCall) {
-		assertSame("Constructor call is typed by the class of the constructor", typeExpected, constructorCall.getType().getActualClass());
+		assertSame(typeExpected, constructorCall.getType().getActualClass(), "Constructor call is typed by the class of the constructor");
 	}
 
 	@Test
