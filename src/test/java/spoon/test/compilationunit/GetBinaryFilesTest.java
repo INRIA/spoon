@@ -23,7 +23,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
@@ -41,9 +40,6 @@ public class GetBinaryFilesTest {
 
 	@TempDir
 	Path tmpFolder;
-
-	@BeforeEach
-
 
 	@Test
 	public void testSingleBinary() {
