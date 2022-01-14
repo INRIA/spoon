@@ -16,13 +16,7 @@
  */
 package spoon.test.ctBodyHolder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static spoon.testing.utils.ModelUtils.build;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
@@ -41,6 +35,12 @@ import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.test.ctBodyHolder.testclasses.CWBStatementTemplate;
 import spoon.test.ctBodyHolder.testclasses.ClassWithBodies;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static spoon.testing.utils.ModelUtils.build;
 
 public class CtBodyHolderTest {
 
