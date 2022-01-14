@@ -16,8 +16,11 @@
  */
 package spoon.test.constructorcallnewclass;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.FluentLauncher;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
@@ -34,25 +37,24 @@ import spoon.test.constructorcallnewclass.testclasses.Bar;
 import spoon.test.constructorcallnewclass.testclasses.Foo;
 import spoon.test.constructorcallnewclass.testclasses.Foo2;
 
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class NewClassTest {
 	private List<CtNewClass<?>> newClasses;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		final Factory build = build(Foo.class);
 		final CtClass<?> foo = (CtClass<?>) build.Type().get(Foo.class);
@@ -106,8 +108,7 @@ public class NewClassTest {
 		assertIsAnonymous(newClass.getAnonymousClass());
 		assertSuperInterface(Foo.Tacos.class, newClass.getAnonymousClass());
 		CtTypeReference[] ctTypeReferences = newClass.getAnonymousClass().getSuperInterfaces().toArray(new CtTypeReference[0]);
-		assertSame("Super interface is typed by the class of the constructor", String.class,
-				ctTypeReferences[0].getActualTypeArguments().get(0).getActualClass());
+		assertSame(String.class, ctTypeReferences[0].getActualTypeArguments().get(0).getActualClass(), "Super interface is typed by the class of the constructor");
 	}
 
 	@Test
@@ -138,33 +139,33 @@ public class NewClassTest {
 	}
 
 	private void assertSuperClass(Class<?> expected, CtClass<?> anonymousClass) {
-		assertEquals("There isn't a super interface if there is a super class", 0, anonymousClass.getSuperInterfaces().size());
-		assertSame("There is a super class if there isn't a super interface", expected, anonymousClass.getSuperclass().getActualClass());
+		assertEquals(0, anonymousClass.getSuperInterfaces().size(), "There isn't a super interface if there is a super class");
+		assertSame(expected, anonymousClass.getSuperclass().getActualClass(), "There is a super class if there isn't a super interface");
 	}
 
 	private void assertSuperInterface(Class<?> expected, CtClass<?> anonymousClass) {
-		assertNull("There isn't super class if there is a super interface", anonymousClass.getSuperclass());
-		assertSame("There is a super interface if there isn't super class", expected, anonymousClass.getSuperInterfaces().toArray(new CtTypeReference[0])[0].getActualClass());
+		assertNull(anonymousClass.getSuperclass(), "There isn't super class if there is a super interface");
+		assertSame(expected, anonymousClass.getSuperInterfaces().toArray(new CtTypeReference[0])[0].getActualClass(), "There is a super interface if there isn't super class");
 	}
 
 	private void assertIsAnonymous(CtClass<?> anonymousClass) {
-		assertTrue("Class in CtNewClass is anonymous", anonymousClass.isAnonymous());
+		assertTrue(anonymousClass.isAnonymous(), "Class in CtNewClass is anonymous");
 	}
 
 	private void assertHasParameters(int sizeExpected, List<CtExpression<?>> arguments) {
 		if (sizeExpected == 0) {
-			assertEquals("New class without parameter", sizeExpected, arguments.size());
+			assertEquals(sizeExpected, arguments.size(), "New class without parameter");
 		} else {
-			assertEquals("New class with parameters", sizeExpected, arguments.size());
+			assertEquals(sizeExpected, arguments.size(), "New class with parameters");
 		}
 	}
 
 	private void assertIsConstructor(CtExecutableReference<?> executable) {
-		assertTrue("Method must be a constructor", executable.isConstructor());
+		assertTrue(executable.isConstructor(), "Method must be a constructor");
 	}
 
 	private void assertType(Class<?> typeExpected, CtNewClass<?> newClass) {
-		assertSame("New class is typed by the class of the constructor", typeExpected, newClass.getType().getActualClass());
+		assertSame(typeExpected, newClass.getType().getActualClass(), "New class is typed by the class of the constructor");
 	}
 
 	@Test
