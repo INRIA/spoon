@@ -16,36 +16,37 @@
  */
 package spoon.test.compilationunit;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.reflect.cu.CompilationUnit;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests {@link CompilationUnit#getBinaryFiles()}.
  */
 public class GetBinaryFilesTest {
 
-	@Rule
-	public TemporaryFolder tmpFolder = new TemporaryFolder();
+	@TempDir
+	Path tmpFolder;
 
 	@Test
 	public void testSingleBinary() {
 		final String input = "./src/test/resources/compilation/compilation-tests/IBar.java";
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource(input);
-		launcher.setBinaryOutputDirectory(tmpFolder.getRoot());
+		launcher.setBinaryOutputDirectory(tmpFolder.toString());
 		launcher.buildModel();
 		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
 
@@ -60,13 +61,13 @@ public class GetBinaryFilesTest {
 
 	@Test
 	public void testExistingButNotBuiltBinary() throws IOException {
-		tmpFolder.newFolder("compilation");
-		tmpFolder.newFile("compilation/IBar$Test.class");
+		new File(tmpFolder.toFile(), "compilation").mkdir();
+		new File(tmpFolder.toFile(), "compilation/IBar$Test.class").createNewFile();
 
 		final String input = "./src/test/resources/compilation/compilation-tests/IBar.java";
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource(input);
-		launcher.setBinaryOutputDirectory(tmpFolder.getRoot());
+		launcher.setBinaryOutputDirectory(tmpFolder.toString());
 		launcher.buildModel();
 		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
 
@@ -89,7 +90,7 @@ public class GetBinaryFilesTest {
 		final String input = "./src/test/resources/compilation/compilation-tests/";
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource(input);
-		launcher.setBinaryOutputDirectory(tmpFolder.getRoot());
+		launcher.setBinaryOutputDirectory(tmpFolder.toString());
 		launcher.buildModel();
 		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
 
@@ -114,7 +115,7 @@ public class GetBinaryFilesTest {
 		final String input = "./src/test/java/spoon/test/imports/testclasses/internal/PublicInterface2.java";
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource(input);
-		launcher.setBinaryOutputDirectory(tmpFolder.getRoot());
+		launcher.setBinaryOutputDirectory(tmpFolder.toString());
 		launcher.buildModel();
 		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
 
@@ -136,7 +137,7 @@ public class GetBinaryFilesTest {
 		final String input = "./src/test/java/spoon/test/secondaryclasses/testclasses/AnonymousClass.java";
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource(input);
-		launcher.setBinaryOutputDirectory(tmpFolder.getRoot());
+		launcher.setBinaryOutputDirectory(tmpFolder.toString());
 		launcher.buildModel();
 		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
 
