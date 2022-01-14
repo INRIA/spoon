@@ -11,14 +11,12 @@ import spoon.SpoonException;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
 
-import java.io.Serializable;
-
 /**
  * This class represents the position of a Java program element in a source
  * file.
  */
 public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
-		implements DeclarationSourcePosition, Serializable, Cloneable {
+		implements DeclarationSourcePosition, Cloneable {
 
 	private static final long serialVersionUID = 1L;
 	private int modifierSourceEnd;

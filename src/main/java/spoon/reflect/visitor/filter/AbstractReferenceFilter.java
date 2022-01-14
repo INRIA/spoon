@@ -8,7 +8,6 @@
 package spoon.reflect.visitor.filter;
 
 import spoon.reflect.reference.CtReference;
-import spoon.reflect.visitor.Filter;
 
 /**
  * This class defines an abstract reference filter that needs to be subclassed
@@ -17,7 +16,7 @@ import spoon.reflect.visitor.Filter;
  * @param <T>
  * 		the type of the reference to be matched
  */
-public abstract class AbstractReferenceFilter<T extends CtReference> extends AbstractFilter<T> implements Filter<T> {
+public abstract class AbstractReferenceFilter<T extends CtReference> extends AbstractFilter<T> {
 
 	/**
 	 * Creates a reference filter with the type of the potentially matching

@@ -10,14 +10,12 @@ package spoon.support.reflect.cu.position;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.position.CompoundSourcePosition;
 
-import java.io.Serializable;
-
 /**
  * This class represents the position of a named Java program element in a source
  * file.
  */
 public class CompoundSourcePositionImpl extends SourcePositionImpl
-		implements CompoundSourcePosition, Serializable {
+		implements CompoundSourcePosition {
 
 	private static final long serialVersionUID = 1L;
 	private int declarationSourceStart;
