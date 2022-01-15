@@ -732,7 +732,7 @@ public class JDTTreeBuilderHelper {
 		}
 		Consumer<CtTypeReference<?>> addPermittedType;
 		if (type instanceof CtSealable) {
-			addPermittedType = ref -> ((CtSealable) type).addPermittedType(ref);
+			addPermittedType = ((CtSealable) type)::addPermittedType;
 		} else {
 			addPermittedType = ref -> {
 				throw new SpoonException("Tried to add permitted type to " + type);
