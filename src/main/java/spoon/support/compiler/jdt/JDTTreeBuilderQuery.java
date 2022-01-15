@@ -368,9 +368,9 @@ class JDTTreeBuilderQuery {
 		}
 		// AccSealed == AccPatternVariable == AccOverriding, so checking context is needed
 		// AccNonSealed == AccIsDefaultConstructor == AccBlankFinal, so checking context is needed
-		if ((modifier & ExtraCompilerModifiers.AccSealed) != 0 && containsAny(target, ModifierTarget.TYPE)) {
+		if ((modifier & ExtraCompilerModifiers.AccSealed) != 0 && intersect(target, ModifierTarget.TYPE)) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.SEALED, implicit));
-		} else if ((modifier & ExtraCompilerModifiers.AccNonSealed) != 0 && containsAny(target, ModifierTarget.TYPE)) {
+		} else if ((modifier & ExtraCompilerModifiers.AccNonSealed) != 0 && intersect(target, ModifierTarget.TYPE)) {
 			modifiers.add(new CtExtendedModifier(ModifierKind.NON_SEALED, implicit));
 		}
 		return modifiers;
@@ -388,7 +388,11 @@ class JDTTreeBuilderQuery {
 		return getModifiers(modifier, implicit, target.asSingleton());
 	}
 
-	private static <E> boolean containsAny(Set<E> elements, Set<E> anyOf) {
-		return !Collections.disjoint(elements, anyOf);
+	/**
+	 * Returns {@code true} if the given sets intersect, that means the intersection
+	 * of {@code first} and {@code second} is non-empty.
+	 */
+	private static <E> boolean intersect(Set<E> first, Set<E> second) {
+		return !Collections.disjoint(first, second);
 	}
 }
