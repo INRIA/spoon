@@ -20,67 +20,67 @@ public enum ModifierKind {
 	/**
 	 * The modifier <tt>public</tt>
 	 */
-	PUBLIC,
+	PUBLIC("public"),
 	/**
 	 * The modifier <tt>protected</tt>
 	 */
-	PROTECTED,
+	PROTECTED("protected"),
 	/**
 	 * The modifier <tt>private</tt>
 	 */
-	PRIVATE,
+	PRIVATE("private"),
 	/**
 	 * The modifier <tt>abstract</tt>
 	 */
-	ABSTRACT,
+	ABSTRACT("abstract"),
 	/**
 	 * The modifier <tt>static</tt>
 	 */
-	STATIC,
+	STATIC("static"),
 	/**
 	 * The modifier <tt>final</tt>
 	 */
-	FINAL,
+	FINAL("final"),
 	/**
 	 * The modifier <tt>transient</tt>
 	 */
-	TRANSIENT,
+	TRANSIENT("transient"),
 	/**
 	 * The modifier <tt>volatile</tt>
 	 */
-	VOLATILE,
+	VOLATILE("volatile"),
 	/**
 	 * The modifier <tt>synchronized</tt>
 	 */
-	SYNCHRONIZED,
+	SYNCHRONIZED("synchronized"),
 	/**
 	 * The modifier <tt>native</tt>
 	 */
-	NATIVE,
+	NATIVE("native"),
 	/**
 	 * The modifier <tt>strictfp</tt>
 	 */
-	STRICTFP,
+	STRICTFP("strictfp"),
 	/**
 	 * The modifier <tt>non-sealed</tt>
 	 */
-	NON_SEALED,
+	NON_SEALED("non-sealed"),
 	/**
 	 * The modifier <tt>sealed</tt>
 	 */
-	SEALED;
+	SEALED("sealed");
 
-	private String lowercase = null; // modifier name in lowercase
+	ModifierKind(String lowercase) {
+		this.lowercase = lowercase;
+	}
+
+	private final String lowercase; // modifier name in lowercase
 
 	/**
 	 * Returns this modifier's name in lowercase.
 	 */
 	@Override
 	public String toString() {
-		if (lowercase == null) {
-			lowercase = name().replace('_', '-') // NON_SEALED => non-sealed
-					.toLowerCase(java.util.Locale.US);
-		}
 		return lowercase;
 	}
 
