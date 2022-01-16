@@ -38,11 +38,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class GetBinaryFilesTest {
 
-	@TempDir
-	Path tmpFolder;
-
 	@Test
-	public void testSingleBinary() {
+	public void testSingleBinary(@TempDir Path tmpFolder) {
 		final String input = "./src/test/resources/compilation/compilation-tests/IBar.java";
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource(input);
@@ -60,7 +57,7 @@ public class GetBinaryFilesTest {
 	}
 
 	@Test
-	public void testExistingButNotBuiltBinary() throws IOException {
+	public void testExistingButNotBuiltBinary(@TempDir Path tmpFolder) throws IOException {
 		new File(tmpFolder.toFile(), "compilation").mkdir();
 		new File(tmpFolder.toFile(), "compilation/IBar$Test.class").createNewFile();
 
@@ -86,7 +83,7 @@ public class GetBinaryFilesTest {
 	}
 
 	@Test
-	public void testMultiClassInSingleFile() throws IOException {
+	public void testMultiClassInSingleFile(@TempDir Path tmpFolder) throws IOException {
 		final String input = "./src/test/resources/compilation/compilation-tests/";
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource(input);
@@ -111,7 +108,7 @@ public class GetBinaryFilesTest {
 	}
 
 	@Test
-	public void testNestedTypes() throws IOException {
+	public void testNestedTypes(@TempDir Path tmpFolder) throws IOException {
 		final String input = "./src/test/java/spoon/test/imports/testclasses/internal/PublicInterface2.java";
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource(input);
@@ -133,7 +130,7 @@ public class GetBinaryFilesTest {
 	}
 
 	@Test
-	public void testAnonymousClasses() throws IOException {
+	public void testAnonymousClasses(@TempDir Path tmpFolder) throws IOException {
 		final String input = "./src/test/java/spoon/test/secondaryclasses/testclasses/AnonymousClass.java";
 		final Launcher launcher = new Launcher();
 		launcher.addInputResource(input);
