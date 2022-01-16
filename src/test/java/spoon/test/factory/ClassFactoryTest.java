@@ -16,12 +16,12 @@
  */
 package spoon.test.factory;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class ClassFactoryTest {
