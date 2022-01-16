@@ -16,7 +16,11 @@
  */
 package spoon.test.factory;
 
-import org.junit.Test;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
@@ -29,11 +33,8 @@ import spoon.test.targeted.testclasses.Bar;
 import spoon.test.targeted.testclasses.Foo;
 import spoon.test.targeted.testclasses.SuperClass;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 
 public class FieldFactoryTest {
