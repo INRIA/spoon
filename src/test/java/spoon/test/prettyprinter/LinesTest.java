@@ -16,8 +16,13 @@
  */
 package spoon.test.prettyprinter;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.declaration.CtElement;
@@ -27,20 +32,16 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LinesTest {
 
 	Factory factory;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		Launcher spoon = new Launcher();
 		factory = spoon.createFactory();
@@ -110,8 +111,8 @@ public class LinesTest {
 			CtElement el2 = launcher2.getModel().getElements(new TypeFilter<>(CtElement.class)).get(i);
 			assertNotSame(e, el2);
 			if (e.getPosition().isValidPosition()) {
-				assertEquals(e.toString() + " not handled", e.getPosition().getLine(), el2.getPosition().getLine());
-				assertEquals(e.toString() + " not handled", e.getPosition().getEndLine(), el2.getPosition().getEndLine());
+				assertEquals(e.getPosition().getLine(), el2.getPosition().getLine(), e.toString() + " not handled");
+				assertEquals(e.getPosition().getEndLine(), el2.getPosition().getEndLine(), e.toString() + " not handled");
 			} else {
 				assertFalse(el2.getPosition().isValidPosition());
 			}
