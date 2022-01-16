@@ -1,11 +1,12 @@
 package spoon.test.imports.testclasses;
 
-
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import static java.nio.charset.Charset.forName;
 import java.lang.annotation.Annotation;
 import java.nio.charset.Charset;
+
+import org.junit.Test;
+
+import static java.nio.charset.Charset.forName;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /**
