@@ -16,7 +16,11 @@
  */
 package spoon.test.exceptions;
 
-import org.junit.Test;
+
+import java.io.FileNotFoundException;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.InvalidClassPathException;
@@ -28,11 +32,9 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-import java.io.FileNotFoundException;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class ExceptionTest {
@@ -108,19 +110,16 @@ public class ExceptionTest {
 		}
 	}
 
-	@Test(expected = ModelBuildingException.class)
-	public void testExceptionDuplicateClass() throws Exception {
+	@Test
+	public void testExceptionDuplicateClass() throws Exception{
+		assertThrows(ModelBuildingException.class, () -> {
 			Launcher spoon = new Launcher();
 			Factory factory = spoon.createFactory();
-
 			// contains twice the same class in the same package
 			// an exception should be thrown, even in noclasspath mode
-			spoon.createCompiler(
-					factory,
-					SpoonResourceHelper
-							.resources("./src/test/resources/spoon/test/duplicateclasses/Foo.java", "./src/test/resources/spoon/test/duplicateclasses/Bar.java"))
-					.build();
-	}
+			spoon.createCompiler(factory, SpoonResourceHelper.resources("./src/test/resources/spoon/test/duplicateclasses/Foo.java", "./src/test/resources/spoon/test/duplicateclasses/Bar.java")).build();
+		});
+	} 
 
 	@Test
 	public void testUnionCatchExceptionInsideLambdaInNoClasspath() {
