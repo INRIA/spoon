@@ -46,14 +46,6 @@ public class InitializerTest {
 		CtAnonymousExecutable staticBlock = type.getElements(new TypeFilter<>(CtAnonymousExecutable.class)).get(0);
 		assertTrue(staticBlock.getModifiers().contains(ModifierKind.STATIC));
 		assertEquals(1, staticBlock.getBody().getStatements().size());
-
-		// this fails: regression or known bug?
-
-		// RP: this look OK. Spoon adds the full path
-
-		// assertEquals("InternalClass.tmp = \"nop\"",
-
-		// staticBlock.getBody().getStatements().get(0).toString());
 	}
 
 	@Test
