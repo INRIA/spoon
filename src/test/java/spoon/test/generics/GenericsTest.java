@@ -16,7 +16,13 @@
  */
 package spoon.test.generics;
 
-import org.junit.Test;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 import spoon.ContractVerifier;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
@@ -65,15 +71,6 @@ import spoon.test.ctType.testclasses.ErasureModelA;
 import spoon.test.generics.testclasses.Banana;
 import spoon.test.generics.testclasses.CelebrationLunch;
 import spoon.test.generics.testclasses.CelebrationLunch.WeddingLunch;
-import spoon.test.generics.testclasses2.LikeCtClass;
-import spoon.test.generics.testclasses2.LikeCtClassImpl;
-import spoon.test.generics.testclasses2.SameSignature2;
-import spoon.test.generics.testclasses2.SameSignature3;
-import spoon.test.generics.testclasses3.Bar;
-import spoon.test.generics.testclasses3.ClassThatBindsAGenericType;
-import spoon.test.generics.testclasses3.ClassThatDefinesANewTypeArgument;
-import spoon.test.generics.testclasses3.Foo;
-import spoon.test.generics.testclasses3.GenericConstructor;
 import spoon.test.generics.testclasses.EnumSetOf;
 import spoon.test.generics.testclasses.FakeTpl;
 import spoon.test.generics.testclasses.Lunch;
@@ -85,22 +82,27 @@ import spoon.test.generics.testclasses.Panini;
 import spoon.test.generics.testclasses.SameSignature;
 import spoon.test.generics.testclasses.Spaghetti;
 import spoon.test.generics.testclasses.Tacos;
+import spoon.test.generics.testclasses2.LikeCtClass;
+import spoon.test.generics.testclasses2.LikeCtClassImpl;
+import spoon.test.generics.testclasses2.SameSignature2;
+import spoon.test.generics.testclasses2.SameSignature3;
+import spoon.test.generics.testclasses3.Bar;
+import spoon.test.generics.testclasses3.ClassThatBindsAGenericType;
+import spoon.test.generics.testclasses3.ClassThatDefinesANewTypeArgument;
+import spoon.test.generics.testclasses3.Foo;
+import spoon.test.generics.testclasses3.GenericConstructor;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.buildNoClasspath;
@@ -383,11 +385,11 @@ public class GenericsTest {
 		final List<CtTypeParameter> barTypeParamGenerics = bar.getFormalCtTypeParameters();
 		final CtTypeReference<?> anonymousBar = newAnonymousBar.getType();
 
-		assertEquals("Name of the first generic parameter in Bar interface must to be I.", "I", barTypeParamGenerics.get(0).getSimpleName());
-		assertEquals("Name of the first generic parameter in Bar usage must to be K.", "K", anonymousBar.getActualTypeArguments().get(0).getSimpleName());
+		assertEquals("I", barTypeParamGenerics.get(0).getSimpleName(), "Name of the first generic parameter in Bar interface must to be I.");
+		assertEquals("K", anonymousBar.getActualTypeArguments().get(0).getSimpleName(), "Name of the first generic parameter in Bar usage must to be K.");
 
-		assertEquals("Name of the second generic parameter in Bar interface must to be O.", "O", barTypeParamGenerics.get(1).getSimpleName());
-		assertEquals("Name of the second generic parameter in Bar usage must to be V.", "V", anonymousBar.getActualTypeArguments().get(1).getSimpleName());
+		assertEquals("O", barTypeParamGenerics.get(1).getSimpleName(), "Name of the second generic parameter in Bar interface must to be O.");
+		assertEquals("V", anonymousBar.getActualTypeArguments().get(1).getSimpleName(), "Name of the second generic parameter in Bar usage must to be V.");
 	}
 
 	@Test
@@ -697,7 +699,7 @@ public class GenericsTest {
 		assertFalse(genericTypeRef.getActualTypeArguments().isEmpty());
 		assertEquals(aTacos.getFormalCtTypeParameters().size(), genericTypeRef.getActualTypeArguments().size());
 		for(int i=0; i<aTacos.getFormalCtTypeParameters().size(); i++) {
-			assertSame("TypeParameter reference idx="+i+" is different", aTacos.getFormalCtTypeParameters().get(i), genericTypeRef.getActualTypeArguments().get(i).getTypeParameterDeclaration());
+			assertSame(aTacos.getFormalCtTypeParameters().get(i), genericTypeRef.getActualTypeArguments().get(i).getTypeParameterDeclaration(), "TypeParameter reference idx=" + i + " is different");
 
 			// contract: getTypeParameterDeclaration goes back to the declaration, even without context
 			assertSame(aTacos.getFormalCtTypeParameters().get(i), genericTypeRef.getActualTypeArguments().get(i).getTypeParameterDeclaration());
@@ -896,17 +898,17 @@ public class GenericsTest {
 				+ "spoon.test.generics.testclasses.Paella, "
 				+ "X"
 				+ ">",trWeddingLunch_Mole.getSuperclass().toString());
-		//future suggested behavior of CtTypeReference#getSuperclass() - the 3rd argument is Mole.
-//		assertEquals("spoon.test.generics.testclasses.CelebrationLunch<"
-//				+ "spoon.test.generics.testclasses.Tacos, "
-//				+ "spoon.test.generics.testclasses.Paella, "
-//				+ "spoon.test.generics.testclasses.Mole"
-//				+ ">",trWeddingLunch_Mole.getSuperclass().toString());
-		//future suggested behavior of CtTypeReference#getSuperclass() 
-//		assertEquals("spoon.test.generics.testclasses.Lunch<"
-//				+ "spoon.test.generics.testclasses.Mole, "
-//				+ "spoon.test.generics.testclasses.Tacos"
-//				+ ">",trWeddingLunch_Mole.getSuperclass().getSuperclass().toString());
+		// future suggested behavior of CtTypeReference#getSuperclass() - the 3rd argument is Mole.
+		// assertEquals("spoon.test.generics.testclasses.CelebrationLunch<"
+		// + "spoon.test.generics.testclasses.Tacos, "
+		// + "spoon.test.generics.testclasses.Paella, "
+		// + "spoon.test.generics.testclasses.Mole"
+		// + ">",trWeddingLunch_Mole.getSuperclass().toString());
+		// future suggested behavior of CtTypeReference#getSuperclass()
+		// assertEquals("spoon.test.generics.testclasses.Lunch<"
+		// + "spoon.test.generics.testclasses.Mole, "
+		// + "spoon.test.generics.testclasses.Tacos"
+		// + ">",trWeddingLunch_Mole.getSuperclass().getSuperclass().toString());
 	}
 
 	@Test
