@@ -16,15 +16,16 @@
  */
 package spoon.test.factory;
 
-import org.junit.Test;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 import spoon.reflect.factory.ExecutableFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 public class ExecutableFactoryTest {
