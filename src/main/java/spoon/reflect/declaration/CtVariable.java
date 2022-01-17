@@ -49,4 +49,16 @@ public interface CtVariable<T> extends CtNamedElement, CtTypedElement<T>, CtModi
 	 */
 	@DerivedProperty
 	boolean isPartOfJointDeclaration();
+
+	/**
+	 * Returns true if field or a local variable are part of the same joint declaration.
+	 * Eg:
+	 * ```
+	 * int a,b;
+	 * int c;
+	 * ```
+	 * a and b are part of the same joint declaration.
+	 * a and c are not part of the same joint declaration.
+	 */
+	boolean isInSameJointDeclarationAs(CtVariable<?> variable);
 }

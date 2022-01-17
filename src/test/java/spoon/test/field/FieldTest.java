@@ -16,7 +16,7 @@
  */
 package spoon.test.field;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static spoon.testing.utils.ModelUtils.buildClass;
@@ -222,5 +222,28 @@ public class FieldTest {
 
 	}
 
+	@Test
+	void testFieldIsInSameJointDeclarationAsProvidedField() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/isPartOfJointDeclaration/Field.java");
+		CtModel model = launcher.buildModel();
 
+		List<CtField<?>> fields = model.getElements(new TypeFilter<>(CtField.class));
+		Boolean[][] jointlyDeclared = {
+				{true,  true,  false, false, false, false},
+				{true,  true,  false, false, false, false},
+				{false, false, true,  true,  true,  false},
+				{false, false, true,  true,  true,  false},
+				{false, false, true,  true,  true,  false},
+				{false, false, false, false, false, false},
+		};
+		for (int i=0; i < fields.size(); ++i) {
+			CtField<?> first = fields.get(i);
+			for (int j=0; j < fields.size(); ++j) {
+				CtField<?> second = fields.get(j);
+				assertEquals(jointlyDeclared[i][j], first.isInSameJointDeclarationAs(second), first + " " + second);
+				assertEquals(jointlyDeclared[i][j], second.isInSameJointDeclarationAs(first), second + " " + first);
+			}
+		}
+	}
 }

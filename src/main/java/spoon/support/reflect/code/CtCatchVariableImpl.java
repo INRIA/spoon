@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.SpoonException;
 import spoon.reflect.ModelElementContainerDefaultCapacities;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtCatchVariable;
@@ -110,6 +111,11 @@ public class CtCatchVariableImpl<T> extends CtCodeElementImpl implements CtCatch
 	@Override
 	public boolean isPartOfJointDeclaration() {
 		return false;
+	}
+
+	@Override
+	public boolean isInSameJointDeclarationAs(CtVariable<?> variable) {
+		throw new SpoonException("Joint declaration does not exist for " + variable.getClass());
 	}
 
 	@Override

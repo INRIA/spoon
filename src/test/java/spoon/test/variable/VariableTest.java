@@ -33,9 +33,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class VariableTest {
 
@@ -55,6 +55,32 @@ public class VariableTest {
         assertEquals(true, localVariables.get(8).isPartOfJointDeclaration());
         assertEquals(true, localVariables.get(9).isPartOfJointDeclaration());
 
+    }
+
+    @Test
+    void testVariableIsInSameJointDeclarationAsProvidedVariable() {
+        Launcher launcher = new Launcher();
+        launcher.addInputResource("src/test/resources/isPartOfJointDeclaration/LocalVariable.java");
+
+        CtModel model = launcher.buildModel();
+
+        List<CtLocalVariable<?>> localVariables = model.getElements(new TypeFilter<>(CtLocalVariable.class));
+        Boolean[][] jointlyDeclared = {
+                {true,  true,  false, false, false, false},
+                {true,  true,  false, false, false, false},
+                {false, false, false, false, false, false},
+                {false, false, false, true,  true,  true },
+                {false, false, false, true,  true,  true },
+                {false, false, false, true,  true,  true },
+        };
+        for (int i=0; i < localVariables.size(); ++i) {
+            CtLocalVariable<?> first = localVariables.get(i);
+            for (int j=0; j < localVariables.size(); ++j) {
+                CtLocalVariable<?> second = localVariables.get(j);
+                assertEquals(jointlyDeclared[i][j], first.isInSameJointDeclarationAs(second), first + " " + second);
+                assertEquals(jointlyDeclared[i][j], second.isInSameJointDeclarationAs(first), second + " " + first);
+            }
+        }
     }
 
         @Test

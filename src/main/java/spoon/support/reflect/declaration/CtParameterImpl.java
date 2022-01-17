@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtExecutable;
@@ -82,6 +83,11 @@ public class CtParameterImpl<T> extends CtNamedElementImpl implements CtParamete
 	public boolean isPartOfJointDeclaration() {
 		// a parameter can never be part of a joint declaration
 		return false;
+	}
+
+	@Override
+	public boolean isInSameJointDeclarationAs(CtVariable<?> variable) {
+		throw new SpoonException("Joint declaration does not exist for " + variable.getClass());
 	}
 
 	@Override

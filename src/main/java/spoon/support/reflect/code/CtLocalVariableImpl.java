@@ -11,6 +11,7 @@ import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtRHSReceiver;
+import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
@@ -101,6 +102,18 @@ public class CtLocalVariableImpl<T> extends CtStatementImpl implements CtLocalVa
 					&& f.getPosition().getSourceEnd() == this.getPosition().getSourceEnd()) {
 				return true;
 			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isInSameJointDeclarationAs(CtVariable<?> variable) {
+		if (isPartOfJointDeclaration() && variable.isPartOfJointDeclaration()) {
+			SourcePosition thisPosition = getPosition();
+			SourcePosition otherPosition = variable.getPosition();
+
+			return thisPosition.getSourceStart() == otherPosition.getSourceStart()
+					&& thisPosition.getSourceEnd() == otherPosition.getSourceEnd();
 		}
 		return false;
 	}
