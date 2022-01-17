@@ -100,6 +100,7 @@ import spoon.reflect.declaration.CtProvidedService;
 import spoon.reflect.declaration.CtRecord;
 import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeMember;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.CtUsedService;
 import spoon.reflect.declaration.CtVariable;
@@ -781,15 +782,30 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		elementPrinterHelper.writeComment(f, CommentOffset.BEFORE);
 		elementPrinterHelper.visitCtNamedElement(f, sourceCompilationUnit);
 		elementPrinterHelper.writeModifiers(f);
-		if (f.getType() instanceof CtArrayTypeReference<?>) {
-			try (Writable unused = context.modify()
-					.skipArray(shouldSquareBracketBeSkipped(
-							(CtArrayTypeReference<?>) f.getType(),
-							CtArrayTypeReferenceImpl.DeclarationKind.TYPE))) {
-				scan(f.getType());
+		if (f.isPartOfJointDeclaration()) {
+			if (isFirstFieldInJointDeclaration(f)) {
+				if (f.getType() instanceof CtArrayTypeReference<?>) {
+					try (Writable unused = context.modify()
+							.skipArray(shouldSquareBracketBeSkipped(
+									(CtArrayTypeReference<?>) f.getType(),
+									CtArrayTypeReferenceImpl.DeclarationKind.TYPE))) {
+						scan(f.getType());
+					}
+				} else {
+					scan(f.getType());
+				}
 			}
 		} else {
-			scan(f.getType());
+			if (f.getType() instanceof CtArrayTypeReference<?>) {
+				try (Writable unused = context.modify()
+						.skipArray(shouldSquareBracketBeSkipped(
+								(CtArrayTypeReference<?>) f.getType(),
+								CtArrayTypeReferenceImpl.DeclarationKind.TYPE))) {
+					scan(f.getType());
+				}
+			} else {
+				scan(f.getType());
+			}
 		}
 
 		printer.writeSpace();
@@ -808,8 +824,44 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 			printer.writeSpace().writeOperator("=").writeSpace();
 			scan(f.getDefaultExpression());
 		}
-		printer.writeSeparator(";");
+		if (f.isPartOfJointDeclaration()) {
+			if (isLastFieldInJointDeclaration(f)) {
+				printer.writeSeparator(";");
+			} else {
+				printer.writeSeparator(",");
+			}
+		} else {
+			printer.writeSeparator(";");
+		}
 		elementPrinterHelper.writeComment(f, CommentOffset.AFTER);
+	}
+
+	private boolean isFirstFieldInJointDeclaration(CtField<?> field) {
+		CtType<?> type = (CtType<?>) field.getParent();
+		int positionOfField = type.getTypeMembers().indexOf(field);
+
+		if (positionOfField - 1 < 0) {
+			return true;
+		}
+		CtTypeMember typeMember = type.getTypeMembers().get(positionOfField - 1);
+		if (!(typeMember instanceof CtField<?>)) {
+			return true;
+		}
+		return !field.isInSameJointDeclarationAs((CtVariable<?>) typeMember);
+	}
+
+	private boolean isLastFieldInJointDeclaration(CtField<?> field) {
+		CtType<?> type = (CtType<?>) field.getParent();
+		int positionOfField = type.getTypeMembers().indexOf(field);
+
+		if (positionOfField + 1 == type.getTypeMembers().size()) {
+			return true;
+		}
+		CtTypeMember typeMember = type.getTypeMembers().get(positionOfField + 1);
+		if (!(typeMember instanceof CtField<?>)) {
+			return true;
+		}
+		return !field.isInSameJointDeclarationAs((CtVariable<?>) typeMember);
 	}
 
 	private boolean shouldSquareBracketBeSkipped(
