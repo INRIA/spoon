@@ -31,7 +31,6 @@ import spoon.support.Experimental;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
 
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -340,7 +339,7 @@ public class ElementSourceFragment implements SourceFragment {
 		OTHER_IS_BEFORE,
 		OTHER_IS_AFTER,
 		OTHER_IS_CHILD,
-		OTHER_IS_PARENT;
+		OTHER_IS_PARENT
 	}
 
 	/**
