@@ -29,7 +29,6 @@ import spoon.compiler.SpoonFolder;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
