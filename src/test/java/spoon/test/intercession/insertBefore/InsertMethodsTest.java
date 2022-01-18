@@ -16,8 +16,11 @@
  */
 package spoon.test.intercession.insertBefore;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.compiler.SpoonResourceHelper;
 import spoon.reflect.code.CtBlock;
@@ -36,13 +39,11 @@ import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class InsertMethodsTest {
 
@@ -50,7 +51,7 @@ public class InsertMethodsTest {
 	private CtClass<?> assignmentClass;
 	private CtClass<?> insertExampleClass;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		Launcher spoon = new Launcher();
 		factory = spoon.createFactory();
