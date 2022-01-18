@@ -7,6 +7,7 @@
  */
 package spoon.support.sniper.internal;
 
+
 import spoon.SpoonException;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtLiteral;
@@ -29,6 +30,7 @@ import spoon.reflect.visitor.EarlyTerminatingScanner;
 import spoon.support.Experimental;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
+
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -338,7 +340,7 @@ public class ElementSourceFragment implements SourceFragment {
 		OTHER_IS_BEFORE,
 		OTHER_IS_AFTER,
 		OTHER_IS_CHILD,
-		OTHER_IS_PARENT
+		OTHER_IS_PARENT;
 	}
 
 	/**
@@ -720,7 +722,7 @@ public class ElementSourceFragment implements SourceFragment {
 			}
 			// nothing has matched, best effort token
 			if (longestMatcher == null) {
-				consumer.accept(new TokenSourceFragment(str.toString(), TokenType.CODE_SNIPPET));
+				consumer.accept(new TokenSourceFragment(Arrays.toString(str), TokenType.CODE_SNIPPET));
 				return;
 			}
 			consumer.accept(new TokenSourceFragment(longestMatcher.toString(), longestMatcher.getType()));
