@@ -7,16 +7,17 @@
  */
 package spoon.support.compiler;
 
+
 import spoon.SpoonModelBuilder;
 import spoon.compiler.ModelBuildingException;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
+import spoon.reflect.code.CtComment;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtComment;
-import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtCodeSnippet;
 import spoon.reflect.declaration.CtElement;
@@ -31,13 +32,14 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
 import spoon.support.compiler.jdt.PositionBuilder;
 import spoon.support.reflect.declaration.CtElementImpl;
+
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Arrays;
 
 /** Helper class for working with snippets */
 public class SnippetCompilationHelper {
@@ -82,7 +84,7 @@ public class SnippetCompilationHelper {
 		removeIllegalDummyStatements(clonedInitialClass);
 
 		String pkg = initialClass.getPackage().getQualifiedName();
-		if (!pkg.equals("")) {
+		if (!pkg.isEmpty()) {
 			pkg = "package " + pkg + ";";
 		}
 		try {
