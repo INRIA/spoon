@@ -65,6 +65,10 @@ public class TypeFactoryTest {
 		assertAll(
 			() -> assertEquals("String", s.getSimpleName()),
 			() -> assertEquals("java.lang.String", s.getQualifiedName()),
+			/*
+			In java 12 string got 2 new interfaces (see https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/lang/String.html)
+			Constable, ConstantDesc. To support the CI with jdk8 and newer CIs for local testing this assertion is needed.
+			*/
 			() -> assertTrue(3 == s.getSuperInterfaces().size() || 5 == s.getSuperInterfaces().size()),
 			() -> assertEquals(2, s.getMethodsByName("toLowerCase").size()));
 	}
