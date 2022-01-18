@@ -14,8 +14,12 @@
  */
 package spoon.test.factory;
 
+
 import com.mysema.query.types.expr.ComparableExpressionBase;
-import org.junit.Test;
+
+import java.io.File;
+
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtJavaDoc;
 import spoon.reflect.declaration.CtMethod;
@@ -27,12 +31,10 @@ import spoon.test.factory.testclasses3.Cooking;
 import spoon.test.factory.testclasses3.Prepare;
 import spoon.testing.utils.ModelUtils;
 
-import java.io.File;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TypeFactoryTest {
@@ -63,10 +65,6 @@ public class TypeFactoryTest {
 		assertAll(
 			() -> assertEquals("String", s.getSimpleName()),
 			() -> assertEquals("java.lang.String", s.getQualifiedName()),
-			/*
-			In java 12 string got 2 new interfaces (see https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/lang/String.html)
-			Constable, ConstantDesc. To support the CI with jdk8 and newer CIs for local testing this assertion is needed.
-			*/
 			() -> assertTrue(3 == s.getSuperInterfaces().size() || 5 == s.getSuperInterfaces().size()),
 			() -> assertEquals(2, s.getMethodsByName("toLowerCase").size()));
 	}
