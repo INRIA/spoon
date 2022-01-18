@@ -16,14 +16,14 @@
  */
 package spoon.test.filters;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtReturn;
 import spoon.support.compiler.jdt.CompilationUnitFilter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CUFilterTest {
 
