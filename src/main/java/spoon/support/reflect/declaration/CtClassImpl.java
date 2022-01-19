@@ -28,7 +28,6 @@ import spoon.support.reflect.code.CtStatementImpl;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
 import spoon.support.util.SignatureBasedSortedSet;
 
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
