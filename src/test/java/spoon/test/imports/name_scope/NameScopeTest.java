@@ -16,7 +16,14 @@
  */
 package spoon.test.imports.name_scope;
 
-import org.junit.Test;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtElement;
@@ -30,16 +37,10 @@ import spoon.reflect.visitor.chain.ScanningMode;
 import spoon.test.imports.name_scope.testclasses.Renata;
 import spoon.testing.utils.ModelUtils;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class NameScopeTest {
 
