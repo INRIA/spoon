@@ -694,14 +694,14 @@ public class ElementSourceFragment implements SourceFragment {
 			consumer.accept(new TokenSourceFragment(buff.toString(), TokenType.SPACE));
 			return;
 		}
-		char[] str = new char[buff.length()];
-		buff.getChars(0, buff.length(), str, 0);
+		char[] charArray = new char[buff.length()];
+		buff.getChars(0, buff.length(), charArray, 0);
 		int off = 0;
-		while (off < str.length) {
+		while (off < charArray.length) {
 			//detect java identifier or keyword
-			int lenOfIdentifier = detectJavaIdentifier(str, off);
+			int lenOfIdentifier = detectJavaIdentifier(charArray, off);
 			if (lenOfIdentifier > 0) {
-				String identifier = new String(str, off, lenOfIdentifier);
+				String identifier = new String(charArray, off, lenOfIdentifier);
 				if (javaKeywords.contains(identifier)) {
 					//it is a java keyword
 					consumer.accept(new TokenSourceFragment(identifier, TokenType.KEYWORD));
@@ -715,13 +715,13 @@ public class ElementSourceFragment implements SourceFragment {
 			//detect longest match in matchers
 			StringMatcher longestMatcher = null;
 			for (StringMatcher strMatcher : matchers) {
-				if (strMatcher.isMatch(str, off)) {
+				if (strMatcher.isMatch(charArray, off)) {
 					longestMatcher = strMatcher.getLonger(longestMatcher);
 				}
 			}
 			// nothing has matched, best effort token
 			if (longestMatcher == null) {
-				consumer.accept(new TokenSourceFragment(Arrays.toString(str), TokenType.CODE_SNIPPET));
+				consumer.accept(new TokenSourceFragment(Arrays.toString(charArray), TokenType.CODE_SNIPPET));
 				return;
 			}
 			consumer.accept(new TokenSourceFragment(longestMatcher.toString(), longestMatcher.getType()));
