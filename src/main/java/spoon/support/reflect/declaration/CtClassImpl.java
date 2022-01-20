@@ -38,8 +38,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static spoon.reflect.path.CtRole.CONSTRUCTOR;
 import static spoon.reflect.path.CtRole.ANNONYMOUS_EXECUTABLE;
+import static spoon.reflect.path.CtRole.CONSTRUCTOR;
 import static spoon.reflect.path.CtRole.SUPER_TYPE;
 
 /**
@@ -173,7 +173,7 @@ public class CtClassImpl<T> extends CtTypeImpl<T> implements CtClass<T> {
 	@Override
 	public boolean isAnonymous() {
 		// case 1: the java.lang.Class convention
-		if ("".equals(getSimpleName())) {
+		if (getSimpleName().isEmpty()) {
 			return true;
 		}
 		// case 2: the Spoon convention (the number in the class file)
