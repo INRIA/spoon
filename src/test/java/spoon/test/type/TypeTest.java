@@ -16,6 +16,7 @@
  */
 package spoon.test.type;
 
+
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
