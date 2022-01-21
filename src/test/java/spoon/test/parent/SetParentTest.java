@@ -15,8 +15,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 package spoon.test.parent;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.reflect.CtModelImpl;
@@ -31,13 +30,14 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.ModuleFactory;
 import spoon.reflect.visitor.CtVisitable;
 
+
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.test.parent.ContractOnSettersParametrizedTest.createReceiverList;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
