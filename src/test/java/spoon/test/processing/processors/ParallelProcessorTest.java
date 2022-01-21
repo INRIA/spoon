@@ -6,11 +6,8 @@
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.test.processing.processors;
-
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.TemporaryFolder;
-
+import org.junit.jupiter.api.io.TempDir;
 import spoon.FluentLauncher;
 import spoon.SpoonException;
 import spoon.processing.AbstractParallelProcessor;
@@ -19,6 +16,7 @@ import spoon.processing.Processor;
 import spoon.reflect.declaration.CtElement;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -27,14 +25,10 @@ import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ParallelProcessorTest {
 	private static final String INPUT_FILES = "src/test/resources/deprecated/input";
-	@Rule
-	public TemporaryFolder folderFactory = new TemporaryFolder();
-
 	private AtomicReferenceArray<Integer> createCounter() {
 		Integer[] counter = new Integer[] { 0, 0, 0, 0 };
 		AtomicReferenceArray<Integer> atomicCounter = new AtomicReferenceArray<Integer>(counter);
@@ -52,7 +46,7 @@ public class ParallelProcessorTest {
 	}
 
 	@Test
-	public void compareWithSingleThreaded1() throws IOException {
+	public void compareWithSingleThreaded1(@TempDir Path outputFolder) throws IOException {
 		// contract: running with 4 processors parallel must produce the same result as
 		// single threaded processor.
 		// for testing this a simple processor counting visited nodes is used.
@@ -69,7 +63,7 @@ public class ParallelProcessorTest {
 				.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1, p2, p3, p4)) {
 				})
 				.noClasspath(true)
-				.outputDirectory(folderFactory.newFolder())
+				.outputDirectory(outputFolder.toFile())
 				.buildModel();
 
 		AtomicInteger singleThreadCounter = new AtomicInteger(0);
@@ -78,7 +72,7 @@ public class ParallelProcessorTest {
 			public void process(CtElement element) {
 				singleThreadCounter.incrementAndGet();
 			}
-		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
+		}).noClasspath(true).outputDirectory(outputFolder.toFile()).buildModel();
 
 		int sequentialCount = singleThreadCounter.get();
 		int parallelCount = IntStream.range(0, atomicCounter.length()).map(atomicCounter::get).sum();
@@ -86,7 +80,7 @@ public class ParallelProcessorTest {
 	}
 
 	@Test
-	public void compareWithSingleThreaded2() throws IOException {
+	public void compareWithSingleThreaded2(@TempDir Path outputFolder) throws IOException {
 		// contract: a parallelProcessor with one thread must produce the same result as
 		// a normal processor.
 
@@ -97,7 +91,7 @@ public class ParallelProcessorTest {
 				.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1)) {
 				})
 				.noClasspath(true)
-				.outputDirectory(folderFactory.newFolder())
+				.outputDirectory(outputFolder.toFile())
 				.buildModel();
 		AtomicInteger singleThreadCounter = new AtomicInteger(0);
 		new FluentLauncher().inputResource(INPUT_FILES).processor(new AbstractProcessor<CtElement>() {
@@ -105,13 +99,13 @@ public class ParallelProcessorTest {
 			public void process(CtElement element) {
 				singleThreadCounter.incrementAndGet();
 			}
-		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
+		}).noClasspath(true).outputDirectory(outputFolder.toFile()).buildModel();
 
 		assertThat(atomicCounter.get(0), equalTo(singleThreadCounter.get()));
 	}
 
 	@Test
-	public void consumerConstructorTest() throws IOException {
+	public void consumerConstructorTest(@TempDir Path outputFolder) throws IOException {
 		// contract: creating with consumer constructor must produces correct results.
 		// See other tests for explanation how the testing works.
 		AtomicReferenceArray<Integer> atomicCounter = createCounter();
@@ -119,7 +113,7 @@ public class ParallelProcessorTest {
 				.processor(new AbstractParallelProcessor<CtElement>((e) -> atomicCounter.getAndUpdate(0, i -> i + 1), 4) {
 				})
 				.noClasspath(true)
-				.outputDirectory(folderFactory.newFolder())
+				.outputDirectory(outputFolder.toFile())
 				.buildModel();
 		AtomicInteger singleThreadCounter = new AtomicInteger(0);
 		new FluentLauncher().inputResource(INPUT_FILES).processor(new AbstractProcessor<CtElement>() {
@@ -127,7 +121,7 @@ public class ParallelProcessorTest {
 			public void process(CtElement element) {
 				singleThreadCounter.incrementAndGet();
 			}
-		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
+		}).noClasspath(true).outputDirectory(outputFolder.toFile()).buildModel();
 
 		int sequentialCount = singleThreadCounter.get();
 		int parallelCount = IntStream.range(0, atomicCounter.length()).map(atomicCounter::get).sum();
@@ -135,7 +129,7 @@ public class ParallelProcessorTest {
 	}
 
 	@Test
-	public void compareWithSingleThreaded3() throws IOException {
+	public void compareWithSingleThreaded3(@TempDir Path outputFolder) throws IOException {
 		// contract: using an iterable with more elements than used should only use the
 		// given number. Result must be correct too.
 		// Here the iterable<Processor> has size 4 and only 3 are used.
@@ -150,7 +144,7 @@ public class ParallelProcessorTest {
 				.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1, p2, p3, p4), 3) {
 				})
 				.noClasspath(true)
-				.outputDirectory(folderFactory.newFolder())
+				.outputDirectory(outputFolder.toFile())
 				.buildModel();
 		AtomicInteger singleThreadCounter = new AtomicInteger(0);
 		new FluentLauncher().inputResource(INPUT_FILES).processor(new AbstractProcessor<CtElement>() {
@@ -158,7 +152,7 @@ public class ParallelProcessorTest {
 			public void process(CtElement element) {
 				singleThreadCounter.incrementAndGet();
 			}
-		}).noClasspath(true).outputDirectory(folderFactory.newFolder()).buildModel();
+		}).noClasspath(true).outputDirectory(outputFolder.toFile()).buildModel();
 
 
 		int sequentialCount = singleThreadCounter.get();
@@ -168,7 +162,7 @@ public class ParallelProcessorTest {
 	}
 
 	@Test
-	public void testSize() throws IOException {
+	public void testSize(@TempDir Path outputFolder) throws IOException {
 		// contract: a thread pool with size zero must not created.
 		AtomicReferenceArray<Integer> atomicCounter = createCounter();
 		Processor<CtElement> p1 = createProcessor(atomicCounter, 0);
@@ -177,12 +171,12 @@ public class ParallelProcessorTest {
 				.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1), 0) {
 				})
 				.noClasspath(true)
-				.outputDirectory(folderFactory.newFolder())
+				.outputDirectory(outputFolder.toFile())
 				.buildModel());
 	}
 
 	@Test
-	public void testSize2() throws IOException {
+	public void testSize2(@TempDir Path outputFolder) throws IOException {
 		// contract: negative processor numbers must throw an exception.
 		AtomicReferenceArray<Integer> atomicCounter = createCounter();
 		Processor<CtElement> p1 = createProcessor(atomicCounter, 0);
@@ -190,43 +184,43 @@ public class ParallelProcessorTest {
 				.processor(new AbstractParallelProcessor<CtElement>(Arrays.asList(p1), -5) {
 				})
 				.noClasspath(true)
-				.outputDirectory(folderFactory.newFolder())
+				.outputDirectory(outputFolder.toFile())
 				.buildModel());
 	}
 
 	@Test
-	public void testSize3() throws IOException {
+	public void testSize3(@TempDir Path outputFolder) throws IOException {
 		// contract: trying to consume more processor than provided must throw an
 		// exception.
 		assertThrows(SpoonException.class, () -> new FluentLauncher().inputResource(INPUT_FILES)
 				.processor(new AbstractParallelProcessor<CtElement>(Collections.emptyList(), 1) {
 				})
 				.noClasspath(true)
-				.outputDirectory(folderFactory.newFolder())
+				.outputDirectory(outputFolder.toFile())
 				.buildModel());
 	}
 
 	@Test
-	public void testSize4() throws IOException {
+	public void testSize4(@TempDir Path outputFolder) throws IOException {
 		// contract: trying to consume more processor than provided must throw an
 		// exception.
 		assertThrows(IllegalArgumentException.class, () -> new FluentLauncher().inputResource(INPUT_FILES)
 				.processor(new AbstractParallelProcessor<CtElement>(Collections.emptyList()) {
 				})
 				.noClasspath(true)
-				.outputDirectory(folderFactory.newFolder())
+				.outputDirectory(outputFolder.toFile())
 				.buildModel());
 	}
 
 	@Test
-	public void testSize5() throws IOException {
+	public void testSize5(@TempDir Path outputFolder) throws IOException {
 		// contract: a thread pool with size zero must not created.
 
 		assertThrows(IllegalArgumentException.class, () -> new FluentLauncher().inputResource(INPUT_FILES)
 				.processor(new AbstractParallelProcessor<CtElement>((v) -> v.toString(), 0) {
 				})
 				.noClasspath(true)
-				.outputDirectory(folderFactory.newFolder())
+				.outputDirectory(outputFolder.toFile())
 				.buildModel());
 	}
 
