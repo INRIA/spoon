@@ -46,7 +46,6 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.compiler.jdt.JDTBatchCompiler;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -57,7 +56,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -346,7 +344,6 @@ public class TestModule {
 		assertNotNull(module);
 	}
 
-	
 	@Test
 	@Disabled
 	public void testMultipleModulesAndParents() {
