@@ -17,10 +17,10 @@
 package spoon.test.module;
 
 import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import spoon.Launcher;
@@ -46,6 +46,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.compiler.jdt.JDTBatchCompiler;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -57,18 +58,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestModule {
 	private static final String MODULE_RESOURCES_PATH = "./src/test/resources/spoon/test/module";
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp() throws IOException {
 		File directory = new File(MODULE_RESOURCES_PATH);
 		try (Stream<Path> paths = Files.walk(directory.toPath())) {
@@ -84,7 +87,7 @@ public class TestModule {
 		}
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void tearDown() throws IOException {
 		File directory = new File(MODULE_RESOURCES_PATH);
 		try (Stream<Path> paths = Files.walk(directory.toPath())) {
@@ -343,8 +346,9 @@ public class TestModule {
 		assertNotNull(module);
 	}
 
-	@Ignore
+	
 	@Test
+	@Disabled
 	public void testMultipleModulesAndParents() {
 		// contract: Spoon is able to build a model with multiple modules
 
@@ -365,19 +369,21 @@ public class TestModule {
 		assertTrue(packBar.getParent() instanceof CtModule);
 	}
 
-	@Test (expected = SpoonException.class)
+	@Test
 	public void testModuleComplianceLevelException() {
-		// contract: provide clear exception in case if module exists but the compliance level is < 9
-		try {
-			final Launcher launcher = new Launcher();
-			launcher.getEnvironment().setComplianceLevel(8);
-			launcher.addInputResource(MODULE_RESOURCES_PATH + "/simple_module");
-			launcher.run();
-		} catch (SpoonException e) {
-			assertEquals("Modules are only available since Java 9. Please set appropriate compliance level.", e.getMessage());
-			throw e;
-		}
-	}
+		assertThrows(SpoonException.class, () -> {
+			// contract: provide clear exception in case if module exists but the compliance level is < 9
+			try {
+				final Launcher launcher = new Launcher();
+				launcher.getEnvironment().setComplianceLevel(8);
+				launcher.addInputResource(MODULE_RESOURCES_PATH + "/simple_module");
+				launcher.run();
+			} catch (SpoonException e) {
+				assertEquals("Modules are only available since Java 9. Please set appropriate compliance level.", e.getMessage());
+				throw e;
+			}
+		});
+	} 
 
 	@Test
 	public void testModuleOverlappingPackages() {
@@ -400,11 +406,8 @@ public class TestModule {
 		launcher.addInputResource(MODULE_RESOURCES_PATH + "/overlapping-packages");
 		CtModel ctModel = launcher.buildModel();
 		assertEquals(3, ctModel.getAllModules().size());
-		assertNotNull(
-				"Wrong package picked, the synthetic one comes first in alphabetical order but"
-						+ " doesn't have the classes we want!",
-				launcher.getFactory().Type().get("test.parent.Bar")
+		assertNotNull(launcher.getFactory().Type().get("test.parent.Bar"), "Wrong package picked, the synthetic one comes first in alphabetical order but" + " doesn't have the classes we want!"
 		);
-		assertNotNull("", launcher.getFactory().Type().get("test.parent.nested.Foo"));
+		assertNotNull(launcher.getFactory().Type().get("test.parent.nested.Foo"), "");
 	}
 }
