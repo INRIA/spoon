@@ -15,6 +15,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 package spoon.test.modifiers;
+
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
