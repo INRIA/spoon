@@ -15,15 +15,14 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 package spoon.test.replace;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.SpoonException;
 import spoon.metamodel.ConceptKind;
+import spoon.metamodel.Metamodel;
 import spoon.metamodel.MetamodelConcept;
 import spoon.metamodel.MetamodelProperty;
-import spoon.metamodel.Metamodel;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtStatement;
@@ -40,16 +39,17 @@ import spoon.reflect.visitor.CtScanner;
 import spoon.reflect.visitor.CtVisitable;
 import spoon.reflect.visitor.filter.SameFilter;
 
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.test.parent.ContractOnSettersParametrizedTest.createCompatibleObject;
 
 @RunWith(Parameterized.class)
@@ -163,7 +163,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 			}
 			Scanner s = new Scanner();
 			receiver.accept(s);
-			assertTrue("Settable field " + mmField.toString() + " should set value.\n" + getReport(problems), s.found);
+			assertTrue(s.found, "Settable field " + mmField.toString() + " should set value.\n" + getReport(problems));
 			
 			// contract: a property getter on the same role can be used to get the value back
 			assertSame(argument, invokeGetter(rh, receiver));
@@ -175,7 +175,7 @@ public class ReplaceParametrizedTest<T extends CtVisitable> {
 			argument.replace(argument2);
 
 			// the new element is indeed now in this AST
-			assertTrue(receiver.getClass().getSimpleName() + " failed for " + mmField, receiver.getElements(new SameFilter(argument2)).size() == 1);
+			assertTrue(receiver.getElements(new SameFilter(argument2)).size() == 1, receiver.getClass().getSimpleName() + " failed for " + mmField);
 		}
 		if (!problems.isEmpty()) {
 			fail(getReport(problems));
