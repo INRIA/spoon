@@ -321,7 +321,7 @@ public class TestModule {
 		assertThat(list, is(Set.of("foo", "bar")));
 	}
 
-	@org.junit.jupiter.api.Test
+	@Test
 	@DisabledForJreRange(max = JRE.JAVA_8)
 	public void testSimpleModuleCanBeBuilt() {
 		// contract: Spoon is able to build a simple model with a module in full classpath
@@ -334,7 +334,7 @@ public class TestModule {
 		CtModel model = launcher.getModel();
 
 		// unnamed module
-		assertEquals(1, model.getAllModules().size());
+		assertEquals(2, model.getAllModules().size());
 		assertEquals(1, model.getAllTypes().size());
 
 		CtClass simpleClass = model.getElements(new TypeFilter<>(CtClass.class)).get(0);
