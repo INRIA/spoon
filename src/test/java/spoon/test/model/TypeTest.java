@@ -6,8 +6,7 @@
  * Spoon is available either under the terms of the MIT License (see LICENSE-MIT.txt) of the Cecill-C License (see LICENSE-CECILL-C.txt). You as the user are entitled to choose the terms under which to adopt Spoon.
  */
 package spoon.test.model;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.compiler.ModelBuildingException;
 import spoon.reflect.CtModel;
@@ -20,17 +19,19 @@ import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
@@ -163,13 +164,15 @@ public class TypeTest {
 		checkIsSomething("generics", ctTypeParam);
 	}
 
-	@Test(expected = ModelBuildingException.class)
+	@Test
 	public void testMultiClassNotEnable() {
-		Launcher spoon = new Launcher();
-		spoon.addInputResource("src/test/resources/multiclass/module1");
-		spoon.addInputResource("src/test/resources/multiclass/module2");
-		spoon.buildModel();
-	}
+		assertThrows(ModelBuildingException.class, () -> {
+			Launcher spoon = new Launcher();
+			spoon.addInputResource("src/test/resources/multiclass/module1");
+			spoon.addInputResource("src/test/resources/multiclass/module2");
+			spoon.buildModel();
+		});
+	} 
 
 	@Test
 	public void testMultiClassEnable() {
