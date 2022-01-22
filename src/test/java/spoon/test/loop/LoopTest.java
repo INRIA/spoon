@@ -16,27 +16,27 @@
  */
 package spoon.test.loop;
 
-import org.junit.Test;
-import spoon.Launcher;
-import spoon.reflect.CtModel;
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtFor;
-import spoon.reflect.code.CtForEach;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtLoop;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.loop.testclasses.Condition;
 import spoon.test.loop.testclasses.Join;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.reflect.code.CtForEach;
+import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.declaration.CtConstructor;
+import spoon.reflect.code.CtLoop;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.code.CtBlock;
+import spoon.Launcher;
+import spoon.reflect.code.CtFor;
+import spoon.reflect.CtModel;
+import spoon.reflect.declaration.CtClass;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static spoon.testing.utils.ModelUtils.build;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class LoopTest {
 	private static final String nl = System.lineSeparator();
