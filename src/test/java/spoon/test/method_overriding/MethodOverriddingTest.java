@@ -16,27 +16,27 @@
  */
 package spoon.test.method_overriding;
 
-import org.junit.Test;
-import spoon.Launcher;
 import spoon.SpoonModelBuilder;
-import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.test.method_overriding.testclasses2.ObjectInterface;
+import spoon.compiler.SpoonResourceHelper;
+import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.reflect.declaration.CtType;
 import spoon.testing.utils.ModelUtils;
+import spoon.Launcher;
+import spoon.reflect.declaration.CtMethod;
+import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.function.BiFunction;
+import java.util.Comparator;
+import java.util.List;
+import java.io.File;
+import java.util.Map;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class MethodOverriddingTest {
 
@@ -118,13 +118,13 @@ public class MethodOverriddingTest {
 	}
 
 	private void checkOverride(CtMethod m1, CtMethod m2, BiFunction<CtMethod<?>, CtMethod<?>, Boolean> isOverriding) {
-		assertTrue(descr(m1)+" overriding "+descr(m2), 		isOverriding.apply(m1, m2));
-		assertFalse(descr(m2)+" NOT overriding "+descr(m1), isOverriding.apply(m2, m1));
+		assertTrue(isOverriding.apply(m1, m2), descr(m1) + " overriding " + descr(m2));
+		assertFalse(isOverriding.apply(m2, m1), descr(m2) + " NOT overriding " + descr(m1));
 	}
 
 	private void checkNotOverride(CtMethod m1, CtMethod m2, BiFunction<CtMethod<?>, CtMethod<?>, Boolean> isOverriding) {
-		assertFalse(descr(m1)+" NOT overriding "+descr(m2), isOverriding.apply(m1, m2));
-		assertFalse(descr(m2)+" NOT overriding "+descr(m1), isOverriding.apply(m2, m1));
+		assertFalse(isOverriding.apply(m1, m2), descr(m1) + " NOT overriding " + descr(m2));
+		assertFalse(isOverriding.apply(m2, m1), descr(m2) + " NOT overriding " + descr(m1));
 	}
 
 	private String descr(CtMethod m) {
