@@ -16,8 +16,8 @@
  */
 package spoon.test.methodreference;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonModelBuilder;
@@ -51,19 +51,19 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class MethodReferenceTest {
 	private static final String TEST_CLASS = "spoon.test.methodreference.testclasses.Foo.";
 	private CtClass<?> foo;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.getFactory();
@@ -287,12 +287,12 @@ public class MethodReferenceTest {
 	}
 
 	private void assertTypedBy(Class<?> expected, CtTypeReference<?> type) {
-		assertSame("Method reference must be typed.", expected, type.getActualClass());
+		assertSame(expected, type.getActualClass(), "Method reference must be typed.");
 	}
 
 	private void assertTargetedBy(String expected, CtExpression<?> target) {
-		assertNotNull("Method reference must have a target expression.", target);
-		assertEquals("Target reference correspond to the enclosing class.", expected, target.toString());
+		assertNotNull(target, "Method reference must have a target expression.");
+		assertEquals(expected, target.toString(), "Target reference correspond to the enclosing class.");
 	}
 
 	private void assertIsConstructorReference(CtExecutableReference<?> executable) {
@@ -300,12 +300,12 @@ public class MethodReferenceTest {
 	}
 
 	private void assertExecutableNamedBy(String expected, CtExecutableReference<?> executable) {
-		assertNotNull("Method reference must reference an executable.", executable);
-		assertEquals("Method reference must reference the right executable.", expected, executable.getSimpleName());
+		assertNotNull(executable, "Method reference must reference an executable.");
+		assertEquals(expected, executable.getSimpleName(), "Method reference must reference the right executable.");
 	}
 
 	private void assertIsWellPrinted(String methodReference, CtExecutableReferenceExpression<?,?> reference) {
-		assertEquals("Method reference must be well printed", methodReference, reference.toString());
+		assertEquals(methodReference, reference.toString(), "Method reference must be well printed");
 	}
 
 	private CtExecutableReferenceExpression<?,?> getCtExecutableReferenceExpression(final String methodReference) {
