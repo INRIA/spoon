@@ -16,7 +16,7 @@
  */
 package spoon.test.modifiers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtField;
@@ -35,10 +35,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ModifiersTest {
 
@@ -223,17 +223,17 @@ public class ModifiersTest {
     }
 
     private void checkCtModifiableHelpersAssertion(CtModifiable element, boolean isPublic, boolean isProtected, boolean isPrivate, boolean isAbstract, boolean isFinal, boolean isStatic, boolean isTransient, boolean isVolatile, boolean isSynchronized, boolean isNative, boolean isStrictfp) {
-        assertEquals("isPublic for "+element+" is wrong", isPublic, element.isPublic());
-        assertEquals("isProtected for "+element+" is wrong", isProtected, element.isProtected());
-        assertEquals("isPrivate for "+element+" is wrong", isPrivate, element.isPrivate());
-        assertEquals("isAbstract for "+element+" is wrong", isAbstract, element.isAbstract());
-        assertEquals("isFinal for "+element+" is wrong", isFinal, element.isFinal());
-        assertEquals("isStatic for "+element+" is wrong", isStatic, element.isStatic());
-        assertEquals("isTransient for "+element+" is wrong", isTransient, element.isTransient());
-        assertEquals("isVolatile for "+element+" is wrong", isVolatile, element.isVolatile());
-        assertEquals("isSynchronized for "+element+" is wrong", isSynchronized, element.isSynchronized());
-        assertEquals("isNative for "+element+" is wrong", isNative, element.isNative());
-        assertEquals("isStrictfp for "+element+" is wrong", isStrictfp, element.isStrictfp());
+        assertEquals(isPublic, element.isPublic(), "isPublic for " + element + " is wrong");
+        assertEquals(isProtected, element.isProtected(), "isProtected for " + element + " is wrong");
+        assertEquals(isPrivate, element.isPrivate(), "isPrivate for " + element + " is wrong");
+        assertEquals(isAbstract, element.isAbstract(), "isAbstract for " + element + " is wrong");
+        assertEquals(isFinal, element.isFinal(), "isFinal for " + element + " is wrong");
+        assertEquals(isStatic, element.isStatic(), "isStatic for " + element + " is wrong");
+        assertEquals(isTransient, element.isTransient(), "isTransient for " + element + " is wrong");
+        assertEquals(isVolatile, element.isVolatile(), "isVolatile for " + element + " is wrong");
+        assertEquals(isSynchronized, element.isSynchronized(), "isSynchronized for " + element + " is wrong");
+        assertEquals(isNative, element.isNative(), "isNative for " + element + " is wrong");
+        assertEquals(isStrictfp, element.isStrictfp(), "isStrictfp for " + element + " is wrong");
     }
 
     @Test
