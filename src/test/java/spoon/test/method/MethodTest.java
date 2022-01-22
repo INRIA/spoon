@@ -16,36 +16,36 @@
  */
 package spoon.test.method;
 
-import org.junit.Test;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.declaration.CtParameter;
+import spoon.test.method.testclasses.Tacos;
+import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.filter.NamedElementFilter;
+import spoon.reflect.declaration.CtTypeParameter;
+import spoon.test.delete.testclasses.Adobada;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.CtType;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.filter.NamedElementFilter;
-import spoon.test.delete.testclasses.Adobada;
 import spoon.test.method.testclasses.Methods;
-import spoon.test.method.testclasses.Tacos;
+import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.ConcurrentModificationException;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.ConcurrentModificationException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Arrays;
 
+import static spoon.testing.utils.ModelUtils.buildClass;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static spoon.testing.utils.ModelUtils.build;
-import static spoon.testing.utils.ModelUtils.buildClass;
 import static spoon.testing.utils.ModelUtils.createFactory;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MethodTest {
 
