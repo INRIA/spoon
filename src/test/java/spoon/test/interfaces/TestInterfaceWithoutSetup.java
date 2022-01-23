@@ -16,24 +16,23 @@
  */
 package spoon.test.interfaces;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
-
-import spoon.Launcher;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.support.reflect.CtExtendedModifier;
+import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtField;
+import org.apache.commons.lang3.StringUtils;
+import spoon.Launcher;
+import spoon.reflect.declaration.CtMethod;
+import org.junit.jupiter.api.Test;
 
-import java.io.File;
+import java.util.Set;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Set;
+import java.io.File;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestInterfaceWithoutSetup {
 
