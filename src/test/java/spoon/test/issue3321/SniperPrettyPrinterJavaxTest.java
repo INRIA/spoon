@@ -1,9 +1,11 @@
 package spoon.test.issue3321;
 
-import org.junit.Test;
+import spoon.support.sniper.SniperJavaPrettyPrinter;
 import spoon.Launcher;
 import spoon.compiler.Environment;
-import spoon.support.sniper.SniperJavaPrettyPrinter;
+import org.junit.jupiter.api.Test;
+
+
 
 /**
  * @author Gibah Joseph
