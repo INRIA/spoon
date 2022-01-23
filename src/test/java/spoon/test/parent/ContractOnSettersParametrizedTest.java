@@ -16,9 +16,8 @@
  */
 package spoon.test.parent;
 
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -57,15 +56,21 @@ import static spoon.testing.utils.ModelUtils.createFactory;
  * - call setParent
  * - trigger a change event
   */
-@RunWith(Parameterized.class)
 public class ContractOnSettersParametrizedTest {
 
 	private static final Factory factory = createFactory();
 	private static final List<CtType<? extends CtElement>> allInstantiableMetamodelInterfaces = SpoonTestHelpers.getAllInstantiableMetamodelInterfaces();
+	private ModelChangeListener changeListener = new ModelChangeListener();
 
-	@Parameterized.Parameters(name = "{0}")
-	public static Collection<Object[]> data() {
-		return createReceiverList();
+	@TestFactory
+	public  Collection<DynamicTest> data() {
+		List<DynamicTest> values = new ArrayList<>();
+		for (CtType<?> t : allInstantiableMetamodelInterfaces) {
+			if (!(CtReference.class.isAssignableFrom(t.getActualClass()))) {
+				values.add(DynamicTest.dynamicTest(t.getQualifiedName(), () -> testContract(t)));
+			}
+		}
+		return values;
 	}
 
 	public static Collection<Object[]> createReceiverList() {
@@ -78,9 +83,6 @@ public class ContractOnSettersParametrizedTest {
 		return values;
 	}
 
-	@Parameterized.Parameter()
-	public CtType<?> toTest;
-
 	static class ModelChangeListener extends ActionBasedChangeListenerImpl {
 		int nbCallsToOnAction = 0;
 		List<CtElement> changedElements = new ArrayList<>();
@@ -92,7 +94,6 @@ public class ContractOnSettersParametrizedTest {
 		}
 	}
 
-	ModelChangeListener changeListener = new ModelChangeListener();
 
 	public static Object createCompatibleObject(CtTypeReference<?> parameterType) {
 		Class<?> c = parameterType.getActualClass();
@@ -194,10 +195,8 @@ public class ContractOnSettersParametrizedTest {
 
 		throw new IllegalArgumentException("cannot instantiate "+parameterType);
 	}
-	static int nTotalSetterCalls = 0;
 
-	@Test
-	public void testContract() throws Throwable {
+	private void testContract(CtType<?> toTest) throws Throwable {
 		factory.getEnvironment().setModelChangeListener(changeListener);
 		// we disable errors here because JLSViolations are not really relevant in this testcase
 		factory.getEnvironment().setIgnoreSyntaxErrors(true);
@@ -230,7 +229,6 @@ public class ContractOnSettersParametrizedTest {
 				assertTrue(nBefore < nAfter, actualMethod.getName());
 
 				nSetterCalls++;
-				nTotalSetterCalls++;
 				// if it's a settable property
 				// we check that setParent has been called
 
