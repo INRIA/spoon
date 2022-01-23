@@ -16,8 +16,8 @@
  */
 package spoon.test.lambda;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.OutputType;
 import spoon.SpoonModelBuilder;
@@ -62,13 +62,13 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static spoon.testing.utils.ModelUtils.canBeBuilt;
 
 public class LambdaTest {
@@ -82,7 +82,7 @@ public class LambdaTest {
 	private CtType<Intersection> intersection;
 	private SpoonModelBuilder compiler;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		launcher = new Launcher();
 		launcher.setArgs(new String[] {"--output-type", "nooutput" });
@@ -119,13 +119,12 @@ public class LambdaTest {
 		runLaunch.addInputResource("./src/test/resources/noclasspath/lambdas/TypeAccessInLambda.java");
 		runLaunch.buildModel();
 
-		assertEquals("The token 'Strings' has not been parsed as CtTypeAccess", 1,
-				runLaunch.getModel().getElements(new Filter<CtTypeAccess>() {
+		assertEquals(1, runLaunch.getModel().getElements(new Filter<CtTypeAccess>() {
 			@Override
 			public boolean matches(final CtTypeAccess element) {
 				return "Strings".equals(element.getAccessedType().getSimpleName());
 			}
-		}).size());
+		}).size(), "The token 'Strings' has not been parsed as CtTypeAccess");
 	}
 
 	@Test
@@ -296,7 +295,7 @@ public class LambdaTest {
 						+ "    System.err.println(\"Enjoy, you have more than 18.\");" + System
 						.lineSeparator()
 						+ "}";
-		assertEquals("Condition must be well printed", expected, printByPrinter(condition));
+		assertEquals(expected, printByPrinter(condition), "Condition must be well printed");
 	}
 
 	@Test
@@ -401,10 +400,10 @@ public class LambdaTest {
 /* This assertion fails now		
 		CtExecutableReference<?> lambdaRef = lambda.getReference();
 		CtExecutableReference<?> methodRef = lambdaRef.getOverridingExecutable();
-// because methodRef is null
+		// because methodRef is null
 		CtExecutable<?> method2 = methodRef.getDeclaration();
 		assertEquals("The lambda.getMethod() != lambda.getReference().getOverridingExecutable().getDeclaration()", method, method2);
-*/
+		 */
 	}
 
 	@Test
@@ -475,7 +474,7 @@ public class LambdaTest {
 
 	private void assertHasStrings(List<String> methodNames, String... strs) {
 		for (String str : strs) {
-			assertTrue("List should contain "+str+" but it is missing.", methodNames.remove(str));
+			assertTrue(methodNames.remove(str), "List should contain " + str + " but it is missing.");
 		}
 		if(!methodNames.isEmpty()) {
 			fail("List shouldn't contain "+methodNames);
@@ -483,38 +482,38 @@ public class LambdaTest {
 	}
 
 	private void assertTypedBy(Class<?> expectedType, CtTypeReference<?> type) {
-		assertSame("Lambda must be typed", expectedType, type.getActualClass());
+		assertSame(expectedType, type.getActualClass(), "Lambda must be typed");
 	}
 
 	private void assertParametersSizeIs(int nbParameters, List<CtParameter<?>> parameters) {
 		if (nbParameters == 0) {
-			assertEquals("Lambda hasn't parameters", nbParameters, parameters.size());
+			assertEquals(nbParameters, parameters.size(), "Lambda hasn't parameters");
 		} else {
-			assertEquals("Lambda has parameters", nbParameters, parameters.size());
+			assertEquals(nbParameters, parameters.size(), "Lambda has parameters");
 		}
 	}
 
 	private void assertParameterTypedBy(Class<?> expectedType, CtParameter<?> parameter) {
-		assertNotNull("Lambda has a parameter typed", parameter.getType());
-		assertSame("Lambda has a parameter typed by", expectedType, parameter.getType().getActualClass());
+		assertNotNull(parameter.getType(), "Lambda has a parameter typed");
+		assertSame(expectedType, parameter.getType().getActualClass(), "Lambda has a parameter typed by");
 	}
 
 	private void assertHasExpressionBody(CtLambda<?> lambda) {
-		assertNotNull("Lambda has an expression for its body.", lambda.getExpression());
-		assertNull("Lambda don't have a list of statements (body) for its body", lambda.getBody());
+		assertNotNull(lambda.getExpression(), "Lambda has an expression for its body.");
+		assertNull(lambda.getBody(), "Lambda don't have a list of statements (body) for its body");
 	}
 
 	private void assertStatementBody(CtLambda<?> lambda) {
-		assertNotNull("Lambda has a body with statements.", lambda.getBody());
-		assertNull("Lambda don't have an expression for its body", lambda.getExpression());
+		assertNotNull(lambda.getBody(), "Lambda has a body with statements.");
+		assertNull(lambda.getExpression(), "Lambda don't have an expression for its body");
 	}
 
 	private void assertParameterIsNamedBy(String name, CtParameter<?> parameter) {
-		assertEquals("Lambda has a parameter with a name", name, parameter.getSimpleName());
+		assertEquals(name, parameter.getSimpleName(), "Lambda has a parameter with a name");
 	}
 
 	private void assertIsWellPrinted(String expected, CtLambda<?> lambda) {
-		assertEquals("Lambda must be well printed", expected, printByPrinter(lambda));
+		assertEquals(expected, printByPrinter(lambda), "Lambda must be well printed");
 	}
 	
 	private static String printByPrinter(CtElement element) {
