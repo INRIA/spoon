@@ -16,27 +16,27 @@
  */
 package spoon.test.jar;
 
-import org.junit.Test;
-import spoon.Launcher;
-import spoon.SpoonModelBuilder;
-import spoon.compiler.SpoonFile;
 import spoon.compiler.SpoonResource;
-import spoon.compiler.SpoonResourceHelper;
+import spoon.SpoonModelBuilder;
 import spoon.reflect.factory.Factory;
+import spoon.compiler.SpoonResourceHelper;
+import spoon.compiler.SpoonFile;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.compiler.ZipFolder;
+import spoon.Launcher;
+import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.io.File;
+import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class JarTest {
 
