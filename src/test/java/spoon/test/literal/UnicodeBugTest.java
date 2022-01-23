@@ -1,17 +1,18 @@
 package spoon.test.literal;
 
-import org.junit.Test;
-import spoon.Launcher;
-import spoon.processing.AbstractProcessor;
-import spoon.reflect.CtModel;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.declaration.CtField;
+import spoon.Launcher;
+import spoon.processing.AbstractProcessor;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.reflect.CtModel;
 import spoon.support.compiler.VirtualFile;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // bug case kindly provided by @Banbury
 // in https://github.com/INRIA/spoon/issues/3203
