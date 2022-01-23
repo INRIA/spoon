@@ -16,7 +16,7 @@
  */
 package spoon.test.parent;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import spoon.SpoonException;
@@ -27,18 +27,18 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.support.modelobs.ActionBasedChangeListenerImpl;
-import spoon.support.modelobs.action.Action;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+import spoon.support.modelobs.ActionBasedChangeListenerImpl;
+import spoon.support.modelobs.action.Action;
 import spoon.test.SpoonTestHelpers;
 
 import java.lang.reflect.InvocationTargetException;
@@ -49,7 +49,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 /**
@@ -227,7 +227,7 @@ public class ContractOnSettersParametrizedTest {
 				int nAfter = changeListener.nbCallsToOnAction;
 
 				// contract: at least one change event is well fired (sometimes it is more than one for complex setters)
-				assertTrue(actualMethod.getName(), nBefore < nAfter);
+				assertTrue(nBefore < nAfter, actualMethod.getName());
 
 				nSetterCalls++;
 				nTotalSetterCalls++;
@@ -239,7 +239,7 @@ public class ContractOnSettersParametrizedTest {
 					&& setter.getAnnotation(UnsettableProperty.class) == null
 					&& setter.getAnnotation(DerivedProperty.class) == null) {
 					nAssertsOnParent++;
-					assertTrue(setter.getDeclaringType().getQualifiedName() + "#" + setter.getSignature() + " doesn't initializes parent", ((CtElement)argument).hasParent(receiver));
+					assertTrue(((CtElement) (argument)).hasParent(receiver), setter.getDeclaringType().getQualifiedName() + "#" + setter.getSignature() + " doesn't initializes parent");
 				}
 
 				// the element is in a list
@@ -247,7 +247,7 @@ public class ContractOnSettersParametrizedTest {
 						&& setter.getAnnotation(UnsettableProperty.class) == null
 						&& setter.getAnnotation(DerivedProperty.class) == null) {
 					nAssertsOnParentInList++;
-					assertTrue(setter.getDeclaringType().getQualifiedName() + "#" + setter.getSignature() + " doesn't initializes parent", ((CtElement)((Collection<?>)argument).iterator().next()).hasParent(receiver));
+					assertTrue(((CtElement) (((Collection<?>) (argument)).iterator().next())).hasParent(receiver), setter.getDeclaringType().getQualifiedName() + "#" + setter.getSignature() + " doesn't initializes parent");
 				}
 
 
