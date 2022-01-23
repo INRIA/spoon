@@ -18,8 +18,6 @@ public class AnnotationPositionTest {
 
 	
 	@GitHubIssue(issueNumber = 3358)
-	@Test
-	@Disabled("Unresolved Bug")
 	public void testUsageOfTypeAnnotationOnParameterInMethod() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(false);
@@ -72,10 +70,7 @@ public class AnnotationPositionTest {
 	}
 
 
-	
 	@GitHubIssue(issueNumber = 3358)
-	@Test
-	@Disabled("UnresolvedBug")
 	public void testSneakyAnnotationsOnParameters() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(false);

@@ -60,7 +60,7 @@ Guidelines for feature pull-requests:
 Other kinds of pull-requests:
 
 1. Pull requests with passing test cases only are welcome, they specify previously unspecified behavior and are prefixed by "test:".
-1. Pull requests with failing test cases only are welcome, they reproduce bugs and are very useful for maintainers to fix them. You can prevent failing the CI with adding the annoation `@Ignore("UnresolvedBug")` and `@GitHubIssue(issueNumber = <your-issue-number>)`.
+1. Pull requests with failing test cases only are welcome, they reproduce bugs and are very useful for maintainers to fix them. You can prevent failing the CI with adding the annoation `@GitHubIssue(issueNumber = <your-issue-number>)`.
 1. "Chore" pull-requests modify the CI setup.
 1. If there is no activity on an issue or on a pull request for 3 months it's closed.
 

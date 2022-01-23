@@ -786,7 +786,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
-	@GitHubIssue(issueNumber = 4021)
+	@GitHubIssue(issueNumber = 4021, open = false)
 	void testSniperRespectsSuperWithUnaryOperator() {
 		// Combining CtSuperAccess and CtUnaryOperator leads to SpoonException with Sniper
 
@@ -800,8 +800,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
-	@GitHubIssue(issueNumber = 3911)
-	@Disabled("UnresolvedBug")
+	@GitHubIssue(issueNumber = 3911, open = false)
 	void testRoundBracketPrintingInComplexArithmeticExpression() {
 		Consumer<CtType<?>> noOpModifyFieldAssignment = type ->
 				type.getField("value")
@@ -816,7 +815,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
-	@GitHubIssue(issueNumber = 4218)
+	@GitHubIssue(issueNumber = 4218, open = false)
 	void testSniperDoesNotPrintTheDeletedAnnotation() {
 		Consumer<CtType<?>> deleteAnnotation = type -> {
 			type.getAnnotations().forEach(CtAnnotation::delete);
@@ -829,7 +828,7 @@ public class TestSniperPrinter {
 	}
 
 	@Test
-	@GitHubIssue(issueNumber = 4220)
+	@GitHubIssue(issueNumber = 4220, open = false)
 	void testSniperAddsSpaceAfterFinal() {
 		Consumer<CtType<?>> modifyField = type -> {
 			Factory factory = type.getFactory();
@@ -877,7 +876,7 @@ public class TestSniperPrinter {
 	}
 
 	@Nested
-	@GitHubIssue(issueNumber = 4315)
+	@GitHubIssue(issueNumber = 4315, open = false)
 	class SquareBracketPrintingInArrayInitialisation {
 		// contract: square brackets should be printed *only* after the identifier of the field or local variable
 
@@ -938,7 +937,7 @@ public class TestSniperPrinter {
 					assertPrintsBracketForArrayInitialisation("int array[] = new int[]{ };"));
 		}
 
-		@GitHubIssue(issueNumber = 4421)
+		@GitHubIssue(issueNumber = 4421, open = false)
 		@Test
 		void test_bracketsShouldBePrintedForGenericTypeOfArray() {
 			testSniper(
@@ -1103,8 +1102,7 @@ public class TestSniperPrinter {
 	 */
 	@ParameterizedTest
 	@MethodSource("noChangeDiffTestFiles")
-	@GitHubIssue(issueNumber = 3811)
-	@Disabled("UnresolvedBug")
+	@GitHubIssue(issueNumber = 3811, open = false)
 	public void testNoChangeDiff(File file) throws IOException {
 		String fileName = file.getName();
 		Path outputPath = Paths.get("target/test-output");
