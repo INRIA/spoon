@@ -17,10 +17,9 @@
 package spoon.test.main;
 
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.contrib.java.lang.system.Assertion;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
-
+import org.junit.jupiter.api.Test;
 import spoon.ContractVerifier;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtPackage;
@@ -34,8 +33,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MainTest {
 
@@ -145,7 +144,7 @@ public class MainTest {
 				//Meta model classes doesn't have to follow test class naming conventions
 				continue;
 			}
-			assertTrue(t.getQualifiedName() + " is not clearly a test class, it should contain 'test' either in its package name or class name", t.getQualifiedName().matches("(?i:.*test.*)"));
+			assertTrue(t.getQualifiedName().matches("(?i:.*test.*)"), t.getQualifiedName() + " is not clearly a test class, it should contain 'test' either in its package name or class name");
 		}
 	}
 
