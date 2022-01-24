@@ -67,7 +67,6 @@ import spoon.test.imports.testclasses.A;
 import spoon.test.imports.testclasses.ClientClass;
 import spoon.test.imports.testclasses.Pozole;
 import spoon.test.imports.testclasses.Reflection;
-import spoon.test.imports.testclasses.StaticNoOrdered;
 import spoon.test.imports.testclasses.SubClass;
 import spoon.test.imports.testclasses.Tacos;
 import spoon.test.imports.testclasses.ToBeModified;
@@ -1212,12 +1211,12 @@ public class ImportTest {
 		launcher.getEnvironment().setAutoImports(true);
 		launcher.getEnvironment().setShouldCompile(true);
 		String outputDir = "./target/spoon-sort-import";
-		launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/StaticNoOrdered.java");
+		launcher.addInputResource("./src/test/resources/imports/StaticNoOrdered.java");
 		launcher.setSourceOutputDirectory(outputDir);
 		launcher.run();
 
 		PrettyPrinter prettyPrinter = launcher.createPrettyPrinter();
-		CtType element = launcher.getFactory().Class().get(StaticNoOrdered.class);
+		CtType<?> element = launcher.getFactory().Class().get("spoon.test.imports.testclasses.StaticNoOrdered");
 		List<CtType<?>> toPrint = new ArrayList<>();
 		toPrint.add(element);
 
