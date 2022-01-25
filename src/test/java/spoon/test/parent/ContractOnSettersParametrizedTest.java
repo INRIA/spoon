@@ -16,9 +16,8 @@
  */
 package spoon.test.parent;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import spoon.SpoonException;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -27,18 +26,18 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtJavaDocTag;
 import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.ModifierKind;
-import spoon.support.modelobs.ActionBasedChangeListenerImpl;
-import spoon.support.modelobs.action.Action;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.DerivedProperty;
 import spoon.support.UnsettableProperty;
+import spoon.support.modelobs.ActionBasedChangeListenerImpl;
+import spoon.support.modelobs.action.Action;
 import spoon.test.SpoonTestHelpers;
 
 import java.lang.reflect.InvocationTargetException;
@@ -49,7 +48,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static spoon.testing.utils.ModelUtils.createFactory;
 
 /**
@@ -57,15 +56,21 @@ import static spoon.testing.utils.ModelUtils.createFactory;
  * - call setParent
  * - trigger a change event
   */
-@RunWith(Parameterized.class)
 public class ContractOnSettersParametrizedTest {
 
 	private static final Factory factory = createFactory();
 	private static final List<CtType<? extends CtElement>> allInstantiableMetamodelInterfaces = SpoonTestHelpers.getAllInstantiableMetamodelInterfaces();
+	private ModelChangeListener changeListener = new ModelChangeListener();
 
-	@Parameterized.Parameters(name = "{0}")
-	public static Collection<Object[]> data() {
-		return createReceiverList();
+	@TestFactory
+	public  Collection<DynamicTest> data() {
+		List<DynamicTest> values = new ArrayList<>();
+		for (CtType<?> t : allInstantiableMetamodelInterfaces) {
+			if (!(CtReference.class.isAssignableFrom(t.getActualClass()))) {
+				values.add(DynamicTest.dynamicTest(t.getQualifiedName(), () -> testContract(t)));
+			}
+		}
+		return values;
 	}
 
 	public static Collection<Object[]> createReceiverList() {
@@ -78,9 +83,6 @@ public class ContractOnSettersParametrizedTest {
 		return values;
 	}
 
-	@Parameterized.Parameter()
-	public CtType<?> toTest;
-
 	static class ModelChangeListener extends ActionBasedChangeListenerImpl {
 		int nbCallsToOnAction = 0;
 		List<CtElement> changedElements = new ArrayList<>();
@@ -92,7 +94,6 @@ public class ContractOnSettersParametrizedTest {
 		}
 	}
 
-	ModelChangeListener changeListener = new ModelChangeListener();
 
 	public static Object createCompatibleObject(CtTypeReference<?> parameterType) {
 		Class<?> c = parameterType.getActualClass();
@@ -194,10 +195,8 @@ public class ContractOnSettersParametrizedTest {
 
 		throw new IllegalArgumentException("cannot instantiate "+parameterType);
 	}
-	static int nTotalSetterCalls = 0;
 
-	@Test
-	public void testContract() throws Throwable {
+	private void testContract(CtType<?> toTest) throws Throwable {
 		factory.getEnvironment().setModelChangeListener(changeListener);
 		// we disable errors here because JLSViolations are not really relevant in this testcase
 		factory.getEnvironment().setIgnoreSyntaxErrors(true);
@@ -227,10 +226,9 @@ public class ContractOnSettersParametrizedTest {
 				int nAfter = changeListener.nbCallsToOnAction;
 
 				// contract: at least one change event is well fired (sometimes it is more than one for complex setters)
-				assertTrue(actualMethod.getName(), nBefore < nAfter);
+				assertTrue(nBefore < nAfter, actualMethod.getName());
 
 				nSetterCalls++;
-				nTotalSetterCalls++;
 				// if it's a settable property
 				// we check that setParent has been called
 
@@ -239,7 +237,7 @@ public class ContractOnSettersParametrizedTest {
 					&& setter.getAnnotation(UnsettableProperty.class) == null
 					&& setter.getAnnotation(DerivedProperty.class) == null) {
 					nAssertsOnParent++;
-					assertTrue(setter.getDeclaringType().getQualifiedName() + "#" + setter.getSignature() + " doesn't initializes parent", ((CtElement)argument).hasParent(receiver));
+					assertTrue(((CtElement) (argument)).hasParent(receiver), setter.getDeclaringType().getQualifiedName() + "#" + setter.getSignature() + " doesn't initializes parent");
 				}
 
 				// the element is in a list
@@ -247,7 +245,7 @@ public class ContractOnSettersParametrizedTest {
 						&& setter.getAnnotation(UnsettableProperty.class) == null
 						&& setter.getAnnotation(DerivedProperty.class) == null) {
 					nAssertsOnParentInList++;
-					assertTrue(setter.getDeclaringType().getQualifiedName() + "#" + setter.getSignature() + " doesn't initializes parent", ((CtElement)((Collection<?>)argument).iterator().next()).hasParent(receiver));
+					assertTrue(((CtElement) (((Collection<?>) (argument)).iterator().next())).hasParent(receiver), setter.getDeclaringType().getQualifiedName() + "#" + setter.getSignature() + " doesn't initializes parent");
 				}
 
 
