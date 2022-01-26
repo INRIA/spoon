@@ -16,26 +16,19 @@
  */
 package spoon.test.main;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.contrib.java.lang.system.Assertion;
-import org.junit.contrib.java.lang.system.ExpectedSystemExit;
-
+import org.junit.jupiter.api.Test;
 import spoon.ContractVerifier;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MainTest {
 
@@ -145,7 +138,7 @@ public class MainTest {
 				//Meta model classes doesn't have to follow test class naming conventions
 				continue;
 			}
-			assertTrue(t.getQualifiedName() + " is not clearly a test class, it should contain 'test' either in its package name or class name", t.getQualifiedName().matches("(?i:.*test.*)"));
+			assertTrue(t.getQualifiedName().matches("(?i:.*test.*)"), t.getQualifiedName() + " is not clearly a test class, it should contain 'test' either in its package name or class name");
 		}
 	}
 
@@ -198,26 +191,5 @@ public class MainTest {
 		assertFalse(new File("target/spooned-without-resources/fr/package.html").exists());
 		assertTrue(new File("src/test/resources/no-copy-resources/fr/inria/package.html").exists());
 		assertFalse(new File("target/spooned-without-resources/fr/inria/package.html").exists());
-	}
-
-	@Rule
-	public final ExpectedSystemExit exit = ExpectedSystemExit.none();
-	private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-
-	@Test
-	public void testLauncherWithoutArgumentsExitWithSystemExit() {
-		exit.expectSystemExit();
-
-		final PrintStream oldErr = System.err;
-		System.setErr(new PrintStream(errContent));
-		exit.checkAssertionAfterwards(new Assertion() {
-			@Override
-			public void checkAssertion() {
-				assertTrue(errContent.toString().contains("Usage: java <launcher name> [option(s)]"));
-				System.setErr(oldErr);
-			}
-		});
-
-		new Launcher().run(new String[] { });
 	}
 }
