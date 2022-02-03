@@ -146,19 +146,10 @@ jobs:
         uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2.4.0
         with:
           path: pull_request
-      - name: Checkout
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2.4.0
-        with:
-          path: master
-          ref: master
-      - name: copy config file
-        run: cp pull_request/qodana.yml master/qodana.yml
       - uses: actions/setup-java@f0bb91606209742fe3ea40199be2f3ef195ecabf # renovate: tag=v2.5.0
         with:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}
-      - name: "Create folder"
-        run: "mkdir -p ${{ github.workspace }}/result/master"
       - name: git reset
         run: cd pull_request && git fetch && git reset --soft origin/master
       - name: Qodana - Code Inspection
@@ -170,34 +161,4 @@ jobs:
           inspected-dir: ./src/main/java # only main spoon project at first
           results-dir:  "${{ github.workspace }}/result"
           changes: true
-          fail-threshold: 1
-      - name: Print problems(full)
-        run: jq '.runs | .[0].results | map(select (.baselineState == "new"))' ${{ github.workspace }}/result/qodana.sarif.json
-      - name: Print problems(short)
-        run: |
-          jq -r '.runs
-          | .[0].results
-          | map(
-             select (.baselineState == "new") |
-             {
-                 text: .message.text,
-                 location: .locations | map({
-                       snippet: .physicalLocation.contextRegion.snippet.text,
-                       file: .physicalLocation.artifactLocation.uri,
-                       position: ((.physicalLocation.contextRegion.startLine | tostring) + ":" + (.physicalLocation.contextRegion.startColumn | tostring))
-                   })
-             }
-          )
-          | map(
-             "## " + .text + "\n" +
-             (.location
-               | map(
-                 "In file " + .file + " at " + .position + "\n```java\n" + .snippet + "\n```"
-               )
-               | join("\n")
-             )
-          )
-          | join("\n\n----\n\n")' \
-          ${{ github.workspace }}/result/qodana.sarif.json
-          VIOLATIONS=$(jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/result/qodana.sarif.json)
-          if [ "$VIOLATIONS" -gt "0" ]; then exit 1; fi
+          fail-threshold: 0
