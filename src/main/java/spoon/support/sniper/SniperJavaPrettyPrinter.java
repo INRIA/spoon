@@ -221,9 +221,11 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 			public void printSourceFragment(SourceFragment fragment, ModificationStatus isModified) {
 				if (isModified == ModificationStatus.UNKNOWN || isModified == ModificationStatus.MODIFIED) {
 					printAction.run();
-				} else if (fragment instanceof CollectionSourceFragment) {
+				} else {
+					if (fragment instanceof CollectionSourceFragment) {
 						//we started scanning of collection of elements
-						SourceFragmentPrinter listContext = getCollectionContext(null, (CollectionSourceFragment) fragment, isModified.toBoolean());
+						SourceFragmentPrinter listContext = getCollectionContext(null,
+								(CollectionSourceFragment) fragment, isModified.toBoolean());
 						// we need to update the cursor (childFragmentIdx) with the current token
 						listContext.update(this);
 						//push the context of this collection
@@ -231,6 +233,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 					}
 					mutableTokenWriter.directPrint(fragment.getSourceCode());
 				}
+			}
 		});
 	}
 
