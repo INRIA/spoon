@@ -721,7 +721,7 @@ public class ElementSourceFragment implements SourceFragment {
 			}
 			// nothing has matched, best effort token
 			if (longestMatcher == null) {
-				consumer.accept(new TokenSourceFragment(Arrays.toString(charArray), TokenType.CODE_SNIPPET));
+				// this case only exists currently because we have problems with sniper printing and joint variable declarations
 				return;
 			}
 			consumer.accept(new TokenSourceFragment(longestMatcher.toString(), longestMatcher.getType()));
