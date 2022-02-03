@@ -231,7 +231,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 					}
 					mutableTokenWriter.directPrint(fragment.getSourceCode());
 				}
-			}
 		});
 	}
 
