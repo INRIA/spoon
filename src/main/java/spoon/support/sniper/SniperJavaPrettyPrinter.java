@@ -221,7 +221,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 			public void printSourceFragment(SourceFragment fragment, ModificationStatus isModified) {
 				if (isModified == ModificationStatus.UNKNOWN || isModified == ModificationStatus.MODIFIED) {
 					printAction.run();
-					return;
 				} else {
 					if (fragment instanceof CollectionSourceFragment) {
 						//we started scanning of collection of elements
@@ -313,7 +312,6 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 				// we don't have any source fragment for this element, so we simply pretty-print it normally
 				if (fragment == null) {
 					superScanInContext(this.element, DefaultSourceFragmentPrinter.INSTANCE);
-					return;
 				} else if (fragment instanceof CollectionSourceFragment) {
 					//we started scanning of collection of elements
 					SourceFragmentPrinter listContext = getCollectionContext(this.element, (CollectionSourceFragment) fragment, isModified.toBoolean());
