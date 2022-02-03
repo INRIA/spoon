@@ -159,13 +159,8 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
       - name: "Create folder"
         run: "mkdir -p ${{ github.workspace }}/result/master"
-      - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@6df92dd1240ad63ed7956fa74069d636067d574d # renovate: tag=v4.2.5
-        with:
-          linter: ${{ env.QODANA_LINTER }}
-          project-dir: "${{ github.workspace }}/master"
-          inspected-dir: ./src/main/java # only main spoon project at first
-          results-dir:  "${{ github.workspace }}/result/master"
+      - name: git reset
+        run: cd pull_request && git reset --soft origin/master
       - name: Qodana - Code Inspection
         uses: JetBrains/qodana-action@6df92dd1240ad63ed7956fa74069d636067d574d # renovate: tag=v4.2.5
         continue-on-error: true
@@ -173,11 +168,9 @@ jobs:
           linter: ${{ env.QODANA_LINTER }}
           project-dir: "${{ github.workspace }}/pull_request"
           inspected-dir: ./src/main/java # only main spoon project at first
-          baseline-path: "/data/results/master/qodana.sarif.json"
-          baseline-include-absent: true
           results-dir:  "${{ github.workspace }}/result"
+          changes: true
           fail-threshold: 1
-          upload-result: false
       - name: Print problems(full)
         run: jq '.runs | .[0].results | map(select (.baselineState == "new"))' ${{ github.workspace }}/result/qodana.sarif.json
       - name: Print problems(short)
