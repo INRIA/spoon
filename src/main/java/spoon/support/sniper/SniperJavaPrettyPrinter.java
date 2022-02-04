@@ -224,8 +224,7 @@ public class SniperJavaPrettyPrinter extends DefaultJavaPrettyPrinter implements
 				} else {
 					if (fragment instanceof CollectionSourceFragment) {
 						//we started scanning of collection of elements
-						SourceFragmentPrinter listContext = getCollectionContext(null,
-								(CollectionSourceFragment) fragment, isModified.toBoolean());
+						SourceFragmentPrinter listContext = getCollectionContext(null, (CollectionSourceFragment) fragment, isModified.toBoolean());
 						// we need to update the cursor (childFragmentIdx) with the current token
 						listContext.update(this);
 						//push the context of this collection
