@@ -23,8 +23,10 @@ import spoon.SpoonModelBuilder;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtCatchVariable;
+import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
@@ -409,5 +411,19 @@ public class TryCatchTest {
 
 		// We don't extract the type arguments
 		assertThat(varRef.getType().getActualTypeArguments().size(), equalTo(0));
+	}
+
+	@Test
+	public void testTryWithVariableAsResource() {
+		Factory factory = createFactory();
+		factory.getEnvironment().setComplianceLevel(9);
+		CtTryWithResource tryStmt = factory.Code().createCodeSnippetStatement("" +
+				"java.lang.AutoCloseable resource = null;" +
+				"try(resource){}"
+			).compile();
+        List<CtResource<?>> resources = tryStmt.getResources();
+        assertEquals(1, resources.size());
+        assertTrue(resources.get(0) instanceof CtVariableRead);
+        assertEquals("resource", ((CtVariableRead<?>) resources.get(0)).getVariable().getSimpleName());
 	}
 }
