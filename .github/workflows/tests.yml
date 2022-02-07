@@ -64,8 +64,9 @@ jobs:
         run: timeout 20 mvn -B test || echo "Done fetching dependencies"
         shell: bash
       - name: Test
-        run: mvn test
-
+        run: 
+          mvn test
+          grep testcase target/surefire-reports/*xml # output the name of executed test cases in CI log
   coverage:
     runs-on: ubuntu-latest
     env:
