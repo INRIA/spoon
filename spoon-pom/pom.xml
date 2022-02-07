@@ -58,6 +58,7 @@
             <artifactId>junit-platform-launcher</artifactId>
             <version>1.8.2</version>
             <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
