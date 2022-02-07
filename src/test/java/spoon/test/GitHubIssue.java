@@ -77,9 +77,9 @@ public @interface GitHubIssue {
 		}
 
 		private boolean shouldFail(ExtensionContext context) {
-			return context.getTestMethod().isPresent()
-					&& context.getTestMethod().get().getAnnotation(GitHubIssue.class) != null
-					&& context.getTestMethod().get().getAnnotation(GitHubIssue.class).open();
+			return context.getTestMethod()
+					.map(v -> v.getAnnotation(GitHubIssue.class) != null && v.getAnnotation(GitHubIssue.class).open())
+					.orElse(false);
 		}
 	}
 }
