@@ -16,7 +16,7 @@ public class TestExecutionLogger implements TestExecutionListener {
 				if (testIdentifier.getType().isTest()) {
 					// now we simply print the result to sysout here could be a real logger(Our logger is off during testing?), markdown to a file
 					// our more advanced logging happen.
-					System.out.println("executionFinished: " + testIdentifier.getClass() + "#"
+					System.out.println("executionFinished: "
 							+ testIdentifier.getDisplayName() + " with result: "
 							+ testExecutionResult.getStatus());
 				}
