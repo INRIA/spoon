@@ -56,3 +56,4 @@ gradle-app.setting
 
 ## Gradle Enterprise ID File ##
 .mvn/.gradle-enterprise/gradle-enterprise-workspace-id
+testResults.md

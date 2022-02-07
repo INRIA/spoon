@@ -66,6 +66,8 @@ jobs:
       - name: Test
         run: 
           mvn test
+      - name: print run tests
+        run: cat testResults.md
   coverage:
     runs-on: ubuntu-latest
     env:
