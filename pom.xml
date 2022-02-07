@@ -175,7 +175,6 @@
       <groupId>org.kohsuke.metainf-services</groupId>
       <artifactId>metainf-services</artifactId>
       <version>1.8</version>
-      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.junit.platform</groupId>
