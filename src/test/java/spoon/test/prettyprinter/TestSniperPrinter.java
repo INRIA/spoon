@@ -8,7 +8,6 @@
 package spoon.test.prettyprinter;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -872,7 +871,7 @@ public class TestSniperPrinter {
 	}
 
 	@Nested
-	@GitHubIssue(issueNumber = 4315, open = false)
+
 	class SquareBracketPrintingInArrayInitialisation {
 		// contract: square brackets should be printed *only* after the identifier of the field or local variable
 
@@ -888,7 +887,7 @@ public class TestSniperPrinter {
 					assertThat(result, containsString(arrayDeclaration));
 		}
 
-		@Test
+		@GitHubIssue(issueNumber = 4315, open = false)
 		void test_bracketShouldBePrintedWhenArrayIsNull() {
 			testSniper(
 					"sniperPrinter.arrayInitialisation.ToNull",
@@ -896,7 +895,7 @@ public class TestSniperPrinter {
 					assertPrintsBracketForArrayInitialisation("int array[];"));
 		}
 
-		@Test
+		@GitHubIssue(issueNumber = 4315, open = false)
 		void test_bracketShouldBePrintedWhenArrayIsInitialisedToIntegers() {
 			testSniper(
 					"sniperPrinter.arrayInitialisation.FiveIntegers",
@@ -904,7 +903,7 @@ public class TestSniperPrinter {
 					assertPrintsBracketForArrayInitialisation("int array[] = {1, 2, 3, 4, 5};"));
 		}
 
-		@Test
+		@GitHubIssue(issueNumber = 4315, open = false)
 		void test_bracketShouldBePrintedWhenArrayIsInitialisedToNullElements() {
 			testSniper(
 					"sniperPrinter.arrayInitialisation.ToNullElements",
@@ -912,7 +911,7 @@ public class TestSniperPrinter {
 					assertPrintsBracketForArrayInitialisation("String array[] = new String[42];"));
 		}
 
-		@Test
+		@GitHubIssue(issueNumber = 4315, open = false)
 		void test_bracketsShouldBePrintedForMultiDimensionalArray() {
 			testSniper(
 					"sniperPrinter.arrayInitialisation.MultiDimension",
@@ -920,7 +919,7 @@ public class TestSniperPrinter {
 					assertPrintsBracketForArrayInitialisation("String array[][][] = new String[1][2][3];"));
 		}
 
-		@Test
+		@GitHubIssue(issueNumber = 4315, open = false)
 		void test_bracketsShouldBePrintedForArrayInitialisedInLocalVariable() {
 			Consumer<CtType<?>> noOpModifyLocalVariable = type -> {
 				CtMethod<?> method = type.getMethod("doNothing");
@@ -1097,7 +1096,7 @@ public class TestSniperPrinter {
 	 */
 	@ParameterizedTest
 	@MethodSource("noChangeDiffTestFiles")
-	@GitHubIssue(issueNumber = 3811, open = false)
+	@GitHubIssue(issueNumber = 3811)
 	public void testNoChangeDiff(File file) throws IOException {
 		String fileName = file.getName();
 		Path outputPath = Paths.get("target/test-output");

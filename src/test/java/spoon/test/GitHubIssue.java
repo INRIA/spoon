@@ -22,7 +22,7 @@ import org.junit.jupiter.api.extension.TestWatcher;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target(ElementType.METHOD)
 @Test
 @ExtendWith(GitHubIssue.UnresolvedBugExtension.class)
 /**
