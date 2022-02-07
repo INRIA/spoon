@@ -67,7 +67,7 @@ jobs:
         run: 
           mvn test
       - name: print run tests
-        run: cat testResults.md
+        run: cat testResults.spoon
   coverage:
     runs-on: ubuntu-latest
     env:

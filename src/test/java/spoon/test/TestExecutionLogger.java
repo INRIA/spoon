@@ -5,6 +5,10 @@ import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.support.descriptor.MethodSource;
 import org.junit.platform.launcher.TestExecutionListener;
@@ -18,23 +22,39 @@ import org.slf4j.LoggerFactory;
 public class TestExecutionLogger implements TestExecutionListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
+	private static Map<TestIdentifier, LocalDateTime> timers = new HashMap<>();
 	@Override
 	public void executionFinished(TestIdentifier testIdentifier,
 			TestExecutionResult testExecutionResult) {
 		// here we check if the execution was a test and not something like container or otherwise (like a suite)
 		if (testIdentifier.getType().isTest()) {
+			long duration = getTestRunTime(testIdentifier);
 			String classname = getClassName(testIdentifier);
-			// now we simply print the result to sysout here could be a real logger(Our logger is off during testing?), markdown to a file
-			// our more advanced logging happen.
-			String result = "executionFinished: `" + classname + "#" + testIdentifier.getDisplayName()
-					+ "` with result: `" + testExecutionResult.getStatus() + "`";
+			String result = "executionFinished: " + classname + "#" + testIdentifier.getDisplayName()
+					+ " with result: " + testExecutionResult.getStatus() + " in duration: " + duration
+					+ " miliseconds\n";
 			try {
-				Files.writeString(Path.of("testResults.md"), result, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+				Files.writeString(Path.of("testResults.spoon"), result, StandardOpenOption.APPEND,
+						StandardOpenOption.CREATE);
 			} catch (IOException e) {
 				LOGGER.error("Error writing to file", e);
 			}
 		}
+	}
+	/**
+	 * Returns the time in milliseconds since the test started.
+	 * @param testIdentifier  the test identifier
+	 * @return  the time in milliseconds since the test started or 0 if any error occurred.
+	 */
+	private long getTestRunTime(TestIdentifier testIdentifier) {
+		LocalDateTime finish = LocalDateTime.now();
+		LocalDateTime startTime = timers.get(testIdentifier);
+		timers.remove(testIdentifier);
+		long duration = 0;
+		if (startTime != null) {
+			duration = startTime.until(finish, ChronoUnit.MILLIS);
+		}
+		return duration;
 	}
 	/**
 	 * Returns the classname or empty string if the testIdentifier is not a methodsource.
@@ -52,11 +72,28 @@ public class TestExecutionLogger implements TestExecutionListener {
 
 	@Override
 	public void executionSkipped(TestIdentifier testIdentifier, String reason) {
-		// here land the skipped executions either by assumptions, annotations or by some other reason
+		LocalDateTime finish = LocalDateTime.now();
+		LocalDateTime startTime = timers.get(testIdentifier);
+		timers.remove(testIdentifier);
+		long duration = 0;
+		if (startTime != null) {
+			duration = startTime.until(finish, java.time.temporal.ChronoUnit.MILLIS);
+		}
+		if (testIdentifier.getType().isTest()) {
+			String classname = getClassName(testIdentifier);
+			String result = "executionSkipped: " + classname + "#" + testIdentifier.getDisplayName() +" duration: "+ duration + "miliseconds"
+					+ " with reason: " + reason+"\n";
+			try {
+				Files.writeString(Path.of("testResults.spoon"), result, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+			} catch (IOException e) {
+				LOGGER.error("Error writing to file", e);
+			}
+		}
 	}
 
 	@Override
 	public void executionStarted(TestIdentifier testIdentifier) {
+		timers.put(testIdentifier, LocalDateTime.now());
 		// here land all started executions for example test methods, test classes, test containers.
 	}
 }
