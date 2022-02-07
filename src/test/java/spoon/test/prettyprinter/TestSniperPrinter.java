@@ -785,7 +785,6 @@ public class TestSniperPrinter {
 		testSniper("ForLoop", deleteForUpdate, assertNotStaticFindFirstIsEmpty);
 	}
 
-	@Test
 	@GitHubIssue(issueNumber = 4021, open = false)
 	void testSniperRespectsSuperWithUnaryOperator() {
 		// Combining CtSuperAccess and CtUnaryOperator leads to SpoonException with Sniper
@@ -799,7 +798,6 @@ public class TestSniperPrinter {
 		testSniper("superCall.SuperCallSniperTestClass", deleteForUpdate, assertContainsSuperWithUnaryOperator);
 	}
 
-	@Test
 	@GitHubIssue(issueNumber = 3911, open = false)
 	void testRoundBracketPrintingInComplexArithmeticExpression() {
 		Consumer<CtType<?>> noOpModifyFieldAssignment = type ->
@@ -814,7 +812,6 @@ public class TestSniperPrinter {
 		testSniper("ArithmeticExpression", noOpModifyFieldAssignment, assertPrintsRoundBracketsCorrectly);
 	}
 
-	@Test
 	@GitHubIssue(issueNumber = 4218, open = false)
 	void testSniperDoesNotPrintTheDeletedAnnotation() {
 		Consumer<CtType<?>> deleteAnnotation = type -> {
@@ -827,7 +824,6 @@ public class TestSniperPrinter {
 		testSniper("sniperPrinter.DeleteAnnotation", deleteAnnotation, assertDoesNotContainAnnotation);
 	}
 
-	@Test
 	@GitHubIssue(issueNumber = 4220, open = false)
 	void testSniperAddsSpaceAfterFinal() {
 		Consumer<CtType<?>> modifyField = type -> {
@@ -938,7 +934,6 @@ public class TestSniperPrinter {
 		}
 
 		@GitHubIssue(issueNumber = 4421, open = false)
-		@Test
 		void test_bracketsShouldBePrintedForGenericTypeOfArray() {
 			testSniper(
 					"sniperPrinter.arrayInitialisation.GenericTypeArray",
