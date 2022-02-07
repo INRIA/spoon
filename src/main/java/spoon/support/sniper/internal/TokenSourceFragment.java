@@ -26,7 +26,7 @@ public class TokenSourceFragment implements SourceFragment {
 
 	@Override
 	public String getSourceCode() {
-		return null;
+		return source;
 	}
 
 	/**
