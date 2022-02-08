@@ -303,6 +303,23 @@
            </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.pitest</groupId>
+        <artifactId>pitest-maven</artifactId>
+        <version>1.7.4</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-junit5-plugin</artifactId>
+            <version>0.15</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <timestampedReports>false</timestampedReports>
+          <failWhenNoMutations>false</failWhenNoMutations>
+          <scmRootDir>${project.basedir}</scmRootDir>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>

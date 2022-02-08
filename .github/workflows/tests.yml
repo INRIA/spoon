@@ -208,3 +208,42 @@ jobs:
           ${{ github.workspace }}/result/qodana.sarif.json
           VIOLATIONS=$(jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/result/qodana.sarif.json)
           if [ "$VIOLATIONS" -gt "0" ]; then exit 1; fi
+
+  #
+  # Part one of two stage process to update PRs with pitest data when accepting PRs from untrusted forks.
+  #
+  # The jobs will run the mutation analysis, but the token supplied by gtihub does not have write access.
+  # The results are therefore stored as an artifact which will be used to update the PR in the second stage.
+  #
+  # Projects where PRs come from the same repo can use a simpler single stage process.
+  #
+  # see https://blog.pitest.org/pitest-pr-setup/
+  #
+  PITest:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+        - name: Checkout project
+          uses: actions/checkout@v2
+          with:
+            # important to set a fetch depth of 2. By default the checkout action make no history available
+            fetch-depth: 2
+        - name : git reset
+          run: git fetch && git reset --soft origin/master
+        - name: Setup Java
+          uses: actions/setup-java@v2
+          with:
+            distribution: 'zulu'
+            java-version: 11
+            cache: 'maven'
+        - name: run pitest
+          # pitest has been bound to a profile called pitest for normal running
+          # we add config to analyse only changes made within a PR and treat surviving mutants as check errors
+          # failWhenNoMutations is unset in the pom, as otherwise PRs that do not affect java code would fail
+          run: mvn org.pitest:pitest-maven:scmMutationCoverage -Dinclude="ADDED,UNKNOWN,MODIFIED" -DmutationThreshold=85
+        - name: upload results
+          uses: actions/upload-artifact@v2
+          with:
+            name: pitest
+            path: target/pit-reports/
+            retention-days: 10
