@@ -237,7 +237,7 @@ jobs:
             java-version: 11
             cache: 'maven'
         - name: mvn test-compile
-          run: mvn testCompile 
+          run: mvn test-compile 
         - name: run pitest
           # pitest has been bound to a profile called pitest for normal running
           # we add config to analyse only changes made within a PR and treat surviving mutants as check errors
