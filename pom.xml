@@ -311,7 +311,7 @@
           <dependency>
             <groupId>org.pitest</groupId>
             <artifactId>pitest-junit5-plugin</artifactId>
-            <version>0.15</version>
+            <version>0.14</version>
           </dependency>
         </dependencies>
         <configuration>
