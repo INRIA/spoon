@@ -79,6 +79,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	@Override
 	public CtTypeReference<?> box() {
+		int a = 3;
 		if (!isPrimitive()) {
 			return this;
 		}
