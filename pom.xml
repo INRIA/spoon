@@ -315,12 +315,13 @@
           </dependency>
         </dependencies>
         <configuration>
+          <verbose>true</verbose>
+          <targetTests>
+            <param>spoon.test.*</param>
+          </targetTests>
           <timestampedReports>false</timestampedReports>
           <failWhenNoMutations>false</failWhenNoMutations>
           <scmRootDir>${project.basedir}</scmRootDir>
-          <outputFormats>
-          <outputFormat>XML</outputFormat>
-        </outputFormats>
         </configuration>
       </plugin>
     </plugins>
