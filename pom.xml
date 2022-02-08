@@ -313,6 +313,11 @@
             <artifactId>pitest-junit5-plugin</artifactId>
             <version>0.14</version>
           </dependency>
+          <dependency>
+            <groupId>eu.stamp-project</groupId>
+            <artifactId>descartes</artifactId>
+            <version>1.3.2</version>
+          </dependency>
         </dependencies>
         <configuration>
           <verbose>true</verbose>

@@ -227,7 +227,7 @@ jobs:
           uses: actions/checkout@v2
           with:
             # important to set a fetch depth of 2. By default the checkout action make no history available
-            fetch-depth: 2
+            fetch-depth: 0
         - name : git reset
           run: git fetch && git reset --soft origin/master
         - name: Setup Java
@@ -236,13 +236,12 @@ jobs:
             distribution: 'zulu'
             java-version: 11
             cache: 'maven'
-        - name: mvn test
-          run: mvn test
+
         - name: run pitest
           # pitest has been bound to a profile called pitest for normal running
           # we add config to analyse only changes made within a PR and treat surviving mutants as check errors
           # failWhenNoMutations is unset in the pom, as otherwise PRs that do not affect java code would fail
-          run: mvn org.pitest:pitest-maven:scmMutationCoverage -Dinclude="ADDED,UNKNOWN,MODIFIED"
+          run: mvn clean package org.pitest:pitest-maven:scmMutationCoverage -Dinclude="ADDED,UNKNOWN,MODIFIED"
         - name: upload results
           uses: actions/upload-artifact@v2
           with:
