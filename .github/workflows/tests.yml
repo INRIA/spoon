@@ -240,7 +240,7 @@ jobs:
           # pitest has been bound to a profile called pitest for normal running
           # we add config to analyse only changes made within a PR and treat surviving mutants as check errors
           # failWhenNoMutations is unset in the pom, as otherwise PRs that do not affect java code would fail
-          run: mvn org.pitest:pitest-maven:scmMutationCoverage -Dinclude="ADDED,UNKNOWN,MODIFIED" -DmutationThreshold=85
+          run: mvn org.pitest:pitest-maven:scmMutationCoverage -Dinclude="ADDED,UNKNOWN,MODIFIED"
         - name: upload results
           uses: actions/upload-artifact@v2
           with:
