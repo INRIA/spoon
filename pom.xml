@@ -322,7 +322,7 @@
         <configuration>
           <verbose>true</verbose>
           <targetTests>
-            <param>spoon.test.*</param>
+            <param>spoon.*</param>
           </targetTests>
           <timestampedReports>false</timestampedReports>
           <failWhenNoMutations>false</failWhenNoMutations>
