@@ -280,7 +280,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.0.0-M5</version>
         <configuration>
-          <parallel>all</parallel>
+          <parallel>classes</parallel>
           <classpathDependencyExcludes>
             <classpathDependencyExclude>ch.qos.logback:logback-classic</classpathDependencyExclude>
           </classpathDependencyExcludes>
