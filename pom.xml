@@ -321,6 +321,9 @@
         </dependencies>
         <configuration>
           <verbose>true</verbose>
+          <targetClasses>
+            <param>spoon.*</param>
+          </targetClasses>
           <targetTests>
             <param>spoon.*</param>
           </targetTests>
