@@ -43,7 +43,6 @@ public enum OutputType {
 	 * @see Launcher#printUsage()
 	 */
 	public static OutputType fromString(String string) {
-		int a = 3;
 		for (OutputType outputType : OutputType.values()) {
 			if (outputType.toString().equals(string)) {
 				return outputType;

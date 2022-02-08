@@ -17,6 +17,7 @@ public class ModelBuildingException extends SpoonException {
 
 	public ModelBuildingException(String msg) {
 		super(msg);
+		int a = 3;
 	}
 
 	public ModelBuildingException(String msg, Exception e) {
