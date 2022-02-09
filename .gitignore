@@ -31,6 +31,7 @@ spooned-classes/
 spooned/
 doc/_jekyll/_site/
 *.tmp
+testResults.spoon
 
 # Nodejs
 node_modules/

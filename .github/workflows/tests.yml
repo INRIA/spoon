@@ -64,8 +64,10 @@ jobs:
         run: timeout 20 mvn -B test || echo "Done fetching dependencies"
         shell: bash
       - name: Test
-        run: mvn test
-
+        run: 
+          mvn test
+      - name: print run tests
+        run: cat testResults.spoon
   coverage:
     runs-on: ubuntu-latest
     env:

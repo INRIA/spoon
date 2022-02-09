@@ -171,6 +171,13 @@
       <version>1.2.0</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.kohsuke.metainf-services</groupId>
+      <artifactId>metainf-services</artifactId>
+      <version>1.8</version>
+      <optional>true</optional>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -297,6 +304,7 @@
                 <goal>depclean</goal>
               </goals>
              <configuration>
+                <ignoreDependencies>org.kohsuke.metainf-services:metainf-services:1.8:test</ignoreDependencies>
                <!-- the build fails if there are unused direct dependencies -->
                <failIfUnusedDirect>true</failIfUnusedDirect>
              </configuration>
