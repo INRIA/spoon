@@ -8,8 +8,6 @@ import spoon.test.issue3321.testclasses.AnnoUser;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -17,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class AnnotationPositionTest {
 
 	
-	@GitHubIssue(issueNumber = 3358)
+	@GitHubIssue(issueNumber = 3358, fixed = true)
 	public void testUsageOfTypeAnnotationOnParameterInMethod() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(false);
@@ -70,7 +68,7 @@ public class AnnotationPositionTest {
 	}
 
 
-	@GitHubIssue(issueNumber = 3358)
+	@GitHubIssue(issueNumber = 3358, fixed = true)
 	public void testSneakyAnnotationsOnParameters() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(false);

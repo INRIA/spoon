@@ -26,10 +26,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 @Test
 @ExtendWith(GitHubIssue.UnresolvedBugExtension.class)
 /**
- * This meta annotation is used to mark a test method as a test that should fail if {@link #open} is true.
+ * This meta annotation is used to mark a test method as a test that should fail if {@link #fixed} is false.
  * The test will be executed and the result will be checked. If the test fails, the test will be marked as success.
  * As this is a meta annotation you can simple only add this to a test method and omit the {@link Test} aonntation.
- * Mark {@link #open} as false if you want to signal that the test should succed and the issue is fixed.
+ * Mark {@link #fixed} as true if you want to signal that the test should succed and the issue is fixed.
  */
 public @interface GitHubIssue {
 
@@ -38,11 +38,10 @@ public @interface GitHubIssue {
 	 */
 	int issueNumber();
 
-	/**
-	 * If true, the test will be marked as success if the test fails.
-	 * Signals that the issue is not fixed yet.
+	/*
+	 * Signals if the issue is fixed. If the issue is marked as not fixed a failing testcase is a success. 
 	 */
-	boolean open() default true;
+	boolean fixed();
 
 	/**
 	 * This extension does two things:
@@ -54,7 +53,7 @@ public @interface GitHubIssue {
 	 * This is useful to check if each testcase fails as expected. Internal in junit 5 failing testcases simply throw an exception.
 	 * Swallowing this exceptions marks the testcase as not failing.
 	 */
-	 class UnresolvedBugExtension implements TestWatcher, TestExecutionExceptionHandler {
+	 static class UnresolvedBugExtension implements TestWatcher, TestExecutionExceptionHandler {
 
 		private Set<ExtensionContext> correctFailingTestCases = new HashSet<>();
 
@@ -78,7 +77,7 @@ public @interface GitHubIssue {
 
 		private boolean shouldFail(ExtensionContext context) {
 			return context.getTestMethod()
-					.map(v -> v.getAnnotation(GitHubIssue.class) != null && v.getAnnotation(GitHubIssue.class).open())
+					.map(method -> method.getAnnotation(GitHubIssue.class) != null && !method.getAnnotation(GitHubIssue.class).fixed())
 					.orElse(false);
 		}
 	}
