@@ -784,7 +784,7 @@ public class TestSniperPrinter {
 		testSniper("ForLoop", deleteForUpdate, assertNotStaticFindFirstIsEmpty);
 	}
 
-	@GitHubIssue(issueNumber = 4021, fixed = false)
+	@GitHubIssue(issueNumber = 4021, fixed = true)
 	void testSniperRespectsSuperWithUnaryOperator() {
 		// Combining CtSuperAccess and CtUnaryOperator leads to SpoonException with Sniper
 
@@ -797,7 +797,7 @@ public class TestSniperPrinter {
 		testSniper("superCall.SuperCallSniperTestClass", deleteForUpdate, assertContainsSuperWithUnaryOperator);
 	}
 
-	@GitHubIssue(issueNumber = 3911, fixed = true)
+	@GitHubIssue(issueNumber = 3911, fixed = false)
 	void testRoundBracketPrintingInComplexArithmeticExpression() {
 		Consumer<CtType<?>> noOpModifyFieldAssignment = type ->
 				type.getField("value")
@@ -823,7 +823,7 @@ public class TestSniperPrinter {
 		testSniper("sniperPrinter.DeleteAnnotation", deleteAnnotation, assertDoesNotContainAnnotation);
 	}
 
-	@GitHubIssue(issueNumber = 4220, fixed = false)
+	@GitHubIssue(issueNumber = 4220, fixed = true)
 	void testSniperAddsSpaceAfterFinal() {
 		Consumer<CtType<?>> modifyField = type -> {
 			Factory factory = type.getFactory();
@@ -887,7 +887,7 @@ public class TestSniperPrinter {
 					assertThat(result, containsString(arrayDeclaration));
 		}
 
-		@GitHubIssue(issueNumber = 4315, fixed = false)
+		@GitHubIssue(issueNumber = 4315, fixed = true)
 		void test_bracketShouldBePrintedWhenArrayIsNull() {
 			testSniper(
 					"sniperPrinter.arrayInitialisation.ToNull",
@@ -895,7 +895,7 @@ public class TestSniperPrinter {
 					assertPrintsBracketForArrayInitialisation("int array[];"));
 		}
 
-		@GitHubIssue(issueNumber = 4315, fixed = false)
+		@GitHubIssue(issueNumber = 4315, fixed = true)
 		void test_bracketShouldBePrintedWhenArrayIsInitialisedToIntegers() {
 			testSniper(
 					"sniperPrinter.arrayInitialisation.FiveIntegers",
@@ -903,7 +903,7 @@ public class TestSniperPrinter {
 					assertPrintsBracketForArrayInitialisation("int array[] = {1, 2, 3, 4, 5};"));
 		}
 
-		@GitHubIssue(issueNumber = 4315, fixed = false)
+		@GitHubIssue(issueNumber = 4315, fixed = true)
 		void test_bracketShouldBePrintedWhenArrayIsInitialisedToNullElements() {
 			testSniper(
 					"sniperPrinter.arrayInitialisation.ToNullElements",
@@ -911,7 +911,7 @@ public class TestSniperPrinter {
 					assertPrintsBracketForArrayInitialisation("String array[] = new String[42];"));
 		}
 
-		@GitHubIssue(issueNumber = 4315, fixed = false)
+		@GitHubIssue(issueNumber = 4315, fixed = true)
 		void test_bracketsShouldBePrintedForMultiDimensionalArray() {
 			testSniper(
 					"sniperPrinter.arrayInitialisation.MultiDimension",
@@ -919,7 +919,7 @@ public class TestSniperPrinter {
 					assertPrintsBracketForArrayInitialisation("String array[][][] = new String[1][2][3];"));
 		}
 
-		@GitHubIssue(issueNumber = 4315, fixed = false)
+		@GitHubIssue(issueNumber = 4315, fixed = true)
 		void test_bracketsShouldBePrintedForArrayInitialisedInLocalVariable() {
 			Consumer<CtType<?>> noOpModifyLocalVariable = type -> {
 				CtMethod<?> method = type.getMethod("doNothing");
@@ -932,7 +932,7 @@ public class TestSniperPrinter {
 					assertPrintsBracketForArrayInitialisation("int array[] = new int[]{ };"));
 		}
 
-		@GitHubIssue(issueNumber = 4421, fixed = false)
+		@GitHubIssue(issueNumber = 4421, fixed = true)
 		void test_bracketsShouldBePrintedForGenericTypeOfArray() {
 			testSniper(
 					"sniperPrinter.arrayInitialisation.GenericTypeArray",
@@ -1096,7 +1096,7 @@ public class TestSniperPrinter {
 	 */
 	@ParameterizedTest
 	@MethodSource("noChangeDiffTestFiles")
-	@GitHubIssue(issueNumber = 3811, fixed = true)
+	@GitHubIssue(issueNumber = 3811, fixed = false)
 	public void testNoChangeDiff(File file) throws IOException {
 		String fileName = file.getName();
 		Path outputPath = Paths.get("target/test-output");

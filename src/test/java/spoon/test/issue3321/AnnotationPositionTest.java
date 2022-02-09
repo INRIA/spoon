@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class AnnotationPositionTest {
 
 	
-	@GitHubIssue(issueNumber = 3358, fixed = true)
+	@GitHubIssue(issueNumber = 3358, fixed = false)
 	public void testUsageOfTypeAnnotationOnParameterInMethod() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(false);
@@ -68,7 +68,7 @@ public class AnnotationPositionTest {
 	}
 
 
-	@GitHubIssue(issueNumber = 3358, fixed = true)
+	@GitHubIssue(issueNumber = 3358, fixed = false)
 	public void testSneakyAnnotationsOnParameters() {
 		final Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(false);
