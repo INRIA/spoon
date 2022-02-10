@@ -1,0 +1,24 @@
+# Workflow for deploying beta release
+
+name: Deploy beta version
+on:
+  schedule:
+    - cron: 0 0 * * 6 # Every Saturday at 0000 UTC
+
+jobs:
+  deploy:
+    if: ${{ github.repository == 'INRIA/spoon' }}
+    name: 'Deploy beta version'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Start deployment
+        env:
+          SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SPOONBOT_PARAPHRASE: ${{ secrets.SPOONBOT_PARAPHRASE }}
+        run: ./chore/deploy/publish.sh
