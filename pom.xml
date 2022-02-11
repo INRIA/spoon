@@ -158,12 +158,6 @@
       <version>2.0.1.Final</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.8.9</version>
-      <scope>test</scope>
-    </dependency>
     <!-- https://mvnrepository.com/artifact/uk.org.lidalia/slf4j-test -->
     <dependency>
       <groupId>uk.org.lidalia</groupId>
