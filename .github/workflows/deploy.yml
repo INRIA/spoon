@@ -20,5 +20,5 @@ jobs:
         env:
           SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          SPOONBOT_PARAPHRASE: ${{ secrets.SPOONBOT_PARAPHRASE }}
+          SPOONBOT_PASSPHRASE: ${{ secrets.SPOONBOT_PASSPHRASE }}
         run: ./chore/deploy/publish.sh
