@@ -14,6 +14,9 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.support.visitor.ClassTypingContext;
 import spoon.support.visitor.MethodTypingContext;
 
+import java.util.ArrayDeque;
+import java.util.Queue;
+
 /**
  * Determines subtyping relationships and adapts generics from a super- to a subclass.
  */
@@ -69,8 +72,24 @@ public class TypeAdaptor {
 	 * 	superRef)}
 	 * @see #isSubtype(CtType, CtTypeReference)
 	 */
+	@SuppressWarnings("removal")
 	public boolean isSubtypeOf(CtTypeReference<?> superRef) {
-		return getOldClassTypingContext().isSubtypeOf(superRef);
+		if (superRef.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption()) {
+			return getOldClassTypingContext().isSubtypeOf(superRef);
+		}
+		// We have no declaration so we can't really do any subtype queries
+		if (hierarchyStart == null) {
+			return false;
+		}
+
+		boolean subtype = isSubtype(hierarchyStart, superRef);
+		if (!subtype) {
+			return false;
+		}
+		if (hierarchyStartReference.getActualTypeArguments().isEmpty() && superRef.getActualTypeArguments().isEmpty()) {
+			return true;
+		}
+		return new ClassTypingContext(hierarchyStartReference).isSubtypeOf(superRef);
 	}
 
 	/**
@@ -88,8 +107,40 @@ public class TypeAdaptor {
 	 * @param superRef the potential supertype
 	 * @return true if base extends/implements the super type
 	 */
+	@SuppressWarnings("removal")
 	public static boolean isSubtype(CtType<?> base, CtTypeReference<?> superRef) {
-		return new TypeAdaptor(base).isSubtypeOf(superRef);
+		if (base.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption()) {
+			return new TypeAdaptor(base).isSubtypeOf(superRef);
+		}
+		String superRefFqn = superRef.getTypeErasure().getQualifiedName();
+
+		// Everything inherits from object
+		if (superRef.getQualifiedName().equals("java.lang.Object")) {
+			return true;
+		}
+
+		// Types are subtypes of themselves
+		if (base.getQualifiedName().equals(superRefFqn)) {
+			return true;
+		}
+
+		// Walk up the supertype hierarchy and see if we find the super ref type
+		Queue<CtTypeReference<?>> workQueue = new ArrayDeque<>();
+		workQueue.add(base.getReference());
+
+		while (!workQueue.isEmpty()) {
+			CtTypeReference<?> next = workQueue.poll();
+			if (next.getQualifiedName().equals(superRefFqn)) {
+				return true;
+			}
+
+			if (next.getSuperclass() != null) {
+				workQueue.add(next.getSuperclass());
+			}
+			workQueue.addAll(next.getSuperInterfaces());
+		}
+
+		return false;
 	}
 
 	/**
