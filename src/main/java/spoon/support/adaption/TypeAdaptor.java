@@ -385,6 +385,7 @@ public class TypeAdaptor {
 	 * @param superMethod the method that might be overridden
 	 * @return true if {@code subMethod} overrides {@code superMethod}
 	 */
+	@SuppressWarnings("removal")
 	public boolean isOverriding(CtMethod<?> subMethod, CtMethod<?> superMethod) {
 		if (useLegacyTypeAdaption(subMethod)) {
 			return getOldClassTypingContext().isOverriding(subMethod, superMethod);
