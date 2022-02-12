@@ -244,8 +244,22 @@ public class TypeAdaptor {
 	 * @param second the second method
 	 * @return true if the two methods have the same signature
 	 */
+	@SuppressWarnings("removal")
 	public boolean isSameSignature(CtMethod<?> first, CtMethod<?> second) {
-		return getOldClassTypingContext().isSubSignature(first, second);
+		if (first.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption()) {
+			return getOldClassTypingContext().isSubSignature(first, second);
+		}
+		if (first.getParameters().size() != second.getParameters().size()) {
+			return false;
+		}
+		if (!first.getSimpleName().equals(second.getSimpleName())) {
+			return false;
+		}
+
+		CtMethod<?> adaptedFirst = adaptMethod(first);
+		CtMethod<?> adaptedSecond = adaptMethod(second);
+
+		return isConflicting(adaptedFirst, adaptedSecond);
 	}
 
 	/**
