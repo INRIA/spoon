@@ -7,16 +7,23 @@
  */
 package spoon.support.adaption;
 
+import spoon.SpoonException;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
+import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.visitor.ClassTypingContext;
 import spoon.support.visitor.MethodTypingContext;
 
 import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -403,14 +410,173 @@ public class TypeAdaptor {
 	 * @param superRef the super type to adapt
 	 * @return the adapted type
 	 */
+	@SuppressWarnings("removal")
 	public CtTypeReference<?> adaptType(CtTypeReference<?> superRef) {
-		if (startMethod != null) {
-			return new MethodTypingContext()
-				.setClassTypingContext(getOldClassTypingContext())
-				.setMethod(startMethod)
-				.adaptType(superRef);
+		if (superRef.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption()) {
+			if (startMethod != null) {
+				return new MethodTypingContext()
+					.setClassTypingContext(getOldClassTypingContext())
+					.setMethod(startMethod)
+					.adaptType(superRef);
+			}
+			return getOldClassTypingContext().adaptType(superRef);
 		}
-		return getOldClassTypingContext().adaptType(superRef);
+
+		// We are already in the same scope, just return super ref unchanged
+		if (hierarchyStart.getQualifiedName().equals(superRef.getQualifiedName())) {
+			return superRef.clone()
+				.setParent(superRef.isParentInitialized() ? superRef.getParent() : null);
+		}
+
+		Optional<CtTypeReference<?>> adaptedBetweenMethods = adaptBetweenMethods(superRef);
+		if (adaptedBetweenMethods.isPresent()) {
+			return adaptedBetweenMethods.get();
+		}
+
+		Node hierarchy = buildHierarchyFrom(hierarchyStartReference, hierarchyStart, superRef);
+
+		if (hierarchy == null) {
+			hierarchy = buildHierarchyFrom(
+				hierarchyStartReference,
+				findDeclaringType(hierarchyStartReference),
+				superRef
+			);
+		}
+
+		if (hierarchy == null) {
+			return superRef.clone()
+				.setParent(superRef.isParentInitialized() ? superRef.getParent() : null);
+		}
+
+		return AdaptionVisitor.adapt(superRef, hierarchy);
+	}
+
+	private Optional<CtTypeReference<?>> adaptBetweenMethods(CtTypeReference<?> superRef) {
+		// If the start method is null or the decla
+		if (startMethod == null) {
+			return Optional.empty();
+		}
+		Optional<CtMethod<?>> superMethodOpt = getDeclaringMethod(superRef);
+		if (superMethodOpt.isEmpty()) {
+			return Optional.empty();
+		}
+		CtMethod<?> superMethod = superMethodOpt.get();
+
+		// We just try to find the usage of the super ref in the method and take the corresponding
+		// value from our start method
+		if (superMethod.getType().equals(superRef)) {
+			return Optional.of(startMethod.getType());
+		}
+
+		for (int i = 0; i < superMethod.getParameters().size(); i++) {
+			CtParameter<?> parameter = superMethod.getParameters().get(i);
+			if (parameter.getType().equals(superRef)) {
+				return Optional.of(startMethod.getParameters().get(i).getType());
+			}
+		}
+
+		throw new SpoonException("Did not find a type :(");
+	}
+
+	/**
+	 * @param reference the reference to find out the declaring method for
+	 * @return the method that declares the type parameter, or empty if the reference is not a {@link
+	 *    CtTypeParameterReference} or it is not declared on a method
+	 */
+	private Optional<CtMethod<?>> getDeclaringMethod(CtTypeReference<?> reference) {
+		if (!(reference instanceof CtTypeParameterReference)) {
+			return Optional.empty();
+		}
+		CtType<?> typeParam = reference.getDeclaration();
+		if (!typeParam.isParentInitialized()) {
+			return Optional.empty();
+		}
+		CtElement parent = typeParam.getParent();
+		if (!(parent instanceof CtMethod)) {
+			return Optional.empty();
+		}
+		return Optional.of((CtMethod<?>) parent);
+	}
+
+	private Node buildHierarchyFrom(CtTypeReference<?> startReference, CtType<?> startType,
+									CtTypeReference<?> end) {
+		CtType<?> endType = findDeclaringType(end);
+		Map<CtTypeReference<?>, Node> nodeMap = new HashMap<>();
+		buildHierarchyFrom(startType.getReference(), endType, nodeMap);
+
+		if (!startReference.getActualTypeArguments().isEmpty()) {
+			nodeMap.get(startType.getReference())
+				.addLower(Node.forReference(this, startReference));
+		}
+
+		return nodeMap.values().stream()
+			.filter(it -> it.getInducedQualifiedName().equals(endType.getQualifiedName()))
+			.filter(Node::isDeclarationNode)
+			.findFirst()
+			.orElse(null);
+	}
+
+	/**
+	 * This method attempts to find a suitable end type for building our hierarchy.
+	 * <br>
+	 * it tries to find the type that declares the reference. It returns the CtType parent of the
+	 * reference if possible, falling back to calling {@link CtTypeReference#getTypeDeclaration()} if
+	 * the parent lookup fails.
+	 * <br>
+	 * If the reference refers to a type parameter it tries to return the type that declares the type
+	 * parameter.
+	 *
+	 * @param reference the reference to find the declaring type for
+	 * @return the declaring type
+	 */
+	private CtType<?> findDeclaringType(CtTypeReference<?> reference) {
+		CtType<?> type = null;
+		if (reference.isParentInitialized()) {
+			type = reference.getParent(CtType.class);
+		}
+		if (type == null) {
+			type = reference.getTypeDeclaration();
+		}
+		if (type instanceof CtTypeParameter) {
+			CtFormalTypeDeclarer declarer = ((CtTypeParameter) type).getTypeParameterDeclarer();
+			if (declarer instanceof CtType) {
+				return (CtType<?>) declarer;
+			}
+			return declarer.getDeclaringType();
+		}
+		return type;
+	}
+
+	private Node buildHierarchyFrom(
+		CtTypeReference<?> start,
+		CtType<?> end,
+		Map<CtTypeReference<?>, Node> nodeMap
+	) {
+		Node node = nodeMap.computeIfAbsent(start, adaptor -> Node.forReference(this, adaptor));
+
+		// If we found a reference with actual type arguments we build the hierarchy for the declaring
+		// type and add ourselves as a glue node below.
+		if (!start.getActualTypeArguments().isEmpty()) {
+			buildHierarchyFrom(start.getTypeDeclaration().getReference(), end, nodeMap)
+				.addLower(node);
+			return node;
+		}
+
+		// Do not expand any further
+		if (end.getQualifiedName().equals(start.getQualifiedName())) {
+			return node;
+		}
+
+		if (start.getSuperclass() != null) {
+			buildHierarchyFrom(start.getSuperclass(), end, nodeMap)
+				.addLower(node);
+		}
+		for (CtTypeReference<?> superInterface : start.getSuperInterfaces()) {
+			buildHierarchyFrom(superInterface, end, nodeMap)
+				.addLower(node);
+		}
+
+		return node;
 	}
 
 	/**
