@@ -278,6 +278,7 @@ public class TypeAdaptor {
 	 * @param second the second method
 	 * @return true if the methods are conflicting
 	 */
+	@SuppressWarnings("removal")
 	public boolean isConflicting(CtMethod<?> first, CtMethod<?> second) {
 		if (useLegacyTypeAdaption(first)) {
 			return getOldClassTypingContext().isSameSignature(first, second);
