@@ -8,6 +8,7 @@
 package spoon.support.adaption;
 
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -186,8 +187,33 @@ public class TypeAdaptor {
 	 * @param second the second method
 	 * @return true if the methods are conflicting
 	 */
+	@SuppressWarnings("removal")
 	public boolean isConflicting(CtMethod<?> first, CtMethod<?> second) {
-		return getOldClassTypingContext().isSameSignature(first, second);
+		if (first.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption()) {
+			return getOldClassTypingContext().isSameSignature(first, second);
+		}
+		if (first.getParameters().size() != second.getParameters().size()) {
+			return false;
+		}
+		if (!first.getSimpleName().equals(second.getSimpleName())) {
+			return false;
+		}
+
+		for (int i = 0; i < first.getParameters().size(); i++) {
+			CtParameter<?> firstParameter = first.getParameters().get(i);
+			CtParameter<?> secondParameter = second.getParameters().get(i);
+			CtTypeReference<?> firstType = firstParameter.getType().getTypeErasure();
+			CtTypeReference<?> secondType = secondParameter.getType().getTypeErasure();
+
+			if (!firstType.equals(secondType)) {
+				// Oh no, we need to do complicated type adaption checking to properly account for
+				// formal method parameters changing the erasure
+				// TODO: Check if we can short-circuit based on that knowledge
+				return isOverriding(first, second) || isOverriding(second, first);
+			}
+		}
+
+		return true;
 	}
 
 	/**
