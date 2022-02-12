@@ -401,6 +401,7 @@ public class SpoonArchitectureEnforcerTest {
 		officialPackages.add("spoon.reflect.visitor.printer");
 		officialPackages.add("spoon.reflect.visitor");
 		officialPackages.add("spoon.reflect");
+		officialPackages.add("spoon.support.adaption");
 		officialPackages.add("spoon.support.comparator");
 		officialPackages.add("spoon.support.compiler.jdt");
 		officialPackages.add("spoon.support.compiler");

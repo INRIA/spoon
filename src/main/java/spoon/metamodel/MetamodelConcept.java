@@ -22,7 +22,7 @@ import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.path.CtRole;
-import spoon.support.visitor.ClassTypingContext;
+import spoon.support.adaption.TypeAdaptor;
 
 /**
  * Represents a concept of the Spoon metamodel (eg {@link CtClass}).
@@ -56,9 +56,9 @@ public class MetamodelConcept {
 	private CtInterface<?> modelInterface;
 
 	/**
-	 * {@link ClassTypingContext} of this concept used to adapt methods from super type implementations to this {@link MetamodelConcept}
+	 * {@link TypeAdaptor} of this concept used to adapt methods from super type implementations to this {@link MetamodelConcept}
 	 */
-	private ClassTypingContext typeContext;
+	private TypeAdaptor typeContext;
 
 	/**
 	 * own methods of {@link MetamodelConcept}, which does not belong to any role
@@ -171,13 +171,13 @@ public class MetamodelConcept {
 	}
 
 	/**
-	 * @return {@link ClassTypingContext}, which can be used to adapt super type methods to this {@link MetamodelConcept}
+	 * @return {@link TypeAdaptor}, which can be used to adapt super type methods to this {@link MetamodelConcept}
 	 *
 	 * (package protected, not in the public API)
 	 */
-	ClassTypingContext getTypeContext() {
+	TypeAdaptor getTypeContext() {
 		if (typeContext == null) {
-			typeContext = new ClassTypingContext(modelClass != null ? modelClass : modelInterface);
+			typeContext = new TypeAdaptor(modelClass != null ? modelClass : modelInterface);
 		}
 		return typeContext;
 	}

@@ -35,8 +35,8 @@ import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.Experimental;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.support.util.ModelList;
-import spoon.support.visitor.ClassTypingContext;
 import spoon.support.visitor.equals.EqualsVisitor;
 
 import java.util.ArrayList;
@@ -372,7 +372,7 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 	 */
 	private boolean removeAllStaticTypeMembersImportWithType(Set<CtImport> imports, CtTypeReference<?> typeRef) {
 		//the cached type hierarchy of typeRef
-		ClassTypingContext contextOfTypeRef = new ClassTypingContext(typeRef);
+		TypeAdaptor contextOfTypeRef = new TypeAdaptor(typeRef);
 		Iterator<CtImport> iter = imports.iterator();
 		class Visitor extends CtAbstractImportVisitor {
 			boolean found = false;

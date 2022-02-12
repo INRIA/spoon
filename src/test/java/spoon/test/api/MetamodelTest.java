@@ -69,7 +69,7 @@ import spoon.reflect.visitor.filter.SuperInheritanceHierarchyFunction;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
-import spoon.support.visitor.ClassTypingContext;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.template.Parameter;
 
 
@@ -346,7 +346,7 @@ public class MetamodelTest {
 					problems.add("Missing getter for " + mmField.getOwner().getName() + " and CtRole." + mmField.getRole());
 				}
 				if (mmField.getMethod(MMMethodKind.SET) == null) {
-					if (new ClassTypingContext(mmConcept.getMetamodelInterface()).isSubtypeOf(factory.Type().createReference(CtReference.class)) == false
+					if (new TypeAdaptor(mmConcept.getMetamodelInterface()).isSubtypeOf(factory.Type().createReference(CtReference.class)) == false
 							&& "CtTypeInformation".equals(mmConcept.getName()) == false) {
 						//only NON references needs a setter
 						problems.add("Missing setter for " + mmField.getOwner().getName() + " and CtRole." + mmField.getRole());

@@ -42,6 +42,7 @@ import spoon.reflect.visitor.filter.AllTypeMembersFunction;
 import spoon.reflect.visitor.filter.NamedElementFilter;
 import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.support.DerivedProperty;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.support.UnsettableProperty;
 import spoon.support.comparator.CtLineElementComparator;
 import spoon.support.compiler.SnippetCompilationHelper;
@@ -49,7 +50,6 @@ import spoon.support.reflect.CtExtendedModifier;
 import spoon.support.reflect.CtModifierHandler;
 import spoon.support.util.QualifiedNameBasedSortedSet;
 import spoon.support.util.SignatureBasedSortedSet;
-import spoon.support.visitor.ClassTypingContext;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -927,12 +927,12 @@ public abstract class CtTypeImpl<T> extends CtNamedElementImpl implements CtType
 	@Override
 	public Set<CtMethod<?>> getAllMethods() {
 		final Set<CtMethod<?>> l = new HashSet<>();
-		final ClassTypingContext ctc = new ClassTypingContext(this);
+		TypeAdaptor typeAdaptor = new TypeAdaptor(this);
 		map(new AllTypeMembersFunction(CtMethod.class)).forEach(new CtConsumer<CtMethod<?>>() {
 			@Override
 			public void accept(CtMethod<?> currentMethod) {
 				for (CtMethod<?> alreadyVisitedMethod : l) {
-					if (ctc.isSameSignature(currentMethod, alreadyVisitedMethod)) {
+					if (typeAdaptor.isConflicting(currentMethod, alreadyVisitedMethod)) {
 						return;
 					}
 				}

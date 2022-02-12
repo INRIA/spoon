@@ -10,11 +10,11 @@ package spoon.metamodel;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.support.visitor.MethodTypingContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import spoon.support.adaption.TypeAdaptor;
 
 /**
  * Represents a method used to get or set a {@link MetamodelProperty} of a {@link MetamodelConcept}.
@@ -37,8 +37,8 @@ public class MMMethod {
 	MMMethod(MetamodelProperty field, CtMethod<?> method) {
 		this.ownerField = field;
 		//adapt method to scope of field.ownType
-		MethodTypingContext mtc = new MethodTypingContext().setClassTypingContext(field.getOwner().getTypeContext()).setMethod(method);
-		this.method = (CtMethod<?>) mtc.getAdaptationScope();
+		TypeAdaptor mtc = field.getOwner().getTypeContext();
+		this.method = mtc.adaptMethod(method);
 		signature = this.method.getSignature();
 		methodKind = MMMethodKind.kindOf(this.method);
 		this.addRelatedMethod(method);
