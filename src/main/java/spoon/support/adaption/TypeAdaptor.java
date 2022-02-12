@@ -10,6 +10,7 @@ package spoon.support.adaption;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.visitor.ClassTypingContext;
@@ -17,6 +18,8 @@ import spoon.support.visitor.MethodTypingContext;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Determines subtyping relationships and adapts generics from a super- to a subclass.
@@ -163,11 +166,54 @@ public class TypeAdaptor {
 	 * @return the input method but with the return type, parameter types and thrown types adapted to
 	 * 	the context of this type adapter
 	 */
+	@SuppressWarnings({"unchecked", "removal"})
 	public CtMethod<?> adaptMethod(CtMethod<?> inputMethod) {
-		return (CtMethod<?>) new MethodTypingContext()
-			.setClassTypingContext(getOldClassTypingContext())
-			.setMethod(inputMethod)
-			.getAdaptationScope();
+		if (inputMethod.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption()) {
+			return (CtMethod<?>) new MethodTypingContext()
+				.setClassTypingContext(getOldClassTypingContext())
+				.setMethod(inputMethod)
+				.getAdaptationScope();
+		}
+		CtMethod<?> clonedMethod = inputMethod.clone();
+
+		for (int i = 0; i < clonedMethod.getFormalCtTypeParameters().size(); i++) {
+			CtTypeParameter clonedParameter = clonedMethod.getFormalCtTypeParameters().get(i);
+			CtTypeParameter realParameter = inputMethod.getFormalCtTypeParameters().get(i);
+
+			if (realParameter.getSuperclass() != null) {
+				clonedParameter.setSuperclass(adaptType(realParameter.getSuperclass()));
+			}
+			clonedParameter.setSuperInterfaces(
+				realParameter.getSuperInterfaces()
+					.stream()
+					.map(this::adaptType)
+					.collect(Collectors.toSet())
+			);
+		}
+
+		// We do not know the return type of the input *or* the output (as it can change), so we can not
+		// make any assumptions. Capture conversions correctly produces two different fresh type
+		// variables and blocks this code. We do not have any assumption for the return type though and
+		// return it as a wildcard so this is actually fine.
+		@SuppressWarnings("rawtypes")
+		CtTypeReference newReturnType = adaptType(inputMethod.getType());
+		clonedMethod.setType(newReturnType);
+
+		for (int i = 0; i < clonedMethod.getParameters().size(); i++) {
+			// We need the rawtype as capture conversion would produce two different fresh type variables
+			@SuppressWarnings("rawtypes")
+			CtParameter newParameter = clonedMethod.getParameters().get(i);
+			newParameter.setType(adaptType(inputMethod.getParameters().get(i).getType()));
+		}
+
+		Set<CtTypeReference<? extends Throwable>> newThrownTypes = clonedMethod.getThrownTypes()
+			.stream()
+			.map(this::adaptType)
+			.map(it -> (CtTypeReference<? extends Throwable>) it)
+			.collect(Collectors.toSet());
+		clonedMethod.setThrownTypes(newThrownTypes);
+
+		return clonedMethod.setParent(hierarchyStart);
 	}
 
 	private ClassTypingContext getOldClassTypingContext() {
