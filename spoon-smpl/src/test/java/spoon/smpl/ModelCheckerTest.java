@@ -33,11 +33,9 @@ import spoon.smpl.label.StatementLabel;
 import spoon.smpl.metavars.IdentifierConstraint;
 import static spoon.smpl.TestUtils.*;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-
 public class ModelCheckerTest {
 	private static class ModelBuilder implements Model {
 		public List<Integer> states;

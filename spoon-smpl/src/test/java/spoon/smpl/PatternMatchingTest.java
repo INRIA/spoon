@@ -25,7 +25,6 @@ package spoon.smpl;
 import org.junit.jupiter.api.Test;
 
 
-
 public class PatternMatchingTest {
 	@Test
 	public void dummy() {

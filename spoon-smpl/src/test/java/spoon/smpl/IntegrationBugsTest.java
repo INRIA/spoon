@@ -114,7 +114,6 @@ public class IntegrationBugsTest {
 		assertEquals(1, checker.getResult().size());
 
 		// Before bugfix was 2, one being correct and the other being an empty match (s, {}, []) for
-
 		// the method header state s.
 	}
 }

@@ -30,8 +30,6 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.support.compiler.VirtualFile;
 import static org.junit.jupiter.api.Assertions.*;
 
-
-
 public class SmPLMethodCFGTest {
 	@Test
 	public void testOutermostBlockBeginNodeRemoved() {

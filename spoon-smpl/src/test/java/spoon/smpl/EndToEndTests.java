@@ -31,7 +31,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-
 public class EndToEndTests {
 	private CtClass<?> getTargetClass(String code) {
 		CtModel model = SpoonJavaParser.parse(code);
