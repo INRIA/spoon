@@ -42,6 +42,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.adaption.TypeAdaptor;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.StandardEnvironment;
+import spoon.support.adaption.TypeAdaptor;
 import spoon.support.compiler.FileSystemFolder;
 
 /**
