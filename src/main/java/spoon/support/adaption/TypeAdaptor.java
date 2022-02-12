@@ -294,8 +294,41 @@ public class TypeAdaptor {
 	 * @param superMethod the method that might be overridden
 	 * @return true if {@code subMethod} overrides {@code superMethod}
 	 */
+	@SuppressWarnings("removal")
 	public boolean isOverriding(CtMethod<?> subMethod, CtMethod<?> superMethod) {
-		return getOldClassTypingContext().isOverriding(subMethod, superMethod);
+		if (subMethod.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption()) {
+			return getOldClassTypingContext().isOverriding(subMethod, superMethod);
+		}
+		if (subMethod.getParameters().size() != superMethod.getParameters().size()) {
+			return false;
+		}
+		if (!subMethod.getSimpleName().equals(superMethod.getSimpleName())) {
+			return false;
+		}
+
+		if (subMethod.isStatic() || superMethod.isStatic()) {
+			return false;
+		}
+
+		CtType<?> subDeclaringType = subMethod.getDeclaringType();
+		CtType<?> superDeclaringType = superMethod.getDeclaringType();
+
+		if (!isSubtype(subDeclaringType, superDeclaringType.getReference())) {
+			return false;
+		}
+
+		CtMethod<?> adapted = new TypeAdaptor(subMethod.getDeclaringType())
+			.adaptMethod(superMethod);
+
+		for (int i = 0; i < subMethod.getParameters().size(); i++) {
+			CtParameter<?> subParam = subMethod.getParameters().get(i);
+			CtParameter<?> superParam = adapted.getParameters().get(i);
+
+			if (!subParam.getType().getTypeErasure().equals(superParam.getType().getTypeErasure())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

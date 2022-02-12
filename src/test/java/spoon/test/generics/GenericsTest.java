@@ -1348,7 +1348,7 @@ public class GenericsTest {
 
 		TypeAdaptor ctcSub = new TypeAdaptor(ctClass.getReference());
 		assertTrue(ctcSub.isOverriding(classMethod, ifaceMethod));
-		assertTrue(ctcSub.isOverriding(ifaceMethod, classMethod));
+		assertFalse(ctcSub.isOverriding(ifaceMethod, classMethod));
 		assertTrue(new ClassTypingContext(ctClass.getReference()).isSubSignature(classMethod, ifaceMethod));
 		assertTrue(new ClassTypingContext(ctClass.getReference()).isSubSignature(ifaceMethod, classMethod));
 		assertTrue(ctcSub.isSameSignature(classMethod, ifaceMethod));
@@ -1397,7 +1397,7 @@ public class GenericsTest {
 
 		TypeAdaptor ctcSub = new TypeAdaptor(ctClass.getReference());
 		assertTrue(ctcSub.isOverriding(classMethod, ifaceMethod));
-		assertTrue(ctcSub.isOverriding(ifaceMethod, classMethod));
+		assertFalse(ctcSub.isOverriding(ifaceMethod, classMethod));
 		assertTrue(new ClassTypingContext(ctClass.getReference()).isSubSignature(classMethod, ifaceMethod));
 		assertTrue(new ClassTypingContext(ctClass.getReference()).isSubSignature(ifaceMethod, classMethod));
 		assertTrue(ctcSub.isSameSignature(classMethod, ifaceMethod));
