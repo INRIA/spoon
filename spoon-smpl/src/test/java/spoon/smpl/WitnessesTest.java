@@ -22,9 +22,8 @@
 
 package spoon.smpl;
 
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -32,22 +31,20 @@ import spoon.reflect.reference.CtVariableReference;
 import spoon.smpl.formula.*;
 import spoon.smpl.metavars.ConstantConstraint;
 import spoon.smpl.metavars.IdentifierConstraint;
-
-import static java.util.Arrays.asList;
+import static spoon.smpl.TestUtils.*;
 
 import java.util.HashSet;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-
-import static spoon.smpl.TestUtils.*;
+import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WitnessesTest {
 	private static Formula stmt(String code, Map<String, MetavariableConstraint> metavars) {
 		return new Statement(parseStatement(code), metavars);
 	}
 
-	@Before
+	@BeforeEach
 	public void before() {
 		resetControlFlowNodeCounter();
 	}

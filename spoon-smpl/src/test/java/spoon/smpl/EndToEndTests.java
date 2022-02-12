@@ -22,17 +22,15 @@
 
 package spoon.smpl;
 
-import java.util.Map;
-
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
+import org.junit.jupiter.api.Test;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtClass;
-
 import static spoon.smpl.TestUtils.*;
+
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class EndToEndTests {
 	private CtClass<?> getTargetClass(String code) {
@@ -52,7 +50,7 @@ public class EndToEndTests {
 		CtClass<?> input = getTargetClass(inputCode);
 		CtClass<?> expected = getTargetClass(expectedCode);
 
-		input.getMethods().forEach((method) -> {
+		input.getMethods().forEach(method -> {
 			if (method.getComments().stream().anyMatch(x -> x.getContent().toLowerCase().equals("skip"))) {
 				return;
 			}

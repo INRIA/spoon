@@ -22,24 +22,24 @@
 
 package spoon.smpl;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.smpl.formula.*;
 import spoon.smpl.metavars.IdentifierConstraint;
+import static spoon.smpl.TestUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static spoon.smpl.TestUtils.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This suite is meant for testing bugs that may involve a large stack of components, making them
  * unsuitable for including as parts of unit test suites of individual components.
  */
 public class IntegrationBugsTest {
-	@Before
+	@BeforeEach
 	public void before() {
 		resetControlFlowNodeCounter();
 	}
@@ -114,6 +114,7 @@ public class IntegrationBugsTest {
 		assertEquals(1, checker.getResult().size());
 
 		// Before bugfix was 2, one being correct and the other being an empty match (s, {}, []) for
-		//  the method header state s.
+
+		// the method header state s.
 	}
 }

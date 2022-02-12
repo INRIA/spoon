@@ -22,13 +22,14 @@
 
 package spoon.smpl;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.CtConstructor;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Note: the patch used in this test has been significantly modified from the C4J original.
@@ -36,38 +37,8 @@ import static org.junit.Assert.fail;
 public class C4JSetTextSizeTest {
 	private static ZippedCodeBaseTestContext ctx = null;
 
-    /*@BeforeClass
-    public static void initializeContext() {
-        if (ctx != null) {
-            return;
-        }
-
-        // This is the original C4J patch
-
-        String smpl = "@@\n" +
-                      "expression E;\n" +
-                      "@@\n" +
-                      "(\n" +
-                      "- E.setTextSize(LARGEST);\n" +
-                      "+ E.setTextZoom(200);\n" +
-                      "|\n" +
-                      "- E.setTextSize(LARGER);\n" +
-                      "+ E.setTextZoom(150);\n" +
-                      "|\n" +
-                      "- E.setTextSize(NORMAL);\n" +
-                      "+ E.setTextZoom(100);\n" +
-                      "|\n" +
-                      "- E.setTextSize(SMALLER);\n" +
-                      "+ E.setTextZoom(75);\n" +
-                      "|\n" +
-                      "- E.setTextSize(SMALLEST);\n" +
-                      "+ E.setTextZoom(50);\n" +
-                      ")\n";
-
-        ctx = new ZippedCodeBaseTestContext(smpl, "src/test/resources/C4JSetTextSize.zip", false);
-    }*/
-
-	@BeforeClass
+    
+	@BeforeAll
 	public static void initializeContext() {
 		if (ctx != null) {
 			return;

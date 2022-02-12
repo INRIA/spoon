@@ -22,20 +22,21 @@
 
 package spoon.smpl;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class C4JOnConsoleMessageTest {
 	private static ZippedCodeBaseTestContext ctx = null;
 
-	@BeforeClass
+	@BeforeAll
 	public static void initializeContext() {
 		if (ctx != null) {
 			return;

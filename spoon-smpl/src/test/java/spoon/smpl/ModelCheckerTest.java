@@ -23,25 +23,20 @@
 package spoon.smpl;
 
 import java.util.*;
-
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
-//import spoon.pattern.Pattern;
-//import spoon.pattern.PatternBuilder;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
-
 import spoon.smpl.formula.*;
 import spoon.smpl.label.PropositionLabel;
 import spoon.smpl.label.StatementLabel;
 import spoon.smpl.metavars.IdentifierConstraint;
-
-import static org.junit.Assert.fail;
 import static spoon.smpl.TestUtils.*;
+
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ModelCheckerTest {
 	private static class ModelBuilder implements Model {
