@@ -335,6 +335,7 @@ public class TypeAdaptor {
 	 * @param second the second method
 	 * @return true if the two methods have the same signature
 	 */
+	@SuppressWarnings("removal")
 	public boolean isSameSignature(CtMethod<?> first, CtMethod<?> second) {
 		if (useLegacyTypeAdaption(first)) {
 			return getOldClassTypingContext().isSubSignature(first, second);
