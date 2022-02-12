@@ -98,6 +98,7 @@ public class TypeAdaptor {
 	 * 	superRef)}
 	 * @see #isSubtype(CtType, CtTypeReference)
 	 */
+	@SuppressWarnings("removal")
 	public boolean isSubtypeOf(CtTypeReference<?> superRef) {
 		if (useLegacyTypeAdaption(superRef)) {
 			return getOldClassTypingContext().isSubtypeOf(superRef);
@@ -145,6 +146,7 @@ public class TypeAdaptor {
 	 * @param superRef the potential supertype
 	 * @return true if base extends/implements the super type
 	 */
+	@SuppressWarnings("removal")
 	public static boolean isSubtype(CtType<?> base, CtTypeReference<?> superRef) {
 		if (useLegacyTypeAdaption(base)) {
 			return new TypeAdaptor(base).isSubtypeOf(superRef);
