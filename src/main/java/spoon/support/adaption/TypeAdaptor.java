@@ -451,6 +451,18 @@ public class TypeAdaptor {
 		return AdaptionVisitor.adapt(superRef, hierarchy);
 	}
 
+	/**
+	 * Adapts a type from a supertype to the context of this adaptor.
+	 *
+	 * @param superType the super type to adapt
+	 * @return the adapted type
+	 * @see #adaptType(CtTypeReference)
+	 * @implNote this implementation just delegates to {@code adaptType(superType.getReference());}
+	 */
+	public CtTypeReference<?> adaptType(CtType<?> superType) {
+		return adaptType(superType.getReference());
+	}
+
 	private Optional<CtTypeReference<?>> adaptBetweenMethods(CtTypeReference<?> superRef) {
 		// If the start method is null or the decla
 		if (startMethod == null) {
@@ -577,17 +589,5 @@ public class TypeAdaptor {
 		}
 
 		return node;
-	}
-
-	/**
-	 * Adapts a type from a supertype to the context of this adaptor.
-	 *
-	 * @param superType the super type to adapt
-	 * @return the adapted type
-	 * @see #adaptType(CtTypeReference)
-	 * @implNote this implementation just delegates to {@code adaptType(superType.getReference());}
-	 */
-	public CtTypeReference<?> adaptType(CtType<?> superType) {
-		return adaptType(superType.getReference());
 	}
 }
