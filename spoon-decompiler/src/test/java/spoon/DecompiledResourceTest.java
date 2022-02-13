@@ -17,7 +17,7 @@
 package spoon;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.decompiler.Decompiler;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtLocalVariable;
@@ -27,7 +27,7 @@ import spoon.reflect.declaration.CtConstructor;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DecompiledResourceTest {
 	@Test

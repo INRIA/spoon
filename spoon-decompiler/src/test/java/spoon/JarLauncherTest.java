@@ -17,8 +17,8 @@
 package spoon;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import spoon.decompiler.CFRDecompiler;
 import spoon.decompiler.Decompiler;
 import spoon.decompiler.FernflowerDecompiler;
@@ -31,9 +31,9 @@ import spoon.reflect.declaration.CtConstructor;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JarLauncherTest {
 
@@ -47,14 +47,14 @@ public class JarLauncherTest {
 		testJarLauncher(new ProcyonDecompiler());
 	}
 
-	@Ignore
 	@Test
+	@Disabled
 	public void testJarLauncherWithFernflower() throws IOException {
 		testJarLauncher(new FernflowerDecompiler());
 	}
 
-	@Ignore
 	@Test
+	@Disabled
 	public void testTmpDirDeletion() {
 		File baseDir = new File("src/test/resources/jarLauncher");
 		File jar = new File(baseDir, "helloworld-1.0-SNAPSHOT.jar");
@@ -122,8 +122,8 @@ public class JarLauncherTest {
 		assertEquals(5, model.getAllTypes().size());
 	}
 
-	@Ignore
 	@Test
+	@Disabled
 	public void testJarLauncherNoPomFernflower() {
 		File baseDir = new File("src/test/resources/jarLauncher");
 		File jar = new File(baseDir, "helloworld-1.0-SNAPSHOT.jar");
