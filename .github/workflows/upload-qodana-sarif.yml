@@ -1,0 +1,24 @@
+name: Upload qodana sarif
+
+on:
+  workflow_run:
+    workflows: ["tests"]
+    types:
+      - completed
+
+jobs:
+  upload-qodana-sarif:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: ${{ github.event.workflow_run.workflow_id }}
+          name: qodana-sarif
+          path: sarif
+          workflow_conclusion: success
+      - name: Upload sarif file
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: sarif/qodana.sarif.json
