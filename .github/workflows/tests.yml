@@ -46,6 +46,7 @@ jobs:
           results-dir:  "${{ github.workspace }}/result"
           changes: true
           fail-threshold: 0
+          upload-result: false
       - name: Upload as artifact for later workflow
         uses: actions/upload-artifact@v2
         with:
