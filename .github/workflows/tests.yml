@@ -162,4 +162,35 @@ jobs:
           inspected-dir: ./src/main/java # only main spoon project at first
           results-dir:  "${{ github.workspace }}/result"
           changes: true
-          fail-threshold: 0
+          fail-threshold: 1
+          upload-result: false
+      - name: Print problems(full)
+        run: jq '.runs | .[0].results | map(select (.baselineState == "new"))' ${{ github.workspace }}/result/qodana.sarif.json
+      - name: Print problems(short)
+        run: |
+          jq -r '.runs
+          | .[0].results
+          | map(
+             select (.baselineState == "new") |
+             {
+                 text: .message.text,
+                 location: .locations | map({
+                       snippet: .physicalLocation.contextRegion.snippet.text,
+                       file: .physicalLocation.artifactLocation.uri,
+                       position: ((.physicalLocation.contextRegion.startLine | tostring) + ":" + (.physicalLocation.contextRegion.startColumn | tostring))
+                   })
+             }
+          )
+          | map(
+             "## " + .text + "\n" +
+             (.location
+               | map(
+                 "In file " + .file + " at " + .position + "\n```java\n" + .snippet + "\n```"
+               )
+               | join("\n")
+             )
+          )
+          | join("\n\n----\n\n")' \
+          ${{ github.workspace }}/result/qodana.sarif.json
+          VIOLATIONS=$(jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/result/qodana.sarif.json)
+          if [ "$VIOLATIONS" -gt "0" ]; then exit 1; fi
