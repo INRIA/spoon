@@ -425,14 +425,15 @@ public class TryCatchTest {
 			).compile();
         List<CtResource<?>> resources = tryStmt.getResources();
         assertEquals(1, resources.size());
-        assertTrue(resources.get(0) instanceof CtVariableRead);
-        assertEquals("resource", ((CtVariableRead<?>) resources.get(0)).getVariable().getSimpleName());
+		final CtResource<?> ctResource = resources.get(0);
+		assertTrue(ctResource instanceof CtVariableRead);
+        assertEquals("resource", ((CtVariableRead<?>) ctResource).getVariable().getSimpleName());
 
 		// contract: removeResource does remove the resource
-		tryStmt.removeResource(resources.get(0));
+		tryStmt.removeResource(ctResource);
 		assertEquals(0, tryStmt.getResources().size());
 		// contract: removeResource of nothing is graceful and accepts it
-		tryStmt.removeResource(resources.get(0));
+		tryStmt.removeResource(ctResource);
 
 	}
 }
