@@ -165,13 +165,12 @@ jobs:
           fail-threshold: 1
           upload-result: false
       - name: Print problems(full)
-        run: jq '.runs | .[0].results | map(select (.baselineState == "new"))' ${{ github.workspace }}/result/qodana.sarif.json
+        run: jq '.runs | .[0].results ${{ github.workspace }}/result/qodana.sarif.json
       - name: Print problems(short)
         run: |
           jq -r '.runs
           | .[0].results
-          | map(
-             select (.baselineState == "new") |
+          |
              {
                  text: .message.text,
                  location: .locations | map({
