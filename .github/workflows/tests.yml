@@ -12,6 +12,7 @@ on:
   push:
     branches:
       - master
+      - meta/qodana
   schedule:
   - cron: "0 0 * * *"
 
