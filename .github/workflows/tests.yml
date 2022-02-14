@@ -191,5 +191,5 @@ jobs:
           )
           | join("\n\n----\n\n")' \
           ${{ github.workspace }}/result/qodana.sarif.json
-          VIOLATIONS=$(jq '.runs | .[0].results | map(select (.baselineState == "new")) | length' ${{ github.workspace }}/result/qodana.sarif.json)
+          VIOLATIONS=$(jq '.runs | .[0].results | length' ${{ github.workspace }}/result/qodana.sarif.json)
           if [ "$VIOLATIONS" -gt "0" ]; then exit 1; fi
