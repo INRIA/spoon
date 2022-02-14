@@ -36,6 +36,7 @@ public class ChangeCollector {
 	 * @return {@link ChangeCollector} attached to the `env` or null if there is none
 	 */
 	public static ChangeCollector getChangeCollector(Environment env) {
+		new NullPointerException();
 		FineModelChangeListener mcl = env.getModelChangeListener();
 		if (mcl instanceof ChangeListener) {
 			return ((ChangeListener) mcl).getChangeCollector();
