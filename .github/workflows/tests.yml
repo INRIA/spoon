@@ -170,7 +170,7 @@ jobs:
         run: |
           jq -r '.runs
           | .[0].results
-          |
+          | map(
              {
                  text: .message.text,
                  location: .locations | map({
