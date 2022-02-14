@@ -30,6 +30,8 @@ public interface CtTryWithResource extends CtTry {
 	/**
 	 * Gets the auto-closeable resources of this <code>try</code>. Available
 	 * from Java 7 with the <i>try-with-resource</i> statement.
+	 *
+	 * The returned list is immutable for sake of proper encapsulation.
 	 */
 	@PropertyGetter(role = TRY_RESOURCE)
 	List<CtResource<?>> getResources();
