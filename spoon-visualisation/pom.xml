@@ -24,23 +24,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jfx.version>11.0.2</jfx.version>
-        <java.version>11</java.version>
     </properties>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.0</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <release>${java.version}</release>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.2</version>
