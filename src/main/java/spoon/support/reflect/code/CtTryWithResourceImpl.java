@@ -8,12 +8,13 @@
 package spoon.support.reflect.code;
 
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.visitor.CtVisitor;
 import spoon.support.reflect.declaration.CtElementImpl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static spoon.reflect.ModelElementContainerDefaultCapacities.RESOURCES_CONTAINER_DEFAULT_CAPACITY;
@@ -23,7 +24,7 @@ public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResourc
 	private static final long serialVersionUID = 1L;
 
 	@MetamodelPropertyField(role = TRY_RESOURCE)
-	List<CtLocalVariable<?>> resources = emptyList();
+	List<CtResource<?>> resources = emptyList();
 
 	@Override
 	public void accept(CtVisitor visitor) {
@@ -31,30 +32,30 @@ public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResourc
 	}
 
 	@Override
-	public List<CtLocalVariable<?>> getResources() {
-		return resources;
+	public List<CtResource<?>> getResources() {
+		return Collections.unmodifiableList(resources);
 	}
 
 	@Override
-	public <T extends CtTryWithResource> T setResources(List<CtLocalVariable<?>> resources) {
+	public <T extends CtTryWithResource> T setResources(List<? extends CtResource<?>> resources) {
 		if (resources == null || resources.isEmpty()) {
 			this.resources = CtElementImpl.emptyList();
 			return (T) this;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDeleteAll(this, TRY_RESOURCE, this.resources, new ArrayList<>(this.resources));
 		this.resources.clear();
-		for (CtLocalVariable<?> l : resources) {
+		for (CtResource<?> l : resources) {
 			addResource(l);
 		}
 		return (T) this;
 	}
 
 	@Override
-	public <T extends CtTryWithResource> T addResource(CtLocalVariable<?> resource) {
+	public <T extends CtTryWithResource> T addResource(CtResource<?> resource) {
 		if (resource == null) {
 			return (T) this;
 		}
-		if (resources == CtElementImpl.<CtLocalVariable<?>>emptyList()) {
+		if (resources == CtElementImpl.<CtResource<?>>emptyList()) {
 			resources = new ArrayList<>(RESOURCES_CONTAINER_DEFAULT_CAPACITY);
 		}
 		resource.setParent(this);
@@ -64,8 +65,8 @@ public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResourc
 	}
 
 	@Override
-	public boolean removeResource(CtLocalVariable<?> resource) {
-		if (resources == CtElementImpl.<CtLocalVariable<?>>emptyList()) {
+	public boolean removeResource(CtResource<?> resource) {
+		if (resources.isEmpty()) {
 			return false;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TRY_RESOURCE, resources, resources.indexOf(resource), resource);

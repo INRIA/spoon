@@ -58,6 +58,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSuperAccess;
@@ -972,8 +973,8 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
-		if (child instanceof CtLocalVariable) {
-			tryWithResource.addResource((CtLocalVariable<?>) child);
+		if (child instanceof CtResource) {
+			tryWithResource.addResource((CtResource<?>) child);
 		}
 		super.visitCtTryWithResource(tryWithResource);
 	}

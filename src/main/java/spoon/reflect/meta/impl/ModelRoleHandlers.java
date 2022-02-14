@@ -38,6 +38,7 @@ import spoon.reflect.code.CtNewArray;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtOperatorAssignment;
 import spoon.reflect.code.CtRHSReceiver;
+import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
@@ -355,9 +356,9 @@ class ModelRoleHandlers {
 		}
 	}
 
-	static class CtTryWithResource_TRY_RESOURCE_RoleHandler extends ListHandler<CtTryWithResource, CtLocalVariable<? extends Object>> {
+	static class CtTryWithResource_TRY_RESOURCE_RoleHandler extends ListHandler<CtTryWithResource, CtResource<? extends Object>> {
 		private CtTryWithResource_TRY_RESOURCE_RoleHandler() {
-			super(CtRole.TRY_RESOURCE, CtTryWithResource.class, CtLocalVariable.class);
+			super(CtRole.TRY_RESOURCE, CtTryWithResource.class, CtResource.class);
 		}
 
 		@SuppressWarnings("unchecked")
