@@ -417,6 +417,8 @@ public class TryCatchTest {
 	public void testTryWithVariableAsResource() {
 		Factory factory = createFactory();
 		factory.getEnvironment().setComplianceLevel(9);
+
+		// contract: a try with resource is modeled with CtTryWithResource
 		CtTryWithResource tryStmt = factory.Code().createCodeSnippetStatement("" +
 				"java.lang.AutoCloseable resource = null;" +
 				"try(resource){}"
@@ -425,5 +427,12 @@ public class TryCatchTest {
         assertEquals(1, resources.size());
         assertTrue(resources.get(0) instanceof CtVariableRead);
         assertEquals("resource", ((CtVariableRead<?>) resources.get(0)).getVariable().getSimpleName());
+
+		// contract: removeResource does remove the resource
+		tryStmt.removeResource(resources.get(0));
+		assertEquals(0, tryStmt.getResources().size());
+		// contract: removeResource of nothing is graceful and accepts it
+		tryStmt.removeResource(resources.get(0));
+
 	}
 }

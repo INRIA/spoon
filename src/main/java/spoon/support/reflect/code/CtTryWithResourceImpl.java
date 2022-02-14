@@ -65,7 +65,7 @@ public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResourc
 
 	@Override
 	public boolean removeResource(CtResource<?> resource) {
-		if (resources == CtElementImpl.<CtResource<?>>emptyList()) {
+		if (resources.isEmpty()) {
 			return false;
 		}
 		getFactory().getEnvironment().getModelChangeListener().onListDelete(this, TRY_RESOURCE, resources, resources.indexOf(resource), resource);
