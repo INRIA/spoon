@@ -35,8 +35,9 @@ public class TypeAdaptor {
 
 	private final CtType<?> hierarchyStart;
 	private final CtTypeReference<?> hierarchyStartReference;
-	private CtMethod<?> startMethod;
 	private final boolean initializedWithReference;
+	private CtMethod<?> startMethod;
+	private ClassTypingContext oldClassTypingContext;
 
 	/**
 	 * Creates a new type adaptor using the given type as the start of its hierarchy.
@@ -224,10 +225,14 @@ public class TypeAdaptor {
 	}
 
 	private ClassTypingContext getOldClassTypingContext() {
-		if (initializedWithReference) {
-			return new ClassTypingContext(hierarchyStartReference);
+		if (oldClassTypingContext == null) {
+			if (initializedWithReference) {
+				oldClassTypingContext = new ClassTypingContext(hierarchyStartReference);
+			} else {
+				oldClassTypingContext = new ClassTypingContext(hierarchyStart);
+			}
 		}
-		return new ClassTypingContext(hierarchyStart);
+		return oldClassTypingContext;
 	}
 
 	/**
