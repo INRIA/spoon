@@ -164,3 +164,8 @@ jobs:
           results-dir:  "${{ github.workspace }}/result"
           changes: true
           fail-threshold: 0
+      - name: Upload as artifact for later workflow
+        uses: actions/upload-artifact@v2
+        with:
+          name: qodana-sarif
+          path: ${{ github.workspace }}/result/qodana.sarif.json
