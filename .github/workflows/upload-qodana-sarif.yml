@@ -31,3 +31,4 @@ jobs:
         with:
           sarif_file: sarif/qodana.sarif.json
           category: Fun
+          wait-for-processing: true
