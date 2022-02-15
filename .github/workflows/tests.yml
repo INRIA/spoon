@@ -164,3 +164,7 @@ jobs:
           results-dir:  "${{ github.workspace }}/result"
           changes: true
           fail-threshold: 0
+          use-annotations: false
+      - uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: "${{ github.workspace }}/result/qodana.sarif.json"
