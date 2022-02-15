@@ -44,7 +44,7 @@ jobs:
           project-dir: "${{ github.workspace }}/pull_request"
           inspected-dir: ./src/main/java # only main spoon project at first
           results-dir:  "${{ github.workspace }}/result"
-          changes: true
+          changes: false
           fail-threshold: 0
           upload-result: false
       - name: Upload as artifact for later workflow
