@@ -22,15 +22,13 @@
 
 package spoon.smpl;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-
+import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.CtElement;
+import static spoon.smpl.TestUtils.*;
 
 import java.util.HashMap;
 
-import static spoon.smpl.TestUtils.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This suite is intentionally left very sparse as the current idea is that Substitutor

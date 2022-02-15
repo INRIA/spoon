@@ -33,7 +33,7 @@ import spoon.support.compiler.ZipFolder;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ZippedCodeBaseTestContext {
 	public ZippedCodeBaseTestContext(String smpl, String pathToSourcesZipFile, boolean useAutoImports) {

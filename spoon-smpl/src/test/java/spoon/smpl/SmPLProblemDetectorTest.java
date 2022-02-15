@@ -22,13 +22,12 @@
 
 package spoon.smpl;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import spoon.smpl.SmPLProblemDetector.Problem;
 
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
-
-import spoon.smpl.SmPLProblemDetector.Problem;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SmPLProblemDetectorTest {
 	@Test

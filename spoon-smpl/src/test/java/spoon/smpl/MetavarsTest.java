@@ -22,8 +22,9 @@
 
 package spoon.smpl;
 
-import org.junit.Before;
-import org.junit.Test;
+import java.util.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.smpl.formula.*;
@@ -32,17 +33,16 @@ import spoon.smpl.metavars.ExpressionConstraint;
 import spoon.smpl.metavars.IdentifierConstraint;
 import spoon.smpl.metavars.RegexConstraint;
 import spoon.smpl.metavars.TypeConstraint;
-
-import java.util.*;
-
-import static org.junit.Assert.*;
 import static spoon.smpl.TestUtils.*;
+
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This is essentially an integration test of most of the SmPL stack, leaving out the parser.
  */
 public class MetavarsTest {
-	@Before
+	@BeforeEach
 	public void before() {
 		resetControlFlowNodeCounter();
 	}

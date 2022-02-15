@@ -23,21 +23,20 @@
 package spoon.smpl;
 
 import fr.inria.controlflow.BranchKind;
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.*;
 import spoon.smpl.formula.*;
 import spoon.smpl.label.PropositionLabel;
 import spoon.smpl.label.StatementLabel;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import static spoon.smpl.TestUtils.*;
 
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class CFGModelTest {
-	@Before
+	@BeforeEach
 	public void before() {
 		resetControlFlowNodeCounter();
 	}

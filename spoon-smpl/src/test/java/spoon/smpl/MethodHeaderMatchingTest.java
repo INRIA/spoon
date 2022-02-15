@@ -22,22 +22,21 @@
 
 package spoon.smpl;
 
-import org.junit.Before;
-import org.junit.Test;
+import java.util.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.declaration.CtMethod;
 import spoon.smpl.formula.MetavariableConstraint;
 import spoon.smpl.formula.MethodHeaderPredicate;
 import spoon.smpl.label.MethodHeaderLabel;
 import spoon.smpl.metavars.IdentifierConstraint;
 import spoon.smpl.metavars.TypeConstraint;
+import static spoon.smpl.TestUtils.*;
 
-import java.util.*;
 import java.util.function.Function;
 
-import static org.junit.Assert.assertEquals;
-
-import static org.junit.Assert.fail;
-import static spoon.smpl.TestUtils.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class MethodHeaderMatchingTest {
     /*
@@ -98,7 +97,7 @@ public class MethodHeaderMatchingTest {
 
 	private Map<String, CtMethod<?>> methods = null;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		if (methods == null) {
 			methods = new HashMap<>();
