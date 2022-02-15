@@ -16,6 +16,8 @@ jobs:
       - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2.4.0
         with:
           fetch-depth: 0
+          repository: ${{ github.event.workflow_run.head_repository.full_name }}
+          ref: ${{ github.event.workflow_run.head_branch }}
       - run: "echo '${{ toJson(github.event.workflow_run) }}'"
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
@@ -28,6 +30,4 @@ jobs:
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: sarif/qodana.sarif.json
-          sha: ${{ github.event.workflow_run.head_commit.id }}
-          ref: refs/pull/${{ github.event.workflow_run.pull_requests[0].number }}/merge
           category: Fun
