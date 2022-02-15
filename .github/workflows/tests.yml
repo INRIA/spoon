@@ -2,7 +2,7 @@
 #
 # Note that actions are specified by commit hash. This is to avoid the security
 # risk of someone injecting malicious code into a release and then simply
-# changing a tag.
+# changing a tag.!
 
 name: tests
 on:
