@@ -107,6 +107,8 @@ public class Launcher implements SpoonAPI {
 
 	@Override
 	public void run(String[] args) {
+		String a = null;
+		System.out.println(a.length());
 		this.setArgs(args);
 		if (args.length != 0) {
 			this.run();

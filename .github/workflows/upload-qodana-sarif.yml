@@ -31,4 +31,6 @@ jobs:
         with:
           sarif_file: sarif/qodana.sarif.json
           category: Fun
+          sha: ${{ github.event.workflow_run.head_sha }}
+          ref: refs/heads/${{ github.event.workflow_run.head_branch }}
           wait-for-processing: true
