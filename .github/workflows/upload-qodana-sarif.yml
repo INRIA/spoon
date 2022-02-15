@@ -27,4 +27,4 @@ jobs:
         with:
           sarif_file: sarif/qodana.sarif.json
           sha: ${{ github.event.workflow_run.head_commit.id }}
-          ref: ${{ github.event.workflow_run.head_branch }}
+          ref: refs/heads/${{ github.event.workflow_run.head_branch }}
