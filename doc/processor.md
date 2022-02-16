@@ -38,7 +38,7 @@ including modification.
 ```java
 package fr.inria.gforge.spoon.processors;
 
-import org.apache.log4j.Level;
+import  spoon.support.Level;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtCatch;
 
