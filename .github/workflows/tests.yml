@@ -156,7 +156,6 @@ jobs:
         run: cd pull_request && git fetch && git reset --soft origin/master
       - name: Qodana - Code Inspection
         uses: JetBrains/qodana-action@6df92dd1240ad63ed7956fa74069d636067d574d # renovate: tag=v4.2.5
-        continue-on-error: true
         with:
           linter: ${{ env.QODANA_LINTER }}
           project-dir: "${{ github.workspace }}/pull_request"
@@ -164,3 +163,8 @@ jobs:
           results-dir:  "${{ github.workspace }}/result"
           changes: true
           fail-threshold: 0
+          use-annotations: false
+      - uses: github/codeql-action/upload-sarif@v1
+        if: always()
+        with:
+          sarif_file: "${{ github.workspace }}/result/qodana.sarif.json"
