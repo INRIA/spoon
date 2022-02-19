@@ -339,7 +339,7 @@ public class ElementSourceFragment implements SourceFragment {
 		OTHER_IS_BEFORE,
 		OTHER_IS_AFTER,
 		OTHER_IS_CHILD,
-		OTHER_IS_PARENT
+		OTHER_IS_PARENT;
 	}
 
 	/**
@@ -412,7 +412,7 @@ public class ElementSourceFragment implements SourceFragment {
 					//we have found exact match
 					if (element != null && getElement() != element) {
 						if (firstChild == null) {
-							throw new SpoonException("There is no source fragment for element " + element.toString() + ". There is one for class " + getElement().toString());
+							throw new SpoonException("There is no source fragment for element " + element + ". There is one for class " + getElement().toString());
 						}
 						return firstChild.getSourceFragmentOf(element, start, end);
 					}

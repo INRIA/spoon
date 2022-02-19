@@ -327,7 +327,7 @@ public class MetamodelProperty {
 
 	private int getIdxOfBestMatchByReturnType(List<MMMethod> methods, MMMethodKind key) {
 		if (methods.size() > 2) {
-			throw new SpoonException("Resolving of more then 2 conflicting getters is not supported. There are: " + methods.toString());
+			throw new SpoonException("Resolving of more then 2 conflicting getters is not supported. There are: " + methods);
 		}
 		// There is no input parameter. We are resolving getter field.
 		// choose the getter whose return value is a collection
@@ -425,7 +425,7 @@ public class MetamodelProperty {
 	private enum MatchLevel {
 		SUBTYPE,
 		ERASED_EQUALS,
-		EQUALS
+		EQUALS;
 	}
 
 	/**

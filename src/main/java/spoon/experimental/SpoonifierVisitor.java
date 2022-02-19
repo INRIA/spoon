@@ -253,7 +253,7 @@ public class SpoonifierVisitor extends CtScanner {
 		@Override
 		public void visitCtLiteral(CtLiteral element) {
 			if (element.getType().isPrimitive()) {
-				result.append(printTabs() + variableName + ".setValue((" + element.getType().getSimpleName() + ") " + element.toString() + ");\n");
+				result.append(printTabs() + variableName + ".setValue((" + element.getType().getSimpleName() + ") " + element + ");\n");
 				if (element.getBase() != null) {
 					result.append(printTabs() + variableName + ".setBase(LiteralBase." + element.getBase().name() + ");\n");
 				}
