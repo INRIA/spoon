@@ -225,7 +225,11 @@ public class SpoonifierVisitor extends CtScanner {
 		if (!roleContainer.peek().isEmpty()) {
 			for (CtRole role: roleContainer.peek().keySet()) {
 				String variableName = roleContainer.peek().get(role);
-				result.append(printTabs() + parentName.peek() + ".setValueByRole(CtRole." + role.name() + ", " + variableName + ");\n");
+				result.append(printTabs())
+						.append(parentName.peek())
+						.append(".setValueByRole(CtRole.")
+						.append(role.name()).append(", ")
+						.append(variableName).append(");\n");
 			}
 		}
 		parentName.pop();
