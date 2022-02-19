@@ -24,7 +24,7 @@ and invite you to it, where you can then safely disclose the vulnerability.
 
 ### Report a vulnerability by encrypted email (if you don't have a GitHub account)
 
-Some integrators have have public PGP keys that you can use to encrypt a
+Some integrators have public PGP keys that you can use to encrypt a
 message, for example using `gpg`. See [CONTRIBUTING.md](CONTRIBUTING.md)
 for a list of integrator key fingerprints. If you write down the vulnerability
 in a file `vuln.txt`, you can encrypt it with `gpg` like so:
