@@ -370,8 +370,7 @@ public class MetamodelProperty {
 
 	private int getIdxOfBestMatchByInputParameter(List<MMMethod> methods, MMMethodKind key, CtTypeReference<?> expectedValueType)  {
 		int idx = -1;
-		
-		maxMatchLevel = null;
+		MatchLevel maxMatchLevel = null;
 		if (key.isMulti()) {
 			expectedValueType = getTypeofItems(expectedValueType);
 		}
