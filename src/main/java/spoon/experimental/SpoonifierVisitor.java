@@ -257,12 +257,26 @@ public class SpoonifierVisitor extends CtScanner {
 		@Override
 		public void visitCtLiteral(CtLiteral element) {
 			if (element.getType().isPrimitive()) {
-				result.append(printTabs() + variableName + ".setValue((" + element.getType().getSimpleName() + ") " + element + ");\n");
+				result.append(printTabs())
+							.append(variableName)
+							.append(".setValue((")
+							.append(element.getType().getSimpleName())
+							.append(") ")
+							.append(element)
+							.append(");\n");
 				if (element.getBase() != null) {
-					result.append(printTabs() + variableName + ".setBase(LiteralBase." + element.getBase().name() + ");\n");
+					result.append(printTabs())
+							.append(variableName)
+							.append(".setBase(LiteralBase.")
+							.append(element.getBase().name())
+							.append(");\n");
 				}
 			} else if (element.getType().getQualifiedName().equals("java.lang.String")) {
-				result.append(printTabs() + variableName + ".setValue(\"" + StringEscapeUtils.escapeJava((String) element.getValue()) + "\");\n");
+				result.append(printTabs())
+							.append(variableName)
+							.append(".setValue(\"")
+							.append(StringEscapeUtils.escapeJava((String) element.getValue()))
+							.append("\");\n");
 			}
 			super.visitCtLiteral(element);
 		}
