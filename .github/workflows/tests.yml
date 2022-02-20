@@ -168,3 +168,11 @@ jobs:
         if: always()
         with:
           sarif_file: "${{ github.workspace }}/result/qodana.sarif.json"
+  reproducible-builds:
+    runs-on: ubuntu-latest
+    name: reproducible-builds
+    steps: 
+      - name: build spoon
+        run: mvn clean install
+      - name: check build
+        run: mvn clean verify artifact:compare
