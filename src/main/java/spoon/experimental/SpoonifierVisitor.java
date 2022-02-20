@@ -228,8 +228,10 @@ public class SpoonifierVisitor extends CtScanner {
 				result.append(printTabs())
 						.append(parentName.peek())
 						.append(".setValueByRole(CtRole.")
-						.append(role.name()).append(", ")
-						.append(variableName).append(");\n");
+						.append(role.name())
+						.append(", ")
+						.append(variableName)
+						.append(");\n");
 			}
 		}
 		parentName.pop();
