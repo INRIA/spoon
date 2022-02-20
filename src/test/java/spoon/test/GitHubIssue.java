@@ -62,10 +62,12 @@ public @interface GitHubIssue {
 	 * Swallowing this exceptions marks the testcase as not failing.
 	 */
 	static class UnresolvedBugExtension implements AfterEachCallback, TestExecutionExceptionHandler {
+
 		@Override
 		public void handleTestExecutionException(ExtensionContext context, Throwable throwable)
 				throws Throwable {
 			if (shouldFail(context)) {
+				context.getStore(ExtensionContext.Namespace.create(GitHubIssue.class)).put("failed", true);
 				return;
 			}
 			// rethrow the exception to fail the test case if it was not expected to fail
@@ -74,7 +76,7 @@ public @interface GitHubIssue {
 
 		@Override
 		public void afterEach(ExtensionContext context) throws Exception {
-			if (shouldFail(context)) {
+			if (shouldFail(context) && !context.getStore(ExtensionContext.Namespace.create(GitHubIssue.class)).getOrDefault("failed", Boolean.class, false)) {
 				fail("Test " + context.getDisplayName() + " must fail");
 			}
 		}
