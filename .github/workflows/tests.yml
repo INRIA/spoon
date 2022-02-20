@@ -186,5 +186,7 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
+      - name: install build
+        run: mvn clean install -Dskip="jacoco-maven-plugin:check"    
       - name: check build
-        run: mvn clean verify artifact:compare
+        run: mvn clean verify artifact:compare -Dskip="jacoco-maven-plugin:check"
