@@ -542,7 +542,7 @@ public class ContractVerifier {
 			} catch (CtPathException e) {
 				throw new AssertionError("Path " + pathStr + " is either incorrectly generated or incorrectly read", e);
 			} catch (AssertionError e) {
-				throw new AssertionError("Path " + pathStr + " detection failed on " + element.getClass().getSimpleName() + ": " + element.toString(), e);
+				throw new AssertionError("Path " + pathStr + " detection failed on " + element.getClass().getSimpleName() + ": " + element, e);
 			}
 		});
 	}
