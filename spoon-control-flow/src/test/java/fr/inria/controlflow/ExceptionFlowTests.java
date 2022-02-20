@@ -1,15 +1,15 @@
 package fr.inria.controlflow;
 
-import org.junit.Test;
+import java.util.*;
+import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtMethod;
 
-import java.util.*;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ExceptionFlowTests {
     @Test
@@ -281,9 +281,9 @@ public class ExceptionFlowTests {
         assertNotNull(findNodeByString(cfg, "bang()"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testFinalizerReturnStatementInTryBlockRejected() {
-
+        assertThrows(IllegalArgumentException.class, () -> {
         // contract: NaiveExceptionControlFlowStrategy should reject a try-catch construct if it is equipped with a
         //           finalizer and return statements are used anywhere in the construct
 
@@ -305,11 +305,12 @@ public class ExceptionFlowTests {
         ControlFlowBuilder builder = new ControlFlowBuilder();
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
         builder.build(method);
-    }
+        });
+    } 
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testFinalizerReturnStatementInCatchBlockRejected() {
-
+        assertThrows(IllegalArgumentException.class, () -> {
         // contract: NaiveExceptionControlFlowStrategy should reject a try-catch construct if it is equipped with a
         //           finalizer and return statements are used anywhere in the construct
 
@@ -333,11 +334,11 @@ public class ExceptionFlowTests {
         ControlFlowBuilder builder = new ControlFlowBuilder();
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
         builder.build(method);
-    }
+        });
+    } 
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testFinalizerReturnStatementInFinalizerBlockRejected() {
-
         // contract: NaiveExceptionControlFlowStrategy should reject a try-catch construct if it is equipped with a
         //           finalizer and return statements are used anywhere in the construct
 
@@ -363,8 +364,10 @@ public class ExceptionFlowTests {
 
         ControlFlowBuilder builder = new ControlFlowBuilder();
         builder.setExceptionControlFlowStrategy(new NaiveExceptionControlFlowStrategy());
-        builder.build(method);
-    }
+        assertThrows(IllegalArgumentException.class, () -> {
+            builder.build(method);
+        });
+    } 
 
     @Test
     public void testFinalizer() {

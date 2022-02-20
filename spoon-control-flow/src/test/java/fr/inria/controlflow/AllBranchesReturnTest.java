@@ -22,7 +22,7 @@
 
 package fr.inria.controlflow;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.code.CtIf;
@@ -30,8 +30,8 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.factory.Factory;
 import spoon.support.QueueProcessingManager;
 
-import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by marodrig on 04/01/2016.
