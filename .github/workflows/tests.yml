@@ -186,7 +186,5 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
-      - name: build spoon
-        run: mvn clean install
       - name: check build
         run: mvn clean verify artifact:compare
