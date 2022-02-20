@@ -7,19 +7,27 @@
  */
 package spoon.test;
 
+import static org.junit.jupiter.api.Assertions.fail;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.HashSet;
+import java.util.IllformedLocaleException;
+import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestWatcher;
-import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.platform.engine.TestExecutionResult;
+import org.junit.platform.engine.support.descriptor.MethodSource;
+import org.junit.platform.launcher.TestExecutionListener;
+import org.junit.platform.launcher.TestIdentifier;
+import org.kohsuke.MetaInfServices;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
@@ -53,32 +61,26 @@ public @interface GitHubIssue {
 	 * This is useful to check if each testcase fails as expected. Internal in junit 5 failing testcases simply throw an exception.
 	 * Swallowing this exceptions marks the testcase as not failing.
 	 */
-	 static class UnresolvedBugExtension implements TestWatcher, TestExecutionExceptionHandler {
-
-		private Set<ExtensionContext> correctFailingTestCases = new HashSet<>();
-
-		@Override
-		public void testSuccessful(ExtensionContext context) {
-			if (shouldFail(context) && !correctFailingTestCases.contains(context)) {
-				fail("Method " + context.getTestMethod().get().getName() + " must fail");
-			}
-		}
-
+	static class UnresolvedBugExtension implements AfterEachCallback, TestExecutionExceptionHandler {
 		@Override
 		public void handleTestExecutionException(ExtensionContext context, Throwable throwable)
 				throws Throwable {
 			if (shouldFail(context)) {
-				correctFailingTestCases.add(context);
 				return;
 			}
 			// rethrow the exception to fail the test case if it was not expected to fail
 			throw throwable;
 		}
 
+		@Override
+		public void afterEach(ExtensionContext context) throws Exception {
+			if (shouldFail(context)) {
+				fail("Test " + context.getDisplayName() + " must fail");
+			}
+		}
 		private boolean shouldFail(ExtensionContext context) {
-			return context.getTestMethod()
-					.map(method -> method.getAnnotation(GitHubIssue.class) != null && !method.getAnnotation(GitHubIssue.class).fixed())
-					.orElse(false);
+			return context.getTestMethod().map(method -> method.getAnnotation(GitHubIssue.class) != null
+					&& !method.getAnnotation(GitHubIssue.class).fixed()).orElse(false);
 		}
 	}
 }
