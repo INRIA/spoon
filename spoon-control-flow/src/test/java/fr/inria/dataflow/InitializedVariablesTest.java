@@ -23,15 +23,15 @@
 package fr.inria.dataflow;
 
 import fr.inria.controlflow.*;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.reference.CtVariableReference;
 
 import java.util.HashSet;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.TestCase.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class InitializedVariablesTest {
 
@@ -156,8 +156,9 @@ public class InitializedVariablesTest {
 	}
 
 
-	@Ignore("Known bug")
+	
 	@Test
+	@Disabled("Known bug")
 	public void testTwoConsecutiveLoops() throws Exception {
 		ControlFlowGraph graph = ForwardFlowBuilderVisitorTest.buildGraph(
 				this.getClass().getResource("/initialized").toURI().getPath(), "twoLoops", true);

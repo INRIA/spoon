@@ -22,14 +22,14 @@
 
 package fr.inria.controlflow;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.reflect.code.CtStatement;
 import spoon.support.reflect.code.CtIfImpl;
-
 import static fr.inria.controlflow.BranchKind.*;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Control flow graph tests
@@ -38,18 +38,17 @@ import static junit.framework.TestCase.assertEquals;
  */
 public class ControlFlowGraphTests {
 
-	@Test(expected = NotFoundException.class)
-	public void testFindNodeNotFound() throws NotFoundException {
-		ControlFlowGraph graph = new ControlFlowGraph();
-
-		CtStatement s = new CtIfImpl();
-
-		ControlFlowNode branch1 = new ControlFlowNode(null, graph, BRANCH);
-		ControlFlowNode branch2 = new ControlFlowNode(null, graph, BRANCH);
-		graph.addEdge(branch1, branch2);
-
-		ControlFlowNode n = graph.findNode(s);
-	}
+	@Test
+	public void testFindNodeNotFound() throws NotFoundException{
+		assertThrows(NotFoundException.class, () -> {
+			ControlFlowGraph graph = new ControlFlowGraph();
+			CtStatement s = new CtIfImpl();
+			ControlFlowNode branch1 = new ControlFlowNode(null, graph, BRANCH);
+			ControlFlowNode branch2 = new ControlFlowNode(null, graph, BRANCH);
+			graph.addEdge(branch1, branch2);
+			ControlFlowNode n = graph.findNode(s);
+		});
+	} 
 
 	@Test
 	public void testFindNode() throws NotFoundException {

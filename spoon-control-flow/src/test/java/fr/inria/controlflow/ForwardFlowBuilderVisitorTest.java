@@ -22,7 +22,7 @@
 
 package fr.inria.controlflow;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.declaration.CtMethod;
@@ -33,7 +33,7 @@ import java.io.PrintWriter;
 
 import static fr.inria.controlflow.BranchKind.BRANCH;
 import static fr.inria.controlflow.BranchKind.STATEMENT;
-import static junit.framework.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by marodrig on 14/10/2015.
