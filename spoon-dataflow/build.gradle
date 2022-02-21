@@ -23,7 +23,7 @@ dependencies {
     implementation group: 'fr.inria.gforge.spoon', name: 'spoon-core', version: '+'
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
     implementation group: 'com.microsoft', name: 'z3', version: '4.8.4'
-    testImplementation group: 'junit', name: 'junit', version: '4.13.2'
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.0")
 }
 
 application {
@@ -36,3 +36,6 @@ shadowJar {
     archiveVersion.set('')
 }
 
+test {
+    useJUnitPlatform()
+}
