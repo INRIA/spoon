@@ -164,7 +164,6 @@ jobs:
           changes: true
           fail-threshold: 0
           use-annotations: false
-          use-caches: false
       - uses: github/codeql-action/upload-sarif@v1
         if: always()
         with:
