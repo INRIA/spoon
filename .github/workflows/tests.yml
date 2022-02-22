@@ -141,7 +141,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
-      QODANA_LINTER: jetbrains/qodana-jvm-community:2021.3
+      QODANA_LINTER: jetbrains/qodana-jvm-community@sha256:c388ddd7b852296f71b1a786d3b30f458a993eb252d5cd4963422007e5b824db
     name: code-quality qodana
     steps:
       - name: Checkout
@@ -164,6 +164,7 @@ jobs:
           changes: true
           fail-threshold: 0
           use-annotations: false
+          use-caches: false # we disable cache for consistent results
       - uses: github/codeql-action/upload-sarif@v1
         if: always()
         with:
