@@ -988,7 +988,7 @@ public class ParentExiter extends CtInheritanceScanner {
 						for (CtLocalVariable v: variables) {
 							if (v.getSimpleName().equals(variableRef.getSimpleName())) {
 								// we found the resource
-								tryWithResource.addResource(v);
+								tryWithResource.addResource(v.clone());
 							}
 						}
 					}
