@@ -315,6 +315,11 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	public <T> void scanCtVariable(CtVariable<T> v) {
 	}
 
+	/**
+	 * Scans a resource in a try-with-resource.
+	 */
+	public <T> void scanCtResource(CtVariable<T> v) {
+	}
 
 	/**
 	 * Scans an array access (read and write).
@@ -684,6 +689,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	public <T> void visitCtLocalVariable(CtLocalVariable<T> e) {
 		scanCtStatement(e);
+		scanCtResource(e);
 		scanCtVariable(e);
 		scanCtCodeElement(e);
 		scanCtNamedElement(e);
