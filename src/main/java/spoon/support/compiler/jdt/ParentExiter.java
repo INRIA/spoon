@@ -980,7 +980,7 @@ public class ParentExiter extends CtInheritanceScanner {
 			final CtVariableReference<?> variableRef = ((CtVariableRead<?>) child).getVariable();
 			if (variableRef.getDeclaration() != null) {
 				// getDeclaration works
-				tryWithResource.addResource((CtResource<?>) variableRef.getDeclaration().clone());
+				tryWithResource.addResource((CtResource<?>) variableRef.getDeclaration().clone().setImplicit(true));
 			} else {
 				// we have to find it manually
 				for (ASTPair pair: this.jdtTreeBuilder.getContextBuilder().stack) {
@@ -990,7 +990,10 @@ public class ParentExiter extends CtInheritanceScanner {
 							if (v.getSimpleName().equals(variableRef.getSimpleName())) {
 								// we found the resource
 								// we clone it in order to comply with the contract of being a tree
-								tryWithResource.addResource(v.clone());
+								final CtLocalVariable clone = v.clone();
+								clone.setImplicit(true);
+								tryWithResource.addResource(clone);
+								break;
 							}
 						}
 					}

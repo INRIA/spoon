@@ -422,15 +422,18 @@ public class TryCatchTest {
 		factory.getEnvironment().setComplianceLevel(9);
 
 		// contract: a try with resource is modeled with CtTryWithResource
-		CtTryWithResource tryStmt = factory.Code().createCodeSnippetStatement("" +
+		CtTryWithResource tryStmt = factory.Code().createCodeSnippetStatement("class A { public void m() throws Exception {" +
 				"java.lang.AutoCloseable resource = null;" +
-				"try(resource){}"
-			).compile();
+				"try(resource){}}}"
+			).compile().getElements(new TypeFilter<>(CtTryWithResource.class)).get(0);
         List<CtResource<?>> resources = tryStmt.getResources();
         assertEquals(1, resources.size());
 		final CtResource<?> ctResource = resources.get(0);
 		assertTrue(ctResource instanceof CtVariable);
         assertEquals("resource", ((CtVariable<?>) ctResource).getSimpleName());
+
+		// contract: pretty-printing of existign resources works
+		assertEquals("try (resource) {\n}", tryStmt.toString());
 
 		// contract: removeResource does remove the resource
 		tryStmt.removeResource(ctResource);
