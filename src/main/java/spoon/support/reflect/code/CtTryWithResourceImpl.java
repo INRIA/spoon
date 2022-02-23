@@ -7,6 +7,7 @@
  */
 package spoon.support.reflect.code;
 
+import spoon.reflect.annotations.MetamodelPropertyField;
 import spoon.reflect.code.CtResource;
 import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.visitor.CtVisitor;
@@ -22,7 +23,7 @@ import static spoon.reflect.path.CtRole.TRY_RESOURCE;
 public class CtTryWithResourceImpl extends CtTryImpl implements CtTryWithResource {
 	private static final long serialVersionUID = 1L;
 
-	// that's not structural, the resource is comprised in the parent block
+	@MetamodelPropertyField(role = TRY_RESOURCE)
 	List<CtResource<?>> resources = emptyList();
 
 	@Override
