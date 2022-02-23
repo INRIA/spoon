@@ -180,7 +180,7 @@ public class TryCatchTest {
 				new TypeFilter<>(CtTryWithResource.class)).get(0);
 
 		// Checks try has only one resource.
-		assertTrue(ctTryWithResource.getResources().size() == 1);
+		assertEquals(1, ctTryWithResource.getResources().size());
 	}
 
 	@Test

@@ -976,7 +976,11 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
-		if (child instanceof CtVariableRead) {
+		if (child instanceof CtLocalVariable) {
+			// normal, happy path of declaring a new variable
+			tryWithResource.addResource((CtLocalVariable) child);
+		} else if (child instanceof CtVariableRead) {
+			// special case of the resource being declared before
 			final CtVariableReference<?> variableRef = ((CtVariableRead<?>) child).getVariable();
 			if (variableRef.getDeclaration() != null) {
 				// getDeclaration works
