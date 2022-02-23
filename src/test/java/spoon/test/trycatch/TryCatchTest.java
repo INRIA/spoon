@@ -433,7 +433,7 @@ public class TryCatchTest {
         assertEquals("resource", ((CtVariable<?>) ctResource).getSimpleName());
 
 		// contract: pretty-printing of existing resources works
-		assertEquals("try (resource) {\n}", tryStmt.toString());
+		assertEquals("try (resource) {"+System.getProperty("line.separator")+"}", tryStmt.toString());
 
 		// contract: removeResource does remove the resource
 		tryStmt.removeResource(ctResource);
