@@ -121,7 +121,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	private CtElement child;
 	private ASTNode childJDT;
-	private ASTNode parentJDT;
+	private ASTPair parentJDT;
 	private Map<CtTypedElement<?>, List<CtAnnotation>> annotationsMap = new HashMap<>();
 
 	/**
@@ -139,7 +139,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		this.childJDT = child;
 	}
 
-	public void setParent(ASTNode parent) {
+	public void setParent(ASTPair parent) {
 		this.parentJDT = parent;
 	}
 
@@ -654,7 +654,7 @@ public class ParentExiter extends CtInheritanceScanner {
 				child.setPosition(this.child.getPosition());
 			}
 
-			IfStatement ifJDT = (IfStatement) this.parentJDT;
+			IfStatement ifJDT = (IfStatement) this.parentJDT.node;
 			if (ifJDT.thenStatement == this.childJDT) {
 				//we are visiting `then` of `if`
 				ifElement.setThenStatement(child);
