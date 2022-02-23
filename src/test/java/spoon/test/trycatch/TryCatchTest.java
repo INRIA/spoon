@@ -432,7 +432,7 @@ public class TryCatchTest {
 		assertTrue(ctResource instanceof CtVariable);
         assertEquals("resource", ((CtVariable<?>) ctResource).getSimpleName());
 
-		// contract: pretty-printing of existign resources works
+		// contract: pretty-printing of existing resources works
 		assertEquals("try (resource) {\n}", tryStmt.toString());
 
 		// contract: removeResource does remove the resource
