@@ -121,7 +121,7 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	private CtElement child;
 	private ASTNode childJDT;
-	private ASTPair parentJDT;
+	private ASTPair parentPair;
 	private Map<CtTypedElement<?>, List<CtAnnotation>> annotationsMap = new HashMap<>();
 
 	/**
@@ -131,16 +131,16 @@ public class ParentExiter extends CtInheritanceScanner {
 		this.jdtTreeBuilder = jdtTreeBuilder;
 	}
 
+	public void exitParent(ASTPair pair) {
+		this.parentPair = pair;
+		scan(pair.element);
+	}
 	public void setChild(CtElement child) {
 		this.child = child;
 	}
 
 	public void setChild(ASTNode child) {
 		this.childJDT = child;
-	}
-
-	public void setParent(ASTPair parent) {
-		this.parentJDT = parent;
 	}
 
 	@Override
@@ -654,7 +654,7 @@ public class ParentExiter extends CtInheritanceScanner {
 				child.setPosition(this.child.getPosition());
 			}
 
-			IfStatement ifJDT = (IfStatement) this.parentJDT.node;
+			IfStatement ifJDT = (IfStatement) this.parentPair.node;
 			if (ifJDT.thenStatement == this.childJDT) {
 				//we are visiting `then` of `if`
 				ifElement.setThenStatement(child);
