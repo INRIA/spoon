@@ -38,6 +38,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtCatchVariableReference;
@@ -428,8 +429,8 @@ public class TryCatchTest {
         List<CtResource<?>> resources = tryStmt.getResources();
         assertEquals(1, resources.size());
 		final CtResource<?> ctResource = resources.get(0);
-		assertTrue(ctResource instanceof CtVariableRead);
-        assertEquals("resource", ((CtVariableRead<?>) ctResource).getVariable().getSimpleName());
+		assertTrue(ctResource instanceof CtVariable);
+        assertEquals("resource", ((CtVariable<?>) ctResource).getSimpleName());
 
 		// contract: removeResource does remove the resource
 		tryStmt.removeResource(ctResource);

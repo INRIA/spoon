@@ -21,7 +21,7 @@ package spoon.reflect.code;
  * @param <T>
  * 		type of the variable
  */
-public interface CtVariableRead<T> extends CtVariableAccess<T>, CtResource<T> {
+public interface CtVariableRead<T> extends CtVariableAccess<T> {
 	@Override
 	CtVariableRead<T> clone();
 }

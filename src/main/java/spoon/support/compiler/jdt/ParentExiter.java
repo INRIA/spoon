@@ -73,6 +73,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.cu.CompilationUnit;
@@ -102,9 +103,11 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -973,8 +976,24 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
-		if (child instanceof CtResource) {
-			tryWithResource.addResource((CtResource<?>) child);
+		if (child instanceof CtVariableRead) {
+			final CtVariableReference<?> variableRef = ((CtVariableRead<?>) child).getVariable();
+			if (variableRef.getDeclaration() != null) {
+				tryWithResource.addResource((CtResource<?>) variableRef.getDeclaration());
+			} else {
+				// we have to find it manually
+				for (ASTPair pair: this.jdtTreeBuilder.getContextBuilder().stack) {
+					final List<CtLocalVariable> variables = pair.element.getElements(new TypeFilter<>(CtLocalVariable.class));
+					if (variables.size()>0) {
+						for (CtLocalVariable v: variables) {
+							if (v.getSimpleName().equals(variableRef.getSimpleName())) {
+								// we found the resource
+								tryWithResource.addResource(v);
+							}
+						}
+					}
+				}
+			}
 		}
 		super.visitCtTryWithResource(tryWithResource);
 	}
