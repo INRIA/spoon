@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.reflect.CtModel;
@@ -49,6 +50,7 @@ import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.CtExtendedModifier;
 import spoon.test.trycatch.testclasses.Foo;
 import spoon.test.trycatch.testclasses.Main;
+import spoon.testing.utils.LineSeperatorExtension;
 
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -416,6 +418,7 @@ public class TryCatchTest {
 		assertThat(varRef.getType().getActualTypeArguments().size(), equalTo(0));
 	}
 
+	@ExtendWith(LineSeperatorExtension.class)
 	@Test
 	public void testTryWithVariableAsResource() {
 		Factory factory = createFactory();
@@ -426,14 +429,14 @@ public class TryCatchTest {
 				"java.lang.AutoCloseable resource = null;" +
 				"try(resource){}}}"
 			).compile().getElements(new TypeFilter<>(CtTryWithResource.class)).get(0);
-        List<CtResource<?>> resources = tryStmt.getResources();
-        assertEquals(1, resources.size());
+		List<CtResource<?>> resources = tryStmt.getResources();
+		assertEquals(1, resources.size());
 		final CtResource<?> ctResource = resources.get(0);
 		assertTrue(ctResource instanceof CtVariable);
-        assertEquals("resource", ((CtVariable<?>) ctResource).getSimpleName());
+		assertEquals("resource", ((CtVariable<?>) ctResource).getSimpleName());
 
 		// contract: pretty-printing of existing resources works
-		assertEquals("try (resource) {"+System.getProperty("line.separator")+"}", tryStmt.toString());
+		assertEquals("try (resource) {\n}", tryStmt.toString());
 
 		// contract: removeResource does remove the resource
 		tryStmt.removeResource(ctResource);
