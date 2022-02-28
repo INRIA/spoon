@@ -63,5 +63,4 @@ public abstract class CtVariableAccessImpl<T> extends CtExpressionImpl<T> implem
 	public CtVariableAccess<T> clone() {
 		return (CtVariableAccess<T>) super.clone();
 	}
-
 }
