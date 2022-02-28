@@ -932,7 +932,6 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 
 	@Override
 	public <T> void visitCtVariableRead(CtVariableRead<T> e) {
-		scanCtResource(e);
 		scanCtVariableAccess(e);
 		scanCtExpression(e);
 		scanCtCodeElement(e);

@@ -73,6 +73,7 @@ import spoon.reflect.code.CtTryWithResource;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtTypePattern;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.CtYieldStatement;
 import spoon.reflect.cu.CompilationUnit;
@@ -102,9 +103,11 @@ import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.reference.CtWildcardReference;
 import spoon.reflect.visitor.CtInheritanceScanner;
 import spoon.reflect.visitor.CtScanner;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -973,8 +976,31 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtTryWithResource(CtTryWithResource tryWithResource) {
-		if (child instanceof CtResource) {
-			tryWithResource.addResource((CtResource<?>) child);
+		if (child instanceof CtLocalVariable) {
+			// normal, happy path of declaring a new variable
+			tryWithResource.addResource((CtLocalVariable) child);
+		} else if (child instanceof CtVariableRead) {
+			// special case of the resource being declared before
+			final CtVariableReference<?> variableRef = ((CtVariableRead<?>) child).getVariable();
+			if (variableRef.getDeclaration() != null) {
+				// getDeclaration works
+				tryWithResource.addResource((CtResource<?>) variableRef.getDeclaration().clone().setImplicit(true));
+			} else {
+				// we have to find it manually
+				for (ASTPair pair: this.jdtTreeBuilder.getContextBuilder().stack) {
+					final List<CtLocalVariable> variables = pair.element.getElements(new TypeFilter<>(CtLocalVariable.class));
+					for (CtLocalVariable v: variables) {
+						if (v.getSimpleName().equals(variableRef.getSimpleName())) {
+							// we found the resource
+							// we clone it in order to comply with the contract of being a tree
+							final CtLocalVariable clone = v.clone();
+							clone.setImplicit(true);
+							tryWithResource.addResource(clone);
+							break;
+						}
+					}
+				}
+			}
 		}
 		super.visitCtTryWithResource(tryWithResource);
 	}

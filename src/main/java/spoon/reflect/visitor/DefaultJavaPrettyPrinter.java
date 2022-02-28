@@ -1414,7 +1414,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (env.isPreserveLineNumbers()) {
 			getPrinterHelper().adjustStartPosition(localVariable);
 		}
-		if (!context.isNextForVariable()) {
+		if (!context.isNextForVariable()
+				&& !localVariable.isImplicit() // for resources in try-with-resources
+		) {
 			elementPrinterHelper.writeModifiers(localVariable);
 			if (localVariable.isInferred() && this.env.getComplianceLevel() >= 10) {
 				getPrinterTokenWriter().writeKeyword("var");
@@ -1443,7 +1445,9 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				printSquareBrackets((CtArrayTypeReference<?>) localVariable.getType());
 			}
 		}
-		if (localVariable.getDefaultExpression() != null) {
+		if (localVariable.getDefaultExpression() != null
+				&& !localVariable.isImplicit() // for resources in try-with-resources
+		) {
 			printer.writeSpace().writeOperator("=").writeSpace();
 			scan(localVariable.getDefaultExpression());
 		}
