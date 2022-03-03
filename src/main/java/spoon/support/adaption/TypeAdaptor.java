@@ -89,8 +89,10 @@ public class TypeAdaptor {
 		if (useLegacyTypeAdaption(superRef)) {
 			return getOldClassTypingContext().isSubtypeOf(superRef);
 		}
-		// We have no declaration so we can't really do any subtype queries
 		if (hierarchyStart == null) {
+			// We have no declaration, so we can't really do any subtype queries. This happens when the constructor was
+			// called with a type reference to a class not on the classpath. Any subtype relationships of that class are
+			// therefore ambiguous.
 			return false;
 		}
 
@@ -136,12 +138,10 @@ public class TypeAdaptor {
 		}
 		String superRefFqn = superRef.getTypeErasure().getQualifiedName();
 
-		// Everything inherits from object
 		if (superRef.getQualifiedName().equals("java.lang.Object")) {
 			return true;
 		}
 
-		// Types are subtypes of themselves
 		if (base.getQualifiedName().equals(superRefFqn)) {
 			return true;
 		}
@@ -431,8 +431,8 @@ public class TypeAdaptor {
 			return legacyAdaptType(superRef);
 		}
 
-		// We are already in the same scope, just return super ref unchanged
 		if (hierarchyStart.getQualifiedName().equals(superRef.getQualifiedName())) {
+			// We are already in the same scope, just return super ref unchanged
 			return superRef.clone()
 				.setParent(superRef.isParentInitialized() ? superRef.getParent() : null);
 		}
@@ -492,8 +492,9 @@ public class TypeAdaptor {
 		}
 		CtMethod<?> superMethod = superMethodOpt.get();
 
-		// We just try to find the usage of the super ref in the method and take the corresponding
-		// value from our start method
+		// We try to find the usage of the super ref in the method and take the corresponding value from our start
+		// method. If a type parameter declared on a method is used in the return type of the method, we take the type
+		// parameter representing the return type of the method in the subclass.
 		if (superMethod.getType().equals(superRef)) {
 			return Optional.of(startMethod.getType());
 		}
@@ -584,15 +585,14 @@ public class TypeAdaptor {
 	) {
 		Node node = nodeMap.computeIfAbsent(start, adaptor -> Node.forReference(this, adaptor));
 
-		// If we found a reference with actual type arguments we build the hierarchy for the declaring
-		// type and add ourselves as a glue node below.
 		if (!start.getActualTypeArguments().isEmpty()) {
+			// If we found a reference with actual type arguments we build the hierarchy for the declaring
+			// type and add ourselves as a glue node below.
 			buildHierarchyFrom(start.getTypeDeclaration().getReference(), end, nodeMap)
 				.addLower(node);
 			return node;
 		}
 
-		// Do not expand any further
 		if (end.getQualifiedName().equals(start.getQualifiedName())) {
 			return node;
 		}
