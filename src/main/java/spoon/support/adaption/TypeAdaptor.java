@@ -146,13 +146,23 @@ public class TypeAdaptor {
 			return true;
 		}
 
-		// Walk up the supertype hierarchy and see if we find the super ref type
+		return supertypeReachableInInheritanceTree(base, superRefFqn);
+	}
+
+	/**
+	 * Checks whether a type with the passed qualified name is part of the supertype hierarchy of base.
+	 *
+	 * @param base the base to walk the inheritance tree for
+	 * @param qualifiedSupertypeName the qualified name of the type to search for
+	 * @return true if the type could be found in the supertype hierarchy of base, false otherwise
+	 */
+	private static boolean supertypeReachableInInheritanceTree(CtType<?> base, String qualifiedSupertypeName) {
 		Queue<CtTypeReference<?>> workQueue = new ArrayDeque<>();
 		workQueue.add(base.getReference());
 
 		while (!workQueue.isEmpty()) {
 			CtTypeReference<?> next = workQueue.poll();
-			if (next.getQualifiedName().equals(superRefFqn)) {
+			if (next.getQualifiedName().equals(qualifiedSupertypeName)) {
 				return true;
 			}
 
