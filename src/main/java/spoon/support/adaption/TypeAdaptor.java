@@ -8,6 +8,7 @@
 package spoon.support.adaption;
 
 import spoon.SpoonException;
+import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
@@ -84,9 +85,8 @@ public class TypeAdaptor {
 	 * 	superRef)}
 	 * @see #isSubtype(CtType, CtTypeReference)
 	 */
-	@SuppressWarnings("removal")
 	public boolean isSubtypeOf(CtTypeReference<?> superRef) {
-		if (superRef.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption()) {
+		if (useLegacyTypeAdaption(superRef)) {
 			return getOldClassTypingContext().isSubtypeOf(superRef);
 		}
 		// We have no declaration so we can't really do any subtype queries
@@ -112,6 +112,17 @@ public class TypeAdaptor {
 	}
 
 	/**
+	 * Checks whether we should use the legacy or new type adaption API.
+	 *
+	 * @param element the element to obtain environment configuration from
+	 * @return true if the legacy type adaption should be used instead
+	 */
+	@SuppressWarnings("removal")
+	private static boolean useLegacyTypeAdaption(FactoryAccessor element) {
+		return element.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption();
+	}
+
+	/**
 	 * Checks whether the base is a subtype of the passed superref. Generic parameters in superRef are
 	 * ignored.
 	 *
@@ -119,9 +130,8 @@ public class TypeAdaptor {
 	 * @param superRef the potential supertype
 	 * @return true if base extends/implements the super type
 	 */
-	@SuppressWarnings("removal")
 	public static boolean isSubtype(CtType<?> base, CtTypeReference<?> superRef) {
-		if (base.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption()) {
+		if (useLegacyTypeAdaption(base)) {
 			return new TypeAdaptor(base).isSubtypeOf(superRef);
 		}
 		String superRefFqn = superRef.getTypeErasure().getQualifiedName();
@@ -174,9 +184,9 @@ public class TypeAdaptor {
 	 * @return the input method but with the return type, parameter types and thrown types adapted to
 	 * 	the context of this type adapter
 	 */
-	@SuppressWarnings({"unchecked", "removal"})
+	@SuppressWarnings("unchecked")
 	public CtMethod<?> adaptMethod(CtMethod<?> inputMethod) {
-		if (inputMethod.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption()) {
+		if (useLegacyTypeAdaption(inputMethod)) {
 			return (CtMethod<?>) new MethodTypingContext()
 				.setClassTypingContext(getOldClassTypingContext())
 				.setMethod(inputMethod)
@@ -245,9 +255,8 @@ public class TypeAdaptor {
 	 * @param second the second method
 	 * @return true if the methods are conflicting
 	 */
-	@SuppressWarnings("removal")
 	public boolean isConflicting(CtMethod<?> first, CtMethod<?> second) {
-		if (first.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption()) {
+		if (useLegacyTypeAdaption(first)) {
 			return getOldClassTypingContext().isSameSignature(first, second);
 		}
 		if (first.getParameters().size() != second.getParameters().size()) {
@@ -302,9 +311,8 @@ public class TypeAdaptor {
 	 * @param second the second method
 	 * @return true if the two methods have the same signature
 	 */
-	@SuppressWarnings("removal")
 	public boolean isSameSignature(CtMethod<?> first, CtMethod<?> second) {
-		if (first.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption()) {
+		if (useLegacyTypeAdaption(first)) {
 			return getOldClassTypingContext().isSubSignature(first, second);
 		}
 		if (first.getParameters().size() != second.getParameters().size()) {
@@ -352,9 +360,8 @@ public class TypeAdaptor {
 	 * @param superMethod the method that might be overridden
 	 * @return true if {@code subMethod} overrides {@code superMethod}
 	 */
-	@SuppressWarnings("removal")
 	public boolean isOverriding(CtMethod<?> subMethod, CtMethod<?> superMethod) {
-		if (subMethod.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption()) {
+		if (useLegacyTypeAdaption(subMethod)) {
 			return getOldClassTypingContext().isOverriding(subMethod, superMethod);
 		}
 		if (subMethod.getParameters().size() != superMethod.getParameters().size()) {
@@ -415,9 +422,8 @@ public class TypeAdaptor {
 	 * @param superRef the super type to adapt
 	 * @return the adapted type
 	 */
-	@SuppressWarnings("removal")
 	public CtTypeReference<?> adaptType(CtTypeReference<?> superRef) {
-		if (superRef.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption()) {
+		if (useLegacyTypeAdaption(superRef)) {
 			if (startMethod != null) {
 				return new MethodTypingContext()
 					.setClassTypingContext(getOldClassTypingContext())
@@ -461,8 +467,8 @@ public class TypeAdaptor {
 	 *
 	 * @param superType the super type to adapt
 	 * @return the adapted type
-	 * @see #adaptType(CtTypeReference)
 	 * @implNote this implementation just delegates to {@code adaptType(superType.getReference());}
+	 * @see #adaptType(CtTypeReference)
 	 */
 	public CtTypeReference<?> adaptType(CtType<?> superType) {
 		return adaptType(superType.getReference());
