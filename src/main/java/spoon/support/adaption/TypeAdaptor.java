@@ -187,10 +187,7 @@ public class TypeAdaptor {
 	@SuppressWarnings("unchecked")
 	public CtMethod<?> adaptMethod(CtMethod<?> inputMethod) {
 		if (useLegacyTypeAdaption(inputMethod)) {
-			return (CtMethod<?>) new MethodTypingContext()
-				.setClassTypingContext(getOldClassTypingContext())
-				.setMethod(inputMethod)
-				.getAdaptationScope();
+			return legacyAdaptMethod(inputMethod);
 		}
 		CtMethod<?> clonedMethod = inputMethod.clone();
 
@@ -232,6 +229,13 @@ public class TypeAdaptor {
 		clonedMethod.setThrownTypes(newThrownTypes);
 
 		return clonedMethod.setParent(hierarchyStart);
+	}
+
+	private CtMethod<?> legacyAdaptMethod(CtMethod<?> inputMethod) {
+		return (CtMethod<?>) new MethodTypingContext()
+			.setClassTypingContext(getOldClassTypingContext())
+			.setMethod(inputMethod)
+			.getAdaptationScope();
 	}
 
 	private ClassTypingContext getOldClassTypingContext() {
@@ -424,13 +428,7 @@ public class TypeAdaptor {
 	 */
 	public CtTypeReference<?> adaptType(CtTypeReference<?> superRef) {
 		if (useLegacyTypeAdaption(superRef)) {
-			if (startMethod != null) {
-				return new MethodTypingContext()
-					.setClassTypingContext(getOldClassTypingContext())
-					.setMethod(startMethod)
-					.adaptType(superRef);
-			}
-			return getOldClassTypingContext().adaptType(superRef);
+			return legacyAdaptType(superRef);
 		}
 
 		// We are already in the same scope, just return super ref unchanged
@@ -462,6 +460,16 @@ public class TypeAdaptor {
 		return AdaptionVisitor.adapt(superRef, hierarchy);
 	}
 
+	private CtTypeReference<?> legacyAdaptType(CtTypeReference<?> superRef) {
+		if (startMethod != null) {
+			return new MethodTypingContext()
+				.setClassTypingContext(getOldClassTypingContext())
+				.setMethod(startMethod)
+				.adaptType(superRef);
+		}
+		return getOldClassTypingContext().adaptType(superRef);
+	}
+
 	/**
 	 * Adapts a type from a supertype to the context of this adaptor.
 	 *
@@ -475,7 +483,6 @@ public class TypeAdaptor {
 	}
 
 	private Optional<CtTypeReference<?>> adaptBetweenMethods(CtTypeReference<?> superRef) {
-		// If the start method is null or the decla
 		if (startMethod == null) {
 			return Optional.empty();
 		}
