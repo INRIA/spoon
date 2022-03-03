@@ -121,7 +121,7 @@ public class TypeAdaptor {
 	 */
 	@SuppressWarnings("removal")
 	private static boolean useLegacyTypeAdaption(FactoryAccessor element) {
-		return element.getFactory().getEnvironment().useOldAndSoonDeprecatedClassContextTypeAdaption();
+		return element.getFactory().getEnvironment().useLegacyTypeAdaption();
 	}
 
 	/**

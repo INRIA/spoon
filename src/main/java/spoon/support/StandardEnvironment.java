@@ -125,7 +125,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private CompressionType compressionType = CompressionType.GZIP;
 
-	private boolean useOldAndSoonDeprecatedClassContextTypeAdaption;
+	private boolean useLegacyTypeAdaption;
 
 	private boolean ignoreDuplicateDeclarations = false;
 
@@ -724,14 +724,14 @@ private transient  ClassLoader inputClassloader;
 
 	@SuppressWarnings("removal")
 	@Override
-	public boolean useOldAndSoonDeprecatedClassContextTypeAdaption() {
-		return useOldAndSoonDeprecatedClassContextTypeAdaption;
+	public boolean useLegacyTypeAdaption() {
+		return useLegacyTypeAdaption;
 	}
 
 	@SuppressWarnings("removal")
 	@Override
-	public void setUseOldAndSoonDeprecatedClassContextTypeAdaption(boolean useOldAndSoonDeprecatedClassContextTypeAdaption) {
-		this.useOldAndSoonDeprecatedClassContextTypeAdaption = useOldAndSoonDeprecatedClassContextTypeAdaption;
+	public void setUseLegacyTypeAdaption(boolean useLegacyTypeAdaption) {
+		this.useLegacyTypeAdaption = useLegacyTypeAdaption;
 	}
 
 	@Override
