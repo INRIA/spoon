@@ -2,15 +2,11 @@
 
 This module allow to build both the controlflow and the dataflow graphs of a java program based on its spoon AST.
 
-To use it with maven, add the following dependency to your pom.xml
-
-```xml
-    <dependency>
-        <groupId>fr.inria.gforge.spoon</groupId>
-        <artifactId>spoon-control-flow</artifactId>
-        <version>0.0.2</version>
-    </dependency>
+spoon-control-flow is not currently deployed on Maven Central. It can be used by building from source. ```cd``` into the spoon-control-flow directory, and execute:
 ```
+mvn package
+```
+This will generate the JAR files in the target directory
 
 ### Control flow
 
