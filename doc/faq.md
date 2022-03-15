@@ -78,7 +78,3 @@ final String[] builder = new JDTBuilderImpl() //
 		.sources(new SourceOptions().sources(".")) //
 		.build();
 ```
-
-#### What does launcher.prettyprint() do? It returns void, although I expected it to return a String representation of the model.
-```launcher.prettyprint``` prints the model (could be transformed or not) in an output directory which one can set up with ```launcher.setSourceOutputDirectory()``` (there is a default one too). If you want the output in the STDOUT, use toString method defined for every CtElement. It will first get the prettyprinter from the environment and return the result.
-Source: https://github.com/INRIA/spoon/issues/4274
