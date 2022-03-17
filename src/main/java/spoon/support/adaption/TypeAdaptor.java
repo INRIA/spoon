@@ -593,7 +593,7 @@ public class TypeAdaptor {
 		CtType<?> end,
 		Map<CtTypeReference<?>, Node> nodeMap
 	) {
-		Node node = nodeMap.computeIfAbsent(start, adaptor -> Node.forReference(adaptor));
+		Node node = nodeMap.computeIfAbsent(start, Node::forReference);
 
 		if (!start.getActualTypeArguments().isEmpty()) {
 			// If we found a reference with actual type arguments we build the hierarchy for the declaring

@@ -588,6 +588,7 @@ public interface Environment {
 	 *
 	 * @return true if spoon uses the old and (soon to be) deprecated type adaption.
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(forRemoval = true, since = "10.0.1")
 	boolean useLegacyTypeAdaption();
 
