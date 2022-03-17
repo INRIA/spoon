@@ -7,37 +7,70 @@
  */
 package spoon.support.adaption;
 
-import java.util.List;
-import java.util.Optional;
 import spoon.SpoonException;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
-class DeclarationNode extends Node {
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+
+import static spoon.support.adaption.NodePrintHelper.quote;
+
+class DeclarationNode {
 
 	private final List<CtTypeParameter> formalArguments;
+	private final CtTypeReference<?> inducedBy;
+	private final Set<GlueNode> lowerNodes;
 
-	protected DeclarationNode(CtTypeReference<?> inducedBy, List<CtTypeParameter> formalArguments) {
-		super(inducedBy);
-		this.formalArguments = formalArguments;
+	protected DeclarationNode(CtTypeReference<?> inducedBy) {
+		this.inducedBy = inducedBy;
+		this.formalArguments = inducedBy.getTypeDeclaration().getFormalCtTypeParameters();
+
+		this.lowerNodes = new HashSet<>();
 	}
 
-	@Override
-	public boolean isGlueNode() {
-		return false;
+	/**
+	 * Adds a glue node as a child of this declaration node.
+	 *
+	 * @param node the node to add as a child
+	 */
+	public void addLower(GlueNode node) {
+		lowerNodes.add(node);
 	}
 
-	@Override
+	/**
+	 * Checks if this node is induced by the passed type.
+	 *
+	 * @param type the type to check against
+	 * @return true if the qualified names match and this node is induced by the passed type
+	 */
+	public boolean inducedBy(CtType<?> type) {
+		return inducedBy.getQualifiedName().equals(type.getQualifiedName());
+	}
+
+	/**
+	 * Resolves a type parameter within this node's hierarchy. This is done by walking down the chain
+	 * until we encounter a concrete type or reach the end. If we can not find a mapping, empty is
+	 * returned. If we can't find the declaration for a formal parameter however, an exception is
+	 * thrown as type resolution is longer possible.
+	 *
+	 * @param reference the reference to resolve
+	 * @return the resolved reference if found
+	 */
 	public Optional<CtTypeReference<?>> resolveTypeParameter(CtTypeParameterReference reference) {
 		String name = reference.getSimpleName();
 
 		// We try to find a glue node below us to delegate to. Glue nodes do the mapping so we can just
 		// pass it on unchanged.
-		Optional<Node> glueNode = lowerNodes.stream()
-				.filter(it -> it.inducedBy.getQualifiedName().equals(this.inducedBy.getQualifiedName()))
-				.findFirst();
+		Optional<GlueNode> glueNode = lowerNodes.stream()
+			.filter(it -> it.isInducedBy(this.inducedBy))
+			.findFirst();
 
 		if (glueNode.isPresent()) {
 			return glueNode.get().resolveTypeParameter(reference);
@@ -46,18 +79,18 @@ class DeclarationNode extends Node {
 		// If we have no glue node, we need to actually resolve the type parameter as we reached the
 		// end of the chain.
 		Optional<CtTypeReference<?>> foo = formalArguments.stream()
-				.filter(it -> it.getSimpleName().equals(name))
-				.findFirst()
-				.map(CtTypeParameter::getReference)
-				.or(() -> findTypeParameterByName(name))
-				.map(it -> it);
+			.filter(it -> it.getSimpleName().equals(name))
+			.findFirst()
+			.map(CtTypeParameter::getReference)
+			.or(() -> findTypeParameterByName(name))
+			.map(it -> it);
 		if (foo.isPresent()) {
 			return foo;
 		}
 		throw new SpoonException(
-				"Could not find declaration of formal type parameter" + name
-						+ " in " + formalArguments
-						+ " for " + inducedBy
+			"Could not find declaration of formal type parameter" + name
+				+ " in " + formalArguments
+				+ " for " + inducedBy
 		);
 	}
 
@@ -72,10 +105,10 @@ class DeclarationNode extends Node {
 		CtType<?> currentType = inducedBy.getTypeDeclaration();
 		while (currentType != null) {
 			Optional<CtTypeParameterReference> parameter = currentType.getFormalCtTypeParameters()
-					.stream()
-					.filter(it -> it.getSimpleName().equals(name))
-					.map(CtTypeParameter::getReference)
-					.findFirst();
+				.stream()
+				.filter(it -> it.getSimpleName().equals(name))
+				.map(CtTypeParameter::getReference)
+				.findFirst();
 
 			if (parameter.isPresent()) {
 				return parameter;
@@ -87,7 +120,24 @@ class DeclarationNode extends Node {
 	}
 
 	@Override
-	protected String argumentsForToString() {
-		return "\"Formal\": " + quote(formalArguments);
+	public String toString() {
+		String result = "{\n";
+		result += "  " + quote("String") + ": " + quote(inducedBy.getQualifiedName()) + ",\n";
+		result += "  " + quote("Formal") + ": " + quote(formalArguments);
+
+		if (!lowerNodes.isEmpty()) {
+			result += ",\n  [\n";
+			StringJoiner children = new StringJoiner("\n");
+			for (GlueNode node : lowerNodes) {
+				children.add(node.toString());
+			}
+			result += children.toString().lines().map(it -> "    " + it).collect(Collectors.joining("\n")) + "\n";
+			result += "  ]\n";
+		} else {
+			result += "\n";
+		}
+
+		result += "}";
+		return result;
 	}
 }

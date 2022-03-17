@@ -7,28 +7,66 @@
  */
 package spoon.support.adaption;
 
-import java.util.List;
-import java.util.Optional;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
-class GlueNode extends Node {
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+
+import static spoon.support.adaption.NodePrintHelper.quote;
+
+class GlueNode {
 
 	private final List<CtTypeReference<?>> actualArguments;
+	private final CtTypeReference<?> inducedBy;
+	private final Set<DeclarationNode> lowerNodes;
 
-	protected GlueNode(CtTypeReference<?> inducedBy, List<CtTypeReference<?>> actualArguments) {
-		super(inducedBy);
-		this.actualArguments = actualArguments;
+	/**
+	 * Creates a new glue node for the given reference.
+	 *
+	 * @param inducedBy the reference this node is built from
+	 */
+	public GlueNode(CtTypeReference<?> inducedBy) {
+		this.inducedBy = inducedBy;
+		this.actualArguments = inducedBy.getActualTypeArguments();
+
+		this.lowerNodes = new HashSet<>();
 	}
 
-	@Override
-	public boolean isGlueNode() {
-		return true;
+	/**
+	 * Adds a declaration node as a child of this glue node.
+	 *
+	 * @param node the node to add as a child
+	 */
+	public void addLower(DeclarationNode node) {
+		lowerNodes.add(node);
 	}
 
-	@Override
+	/**
+	 * Checks whether this glue node is induced by the same type as the passed reference. Does not compare type arguments.
+	 *
+	 * @param reference the reference to check against
+	 * @return true if this glue node is induced by the same type as the passed reference
+	 */
+	public boolean isInducedBy(CtTypeReference<?> reference) {
+		return reference.getQualifiedName().equals(inducedBy.getQualifiedName());
+	}
+
+	/**
+	 * Resolves a type parameter within this node's hierarchy. This is done by walking down the chain
+	 * until we encounter a concrete type or reach the end. If we can not find a mapping, empty is
+	 * returned. If we can't find the declaration for a formal parameter however, an exception is
+	 * thrown as type resolution is longer possible.
+	 *
+	 * @param reference the reference to resolve
+	 * @return the resolved reference if found
+	 */
 	public Optional<CtTypeReference<?>> resolveTypeParameter(CtTypeParameterReference reference) {
 		String name = reference.getSimpleName();
 
@@ -39,6 +77,11 @@ class GlueNode extends Node {
 
 			if (!parameter.getSimpleName().equals(name)) {
 				continue;
+			}
+
+			// We were used as a rawtype. Redirect queries to java.lang.Object.
+			if (actualArguments.isEmpty()) {
+				return Optional.of(reference.getFactory().Class().get(Object.class).getReference());
 			}
 
 			CtTypeReference<?> actualArgument = actualArguments.get(i);
@@ -55,7 +98,24 @@ class GlueNode extends Node {
 	}
 
 	@Override
-	protected String argumentsForToString() {
-		return "\"Actual\": " + quote(actualArguments);
+	public String toString() {
+		String result = "{\n";
+		result += "  " + quote("String") + ": " + quote(inducedBy.getQualifiedName()) + ",\n";
+		result += "  " + quote("Actual") + ": " + quote(actualArguments);
+
+		if (!lowerNodes.isEmpty()) {
+			result += ",\n  [\n";
+			StringJoiner children = new StringJoiner(",\n");
+			for (DeclarationNode node : lowerNodes) {
+				children.add(node.toString());
+			}
+			result += children.toString().lines().map(it -> "    " + it).collect(Collectors.joining("\n")) + "\n";
+			result += "  ]\n";
+		} else {
+			result += "\n";
+		}
+
+		result += "}";
+		return result;
 	}
 }

@@ -24,10 +24,10 @@ import java.util.stream.Collectors;
  */
 class AdaptionVisitor extends CtAbstractVisitor {
 
-	private final Node hierarchy;
+	private final DeclarationNode hierarchy;
 	private CtTypeReference<?> result;
 
-	private AdaptionVisitor(Node hierarchy) {
+	private AdaptionVisitor(DeclarationNode hierarchy) {
 		this.hierarchy = hierarchy;
 	}
 
@@ -76,7 +76,7 @@ class AdaptionVisitor extends CtAbstractVisitor {
 	 * @param hierarchy the hierarchy to adapt within
 	 * @return the adapted reference
 	 */
-	public static CtTypeReference<?> adapt(CtTypeReference<?> reference, Node hierarchy) {
+	public static CtTypeReference<?> adapt(CtTypeReference<?> reference, DeclarationNode hierarchy) {
 		if (!reference.isGenerics()) {
 			return reference.clone();
 		}

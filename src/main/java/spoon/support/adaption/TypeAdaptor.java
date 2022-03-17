@@ -452,7 +452,7 @@ public class TypeAdaptor {
 			return adaptedBetweenMethods.get();
 		}
 
-		Node hierarchy = buildHierarchyFrom(hierarchyStartReference, hierarchyStart, superRef);
+		DeclarationNode hierarchy = buildHierarchyFrom(hierarchyStartReference, hierarchyStart, superRef);
 
 		if (hierarchy == null) {
 			hierarchy = buildHierarchyFrom(
@@ -539,22 +539,26 @@ public class TypeAdaptor {
 		return Optional.of((CtMethod<?>) parent);
 	}
 
-	private Node buildHierarchyFrom(CtTypeReference<?> startReference, CtType<?> startType,
-									CtTypeReference<?> end) {
+	private DeclarationNode buildHierarchyFrom(CtTypeReference<?> startReference, CtType<?> startType,
+											   CtTypeReference<?> end) {
 		CtType<?> endType = findDeclaringType(end);
-		Map<CtTypeReference<?>, Node> nodeMap = new HashMap<>();
-		buildHierarchyFrom(startType.getReference(), endType, nodeMap);
+		Map<CtTypeReference<?>, DeclarationNode> declarationNodes = new HashMap<>();
 
-		// Ensure we can resolve type parameters that are resolved within the start reference: Translating the "X" in
-		// "List<X>" for a start reference of "List<String>" should return String.
+		DeclarationNode root = buildDeclarationHierarchyFrom(
+			startType.getReference(),
+			endType,
+			new HashMap<>(),
+			declarationNodes
+		);
+
 		if (!startReference.getActualTypeArguments().isEmpty()) {
-			nodeMap.get(startType.getReference())
-				.addLower(Node.forReference(startReference));
+			// Ensure we can resolve type parameters that are resolved within the start reference: Translating the "X" in
+			// "List<X>" for a start reference of "List<String>" should return String.
+			root.addLower(new GlueNode(startReference));
 		}
 
-		return nodeMap.values().stream()
-			.filter(it -> it.getInducedQualifiedName().equals(endType.getQualifiedName()))
-			.filter(Node::isDeclarationNode)
+		return declarationNodes.values().stream()
+			.filter(it -> it.inducedBy(endType))
 			.findFirst()
 			.orElse(null);
 	}
@@ -590,19 +594,16 @@ public class TypeAdaptor {
 		return type;
 	}
 
-	private Node buildHierarchyFrom(
+	private DeclarationNode buildDeclarationHierarchyFrom(
 		CtTypeReference<?> start,
 		CtType<?> end,
-		Map<CtTypeReference<?>, Node> nodeMap
+		Map<CtTypeReference<?>, GlueNode> glueNodes,
+		Map<CtTypeReference<?>, DeclarationNode> declarationNodes
 	) {
-		Node node = nodeMap.computeIfAbsent(start, Node::forReference);
+		DeclarationNode node = declarationNodes.computeIfAbsent(start, DeclarationNode::new);
 
 		if (!start.getActualTypeArguments().isEmpty()) {
-			// If we found a reference with actual type arguments we build the hierarchy for the declaring
-			// type and add ourselves as a glue node below.
-			buildHierarchyFrom(start.getTypeDeclaration().getReference(), end, nodeMap)
-				.addLower(node);
-			return node;
+			throw new RuntimeException("Wat? Why declaration then?");
 		}
 
 		if (end.getQualifiedName().equals(start.getQualifiedName())) {
@@ -610,11 +611,29 @@ public class TypeAdaptor {
 		}
 
 		if (start.getSuperclass() != null) {
-			buildHierarchyFrom(start.getSuperclass(), end, nodeMap)
+			buildGlueHierarchyFrom(start.getSuperclass(), end, glueNodes, declarationNodes)
 				.addLower(node);
 		}
 		for (CtTypeReference<?> superInterface : start.getSuperInterfaces()) {
-			buildHierarchyFrom(superInterface, end, nodeMap)
+			buildGlueHierarchyFrom(superInterface, end, glueNodes, declarationNodes)
+				.addLower(node);
+		}
+
+		return node;
+	}
+
+	private GlueNode buildGlueHierarchyFrom(
+		CtTypeReference<?> start,
+		CtType<?> end,
+		Map<CtTypeReference<?>, GlueNode> glueNodes,
+		Map<CtTypeReference<?>, DeclarationNode> declarationNodes
+	) {
+		GlueNode node = glueNodes.computeIfAbsent(start, GlueNode::new);
+
+		CtType<?> typeDeclaration = start.getTypeDeclaration();
+		if (typeDeclaration != null) {
+			// Might be null if running on no-classpath mode
+			buildDeclarationHierarchyFrom(typeDeclaration.getReference(), end, glueNodes, declarationNodes)
 				.addLower(node);
 		}
 
