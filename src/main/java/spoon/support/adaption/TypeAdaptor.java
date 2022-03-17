@@ -545,6 +545,8 @@ public class TypeAdaptor {
 		Map<CtTypeReference<?>, Node> nodeMap = new HashMap<>();
 		buildHierarchyFrom(startType.getReference(), endType, nodeMap);
 
+		// Ensure we can resolve type parameters that are resolved within the start reference: Translating the "X" in
+		// "List<X>" for a start reference of "List<String>" should return String.
 		if (!startReference.getActualTypeArguments().isEmpty()) {
 			nodeMap.get(startType.getReference())
 				.addLower(Node.forReference(startReference));

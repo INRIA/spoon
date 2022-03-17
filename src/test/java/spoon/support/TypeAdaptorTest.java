@@ -64,6 +64,19 @@ class TypeAdaptorTest {
 	}
 
 	@Test
+	void testAdaptToTypeInStartReference() {
+		Factory factory = new Launcher().getFactory();
+		CtType<?> list = factory.Type().get(List.class);
+		CtClass<?> string = factory.Class().get(String.class);
+
+		CtTypeReference<?> listReference = list.getReference();
+		listReference.setActualTypeArguments(List.of(string.getReference()));
+
+		assertThat(new TypeAdaptor(listReference).adaptType(list.getFormalCtTypeParameters().get(0)))
+			.isEqualTo(string.getReference());
+	}
+
+	@Test
 	void testAdaptTypeGenericRename() {
 		Factory factory = new Launcher().getFactory();
 		CtType<?> top = factory.Type().get(GenericRenameTop.class);
