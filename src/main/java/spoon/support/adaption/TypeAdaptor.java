@@ -540,7 +540,7 @@ public class TypeAdaptor {
 	}
 
 	private DeclarationNode buildHierarchyFrom(CtTypeReference<?> startReference, CtType<?> startType,
-											   CtTypeReference<?> end) {
+		CtTypeReference<?> end) {
 		CtType<?> endType = findDeclaringType(end);
 		Map<CtTypeReference<?>, DeclarationNode> declarationNodes = new HashMap<>();
 

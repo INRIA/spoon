@@ -32,7 +32,7 @@ class GlueNode {
 	 *
 	 * @param inducedBy the reference this node is built from
 	 */
-	public GlueNode(CtTypeReference<?> inducedBy) {
+	GlueNode(CtTypeReference<?> inducedBy) {
 		this.inducedBy = inducedBy;
 		this.actualArguments = inducedBy.getActualTypeArguments();
 
