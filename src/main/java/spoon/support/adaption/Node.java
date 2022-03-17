@@ -92,11 +92,9 @@ abstract class Node {
 
 	protected final CtTypeReference<?> inducedBy;
 	protected final Set<Node> lowerNodes;
-	protected final TypeAdaptor typeAdaptor;
 
-	protected Node(CtTypeReference<?> inducedBy, TypeAdaptor typeAdaptor) {
+	protected Node(CtTypeReference<?> inducedBy) {
 		this.inducedBy = inducedBy;
-		this.typeAdaptor = typeAdaptor;
 		this.lowerNodes = new HashSet<>();
 	}
 
@@ -192,30 +190,28 @@ abstract class Node {
 	/**
 	 * Builds a new node for a given reference.
 	 *
-	 * @param adaptor the type adaptor to use for {@link #resolveTypeParameter(CtTypeParameterReference)}
 	 * @param reference the reference to build a node for
 	 * @return a node for the given reference
 	 */
-	public static Node forReference(TypeAdaptor adaptor, CtTypeReference<?> reference) {
+	public static Node forReference(CtTypeReference<?> reference) {
 		if (reference.getActualTypeArguments().isEmpty()) {
 			CtType<?> typeDeclaration = reference.getTypeDeclaration();
 			if (typeDeclaration == null) {
-				return forActual(adaptor, reference);
+				return forActual(reference);
 			}
-			return Node.forFormal(adaptor, typeDeclaration.getReference());
+			return Node.forFormal(typeDeclaration.getReference());
 		}
-		return Node.forActual(adaptor, reference);
+		return Node.forActual(reference);
 	}
 
-	private static Node forActual(TypeAdaptor adaptor, CtTypeReference<?> inducedBy) {
-		return new GlueNode(inducedBy, adaptor, inducedBy.getActualTypeArguments());
+	private static Node forActual(CtTypeReference<?> inducedBy) {
+		return new GlueNode(inducedBy, inducedBy.getActualTypeArguments());
 	}
 
-	private static Node forFormal(TypeAdaptor adaptor, CtTypeReference<?> inducedBy) {
+	private static Node forFormal(CtTypeReference<?> inducedBy) {
 		return new DeclarationNode(
 				inducedBy,
-				adaptor,
-				inducedBy.getTypeDeclaration().getFormalCtTypeParameters()
+			inducedBy.getTypeDeclaration().getFormalCtTypeParameters()
 		);
 	}
 }

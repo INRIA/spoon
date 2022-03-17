@@ -19,9 +19,8 @@ class DeclarationNode extends Node {
 
 	private final List<CtTypeParameter> formalArguments;
 
-	protected DeclarationNode(CtTypeReference<?> inducedBy, TypeAdaptor typeAdaptor,
-			List<CtTypeParameter> formalArguments) {
-		super(inducedBy, typeAdaptor);
+	protected DeclarationNode(CtTypeReference<?> inducedBy, List<CtTypeParameter> formalArguments) {
+		super(inducedBy);
 		this.formalArguments = formalArguments;
 	}
 

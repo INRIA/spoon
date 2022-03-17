@@ -18,9 +18,8 @@ class GlueNode extends Node {
 
 	private final List<CtTypeReference<?>> actualArguments;
 
-	protected GlueNode(CtTypeReference<?> inducedBy, TypeAdaptor typeAdaptor,
-			List<CtTypeReference<?>> actualArguments) {
-		super(inducedBy, typeAdaptor);
+	protected GlueNode(CtTypeReference<?> inducedBy, List<CtTypeReference<?>> actualArguments) {
+		super(inducedBy);
 		this.actualArguments = actualArguments;
 	}
 

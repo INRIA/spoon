@@ -547,7 +547,7 @@ public class TypeAdaptor {
 
 		if (!startReference.getActualTypeArguments().isEmpty()) {
 			nodeMap.get(startType.getReference())
-				.addLower(Node.forReference(this, startReference));
+				.addLower(Node.forReference(startReference));
 		}
 
 		return nodeMap.values().stream()
@@ -593,7 +593,7 @@ public class TypeAdaptor {
 		CtType<?> end,
 		Map<CtTypeReference<?>, Node> nodeMap
 	) {
-		Node node = nodeMap.computeIfAbsent(start, adaptor -> Node.forReference(this, adaptor));
+		Node node = nodeMap.computeIfAbsent(start, adaptor -> Node.forReference(adaptor));
 
 		if (!start.getActualTypeArguments().isEmpty()) {
 			// If we found a reference with actual type arguments we build the hierarchy for the declaring
