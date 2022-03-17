@@ -571,6 +571,8 @@ public class TypeAdaptor {
 			declarationNodes
 		);
 
+		// Ensure we can resolve type parameters that are resolved within the start reference: Translating the "X" in
+		// "List<X>" for a start reference of "List<String>" should return String.
 		if (!startReference.getActualTypeArguments().isEmpty()) {
 			// Ensure we can resolve type parameters that are resolved within the start reference: Translating the "X" in
 			// "List<X>" for a start reference of "List<String>" should return String.
