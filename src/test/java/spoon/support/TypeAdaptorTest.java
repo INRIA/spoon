@@ -8,6 +8,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.adaption.TypeAdaptor;
@@ -180,6 +181,28 @@ class TypeAdaptorTest {
 	interface MethodChild<R> extends MethodParent<R> {
 
 		<S> S foo(R t);
+	}
+
+	@Test
+	void testRawtypeToObject() {
+		Factory factory = new Launcher().getFactory();
+		CtType<?> top = factory.Type().get(RawTop.class);
+		CtType<?> bottom = factory.Type().get(RawBottom.class);
+		CtClass<?> object = factory.Class().get(Object.class);
+		CtTypeParameter topParameter = top.getFormalCtTypeParameters().get(0);
+
+		assertThat(new TypeAdaptor(bottom).adaptType(topParameter.getReference()))
+			.isEqualTo(object.getReference());
+	}
+
+	private static class RawTop<T> {
+	}
+
+	@SuppressWarnings("rawtypes")
+	private static class RawMiddle extends RawTop {
+	}
+
+	private static class RawBottom extends RawMiddle {
 	}
 
 	@ParameterizedTest
