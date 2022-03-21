@@ -80,4 +80,4 @@ final String[] builder = new JDTBuilderImpl() //
 ```
 
 #### What does `Launcher#prettyprint()` do?
-```launcher.prettyprint``` prints the model on disk. The model could have been transformed or not, and is saved in an output directory which one can set up with ```launcher.setSourceOutputDirectory()```. If you want the pretty-print to the standard output (console STDOUT), use method `toString` instead, defined for every CtElement. Reference: https://github.com/INRIA/spoon/issues/4274
+```launcher.prettyprint``` prints the model on disk. The model could have been transformed or not, and is saved in an output directory which one can set up with ```launcher.setSourceOutputDirectory()```. The default output directory is called `spooned`. If you want the pretty-print to the standard output (console STDOUT), use method `toString` instead, defined for every CtElement. Reference: https://github.com/INRIA/spoon/issues/4274
