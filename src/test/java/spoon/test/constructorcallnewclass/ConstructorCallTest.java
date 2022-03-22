@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -220,5 +220,17 @@ public class ConstructorCallTest {
 				model.getElements(element -> element.getExecutable().getType().getSimpleName().equals(simpleName));
 		assert calls.size() == 1;
 		return calls.get(0).getExecutable().getType();
+	}
+	
+	@Test
+	public void testConstructorCorrectTyped() {
+		// no constructorcall from the input has the simple object type in noclasspathmode
+		Launcher launcher = new Launcher();
+		launcher.getEnvironment().setNoClasspath(true);
+		launcher.addInputResource("./src/test/resources/constructorcall-type/TestHttpStub.java");
+		CtModel model = launcher.buildModel();
+		for (CtConstructorCall<?> ctConstructorCall : model.getElements(new TypeFilter<>(CtConstructorCall.class))) {
+			assertThat(ctConstructorCall.getType(), CoreMatchers.not(ctConstructorCall.getFactory().Type().objectType()));
+		}
 	}
 }
