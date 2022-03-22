@@ -182,3 +182,5 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
       - name: check build
         run: mvn clean install -Dskip="jacoco-maven-plugin:check" -DskipTests=true && mvn clean verify artifact:compare -Dskip="jacoco-maven-plugin:check" -DskipTests=true
+      - name: check
+        run: diff target/reference/spoon-core-10.0.1-SNAPSHOT.buildinfo target/spoon-core-10.0.1-SNAPSHOT.buildinfo
