@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import spoon.Launcher;
@@ -42,6 +41,7 @@ import spoon.test.constructorcallnewclass.testclasses.Panini;
 
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -229,8 +229,10 @@ public class ConstructorCallTest {
 		launcher.getEnvironment().setNoClasspath(true);
 		launcher.addInputResource("./src/test/resources/constructorcall-type/TestHttpStub.java");
 		CtModel model = launcher.buildModel();
-		for (CtConstructorCall<?> ctConstructorCall : model.getElements(new TypeFilter<>(CtConstructorCall.class))) {
-			assertThat(ctConstructorCall.getType(), CoreMatchers.not(ctConstructorCall.getFactory().Type().objectType()));
+		for (CtConstructorCall<?> ctConstructorCall : model
+				.getElements(new TypeFilter<>(CtConstructorCall.class))) {
+			assertThat(ctConstructorCall.getExecutable().getType().getSimpleName(), not(equalTo("Object")));
+			assertThat(ctConstructorCall.getType(), not(ctConstructorCall.getFactory().Type().objectType()));
 		}
 	}
 }
