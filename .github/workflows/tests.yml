@@ -180,13 +180,5 @@ jobs:
         with:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}
-      - name: Use Maven dependency cache
-        uses: actions/cache@937d24475381cd9c75ae6db12cb4e79714b926ed # renovate: tag=v2.1.7
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-maven-
-      - name: install build
-        run: mvn clean install -Dskip="jacoco-maven-plugin:check"    
       - name: check build
-        run: mvn clean verify artifact:compare -Dskip="jacoco-maven-plugin:check"
+        run: mvn clean install -Dskip="jacoco-maven-plugin:check" && mvn clean verify artifact:compare
