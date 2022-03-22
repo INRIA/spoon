@@ -181,4 +181,4 @@ jobs:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}
       - name: check build
-        run: mvn clean install -Dskip="jacoco-maven-plugin:check" && mvn clean verify artifact:compare
+        run: mvn clean install -Dskip="jacoco-maven-plugin:check" -DskipTests=true && mvn clean verify artifact:compare -Dskip="jacoco-maven-plugin:check" -DskipTests=true
