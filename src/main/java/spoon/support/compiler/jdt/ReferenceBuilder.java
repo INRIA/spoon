@@ -452,6 +452,8 @@ public class ReferenceBuilder {
 			// in some cases the binding is not null but points wrong to object type see #4643
 			if (ref.getType().equals(ref.getFactory().Type().objectType()) && allocationExpression.resolvedType != null) {
 				ref.setType(getTypeReference(allocationExpression.resolvedType));
+				ref.getExecutableDeclaration().setType(getTypeReference(allocationExpression.resolvedType));
+				ref.setDeclaringType(getTypeReference(allocationExpression.resolvedType));
 			}
 		} else {
 			ref = jdtTreeBuilder.getFactory().Core().createExecutableReference();
