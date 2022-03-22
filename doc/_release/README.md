@@ -1,4 +1,14 @@
-# How to release Spoon?
+# Spoon Releases
+
+## Versioning
+
+Spoon uses a three digit version number MAJOR.MINOR.HOTPATCH
+
+* we bump MAJOR when there is a big new feature or a strongly breaking change
+* we bump HOTPATCH when a normal release is not operational
+* we bump MINOR in the remaining cases (the majority of cases)
+
+## Release reference documentation
 
 This article is a short summary of the [official documentation of sonatype](http://central.sonatype.org/pages/ossrh-guide.html), an [article by yegor](http://www.yegor256.com/2014/08/19/how-to-release-to-maven-central.html) and [official documentation of maven release plugin](http://maven.apache.org/maven-release/maven-release-plugin/).
 
