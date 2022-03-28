@@ -2,11 +2,11 @@
 
 ## Versioning
 
-Spoon uses a three digit version number MAJOR.MINOR.HOTPATCH
+Spoon uses a three digit version number MAJOR.MINOR.HOTPATCH. We follow semantic versioning with the exception that we may increment the major version number for significant new features even when there are no breaking changes
 
 * we bump MAJOR when there is a big new feature or a strongly breaking change. We use it mostly for new features since we take special care to backward compatibility.
-* we bump HOTPATCH when a normal release is not operational.
 * we bump MINOR in the remaining cases (the majority of cases).
+* we bump HOTPATCH when a normal release is not operational.
 
 ## Release reference documentation
 
