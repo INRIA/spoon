@@ -227,7 +227,7 @@
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
-            <version>2.6</version>
+            <version>3.3.0</version>
             <configuration>
                 <archive>
                     <manifest>
@@ -248,7 +248,7 @@
                     <id>make-assembly</id><!-- this is used for inheritance merges -->
                     <phase>package</phase><!-- append to the packaging phase. -->
                     <goals>
-                        <goal>attached</goal><!-- goals == mojos -->
+                        <goal>single</goal><!-- goals == mojos -->
                     </goals>
                 </execution>
             </executions>
