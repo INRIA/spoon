@@ -53,7 +53,7 @@ public class SourceOptions<T extends SourceOptions<T>> extends Options<T> {
 					File file = File.createTempFile(source.getName(), ".java");
 					file.deleteOnExit();
 					try (FileOutputStream fileOutputStream = new FileOutputStream(file);
-						 InputStream content = source.getContent()) {
+							InputStream content = source.getContent()) {
 						content.transferTo(fileOutputStream);
 					}
 					args.add(file.toString());
