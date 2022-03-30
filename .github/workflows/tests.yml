@@ -48,7 +48,7 @@ jobs:
         run: echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
         shell: bash
       - name: Use Maven dependency cache
-        uses: actions/cache@4b0cf6cc4619e737324ddfcec08fff2413359514 # tag=v3.0.0
+        uses: actions/cache@136d96b4aee02b1f0de3ba493b1d47135042d9c0 # tag=v3.0.1
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
@@ -85,7 +85,7 @@ jobs:
         run: echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
         shell: bash
       - name: Use Maven dependency cache
-        uses: actions/cache@4b0cf6cc4619e737324ddfcec08fff2413359514 # tag=v3.0.0
+        uses: actions/cache@136d96b4aee02b1f0de3ba493b1d47135042d9c0 # tag=v3.0.1
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
@@ -124,7 +124,7 @@ jobs:
         run: echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
         shell: bash
       - name: Use Maven dependency cache
-        uses: actions/cache@4b0cf6cc4619e737324ddfcec08fff2413359514 # tag=v3.0.0
+        uses: actions/cache@136d96b4aee02b1f0de3ba493b1d47135042d9c0 # tag=v3.0.1
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('**/pom.xml') }}
