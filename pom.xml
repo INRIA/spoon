@@ -41,6 +41,9 @@
     <sonar.coverage.exclusions>
         **/support/gui/*
     </sonar.coverage.exclusions>
+	  
+	    <sonar.organization>warpspeedscp</sonar.organization>
+  <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
   </properties>
 
