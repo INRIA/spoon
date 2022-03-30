@@ -7,7 +7,6 @@
  */
 package spoon.support.compiler.jdt;
 
-import org.apache.commons.io.output.NullOutputStream;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.core.compiler.CompilationProgress;
@@ -50,7 +49,7 @@ public class JDTBatchCompiler extends org.eclipse.jdt.internal.compiler.batch.Ma
 		// by default we don't want anything from JDT
 		// the reports are sent with callbakcs to the reporter
 		// for debuggging, you may use System.out/err instead
-		this(jdtCompiler, new NullOutputStream(), new NullOutputStream());
+		this(jdtCompiler, OutputStream.nullOutputStream(), OutputStream.nullOutputStream());
 	}
 
 	JDTBatchCompiler(JDTBasedSpoonCompiler jdtCompiler, OutputStream outWriter, OutputStream errWriter) {
