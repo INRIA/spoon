@@ -57,17 +57,12 @@ public class ZipFolder implements SpoonFolder {
 		// Indexing content
 		if (files == null) {
 			files = new ArrayList<>();
-			final int buffer = 2048;
 			try (ZipInputStream zipInput = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)));
-				ByteArrayOutputStream output = new ByteArrayOutputStream(buffer)) {
+				ByteArrayOutputStream output = new ByteArrayOutputStream(2048)) {
+
 				ZipEntry entry;
 				while ((entry = zipInput.getNextEntry()) != null) {
-					// deflate in buffer
-					int count;
-					byte[] data = new byte[buffer];
-					while ((count = zipInput.read(data, 0, buffer)) != -1) {
-						output.write(data, 0, count);
-					}
+					zipInput.transferTo(output);
 					files.add(new ZipFile(this, entry.getName(), output.toByteArray()));
 					output.reset();
 				}
@@ -177,17 +172,11 @@ public class ZipFolder implements SpoonFolder {
 					continue;
 				}
 				// deflate in buffer
-				final int buffer = 2048;
 				// Force parent directory creation, sometimes directory was not yet handled
 				f.getParentFile().mkdirs();
 				// in the zip entry iteration
 				try (OutputStream output = new BufferedOutputStream(new FileOutputStream(f))) {
-					int count;
-					byte[] data = new byte[buffer];
-					while ((count = zipInput.read(data, 0, buffer)) != -1) {
-						output.write(data, 0, count);
-					}
-					output.flush();
+					zipInput.transferTo(output);
 				}
 			}
 		} catch (Exception e) {

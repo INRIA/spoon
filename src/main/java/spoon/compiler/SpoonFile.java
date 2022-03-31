@@ -7,7 +7,6 @@
  */
 package spoon.compiler;
 
-import org.apache.commons.io.IOUtils;
 import spoon.SpoonException;
 
 import java.io.ByteArrayOutputStream;
@@ -47,7 +46,7 @@ public interface SpoonFile extends SpoonResource {
 		byte[] bytes;
 		try (InputStream contentStream = getContent()) {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			IOUtils.copy(contentStream, outputStream);
+			contentStream.transferTo(outputStream);
 			bytes = outputStream.toByteArray();
 		} catch (IOException e) {
 			throw new SpoonException(e);
