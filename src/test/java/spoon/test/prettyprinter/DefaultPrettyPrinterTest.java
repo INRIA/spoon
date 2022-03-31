@@ -17,11 +17,8 @@
 package spoon.test.prettyprinter;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
-import org.apache.maven.model.Profile;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
@@ -36,13 +33,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import spoon.Launcher;
-import spoon.MavenLauncher;
-import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonResource;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.pattern.Match;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtConstructorCall;
@@ -70,11 +64,12 @@ import spoon.testing.utils.LineSeperatorExtension;
 import spoon.testing.utils.ModelUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -352,7 +347,7 @@ public class DefaultPrettyPrinterTest {
 		assertTrue(javaFile.exists());
 
 		assertEquals("package foo;" + nl + "class Bar {}",
-				IOUtils.toString(new FileInputStream(javaFile), "UTF-8"));
+				Files.readString(javaFile.toPath(), StandardCharsets.UTF_8));
 	}
 
 	@Test
