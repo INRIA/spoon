@@ -298,7 +298,7 @@
                 <goal>depclean</goal>
               </goals>
              <configuration>
-                <ignoreDependencies>org.kohsuke.metainf-services:metainf-services:1.8:test</ignoreDependencies>
+                <ignoreDependencies>org.kohsuke.metainf-services:metainf-services:1.9:test</ignoreDependencies>
                <!-- the build fails if there are unused direct dependencies -->
                <failIfUnusedDirect>true</failIfUnusedDirect>
              </configuration>
