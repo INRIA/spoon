@@ -115,7 +115,7 @@ jobs:
         with:
           java-version: 17
           distribution: ${{ env.JAVA_DISTRIBUTION }}
-      - uses: actions/setup-python@0ebf233433c08fb9061af664d501c3f3ff0e9e20 # tag=v3.0.0
+      - uses: actions/setup-python@9c644ca2ab8e57ea0a487b5ec2f8290740378bfd # tag=v3.1.0
         with:
           python-version: 3.6
 
