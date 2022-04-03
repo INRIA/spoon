@@ -17,6 +17,7 @@
 package spoon.test.imports;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
@@ -1021,10 +1022,10 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testmportInCu() throws  Exception{
+	public void testmportInCu(@TempDir Path tempDir) throws  Exception{
 		// contract: auto-import works for compilation units with multiple classes
 		String[] options = {"--output-type", "compilationunits",
-				"--output", "target/testmportInCu", "--with-imports"};
+				"--output", tempDir.toString(), "--with-imports"};
 
 		String path = "spoon/test/prettyprinter/testclasses/A.java";
 
@@ -1033,7 +1034,7 @@ public class ImportTest {
 		launcher.addInputResource("./src/test/java/"+path);
 		launcher.run();
 
-		Path output = Path.of("target/testmportInCu/" + path);
+		Path output = tempDir.resolve(path);
 		String code = Files.readString(output);
 
 		// the ArrayList is imported and used in short mode
@@ -1044,9 +1045,6 @@ public class ImportTest {
 
 		// sanity check: the actual code
 		assertThat(code, containsString("ArrayList<String> list = new ArrayList<>()"));
-
-		// cleaning
-		Files.delete(output);
 	}
 
 	@Test
