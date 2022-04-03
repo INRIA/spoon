@@ -16,8 +16,8 @@
  */
 package spoon.test.imports;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
 import spoon.SpoonException;
 import spoon.SpoonModelBuilder;
@@ -75,11 +75,11 @@ import spoon.testing.utils.ModelUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1022,10 +1022,10 @@ public class ImportTest {
 	}
 
 	@Test
-	public void testmportInCu() throws  Exception{
+	public void testmportInCu(@TempDir Path tempDir) throws  Exception{
 		// contract: auto-import works for compilation units with multiple classes
 		String[] options = {"--output-type", "compilationunits",
-				"--output", "target/testmportInCu", "--with-imports"};
+				"--output", tempDir.toString(), "--with-imports"};
 
 		String path = "spoon/test/prettyprinter/testclasses/A.java";
 
@@ -1034,8 +1034,8 @@ public class ImportTest {
 		launcher.addInputResource("./src/test/java/"+path);
 		launcher.run();
 
-		File output = new File("target/testmportInCu/"+path);
-		String code = IOUtils.toString(new FileReader(output));
+		Path output = tempDir.resolve(path);
+		String code = Files.readString(output);
 
 		// the ArrayList is imported and used in short mode
 		assertThat(code, containsString("import java.util.ArrayList"));
@@ -1045,9 +1045,6 @@ public class ImportTest {
 
 		// sanity check: the actual code
 		assertThat(code, containsString("ArrayList<String> list = new ArrayList<>()"));
-
-		// cleaning
-		output.delete();
 	}
 
 	@Test
@@ -1061,16 +1058,15 @@ public class ImportTest {
 
 		canBeBuilt(outputDir, 7);
 
-		String pathA = "spoon/test/imports/testclasses/multiplecu/A.java";
-		String pathB = "spoon/test/imports/testclasses/multiplecu/B.java";
+		Path outputDirPath = Path.of(outputDir);
+		Path pathA = outputDirPath.resolve("spoon/test/imports/testclasses/multiplecu/A.java");
+		Path pathB = outputDirPath.resolve("spoon/test/imports/testclasses/multiplecu/B.java");
 
-		File outputA = new File(outputDir+"/"+pathA);
-		String codeA = IOUtils.toString(new FileReader(outputA));
+		String codeA = Files.readString(pathA);
 
 		assertThat(codeA, containsString("import java.util.List;"));
 
-		File outputB = new File(outputDir+"/"+pathB);
-		String codeB = IOUtils.toString(new FileReader(outputB));
+		String codeB = Files.readString(pathB);
 
 		assertThat(codeB, containsString("import java.awt.List;"));
 	}
