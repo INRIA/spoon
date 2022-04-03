@@ -64,36 +64,11 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.CtYieldStatement;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.CompoundSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtAnnotationMethod;
-import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtAnonymousExecutable;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtEnum;
-import spoon.reflect.declaration.CtEnumValue;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtImport;
-import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtModuleRequirement;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtPackageDeclaration;
-import spoon.reflect.declaration.CtPackageExport;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtProvidedService;
-import spoon.reflect.declaration.CtRecord;
-import spoon.reflect.declaration.CtRecordComponent;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.CtUsedService;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.SubFactory;
@@ -163,35 +138,11 @@ import spoon.support.reflect.code.CtVariableReadImpl;
 import spoon.support.reflect.code.CtVariableWriteImpl;
 import spoon.support.reflect.code.CtWhileImpl;
 import spoon.support.reflect.code.CtYieldStatementImpl;
-import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.position.BodyHolderSourcePositionImpl;
 import spoon.support.reflect.cu.position.CompoundSourcePositionImpl;
 import spoon.support.reflect.cu.position.DeclarationSourcePositionImpl;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
-import spoon.support.reflect.declaration.CtAnnotationImpl;
-import spoon.support.reflect.declaration.CtAnnotationMethodImpl;
-import spoon.support.reflect.declaration.CtAnnotationTypeImpl;
-import spoon.support.reflect.declaration.CtAnonymousExecutableImpl;
-import spoon.support.reflect.declaration.CtClassImpl;
-import spoon.support.reflect.declaration.CtConstructorImpl;
-import spoon.support.reflect.declaration.CtEnumImpl;
-import spoon.support.reflect.declaration.CtEnumValueImpl;
-import spoon.support.reflect.declaration.CtFieldImpl;
-import spoon.support.reflect.declaration.CtImportImpl;
-import spoon.support.reflect.declaration.CtInterfaceImpl;
-import spoon.support.reflect.declaration.CtMethodImpl;
-import spoon.support.reflect.declaration.CtModuleImpl;
-import spoon.support.reflect.declaration.CtModuleRequirementImpl;
-import spoon.support.reflect.declaration.CtPackageDeclarationImpl;
-import spoon.support.reflect.declaration.CtPackageExportImpl;
-import spoon.support.reflect.declaration.CtPackageImpl;
-import spoon.support.reflect.declaration.CtParameterImpl;
-import spoon.support.reflect.declaration.CtProvidedServiceImpl;
-import spoon.support.reflect.declaration.CtRecordComponentImpl;
-import spoon.support.reflect.declaration.CtRecordImpl;
-import spoon.support.reflect.declaration.CtTypeParameterImpl;
-import spoon.support.reflect.declaration.CtUsedServiceImpl;
-import spoon.support.reflect.declaration.InvisibleArrayConstructorImpl;
+import spoon.support.reflect.declaration.*;
 import spoon.support.reflect.reference.CtArrayTypeReferenceImpl;
 import spoon.support.reflect.reference.CtCatchVariableReferenceImpl;
 import spoon.support.reflect.reference.CtExecutableReferenceImpl;
@@ -786,28 +737,28 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	}
 
 	@Override
-	public SourcePosition createSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int[] lineSeparatorPositions) {
+	public SourcePosition createSourcePosition(CtCompilationUnit compilationUnit, int startSource, int end, int[] lineSeparatorPositions) {
 		return new SourcePositionImpl(compilationUnit, startSource, end, lineSeparatorPositions);
 	}
 
 	@Override
-	public SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit) {
-		return ((CompilationUnitImpl) compilationUnit).getOrCreatePartialSourcePosition();
+	public SourcePosition createPartialSourcePosition(CtCompilationUnit compilationUnit) {
+		return ((CtCompilationUnitImpl) compilationUnit).getOrCreatePartialSourcePosition();
 	}
 
 	@Override
-	public CompoundSourcePosition createCompoundSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int declarationStart, int declarationEnd, int[] lineSeparatorPositions) {
+	public CompoundSourcePosition createCompoundSourcePosition(CtCompilationUnit compilationUnit, int startSource, int end, int declarationStart, int declarationEnd, int[] lineSeparatorPositions) {
 		return new CompoundSourcePositionImpl(compilationUnit, startSource, end, declarationStart, declarationEnd, lineSeparatorPositions);
 	}
 
 	@Override
-	public DeclarationSourcePosition createDeclarationSourcePosition(CompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int[] lineSeparatorPositions) {
+	public DeclarationSourcePosition createDeclarationSourcePosition(CtCompilationUnit compilationUnit, int startSource, int end, int modifierStart, int modifierEnd, int declarationStart, int declarationEnd, int[] lineSeparatorPositions) {
 		return new DeclarationSourcePositionImpl(compilationUnit, startSource, end, modifierStart, modifierEnd, declarationStart, declarationEnd, lineSeparatorPositions);
 	}
 
 	@Override
 	public BodyHolderSourcePosition createBodyHolderSourcePosition(
-			CompilationUnit compilationUnit,
+			CtCompilationUnit compilationUnit,
 			int nameStart, int nameEnd,
 			int modifierStart, int modifierEnd,
 			int declarationStart, int declarationEnd,
@@ -821,8 +772,8 @@ public class DefaultCoreFactory extends SubFactory implements CoreFactory {
 	}
 
 	@Override
-	public CompilationUnit createCompilationUnit() {
-		CompilationUnit cu = new CompilationUnitImpl();
+	public CtCompilationUnit createCompilationUnit() {
+		CtCompilationUnit cu = new CtCompilationUnitImpl();
 		cu.setFactory(getMainFactory());
 		return cu;
 	}

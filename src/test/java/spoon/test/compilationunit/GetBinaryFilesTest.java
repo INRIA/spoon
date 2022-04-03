@@ -27,14 +27,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
-import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtCompilationUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Tests {@link CompilationUnit#getBinaryFiles()}.
+ * Tests {@link CtCompilationUnit#getBinaryFiles()}.
  */
 public class GetBinaryFilesTest {
 
@@ -47,7 +47,7 @@ public class GetBinaryFilesTest {
 		launcher.buildModel();
 		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
 
-		final Map<String, CompilationUnit> cus = launcher.getFactory().CompilationUnit().getMap();
+		final Map<String, CtCompilationUnit> cus = launcher.getFactory().CompilationUnit().getMap();
 		assertEquals(1, cus.size());
 
 		final List<File> binaries = cus.values().iterator().next().getBinaryFiles();
@@ -68,7 +68,7 @@ public class GetBinaryFilesTest {
 		launcher.buildModel();
 		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
 
-		final Map<String, CompilationUnit> cus = launcher.getFactory().CompilationUnit().getMap();
+		final Map<String, CtCompilationUnit> cus = launcher.getFactory().CompilationUnit().getMap();
 		assertEquals(1, cus.size());
 
 		final List<File> binaries = cus.values().iterator().next().getBinaryFiles();
@@ -91,7 +91,7 @@ public class GetBinaryFilesTest {
 		launcher.buildModel();
 		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
 
-		final Map<String, CompilationUnit> cus = launcher.getFactory().CompilationUnit().getMap();
+		final Map<String, CtCompilationUnit> cus = launcher.getFactory().CompilationUnit().getMap();
 		assertEquals(2, cus.size());
 
 		final List<File> ibarBinaries = cus.get(new File(input, "IBar.java").getCanonicalFile().getAbsolutePath()).getBinaryFiles();
@@ -116,7 +116,7 @@ public class GetBinaryFilesTest {
 		launcher.buildModel();
 		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
 
-		final Map<String, CompilationUnit> cus = launcher.getFactory().CompilationUnit().getMap();
+		final Map<String, CtCompilationUnit> cus = launcher.getFactory().CompilationUnit().getMap();
 		assertEquals(1, cus.size());
 
 		final List<File> binaries = cus.get(new File(input).getCanonicalFile().getAbsolutePath()).getBinaryFiles();
@@ -138,7 +138,7 @@ public class GetBinaryFilesTest {
 		launcher.buildModel();
 		launcher.getModelBuilder().compile(SpoonModelBuilder.InputType.FILES);
 
-		final Map<String, CompilationUnit> cus = launcher.getFactory().CompilationUnit().getMap();
+		final Map<String, CtCompilationUnit> cus = launcher.getFactory().CompilationUnit().getMap();
 		assertEquals(1, cus.size());
 
 		final List<File> binaries = cus.get(new File(input).getCanonicalFile().getAbsolutePath()).getBinaryFiles();

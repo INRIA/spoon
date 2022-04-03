@@ -15,20 +15,8 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFieldWrite;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.code.CtVariableWrite;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtAnonymousExecutable;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtShadowable;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.ParentNotInitializedException;
+import spoon.reflect.declaration.*;
 import spoon.reflect.path.CtPath;
 import spoon.reflect.path.CtPathException;
 import spoon.reflect.path.CtPathStringBuilder;
@@ -105,7 +93,7 @@ public class ContractVerifier {
 					continue;
 				}
 				SourcePosition position = modifier.getPosition();
-				CompilationUnit compilationUnit = position.getCompilationUnit();
+				CtCompilationUnit compilationUnit = position.getCompilationUnit();
 				String originalSourceCode = compilationUnit.getOriginalSourceCode();
 				assertEquals(modifier.getKind().toString(), originalSourceCode.substring(position.getSourceStart(), position.getSourceEnd() + 1));
 			}

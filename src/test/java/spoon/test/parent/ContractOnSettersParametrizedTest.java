@@ -24,13 +24,7 @@ import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtJavaDocTag;
-import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
@@ -151,7 +145,7 @@ public class ContractOnSettersParametrizedTest {
 		if (ModifierKind[].class.isAssignableFrom(c)) {
 			return new ModifierKind[] {ModifierKind.PUBLIC};
 		}
-		if (CompilationUnit.class.isAssignableFrom(c)) {
+		if (CtCompilationUnit.class.isAssignableFrom(c)) {
 			return parameterType.getFactory().createCompilationUnit();
 		}
 

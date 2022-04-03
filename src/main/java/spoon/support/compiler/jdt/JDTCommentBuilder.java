@@ -27,7 +27,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtSwitchExpression;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
@@ -75,7 +74,7 @@ public class JDTCommentBuilder {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private final CompilationUnitDeclaration declarationUnit;
-	private CompilationUnit spoonUnit;
+	private CtCompilationUnit spoonUnit;
 	private Factory factory;
 	private ICompilationUnit sourceUnit;
 	private char[] contents;

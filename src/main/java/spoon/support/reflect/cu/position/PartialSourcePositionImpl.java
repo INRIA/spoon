@@ -7,8 +7,8 @@
  */
 package spoon.support.reflect.cu.position;
 
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.position.NoSourcePosition;
+import spoon.reflect.declaration.CtCompilationUnit;
 
 import java.io.File;
 
@@ -19,9 +19,9 @@ public class PartialSourcePositionImpl extends NoSourcePosition {
 
 	private static final long serialVersionUID = 1L;
 
-	private CompilationUnit compilationUnit;
+	private CtCompilationUnit compilationUnit;
 
-	public PartialSourcePositionImpl(CompilationUnit compilationUnit) {
+	public PartialSourcePositionImpl(CtCompilationUnit compilationUnit) {
 		this.compilationUnit = compilationUnit;
 	}
 
@@ -31,7 +31,7 @@ public class PartialSourcePositionImpl extends NoSourcePosition {
 	}
 
 	@Override
-	public CompilationUnit getCompilationUnit() {
+	public CtCompilationUnit getCompilationUnit() {
 		return compilationUnit;
 	}
 }

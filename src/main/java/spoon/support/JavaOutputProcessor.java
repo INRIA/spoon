@@ -13,11 +13,7 @@ import spoon.compiler.Environment;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.FileGenerator;
 import spoon.processing.TraversalStrategy;
-import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.*;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.compiler.SpoonProgress;
 
@@ -108,7 +104,7 @@ public class JavaOutputProcessor extends AbstractProcessor<CtNamedElement> imple
 			throw new IllegalArgumentException();
 		}
 
-		CompilationUnit cu = this.getFactory().CompilationUnit().getOrCreate(element);
+		CtCompilationUnit cu = this.getFactory().CompilationUnit().getOrCreate(element);
 		List<CtType<?>> toBePrinted = new ArrayList<>();
 		toBePrinted.add(element);
 

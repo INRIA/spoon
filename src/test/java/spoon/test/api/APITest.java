@@ -43,15 +43,7 @@ import spoon.compiler.InvalidClassPathException;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
-import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtVisitor;
@@ -545,15 +537,15 @@ public class APITest {
 		Factory factory = launcher.getFactory();
 
 		CtModule module = factory.Module().getOrCreate("simplemodule");
-		CompilationUnit cuModule = factory.CompilationUnit().getOrCreate(module);
+		CtCompilationUnit cuModule = factory.CompilationUnit().getOrCreate(module);
 
 		CtPackage ctPackage = factory.Package().getOrCreate("my.beautiful.pack");
 		module.setRootPackage(factory.Package().get("my"));
 
 		CtType ctType = factory.Class().create("my.beautiful.pack.SuperClass");
 
-		CompilationUnit cuClass = factory.CompilationUnit().getOrCreate(ctType);
-		CompilationUnit cuPackage = factory.CompilationUnit().getOrCreate(ctPackage);
+		CtCompilationUnit cuClass = factory.CompilationUnit().getOrCreate(ctType);
+		CtCompilationUnit cuPackage = factory.CompilationUnit().getOrCreate(ctPackage);
 
 		File moduleFile = new File(outputDest.getCanonicalPath(), "simplemodule_module-info.java");
 		File packageFile = new File(outputDest.getCanonicalPath(), "simplemodule_my.beautiful.pack_package-info.java");
@@ -589,9 +581,9 @@ public class APITest {
 
 	@Test
 	public void testGetOneLinerMainClassFromCU() {
-		// contract: when using Spoon with a snippet, we can still use properly CompilationUnit methods
+		// contract: when using Spoon with a snippet, we can still use properly CtCompilationUnit methods
 		CtClass<?> l = Launcher.parseClass("class A { void m() { System.out.println(\"yeah\");} }");
-		CompilationUnit compilationUnit = l.getPosition().getCompilationUnit();
+		CtCompilationUnit compilationUnit = l.getPosition().getCompilationUnit();
 
 		assertNotNull(compilationUnit);
 		CtType<?> mainType = compilationUnit.getMainType();

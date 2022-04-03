@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 
 import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
@@ -378,10 +377,10 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 		if (position == SourcePosition.NOPOSITION) {
 			String sourceCode = getOriginalSourceCode();
 			if (sourceCode != null) {
-				position = getFactory().Core().createSourcePosition((CompilationUnit) this, 0, sourceCode.length() - 1, getLineSeparatorPositions());
+				position = getFactory().Core().createSourcePosition((CtCompilationUnit) this, 0, sourceCode.length() - 1, getLineSeparatorPositions());
 			} else {
 				//it is a virtual compilation unit (e.g. for Snippet)
-				position = getFactory().Core().createSourcePosition((CompilationUnit) this, 0, Integer.MAX_VALUE - 1, getLineSeparatorPositions());
+				position = getFactory().Core().createSourcePosition((CtCompilationUnit) this, 0, Integer.MAX_VALUE - 1, getLineSeparatorPositions());
 			}
 		}
 		return position;
@@ -394,11 +393,11 @@ public class CtCompilationUnitImpl extends CtElementImpl implements CtCompilatio
 	}
 
 	/**
-	 * @return a {@link SourcePosition} which points to this {@link CompilationUnit}. It always returns same value to safe memory.
+	 * @return a {@link SourcePosition} which points to this {@link CtCompilationUnit}. It always returns same value to safe memory.
 	 */
 	public SourcePosition getOrCreatePartialSourcePosition() {
 		if (myPartialSourcePosition == null) {
-			myPartialSourcePosition = new PartialSourcePositionImpl((CompilationUnit) this);
+			myPartialSourcePosition = new PartialSourcePositionImpl((CtCompilationUnit) this);
 		}
 		return myPartialSourcePosition;
 	}

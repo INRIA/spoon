@@ -15,7 +15,7 @@ import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonFile;
 import spoon.compiler.builder.JDTBuilder;
-import spoon.reflect.cu.CompilationUnit;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.factory.Factory;
 import spoon.support.compiler.SnippetCompilationError;
 import spoon.support.compiler.VirtualFile;
@@ -25,7 +25,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 	private final AtomicLong snippetNumber = new AtomicLong(0);
 	public static final String SNIPPET_FILENAME_PREFIX = JDTSnippetCompiler.class.getName() + "_spoonSnippet_";
 
-	private CompilationUnit snippetCompilationUnit;
+	private CtCompilationUnit snippetCompilationUnit;
 
 	public JDTSnippetCompiler(Factory factory, String contents) {
 		super(factory);
@@ -79,7 +79,7 @@ public class JDTSnippetCompiler extends JDTBasedSpoonCompiler {
 	/**
 	 * @return CompilationUnit which was produced by compiling of this snippet
 	 */
-	public CompilationUnit getSnippetCompilationUnit() {
+	public CtCompilationUnit getSnippetCompilationUnit() {
 		return snippetCompilationUnit;
 	}
 }

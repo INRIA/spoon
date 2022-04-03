@@ -138,23 +138,8 @@ import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.LiteralBase;
 import spoon.reflect.code.UnaryOperatorKind;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtAnnotationMethod;
-import spoon.reflect.declaration.CtAnonymousExecutable;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtEnumValue;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtPackageDeclaration;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtReference;
@@ -795,8 +780,8 @@ public class JDTTreeBuilder extends ASTVisitor {
 		return false;
 	}
 
-	static CompilationUnit getOrCreateCompilationUnit(CompilationUnitDeclaration compilationUnitDeclaration, Factory factory) {
-		CompilationUnit compilationUnitSpoon = factory.CompilationUnit().getOrCreate(new String(compilationUnitDeclaration.getFileName()));
+	static CtCompilationUnit getOrCreateCompilationUnit(CompilationUnitDeclaration compilationUnitDeclaration, Factory factory) {
+		CtCompilationUnit compilationUnitSpoon = factory.CompilationUnit().getOrCreate(new String(compilationUnitDeclaration.getFileName()));
 		if (compilationUnitSpoon.getLineSeparatorPositions() == null) {
 			compilationUnitSpoon.setLineSeparatorPositions(compilationUnitDeclaration.compilationResult.lineSeparatorPositions);
 		} else if (compilationUnitSpoon.getLineSeparatorPositions() != compilationUnitDeclaration.compilationResult.lineSeparatorPositions) {

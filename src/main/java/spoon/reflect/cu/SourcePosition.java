@@ -9,6 +9,7 @@ package spoon.reflect.cu;
 
 import spoon.compiler.Environment;
 import spoon.reflect.cu.position.NoSourcePosition;
+import spoon.reflect.declaration.CtCompilationUnit;
 
 import java.io.File;
 import java.io.Serializable;
@@ -40,7 +41,7 @@ public interface SourcePosition extends Serializable {
 	/**
 	 * Gets the compilation unit for this position.
 	 */
-	CompilationUnit getCompilationUnit();
+	CtCompilationUnit getCompilationUnit();
 
 	/**
 	 * Gets the line in the source file (1 indexed). Prefer using
@@ -59,7 +60,7 @@ public interface SourcePosition extends Serializable {
 	 * Gets the column in the source file (1 indexed). This method is slow
 	 * because it has to calculate the column number depending on
 	 * {@link Environment#getTabulationSize()} and
-	 * {@link CompilationUnit#getOriginalSourceCode()}. Prefer {@link #getSourceStart()}.
+	 * {@link CtCompilationUnit#getOriginalSourceCode()}. Prefer {@link #getSourceStart()}.
 	 */
 	int getColumn();
 
@@ -67,7 +68,7 @@ public interface SourcePosition extends Serializable {
 	 * Gets the end column in the source file (1 indexed). This method is slow
 	 * because it has to calculate the column number depending on
 	 * {@link Environment#getTabulationSize()} and
-	 * {@link CompilationUnit#getOriginalSourceCode()}. Prefer {@link #getSourceEnd()}.
+	 * {@link CtCompilationUnit#getOriginalSourceCode()}. Prefer {@link #getSourceEnd()}.
 	 */
 	int getEndColumn();
 

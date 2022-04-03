@@ -8,8 +8,8 @@
 package spoon.support.reflect.cu.position;
 
 import spoon.SpoonException;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
+import spoon.reflect.declaration.CtCompilationUnit;
 
 /**
  * This class represents the position of a Java program element in a source
@@ -48,9 +48,9 @@ public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
 		}
 	}
 
-	public DeclarationSourcePositionImpl(CompilationUnit compilationUnit, int nameStart, int nameEnd,
-			int modifierSourceStart, int modifierSourceEnd, int declarationSourceStart, int declarationSourceEnd,
-			int[] lineSeparatorPositions) {
+	public DeclarationSourcePositionImpl(CtCompilationUnit compilationUnit, int nameStart, int nameEnd,
+										 int modifierSourceStart, int modifierSourceEnd, int declarationSourceStart, int declarationSourceEnd,
+										 int[] lineSeparatorPositions) {
 		super(compilationUnit,
 				nameStart, nameEnd, declarationSourceStart, declarationSourceEnd,
 				lineSeparatorPositions);

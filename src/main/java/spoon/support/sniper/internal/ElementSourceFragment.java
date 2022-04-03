@@ -12,7 +12,6 @@ import spoon.SpoonException;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.SourcePositionHolder;
 import spoon.reflect.cu.position.NoSourcePosition;
@@ -752,7 +751,7 @@ public class ElementSourceFragment implements SourceFragment {
 	}
 
 	private String getOriginalSourceCode() {
-		CompilationUnit cu = getSourcePosition().getCompilationUnit();
+		CtCompilationUnit cu = getSourcePosition().getCompilationUnit();
 		if (cu != null) {
 			return cu.getOriginalSourceCode();
 		}

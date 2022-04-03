@@ -1,8 +1,8 @@
 package spoon.support.util;
 
 import org.junit.jupiter.api.Test;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.visitor.java.JavaReflectionTreeBuilder;
@@ -87,7 +87,7 @@ public class QualifiedNameBasedSortedSetTest {
         }
 
         @Override
-        public CompilationUnit getCompilationUnit() {
+        public CtCompilationUnit getCompilationUnit() {
             return null;
         }
 

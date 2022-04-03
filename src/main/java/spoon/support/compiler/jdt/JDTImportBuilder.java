@@ -11,12 +11,7 @@ import org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.ImportReference;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 
-import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.declaration.CtImport;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtNamedElement;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
 
@@ -32,7 +27,7 @@ import java.util.Set;
 class JDTImportBuilder {
 
 	private final CompilationUnitDeclaration declarationUnit;
-	private CompilationUnit spoonUnit;
+	private CtCompilationUnit spoonUnit;
 	private ICompilationUnit sourceUnit;
 	private Factory factory;
 	private Set<CtImport> imports;

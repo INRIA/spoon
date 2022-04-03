@@ -339,6 +339,9 @@ public class Metamodel {
 	private static String getConceptName(String simpleName) {
 		if (simpleName.endsWith(CLASS_SUFFIX)) {
 			simpleName = simpleName.substring(0, simpleName.length() - CLASS_SUFFIX.length());
+			// Hack to make CompilationUnitImpl work.
+			if (simpleName == "CompilationUnit")
+				simpleName = "Ct" + simpleName;
 		}
 		return simpleName;
 	}

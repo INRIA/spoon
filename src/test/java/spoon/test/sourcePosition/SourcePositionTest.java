@@ -23,23 +23,19 @@ import org.junit.jupiter.api.Test;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.TypeFilter;
-import spoon.support.reflect.CtExtendedModifier;
-import spoon.support.reflect.cu.CompilationUnitImpl;
 import spoon.support.reflect.cu.position.BodyHolderSourcePositionImpl;
 import spoon.support.reflect.cu.position.DeclarationSourcePositionImpl;
 import spoon.support.reflect.cu.position.SourcePositionImpl;
 import spoon.support.reflect.declaration.CtClassImpl;
+import spoon.support.reflect.declaration.CtCompilationUnitImpl;
 import spoon.test.sourcePosition.testclasses.Brambora;
 import spoon.testing.utils.ModelUtils;
 
@@ -98,7 +94,7 @@ public class SourcePositionTest {
 
 	@Test
 	public void testSourcePositionStringFragment() {
-		CompilationUnit cu = new CompilationUnitImpl() {
+		CtCompilationUnitImpl cu = new CtCompilationUnitImpl() {
 			@Override
 			public String getOriginalSourceCode() {
 				return "0123456789";

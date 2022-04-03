@@ -39,11 +39,7 @@ import spoon.metamodel.Metamodel;
 import spoon.metamodel.MetamodelConcept;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtInvocation;
-import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.*;
 import spoon.reflect.meta.ContainerKind;
 import spoon.reflect.meta.RoleHandler;
 import spoon.reflect.meta.impl.RoleHandlerHelper;
@@ -262,7 +258,7 @@ public class CtScannerTest {
 		//top comment of file belongs to compilation unit which is not visited by standard scanning
 		//so count comments of these compilation units
 		int countOfCommentsInCompilationUnits = 0;
-		for (CompilationUnit cu : launcher.getFactory().CompilationUnit().getMap().values()) {
+		for (CtCompilationUnit cu : launcher.getFactory().CompilationUnit().getMap().values()) {
 			countOfCommentsInCompilationUnits += cu.getComments().size();
 		}
 

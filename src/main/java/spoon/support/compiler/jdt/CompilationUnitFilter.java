@@ -9,7 +9,7 @@ package spoon.support.compiler.jdt;
 
 /**
  * This interface is used by instances of {@link spoon.SpoonModelBuilder} to
- * exclude particular {@link spoon.reflect.cu.CompilationUnit}s while
+ * exclude particular {@link spoon.reflect.declaration.CtCompilationUnit}s while
  * generating a {@link spoon.reflect.CtModel} with
  * {@link spoon.SpoonModelBuilder#build(spoon.compiler.builder.JDTBuilder)}.
  *

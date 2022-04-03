@@ -19,12 +19,8 @@ import spoon.pattern.internal.parameter.ParameterInfo;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtComment;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtTypeMember;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.support.SpoonClassNotFoundException;
@@ -145,7 +141,7 @@ public class DefaultGenerator implements Generator {
 	public String getGeneratedByComment(CtElement ele) {
 		SourcePosition pos = ele.getPosition();
 		if (pos != null && pos.isValidPosition()) {
-			CompilationUnit cu = pos.getCompilationUnit();
+			CtCompilationUnit cu = pos.getCompilationUnit();
 			if (cu != null) {
 				CtType<?> mainType = cu.getMainType();
 				if (mainType != null) {

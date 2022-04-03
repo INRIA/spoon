@@ -37,9 +37,9 @@ import spoon.reflect.code.CtForEach;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.code.CtTry;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
@@ -69,7 +69,7 @@ public class PositionBuilder {
 	}
 
 	SourcePosition buildPosition(int sourceStart, int sourceEnd) {
-		CompilationUnit cu = this.jdtTreeBuilder.getContextBuilder().compilationUnitSpoon;
+		CtCompilationUnit cu = this.jdtTreeBuilder.getContextBuilder().compilationUnitSpoon;
 		final int[] lineSeparatorPositions = this.jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions();
 		return this.jdtTreeBuilder.getFactory().Core().createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
 	}
@@ -82,7 +82,7 @@ public class PositionBuilder {
 			return SourcePosition.NOPOSITION;
 		}
 		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();
-		CompilationUnit cu = this.jdtTreeBuilder.getContextBuilder().compilationUnitSpoon;
+		CtCompilationUnit cu = this.jdtTreeBuilder.getContextBuilder().compilationUnitSpoon;
 		int[] lineSeparatorPositions = jdtTreeBuilder.getContextBuilder().getCompilationUnitLineSeparatorPositions();
 		char[] contents = jdtTreeBuilder.getContextBuilder().getCompilationUnitContents();
 
@@ -558,7 +558,7 @@ public class PositionBuilder {
 
 	private void setModifiersPosition(CtModifiable e, int start, int end) {
 		CoreFactory cf = this.jdtTreeBuilder.getFactory().Core();
-		CompilationUnit cu = this.jdtTreeBuilder.getContextBuilder().compilationUnitSpoon;
+		CtCompilationUnit cu = this.jdtTreeBuilder.getContextBuilder().compilationUnitSpoon;
 		char[] contents = jdtTreeBuilder.getContextBuilder().getCompilationUnitContents();
 
 		Set<CtExtendedModifier> modifiers = e.getExtendedModifiers();

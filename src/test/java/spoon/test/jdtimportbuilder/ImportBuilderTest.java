@@ -16,10 +16,10 @@
  */
 package spoon.test.jdtimportbuilder;
 
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.test.imports.testclasses.A;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.test.jdtimportbuilder.testclasses.StaticImport;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.declaration.CtImport;
 import spoon.test.jdtimportbuilder.testclasses.StaticImportWithInheritance;
 import spoon.reflect.declaration.CtImportKind;
@@ -54,7 +54,7 @@ public class ImportBuilderTest {
 		spoon.buildModel();
 
 		CtClass classA = spoon.getFactory().Class().get(A.class);
-		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtCompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 		assertTrue(unitA.getImports().isEmpty());
 	}
 
@@ -67,7 +67,7 @@ public class ImportBuilderTest {
 		spoon.buildModel();
 
 		CtClass classA = spoon.getFactory().Class().get(ClassWithInvocation.class);
-		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtCompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitA.getImports();
 
 		assertEquals(1, imports.size());
@@ -90,7 +90,7 @@ public class ImportBuilderTest {
 		spoon.run();
 
 		CtClass classA = spoon.getFactory().Class().get(ClassWithInvocation.class);
-		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtCompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 		assertTrue(unitA.getImports().isEmpty());
 	}
 
@@ -104,7 +104,7 @@ public class ImportBuilderTest {
 		spoon.buildModel();
 
 		CtClass classA = spoon.getFactory().Class().get("it.feio.android.omninotes.models.Attachment");
-		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtCompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 
 		assertTrue(unitA.getImports().stream().filter(i -> !(i instanceof CtUnresolvedImport)).collect(Collectors.toList()).isEmpty());
 		assertEquals(3, unitA.getImports().size());
@@ -124,7 +124,7 @@ public class ImportBuilderTest {
 		spoon.buildModel();
 
 		CtClass classA = spoon.getFactory().Class().get(StaticImport.class);
-		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtCompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitA.getImports();
 
 		assertEquals(1, imports.size());
@@ -145,7 +145,7 @@ public class ImportBuilderTest {
 		spoon.buildModel();
 
 		CtClass classA = spoon.getFactory().Class().get(StarredImport.class);
-		CompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
+		CtCompilationUnit unitA = spoon.getFactory().CompilationUnit().getMap().get(classA.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitA.getImports();
 
 		assertEquals(1, imports.size());
@@ -173,7 +173,7 @@ public class ImportBuilderTest {
 		spoon.run();
 
 		CtClass classStatic = spoon.getFactory().Class().get(StaticImportWithInheritance.class);
-		CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
+		CtCompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitStatic.getImports();
 
 		assertEquals(1, imports.size());
@@ -193,7 +193,7 @@ public class ImportBuilderTest {
 		spoon.run();
 
 		CtClass classStatic = spoon.getFactory().Class().get("jdtimportbuilder.ItfImport");
-		CompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
+		CtCompilationUnit unitStatic = spoon.getFactory().CompilationUnit().getMap().get(classStatic.getPosition().getFile().getPath());
 		Collection<CtImport> imports = unitStatic.getImports();
 
 		assertEquals(1, imports.size(), imports.toString());

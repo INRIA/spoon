@@ -32,16 +32,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtTypeAccess;
-import spoon.reflect.cu.CompilationUnit;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtImport;
-import spoon.reflect.declaration.CtImportKind;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.reference.CtExecutableReference;
@@ -1281,7 +1272,7 @@ public class ImportTest {
 		launcher.run();
 
 		File f = new File("./src/test/java/spoon/test/imports/testclasses/DumbClassUsingInternal.java");
-		CompilationUnit cu = launcher.getFactory().CompilationUnit().getMap().get(f.getCanonicalPath());
+		CtCompilationUnit cu = launcher.getFactory().CompilationUnit().getMap().get(f.getCanonicalPath());
 
 		assertNotNull(cu);
 
@@ -1789,7 +1780,7 @@ launcher.addInputResource("./src/test/java/spoon/test/imports/testclasses/JavaLo
 		launcher.run();
 
 		CtType<TestSource> objectCtType = launcher.getFactory().Type().get(TestSource.class);
-		CompilationUnit compilationUnit = launcher.getFactory().CompilationUnit().getOrCreate(objectCtType);
+		CtCompilationUnit compilationUnit = launcher.getFactory().CompilationUnit().getOrCreate(objectCtType);
 
 		assertEquals(1, compilationUnit.getImports().stream()
 				.filter(ctImport -> ctImport.prettyprint().equals("import spoon.test.imports.testclasses.badimportissue3320.source.other.SomeObjectDto;"))

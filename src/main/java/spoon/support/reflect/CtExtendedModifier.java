@@ -1,3 +1,4 @@
+
 /*
  * SPDX-License-Identifier: (MIT OR CECILL-C)
  *
@@ -7,9 +8,9 @@
  */
 package spoon.support.reflect;
 
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.SourcePositionHolder;
+import spoon.reflect.declaration.CtCompilationUnit;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.support.sniper.internal.ElementSourceFragment;
 
@@ -118,7 +119,7 @@ public class CtExtendedModifier implements SourcePositionHolder, Serializable {
 	@Override
 	public ElementSourceFragment getOriginalSourceFragment() {
 		SourcePosition sp = this.getPosition();
-		CompilationUnit compilationUnit = sp.getCompilationUnit();
+		CtCompilationUnit compilationUnit = sp.getCompilationUnit();
 		if (compilationUnit != null) {
 			ElementSourceFragment rootFragment = compilationUnit.getOriginalSourceFragment();
 			return rootFragment.getSourceFragmentOf(this, sp.getSourceStart(), sp.getSourceEnd() + 1);

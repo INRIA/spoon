@@ -61,42 +61,18 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.code.CtVariableWrite;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.code.CtYieldStatement;
-import spoon.reflect.cu.CompilationUnit;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.cu.position.BodyHolderSourcePosition;
 import spoon.reflect.cu.position.CompoundSourcePosition;
 import spoon.reflect.cu.position.DeclarationSourcePosition;
-import spoon.reflect.declaration.CtAnnotation;
-import spoon.reflect.declaration.CtAnnotationMethod;
-import spoon.reflect.declaration.CtAnnotationType;
-import spoon.reflect.declaration.CtAnonymousExecutable;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtConstructor;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtEnum;
-import spoon.reflect.declaration.CtEnumValue;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModule;
-import spoon.reflect.declaration.CtPackageExport;
-import spoon.reflect.declaration.CtProvidedService;
-import spoon.reflect.declaration.CtRecord;
-import spoon.reflect.declaration.CtRecordComponent;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtPackageDeclaration;
-import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtTypeParameter;
-import spoon.reflect.declaration.CtUsedService;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
-import spoon.reflect.declaration.CtImport;
 import spoon.reflect.reference.CtIntersectionTypeReference;
 import spoon.reflect.reference.CtLocalVariableReference;
 import spoon.reflect.reference.CtModuleReference;
-import spoon.reflect.declaration.CtModuleRequirement;
 import spoon.reflect.reference.CtPackageReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtTypeMemberWildcardImportReference;
@@ -397,17 +373,17 @@ public interface CoreFactory {
 	 * Creates a source position.
 	 */
 	SourcePosition createSourcePosition(
-			CompilationUnit compilationUnit,
+			CtCompilationUnit compilationUnit,
 			int startSource, int end, int[] lineSeparatorPositions);
 
 	/** Creates a source position that points to the given compilation unit */
-	SourcePosition createPartialSourcePosition(CompilationUnit compilationUnit);
+	SourcePosition createPartialSourcePosition(CtCompilationUnit compilationUnit);
 
 	/**
 	 * Creates a compound source position.
 	 */
 	CompoundSourcePosition createCompoundSourcePosition(
-			CompilationUnit compilationUnit,
+			CtCompilationUnit compilationUnit,
 			int startSource, int end,
 			int declarationStart, int declarationEnd,
 			int[] lineSeparatorPositions);
@@ -416,7 +392,7 @@ public interface CoreFactory {
 	 * Creates a declaration source position.
 	 */
 	DeclarationSourcePosition createDeclarationSourcePosition(
-			CompilationUnit compilationUnit,
+			CtCompilationUnit compilationUnit,
 			int startSource, int end,
 			int modifierStart, int modifierEnd,
 			int declarationStart, int declarationEnd,
@@ -426,7 +402,7 @@ public interface CoreFactory {
 	 * Creates a body holder source position.
 	 */
 	BodyHolderSourcePosition createBodyHolderSourcePosition(
-			CompilationUnit compilationUnit,
+			CtCompilationUnit compilationUnit,
 			int nameSource, int nameEnd,
 			int modifierStart, int modifierEnd,
 			int declarationStart, int declarationEnd,
@@ -567,7 +543,7 @@ public interface CoreFactory {
 	/**
 	 * Creates a compilation unit.
 	 */
-	CompilationUnit createCompilationUnit();
+	CtCompilationUnit createCompilationUnit();
 
 	/**
 	 * Create an access to annotation value
