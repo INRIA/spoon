@@ -35,6 +35,7 @@ import spoon.reflect.declaration.CtRecordComponent;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.factory.ModuleFactory;
 import spoon.reflect.path.CtRole;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AllTypeMembersFunction;
@@ -339,9 +340,9 @@ public class Metamodel {
 	private static String getConceptName(String simpleName) {
 		if (simpleName.endsWith(CLASS_SUFFIX)) {
 			simpleName = simpleName.substring(0, simpleName.length() - CLASS_SUFFIX.length());
-			// Hack to make CompilationUnitImpl work.
-			if (simpleName == "CompilationUnit")
-				simpleName = "Ct" + simpleName;
+			// The unnamed module is a special case due to its name
+		} else if (simpleName.equals("CtUnnamedModule")) {
+			simpleName = "CtModule";
 		}
 		return simpleName;
 	}
