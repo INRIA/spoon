@@ -343,6 +343,8 @@ public class Metamodel {
 			// The unnamed module is a special case due to its name
 		} else if (simpleName.equals("CtUnnamedModule")) {
 			simpleName = "CtModule";
+		} else if (simpleName.equals("CtRootPackage")) {
+			simpleName = "CtPackage";
 		}
 		return simpleName;
 	}
