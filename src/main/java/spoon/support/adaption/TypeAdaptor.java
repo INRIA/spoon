@@ -138,15 +138,9 @@ public class TypeAdaptor {
 		}
 		String superRefFqn = superRef.getTypeErasure().getQualifiedName();
 
-		if (superRef.getQualifiedName().equals("java.lang.Object")) {
-			return true;
-		}
-
-		if (base.getQualifiedName().equals(superRefFqn)) {
-			return true;
-		}
-
-		return supertypeReachableInInheritanceTree(base, superRefFqn);
+		return superRef.getQualifiedName().equals("java.lang.Object")
+			|| base.getQualifiedName().equals(superRefFqn)
+			|| supertypeReachableInInheritanceTree(base, superRefFqn);
 	}
 
 	/**
