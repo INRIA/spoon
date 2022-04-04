@@ -23,6 +23,7 @@ class TypeAdaptorTest {
 
 	@Test
 	void testSubtypeSuperclass() {
+		// contract: Subtypes for classes should be computed transitively
 		Factory factory = new Launcher().getFactory();
 		CtClass<?> top = factory.Class().get(Top.class);
 		CtClass<?> middle = factory.Class().get(Middle.class);
@@ -35,6 +36,7 @@ class TypeAdaptorTest {
 
 	@Test
 	void testSubtypeSuperinterface() {
+		// contract: Subtype relationship includes interfaces
 		Factory factory = new Launcher().getFactory();
 		CtType<?> topInterface = factory.Type().get(TopInterface.class);
 		CtClass<?> middle = factory.Class().get(Middle.class);
@@ -66,6 +68,8 @@ class TypeAdaptorTest {
 
 	@Test
 	void testAdaptToTypeInStartReference() {
+		// contract: Adapting to a type reference respects its actual type arguments
+		// Adapt the `T` from List<T> to `List<String>` and expect String
 		Factory factory = new Launcher().getFactory();
 		CtType<?> list = factory.Type().get(List.class);
 		CtClass<?> string = factory.Class().get(String.class);
@@ -79,6 +83,7 @@ class TypeAdaptorTest {
 
 	@Test
 	void testAdaptTypeGenericRename() {
+		// contract: Type adaption considers renames of generic parameters
 		Factory factory = new Launcher().getFactory();
 		CtType<?> top = factory.Type().get(GenericRenameTop.class);
 		CtType<?> middle = factory.Type().get(GenericRenameMiddle.class);
@@ -125,6 +130,8 @@ class TypeAdaptorTest {
 
 	@Test
 	void testTypeAdaptConcreteType() {
+		// contract: Adapting a generic parameter to a concrete type works
+		// Adapt the `T` from ConcreteTypeTop<T> to ConcreteTypeMiddle and expect List<String>
 		Factory factory = new Launcher().getFactory();
 		CtType<?> top = factory.Type().get(ConcreteTypeTop.class);
 		CtType<?> bottom = factory.Type().get(ConcreteTypeBottom.class);
@@ -153,6 +160,8 @@ class TypeAdaptorTest {
 
 	@Test
 	void testTypeAdaptMethod() {
+		// contract: Adapting generic parameters declared at a method to an overridden method works
+		// Adapt `R` from `<R> R foo(T t)` to `<S> S foo(R t)` and expect `R`
 		Factory factory = new Launcher().getFactory();
 		CtType<?> parent = factory.Type().get(MethodParent.class);
 		CtType<?> child = factory.Type().get(MethodChild.class);
@@ -185,6 +194,7 @@ class TypeAdaptorTest {
 
 	@Test
 	void testRawtypeToObject() {
+		// contract: Generic parameters inherited via a rawtype are resolved to Object
 		Factory factory = new Launcher().getFactory();
 		CtType<?> top = factory.Type().get(RawTop.class);
 		CtType<?> bottom = factory.Type().get(RawBottom.class);
@@ -215,6 +225,7 @@ class TypeAdaptorTest {
 		"withIntersection"
 	})
 	void adaptSimpleMethod(String name) {
+		// contract: Various method signatures are equal to the existing subclass-method after adaption
 		Factory factory = new Launcher().getFactory();
 		CtType<?> parent = factory.Type().get(AdaptSimpleMethodParent.class);
 		CtType<?> child = factory.Type().get(AdaptSimpleMethodChild.class);
@@ -285,25 +296,33 @@ class TypeAdaptorTest {
 
 	@Test
 	void testArrayParameter() {
+		// contract: Adaption of a varargs and array parameter works
 		Factory factory = new Launcher().getFactory();
 		CtType<?> parent = factory.Type().get(ArrayParameterParent.class);
 		CtType<?> child = factory.Type().get(ArrayParameterChild.class);
 
-		CtMethod<?> parentMethod = parent.getMethodsByName("crashy").get(0);
-		CtMethod<?> childMethod = child.getMethodsByName("crashy").get(0);
+		CtMethod<?> parentCrashyMethod = parent.getMethodsByName("crashy").get(0);
+		CtMethod<?> childCrashyMethod = child.getMethodsByName("crashy").get(0);
+		CtMethod<?> parentCrashyArrayMethod = parent.getMethodsByName("crashyArray").get(0);
+		CtMethod<?> childCrashyArrayMethod = child.getMethodsByName("crashyArray").get(0);
 
-		CtMethod<?> adapted = new TypeAdaptor(child).adaptMethod(parentMethod);
-		assertThat(childMethod).isEqualTo(adapted);
+		assertThat(childCrashyMethod).isEqualTo(new TypeAdaptor(child).adaptMethod(parentCrashyMethod));
+		assertThat(childCrashyArrayMethod).isEqualTo(new TypeAdaptor(child).adaptMethod(parentCrashyArrayMethod));
 	}
 
 	private interface ArrayParameterParent<F> {
 
 		void crashy(F... paramTypes);
+
+		void crashyArray(F[] paramTypes);
 	}
 
 	private interface ArrayParameterChild extends ArrayParameterParent<String> {
 
 		@Override
 		void crashy(String... paramTypes);
+
+		@Override
+		void crashyArray(String[] paramTypes);
 	}
 }
