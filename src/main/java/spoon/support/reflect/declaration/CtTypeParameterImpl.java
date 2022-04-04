@@ -7,7 +7,9 @@
  */
 package spoon.support.reflect.declaration;
 
+import spoon.SpoonException;
 import spoon.reflect.annotations.MetamodelPropertyField;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
@@ -248,8 +250,12 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 			TypeAdaptor typeAdaptor;
 			if (getTypeParameterDeclarer() instanceof CtType) {
 				typeAdaptor = new TypeAdaptor((CtType<?>) getTypeParameterDeclarer());
-			} else {
+			} else if (getTypeParameterDeclarer() instanceof CtMethod) {
 				typeAdaptor = new TypeAdaptor((CtMethod<?>) getTypeParameterDeclarer());
+			} else if (getTypeParameterDeclarer() instanceof CtConstructor) {
+				typeAdaptor = new TypeAdaptor((CtConstructor<?>) getTypeParameterDeclarer());
+			} else {
+				throw new SpoonException("Unknown type parameter declarer: " + getTypeParameterDeclarer());
 			}
 			return isSubtypeOf(typeAdaptor, this, superTypeParam);
 		}

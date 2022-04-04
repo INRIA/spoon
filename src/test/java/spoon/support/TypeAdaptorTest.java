@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtType;
@@ -293,6 +294,68 @@ class TypeAdaptorTest {
 		@Override
 		<A, B extends List<R> & MethodParent<String>> A withIntersection(B rs);
 	}
+
+	@Test
+	void testConstructorParameter() {
+		// contract: Adapting a generic parameter works in a constructor
+		Factory factory = new Launcher().getFactory();
+		CtClass<?> top = factory.Class().get(ConstructorWithGenericParameterTop.class);
+		CtClass<?> bottom = factory.Class().get(ConstructorWithGenericParameterBottom.class);
+
+		CtConstructor<?> topConstructor = top.getConstructors().iterator().next();
+		CtTypeReference<?> parameterType = topConstructor.getParameters().get(0).getType();
+
+		assertThat(new TypeAdaptor(bottom).adaptType(parameterType))
+			.isEqualTo(bottom.getFormalCtTypeParameters().get(0).getReference());
+	}
+
+	private static class ConstructorWithGenericParameterTop<T> {
+		public ConstructorWithGenericParameterTop(T t) {
+		}
+	}
+
+	private static class ConstructorWithGenericParameterBottom<R> extends ConstructorWithGenericParameterTop<R> {
+		public ConstructorWithGenericParameterBottom(R r) {
+			super(r);
+		}
+	}
+
+	@Test
+	void testGenericConstructor() {
+		// contract: Adapting a generic parameter declared on a constructor works
+		Factory factory = new Launcher().getFactory();
+		CtClass<?> top = factory.Class().get(GenericConstructorTop.class);
+		CtClass<?> bottom = factory.Class().get(GenericConstructorBottom.class);
+
+		CtConstructor<?> topConstructor = top.getConstructors().iterator().next();
+		CtConstructor<?> bottomConstructor = bottom.getConstructors().iterator().next();
+		CtTypeReference<?> parameterType = topConstructor.getParameters().get(0).getType();
+
+		assertTrue(
+			topConstructor.getFormalCtTypeParameters().get(0).isSubtypeOf(parameterType),
+			"top constructor generic is not a String subtype"
+		);
+		assertTrue(
+			bottomConstructor.getFormalCtTypeParameters().get(0).isSubtypeOf(parameterType),
+			"bottom constructor generic is not a String subtype"
+		);
+		assertEquals(
+			"R",
+			new TypeAdaptor(bottomConstructor).adaptType(parameterType).getSimpleName()
+		);
+	}
+
+	private static class GenericConstructorTop {
+		public <T extends String> GenericConstructorTop(T t) {
+		}
+	}
+
+	private static class GenericConstructorBottom extends GenericConstructorTop {
+		public <R extends String> GenericConstructorBottom(R r) {
+			super(r);
+		}
+	}
+
 
 	@Test
 	void testArrayParameter() {

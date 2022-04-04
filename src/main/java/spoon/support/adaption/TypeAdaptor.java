@@ -9,7 +9,9 @@ package spoon.support.adaption;
 
 import spoon.SpoonException;
 import spoon.processing.FactoryAccessor;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtFormalTypeDeclarer;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
@@ -38,6 +40,7 @@ public class TypeAdaptor {
 	private final CtTypeReference<?> hierarchyStartReference;
 	private final boolean initializedWithReference;
 	private CtMethod<?> startMethod;
+	private CtConstructor<?> startConstructor;
 	private ClassTypingContext oldClassTypingContext;
 
 	/**
@@ -74,6 +77,16 @@ public class TypeAdaptor {
 	public TypeAdaptor(CtMethod<?> hierarchyStart) {
 		this(hierarchyStart.getDeclaringType());
 		this.startMethod = hierarchyStart;
+	}
+
+	/**
+	 * Creates a new type adaptor using the given constructor as the start of its hierarchy.
+	 *
+	 * @param hierarchyStart the start of the hierarchy
+	 */
+	public TypeAdaptor(CtConstructor<?> hierarchyStart) {
+		this(hierarchyStart.getDeclaringType());
+		this.startConstructor = hierarchyStart;
 	}
 
 	/**
@@ -471,6 +484,12 @@ public class TypeAdaptor {
 				.setMethod(startMethod)
 				.adaptType(superRef);
 		}
+		if (startConstructor != null) {
+			return new MethodTypingContext()
+				.setClassTypingContext(getOldClassTypingContext())
+				.setConstructor(startConstructor)
+				.adaptType(superRef);
+		}
 		return getOldClassTypingContext().adaptType(superRef);
 	}
 
@@ -487,26 +506,28 @@ public class TypeAdaptor {
 	}
 
 	private Optional<CtTypeReference<?>> adaptBetweenMethods(CtTypeReference<?> superRef) {
-		if (startMethod == null) {
+		if (startMethod == null && startConstructor == null) {
 			return Optional.empty();
 		}
-		Optional<CtMethod<?>> superMethodOpt = getDeclaringMethod(superRef);
-		if (superMethodOpt.isEmpty()) {
+		CtExecutable<?> startExecutable = startMethod != null ? startMethod : startConstructor;
+
+		Optional<CtExecutable<?>> superExecutableOpt = getDeclaringMethodOrConstructor(superRef);
+		if (superExecutableOpt.isEmpty()) {
 			return Optional.empty();
 		}
-		CtMethod<?> superMethod = superMethodOpt.get();
+		CtExecutable<?> superMethod = superExecutableOpt.get();
 
 		// We try to find the usage of the super ref in the method and take the corresponding value from our start
 		// method. If a type parameter declared on a method is used in the return type of the method, we take the type
 		// parameter representing the return type of the method in the subclass.
 		if (superMethod.getType().equals(superRef)) {
-			return Optional.of(startMethod.getType());
+			return Optional.of(startExecutable.getType());
 		}
 
 		for (int i = 0; i < superMethod.getParameters().size(); i++) {
 			CtParameter<?> parameter = superMethod.getParameters().get(i);
 			if (parameter.getType().equals(superRef)) {
-				return Optional.of(startMethod.getParameters().get(i).getType());
+				return Optional.of(startExecutable.getParameters().get(i).getType());
 			}
 		}
 
@@ -514,11 +535,11 @@ public class TypeAdaptor {
 	}
 
 	/**
-	 * @param reference the reference to find out the declaring method for
-	 * @return the method that declares the type parameter, or empty if the reference is not a {@link
-	 *    CtTypeParameterReference} or it is not declared on a method
+	 * @param reference the reference to find out the declaring method/constructor for
+	 * @return the method/constructor that declares the type parameter, or empty if the reference is not a
+	 *    {@link CtTypeParameterReference} or it is not declared on a method/constructor
 	 */
-	private Optional<CtMethod<?>> getDeclaringMethod(CtTypeReference<?> reference) {
+	private Optional<CtExecutable<?>> getDeclaringMethodOrConstructor(CtTypeReference<?> reference) {
 		if (!(reference instanceof CtTypeParameterReference)) {
 			return Optional.empty();
 		}
@@ -527,10 +548,10 @@ public class TypeAdaptor {
 			return Optional.empty();
 		}
 		CtElement parent = typeParam.getParent();
-		if (!(parent instanceof CtMethod)) {
+		if (!(parent instanceof CtMethod) && !(parent instanceof CtConstructor)) {
 			return Optional.empty();
 		}
-		return Optional.of((CtMethod<?>) parent);
+		return Optional.of((CtExecutable<?>) parent);
 	}
 
 	private DeclarationNode buildHierarchyFrom(CtTypeReference<?> startReference, CtType<?> startType,
