@@ -21,6 +21,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import static spoon.support.adaption.NodePrintHelper.quote;
+import static spoon.support.adaption.NodePrintHelper.toJsonLikeArray;
 
 class DeclarationNode {
 
@@ -123,7 +124,7 @@ class DeclarationNode {
 	public String toString() {
 		String result = "{\n";
 		result += "  " + quote("String") + ": " + quote(inducedBy.getQualifiedName()) + ",\n";
-		result += "  " + quote("Formal") + ": " + quote(formalArguments);
+		result += "  " + quote("Formal") + ": " + toJsonLikeArray(formalArguments);
 
 		if (!lowerNodes.isEmpty()) {
 			result += ",\n  [\n";

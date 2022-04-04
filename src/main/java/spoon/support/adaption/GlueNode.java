@@ -20,6 +20,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import static spoon.support.adaption.NodePrintHelper.quote;
+import static spoon.support.adaption.NodePrintHelper.toJsonLikeArray;
 
 class GlueNode {
 
@@ -101,7 +102,7 @@ class GlueNode {
 	public String toString() {
 		String result = "{\n";
 		result += "  " + quote("String") + ": " + quote(inducedBy.getQualifiedName()) + ",\n";
-		result += "  " + quote("Actual") + ": " + quote(actualArguments);
+		result += "  " + quote("Actual") + ": " + toJsonLikeArray(actualArguments);
 
 		if (!lowerNodes.isEmpty()) {
 			result += ",\n  [\n";

@@ -22,13 +22,15 @@ final class NodePrintHelper {
 	}
 
 	/**
-	 * Converts a list of values to a crudely formatted JSON-y array string.
-	 * Special-purpose helper for {@link DeclarationNode} and {@link GlueNode}.
+	 * Converts a list of values to a crudely formatted JSON-like array.
+	 * <br><br>
+	 * Special-purpose helper for {@link DeclarationNode} and {@link GlueNode},
+	 * it <em>does not produce valid JSON in other contexts!</em>
 	 *
 	 * @param input the input list
 	 * @return the list as a quoted array
 	 */
-	public static String quote(List<?> input) {
+	public static String toJsonLikeArray(List<?> input) {
 		return "["
 			+ input.stream()
 			.map(Objects::toString)
