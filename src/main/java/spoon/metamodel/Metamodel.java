@@ -345,6 +345,8 @@ public class Metamodel {
 			simpleName = "CtModule";
 		} else if (simpleName.equals("CtRootPackage")) {
 			simpleName = "CtPackage";
+		} else if (simpleName.equals("CtUnresolvedImport")) {
+			simpleName = "CtImport";
 		}
 		return simpleName;
 	}
