@@ -227,7 +227,7 @@ public class ConstructorCallTest {
 		// no constructorcall from the input has the simple object type in noclasspathmode
 		Launcher launcher = new Launcher();
 		launcher.getEnvironment().setNoClasspath(true);
-		launcher.addInputResource("./src/test/resources/constructorcall-type/TestHttpStub.java");
+		launcher.addInputResource("./src/test/resources/constructorcall-type/ConstructorCallWithTypesNotOnClasspath.java");
 		CtModel model = launcher.buildModel();
 		for (CtConstructorCall<?> ctConstructorCall : model
 				.getElements(new TypeFilter<>(CtConstructorCall.class))) {
