@@ -61,6 +61,7 @@ import org.eclipse.jdt.internal.compiler.lookup.TypeVariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VariableBinding;
 import org.eclipse.jdt.internal.compiler.lookup.VoidTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
+import spoon.NoClasspathWorkaround;
 import spoon.reflect.code.CtLambda;
 import spoon.reflect.declaration.CtModule;
 import spoon.reflect.declaration.CtPackage;
@@ -450,17 +451,16 @@ public class ReferenceBuilder {
 		if (allocationExpression.binding != null) {
 			ref = getExecutableReference(allocationExpression.binding);
 			// in some cases the binding is not null but points wrong to object type see #4643
-			if (ref.getType().equals(ref.getFactory().Type().objectType()) && allocationExpression.resolvedType != null) {
-				ref.setType(getTypeReference(allocationExpression.resolvedType));
-				ref.getExecutableDeclaration().setType(getTypeReference(allocationExpression.resolvedType));
-				ref.setDeclaringType(getTypeReference(allocationExpression.resolvedType));
+			if (isIncorrectlyBoundExecutableInNoClasspath(ref, allocationExpression)) {
+				adjustExecutableAccordingToResolvedType(ref, allocationExpression);
 			}
 		} else {
 			ref = jdtTreeBuilder.getFactory().Core().createExecutableReference();
 			ref.setSimpleName(CtExecutableReference.CONSTRUCTOR_NAME);
 			ref.setDeclaringType(getTypeReference(null, allocationExpression.type));
 
-			final List<CtTypeReference<?>> parameters = new ArrayList<>(allocationExpression.argumentTypes.length);
+			final List<CtTypeReference<?>> parameters =
+					new ArrayList<>(allocationExpression.argumentTypes.length);
 			for (TypeBinding b : allocationExpression.argumentTypes) {
 				parameters.add(getTypeReference(b, true));
 			}
@@ -470,6 +470,35 @@ public class ReferenceBuilder {
 			ref.setType(this.<T>getTypeReference(allocationExpression.expectedType(), true));
 		}
 		return ref;
+	}
+
+	/**
+	 * Checks if the given executable reference is incorrectly bound to the Object type and noclasspath is set.
+	 * @param ref  the executable reference to check
+	 * @param allocationExpression  the allocation expression that contains the executable reference of jdt.
+	 * @return  true if the executable reference is incorrectly bound to the Object type and noclasspath is set.
+	 */
+	@NoClasspathWorkaround
+	private boolean isIncorrectlyBoundExecutableInNoClasspath(CtExecutableReference<?> ref,
+			AllocationExpression allocationExpression) {
+		boolean noClasspath = ref.getFactory().getEnvironment().getNoClasspath();
+		return noClasspath && ref.getType().equals(ref.getFactory().Type().objectType())
+				&& allocationExpression.resolvedType != null;
+	}
+
+	/**
+	 * Adjusts the executable reference according to the resolved type. This is needed because the binding is not correct in no classpath.
+	 * @param ref the executable reference to adjust
+	 * @param allocationExpression  the allocation expression that contains the executable reference of jdt.
+	 */
+	@NoClasspathWorkaround
+	@SuppressWarnings("unchecked")
+	private void adjustExecutableAccordingToResolvedType(CtExecutableReference ref,
+			AllocationExpression allocationExpression) {
+		CtTypeReference<?> resolvedTypeRef = getTypeReference(allocationExpression.resolvedType);
+		ref.setType(resolvedTypeRef);
+		ref.getExecutableDeclaration().setType(resolvedTypeRef);
+		ref.setDeclaringType(resolvedTypeRef);
 	}
 
 	<T> CtExecutableReference<T> getExecutableReference(MessageSend messageSend) {
