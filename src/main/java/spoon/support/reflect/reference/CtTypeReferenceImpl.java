@@ -56,8 +56,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	// We use thread-local storage for the caching to avoid having to lock when doing cache invalidation and lookup.
 	// See https://github.com/INRIA/spoon/issues/4668 for details.
-	private final static ThreadLocal<Map<String, Class<?>>> classByQName = ThreadLocal.withInitial(HashMap::new);
-	private final static ThreadLocal<ClassLoader> lastClassLoader = new ThreadLocal<>();
+	private static final ThreadLocal<Map<String, Class<?>>> classByQName = ThreadLocal.withInitial(HashMap::new);
+	private static final ThreadLocal<ClassLoader> lastClassLoader = new ThreadLocal<>();
 
 	@MetamodelPropertyField(role = TYPE_ARGUMENT)
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
