@@ -546,7 +546,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			// (this will be called by getCompilationUnitInputStream(cu))
 			try (OutputStream outFile = Files.newOutputStream(file);
 					InputStream is = getCompilationUnitInputStream(cu)) {
-				System.out.println("file = " + file);
 				is.transferTo(outFile);
 			} catch (RuntimeException e) {
 				throw e; // rethrow directly
