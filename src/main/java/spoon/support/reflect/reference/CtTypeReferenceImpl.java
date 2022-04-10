@@ -160,14 +160,16 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			}
 			typeReference = componentTypeReference;
 		}
-		ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
+		Class<T> actualClass = getClassFromThreadLocalCacheOrLoad(typeReference);
+		return isArray() ? arrayType(actualClass) : actualClass;
+	}
 
+	@SuppressWarnings("unchecked")
+	private Class<T> getClassFromThreadLocalCacheOrLoad(CtTypeReference<?> typeReference) {
+		ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
 		checkCacheIntegrity(classLoader);
 		String qualifiedName = typeReference.getQualifiedName();
-		@SuppressWarnings("unchecked")
-		Class<T> clazz = (Class<T>) classByQName.get().computeIfAbsent(qualifiedName, key -> loadClassWithQName(classLoader, qualifiedName));
-
-		return isArray() ? arrayType(clazz) : clazz;
+		return (Class<T>) classByQName.get().computeIfAbsent(qualifiedName, key -> loadClassWithQName(classLoader, qualifiedName));
 	}
 
 	/**
