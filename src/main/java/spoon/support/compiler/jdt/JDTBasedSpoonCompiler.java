@@ -541,8 +541,12 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			String fileName = element.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION;
 			Path file = packageDir.resolve(fileName);
 			// the path must be given relatively to the working directory
-			try (InputStream is = getCompilationUnitInputStream(cu);
-					OutputStream outFile = Files.newOutputStream(file)) {
+			// order is important here, as the new file needs to exist so the CompilationUnit
+			// can fetch its (still empty) source code. See CtCompilationUnitImpl#getOriginalSourceCode
+			// (this will be called by getCompilationUnitInputStream(cu))
+			try (OutputStream outFile = Files.newOutputStream(file);
+					InputStream is = getCompilationUnitInputStream(cu)) {
+				System.out.println("file = " + file);
 				is.transferTo(outFile);
 			} catch (RuntimeException e) {
 				throw e; // rethrow directly
@@ -557,8 +561,8 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			return outputDirectory;
 		} else {
 			// Create current package directory
-			Path packageAsPath = Path.of(pack.getQualifiedName().replace('.', File.separatorChar));
-			return outputDirectory.resolve(packageAsPath);
+			String packagePath = pack.getQualifiedName().replace('.', File.separatorChar);
+			return outputDirectory.resolve(packagePath);
 		}
 	}
 
