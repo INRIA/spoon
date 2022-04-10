@@ -56,7 +56,7 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 	// We use thread-local storage for the caching to avoid having to lock when doing cache invalidation and lookup.
 	// See https://github.com/INRIA/spoon/issues/4668 for details.
-	private final static ThreadLocal<Map<String, Class>> classByQName = ThreadLocal.withInitial(HashMap::new);
+	private final static ThreadLocal<Map<String, Class<?>>> classByQName = ThreadLocal.withInitial(HashMap::new);
 	private final static ThreadLocal<ClassLoader> lastClassLoader = new ThreadLocal<>();
 
 	@MetamodelPropertyField(role = TYPE_ARGUMENT)
@@ -151,7 +151,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	 *
 	 * Looks for the class in the standard Java classpath, but also in the sourceClassPath given as option.
 	 */
-	@SuppressWarnings("unchecked")
 	protected Class<T> findClass() {
 		CtTypeReference<?> typeReference = this;
 		if (isArray()) {
@@ -165,7 +164,8 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 
 		checkCacheIntegrity(classLoader);
 		String qualifiedName = typeReference.getQualifiedName();
-		Class<T> clazz =  classByQName.get().computeIfAbsent(qualifiedName, key -> loadClassWithQName(classLoader, qualifiedName));
+		@SuppressWarnings("unchecked")
+		Class<T> clazz = (Class<T>) classByQName.get().computeIfAbsent(qualifiedName, key -> loadClassWithQName(classLoader, qualifiedName));
 
 		return isArray() ? arrayType(clazz) : clazz;
 	}
