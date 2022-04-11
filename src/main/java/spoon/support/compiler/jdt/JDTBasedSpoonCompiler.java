@@ -540,7 +540,6 @@ public class JDTBasedSpoonCompiler implements spoon.SpoonModelBuilder {
 			// print type
 			String fileName = element.getSimpleName() + DefaultJavaPrettyPrinter.JAVA_FILE_EXTENSION;
 			Path file = packageDir.resolve(fileName);
-			// the path must be given relatively to the working directory
 			// order is important here, as the new file needs to exist so the CompilationUnit
 			// can fetch its (still empty) source code. See CtCompilationUnitImpl#getOriginalSourceCode
 			// (this will be called by getCompilationUnitInputStream(cu))
