@@ -283,6 +283,7 @@
         <configuration>
           <classpathDependencyExcludes>
             <classpathDependencyExclude>ch.qos.logback:logback-classic</classpathDependencyExclude>
+            <trimStackTrace>false</trimStackTrace>
           </classpathDependencyExcludes>
         </configuration>
       </plugin>
