@@ -40,12 +40,11 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
 import static spoon.reflect.ModelElementContainerDefaultCapacities.TYPE_TYPE_PARAMETERS_CONTAINER_DEFAULT_CAPACITY;
 import static spoon.reflect.path.CtRole.DECLARING_TYPE;
 import static spoon.reflect.path.CtRole.IS_SHADOW;
@@ -54,9 +53,11 @@ import static spoon.reflect.path.CtRole.TYPE_ARGUMENT;
 
 public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeReference<T> {
 	private static final long serialVersionUID = 1L;
-	private static Map<String, Class> classByQName = new ConcurrentHashMap<>();
-	private static ClassLoader lastClassLoader = null;
-	private final ReentrantLock lock = new ReentrantLock();
+
+	// We use thread-local storage for the caching to avoid having to lock when doing cache invalidation and lookup.
+	// See https://github.com/INRIA/spoon/issues/4668 for details.
+	private static final ThreadLocal<Map<String, Class<?>>> classByQName = ThreadLocal.withInitial(HashMap::new);
+	private static final ThreadLocal<ClassLoader> lastClassLoader = new ThreadLocal<>();
 
 	@MetamodelPropertyField(role = TYPE_ARGUMENT)
 	List<CtTypeReference<?>> actualTypeArguments = CtElementImpl.emptyList();
@@ -150,7 +151,6 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	 *
 	 * Looks for the class in the standard Java classpath, but also in the sourceClassPath given as option.
 	 */
-	@SuppressWarnings("unchecked")
 	protected Class<T> findClass() {
 		CtTypeReference<?> typeReference = this;
 		if (isArray()) {
@@ -160,13 +160,16 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 			}
 			typeReference = componentTypeReference;
 		}
+		Class<T> actualClass = getClassFromThreadLocalCacheOrLoad(typeReference);
+		return isArray() ? arrayType(actualClass) : actualClass;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Class<T> getClassFromThreadLocalCacheOrLoad(CtTypeReference<?> typeReference) {
 		ClassLoader classLoader = getFactory().getEnvironment().getInputClassLoader();
-		lock.lock();
 		checkCacheIntegrity(classLoader);
 		String qualifiedName = typeReference.getQualifiedName();
-		Class<T> clazz =  classByQName.computeIfAbsent(qualifiedName, key -> loadClassWithQName(classLoader, qualifiedName));
-		lock.unlock();
-		return isArray() ? arrayType(clazz) : clazz;
+		return (Class<T>) classByQName.get().computeIfAbsent(qualifiedName, key -> loadClassWithQName(classLoader, qualifiedName));
 	}
 
 	/**
@@ -194,10 +197,10 @@ public class CtTypeReferenceImpl<T> extends CtReferenceImpl implements CtTypeRef
 	 * @param classLoader  the classloader to check against the old one.
 	 */
 	private void checkCacheIntegrity(ClassLoader classLoader) {
-		if (classLoader != lastClassLoader) {
+		if (classLoader != lastClassLoader.get()) {
 			//clear cache because class loader changed
-			classByQName.clear();
-			lastClassLoader = classLoader;
+			classByQName.get().clear();
+			lastClassLoader.set(classLoader);
 		}
 	}
 
