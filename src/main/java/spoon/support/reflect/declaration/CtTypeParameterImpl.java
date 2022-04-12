@@ -246,7 +246,6 @@ public class CtTypeParameterImpl extends CtTypeImpl<Object> implements CtTypePar
 		if (superTypeRef instanceof CtTypeParameterReference) {
 			//the type is type parameter too. Use appropriate sub type checking algorithm
 			CtTypeParameter superTypeParam = (CtTypeParameter) superTypeRef.getDeclaration();
-			// FIXME: Method parameters
 			TypeAdaptor typeAdaptor;
 			if (getTypeParameterDeclarer() instanceof CtType) {
 				typeAdaptor = new TypeAdaptor((CtType<?>) getTypeParameterDeclarer());
