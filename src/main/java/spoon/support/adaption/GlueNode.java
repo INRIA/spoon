@@ -12,10 +12,9 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -26,7 +25,7 @@ class GlueNode {
 
 	private final List<CtTypeReference<?>> actualArguments;
 	private final CtTypeReference<?> inducedBy;
-	private final Set<DeclarationNode> lowerNodes;
+	private final List<DeclarationNode> children;
 
 	/**
 	 * Creates a new glue node for the given reference.
@@ -37,16 +36,16 @@ class GlueNode {
 		this.inducedBy = inducedBy;
 		this.actualArguments = inducedBy.getActualTypeArguments();
 
-		this.lowerNodes = new HashSet<>();
+		this.children = new ArrayList<>();
 	}
 
 	/**
 	 * Adds a declaration node as a child of this glue node.
 	 *
-	 * @param node the node to add as a child
+	 * @param child the node to add as a child
 	 */
-	public void addLower(DeclarationNode node) {
-		lowerNodes.add(node);
+	public void addChild(DeclarationNode child) {
+		children.add(child);
 	}
 
 	/**
@@ -91,7 +90,7 @@ class GlueNode {
 			}
 
 			// Follow a random child, there should be only one in most cases
-			return Optional.of(AdaptionVisitor.adapt(actualArgument, lowerNodes.iterator().next()));
+			return Optional.of(AdaptionVisitor.adapt(actualArgument, children.iterator().next()));
 		}
 
 		// We might not find it at all!
@@ -104,10 +103,10 @@ class GlueNode {
 		result += "  " + quote("String") + ": " + quote(inducedBy.getQualifiedName()) + ",\n";
 		result += "  " + quote("Actual") + ": " + toJsonLikeArray(actualArguments);
 
-		if (!lowerNodes.isEmpty()) {
+		if (!children.isEmpty()) {
 			result += ",\n  [\n";
 			StringJoiner children = new StringJoiner(",\n");
-			for (DeclarationNode node : lowerNodes) {
+			for (DeclarationNode node : this.children) {
 				children.add(node.toString());
 			}
 			result += children.toString().lines().map(it -> "    " + it).collect(Collectors.joining("\n")) + "\n";

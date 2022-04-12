@@ -13,10 +13,9 @@ import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -27,22 +26,22 @@ class DeclarationNode {
 
 	private final List<CtTypeParameter> formalArguments;
 	private final CtTypeReference<?> inducedBy;
-	private final Set<GlueNode> lowerNodes;
+	private final List<GlueNode> children;
 
 	protected DeclarationNode(CtTypeReference<?> inducedBy) {
 		this.inducedBy = inducedBy;
 		this.formalArguments = inducedBy.getTypeDeclaration().getFormalCtTypeParameters();
 
-		this.lowerNodes = new HashSet<>();
+		this.children = new ArrayList<>();
 	}
 
 	/**
 	 * Adds a glue node as a child of this declaration node.
 	 *
-	 * @param node the node to add as a child
+	 * @param child the node to add as a child
 	 */
-	public void addLower(GlueNode node) {
-		lowerNodes.add(node);
+	public void addChild(GlueNode child) {
+		children.add(child);
 	}
 
 	/**
@@ -69,7 +68,7 @@ class DeclarationNode {
 
 		// We try to find a glue node below us to delegate to. Glue nodes do the mapping so we can just
 		// pass it on unchanged.
-		Optional<GlueNode> glueNode = lowerNodes.stream()
+		Optional<GlueNode> glueNode = children.stream()
 			.filter(it -> it.isInducedBy(this.inducedBy))
 			.findFirst();
 
@@ -126,10 +125,10 @@ class DeclarationNode {
 		result += "  " + quote("String") + ": " + quote(inducedBy.getQualifiedName()) + ",\n";
 		result += "  " + quote("Formal") + ": " + toJsonLikeArray(formalArguments);
 
-		if (!lowerNodes.isEmpty()) {
+		if (!children.isEmpty()) {
 			result += ",\n  [\n";
 			StringJoiner children = new StringJoiner("\n");
-			for (GlueNode node : lowerNodes) {
+			for (GlueNode node : this.children) {
 				children.add(node.toString());
 			}
 			result += children.toString().lines().map(it -> "    " + it).collect(Collectors.joining("\n")) + "\n";

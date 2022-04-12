@@ -569,7 +569,7 @@ public class TypeAdaptor {
 		if (!startReference.getActualTypeArguments().isEmpty()) {
 			// Ensure we can resolve type parameters that are resolved within the start reference: Translating the "X" in
 			// "List<X>" for a start reference of "List<String>" should return String.
-			root.addLower(new GlueNode(startReference));
+			root.addChild(new GlueNode(startReference));
 		}
 
 		return declarationNodes.values().stream()
@@ -627,11 +627,11 @@ public class TypeAdaptor {
 
 		if (start.getSuperclass() != null) {
 			buildGlueHierarchyFrom(start.getSuperclass(), end, glueNodes, declarationNodes)
-				.addLower(node);
+				.addChild(node);
 		}
 		for (CtTypeReference<?> superInterface : start.getSuperInterfaces()) {
 			buildGlueHierarchyFrom(superInterface, end, glueNodes, declarationNodes)
-				.addLower(node);
+				.addChild(node);
 		}
 
 		return node;
@@ -649,7 +649,7 @@ public class TypeAdaptor {
 		if (typeDeclaration != null) {
 			// Might be null if running on no-classpath mode
 			buildDeclarationHierarchyFrom(typeDeclaration.getReference(), end, glueNodes, declarationNodes)
-				.addLower(node);
+				.addChild(node);
 		}
 
 		return node;
