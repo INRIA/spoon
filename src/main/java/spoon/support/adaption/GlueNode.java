@@ -13,6 +13,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -25,7 +26,7 @@ class GlueNode {
 
 	private final List<CtTypeReference<?>> actualArguments;
 	private final CtTypeReference<?> inducedBy;
-	private final List<DeclarationNode> children;
+	private final Collection<DeclarationNode> children;
 
 	/**
 	 * Creates a new glue node for the given reference.

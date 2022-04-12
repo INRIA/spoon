@@ -14,6 +14,7 @@ import spoon.reflect.reference.CtTypeParameterReference;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -26,7 +27,7 @@ class DeclarationNode {
 
 	private final List<CtTypeParameter> formalArguments;
 	private final CtTypeReference<?> inducedBy;
-	private final List<GlueNode> children;
+	private final Collection<GlueNode> children;
 
 	protected DeclarationNode(CtTypeReference<?> inducedBy) {
 		this.inducedBy = inducedBy;
