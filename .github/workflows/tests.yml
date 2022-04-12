@@ -155,7 +155,7 @@ jobs:
       - name: git reset
         run: cd pull_request && git fetch && git reset --soft origin/master
       - name: Qodana - Code Inspection
-        uses: JetBrains/qodana-action@9e56346b427d9ed086178d0e60e424c451979261 # tag=v5.0.2
+        uses: JetBrains/qodana-action@53bd9f02f006a4e67ceec0b8562f10f1bce177e5 # tag=v5.0.4
         with:
           linter: ${{ env.QODANA_LINTER }}
           project-dir: "${{ github.workspace }}/pull_request"
