@@ -292,15 +292,14 @@
         <!-- see https://github.com/castor-software/depclean -->
         <groupId>se.kth.castor</groupId>
         <artifactId>depclean-maven-plugin</artifactId>
-        <version>2.0.1</version>
+        <version>2.0.2</version>
         <executions>
           <execution>
               <goals>
                 <goal>depclean</goal>
               </goals>
              <configuration>
-                <ignoreDependencies>org.kohsuke.metainf-services:metainf-services:1.9:test</ignoreDependencies>
-               <!-- the build fails if there are unused direct dependencies -->
+               <!-- the build should fail if there are unused direct dependencies -->
                <failIfUnusedDirect>true</failIfUnusedDirect>
              </configuration>
            </execution>
