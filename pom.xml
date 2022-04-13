@@ -18,7 +18,7 @@
 
   <artifactId>spoon-core</artifactId>
   <packaging>jar</packaging>
-  <version>10.1.0-SNAPSHOT</version>
+  <version>10.2.0-SNAPSHOT</version>
   <name>Spoon Core</name>
   <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
   <url>http://spoon.gforge.inria.fr/</url>
