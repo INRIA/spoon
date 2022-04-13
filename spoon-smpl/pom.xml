@@ -100,7 +100,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>10.0.0</version>
+            <version>10.1.0</version>
         </dependency>
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
