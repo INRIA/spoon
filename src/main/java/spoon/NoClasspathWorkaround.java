@@ -14,4 +14,5 @@ package spoon;
  * With any new jdt version the workaround can be removed or no longer working.
  */
 public @interface NoClasspathWorkaround {
+  String reason();
 }

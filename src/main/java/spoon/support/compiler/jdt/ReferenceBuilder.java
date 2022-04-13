@@ -478,7 +478,7 @@ public class ReferenceBuilder {
 	 * @param allocationExpression  the allocation expression that contains the executable reference of jdt.
 	 * @return  true if the executable reference is incorrectly bound to the Object type and noclasspath is set.
 	 */
-	@NoClasspathWorkaround
+	@NoClasspathWorkaround(reason =  "https://github.com/INRIA/spoon/issues/4643")
 	private boolean isIncorrectlyBoundExecutableInNoClasspath(CtExecutableReference<?> ref,
 			AllocationExpression allocationExpression) {
 		boolean noClasspath = ref.getFactory().getEnvironment().getNoClasspath();
@@ -491,7 +491,7 @@ public class ReferenceBuilder {
 	 * @param ref the executable reference to adjust
 	 * @param allocationExpression  the allocation expression that contains the executable reference of jdt.
 	 */
-	@NoClasspathWorkaround
+	@NoClasspathWorkaround(reason =  "https://github.com/INRIA/spoon/issues/4643")
 	@SuppressWarnings("unchecked")
 	private void adjustExecutableAccordingToResolvedType(CtExecutableReference ref,
 			AllocationExpression allocationExpression) {
