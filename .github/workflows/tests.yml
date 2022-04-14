@@ -176,7 +176,7 @@ jobs:
       MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
     name: reproducible-builds
     steps:
-      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2.4.0
+      - uses: actions/checkout@f25a3a9f25bd5f4c5d77189cab02ff357b5aedeb # tag=v2.4.1
         with:
           fetch-depth: 0
       - uses: actions/setup-java@9519cf1382ac8dc61ad461f7f7cb45f033220189 # tag=v3.1.1
